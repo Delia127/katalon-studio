@@ -223,6 +223,25 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
                 var mouseDownTemp = this.mousedown;
                 var mouseDownTempTarget = this.mousedown.target;
                 var currentURL = this.window.document.URL;
+                var clickType = this.rec_getMouseButton(event);
+                var action = {};
+
+                // We want to handle double click, hence the 200ms wait
+                // But there is no guaranteed that the document would still
+                // contain event.target after 200ms, if it doesn't, then no xpath
+                // construction method can be done, hence we have to break
+                // encapsulation here by constructing all the relevant xpaths first
+                // and then the 200ms is to decide wether to send the data or not
+                
+                this.checkForNavigateAction(currentURL);
+                action["actionName"] = 'click';
+                action["actionData"] = clickType;
+
+                if (!event.target) {
+                    return;
+                }
+                var jsonObject = mapDOMForRecord(action, event.target, window);                
+
                 this.waitUntilDoubleClickIsConfirmed = setTimeout(function (){
                     if (mouseDownTempTarget !== event.target && !(x + y)) {
                         var x = event.clientX - this.mouseDownTemp.clientX;
@@ -234,17 +253,16 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
                     else if (mouseDownTempTarget === event.target) {
                         var self = this;
                         if (event.button == 0 && !preventClick && event.isTrusted) {
-                            if (!preventClickTwice) {
-                                var clickType = this.rec_getMouseButton(event);
+                            if (!preventClickTwice) {                                
                                 if (this.rec_isElementMouseUpEventRecordable(event.target, clickType)) {
-                                    this.processOnClickTarget(event.target, clickType, currentURL);
+                                    self.rec_processObject(jsonObject);
                                 }
                                 preventClickTwice = true;
                             }
                             setTimeout(function () { preventClickTwice = false; }, 30);
                         }
                     }
-                }.bind(this), 0);
+                }.bind(this), 200);
             }
         }
         delete this.mousedown;

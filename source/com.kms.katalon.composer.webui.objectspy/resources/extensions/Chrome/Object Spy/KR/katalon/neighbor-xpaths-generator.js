@@ -33,7 +33,8 @@ neighborXpathsGenerator.getXpathsByNeighbors = function (clickedElement, xpathPr
         // Retrieve any element that:
         //              - Has text nodes that are not just blank spaces in disguise ( This removes bounding parents )
         //              - The over all string matches the neighbor's text ( This selects the correct element )
-        var partialPathToGetTextOffset = "(.//*[normalize-space(text()) and normalize-space(.)=" + neighborXpathsGenerator.getImmediateText(thisUsefulNeighbor) + "])";
+        var thisUsefulNeighborText = neighborXpathsGenerator.getImmediateText(thisUsefulNeighbor);
+        var partialPathToGetTextOffset = "(.//*[normalize-space(text()) and normalize-space(.)=" + thisUsefulNeighborText + "])";
         var correctOffsetByText = neighborXpathsGenerator.getCorrectOffset(thisUsefulNeighbor, partialPathToGetTextOffset);
         var neighborXpath = partialPathToGetTextOffset + "[" + correctOffsetByText + "]";
 
@@ -60,6 +61,16 @@ neighborXpathsGenerator.getXpathsByNeighbors = function (clickedElement, xpathPr
 
     }
     return newXpaths;
+}
+
+neighborXpathsGenerator.getUsefulNeighborsText = function (clickedElement) {
+    var usefulNeighbors = neighborXpathsGenerator.getUsefulNeighbors(clickedElement, 2, 2);
+    var neighborsText = [];
+    for (var i = 0; i < usefulNeighbors.length; i++) {
+        var thisUsefulNeighbor = usefulNeighbors[i];
+        neighborsText.push(neighborXpathsGenerator.getImmediateText(thisUsefulNeighbor));
+    }
+    return neighborsText;
 }
 
 /**

@@ -316,6 +316,10 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_TITLE_EXECUTION_PROILE;
     
     public static String PA_MSG_UNABLE_TO_SELECT_EXECUTION_PROFILES;
+    
+    public static String DIA_MSG_SEND_EMAIL_REPORT_FOR_FAILED_TEST_ONLY;
+    
+    public static String DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES;
 
     static {
         // initialize resource bundle

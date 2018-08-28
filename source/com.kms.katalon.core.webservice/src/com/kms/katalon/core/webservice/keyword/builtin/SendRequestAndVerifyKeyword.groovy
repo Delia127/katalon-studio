@@ -45,7 +45,9 @@ public class SendRequestAndVerifyKeyword extends WebserviceAbstractKeyword {
             
             logger.logInfo(StringConstants.KW_LOG_INFO_VERIFICATION_START)
             String verificationScript = request.getVerificationScript()
+            WSResponseManager.getInstance().setRequestObjectId(request.getObjectId())
             WSResponseManager.getInstance().setCurrentResponse(responseObject)
+            
             TestResult result = TestCaseMain.runWSVerificationScript(createTestCaseBinding(request),
                 verificationScript, flowControl, true)
             switch(result.getTestStatus().getStatusValue()) {

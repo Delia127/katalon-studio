@@ -11,12 +11,12 @@ import com.kms.katalon.execution.exception.ExecutionException;
 
 public class WSVerificationRunConfiguration extends AbstractRunConfiguration {
     
-    private String testObjectId;
+    private String requestObjectId;
     
     private ResponseObject responseObject;
     
-    public WSVerificationRunConfiguration(String testObjectId, ResponseObject responseObject) {
-        this.testObjectId = testObjectId;
+    public WSVerificationRunConfiguration(String requestObjectId, ResponseObject responseObject) {
+        this.requestObjectId = requestObjectId;
         this.responseObject = responseObject;
     }
     
@@ -27,17 +27,18 @@ public class WSVerificationRunConfiguration extends AbstractRunConfiguration {
 
     @Override
     public IRunConfiguration cloneConfig() throws IOException, ExecutionException {
-        return new WSVerificationRunConfiguration(testObjectId, responseObject);
+        return new WSVerificationRunConfiguration(requestObjectId, responseObject);
     }
     
     @Override
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = super.getProperties();
-        properties.put(StringConstants.WS_RESPONSE_OBJECT, JsonUtil.toJson(responseObject));
+        properties.put(StringConstants.WS_VERIFICATION_RESPONSE_OBJECT, JsonUtil.toJson(responseObject));
+        properties.put(StringConstants.WS_VERIFICATION_REQUEST_OBJECT_ID, requestObjectId);
         return properties;
     }
     
     public String getTestObjectId() {
-        return testObjectId;
+        return requestObjectId;
     }
 }

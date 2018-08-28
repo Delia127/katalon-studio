@@ -29,7 +29,9 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -128,6 +130,11 @@ public class PastePackageHandler {
         try {
             GroovyUtil.copyKeyword(keywordFile, targetPackageFragment, newName);
             String copiedKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
+            
+            KeywordTreeEntity keywordTreeEntity = TreeEntityUtil.getKeywordTreeEntity(
+                    copiedKeywordFilePath, ProjectController.getInstance().getCurrentProject());
+            eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity);
+            
             eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM, new Object[] {
                     keywordFile.getProjectRelativePath().toString(), copiedKeywordFilePath });
         } catch (JavaModelException javaModelException) {
@@ -142,6 +149,11 @@ public class PastePackageHandler {
         try {
             GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, newName);
             String cutKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
+            
+            KeywordTreeEntity keywordTreeEntity = TreeEntityUtil.getKeywordTreeEntity(
+                    cutKeywordFilePath, ProjectController.getInstance().getCurrentProject());
+            eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity);
+            
             eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] {
                     keywordFile.getProjectRelativePath().toString(), cutKeywordFilePath });
         } catch (JavaModelException javaModelException) {

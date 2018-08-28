@@ -119,6 +119,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     public static final String PROPERTIES_TAB_TITLE = ComposerTestcaseMessageConstants.PA_TAB_PROPERTIES;
 
+    public static final String PREF_SCRIPT_VIEW_OPENED_BEFORE = "scriptViewOpenedBefore";
     @Inject
     private MDirtyable dirty;
 
@@ -206,7 +207,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                     return DocumentationMessageConstants.TEST_CASE_SCRIPT;
                 }
                 if (partObject instanceof TestCaseIntegrationPart) {
-                    return DocumentationMessageConstants.TEST_CASE_INTEGRATION;
+                    return ((TestCaseIntegrationPart) partObject).getDocumentationUrl();
                 }
                 if (partObject instanceof TestCasePropertiesPart) {
                     return DocumentationMessageConstants.TEST_CASE_PROPERTIES;
@@ -229,6 +230,11 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 setSelectedPart(getChildCompatibilityPart());
             } else if (childTestCasePart.isManualScriptChanged()) {
                 setChildEditorContents(scriptNode);
+            }
+            
+            boolean isScriptViewOpenedFirstTime = TestCasePreferenceDefaultValueInitializer.isScriptViewOpenedBefore();
+            if (!isScriptViewOpenedFirstTime) {
+               TestCasePreferenceDefaultValueInitializer.setScriptViewOpenedFirstTime();
             }
         }
 
@@ -324,6 +330,21 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                             if (childTestCasePart.isManualScriptChanged()) {
                                 setChildEditorContents(scriptNode);
                             }
+                            
+                            boolean isScriptViewOpenedBefore = TestCasePreferenceDefaultValueInitializer.isScriptViewOpenedBefore();
+                            if (!isScriptViewOpenedBefore) {
+                                TestCasePreferenceDefaultValueInitializer.setScriptViewOpenedFirstTime();
+                                
+                                boolean shouldSetScriptViewAsDefault = MessageDialog.openConfirm(
+                                        Display.getCurrent().getActiveShell(),
+                                        StringConstants.CONFIRMATION,
+                                        StringConstants.MSG_SET_SCRIPT_VIEW_AS_DEFAULT);
+                                
+                                if (shouldSetScriptViewAsDefault) {
+                                    TestCasePreferenceDefaultValueInitializer.setTestCasePartStartView(SCRIPT_TAB_TITLE);
+                                }
+                            }
+                            
                             return;
                         }
 

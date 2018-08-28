@@ -53,7 +53,7 @@ import com.kms.katalon.selenium.firefox.FirefoxWebExtension;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    private static final String FIREFOX_ADDON_UUID = "{932b2318-b453-4947-8d43-92ac9dcef9bf}";
+    private static final String FIREFOX_ADDON_UUID = "{91f05833-bab1-4fb1-b9e4-187091a4d75d}";
 
     private static final String HTTP = "http";
 
@@ -310,7 +310,7 @@ public class InspectSession implements Runnable {
             File firefoxExtensionFolder = FileUtil.getExtensionBuildFolder();
             File firefoxAddonExtracted = new File(firefoxExtensionFolder, FIREFOX_ADDON_FOLDER_RELATIVE_PATH);
             if (firefoxAddonExtracted.exists()) {
-                return firefoxAddonExtracted;
+            	FileUtils.cleanDirectory(firefoxAddonExtracted);
             }
             File firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
             ZipUtil.extract(firefoxAddon, firefoxAddonExtracted);

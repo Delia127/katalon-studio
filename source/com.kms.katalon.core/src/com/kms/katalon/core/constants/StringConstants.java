@@ -487,7 +487,11 @@ public class StringConstants {
     public static final String KW_MSG_LIST_KEYWORD_CLASS_FAILED_X = CoreMessageConstants.KW_MSG_LIST_KEYWORD_CLASS_FAILED_X;
 
     // Web Service Verification
-    public static final String WS_RESPONSE_OBJECT = "responseObject";
+    public static final String WS_VERIFICATION_RESPONSE_OBJECT = "responseObject";
+    
+    public static final String WS_VERIFICATION_REQUEST_OBJECT_ID = "requestObjectId";
+    
+    public static final String WS_VERIFICATION_REQUEST_VARIABLES = "requestObjectVariables";
     
     public static final String WS_VERIFICATION_SUCCESS = CoreMessageConstants.WS_VERIFICATION_SUCCESS;
 }

@@ -77,14 +77,25 @@ public class TestCaseVariableView implements TableActionOperator {
 
     private List<VariableEntity> variables = new ArrayList<>();
 
-    private ITestCasePart testCasePart;
+    private IVariablePart variablePart;
     
-    public TestCaseVariableView(ITestCasePart testCasePart) {
-        this.testCasePart = testCasePart;
+    private InputValueType[] inputValueTypes = defaultInputValueTypes;
+    
+    public TestCaseVariableView(IVariablePart variablePart) {
+        this.variablePart = variablePart;
+    }
+    
+    public void setInputValueTypes(InputValueType[] inputValueTypes) {
+        this.inputValueTypes = inputValueTypes;
+    }
+    
+    public InputValueType[] getInputValueTypes() {
+        return inputValueTypes;
     }
 
     public Composite createComponents(Composite parent) {
         final Composite container = new Composite(parent, SWT.NONE);
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         container.setLayout(new GridLayout(1, false));
 
         Composite compositeToolbar = new Composite(container, SWT.NONE);
@@ -209,7 +220,7 @@ public class TestCaseVariableView implements TableActionOperator {
 
         TableViewerColumn tableViewerColumnDefaultValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnDefaultValueType.setEditingSupport(
-                new VariableDefaultValueTypeEditingSupport(tableViewer, this, defaultInputValueTypes));
+                new VariableDefaultValueTypeEditingSupport(tableViewer, this, inputValueTypes));
         TableColumn tblclmnDefaultValueType = tableViewerColumnDefaultValueType.getColumn();
         tblclmnDefaultValueType.setWidth(100);
         tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);
@@ -484,6 +495,6 @@ public class TestCaseVariableView implements TableActionOperator {
 
     @Override
     public void setDirty(boolean dirty) {
-        testCasePart.setDirty(dirty);
+        variablePart.setDirty(dirty);
     }
 }

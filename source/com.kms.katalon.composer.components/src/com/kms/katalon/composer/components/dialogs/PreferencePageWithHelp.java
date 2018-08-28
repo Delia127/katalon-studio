@@ -21,8 +21,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
-
 /**
  * This class codes of {@link PreferencePage} with modifications to createControl
  * method because the original class contains private fields.
@@ -183,8 +181,9 @@ public abstract class PreferencePageWithHelp extends PreferencePage {
             body.setLayoutData(new GridData(GridData.FILL_BOTH));
         }
 
-        Composite buttonBar = (hasDocumentation()) ? createButtonBarCompositeWithHelp(content)
-                : createDefaultButtonBarComposite(content);
+//        Composite buttonBar = (hasDocumentation()) ? createButtonBarCompositeWithHelp(content)
+//                : createDefaultButtonBarComposite(content);
+        Composite buttonBar = createDefaultButtonBarComposite(content);
 
         contributeButtons(buttonBar);
 
@@ -261,23 +260,23 @@ public abstract class PreferencePageWithHelp extends PreferencePage {
         return buttonBar;
     }
 
-    protected Composite createButtonBarCompositeWithHelp(Composite content) {
-        Composite buttonBar = new Composite(content, SWT.NONE);
-        GridLayout gridLayout = new GridLayout(2, false);
-        gridLayout.marginHeight = 0;
-        gridLayout.marginWidth = 0;
-        buttonBar.setLayout(gridLayout);
-        buttonBar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        
-        new HelpCompositeForDialog(buttonBar, getDocumentationUrl());
-        
-        return createDefaultButtonBarComposite(buttonBar);
-    }
+//    protected Composite createButtonBarCompositeWithHelp(Composite content) {
+//        Composite buttonBar = new Composite(content, SWT.NONE);
+//        GridLayout gridLayout = new GridLayout(1, false);
+//        gridLayout.marginHeight = 0;
+//        gridLayout.marginWidth = 0;
+//        buttonBar.setLayout(gridLayout);
+//        buttonBar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+//        
+//        new HelpCompositeForDialog(buttonBar, getDocumentationUrl());
+//        
+//        return createDefaultButtonBarComposite(buttonBar);
+//    }
 
     /**
      * @return if this preference page have available documentation
      */
-    protected boolean hasDocumentation() {
+    public boolean hasDocumentation() {
         return false;
     }
 
@@ -286,7 +285,7 @@ public abstract class PreferencePageWithHelp extends PreferencePage {
      * 
      * @return return empty for default
      */
-    protected String getDocumentationUrl() {
+    public String getDocumentationUrl() {
         return "";
     }
 

@@ -99,6 +99,48 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         return super.createDialogBodyArea(parent);
         
     }
+    @Override
+    protected Control createButtonBar(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
+        layout.horizontalSpacing = 0;
+        composite.setLayout(layout);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        composite.setFont(parent.getFont());
+
+        // create help control if needed
+        if (isHelpAvailable()) {
+            Control helpControl = createHelpControl(composite);
+            ((GridData) helpControl.getLayoutData()).horizontalIndent = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
+        }
+        doCreateButtonBar(composite);
+
+        return composite;
+    }
+    
+    protected Control doCreateButtonBar(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        // create a layout with spacing and margins appropriate for the font
+        // size.
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 0; // this is incremented by createButton
+        layout.makeColumnsEqualWidth = true;
+        layout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
+        layout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
+        layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
+        layout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
+        composite.setLayout(layout);
+        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_END
+                | GridData.VERTICAL_ALIGN_CENTER);
+        composite.setLayoutData(data);
+        composite.setFont(parent.getFont());
+
+        // Add the buttons to the button bar.
+        createButtonsForButtonBar(composite);
+        return composite;
+    }
     
     @Override
     protected Control createHelpControl(Composite parent) {
@@ -121,7 +163,8 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
     private ToolBar createHelpImageButton(Composite parent, Image image) {
         ToolBar toolBar = new ToolBar(parent, SWT.FLAT | SWT.NO_FOCUS);
         ((GridLayout) parent.getLayout()).numColumns++;
-        toolBar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
+//        toolBar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
+        toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true));
         final Cursor cursor = new Cursor(parent.getDisplay(), SWT.CURSOR_HAND);
         toolBar.setCursor(cursor);
         toolBar.addDisposeListener(e -> cursor.dispose());

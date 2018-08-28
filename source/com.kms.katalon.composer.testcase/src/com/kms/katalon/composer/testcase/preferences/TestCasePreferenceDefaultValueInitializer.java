@@ -82,6 +82,8 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         Type mapType = new TypeToken<Map<String, RecentObjectStorage>>() {}.getType();
         store.setDefault(TestCasePreferenceConstants.TESTCASE_RECENT_TEST_OBJECTS,
                 JsonUtil.toJson(Collections.emptyMap(), mapType, false));
+        
+        store.setDefault(TestCasePreferenceConstants.TESTCASE_SCRIPT_VIEW_OPENED_FIRST_TIME, false);
     }
 
     public static boolean isSetGenerateVariableDefaultValue() {
@@ -152,6 +154,18 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
 
     public static String getTestCasePartStartView() {
         return getStore().getString(TestCasePreferenceConstants.TESTCASE_PART_DEFAULT_START_VIEW);
+    }
+    
+    public static void setTestCasePartStartView(String view) {
+        getStore().setValue(TestCasePreferenceConstants.TESTCASE_PART_DEFAULT_START_VIEW, view);
+    }
+    
+    public static boolean isScriptViewOpenedBefore() {
+        return getStore().getBoolean(TestCasePreferenceConstants.TESTCASE_SCRIPT_VIEW_OPENED_FIRST_TIME);
+    }
+    
+    public static void setScriptViewOpenedFirstTime() {
+        getStore().setValue(TestCasePreferenceConstants.TESTCASE_SCRIPT_VIEW_OPENED_FIRST_TIME, true);
     }
 
     public static List<StoredKeyword> getRecentKeywords() {

@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.gson.JsonObject;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.constant.TrackEvents;
@@ -78,32 +79,28 @@ public class Trackings {
         trackingService.track(trackInfo);
     }
     
-    public static void trackSave() {
-        trackUserAction("save");
-    }
-    
-    public static void trackSaveAll() {
-        trackUserAction("saveAll");
-    }
-    
     public static void trackSpy(String type) {
         trackUserAction("spy", "type", type);
     }
 
+    public static void trackWebRecord(WebUIDriverType browserType, boolean useActiveBrowser) {
+        trackUserAction("record", "type", "web", "browserType", browserType.toString(), "active", useActiveBrowser);
+    }
+    
     public static void trackRecord(String type) {
         trackUserAction("record", "type", type);
     }
     
-    public static void trackExecuteTestCase(String launchMode) {
-        trackUserAction("executeTestCase", "launchMode", launchMode);
+    public static void trackExecuteTestCase(String launchMode, String driverType) {
+        trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType);
     }
     
-    public static void trackExecuteTestSuiteInGuiMode(String launchMode) {
-        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode);
+    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType) {
+        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType);
     }
     
-    public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous) {
-        trackAction("executeTestSuite", isAnonymous, "runningMode", "console");
+    public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType) {
+        trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType);
     }
     
     public static void trackExecuteTestSuiteCollectionInGuiMode() {
@@ -192,6 +189,26 @@ public class Trackings {
     
     public static void trackExportKeywords() {
         trackUserAction("exportKeywords");
+    }
+    
+    public static void trackForumSearch(String keyword) {
+        trackUserAction("forumSearch", "keyword", keyword);
+    }
+    
+    public static void trackQuickDiscussion() {
+        trackUserAction("quickDiscussion");
+    }
+    
+    public static void trackOpenKAIntegration(String objectType) {
+        trackUserAction("openKAIntegration", "type", objectType);
+    }
+    
+    public static void trackAddNewTestStep(String stepType) {
+        trackUserAction("newTestStep", "type", stepType);
+    }
+    
+    public static void trackTestWebServiceObject(boolean withVerification) {
+        trackUserAction("testWebServiceObject", "verify", withVerification);
     }
         
     private static void trackUserAction(String actionName, Object... properties) {

@@ -42,7 +42,31 @@ public interface IImageKeys {
     public static final String SCREEN_SHOT_RECORD = "welcome/record.png"; //$NON-NLS-1$
 
     public static final String SCREEN_SHOT_RUN = "welcome/run.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_MOBILE_RECORD = "welcome/Mobile-Record_test_case.png"; //$NON-NLS-1$
 
+    public static final String SCREEN_SHOT_MOBILE_CONFIG_AND_RECORD_STEP = "welcome/Mobile-Configure-and-record-new-test-steps.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_MOBILE_LOG_VIEWER = "welcome/Mobile-View-execution-log.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_CREATE_WEB_SERVICE_REQUEST = "welcome/API-Create-a-web-service-request.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_TEST_WEB_SERVICE_REQUEST = "welcome/API-Test-the-Web-Service-Request.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_ADD_WEB_SERVICE_KEYWORD = "welcome/API-Add-a-web-service-keyword.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_API_LOG_VIEWER = "welcome/API-view-the-execution-log.png"; //$NON-NLS-1$
+    
+    public static final String SCRIPT_BULLET = "welcome/scripting-bullet.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_SCRIPT_NEW_TEST_CASE = "welcome/Script-script-a-new-test-case.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_ADD_OR_IMPORT_KEYWORDS = "welcome/Script-add-or-import-new-keywords.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_CREATE_TEST_LISTENER = "welcome/Script-create-a-new-test-listener.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_BUILD_CMD = "welcome/Script-build-cmd.png"; //$NON-NLS-1$
+    
     public static final String GRADIENT_LINE_SEPARATOR = "welcome/gradient_line_separator.png"; //$NON-NLS-1$
 
     public static final String STEP_1_36 = "welcome/step_1_36.png"; //$NON-NLS-1$
@@ -50,6 +74,16 @@ public interface IImageKeys {
     public static final String STEP_2_36 = "welcome/step_2_36.png"; //$NON-NLS-1$
 
     public static final String STEP_3_36 = "welcome/step_3_36.png"; //$NON-NLS-1$
+    
+    public static final String STEP_1_26 = "welcome/1.png"; //$NON-NLS-1$
+
+    public static final String STEP_2_26 = "welcome/2.png"; //$NON-NLS-1$
+
+    public static final String STEP_3_26 = "welcome/3.png"; //$NON-NLS-1$
+    
+    public static final String STEP_4_26 = "welcome/4.png"; //$NON-NLS-1$
+    
+    public static final String STEP_5_26 = "welcome/5.png"; //$NON-NLS-1$
 
     public static final String TAB_FIRST_INACTIVE = "welcome/tab_first_inactive.png"; //$NON-NLS-1$
 
@@ -634,5 +668,9 @@ public interface IImageKeys {
     public static final String RESUME_RECORDING_24 = "recorder/resume_recording_24.png"; //$NON-NLS-1$
 
     public static final String STOP_RECORDING_24 = "recorder/stop_recording_24.png"; //$NON-NLS-1$
+    
+    public static final String FORUM_SEARCH_BOX = "search-box.png"; //$NON-NLS-1$
+    
+    public static final String FORUM_SEARCH_ICON = "search_13.png"; //$NON-NLS-1$
 
 }
