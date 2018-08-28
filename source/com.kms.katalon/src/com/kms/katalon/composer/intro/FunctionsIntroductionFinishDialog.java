@@ -38,15 +38,15 @@ public class FunctionsIntroductionFinishDialog extends Dialog {
         Composite container = (Composite) super.createDialogArea(parent);
         container.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-        imageComposite = new ResizableBackgroundImageComposite(container, SWT.NONE, ImageConstants.IMG_INTRO_SCREEN_6);
+        imageComposite = new ResizableBackgroundImageComposite(container, SWT.NONE, ImageConstants.IMG_INTRO_SCREEN_WELCOME);
 
         return container;
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, StringConstants.DIA_OK, true);
-        createButton(parent, IDialogConstants.CANCEL_ID, StringConstants.DIA_CANCEL, false);
+        createButton(parent, IDialogConstants.OK_ID, StringConstants.DIA_LET_START, true);
+//        createButton(parent, IDialogConstants.CANCEL_ID, StringConstants.DIA_CANCEL, false);
     }
 
     @Override

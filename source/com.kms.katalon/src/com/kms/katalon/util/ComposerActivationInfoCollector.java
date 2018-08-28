@@ -44,21 +44,27 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         if (result == Window.CANCEL) {
             return false;
         }
-//        showFunctionsIntroductionForTheFirstTime();
+        showFunctionsIntroductionForTheFirstTime();
         return true;
     }
 
     private static void showFunctionsIntroductionForTheFirstTime() {
-        FunctionsIntroductionDialog dialog = new FunctionsIntroductionDialog(null);
-        dialog.open();
+//        FunctionsIntroductionDialog dialog = new FunctionsIntroductionDialog(null);
+//        dialog.open();
         FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
-        if (finishDialog.open() == Dialog.OK) {
-            try {
-                new CommandCaller().call(CommandId.PROJECT_ADD);
-            } catch (CommandException e) {
-                LogUtil.logError(e);
-            }
+        finishDialog.open();
+        try {
+            new CommandCaller().call(CommandId.PROJECT_ADD);
+        } catch (CommandException e) {
+            LogUtil.logError(e);
         }
+//        if (finishDialog.open() == Dialog.OK) {
+//            try {
+//                new CommandCaller().call(CommandId.PROJECT_ADD);
+//            } catch (CommandException e) {
+//                LogUtil.logError(e);
+//            }
+//        }
     }
 
     public static String genRequestActivationInfo() {
