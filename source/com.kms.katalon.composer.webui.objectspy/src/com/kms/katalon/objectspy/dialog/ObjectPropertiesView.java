@@ -233,7 +233,7 @@ public class ObjectPropertiesView extends Composite
 
     private void createObjectSelectionMethodOptions(Composite parent) {
         Composite methodComposite = new Composite(parent, SWT.NONE);
-        methodComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        methodComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         GridLayout glMethodComposite = new GridLayout(2, false);
         glMethodComposite.marginWidth = 0;
         glMethodComposite.marginHeight = 0;
@@ -244,14 +244,14 @@ public class ObjectPropertiesView extends Composite
         lblObjectDetectMethod.setText(LBL_OBJECT_SELECTION_METHOD);
 
         lblHelp = new Label(methodComposite, SWT.NONE);
-        GridData gdLblHelp = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        GridData gdLblHelp = new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1);
         gdLblHelp.heightHint = 20;
         lblHelp.setLayoutData(gdLblHelp);
         lblHelp.setImage(ImageConstants.IMG_16_HELP);
         lblHelp.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_HAND));
 
         radioBtnComposite = new Composite(parent, SWT.NONE);
-        radioBtnComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+        radioBtnComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
         RowLayout rlRadioBtnComposite = new RowLayout(SWT.HORIZONTAL);
         rlRadioBtnComposite.marginTop = 0;
         rlRadioBtnComposite.marginRight = 0;
@@ -279,21 +279,20 @@ public class ObjectPropertiesView extends Composite
     private void createAttributeToolbarButtons(Composite parent) {
 		compositeAttributeToolbar = new Composite(parent, SWT.NONE);
 		compositeAttributeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		compositeAttributeToolbar.setLayout(new GridLayout(3, true));
+		compositeAttributeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
 		
-        toolbar = new ToolBar(compositeAttributeToolbar, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
-        toolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-        btnAdd = new ToolItem(toolbar, SWT.FLAT);
+        toolbar = new ToolBar(compositeAttributeToolbar, SWT.FLAT | SWT.RIGHT);
+       
+        btnAdd = new ToolItem(toolbar, SWT.NONE);
         btnAdd.setText(StringConstants.ADD);
         btnAdd.setImage(ImageConstants.IMG_16_ADD);
 
-        btnDelete = new ToolItem(toolbar, SWT.FLAT);
+        btnDelete = new ToolItem(toolbar, SWT.NONE);
         btnDelete.setText(StringConstants.DELETE);
         btnDelete.setImage(ImageConstants.IMG_16_DELETE);
         btnDelete.setDisabledImage(ImageConstants.IMG_16_DELETE_DISABLED);
 
-        btnClear = new ToolItem(toolbar, SWT.FLAT);
+        btnClear = new ToolItem(toolbar, SWT.NONE);
         btnClear.setText(StringConstants.CLEAR);
         btnClear.setImage(ImageConstants.IMG_16_CLEAR);
         btnClear.setDisabledImage(ImageConstants.IMG_16_CLEAR_DISABLED);
@@ -714,7 +713,7 @@ public class ObjectPropertiesView extends Composite
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (webElement == null || !webElement.hasProperty()) {
+                if (webElement == null || !webElement.hasProperty()) {                	
                     return;
                 }
 
@@ -729,18 +728,6 @@ public class ObjectPropertiesView extends Composite
                         .map(i -> properties.get(i))
                         .collect(Collectors.toList());
                 properties.removeAll(selectedProperties);
-                
-                int[] selectedXpathIndices = tXpath.getSelectionIndices();
-                if (selectedXpathIndices.length == 0) {
-                    return;
-                }
-
-                List<WebElementXpathEntity> xpaths = getXpaths();
-                List<WebElementXpathEntity> selectedXpaths = Arrays.stream(selectedXpathIndices)
-                        .boxed()
-                        .map(i -> xpaths.get(i))
-                        .collect(Collectors.toList());
-                xpaths.removeAll(selectedXpaths);                
                 
                 updateWebObjectProperties();
                 updateWebObjectXpaths();
@@ -935,9 +922,11 @@ public class ObjectPropertiesView extends Composite
         if (webElement == null) {
             showComposite(propertyTableComposite, true);
             showComposite(xpathTableComposite, false);          
+            showComposite(compositeAttributeToolbar, false);
         } else {
             showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.BASIC);
             showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);  
+            showComposite(compositeAttributeToolbar,  webElement.getSelectorMethod() == SelectorMethod.BASIC);
         }
         cSelected.setText(getCheckboxIcon(isAllPropetyEnabled()));
         boolean hasProperty = !properties.isEmpty();
@@ -954,9 +943,11 @@ public class ObjectPropertiesView extends Composite
         if (webElement == null) {
         	  showComposite(propertyTableComposite, false);
               showComposite(xpathTableComposite, true);     
+              showComposite(compositeAttributeToolbar, false);
         } else {
 	           showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.BASIC);
-	           showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);                       
+	           showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);     
+	           showComposite(compositeAttributeToolbar,  webElement.getSelectorMethod() == SelectorMethod.BASIC);
         }       
        
         boolean hasXpath = !xpaths.isEmpty();
