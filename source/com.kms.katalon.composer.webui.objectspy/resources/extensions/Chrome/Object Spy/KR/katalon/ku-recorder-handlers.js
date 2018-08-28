@@ -85,7 +85,9 @@ KURecorder.addEventHandler('clickAt', 'click', function(event) {
             var target = event.target;
             var currentURL = this.window.document.URL;
             var clickType = this.rec_getMouseButton(event);
-            this.processOnClickTarget(target, clickType, currentURL);
+            if(this.rec_isElementMouseUpEventRecordable(target, clickType)){
+                this.processOnClickTarget(target, clickType, currentURL);
+            }
             //var arrayTest = this.locatorBuilders.buildAll(event.target);
             preventClickTwice = true;
         }
@@ -105,7 +107,10 @@ KURecorder.addEventHandler('doubleClickAt', 'dblclick', function (event) {
         left -= element.offsetLeft;
         element = element.offsetParent;
     } while (element);
-    this.processOnDbClickTarget(event.target);
+    var clickType = this.rec_getMouseButton(event);
+    if(this.rec_isElementMouseUpEventRecordable(event.target, clickType)){
+        this.processOnDbClickTarget(event.target);
+    }
 }, true);
 // END
 
