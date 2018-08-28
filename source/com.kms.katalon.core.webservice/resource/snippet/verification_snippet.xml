@@ -2,7 +2,7 @@
 
 <snippets>
 <snippet>
-<name>import</name>
+<name>common</name>
 <script>
 <![CDATA[
 import static org.assertj.core.api.Assertions.*
@@ -14,6 +14,10 @@ import com.kms.katalon.core.webservice.verification.WSResponseManager
 
 import groovy.json.JsonSlurper
 import internal.GlobalVariable as GlobalVariable
+
+RequestObject request = WSResponseManager.getInstance().getCurrentRequest()
+
+ResponseObject response = WSResponseManager.getInstance().getCurrentResponse()
 ]]>
 </script>
 </snippet>
@@ -28,6 +32,15 @@ ResponseObject response = WSResponseManager.getInstance().getCurrentResponse()
 </snippet>
 
 <snippet>
+<name>Get current request </name>
+<script>
+<![CDATA[
+RequestObject request = WSResponseManager.getInstance().getCurrentRequest()
+]]>
+</script>
+</snippet>
+
+<snippet>
 <name>Get a global variable</name>
 <script>
 <![CDATA[
@@ -37,12 +50,11 @@ GlobalVariable.variable
 </snippet>
 
 <snippet>
-<name>Get a variable from current request</name>
+<name>Get a variable</name>
 <script>
 <![CDATA[
-RequestObject request = WSResponseManager.getInstance().getCurrentRequest()
 def variables = request.getVariables()
-def url = variables.get('url')
+def variable = variables.get('yourVariableName')
 ]]>
 </script>
 </snippet>
@@ -81,8 +93,6 @@ assertThat(response.getResponseText()).isEqualTo("Katalon Test Project")
 <script>
 <![CDATA[
 WS.verifyElementPropertyValue(response, 'issues[0].fields.project.key', 'KTP')
-
-assertThat(jsonResponse.issues[0].fields.project.key).isEqualTo('KTP')
 ]]>
 </script>
 </snippet>
@@ -119,33 +129,6 @@ assertThat(response.getStatusCode()).isIn(Arrays.asList(200, 201, 202))
 </snippet>
 
 <snippet>
-<name>Response body: number of elements</name>
-<script>
-<![CDATA[
-WS.verifyElementsCount(response, 'issues', 6)
-WS.verifyEqual(jsonResponse.issues.size, 6)
-
-assertThat(jsonResponse.issues.size).isEqualTo(6)
-assertThat(jsonResponse.issues).hasSize(6)
-
-WS.verifyGreaterThan(jsonResponse.issues.size, 5)
-assertThat(jsonResponse.issues.size).isGreaterThan(5)
-
-assertThat(jsonResponse.issues.size).isBetween(5,7)
-]]>
-</script>
-</snippet>
-
-<snippet>
-<name>Response body: element not empty</name>
-<script>
-<![CDATA[
-assertThat(jsonResponse.issues[0].id).isNotEmpty()
-]]>
-</script>
-</snippet>
-
-<snippet>
 <name>Response body: Array contains</name>
 <script>
 <![CDATA[
@@ -162,19 +145,6 @@ assertThat(arrayResponse).containsSubsequence("why", "there")
 assertThat(arrayResponse).containsAnyOf("why", "nothing", "new")
 
 assertThat(arrayResponse).contains("hello", atIndex(1))
-]]>
-</script>
-</snippet>
-
-<snippet>
-<name>Response body: Get single info of array list</name>
-<script>
-<![CDATA[
-def ids = new ArrayList<>()
-for (item in jsonResponse.issues) {
-	ids << item.id
-}
-assertThat(ids).containsAnyOf("17019")
 ]]>
 </script>
 </snippet>

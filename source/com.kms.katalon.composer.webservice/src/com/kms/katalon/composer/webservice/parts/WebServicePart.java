@@ -358,7 +358,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         this.parent = parent;
         
         verificationScriptSnippets = VerificationScriptSnippetFactory.getSnippets();
-        verificationScriptImport = VerificationScriptSnippetFactory.getSnippetImport();
+        verificationScriptImport = VerificationScriptSnippetFactory.getCommonScriptSnippet();
     }
     
     public Composite getComposite() {
