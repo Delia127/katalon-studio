@@ -51,6 +51,8 @@ public class SignupDialog extends AbstractDialog {
             Pattern.CASE_INSENSITIVE);
 
     public static final int REQUEST_ACTIVATION_CODE = 1000;
+    
+    public static final int REQUEST_OFFLINE_CODE = 1002;
 
     private Text txtUsername;
 
@@ -65,6 +67,8 @@ public class SignupDialog extends AbstractDialog {
     private Link lnkSwitchToActiveDialog;
 
     private Link lnkConfigProxy;
+    
+    private Link lnkOfflineActivation;
 
     public SignupDialog(Shell parentShell) {
         super(parentShell, false);
@@ -117,6 +121,14 @@ public class SignupDialog extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 new ProxyConfigurationDialog(getShell()).open();
+            }
+        });
+        
+        lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setReturnCode(REQUEST_OFFLINE_CODE);
+                close();
             }
         });
     }
@@ -198,7 +210,7 @@ public class SignupDialog extends AbstractDialog {
 
         Composite bottomLeftComposite = new Composite(bottomBar, SWT.NONE);
         bottomLeftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        bottomLeftComposite.setLayout(new GridLayout(4, false));
+        bottomLeftComposite.setLayout(new GridLayout(6, false));
 
         Label lblAskForAccount = new Label(bottomLeftComposite, SWT.NONE);
         lblAskForAccount.setText(MessageConstants.SignupDialog_LBL_ASK_FOR_ACCOUNT);
@@ -214,6 +226,14 @@ public class SignupDialog extends AbstractDialog {
         lnkConfigProxy = new Link(bottomLeftComposite, SWT.NONE);
         lnkConfigProxy.setText(MessageConstants.CONFIG_PROXY);
         lnkConfigProxy.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        
+        Label label = new Label(bottomLeftComposite, SWT.SEPARATOR);
+        label.setLayoutData(gdSeparator);
+        
+        lnkOfflineActivation = new Link(bottomLeftComposite, SWT.NONE);
+        lnkOfflineActivation
+                .setText(String.format("<a>%s</a>", MessageConstants.SignupDialog_LNK_OFFLINE_ACTIVATION));
+        lnkOfflineActivation.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 
         Composite bottomRightComposite = new Composite(bottomBar, SWT.NONE);
         bottomRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
