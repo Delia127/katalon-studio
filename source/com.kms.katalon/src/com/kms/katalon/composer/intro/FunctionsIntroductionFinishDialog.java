@@ -3,7 +3,6 @@ package com.kms.katalon.composer.intro;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,15 +41,13 @@ public class FunctionsIntroductionFinishDialog extends Dialog {
         containerLayout.marginWidth = 0;
         containerLayout.marginHeight = 0;
         container.setLayout(containerLayout);
-        Image image = ImageConstants.IMG_INTRO_SCREEN_WELCOME;
         
         Composite imageComposite = new Composite(container, SWT.NONE);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gridData.widthHint = image.getBoundsInPixels().width;
-        gridData.heightHint = image.getBoundsInPixels().height;
+        gridData.widthHint = 960;
+        gridData.heightHint = 540;
         imageComposite.setLayoutData(gridData);
         
-
         imageComposite.setBackgroundImage(ImageConstants.IMG_INTRO_SCREEN_WELCOME);
 
         return container;
