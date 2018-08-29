@@ -6,6 +6,7 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 public interface ISystemFileDataProvider {
     List<FileEntity> getChildren(FolderEntity parentFolder) throws DALException;
@@ -23,4 +24,6 @@ public interface ISystemFileDataProvider {
     SystemFileEntity moveFile(SystemFileEntity systemFile, FolderEntity targetFolder) throws DALException;
 
     FolderEntity moveFolder(FolderEntity folder, FolderEntity destinationFolder) throws DALException;
+    
+    SystemFileEntity getSystemFile(String systemFilePath, ProjectEntity projectEntity) throws DALException;
 }

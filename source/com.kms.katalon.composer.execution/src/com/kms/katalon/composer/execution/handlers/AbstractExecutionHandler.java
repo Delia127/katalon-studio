@@ -130,12 +130,12 @@ public abstract class AbstractExecutionHandler {
                             || partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)) {
                         return true;
                     }
-//                    if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
-//                        CompatibilityEditor editor = (CompatibilityEditor) part.getObject();
-//                        if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
-//                            return true;
-//                        }
-//                    }
+                    // if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
+                    // CompatibilityEditor editor = (CompatibilityEditor) part.getObject();
+                    // if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
+                    // return true;
+                    // }
+                    // }
                 }
                 return false;
             }
@@ -166,7 +166,7 @@ public abstract class AbstractExecutionHandler {
         }
     }
 
-    public static Entity getExecutionTarget() {
+    public static Entity getExecutionTarget() throws DALException {
         MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                 application);
         MPart selectedPart = (MPart) composerStack.getSelectedElement();
@@ -206,7 +206,9 @@ public abstract class AbstractExecutionHandler {
                 CompatibilityEditor editor = (CompatibilityEditor) selectedPart.getObject();
                 if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
                     FileEditorInput editorInput = (FileEditorInput) editor.getEditor().getEditorInput();
-                    String featureId = editorInput.getFile().getFullPath().toFile().getAbsolutePath();
+                    String featureFilePath = editorInput.getFile().getRawLocationURI().toString();
+                    return SystemFileController.getInstance().getSystemFile(featureFilePath,
+                            ProjectController.getInstance().getCurrentProject());
                 }
             }
         }
@@ -254,23 +256,22 @@ public abstract class AbstractExecutionHandler {
             executeTestSuite(testSuite, launchMode, runConfiguration);
         } else if (targetEntity instanceof SystemFileEntity) {
             SystemFileEntity feature = (SystemFileEntity) targetEntity;
-            executeFeature(feature, launchMode, runConfiguration);
+            executeFeatureFile(feature, launchMode, runConfiguration);
         }
     }
-    
-    public void executeFeature(final SystemFileEntity feature, final LaunchMode launchMode,
+
+    public void executeFeatureFile(final SystemFileEntity feature, final LaunchMode launchMode,
             final IRunConfiguration runConfig) throws Exception {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         TestCaseEntity testCase = new TestCaseEntity();
         testCase.setName("Temporary Test Case");
         testCase.setParentFolder(FolderController.getInstance().getTestCaseRoot(projectEntity));
         testCase.setProject(projectEntity);
-        String rawScript = "import com.kms.katalon.core.cucumber.keyword.CucumberBuiltinKeywords as CucumberKW\n"+
+        String rawScript = "import com.kms.katalon.core.cucumber.keyword.CucumberBuiltinKeywords as CucumberKW\n" +
 
-"CucumberKW.runFeatureFile('Features/New Feature File')";
-        Job job = new ExecuteTestCaseFromTestScriptJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, 
-                runConfig, testCase, launchMode,
-                sync, rawScript);
+                "CucumberKW.runFeatureFile('Features/New Feature File')";
+        Job job = new ExecuteTestCaseFromTestScriptJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, runConfig,
+                testCase, launchMode, sync, rawScript);
         job.setUser(true);
         job.schedule();
     }
@@ -321,7 +322,7 @@ public abstract class AbstractExecutionHandler {
                         LauncherManager launcherManager = LauncherManager.getInstance();
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
-                        
+
                         trackTestSuiteExecution(launchMode, runConfig);
 
                         monitor.worked(1);
@@ -355,15 +356,15 @@ public abstract class AbstractExecutionHandler {
 
                     return Status.CANCEL_STATUS;
                 } finally {
-//                    UsageInfoCollector.collect(
-//                            UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
+                    // UsageInfoCollector.collect(
+                    // UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
                 }
             }
         };
         job.setUser(true);
         job.schedule();
     }
-    
+
     private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig) {
         Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString(), runConfig.getName());
     }

@@ -215,7 +215,9 @@ public class GroovyUtil {
 
         IFolder sourceMainGroovy = groovyProject.getFolder("Include/scripts/groovy");
         if (!sourceMainGroovy.exists()) {
-            sourceMainGroovy.create(true, true, null);
+            File sourceMainGroovyFolder = new File(sourceMainGroovy.getRawLocationURI());
+            sourceMainGroovyFolder.mkdirs();
+            sourceMainGroovy.refreshLocal(IResource.DEPTH_INFINITE, null);
         }
 
         IFolder driversFolder = groovyProject.getFolder(DRIVERS_FOLDER_NAME);

@@ -12,10 +12,12 @@ import org.apache.commons.io.FilenameUtils;
 import com.kms.katalon.dal.ISystemFileDataProvider;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
+import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 public class SystemFileServiceDataProvider implements ISystemFileDataProvider {
     @Override
@@ -195,5 +197,18 @@ public class SystemFileServiceDataProvider implements ISystemFileDataProvider {
         newFolder.setProject(destinationFolder.getProject());
         
         return newFolder;
+    }
+
+    @Override
+    public SystemFileEntity getSystemFile(String systemFilePath, ProjectEntity projectEntity) throws DALException {
+        try {
+            File systemFile = new File(systemFilePath);
+            SystemFileEntity systemFileEntity = new SystemFileEntity(systemFile);
+            systemFileEntity.setParentFolder(FolderFileServiceManager.getFolder(systemFile.getParent()));
+            systemFileEntity.setProject(projectEntity);
+            return systemFileEntity;
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
     }
 }

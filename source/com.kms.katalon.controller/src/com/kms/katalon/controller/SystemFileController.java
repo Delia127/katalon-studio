@@ -7,6 +7,7 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 public class SystemFileController extends EntityController {
 
@@ -48,4 +49,7 @@ public class SystemFileController extends EntityController {
         return getDataProviderSetting().getSystemFileDataProvider().moveFile(systemFile, targetFolder);
     }
 
+    public SystemFileEntity getSystemFile(String systemFilePath, ProjectEntity projectEntity) throws DALException {
+        return getDataProviderSetting().getSystemFileDataProvider().getSystemFile(systemFilePath, projectEntity);
+    }
 }

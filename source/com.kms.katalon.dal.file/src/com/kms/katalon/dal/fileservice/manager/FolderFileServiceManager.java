@@ -445,7 +445,9 @@ public class FolderFileServiceManager {
                     }
                 }
                 String oldKey = EntityService.getInstance().getEntityCache().getKey(folderEntity);
-                EntityService.getInstance().getEntityCache().remove(oldKey);
+                if (oldKey != null) {
+                    EntityService.getInstance().getEntityCache().remove(oldKey);
+                }
                 EntityService.getInstance().getEntityCache().put(folderEntity.getLocation(), folderEntity);
                 EntityService.getInstance().saveIntergratedFolderMetadataEntity(folderEntity);
                 refreshFolder(folderEntity.getParentFolder());
