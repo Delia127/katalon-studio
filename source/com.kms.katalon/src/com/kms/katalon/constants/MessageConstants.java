@@ -113,7 +113,7 @@ public class MessageConstants extends NLS {
 
     public static String BTN_CLEAR_TILE;
 
-    public static String BTN_ACTIVATE_TILE;
+    public static String BTN_ACTIVATE_TITLE;
 
     public static String WAITTING_MESSAGE;
 
@@ -308,6 +308,62 @@ public class MessageConstants extends NLS {
     public static String URL_CREATE_TEST_LISTENER;
     
     public static String URL_BUILD_CMD;
+    
+    //ActivationDialogV2
+    public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
+
+    public static String ActivationDialogV2_MSG_ACTIVATING;
+
+    public static String ActivationDialogV2_LNK_REGISTER;
+
+    public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATION;
+
+    public static String ActivationDialogV2_LNK_RESET_PASSWORD;
+
+    //ActivationOfflineDialogV2
+    public static String ActivationOfflineDialogV2_LNK_BACK;
+    
+    public static String ActivationOfflineDialogV2_ACTIVATION_URL;
+
+    public static String ActivationOfflineDialogV2_LBL_ACTIVATION_URL;
+
+    public static String ActivationOfflineDialogV2_LBL_ACTIVATION_CODE;
+
+    //SignupDialog
+    public static String SignupDialog_LBL_FULL_NAME;
+
+    public static String SignupDialog_LBL_EMAIL_HINT;
+
+    public static String SignupDialog_LBL_PASSWORD_HINT;
+
+    public static String SignupDialog_LBL_ASK_FOR_ACCOUNT;
+
+    public static String SignupDialog_LNK_SIGN_IN;
+
+    public static String SignupDialog_BTN_SIGN_UP;
+
+    public static String SignupDialog_DIA_TITLE;
+
+    public static String SignupDialog_MSG_CREATING_NEW_ACCOUNT;
+
+    public static String SignupDialog_MSG_ACTIVATING_NEW_ACCOUNT;
+    
+    public static String SignupDialog_MSG_NETWORK_ERROR;
+    
+    public static String SignupDialog_MSG_SIGNUP_REQUEST_FAILED;
+
+    //SignupSurveyDialog
+    public static String SignupSurveyDialog_DIA_TITLE;
+
+    public static String SignupSurveyDialog_BTN_EXPLORE_KATALON;
+
+    public static String SignupSurveyDialog_LBL_SURVEY_HEADLINE;
+
+    public static String SignupSurveyDialog_LBL_QUESTION_FOR_USER_ROLE;
+
+    public static String SignupSurveyDialog_LBL_QUESTION_FOR_DOWNLOAD_PURPOSE;
+
+    public static String SignupSurveyDialog_CBX_DEFAULT_OPTION;
 
     static {
         // initialize resource bundle
