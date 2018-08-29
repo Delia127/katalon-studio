@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -234,7 +235,8 @@ public class FolderController extends EntityController implements Serializable {
         List<String> sourceFolders = project.getSourceContent().getSourceFolderList()
                 .stream().map(source -> source.getUrl()).collect(Collectors.toList());
         return folderEntity.getFolderType() == FolderType.INCLUDE && 
-                sourceFolders.contains(folderEntity.getRelativePath());
+                sourceFolders.contains(
+                        StringUtils.replace(folderEntity.getRelativePath(), "\\", "/"));
     }
     
     public boolean isSystemFolder(ProjectEntity project, FolderEntity folderEntity) {
