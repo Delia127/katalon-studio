@@ -130,6 +130,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.webservice.RecordingScriptGenerator;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
@@ -340,7 +341,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmStop.setEnabled(true);
             resume();
             resetInput();
-            Trackings.trackWebRecord(selectedBrowser, isInstant);
+            Trackings.trackWebRecord(selectedBrowser, isInstant, getWebLocatorConfig());
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -1479,7 +1480,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             
             dispose();
             
-            Trackings.trackCloseRecord("web", "ok", stepCount);
+            Trackings.trackCloseWebRecord("ok", stepCount, getWebLocatorConfig());
         } catch (Exception exception) {
             logger.error(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
@@ -1533,7 +1534,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         disposed = true;
         boolean result = super.close();
         if (!isOkPressed) {
-            Trackings.trackCloseRecord("web", "cancel", 0);
+            try {
+                Trackings.trackCloseWebRecord("cancel", 0, getWebLocatorConfig());
+            } catch (IOException e) {
+                logger.error(e);
+            }
         }
         return result;
     }
@@ -1833,7 +1838,16 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         capturedObjectComposite.setInput(elements);
         capturedObjectComposite.refreshTree(null);
         
-        Trackings.trackOpenWebRecord(continueRecording);
+        try {
+            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig());
+        } catch (IOException e) {
+            logger.error(e);
+        }
+    }
+    
+    private SelectorMethod getWebLocatorConfig() throws IOException {
+        WebUiExecutionSettingStore webUiSettingStore = WebUiExecutionSettingStore.getStore();
+        return webUiSettingStore.getCapturedTestObjectSelectorMethod();
     }
 
     private Map<String, List<RecordedElementMethodCallWrapper>> getTestObjectReferences(ASTNodeWrapper wrapper) {
