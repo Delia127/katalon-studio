@@ -31,6 +31,8 @@ import com.kms.katalon.util.ComposerActivationInfoCollector;
 public class ActivationOfflineDialogV2 extends AbstractDialog {
 
     public static final int REQUEST_ONLINE_CODE = 1001;
+    
+    public static final int REQUEST_SIGNUP_CODE = 1002;
 
     private Label lblRequestCodeDetail;
 
@@ -45,9 +47,12 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     private Link lnkActivationCode;
 
     private Button btnActivate;
+    
+    private boolean navigateFromSignUp;
 
-    public ActivationOfflineDialogV2(Shell parentShell) {
+    public ActivationOfflineDialogV2(Shell parentShell, boolean navigateFromSignUp) {
         super(parentShell, false);
+        this.navigateFromSignUp = navigateFromSignUp;
     }
 
     @Override
@@ -72,7 +77,11 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         lnkOnlineRequest.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setReturnCode(REQUEST_ONLINE_CODE);
+                if (navigateFromSignUp) {
+                    setReturnCode(REQUEST_SIGNUP_CODE);
+                } else {
+                    setReturnCode(REQUEST_ONLINE_CODE);
+                }
                 close();
             }
         });
