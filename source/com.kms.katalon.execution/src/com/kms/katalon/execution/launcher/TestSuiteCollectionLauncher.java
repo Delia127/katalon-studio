@@ -21,7 +21,7 @@ import com.kms.katalon.logging.LogUtil;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
     
-    public static final int MAX_NUMBER_INSTANCES = 8;
+    public static final int MAX_NUMBER_INSTANCES_IN_PARALLEL_MODE = 8;
 
     protected List<ReportableLauncher> subLaunchers;
 
@@ -148,7 +148,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     public class TestSuiteCollectionLauncherManager extends LauncherManager {
         protected boolean isLauncherReadyToRun(ILauncher launcher) {
             if (executionMode == ExecutionMode.PARALLEL) {
-                return getRunningLaunchers().size() <= MAX_NUMBER_INSTANCES;
+                return getRunningLaunchers().size() <= MAX_NUMBER_INSTANCES_IN_PARALLEL_MODE;
             }
             return getRunningLaunchers().isEmpty();
         }
