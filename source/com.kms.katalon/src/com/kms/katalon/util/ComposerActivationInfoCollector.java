@@ -3,7 +3,6 @@ package com.kms.katalon.util;
 import java.util.Random;
 
 import org.eclipse.core.commands.common.CommandException;
-import org.eclipse.jface.dialogs.Dialog;
 
 import com.kms.katalon.activation.dialog.ActivationDialogV2;
 import com.kms.katalon.activation.dialog.ActivationOfflineDialogV2;
@@ -13,7 +12,6 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
-import com.kms.katalon.composer.intro.FunctionsIntroductionDialog;
 import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.logging.LogUtil;
@@ -41,8 +39,8 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         if (!checkSignupDialog()) {
             return false;
         }
+        showFunctionsIntroductionForTheFirstTime();
 
-//        showFunctionsIntroductionForTheFirstTime();
         return true;
     }
 
@@ -91,16 +89,22 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static void showFunctionsIntroductionForTheFirstTime() {
-        FunctionsIntroductionDialog dialog = new FunctionsIntroductionDialog(null);
-        dialog.open();
+//        FunctionsIntroductionDialog dialog = new FunctionsIntroductionDialog(null);
+//        dialog.open();
         FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
-        if (finishDialog.open() == Dialog.OK) {
-            try {
-                new CommandCaller().call(CommandId.PROJECT_ADD);
-            } catch (CommandException e) {
-                LogUtil.logError(e);
-            }
+        finishDialog.open();
+        try {
+            new CommandCaller().call(CommandId.PROJECT_ADD);
+        } catch (CommandException e) {
+            LogUtil.logError(e);
         }
+//        if (finishDialog.open() == Dialog.OK) {
+//            try {
+//                new CommandCaller().call(CommandId.PROJECT_ADD);
+//            } catch (CommandException e) {
+//                LogUtil.logError(e);
+//            }
+//        }
     }
 
     public static String genRequestActivationInfo() {
