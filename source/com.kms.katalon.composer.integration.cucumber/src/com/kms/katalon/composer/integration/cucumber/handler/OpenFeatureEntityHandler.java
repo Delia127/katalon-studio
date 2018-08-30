@@ -44,7 +44,7 @@ public class OpenFeatureEntityHandler {
 
     ITextEditor openEditor(SystemFileEntity object) {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        IFile iFile = GroovyUtil.getGroovyProject(currentProject).getFile(Path.fromOSString(object.getRelativePath()));
+        IFile iFile = GroovyUtil.getGroovyProject(currentProject).getFile(object.getRelativePath());
         try {
             iFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
             IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(iFile.getName());

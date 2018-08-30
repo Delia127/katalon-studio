@@ -51,7 +51,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
 
             CucumberBuiltinKeywords.logger.logInfo(
                 MessageFormat.format("Starting run keyword runFeatureFile: ''{0}'' and extract report to folder: ''{1}''...",
-                    relativeFilePath, PathUtil.absoluteToRelativePath(reportDir, projectDir)))
+                    relativeFilePath, reportDir))
             String[] argv = [
                 "-g",
                 "",
@@ -119,7 +119,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             String projectDir = RunConfiguration.getProjectDir();
             CucumberBuiltinKeywords.logger.logInfo(
                 MessageFormat.format("Starting run keyword runFeatureFolder: ''{0}'' and extract report to folder: ''{1}''...",
-                    folderRelativePath, PathUtil.absoluteToRelativePath(reportDir, projectDir)))
+                    folderRelativePath, reportDir))
             String[] argv = [
                 "-g",
                 "",
