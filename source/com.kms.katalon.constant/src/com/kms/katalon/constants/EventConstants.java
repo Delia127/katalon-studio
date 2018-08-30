@@ -61,6 +61,8 @@ public class EventConstants {
     public static final String EXPLORER_EXPAND_TREE_ENTITY = "EXPLORER/EXPAND_TREE_ENTITY";
 
     public static final String EXPLORER_OPEN_SELECTED_ITEM = "EXPLORER/OPEN_SELECTED_ITEM";
+    
+    public static final String EXPLORER_OPEN_SELECTED_GROOVY_SCRIPT = "EXPLORER/OPEN_SELECTED_GROOVY_SCRIPT";
 
     public static final String EXPLORER_DELETE_SELECTED_ITEM = "EXPLORER/DELETE_SELECTED_ITEM";
 

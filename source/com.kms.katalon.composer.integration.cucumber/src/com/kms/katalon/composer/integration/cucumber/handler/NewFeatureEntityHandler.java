@@ -32,6 +32,7 @@ import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewFeatureEntityHandler extends FeatureTreeRootCatcher {
     
@@ -60,6 +61,9 @@ public class NewFeatureEntityHandler extends FeatureTreeRootCatcher {
                 String content = result.isGenerateTemplateAllowed() ? getFileContent(RESOURCES_TEMPLATE_TPL_PATH) : StringUtils.EMPTY;
                 
                 SystemFileEntity feature = SystemFileController.getInstance().newFile(result.getNewName(), content, rootFolder);                
+                
+                Trackings.trackCreatingObject("bddFeatureFile");
+                
                 OpenFeatureEntityHandler openHandler = new OpenFeatureEntityHandler();
                 openHandler.openEditor(feature);
 
