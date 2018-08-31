@@ -381,6 +381,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_4);
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_5);
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_6);
+        ImageManager.registerImage(IImageKeys.INTRO_SCREEN_WELCOME);
     }
 
 }

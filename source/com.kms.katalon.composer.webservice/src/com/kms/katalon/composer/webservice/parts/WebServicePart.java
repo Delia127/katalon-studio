@@ -358,7 +358,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         this.parent = parent;
         
         verificationScriptSnippets = VerificationScriptSnippetFactory.getSnippets();
-        verificationScriptImport = VerificationScriptSnippetFactory.getSnippetImport();
+        verificationScriptImport = VerificationScriptSnippetFactory.getCommonScriptSnippet();
     }
     
     public Composite getComposite() {
@@ -369,8 +369,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         this.ui = wsRequestPartUI;
         
         new ToolBarForVerificationPart(ui.getVerificationPart());
-        
-//        new HelpToolBarForMPart(ui.getVariablePart(), "www.google.com");
         
         scriptEditorPart = ui.getScriptEditorPart();
         verificationScriptEditor = (GroovyEditor)GroovyEditorUtil.getEditor(scriptEditorPart);
@@ -391,11 +389,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         createSnippetComposite();
         
         createVariableComposite();
-        
-//        Composite verificationToolbarPartComposite = ui.getVerificationToolbarPartComposite();
-//        Composite verificationToolbarPartInnerComposite = new Composite(verificationToolbarPartComposite, SWT.NONE);
-//        verificationToolbarPartInnerComposite.setLayout(new GridLayout());
-//        createVerificationToolbarComposite(verificationToolbarPartInnerComposite);
         
         Composite responsePartComposite = ui.getResponsePartComposite();
         Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
@@ -446,7 +439,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected void executeVerificationScript(ResponseObject responseObject) throws Exception {
         String verificationScript = getVerificationScript();
         VerificationScriptExecutor executor = new VerificationScriptExecutor();
-        executor.execute(originalWsObject.getId(), verificationScript, responseObject);
+        executor.execute(originalWsObject.getIdForDisplay(), verificationScript, responseObject);
     }
 
 
@@ -1489,7 +1482,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             Object[] data = (Object[]) eventData;
             String testObjectId = (String) data[0];
             String logLine = (String) data[1];
-            if (originalWsObject.getId().equals(testObjectId)) {
+            if (originalWsObject.getIdForDisplay().equals(testObjectId)) {
                 txtVerificationLog.append(logLine + "\n");
             }
         }
@@ -1498,7 +1491,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             Object[] data = (Object[]) eventData;
             String testObjectId = (String) data[0];
             TestStatusValue testStatusValue = (TestStatusValue) data[1];
-            if (originalWsObject.getId().equals(testObjectId)) {
+            if (originalWsObject.getIdForDisplay().equals(testObjectId)) {
                 setVerificationResultStatus(testStatusValue);
             }
         }

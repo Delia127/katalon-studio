@@ -459,6 +459,7 @@ public class TreeEntityUtil {
         }
 
         FolderController folderController = FolderController.getInstance();
+        treeEntities.add(new ProfileRootTreeEntity(folderController.getProfileRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getTestCaseRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getObjectRepositoryRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getTestSuiteRoot(project), null));
@@ -467,7 +468,6 @@ public class TreeEntityUtil {
         treeEntities.add(new FolderTreeEntity(folderController.getKeywordRoot(project), null));
         treeEntities.add(new TestListenerFolderTreeEntity(folderController.getTestListenerRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
-        treeEntities.add(new ProfileRootTreeEntity(folderController.getProfileRoot(project), null));
         return treeEntities;
     }
 

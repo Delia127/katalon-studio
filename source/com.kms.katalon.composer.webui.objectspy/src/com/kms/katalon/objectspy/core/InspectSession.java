@@ -205,7 +205,6 @@ public class InspectSession implements Runnable {
                     if (e.getMessage().startsWith("chrome not reachable")) {
                         break;
                     }
-                    return;
                 }
             }
         } catch (WebDriverException e) {

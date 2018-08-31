@@ -294,11 +294,20 @@ public class ProjectStatistics {
         this.remoteWebDriverConfigured = remoteWebDriverConfigured;
     }
 
+<<<<<<< HEAD
     public String getWebLocatorConfig() {
         return webLocatorConfig;
     }
 
     public void setWebLocatorConfig(String webLocatorConfig) {
         this.webLocatorConfig = webLocatorConfig;
+=======
+    public String getDefaultTestCaseView() {
+        return defaultTestCaseView;
+    }
+
+    public void setDefaultTestCaseView(String defaultTestCaseView) {
+        this.defaultTestCaseView = defaultTestCaseView;
+>>>>>>> KAT-3616
     }
 }
