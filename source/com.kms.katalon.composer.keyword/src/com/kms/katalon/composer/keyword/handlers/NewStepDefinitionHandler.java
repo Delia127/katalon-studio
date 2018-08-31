@@ -208,7 +208,7 @@ public class NewStepDefinitionHandler {
                                 dialog.getName());
                     }
 
-                    Trackings.trackCreatingObject("step definition");
+                    Trackings.trackCreatingObject("groovyScriptFile");
 
                     if (createdCompilationUnit instanceof GroovyCompilationUnit
                             && createdCompilationUnit.getParent() instanceof IPackageFragment) {
@@ -219,7 +219,7 @@ public class NewStepDefinitionHandler {
                                 newPackageTreeEntity);
                         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
                         eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, keywordTreeEntity);
-                        eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, createdCompilationUnit);
+                        eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_GROOVY_SCRIPT, createdCompilationUnit);
                         eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity);
                     }
 

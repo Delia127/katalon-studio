@@ -11,6 +11,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -23,6 +25,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenFeatureEntityHandler {
     @Inject
@@ -51,11 +54,20 @@ public class OpenFeatureEntityHandler {
             if (desc == null) {
                 desc = PlatformUI.getWorkbench().getEditorRegistry().findEditor("org.eclipse.ui.DefaultTextEditor");
             }
-            return (ITextEditor) PlatformUI.getWorkbench()
-                    .getActiveWorkbenchWindow()
-                    .getActivePage()
-                    .openEditor(new FileEditorInput(iFile), desc.getId());
             
+            IWorkbenchPage activePage = PlatformUI.getWorkbench()
+                    .getActiveWorkbenchWindow()
+                    .getActivePage();
+            
+            ITextEditor editor = (ITextEditor) activePage.findEditor(new FileEditorInput(iFile));
+            if (editor != null) { //editor already opened
+                activePage.activate(editor);
+            } else {
+                editor = (ITextEditor) activePage.openEditor(new FileEditorInput(iFile), desc.getId());
+                Trackings.trackOpenObject("bddFeatureFile");
+            }
+            
+            return editor;
         } catch (CoreException e) {
             LoggerSingleton.logError(e);
             return null;
