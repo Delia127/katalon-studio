@@ -72,7 +72,7 @@ KURecorder.addEventHandler('type', 'input', function (event) {
 // © Jie-Lin You, SideeX Team
 var preventClickTwice = false;
 KURecorder.addEventHandler('clickAt', 'click', function(event) {
-    if (!preventClick && event.isTrusted) {
+    if (event.button == 0 && !preventClick && event.isTrusted) {
         if (!preventClickTwice) {
             var top = event.pageY,
                 left = event.pageX;
@@ -637,3 +637,6 @@ KURecorder.addEventHandler('select', 'change', function (event) {
     }
 }, true);
 
+KURecorder.addEventHandler('moveDiv', 'mousemove', function(event){
+    this.moveDivAway(event);
+}, true);

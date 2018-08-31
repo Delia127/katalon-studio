@@ -1,36 +1,13 @@
 
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-81802338-9']);
-_gaq.push(['_trackPageview']);
+// var _gaq = _gaq || [];
+// _gaq.push(['_setAccount', 'UA-81802338-9']);
+// _gaq.push(['_trackPageview']);
 
-(function() {
-  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  ga.src = 'https://ssl.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
-// KAT-BEGIN show docs on install or upgrade from 1.0
-chrome.runtime.onInstalled.addListener(function(details) {
-    if (details.reason === 'install') {
-        _gaq.push(['_trackEvent', 'app', 'install']);
-        _gaq.push(['_trackEvent', 'app', 'open-landing-page']);
-        // chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
-        //chrome.tabs.create({'url': 'https://www.katalon.com'});
-    } else if (details.reason === 'update') {
-        _gaq.push(['_trackEvent', 'app', 'update']);
-        var previousVersion = details.previousVersion;
-        var previousMajorVersion = previousVersion.substring(0, previousVersion.indexOf('.'));
-        if (previousMajorVersion === '1') {
-            _gaq.push(['_trackEvent', 'app', 'open-landing-page']);
-            // chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
-            //chrome.tabs.create({'url': 'https://www.katalon.com'});
-        }
-    }
-});
-
-// chrome.runtime.setUninstallURL('https://www.surveymonkey.com/r/katalon-recorder');
-chrome.runtime.setUninstallURL('https://www.katalon.com');
-// KAT-END
+// (function() {
+//   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+//   ga.src = 'https://ssl.google-analytics.com/ga.js';
+//   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+// })();
 
 // KAT-BEGIN save last window size
 function getWindowSize(callback) {
