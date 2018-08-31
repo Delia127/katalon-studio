@@ -119,7 +119,7 @@ public class SystemFileServiceDataProvider implements ISystemFileDataProvider {
         SystemFileEntity systemFileEntity = new SystemFileEntity(newFile);
         systemFileEntity.setParentFolder(folderEntity);
         systemFileEntity.setProject(folderEntity.getProject());
-        return null;
+        return systemFileEntity;
     }
     
     private boolean checkNameExist(String name, List<FileEntity> currentFeatures) {
@@ -172,7 +172,7 @@ public class SystemFileServiceDataProvider implements ISystemFileDataProvider {
         SystemFileEntity newSystemFile = new SystemFileEntity(newFile);
         newSystemFile.setParentFolder(targetFolder);
         newSystemFile.setProject(targetFolder.getProject());
-        return systemFile;
+        return newSystemFile;
     }
 
     @Override

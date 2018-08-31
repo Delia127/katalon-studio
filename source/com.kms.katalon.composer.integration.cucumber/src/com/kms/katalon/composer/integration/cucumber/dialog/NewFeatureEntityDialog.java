@@ -3,7 +3,6 @@ package com.kms.katalon.composer.integration.cucumber.dialog;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -12,17 +11,17 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.EntityNameController;
 import com.kms.katalon.entity.file.FileEntity;
 
-public class NewFeatureEntityDialog extends TitleAreaDialog {
+public class NewFeatureEntityDialog extends CustomTitleAreaDialog {
 
     private static final String NEW_FEATURE_FILE_NAME = "New Feature File";
     private static final String FEATURE_FILE_EXTESION = "feature";
@@ -42,37 +41,7 @@ public class NewFeatureEntityDialog extends TitleAreaDialog {
     }
 
     @Override
-    protected Control createDialogArea(Composite parent) {
-        Composite container = new Composite(parent, SWT.NONE);
-        container.setLayout(new GridLayout(1, false));
-        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-        Composite nameComposite = new Composite(container, SWT.NONE);
-        nameComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        GridLayout layout = new GridLayout(2, false);
-        layout.horizontalSpacing = 15;
-        nameComposite.setLayout(layout);
-
-        Label lblName = new Label(nameComposite, SWT.NONE);
-        lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        lblName.setText(GlobalMessageConstants.NAME);
-
-        txtName = new Text(nameComposite, SWT.BORDER);
-        GridData gdTxtName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdTxtName.minimumWidth = 200;
-        txtName.setLayoutData(gdTxtName);
-
-        chckGenerateSampleContent = new Button(container, SWT.CHECK);
-        chckGenerateSampleContent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-        chckGenerateSampleContent.setText("Generate sample Feature template");
-
-        setInput();
-        registerControlModifyListeners();
-
-        return container;
-    }
-
-    private void registerControlModifyListeners() {
+    protected void registerControlModifyListeners() {
         txtName.addModifyListener(new ModifyListener() {
             
             @Override
@@ -82,7 +51,8 @@ public class NewFeatureEntityDialog extends TitleAreaDialog {
         });
     }
 
-    private void setInput() {
+    @Override
+    protected void setInput() {
         chckGenerateSampleContent.setSelection(true);
         txtName.setText(getSuggestion(NEW_FEATURE_FILE_NAME, FEATURE_FILE_EXTESION));
         int dotIndex = txtName.getText().indexOf(".");
@@ -134,7 +104,7 @@ public class NewFeatureEntityDialog extends TitleAreaDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(400, 200);
+        return new Point(400, 250);
     }
 
     @Override
@@ -164,5 +134,33 @@ public class NewFeatureEntityDialog extends TitleAreaDialog {
         public String getNewName() {
             return newName;
         }
+    }
+
+    @Override
+    protected Composite createContentArea(Composite parent) {
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new GridLayout(1, false));
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        Composite nameComposite = new Composite(container, SWT.NONE);
+        nameComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        GridLayout layout = new GridLayout(2, false);
+        layout.horizontalSpacing = 15;
+        nameComposite.setLayout(layout);
+
+        Label lblName = new Label(nameComposite, SWT.NONE);
+        lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        lblName.setText(GlobalMessageConstants.NAME);
+
+        txtName = new Text(nameComposite, SWT.BORDER);
+        GridData gdTxtName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdTxtName.minimumWidth = 200;
+        txtName.setLayoutData(gdTxtName);
+
+        chckGenerateSampleContent = new Button(container, SWT.CHECK);
+        chckGenerateSampleContent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+        chckGenerateSampleContent.setText("Generate sample Feature template");
+
+        return container;
     }
 }

@@ -51,7 +51,7 @@ public class NewFeatureEntityHandler extends FeatureTreeRootCatcher {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
         try {
-            FolderTreeEntity parentFeatureTreeFolder = getParentFeatureTreeFolder(selectionService, false);
+            FolderTreeEntity parentFeatureTreeFolder = getSelectedTreeEntity((Object[]) selectionService.getSelection());
             FolderEntity rootFolder = parentFeatureTreeFolder.getObject();
             List<FileEntity> currentFeatures = SystemFileController.getInstance().getChildren(rootFolder);
             NewFeatureEntityDialog dialog = new NewFeatureEntityDialog(parentShell, currentFeatures);

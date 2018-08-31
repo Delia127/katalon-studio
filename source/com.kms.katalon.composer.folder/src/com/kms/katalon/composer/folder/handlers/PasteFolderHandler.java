@@ -184,6 +184,9 @@ public class PasteFolderHandler {
     private void move(ITreeEntity[] treeEntities, FolderEntity targetFolder) throws Exception {
         try {
             for (ITreeEntity treeEntity : treeEntities) {
+                if (!treeEntity.isRemoveable()) {
+                    continue;
+                }
                 if (treeEntity instanceof TestCaseTreeEntity) {
                     moveTestCase((TestCaseEntity) ((TestCaseTreeEntity) treeEntity).getObject(), targetFolder);
                 } else if (treeEntity instanceof FolderTreeEntity) {
@@ -352,10 +355,10 @@ public class PasteFolderHandler {
     }
 
     private void copySystemFileEntity(SystemFileTreeEntity treeEntity, FolderEntity targetFolder) throws Exception {
-        SystemFileEntity coppiedFeature = SystemFileController.getInstance().copySystemFile(treeEntity.getObject(),
+        SystemFileEntity coppiedSystemFile = SystemFileController.getInstance().copySystemFile(treeEntity.getObject(),
                 targetFolder);
 
-        lastPastedTreeEntity = new SystemFileTreeEntity(coppiedFeature, (FolderTreeEntity) treeEntity.getParent());
+        lastPastedTreeEntity = new SystemFileTreeEntity(coppiedSystemFile, (FolderTreeEntity) parentPastedTreeEntity);
     }
 
     private void moveTestCase(TestCaseEntity testCase, FolderEntity targetFolder) throws Exception {
