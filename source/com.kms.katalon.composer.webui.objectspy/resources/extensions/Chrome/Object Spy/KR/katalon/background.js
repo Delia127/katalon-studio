@@ -77,16 +77,24 @@ function processXHTTPAction(request, callback) {
         return;
     }
     console.log(request.data);
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        try{
-            var object = request.data.obj;
-            var keyword = request.data.keyword;
-            object['action']['windowId'] = tabs[0].id;
-            clientSocket.send(keyword + "=" +  encodeURIComponent(JSON.stringify(object)));
-        } catch(e){
-            console.log(e);
-        }        
-    });
+    var object = request.data.obj;
+    var keyword = request.data.keyword;
+    var mode = request.data.mode;
+
+    if(mode == 'INSPECT'){
+
+        clientSocket.send(keyword + "=" +  encodeURIComponent(JSON.stringify(object)));
+
+    }else if (mode == 'RECORD'){
+
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            if(tabs && tabs[0] && tabs[0].id){
+                object['action']['windowId'] = tabs[0].id;
+                clientSocket.send(keyword + "=" +  encodeURIComponent(JSON.stringify(object)));
+            }
+        });        
+    }
+
     callback();
     return true; // prevents the callback from being called too early on
 }

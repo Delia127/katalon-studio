@@ -53,7 +53,7 @@ import com.kms.katalon.selenium.firefox.FirefoxWebExtension;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    private static final String FIREFOX_ADDON_UUID = "{932b2318-b453-4947-8d43-92ac9dcef9bf}";
+    private static final String FIREFOX_ADDON_UUID = "{fb8a3d9a-f885-4a21-baa7-dbb68c04f0c0}";
 
     private static final String HTTP = "http";
 

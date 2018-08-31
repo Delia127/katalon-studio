@@ -213,7 +213,7 @@ class KURecorder {
         if (!object) {
             return;
         }
-        var data = { keyword : this.elementKeyword, obj : object };
+        var data = { keyword : this.elementKeyword, obj : object, mode: 'RECORD'};
         if (detectChrome()) {
             chromePostData(url, data, function (response) {
                 if (response) {
@@ -440,6 +440,14 @@ class KURecorder {
             selectedElement.onfocus = null;
         }
     }    
+    moveDivAway(e){
+        var y = 0;
+        var windowHeight = $(window).height();
+        if (e.clientY - this.rec_infoDiv.offsetHeight - 20 < 0) {
+            y = windowHeight - this.rec_infoDiv.offsetHeight;
+        }
+        this.rec_infoDiv.style.top = y + 'px';
+    }
 }
 
 KURecorder.INPUT_TYPE_INPUT_EVENT = ['email', 'number', 'password', 'search', 'tel', 'text', 'url']; // input type that will be handled by input event

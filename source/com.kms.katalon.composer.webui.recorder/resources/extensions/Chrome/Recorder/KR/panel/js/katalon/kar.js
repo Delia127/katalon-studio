@@ -1,13 +1,3 @@
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-81802338-9']);
-_gaq.push(['_trackPageview']);
-
-(function() {
-  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  ga.src = 'https://ssl.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
 var dataFiles;
 var extensions;
 
@@ -340,7 +330,7 @@ function saveAsFileOfTestCase(fileName, content) {
 $(function() {
     $("#export").click(function() {
 
-        _gaq.push(['_trackEvent', 'app', 'export']);
+        // _gaq.push(['_trackEvent', 'app', 'export']);
 
         browser.runtime.sendMessage({
             getExternalCapabilities: true
@@ -420,7 +410,7 @@ $(function() {
     });
     dialog.dialog({
         close: function() {
-            _gaq.push(['_trackEvent', 'app', 'export-' + $("#select-script-language-id").val()]);
+            // _gaq.push(['_trackEvent', 'app', 'export-' + $("#select-script-language-id").val()]);
         }
     });
 });
@@ -1064,7 +1054,7 @@ $(function() {
         buttons: {
             Upload: function() {
 
-                _gaq.push(['_trackEvent', 'app', 'upload_ka']);
+                // _gaq.push(['_trackEvent', 'app', 'upload_ka']);
 
                 $(this).dialog('close');
 
