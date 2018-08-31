@@ -10,7 +10,6 @@ rm -f ${JRE_DIR}/jre/Welcome.html
 rm -f ${JRE_DIR}/jre/lib/ext/jfxrt.jar
 rm -f ${JRE_DIR}/jre/lib/ext/access-bridge.jar
 rm -f ${JRE_DIR}/jre/lib/ext/access-bridge-32.jar
-rm -f ${JRE_DIR}/jre/lib/ext/nashorn.jar
 rm -f ${JRE_DIR}/jre/bin/rmid.*
 rm -f ${JRE_DIR}/jre/bin/rmiregistry.*
 rm -f ${JRE_DIR}/jre/bin/tnameserv.*
