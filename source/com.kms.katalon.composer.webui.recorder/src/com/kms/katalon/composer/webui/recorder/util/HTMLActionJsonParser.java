@@ -228,6 +228,9 @@ public class HTMLActionJsonParser {
         if (!(jsonElement instanceof JsonObject)) {
             return null;
         }
+        if (!jsonElement.getAsJsonObject().has("action")) {
+            return null;
+        }
         return new HTMLActionJson((JsonObject) jsonElement).buildActionMapping();
     }
 }
