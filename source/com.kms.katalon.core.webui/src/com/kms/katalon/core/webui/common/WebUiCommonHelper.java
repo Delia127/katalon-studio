@@ -523,8 +523,8 @@ public class WebUiCommonHelper extends KeywordHelper {
             case XPATH:
             	String ret =  to.getSelectorCollection().get(selectorMethod);
             	if(ret == null || ret.isEmpty()){	
-            		if(to.getActiveXpaths() != null && !to.getActiveXpaths().isEmpty()){
-                		ret = to.getActiveXpaths().get(0).getValue();
+            		if(to.getXpaths() != null && !to.getXpaths().isEmpty()){
+                		ret = to.getXpaths().get(0).getValue();
             		}else{
             			ret = StringUtils.EMPTY;
             		}

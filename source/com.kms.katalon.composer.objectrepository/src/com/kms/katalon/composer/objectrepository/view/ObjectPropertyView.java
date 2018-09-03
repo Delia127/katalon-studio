@@ -2211,6 +2211,11 @@ public class ObjectPropertyView implements EventHandler {
 					prop.getIsSelected());
 		});
 		
+		webElement.getWebElementXpaths().forEach(prop -> {
+			testObject.addXpath(prop.getName(), ConditionType.fromValue(prop.getMatchCondition()), prop.getValue(),
+					prop.getIsSelected());
+		});
+		
 		testObject.setSelectorMethod(SelectorMethod.valueOf(webElement.getSelectorMethod().name()));
 		
 		
