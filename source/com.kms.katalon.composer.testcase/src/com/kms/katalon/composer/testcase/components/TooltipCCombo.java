@@ -28,9 +28,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
@@ -80,6 +78,8 @@ public class TooltipCCombo extends CCombo {
 
     private final java.util.List<String> tooltips = new ArrayList<String>();
     
+    private Shell popup;
+    
     private String classKeywordName = "";
 
     /**
@@ -127,7 +127,8 @@ public class TooltipCCombo extends CCombo {
             // get the popup from the combo
             Field popupField = CCombo.class.getDeclaredField(FIELD_POPUP);
             popupField.setAccessible(true);
-            final Shell popup = (Shell) popupField.get(this);
+//            final Shell popup = (Shell) popupField.get(this);
+            popup = (Shell) popupField.get(this);
 
             // register the popup listener
             ActivationListener activationListener = new ActivationListener(list, this.tooltips);
@@ -382,27 +383,14 @@ public class TooltipCCombo extends CCombo {
                 // calculate the location
                 Point size = this.list.getSize();
                 Point loc = this.list.getParent().getLocation();
-                // force tooltip show next right of list items
-                Point tooltipSize = calculateBestSizeForTooltip();
-                tooltip.setPreferedSize(tooltipSize.x, tooltipSize.y);
+                tooltip.setPreferedSize(600, size.y);
                 this.tooltip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeywordName, list.getItem(index)));
                 this.tooltip.show(new Point(loc.x + size.x - 2, loc.y));
-                // set the selection idx
                 this.previousSelectionIdx = index;
             } else {
                 this.tooltip.hide();
                 previousSelectionIdx = -1;
             }
-        }
-        
-        private Point calculateBestSizeForTooltip() {
-            Point listSize = this.list.getSize();
-            Point listLocation = this.list.getParent().getLocation();
-            Rectangle displayBounds = Display.getCurrent().getClientArea();
-            
-            int availableWidth = displayBounds.width - (listLocation.x + listSize.x + 2);
-
-            return new Point(Math.min(availableWidth, 600), listSize.y);
         }
 
         /**
