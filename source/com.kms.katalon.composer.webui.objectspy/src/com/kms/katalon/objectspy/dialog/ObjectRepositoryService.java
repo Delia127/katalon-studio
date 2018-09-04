@@ -186,6 +186,8 @@ public class ObjectRepositoryService {
                 case REPLACE_EXISTING_OBJECT:
                     oldWebElementEntity.setWebElementProperties(newWebElement.getProperties());
                     oldWebElementEntity.setWebElementXpaths(newWebElement.getXpaths());
+                    // Replace old selector method with new one
+                    oldWebElementEntity.setSelectorMethod(WebElementSelectorMethod.valueOf(wrapElement.getOriginalWebElement().getSelectorMethod().toString()));
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 
