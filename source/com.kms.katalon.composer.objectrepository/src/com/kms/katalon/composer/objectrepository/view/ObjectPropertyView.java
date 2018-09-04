@@ -1287,10 +1287,9 @@ public class ObjectPropertyView implements EventHandler {
 				else if(object.equals(xpathTableViewer)){
 					onWebElementXpathChanged();
 					dirtyable.setDirty(true);
-				}else{
-					onWebElementCSSChanged();
-					dirtyable.setDirty(true);
 				}
+				// Note that there should not be an else without a condition here,
+				// otherwise all TestObjectPart will be marked dirty
 			}
 		}
 		case ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER: {
