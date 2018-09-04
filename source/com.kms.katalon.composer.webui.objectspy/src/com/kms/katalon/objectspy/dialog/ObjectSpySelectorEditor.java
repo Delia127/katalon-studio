@@ -55,8 +55,7 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         lblSelectorEditor.setText(ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR);
         ControlUtils.setFontToBeBold(lblSelectorEditor);
 
-        txtSelector = new StyledText(composite, SWT.BORDER | SWT.WRAP | SWT.VERTICAL);
-        txtSelector.setEditable(false);
+        txtSelector = new StyledText(composite, SWT.BORDER | SWT.WRAP | SWT.VERTICAL);        
 
         GridData gdTxtSelector = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         GC graphicContext = new GC(txtSelector);

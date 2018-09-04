@@ -161,7 +161,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private Label lblSettings;
 
-	private Composite propertyCompositeTable, xpathCompositeTable;
+	private Composite propertyTableComposite, xpathTableComposite;
 
 	private Button btnBrowseParentObj, btnBrowseParentShadowRoot, rdoUseParentObject, rdoShadowRootParent, rdoNoParent;
 
@@ -522,20 +522,20 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void createObjectPropertiesComposite(Composite parent) {
 
-		propertyCompositeTable = new Composite(parent, SWT.NONE);
-		propertyCompositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		propertyTableComposite = new Composite(parent, SWT.NONE);
+		propertyTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		GridLayout glCompositeTable = new GridLayout();
 		glCompositeTable.marginWidth = 0;
 		glCompositeTable.marginHeight = 0;
-		propertyCompositeTable.setLayout(glCompositeTable);
+		propertyTableComposite.setLayout(glCompositeTable);
 		
-		Label lblObjectProperties = new Label(propertyCompositeTable, SWT.NONE);
+		Label lblObjectProperties = new Label(propertyTableComposite, SWT.NONE);
 		lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
 		ControlUtils.setFontToBeBold(lblObjectProperties);	
 		
-		createPropertyTableToolbar(propertyCompositeTable);
+		createPropertyTableToolbar(propertyTableComposite);
 
-		createPropertyTableDetails(propertyCompositeTable);
+		createPropertyTableDetails(propertyTableComposite);
 
 		createPropertyTableMenu();
 		
@@ -544,20 +544,20 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void createObjectXpathsComposite(Composite parent) {
 		
-		xpathCompositeTable = new Composite(parent, SWT.NONE);
-		xpathCompositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		xpathTableComposite = new Composite(parent, SWT.NONE);
+		xpathTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		GridLayout glCompositeTable = new GridLayout();
 		glCompositeTable.marginWidth = 0;
 		glCompositeTable.marginHeight = 0;
-		xpathCompositeTable.setLayout(glCompositeTable);
+		xpathTableComposite.setLayout(glCompositeTable);
 		
-		Label lblObjectXpaths = new Label(xpathCompositeTable, SWT.NONE);
+		Label lblObjectXpaths = new Label(xpathTableComposite, SWT.NONE);
 		lblObjectXpaths.setText(StringConstants.VIEW_LBL_OBJ_XPATHS);
 		ControlUtils.setFontToBeBold(lblObjectXpaths);	
 
 		//createXpathTableToolbar(xpathCompositeTable);
 		
-		createXpathsTableDetails(xpathCompositeTable);
+		createXpathsTableDetails(xpathTableComposite);
 		
 		createXpathTableMenu();
 
@@ -1111,8 +1111,8 @@ public class ObjectPropertyView implements EventHandler {
 		onWebElementXpathChanged();
 		onWebElementCSSChanged();
 		
-		showComposite(propertyCompositeTable, selectorMethod == WebElementSelectorMethod.BASIC);
-		showComposite(xpathCompositeTable, selectorMethod == WebElementSelectorMethod.XPATH);
+		showComposite(propertyTableComposite, selectorMethod == WebElementSelectorMethod.BASIC);
+		showComposite(xpathTableComposite, selectorMethod == WebElementSelectorMethod.XPATH);
 	}
 
 	private void refreshParentObjectComposite(Button rdoButton, ParentObjectType parentObjectType,

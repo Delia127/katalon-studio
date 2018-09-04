@@ -21,6 +21,7 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.ConflictOptions;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
@@ -43,6 +44,7 @@ public class ObjectRepositoryService {
             WebPage page = (WebPage) webPageWrapper.getOriginalWebElement();
             for (ConflictWebElementWrapper webElementChildWrapper : webPageWrapper.getChildren()) {
                 if (webPageWrapper.isConflicted()) {
+                	System.out.println("isConflicted");
                     addConflictedWebElement(page, (ConflictWebElementWrapper) webElementChildWrapper, dialogResult, testObjectIds);
                 } else {
                     newSelectionOnExplorer = addNonConflictedWebElement(page, ((ConflictWebElementWrapper) webElementChildWrapper).getOriginalWebElement(), dialogResult);
@@ -206,6 +208,8 @@ public class ObjectRepositoryService {
                     mergedXpaths.addAll(oldWebElementEntity.getWebElementXpaths());
                     oldWebElementEntity.setWebElementXpaths(new ArrayList<>(mergedXpaths));
                     
+                    // Replace old selector method with new one
+                    oldWebElementEntity.setSelectorMethod(WebElementSelectorMethod.valueOf(wrapElement.getOriginalWebElement().getSelectorMethod().toString()));
                     
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
