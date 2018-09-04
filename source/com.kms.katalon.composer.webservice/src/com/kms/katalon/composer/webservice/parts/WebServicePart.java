@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -118,11 +117,11 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
-
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.IVariablePart;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
+import com.kms.katalon.composer.testcase.parts.TestCaseVariableViewEvent;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -150,9 +149,10 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
-import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
+import com.kms.katalon.tracking.service.Trackings;
+import com.kms.katalon.util.listener.EventListener;
 
 public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent {
     
@@ -559,6 +559,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         variableView = new TestCaseVariableView(this);
         variableView.setInputValueTypes(variableInputValueTypes);
         variableView.createComponents(variablePartComposite);
+        variableView.addListener(new EventListener<TestCaseVariableViewEvent>() {
+
+            @Override
+            public void handleEvent(TestCaseVariableViewEvent event, Object object) {
+                Trackings.trackAddApiVariable();
+            }
+            
+        }, Arrays.asList(TestCaseVariableViewEvent.ADD_VARIABLE));
         
         // hide "Masked" column
         TableColumn[] tableColumns = variableView.getTableViewer().getTable().getColumns();

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="com.kms.katalon.composer.integration.cucumber.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.explorer.delete">
+      <client
+            handler="com.kms.katalon.composer.integration.cucumber.handler.DeleteFeatureEntityHandler">
+      </client>
+   </extension>
+
+</plugin>

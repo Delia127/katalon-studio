@@ -48,6 +48,10 @@ public class ProjectStatistics {
 
     private int profileCount = 0;
     
+    private int featureFileCount = 0;
+    
+    private int groovyScriptFileCount = 0;
+    
     private boolean gitIntegrated = false;
     
     private boolean jiraIntegrated = false;
@@ -244,6 +248,22 @@ public class ProjectStatistics {
 
     public void setProfileCount(int profileCount) {
         this.profileCount = profileCount;
+    }
+
+    public int getFeatureFileCount() {
+        return featureFileCount;
+    }
+
+    public void setFeatureFileCount(int featureFileCount) {
+        this.featureFileCount = featureFileCount;
+    }
+
+    public int getGroovyScriptFileCount() {
+        return groovyScriptFileCount;
+    }
+
+    public void setGroovyScriptFileCount(int groovyScriptFileCount) {
+        this.groovyScriptFileCount = groovyScriptFileCount;
     }
 
     public boolean isGitIntegrated() {

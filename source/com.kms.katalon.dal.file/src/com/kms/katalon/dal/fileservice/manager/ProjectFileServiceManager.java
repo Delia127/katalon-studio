@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
@@ -13,12 +14,17 @@ import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.SourceFolderConfiguration;
+import com.kms.katalon.entity.project.SystemFolderConfiguration;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.util.VersionUtil;
 
 public class ProjectFileServiceManager {
 
     private static final String MIGRATE_LEGACY_GLOBALVARIABLE_VS = "5.4.0";
+
+    private static final String MIGRATE_SOURCE_CONTENT_VS = "5.7.0";
 
     public static ProjectEntity addNewProject(String name, String description, short pageLoadTimeout,
             String projectLocation) throws Exception {
@@ -38,11 +44,12 @@ public class ProjectFileServiceManager {
 
         GlobalVariableFileServiceManager.newProfile(ExecutionProfileEntity.DF_PROFILE_NAME, true,
                 Collections.emptyList(), project);
+        
+        migrateNewIncludeFolder(project);
 
         GroovyUtil.initGroovyProject(project,
                 FolderFileServiceManager.loadAllTestCaseDescendants(FolderFileServiceManager.getTestCaseRoot(project)),
                 null);
-
         return project;
     }
 
@@ -74,24 +81,50 @@ public class ProjectFileServiceManager {
             createSettingFolder(project);
             FolderFileServiceManager.initRootEntityFolders(project);
 
-            if (!MIGRATE_LEGACY_GLOBALVARIABLE_VS.equals(project.getMigratedVersion())) {
+            String migratedVersion = project.getMigratedVersion();
+            if (StringUtils.isEmpty(migratedVersion) ||
+                    VersionUtil.isNewer(MIGRATE_LEGACY_GLOBALVARIABLE_VS, migratedVersion)) {
                 migrateLegacyGlobalVariable(project);
                 project.setMigratedVersion(MIGRATE_LEGACY_GLOBALVARIABLE_VS);
 
                 EntityService.getInstance().saveEntity(project);
             }
+
+            if (StringUtils.isEmpty(migratedVersion) || 
+                    VersionUtil.isNewer(MIGRATE_SOURCE_CONTENT_VS, migratedVersion)) {
+                migrateNewIncludeFolder(project);
+            }
+
             if (GlobalVariableFileServiceManager.getAll(project).isEmpty()) {
                 GlobalVariableFileServiceManager.newProfile(ExecutionProfileEntity.DF_PROFILE_NAME, true,
                         Collections.emptyList(), project);
             }
+
             return project;
         }
         return null;
     }
 
+    private static void migrateNewIncludeFolder(ProjectEntity project) throws Exception {
+        project.getSourceContent().addSourceFolder(
+                new SourceFolderConfiguration(FileServiceConstant.GROOVY_SCRIPTS_INCLUDE_FOLDER));
+
+        project.getSourceContent().addSystemFolder(
+                new SystemFolderConfiguration(FileServiceConstant.GROOVY_SCRIPTS_INCLUDE_FOLDER));
+        project.getSourceContent().addSystemFolder(
+                new SystemFolderConfiguration(FileServiceConstant.FEATURES_INCLUDE_FOLDER));
+
+        project.setMigratedVersion(MIGRATE_SOURCE_CONTENT_VS);
+        
+        EntityService.getInstance().saveEntity(project);
+    }
+
     private static void migrateLegacyGlobalVariable(ProjectEntity project) throws Exception {
         ExecutionProfileEntity legacyGlobalVariable = (ExecutionProfileEntity) EntityService.getInstance()
                 .getEntityByPath(FileServiceConstant.getLegacyGlobalVariableFileLocation(project.getFolderLocation()));
+        if (legacyGlobalVariable == null) {
+            return;
+        }
 
         GlobalVariableFileServiceManager.newProfile(ExecutionProfileEntity.DF_PROFILE_NAME, true,
                 legacyGlobalVariable.getGlobalVariableEntities(), project);

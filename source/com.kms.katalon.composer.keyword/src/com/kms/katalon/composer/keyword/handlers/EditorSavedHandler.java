@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -104,6 +105,7 @@ public class EditorSavedHandler implements EventHandler {
     }
 
     private void refreshKeywordTreeEntity(final IFile file) throws Exception {
+        file.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
         KeywordTreeEntity keywordTreeEntity = TreeEntityUtil.getKeywordTreeEntity(
                 file.getProjectRelativePath().toString(), ProjectController.getInstance().getCurrentProject());
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordTreeEntity);

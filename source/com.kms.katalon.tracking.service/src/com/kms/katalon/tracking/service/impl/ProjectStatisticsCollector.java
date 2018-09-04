@@ -39,7 +39,7 @@ import com.kms.katalon.tracking.osgi.service.IProjectStatisticsCollector;
 
 public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     
-    private static final String SCRIPT_FOLDER = "Scripts";
+    private static final String TEST_CASE_SCRIPT_FOLDER = "Scripts";
     
     private static final String GROOVY_FILE_EXTENSION = "groovy";
     
@@ -79,6 +79,10 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         
         countProfiles();
         
+        countFeatureFiles();
+        
+        countGroovyScriptFiles();
+        
         statistics.setGitIntegrated(isGitIntegrated());
         
         statistics.setJiraIntegrated(isJiraIntegrated());
@@ -112,9 +116,9 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         int customKeywordTestStepCount = 0;
         int totalTestStepCount = 0;
         
-        String scriptFolderPath = project.getFolderLocation() + File.separator + SCRIPT_FOLDER;
-        File scriptFolder = new File(scriptFolderPath);
-        File[] scriptFiles = listFiles(scriptFolder, GROOVY_FILE_EXTENSION);
+        String testCaseScriptFolderPath = project.getFolderLocation() + File.separator + TEST_CASE_SCRIPT_FOLDER;
+        File testCaseScriptFolder = new File(testCaseScriptFolderPath);
+        File[] scriptFiles = listFiles(testCaseScriptFolder, GROOVY_FILE_EXTENSION);
         for (File scriptFile : scriptFiles) {
             String script = FileUtils.readFileToString(scriptFile);
             StringTokenizer st = new StringTokenizer(script, "\n=");
@@ -279,6 +283,22 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         File[] profileFiles = listFiles(profileFolder, ExecutionProfileEntity.getGlobalVariableFileExtension());
         int profileCount = profileFiles.length;
         statistics.setProfileCount(profileCount);
+    }
+    
+    private void countFeatureFiles() throws DALException {
+        String featureFolderPath =  folderController.getIncludeRoot(project).getLocation();
+        File featureFolder = new File(featureFolderPath);
+        File[] featureFiles = listFiles(featureFolder, ".feature");
+        int featureFileCount = featureFiles.length;
+        statistics.setFeatureFileCount(featureFileCount);
+    }
+    
+    private void countGroovyScriptFiles() throws DALException {
+        String scriptFolderPath = folderController.getIncludeRoot(project).getLocation() + File.separator + "scripts";
+        File scriptFolder = new File(scriptFolderPath);
+        File[] scriptFiles = listFiles(scriptFolder, GROOVY_FILE_EXTENSION);
+        int scriptFileCount = scriptFiles.length;
+        statistics.setGroovyScriptFileCount(scriptFileCount);
     }
     
     private boolean isGitIntegrated() {

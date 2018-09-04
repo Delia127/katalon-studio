@@ -22,6 +22,12 @@ public class FileServiceConstant {
     public static final String REPORT_ROOT_FOLDER_NAME = StringConstants.FS_ROOT_FOLDER_NAME_REPORT;
 
     public static final String CHECKPOINT_ROOT_FOLDER_NAME = StringConstants.ROOT_FOLDER_NAME_CHECKPOINT;
+    
+    public static final String INCLUDE_SCRIPT_ROOT_FOLDER_NAME = GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE;
+    
+    public static final String GROOVY_SCRIPTS_INCLUDE_FOLDER = GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE + "/scripts/groovy";
+    
+    public static final String FEATURES_INCLUDE_FOLDER = GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE + "/" + GlobalMessageConstants.ROOT_FOLDER_NAME_FEATURES;
 
     public static final String TEMP_DIR = System.getProperty("java.io.tmpdir") + File.separator + "Katalon";
 
@@ -69,7 +75,19 @@ public class FileServiceConstant {
         return projectFolder + File.separator + GLOBAL_VARIABLE_FILE_NAME
                 + ExecutionProfileEntity.getGlobalVariableFileExtension();
     }
-    
+
+    public static String getFeatureFolderLocation(String projectFolder) {
+        return projectFolder + File.separator + FEATURES_INCLUDE_FOLDER;
+    }
+
+    public static String getSourceFolderLocation(String projectFolder) {
+        return projectFolder + File.separator + GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE;
+    }
+
+    public static String getGroovyScriptFolderLocation(String projectFolder) {
+        return projectFolder + File.separator + GROOVY_SCRIPTS_INCLUDE_FOLDER;
+    }
+
     public static String getProfileFolderLocation(String projectFolder) {
         return projectFolder + File.separator + "Profiles";
     }

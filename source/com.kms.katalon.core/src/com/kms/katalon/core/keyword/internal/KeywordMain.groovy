@@ -56,6 +56,15 @@ public class KeywordMain {
             stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e));
         }
     }
+
+    @CompileStatic
+    public static runKeyword(Closure closure, FailureHandling flowControl) {
+        try {
+            return closure.call();
+        } catch (Throwable e) {
+            stepFailed(e.getMessage(), flowControl, ExceptionsUtil.getMessageForThrowable(e));
+        }
+    }
     
     @CompileStatic
     public static int runKeywordAndReturnInt(Closure closure, FailureHandling flowControl, String errorMessage) {
