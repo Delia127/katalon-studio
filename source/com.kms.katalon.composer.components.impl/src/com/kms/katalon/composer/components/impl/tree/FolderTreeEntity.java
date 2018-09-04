@@ -138,10 +138,7 @@ public class FolderTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Transfer getEntityTransfer() throws Exception {
-        if (isRemoveable()) {
-            return TreeEntityTransfer.getInstance();
-        }
-        return null;
+        return TreeEntityTransfer.getInstance();
     }
 
     @Override

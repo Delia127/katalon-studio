@@ -32,6 +32,7 @@ import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewFeatureEntityHandler extends FeatureTreeRootCatcher {
     
@@ -51,7 +52,7 @@ public class NewFeatureEntityHandler extends FeatureTreeRootCatcher {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
         try {
-            FolderTreeEntity parentFeatureTreeFolder = getParentFeatureTreeFolder(selectionService, false);
+            FolderTreeEntity parentFeatureTreeFolder = getSelectedTreeEntity((Object[]) selectionService.getSelection());
             FolderEntity rootFolder = parentFeatureTreeFolder.getObject();
             List<FileEntity> currentFeatures = SystemFileController.getInstance().getChildren(rootFolder);
             NewFeatureEntityDialog dialog = new NewFeatureEntityDialog(parentShell, currentFeatures);
@@ -60,6 +61,9 @@ public class NewFeatureEntityHandler extends FeatureTreeRootCatcher {
                 String content = result.isGenerateTemplateAllowed() ? getFileContent(RESOURCES_TEMPLATE_TPL_PATH) : StringUtils.EMPTY;
                 
                 SystemFileEntity feature = SystemFileController.getInstance().newFile(result.getNewName(), content, rootFolder);                
+                
+                Trackings.trackCreatingObject("bddFeatureFile");
+                
                 OpenFeatureEntityHandler openHandler = new OpenFeatureEntityHandler();
                 openHandler.openEditor(feature);
 

@@ -10,11 +10,13 @@ import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.folder.dialogs.NewFolderDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 
 public class NewFolderHandler {
     
@@ -24,17 +26,42 @@ public class NewFolderHandler {
     @Inject
     IEventBroker eventBroker;
     
-    private FolderTreeEntity getSelectedTreeEntity() {
-        Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-        if (selectedObjects == null || selectedObjects.length != 1 || !(selectedObjects[0] instanceof FolderTreeEntity)) {
+    protected FolderTreeEntity getSelectedTreeEntity(Object[] selectedObjects ) {
+        if (selectedObjects == null || selectedObjects.length != 1 || !(selectedObjects[0] instanceof ITreeEntity)) {
             return null;
         }
-        return (FolderTreeEntity) selectedObjects[0];
+
+        if (selectedObjects[0] instanceof FolderTreeEntity) {
+            FolderTreeEntity parentFolder = (FolderTreeEntity) selectedObjects[0];
+            return isIncludeFolder(parentFolder) ? parentFolder : null; 
+        } else {
+            ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
+            try {
+                ITreeEntity parent = treeEntity.getParent();
+                if (!(parent instanceof FolderTreeEntity)) {
+                    return null;
+                }
+                FolderTreeEntity parentFolder = (FolderTreeEntity) parent;
+                return isIncludeFolder(parentFolder) ? parentFolder : null; 
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+                return null;
+            }
+        }
+    }
+    
+    private boolean isIncludeFolder(FolderTreeEntity folderTree) {
+        try {
+            return folderTree.getObject().getFolderType() == FolderType.INCLUDE;
+        } catch (Exception e) {
+           return false;
+        }
     }
 
     @Execute
     public void execute() {
-        FolderTreeEntity parentFolderTreeEntity = getSelectedTreeEntity();
+        FolderTreeEntity parentFolderTreeEntity = getSelectedTreeEntity(
+                (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID));
         FolderEntity parentFolder;
         try {
             parentFolder = parentFolderTreeEntity.getObject();

@@ -39,6 +39,7 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.composer.resources,
  cucumber.eclipse.editor,
  cucumber.eclipse.steps.integration,
- cucumber.eclipse.steps.jdt
+ cucumber.eclipse.steps.jdt,
+ com.kms.katalon.tracking
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0"

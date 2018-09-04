@@ -243,7 +243,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @since 5.7
      */
     @Keyword
-    public static Result runWithCucumberRunner(Class<?> cucumberRunnerClass, FailureHandling flowControl) {
+    public static Result runWithCucumberRunner(Class cucumberRunnerClass, FailureHandling flowControl) {
         return KeywordMain.runKeyword({
             JUnitCore core = new JUnitCore();
             Computer computer = new Computer();
@@ -343,7 +343,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
      * @since 5.7
      */
     @Keyword
-    public static Result runWithCucumberRunner(Class<?> cucumberRunnerClass) {
+    public static Result runWithCucumberRunner(Class cucumberRunnerClass) {
         return runWithCucumberRunner(cucumberRunnerClass, RunConfiguration.getDefaultFailureHandling());
     }
 }

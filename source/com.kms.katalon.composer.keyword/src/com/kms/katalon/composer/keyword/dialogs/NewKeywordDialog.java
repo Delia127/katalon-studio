@@ -84,8 +84,13 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         Control area = super.createDialogArea(parent);
+        setInput();
         addControlModifyListeners();
         return area;
+    }
+
+    private void setInput() {
+        txtName.forceFocus();
     }
 
     @Override
@@ -97,8 +102,8 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         createPackageNameControl(container, 3);
         super.setLblName(StringConstants.MSG_CLASS_NAME_TITLE);
         return super.createDialogBodyArea(parent);
-        
     }
+
     @Override
     protected Control createButtonBar(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);

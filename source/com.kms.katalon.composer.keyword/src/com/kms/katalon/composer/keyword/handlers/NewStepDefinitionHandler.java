@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,9 +18,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -59,8 +56,6 @@ public class NewStepDefinitionHandler {
     @Inject
     ESelectionService selectionService;
 
-    private ITreeEntity keywordTreeRoot;
-
     @CanExecute
     private boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;
@@ -91,6 +86,14 @@ public class NewStepDefinitionHandler {
                 
                 return (ITreeEntity) entity;
             }
+            
+            if (entity instanceof KeywordTreeEntity) {
+                PackageTreeEntity parentPackage = (PackageTreeEntity) ((KeywordTreeEntity) entity).getParent();
+                FolderEntity parentFolder = (FolderEntity) parentPackage.getParent().getObject();
+                if (parentFolder.getFolderType() == FolderType.INCLUDE) {
+                    return parentPackage;
+                }
+            }
         }
         return null;
     }
@@ -117,28 +120,16 @@ public class NewStepDefinitionHandler {
                     && ((FolderEntity) entityObject).getFolderType() == FolderType.INCLUDE) {
                 return true;
             }
-        }
-        return false;
-    }
-
-    @Inject
-    @Optional
-    private void catchKeywordFolderTreeEntitiesRoot(
-            @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
-        try {
-            for (Object o : treeEntities) {
-                Object entityObject = ((ITreeEntity) o).getObject();
-                if (entityObject instanceof FolderEntity) {
-                    FolderEntity folder = (FolderEntity) entityObject;
-                    if (folder.getFolderType() == FolderType.KEYWORD) {
-                        keywordTreeRoot = (FolderTreeEntity) o;
-                        return;
-                    }
+            
+            if (entity instanceof KeywordTreeEntity) {
+                PackageTreeEntity treeEntity = (PackageTreeEntity) ((KeywordTreeEntity) entity).getParent();
+                FolderEntity parent = (FolderEntity) treeEntity.getParent().getObject();
+                if (parent.getFolderType() == FolderType.INCLUDE) {
+                    return true;
                 }
             }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
         }
+        return false;
     }
 
     @Execute
@@ -146,10 +137,8 @@ public class NewStepDefinitionHandler {
         try {
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
             ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
-            if (parentTreeEntity == null) {
-                parentTreeEntity = keywordTreeRoot;
-            }
 
+            FolderTreeEntity rootParentFolder = null;
             IPackageFragment packageFragment = null;
             IPackageFragmentRoot rootPackage = null;
             IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject());
@@ -162,9 +151,11 @@ public class NewStepDefinitionHandler {
                         .toString()
                         .replaceFirst(rootPackage.getPath().toString(), "");
                 packageFragment = rootPackage.getPackageFragment(packagePath);
+                rootParentFolder = (FolderTreeEntity) parentTreeEntity;
             } else if (parentTreeEntity instanceof PackageTreeEntity) {
                 packageFragment = (IPackageFragment) parentTreeEntity.getObject();
                 rootPackage = (IPackageFragmentRoot) packageFragment.getParent();
+                rootParentFolder = (FolderTreeEntity) parentTreeEntity.getParent();
             }
 
             if (packageFragment != null) {
@@ -208,19 +199,17 @@ public class NewStepDefinitionHandler {
                                 dialog.getName());
                     }
 
-                    Trackings.trackCreatingObject("step definition");
+                    Trackings.trackCreatingObject("groovyScriptFile");
 
                     if (createdCompilationUnit instanceof GroovyCompilationUnit
                             && createdCompilationUnit.getParent() instanceof IPackageFragment) {
-                        ITreeEntity keywordRootFolder = new FolderTreeEntity(FolderController.getInstance()
-                                .getKeywordRoot(ProjectController.getInstance().getCurrentProject()), null);
-                        ITreeEntity newPackageTreeEntity = new PackageTreeEntity(packageFragment, keywordRootFolder);
+                        ITreeEntity newPackageTreeEntity = new PackageTreeEntity(packageFragment,
+                                rootParentFolder);
                         KeywordTreeEntity keywordTreeEntity = new KeywordTreeEntity(createdCompilationUnit,
                                 newPackageTreeEntity);
-                        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
+                        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, rootParentFolder);
                         eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, keywordTreeEntity);
                         eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, createdCompilationUnit);
-                        eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity);
                     }
 
                     if (monitor.isCanceled()) {
