@@ -538,6 +538,9 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         showComposite(compositeAttributeTableToolBar, store.getCapturedTestObjectSelectorMethod() != null && 
 				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.BASIC);
         
+        showComposite(compositeXpathTableToolBar, store.getCapturedTestObjectSelectorMethod() != null && 
+				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH);
+        
         radioXpath.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH);
         radioAttribute.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.BASIC);
     }
