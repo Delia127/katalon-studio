@@ -30,7 +30,7 @@ public class FeatureTreeRootCatcher {
 
         if (selectedObjects[0] instanceof FolderTreeEntity) {
             FolderTreeEntity parentFolder = (FolderTreeEntity) selectedObjects[0];
-            return isIncludeFolder(parentFolder) ? parentFolder : null; 
+            return isIncludeAndNotSystemFolder(parentFolder) ? parentFolder : null; 
         } else {
             ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
             try {
@@ -39,17 +39,23 @@ public class FeatureTreeRootCatcher {
                     return null;
                 }
                 FolderTreeEntity parentFolder = (FolderTreeEntity) parent;
-                return isIncludeFolder(parentFolder) ? parentFolder : null; 
+                return isIncludeAndNotSystemFolder(parentFolder) ? parentFolder : null; 
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
                 return null;
             }
         }
     }
-    
-    private boolean isIncludeFolder(FolderTreeEntity folderTree) {
+
+    /**
+     * KAT-3622
+     */
+    private boolean isIncludeAndNotSystemFolder(FolderTreeEntity folderTree) {
         try {
-            return folderTree.getObject().getFolderType() == FolderType.INCLUDE;
+            FolderEntity folder = folderTree.getObject();
+            return folder.getFolderType() == FolderType.INCLUDE
+                    && !FolderController.getInstance().isSystemFolder(
+                            ProjectController.getInstance().getCurrentProject(), folder);
         } catch (Exception e) {
            return false;
         }

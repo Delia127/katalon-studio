@@ -80,8 +80,13 @@ public class NewStepDefinitionDialog extends CommonAbstractKeywordDialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         Control area = super.createDialogArea(parent);
+        setInput();
         addControlModifyListeners();
         return area;
+    }
+
+    private void setInput() {
+        txtName.forceFocus();
     }
 
     @Override
