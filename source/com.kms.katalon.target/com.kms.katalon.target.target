@@ -222,11 +222,6 @@
 <plugin id="org.apache.batik.util.source"/>
 <plugin id="org.apache.commons.beanutils"/>
 <plugin id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
-<<<<<<< HEAD
-=======
-<plugin id="org.apache.commons.codec" version="1.11.0"/>
->>>>>>> origin/KAT-3093
-<plugin id="org.apache.commons.codec" version="1.7.0"/>
 <plugin id="org.apache.commons.codec" version="1.11.0"/>
 <plugin id="org.apache.commons.collections"/>
 <plugin id="org.apache.commons.compress"/>
@@ -300,10 +295,6 @@
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201611170128-e46"/>
-<<<<<<< HEAD
-=======
-<plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
->>>>>>> origin/KAT-3093
 <plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.m2eclipse"/>
