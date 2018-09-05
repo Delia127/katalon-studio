@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.WordUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -74,6 +76,8 @@ public class KeywordNodeTooltip {
 
     private boolean isOpeningKeywordDescription = false;
 
+    private Point location;
+
     private static KeywordNodeTooltip currentTooltip = null;
 
     public KeywordNodeTooltip(Control control) {
@@ -84,7 +88,7 @@ public class KeywordNodeTooltip {
         return tip;
     }
 
-    private void initComponents(Composite parent) {
+    private void initComponents(Composite parent) { 
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.marginWidth = 0;
@@ -97,7 +101,7 @@ public class KeywordNodeTooltip {
         composite.setLayout(layout);
         composite.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
         composite.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-
+        
         javaDocContent = new StyledText(composite, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         GridData gdJavaDocContent = new GridData(SWT.FILL, SWT.FILL, true, true);
         javaDocContent.setLeftMargin(20);
@@ -222,10 +226,12 @@ public class KeywordNodeTooltip {
 
     public void show(Point p) {
         hide();
+        location = p;
         createTooltip();
         tip.setLocation(p);
              
-        setBestSizeForTooltip(p, preferedWidth, preferedHeight);
+        Point tipSize = getBestSizeForKeywordDescriptionPopup();
+        tip.setSize(tipSize);
         
         if (currentTooltip != null && currentTooltip != this) {
             currentTooltip.hide();
@@ -235,7 +241,7 @@ public class KeywordNodeTooltip {
         tip.setVisible(true);
     }
 
-    private void setBestSizeForTooltip(Point location, int preferedWidth, int preferedHeight) {
+    private Point getBestSizeForKeywordDescriptionPopup() {
         Monitor currentMonitor = null;
         for (Monitor monitor : Display.getCurrent().getMonitors()) {
             if (monitor.getClientArea().contains(location)) {
@@ -248,7 +254,7 @@ public class KeywordNodeTooltip {
         if (location.x + width > displayRect.x + displayRect.width ) {
             width = displayRect.x + displayRect.width - location.x;
         }
-        tip.setSize(width, preferedHeight);
+        return new Point(width, preferedHeight);
     }
     
     private Point getLocation(Point suggestionLoc) {
@@ -328,6 +334,15 @@ public class KeywordNodeTooltip {
     }
 
     private void formatJavaDoc() {
+        text = "<ul class=\"blockListLast\">" +
+                "                            <li class=\"blockList\">" +
+                "                                <h4>@<a href='http://groovy.codehaus.org/api/groovy/transform/CompileStatic.html' title='CompileStatic'>CompileStatic</a>" +
+                "@com.kms.katalon.core.annotation.Keyword(keywordObject = StringConstants.KW_CATEGORIZE_REQUEST)" +
+                "static&nbsp;com.kms.katalon.core.testobject.ResponseObject <strong>sendRequestAndVerify</strong>(com.kms.katalon.core.testobject.RequestObject request, com.kms.katalon.core.model.FailureHandling flowControl)</h4>" +
+                "                                <p> Send a HTTP Request to web server and verify the response" +
+                "     <DL><DT><B>Returns:</B></DT><DD>@throws Exception</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>request</code> -  the object represents for a HTTP Request, user need to define it from Object Repository->New->Web Service Request, and get it by ObjectRepository.findRequestObject(\"requestObjectId\")</DD><DD>flowControl</DD></DL></p>" +
+                "                            </li>" +
+                "                        </ul>";
         text = text.replaceAll("<h4>", JAVADOC_HEADER)
                 .replaceAll("<DT><B>", JAVADOC_SECTION)
                 .replaceAll("(<DD>|</p>)\\s*", JAVADOC_SECTION_ITEM)
@@ -385,12 +400,14 @@ public class KeywordNodeTooltip {
         text = tipContent.toString();
         javaDocContent.setText(text);
         javaDocContent.setStyleRanges(styles.toArray(new StyleRange[] {}));
-
+        Point size = javaDocContent.computeSize(600, SWT.DEFAULT);
+        javaDocContent.setSize(size.x, size.y);
     }
 
     private String wrapSelectionItemLongLine(String line) {
         GC graphicContext = new GC(javaDocContent);
-        int limWidth = javaDocContent.getSize().x;
+        int limWidth = 600;
+        
         String[] words = line.split("\\s{1,}");
         StringBuilder temp = new StringBuilder("\t\t");
         StringBuilder result = new StringBuilder();
@@ -413,6 +430,7 @@ public class KeywordNodeTooltip {
                 result.append(System.lineSeparator() + temp.toString());
             }
         }
+        
         graphicContext.dispose();
         return result.toString();
     }
