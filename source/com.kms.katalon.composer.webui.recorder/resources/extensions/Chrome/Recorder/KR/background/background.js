@@ -17,7 +17,7 @@
 
 var master = {};
 var clickEnabled = true;
-    
+
 function openPanel(tab) {
 
     let contentWindowId = tab.windowId;

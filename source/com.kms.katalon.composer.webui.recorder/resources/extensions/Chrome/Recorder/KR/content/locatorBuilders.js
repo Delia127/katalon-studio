@@ -71,6 +71,7 @@ LocatorBuilders.prototype.buildAll = function(el) {
     var coreLocatorStrategies = this.pageBot().locationStrategies;
     for (var i = 0; i < LocatorBuilders.order.length; i++) {
         var finderName = LocatorBuilders.order[i];
+        var locator;
         var locatorResults = []; // Array to hold buildWith results
         //this.log.debug("trying " + finderName);
         try {
@@ -93,11 +94,11 @@ LocatorBuilders.prototype.buildAll = function(el) {
             }
 
             for (var j = 0; j < locatorResults.length; j++) {
-                var thisLocator = locatorResults[j];
+                locator = locatorResults[j];
 
-                if (thisLocator) {
-                    thisLocator = String(thisLocator);
-                    //this.log.debug("locator=" + locator);        
+                if (locator) {
+                    locator = String(locator);
+                    //this.log.debug("locator=" + locator);
                     // test the locator. If a is_fuzzy_match() heuristic function is
                     // defined for the location strategy, use it to determine the
                     // validity of the locator's results. Otherwise, maintain existing
@@ -127,12 +128,12 @@ LocatorBuilders.prototype.buildAll = function(el) {
                     //TODO: the builderName should NOT be used as a strategy name, create a feature to allow locatorBuilders to specify this kind of behaviour
                     //TODO: Useful if a builder wants to capture a different element like a parent. Use the this.elementEquals
                     if (finderName != 'tac') {
-                        var fe = this.findElement(thisLocator);
+                        var fe = this.findElement(locator);
                         if ((e == fe) || (coreLocatorStrategies[finderName] && coreLocatorStrategies[finderName].is_fuzzy_match && coreLocatorStrategies[finderName].is_fuzzy_match(fe, e))) {
-                            locators.push([thisLocator, finderName]);
+                            locators.push([locator, finderName]);
                         }
                     } else {
-                        locators.splice(0, 0, [thisLocator, finderName]);
+                        locators.splice(0, 0, [locator, finderName]);
                     }
                 }
             }
@@ -180,7 +181,7 @@ LocatorBuilders._orderChanged = function() {
     var changed = this._ensureAllPresent(this.order, this._preferredOrder);
     this._sortByRefOrder(this.order, this._preferredOrder);
     if (changed) {
-        // NOTE: for some reasons we does not use this part 
+        // NOTE: for some reasons we does not use this part
         // this.notify('preferredOrderChanged', this._preferredOrder);
     }
 };
@@ -371,6 +372,10 @@ LocatorBuilders.add('name', function(e) {
         return 'name=' + e.name;
     }
     return null;
+});
+
+LocatorBuilders.add('xpath:neighbor', function (e){
+    return neighborXpathsGenerator.getXpathsByNeighbors(e, true);
 });
 
 /*
@@ -566,11 +571,4 @@ LocatorBuilders.add('css', function (e) {
         current = current.parentNode;
     }
     return "css=" + sub_path;
-});
-
-
-LocatorBuilders._preferredOrder = ['xpath:neighbor'];
-
-LocatorBuilders.add('xpath:neighbor', function (e){
-    return neighborXpathsGenerator.getXpathsByNeighbors(e, true);
 });

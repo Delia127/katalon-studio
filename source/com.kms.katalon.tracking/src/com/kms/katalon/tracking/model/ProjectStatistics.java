@@ -64,7 +64,7 @@ public class ProjectStatistics {
     
     private boolean remoteWebDriverConfigured = false;
     
-    private String defaultTestCaseView;
+    private String webLocatorConfig;
 
     public String getProjectId() {
         return projectId;
@@ -313,13 +313,13 @@ public class ProjectStatistics {
     public void setRemoteWebDriverConfigured(boolean remoteWebDriverConfigured) {
         this.remoteWebDriverConfigured = remoteWebDriverConfigured;
     }
-    
-    public String getDefaultTestCaseView() {
-        return defaultTestCaseView;
+
+    public String getWebLocatorConfig() {
+        return webLocatorConfig;
     }
 
-    public void setDefaultTestCaseView(String defaultTestCaseView) {
-        this.defaultTestCaseView = defaultTestCaseView;
+    public void setWebLocatorConfig(String webLocatorConfig) {
+        this.webLocatorConfig = webLocatorConfig;
     }
 
 }

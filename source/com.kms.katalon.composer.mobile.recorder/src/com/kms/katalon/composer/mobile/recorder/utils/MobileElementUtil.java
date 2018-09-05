@@ -23,7 +23,6 @@ public class MobileElementUtil {
         newWebElement.setElementGuidId(Util.generateGuid());
         newWebElement.setProject(parentFolder.getProject());
         newWebElement.setWebElementProperties(new ArrayList<WebElementPropertyEntity>());
-
         for (Map.Entry<String, String> entry : element.getAttributes().entrySet()) {
             WebElementPropertyEntity webElementPropertyEntity = new WebElementPropertyEntity();
             webElementPropertyEntity.setName(entry.getKey());

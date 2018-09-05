@@ -120,6 +120,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -129,6 +130,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.webservice.RecordingScriptGenerator;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
@@ -243,6 +245,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private TestCaseEntity testCaseEntity;
     
     private boolean isOkPressed = false;
+    
+    private boolean isUsingIE = false;
 
     /**
      * Create the dialog.
@@ -304,8 +308,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void startBrowser() {
         startBrowser(false);
-    }
-
+    }    
+    
     private void startBrowser(boolean isInstant) {
         if (!BrowserUtil.isBrowserInstalled(selectedBrowser)) {
             MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
@@ -313,13 +317,18 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             return;
         }
         try {
+        	
             if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
+            	isUsingIE = true;
                 checkIEAddon();
+            }else{
+            	isUsingIE = false;
             }
+            
             if (isInstant) {
                 startInstantSession();
                 invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
-            } else {
+            } else {            	
                 startServer();
                 startRecordSession(selectedBrowser);
                 invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
@@ -332,7 +341,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmStop.setEnabled(true);
             resume();
             resetInput();
-            Trackings.trackWebRecord(selectedBrowser, isInstant);
+            Trackings.trackWebRecord(selectedBrowser, isInstant, getWebLocatorConfig());
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -1414,7 +1423,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private void stopRecordSession() {
         if (session != null && session.isRunning()) {
             session.stop();
-        }
+        }    	
     }
 
     /**
@@ -1475,7 +1484,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             
             dispose();
             
-            Trackings.trackCloseRecord("web", "ok", stepCount);
+            Trackings.trackCloseWebRecord("ok", stepCount, getWebLocatorConfig());
         } catch (Exception exception) {
             logger.error(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
@@ -1492,7 +1501,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         TreeViewer capturedTreeViewer = capturedObjectComposite.getTreeViewer();
         if (capturedTreeViewer.getTree().getItemCount() == 0) {
             return true;
-        }
+        }      
+        
         SaveToObjectRepositoryDialog addToObjectRepositoryDialog = new SaveToObjectRepositoryDialog(shell, true,
                 getCloneCapturedObjects((List<WebPage>) capturedTreeViewer.getInput()),
                 capturedTreeViewer.getExpandedElements());
@@ -1528,7 +1538,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         disposed = true;
         boolean result = super.close();
         if (!isOkPressed) {
-            Trackings.trackCloseRecord("web", "cancel", 0);
+            try {
+                Trackings.trackCloseWebRecord("cancel", 0, getWebLocatorConfig());
+            } catch (IOException e) {
+                logger.error(e);
+            }
         }
         return result;
     }
@@ -1569,6 +1583,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
         WebElement targetElement = newAction.getTargetElement();
         if (targetElement != null) {
+        	
+        	if(isUsingIE == true){
+        		targetElement.setSelectorMethod(SelectorMethod.BASIC);
+        	}
             addNewElement(targetElement, newAction);
         }
         recordedActions.add(newAction);
@@ -1677,6 +1695,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 .append(elm1.getTag(), elm2.getTag())
                 .append(elm1.hasProperty(), elm2.hasProperty())
                 .append(elm1.getXpath(), elm2.getXpath())
+                .append(elm1.getName(), elm2.getName())
                 .isEquals();
     }
 
@@ -1808,7 +1827,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             if (we == null) {
                 we = WebElementUtils.createWebElementFromTestObject(entity, false, webPage, webElementIndex);
             }
-
+            
             for (RecordedElementMethodCallWrapper refNode : keywordNodeMaps.get(entity.getIdForDisplay())) {
                 refNode.setWebElement(we);
             }
@@ -1823,7 +1842,16 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         capturedObjectComposite.setInput(elements);
         capturedObjectComposite.refreshTree(null);
         
-        Trackings.trackOpenWebRecord(continueRecording);
+        try {
+            Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig());
+        } catch (IOException e) {
+            logger.error(e);
+        }
+    }
+    
+    private SelectorMethod getWebLocatorConfig() throws IOException {
+        WebUiExecutionSettingStore webUiSettingStore = WebUiExecutionSettingStore.getStore();
+        return webUiSettingStore.getCapturedTestObjectSelectorMethod();
     }
 
     private Map<String, List<RecordedElementMethodCallWrapper>> getTestObjectReferences(ASTNodeWrapper wrapper) {

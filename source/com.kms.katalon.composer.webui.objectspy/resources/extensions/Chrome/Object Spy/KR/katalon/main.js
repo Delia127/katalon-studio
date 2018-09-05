@@ -39,6 +39,7 @@ chrome.runtime.sendMessage({
 });
 
 function start(newRunMode, data, version) {
+    console.log("in Start" + version);
     switch (newRunMode) {
     case RUN_MODE_OBJECT_SPY:
         startObjectSpy(data);
