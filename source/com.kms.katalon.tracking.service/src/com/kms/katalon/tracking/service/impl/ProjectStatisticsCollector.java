@@ -150,7 +150,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
                         continue;
                     } else {
                         totalTestStepCount++;
-                    }                    
+                    }
                 }
             
             }
