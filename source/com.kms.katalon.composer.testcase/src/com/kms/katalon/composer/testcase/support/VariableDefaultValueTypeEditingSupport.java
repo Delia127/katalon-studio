@@ -7,16 +7,16 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.parts.VariableTableActionOperator;
+import com.kms.katalon.composer.testcase.parts.TableActionOperator;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValueTypeColumnSupport {
-    private VariableTableActionOperator variablesPart;
+    private TableActionOperator variablesPart;
 
     private ExpressionWrapper expression;
 
-    public VariableDefaultValueTypeEditingSupport(ColumnViewer viewer, VariableTableActionOperator variablesPart,
+    public VariableDefaultValueTypeEditingSupport(ColumnViewer viewer, TableActionOperator variablesPart,
             InputValueType[] defaultInputValueTypes) {
         super(viewer, defaultInputValueTypes);
         this.variablesPart = variablesPart;

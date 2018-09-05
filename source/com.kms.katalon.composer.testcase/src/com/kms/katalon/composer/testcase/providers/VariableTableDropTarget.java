@@ -7,13 +7,13 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.composer.testcase.ast.variable.operations.MoveVariableOperation;
-import com.kms.katalon.composer.testcase.parts.VariableTableActionOperator;
+import com.kms.katalon.composer.testcase.parts.TableActionOperator;
 
 public class VariableTableDropTarget extends DropTargetAdapter {
 
-    private VariableTableActionOperator operator;
+    private TableActionOperator operator;
 
-    public VariableTableDropTarget(VariableTableActionOperator operator) {
+    public VariableTableDropTarget(TableActionOperator operator) {
        this.operator = operator;
     }
 

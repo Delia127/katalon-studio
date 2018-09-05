@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.TableViewer;
 
 import com.kms.katalon.entity.variable.VariableEntity;
 
-public interface VariableTableActionOperator {
+public interface TableActionOperator {
     
     TableViewer getTableViewer();
     

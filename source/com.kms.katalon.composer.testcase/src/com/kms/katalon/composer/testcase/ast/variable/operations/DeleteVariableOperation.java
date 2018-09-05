@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 
-import com.kms.katalon.composer.testcase.parts.VariableTableActionOperator;
+import com.kms.katalon.composer.testcase.parts.TableActionOperator;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class DeleteVariableOperation extends AbstractOperation {
@@ -43,7 +43,7 @@ public class DeleteVariableOperation extends AbstractOperation {
         }
     }
 
-    private VariableTableActionOperator testCaseVariablePart;
+    private TableActionOperator testCaseVariablePart;
 
     private TableViewer tableViewer;
 
@@ -51,7 +51,7 @@ public class DeleteVariableOperation extends AbstractOperation {
 
     private List<DeletedVariable> deletedVariableList;
 
-    public DeleteVariableOperation(VariableTableActionOperator testCaseVariablePart) {
+    public DeleteVariableOperation(TableActionOperator testCaseVariablePart) {
         super(DeleteVariableOperation.class.getName());
         this.testCaseVariablePart = testCaseVariablePart;
         this.tableViewer = testCaseVariablePart.getTableViewer();

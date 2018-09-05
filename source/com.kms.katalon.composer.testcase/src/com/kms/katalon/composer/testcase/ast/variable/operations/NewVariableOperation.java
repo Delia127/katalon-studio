@@ -11,16 +11,16 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 
-import com.kms.katalon.composer.testcase.parts.VariableTableActionOperator;
+import com.kms.katalon.composer.testcase.parts.TableActionOperator;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class NewVariableOperation extends AbstractOperation {
     private VariableEntity newVariable;
-    private VariableTableActionOperator testCaseVariablePart;
+    private TableActionOperator testCaseVariablePart;
     private TableViewer tableViewer;
     private List<VariableEntity> variableList;
     
-    public NewVariableOperation(VariableTableActionOperator testCaseVariablePart, VariableEntity newVariable) {
+    public NewVariableOperation(TableActionOperator testCaseVariablePart, VariableEntity newVariable) {
         super(NewVariableOperation.class.getName());
         this.testCaseVariablePart = testCaseVariablePart;
         this.tableViewer = testCaseVariablePart.getTableViewer();

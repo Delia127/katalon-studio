@@ -71,7 +71,7 @@ import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.util.listener.EventListener;
 import com.kms.katalon.util.listener.EventManager;
 
-public class TestCaseVariableView implements VariableTableActionOperator {
+public class TestCaseVariableView implements TableActionOperator, EventManager<TestCaseVariableViewEvent> {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
@@ -165,7 +165,7 @@ public class TestCaseVariableView implements VariableTableActionOperator {
                 downVariable();
             }
         });
-
+        
         Composite compositeTable = new Composite(container, SWT.NONE);
         compositeTable.setLayout(new FillLayout(SWT.HORIZONTAL));
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
