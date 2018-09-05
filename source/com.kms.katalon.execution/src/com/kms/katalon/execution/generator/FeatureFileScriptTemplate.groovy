@@ -61,7 +61,7 @@ TestCaseMain.runFeatureFile('<%= featureFileRelativePath %>')
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(config.getExecutionSetting().getSettingFilePath()),
             "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecutingTestCase(),
             "driverCleaners" : driverCleaners,
-            "featureFileRelativePath": featureFile.getRelativePath()
+            "featureFileRelativePath": featureFile.getRelativePath().replace("\\", "/")
         ]
 
         def engine = new GStringTemplateEngine()
