@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.Widget;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
 
@@ -78,6 +77,8 @@ public class TooltipCCombo extends CCombo {
     private static final String FIELD_POPUP = "popup"; //$NON-NLS-1$
 
     private final java.util.List<String> tooltips = new ArrayList<String>();
+    
+    private Shell popup;
     
     private String classKeywordName = "";
 
@@ -126,7 +127,8 @@ public class TooltipCCombo extends CCombo {
             // get the popup from the combo
             Field popupField = CCombo.class.getDeclaredField(FIELD_POPUP);
             popupField.setAccessible(true);
-            final Shell popup = (Shell) popupField.get(this);
+//            final Shell popup = (Shell) popupField.get(this);
+            popup = (Shell) popupField.get(this);
 
             // register the popup listener
             ActivationListener activationListener = new ActivationListener(list, this.tooltips);
@@ -376,16 +378,14 @@ public class TooltipCCombo extends CCombo {
                 return;
             }
             String text = this.textLookup.get(index);
-            if (list.isVisible() && index >= 0 && index < this.list.getItemCount() && StringUtils.isNotEmpty(classKeywordName) && StringUtils.isNotEmpty(text)) {
+            if (list.isVisible() && index >= 0 && index < this.list.getItemCount() && StringUtils.isNotEmpty(classKeywordName)) {
                 this.tooltip.setText(text);
                 // calculate the location
                 Point size = this.list.getSize();
                 Point loc = this.list.getParent().getLocation();
-                // force tooltip show next right of list items
                 tooltip.setPreferedSize(600, size.y);
                 this.tooltip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeywordName, list.getItem(index)));
                 this.tooltip.show(new Point(loc.x + size.x - 2, loc.y));
-                // set the selection idx
                 this.previousSelectionIdx = index;
             } else {
                 this.tooltip.hide();
