@@ -170,13 +170,23 @@ public class NewKeywordHandler {
 
             Object entityObject = ((ITreeEntity) entity).getObject();
             if (entityObject instanceof IPackageFragment) {
-                return (ITreeEntity) entity;
+                PackageTreeEntity treeEntity = (PackageTreeEntity) entity;
+                FolderEntity parent = (FolderEntity) treeEntity.getParent().getObject();
+                if (parent.getFolderType() == FolderType.KEYWORD) {
+                    return (ITreeEntity) entity;
+                }
+                return null;
             }
 
             if (entityObject instanceof ICompilationUnit
                     && ((ICompilationUnit) entityObject).getElementName().endsWith(
                             GroovyConstants.GROOVY_FILE_EXTENSION)) {
-                return ((ITreeEntity) entity).getParent();
+                PackageTreeEntity packageTreeEntity = (PackageTreeEntity) ((ITreeEntity) entity).getParent();
+                FolderEntity parentFolder = (FolderEntity) packageTreeEntity.getParent().getObject();
+                if (parentFolder.getFolderType() == FolderType.KEYWORD) {
+                    return packageTreeEntity;
+                }
+                return null;
             }
 
             if (entityObject instanceof FolderEntity

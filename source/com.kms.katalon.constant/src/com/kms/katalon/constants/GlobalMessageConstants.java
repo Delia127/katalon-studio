@@ -177,7 +177,13 @@ public class GlobalMessageConstants extends NLS {
 
     public static String ROOT_FOLDER_NAME_TEST_LISTENER;
 
+    public static String ROOT_FOLDER_NAME_FEATURES;
+    
+    public static String ROOT_FOLDER_NAME_INCLUDE;
+
     public static String FILE_NAME_GLOBAL_VARIABLE;
+
+    public static String INCLUDE_SCRIPTS_FOLDER;
 
     public static String NULL;
 

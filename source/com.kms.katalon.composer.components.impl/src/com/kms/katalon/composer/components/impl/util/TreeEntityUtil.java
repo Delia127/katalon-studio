@@ -12,12 +12,14 @@ import org.eclipse.jdt.core.IPackageFragment;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.IncludeTreeRootEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.ReportCollectionTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ProfileRootTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ProfileTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ReportCollectionTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.SystemFileTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestListenerFolderTreeEntity;
@@ -40,6 +42,7 @@ import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.file.TestListenerEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -92,6 +95,9 @@ public class TreeEntityUtil {
                             folderTreeEntity);
                 } else if (childrenEntities[i] instanceof CheckpointEntity) {
                     childrenEntities[i] = new CheckpointTreeEntity((CheckpointEntity) childrenEntities[i],
+                            folderTreeEntity);
+                } else if (childrenEntities[i] instanceof SystemFileEntity) {
+                    childrenEntities[i] = new SystemFileTreeEntity((SystemFileEntity) childrenEntities[i],
                             folderTreeEntity);
                 }
             }
@@ -207,6 +213,11 @@ public class TreeEntityUtil {
         return new TestListenerTreeEntity(testListener, new TestListenerFolderTreeEntity(parent, null));
     }
 
+    public static SystemFileTreeEntity getFeatureTreeEntity(SystemFileEntity systemFile,
+            FolderEntity parent) {
+        return new SystemFileTreeEntity(systemFile, new FolderTreeEntity(parent, null));
+    }
+
     /**
      * Get readable keyword name by capitalized and separated the words.
      * <p>
@@ -290,7 +301,8 @@ public class TreeEntityUtil {
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_KEYWORD)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_PROFILES)
-                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TEST_LISTENER)) {
+                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TEST_LISTENER)
+                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_FEATURES)) {
                 // Folder
                 FolderEntity folder = FolderController.getInstance().getFolderByDisplayId(project, id);
                 if (folder == null) {
@@ -468,6 +480,7 @@ public class TreeEntityUtil {
         treeEntities.add(new FolderTreeEntity(folderController.getKeywordRoot(project), null));
         treeEntities.add(new TestListenerFolderTreeEntity(folderController.getTestListenerRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
+        treeEntities.add(new IncludeTreeRootEntity(folderController.getIncludeRoot(project)));
         return treeEntities;
     }
 

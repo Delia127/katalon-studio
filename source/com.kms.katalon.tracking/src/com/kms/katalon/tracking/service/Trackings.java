@@ -235,7 +235,11 @@ public class Trackings {
     public static void trackTestWebServiceObject(boolean withVerification) {
         trackUserAction("testWebServiceObject", "verify", withVerification);
     }
-        
+    
+    public static void trackAddApiVariable() {
+        trackUserAction("addApiVariable");
+    }
+    
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
     }

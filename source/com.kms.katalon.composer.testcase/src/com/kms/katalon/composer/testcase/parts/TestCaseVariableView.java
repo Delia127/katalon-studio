@@ -3,7 +3,11 @@ package com.kms.katalon.composer.testcase.parts;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -64,6 +68,8 @@ import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.util.listener.EventListener;
+import com.kms.katalon.util.listener.EventManager;
 
 public class TestCaseVariableView implements VariableTableActionOperator {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
@@ -80,6 +86,8 @@ public class TestCaseVariableView implements VariableTableActionOperator {
     private IVariablePart variablePart;
     
     private InputValueType[] inputValueTypes = defaultInputValueTypes;
+    
+    private Map<TestCaseVariableViewEvent, Set<EventListener<TestCaseVariableViewEvent>>> eventListeners = new HashMap<>();
     
     public TestCaseVariableView(IVariablePart variablePart) {
         this.variablePart = variablePart;
@@ -351,6 +359,7 @@ public class TestCaseVariableView implements VariableTableActionOperator {
         newVariable.setDefaultValue("''");
 
         executeOperation(new NewVariableOperation(this, newVariable));
+        invoke(TestCaseVariableViewEvent.ADD_VARIABLE, null);
     }
 
     private String generateNewPropertyName() {
@@ -496,5 +505,24 @@ public class TestCaseVariableView implements VariableTableActionOperator {
     @Override
     public void setDirty(boolean dirty) {
         variablePart.setDirty(dirty);
+    }
+
+    @Override
+    public Iterable<EventListener<TestCaseVariableViewEvent>> getListeners(TestCaseVariableViewEvent event) {
+        return eventListeners.get(event);
+    }
+
+    @Override
+    public void addListener(EventListener<TestCaseVariableViewEvent> listener,
+            Iterable<TestCaseVariableViewEvent> events) {
+        events.forEach(e -> {
+            Set<EventListener<TestCaseVariableViewEvent>> listenerOnEvent = eventListeners.get(e);
+            if (listenerOnEvent == null) {
+                listenerOnEvent = new HashSet<>();
+            }
+            listenerOnEvent.add(listener);
+            eventListeners.put(e, listenerOnEvent);
+        });
+        
     }
 }

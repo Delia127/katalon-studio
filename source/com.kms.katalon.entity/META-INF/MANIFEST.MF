@@ -34,4 +34,5 @@ Require-Bundle: org.apache.commons.lang;bundle-version="2.6.0",
  com.kms.katalon.constant,
  org.eclipse.osgi,
  org.apache.commons.lang3,
- com.kms.katalon.core
+ com.kms.katalon.core,
+ org.apache.commons.io

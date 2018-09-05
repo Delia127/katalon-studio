@@ -207,6 +207,9 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.KEYWORD_16);
         ImageManager.registerImage(IImageKeys.PROFILE_FOLDER_ENTITY_16);
         ImageManager.registerImage(IImageKeys.PROFILE_ENTITY_16);
+        ImageManager.registerImage(IImageKeys.FEATURE_16);
+        ImageManager.registerImage(IImageKeys.FOLDER_FEATURE_16);
+        ImageManager.registerImage(IImageKeys.FOLDER_SOURCE_16);
     }
 
     private void registerTestCaseStepImages() {
