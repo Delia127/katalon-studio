@@ -24,7 +24,8 @@ Require-Bundle: com.kms.katalon.entity,
  com.fasterxml.jackson.core.jackson-annotations,
  com.fasterxml.jackson.core.jackson-databind,
  org.apache.commons.logging,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ com.kms.katalon.execution
 Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.constants,
  com.kms.katalon.integration.qtest.credential,
