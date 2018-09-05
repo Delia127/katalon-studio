@@ -313,7 +313,7 @@ public class ProjectStatistics {
     public void setRemoteWebDriverConfigured(boolean remoteWebDriverConfigured) {
         this.remoteWebDriverConfigured = remoteWebDriverConfigured;
     }
-
+    
     public String getDefaultTestCaseView() {
         return defaultTestCaseView;
     }
@@ -321,4 +321,5 @@ public class ProjectStatistics {
     public void setDefaultTestCaseView(String defaultTestCaseView) {
         this.defaultTestCaseView = defaultTestCaseView;
     }
+
 }

@@ -233,7 +233,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_ACTION_FORMAT = ComposerTestcaseMessageConstants.PA_ACTION_FORMAT;
 
-    public static final String MSG_SET_SCRIPT_VIEW_AS_DEFAULT = ComposerTestcaseMessageConstants.MSG_SET_SCRIPT_VIEW_AS_DEFAULT;
     // TestCasePart
     public static final String PA_TOOLBAR_RECORD = ComposerTestcaseMessageConstants.PA_TOOLBAR_RECORD;
 
