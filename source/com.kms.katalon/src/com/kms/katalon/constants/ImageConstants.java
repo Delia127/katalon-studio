@@ -101,6 +101,8 @@ public class ImageConstants {
     public static final Image IMG_INTRO_SCREEN_5 = ImageManager.getImage(IImageKeys.INTRO_SCREEN_5);
 
     public static final Image IMG_INTRO_SCREEN_6 = ImageManager.getImage(IImageKeys.INTRO_SCREEN_6);
+    
+    public static final Image IMG_INTRO_SCREEN_WELCOME = ImageManager.getImage(IImageKeys.INTRO_SCREEN_WELCOME);
 
     // Activation
     public static final Image KATALON_IMAGE = ImageManager.getImage(IImageKeys.LOGO_16);

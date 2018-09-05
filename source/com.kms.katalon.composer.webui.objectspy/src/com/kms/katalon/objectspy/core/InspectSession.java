@@ -53,7 +53,7 @@ import com.kms.katalon.selenium.firefox.FirefoxWebExtension;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    private static final String FIREFOX_ADDON_UUID = "{91f05833-bab1-4fb1-b9e4-187091a4d75d}";
+    private static final String FIREFOX_ADDON_UUID = "{fb8a3d9a-f885-4a21-baa7-dbb68c04f0c0}";
 
     private static final String HTTP = "http";
 
@@ -205,7 +205,6 @@ public class InspectSession implements Runnable {
                     if (e.getMessage().startsWith("chrome not reachable")) {
                         break;
                     }
-                    return;
                 }
             }
         } catch (WebDriverException e) {
@@ -277,7 +276,8 @@ public class InspectSession implements Runnable {
         }
         generateVariableInitFileForChrome(chromeExtensionFolder);
         ChromeOptions options = new ChromeOptions();
-        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath());
+        //TODO - Thanh: investigate why getAbsolutePath() suddenly stops working
+        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         return capabilities;

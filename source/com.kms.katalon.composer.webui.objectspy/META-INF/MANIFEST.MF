@@ -62,3 +62,4 @@ Export-Package: com.kms.katalon.objectspy.components,
  com.kms.katalon.objectspy.websocket,
  com.kms.katalon.objectspy.websocket.messages
 Bundle-ClassPath: .
+Import-Package: org.json

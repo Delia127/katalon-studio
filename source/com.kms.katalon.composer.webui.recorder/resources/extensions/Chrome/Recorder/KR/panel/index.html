@@ -175,7 +175,7 @@
                             <tbody id="records-grid">
                                 <input id="records-count" type="hidden" value="0">
                                 </input>
-                                
+
                                 <!-- set input and /tbody in same line to avoid textNode -->
                                 <!--<tr>
                                     <td>time</td>
@@ -281,7 +281,7 @@
             <div class="clear"></div>
             <article class="module width_full">
                 <header class="tabs_involved">
-                    <ul class="tabs2"> 
+                    <ul class="tabs2">
                     <li id="history-log"><a>Log</a></li>
                     <li id="screenshot"><a>Screenshots</a></li>
                     <li id="variable-log"><a>Variables</a></li>
@@ -314,8 +314,10 @@
                         </div>
                         <div id="datacontainer" class="file-container">
                             <input id="load-csv-hidden" type="file" multiple style="display: none"></input>
+                            <input id="load-json-hidden" type="file" multiple style="display: none"></input>
                             <div class="submit_link">
-                                <button id="data-files-add" class="sub_btn"><img src="/katalon/images/SVG/add-icon.svg"> Add CSV File</button>
+                                <button id="data-files-add-csv" class="sub_btn"><img src="/katalon/images/SVG/add-icon.svg"> Add CSV File</button>
+                                <button id="data-files-add-json" class="sub_btn"><img src="/katalon/images/SVG/add-icon.svg"> Add JSON File</button>
                             </div>
                             <table>
                                 <thead>
@@ -365,6 +367,7 @@
                 <option value="java-rc-junit">Java (WebDriver-backed Remote Control + JUnit)</option>
                 <option value="katalon" selected>Katalon Studio</option>
                 <option value="python2-wd-unittest">Python 2 (WebDriver + unittest)</option>
+                <option value="python-appdynamics">Python (AppDynamics)</option>
                 <option value="robot">Robot Framework</option>
                 <option value="ruby-wd-rspec">Ruby (WebDriver + RSpec)</option>
                 <option value="xml">XML</option>
@@ -421,7 +424,7 @@
     <script src="js/background/editor.js"></script>
     <script src="js/background/formatCommand.js"></script>
     <script src="js/background/playback.js"></script>
-    
+
     <script src="js/katalon/kar.js"></script>
 </body>
 

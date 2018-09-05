@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -83,8 +84,12 @@ public class Trackings {
         trackUserAction("spy", "type", type);
     }
 
-    public static void trackWebRecord(WebUIDriverType browserType, boolean useActiveBrowser) {
-        trackUserAction("record", "type", "web", "browserType", browserType.toString(), "active", useActiveBrowser);
+    public static void trackWebRecord(WebUIDriverType browserType, boolean useActiveBrowser, SelectorMethod webLocatorConfig) {
+        trackUserAction("record",
+                "type", "web",
+                "browserType", browserType.toString(),
+                "active", useActiveBrowser,
+                "webLocatorConfig", webLocatorConfig.toString());
     }
     
     public static void trackRecord(String type) {
@@ -159,16 +164,36 @@ public class Trackings {
         trackUserAction("closeSpy", "type", type);
     }
     
-    public static void trackOpenWebRecord(Boolean continueRecording) {
+    public static void trackOpenWebRecord(Boolean continueRecording, SelectorMethod webLocatorConfig) {
         if (continueRecording != null) {
-            trackUserAction("openRecord", "type", "web", "continue", continueRecording ? "yes" : "no");
+            trackUserAction("openRecord", 
+                    "type", "web", 
+                    "continue", continueRecording ? "yes" : "no", 
+                    "webLocatorConfig", webLocatorConfig.toString());
         } else {
-            trackUserAction("openRecord", "type", "web");
+            trackUserAction("openRecord",
+                    "type", "web",
+                    "webLocatorConfig", webLocatorConfig.toString());
         }
     }
     
     public static void trackOpenMobileRecord() {
         trackUserAction("openRecord", "type", "mobile");
+    }
+    
+    public static void trackCloseWebRecord(String closeButton, int numberOfTestSteps, SelectorMethod webLocatorConfig) {
+        if ("ok".equals(closeButton)) {
+            trackUserAction("closeRecord",
+                    "type", "web",
+                    "closePopup", closeButton,
+                    "numberOfTestSteps", String.valueOf(numberOfTestSteps),
+                    "webLocatorConfig", webLocatorConfig.toString());
+        } else {
+            trackUserAction("closeRecord",
+                    "type", "web",
+                    "closePopup", closeButton,
+                    "webLocatorConfig", webLocatorConfig.toString());
+        }
     }
     
     public static void trackCloseRecord(String type, String closeButton, int numberOfTestSteps) {

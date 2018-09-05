@@ -165,7 +165,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
                 downVariable();
             }
         });
-
+        
         Composite compositeTable = new Composite(container, SWT.NONE);
         compositeTable.setLayout(new FillLayout(SWT.HORIZONTAL));
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));

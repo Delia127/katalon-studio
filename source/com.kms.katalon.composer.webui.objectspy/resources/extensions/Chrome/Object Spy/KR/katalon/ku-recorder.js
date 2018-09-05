@@ -79,7 +79,7 @@ class KURecorder {
                 var listener = function (event) {
                     self.rec_receiveMessage.call(self, event);
                 }
-                this.window.attachEvent("onmessage", self.rec_receiveMessage);
+                this.window.attachEvent("onmessage", listener);
             }
             register.call(this);
         }
@@ -90,6 +90,8 @@ class KURecorder {
         this.rec_hoverElement; // whatever element the mouse is over       
 
         this.rec_createInfoDiv();
+        var currentURL = this.window.document.url;
+        this.checkForNavigateAction(currentURL);
     }
 
     // This part of code is copyright by Software Freedom Conservancy(SFC)
@@ -118,7 +120,7 @@ class KURecorder {
                 var listener = function (event) {
                     self.rec_receiveMessage.call(self, event);
                 }
-                this.window.detachEvent("message", listener);
+                this.window.detachEvent("onmessage", listener);
             }
             unregister.call(this);
         }
@@ -179,16 +181,20 @@ class KURecorder {
         if (!childFrame) {
             return;
         }
-
-        var object = JSON.parse(event.data);
-        var action = {};
-        action["actionName"] = "goIntoFrame";
-        action["actionData"] = "";
-        var json = mapDOMForRecord(action, childFrame, window);
-        if (json) 
-            this.rec_setParentJson(object, json);
         
-        this.rec_processObject(object);
+        try{
+            var object = JSON.parse(event.data);
+            var action = {};
+            action["actionName"] = "goIntoFrame";
+            action["actionData"] = "";
+            var json = mapDOMForRecord(action, childFrame, window);
+            if (json) 
+                this.rec_setParentJson(object, json);
+            
+            this.rec_processObject(object);
+        } catch ( e ){
+            console.log(e);
+        }
         
     }
 
@@ -213,8 +219,7 @@ class KURecorder {
         if (!object) {
             return;
         }
-        console.log(this.elementKeyword);
-        var data = this.elementKeyword + '=' +  encodeURIComponent(JSON.stringify(object));
+        var data = { keyword : this.elementKeyword, obj : object, mode: 'RECORD'};
         if (detectChrome()) {
             chromePostData(url, data, function (response) {
                 if (response) {
@@ -324,7 +329,6 @@ class KURecorder {
         if (!isRecorded) {
             return;
         }
-        this.checkForNavigateAction();
         var action = {};
         action["actionName"] = 'inputChange';
         action["actionData"] = selectedElement.value;
@@ -343,7 +347,6 @@ class KURecorder {
         if (!isRecorded) {
             return;
         }
-        this.checkForNavigateAction();
         var action = {};
         action["actionName"] = 'inputChange';
         if (selectedElement.tagName.toLowerCase() == 'select') {
@@ -413,7 +416,6 @@ class KURecorder {
     }
 
     processOnClickTarget (selectedElement, clickType, currentURL) {
-        this.checkForNavigateAction(currentURL);
         var action = {};
         action["actionName"] = 'click';
         action["actionData"] = clickType;
@@ -421,7 +423,6 @@ class KURecorder {
     }
 
     processOnDbClickTarget (selectedElement) {
-        this.checkForNavigateAction();
         var action = {};
         action["actionName"] = 'doubleClick';
         action["actionData"] = '';
@@ -441,6 +442,14 @@ class KURecorder {
             selectedElement.onfocus = null;
         }
     }    
+    moveDivAway(e){
+        var y = 0;
+        var windowHeight = $(window).height();
+        if (e.clientY - this.rec_infoDiv.offsetHeight - 20 < 0) {
+            y = windowHeight - this.rec_infoDiv.offsetHeight;
+        }
+        this.rec_infoDiv.style.top = y + 'px';
+    }
 }
 
 KURecorder.INPUT_TYPE_INPUT_EVENT = ['email', 'number', 'password', 'search', 'tel', 'text', 'url']; // input type that will be handled by input event

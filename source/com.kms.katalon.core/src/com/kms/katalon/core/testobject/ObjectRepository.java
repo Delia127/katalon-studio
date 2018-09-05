@@ -51,6 +51,8 @@ public class ObjectRepository {
     private static final String WEBELEMENT_FILE_EXTENSION = ".rs";
 
     private static final String WEB_ELEMENT_PROPERTY_NODE_NAME = "webElementProperties";
+    
+    private static final String WEB_ELEMENT_XPATH_NODE_NAME = "webElementXpaths";
 
     private static final String PROPERTY_NAME = "name";
 
@@ -273,6 +275,33 @@ public class ObjectRepository {
                 testObject.setParentObjectShadowRoot(true);
             } else {
                 testObject.addProperty(objectProperty);
+            }
+        }
+        
+        for (Object xpathElementObject : element.elements(WEB_ELEMENT_XPATH_NODE_NAME)) {
+            TestObjectXpath objectXpath = new TestObjectXpath();
+            Element xpathElement = (Element) xpathElementObject;
+
+            String propertyName = StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_NAME));
+            ConditionType propertyCondition = ConditionType
+                    .fromValue(StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_CONDITION)));
+            String propertyValue = StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_VALUE));
+            boolean isPropertySelected = Boolean
+                    .valueOf(StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_IS_SELECTED)));
+
+            objectXpath.setName(propertyName);
+            objectXpath.setCondition(propertyCondition);
+            objectXpath.setValue(propertyValue);
+            objectXpath.setActive(isPropertySelected);
+
+            // Check if this element is inside a frame
+            if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                TestObject parentObject = findTestObject(propertyValue);
+                testObject.setParentObject(parentObject);
+            } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                testObject.setParentObjectShadowRoot(true);
+            } else {
+                testObject.addXpath(objectXpath);
             }
         }
 
