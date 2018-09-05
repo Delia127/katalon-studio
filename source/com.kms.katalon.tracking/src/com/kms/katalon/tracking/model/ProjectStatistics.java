@@ -321,4 +321,5 @@ public class ProjectStatistics {
     public void setWebLocatorConfig(String webLocatorConfig) {
         this.webLocatorConfig = webLocatorConfig;
     }
+
 }

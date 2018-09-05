@@ -84,7 +84,7 @@ public class WSVerificationExecutor {
         }
         testResult.getTestStatus().setStatusValue(getResultByError(t));
         String message =  MessageFormat.format(StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, "Verification",
-                ExceptionsUtil.getMessageForThrowable(t));
+                ExceptionsUtil.getStackTraceForThrowable(t));
         testResult.setMessage(message);
         logError(t, message);
     }
@@ -142,7 +142,8 @@ public class WSVerificationExecutor {
 
     private Object runScript(String script)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        return engine.runScriptAsRawText(script, "WSVerification" + System.currentTimeMillis(), new Binding(testCaseBinding.getBindedValues()));
+        return engine.runScriptAsRawText(script, "WSVerification" + System.currentTimeMillis(),
+                testCaseBinding != null ? new Binding(testCaseBinding.getBindedValues()) : new Binding());
     }
 
     private void logError(Throwable t, String message) {
