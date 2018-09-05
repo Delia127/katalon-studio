@@ -13,6 +13,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -22,6 +23,7 @@ import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.generator.FeatureFileScriptGenerator;
 import com.kms.katalon.execution.generator.TestCaseScriptGenerator;
 import com.kms.katalon.execution.generator.TestSuiteScriptGenerator;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
@@ -64,9 +66,12 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
             if (fileEntity instanceof TestSuiteEntity) {
                 return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
                         (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
-            } else {
+            } else if (fileEntity instanceof TestCaseEntity)  {
                 return new TestCaseScriptGenerator((TestCaseEntity) fileEntity, this).generateScriptFile();
+            } else if (fileEntity instanceof SystemFileEntity) {
+                return new FeatureFileScriptGenerator((SystemFileEntity) fileEntity, this).generateScriptFile();
             }
+            throw new ExecutionException("The execution is not supported for this file");
         } catch (Exception ex) {
             throw new ExecutionException(ex.getMessage());
         }
@@ -88,9 +93,9 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         executionSetting = new DefaultExecutionSetting();
     }
 
-    protected String getLogFolderLocation(TestCaseEntity testCase) {
+    protected String getTemporaryLogFolderLocation(FileEntity testCase) {
         try {
-            return ReportController.getInstance().generateReportFolder(testCase);
+            return ReportController.getInstance().generateTemporaryExecutionFolder(testCase);
         } catch (Exception e) {
             return "";
         }
@@ -106,8 +111,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     public void generateLogFolder(FileEntity fileEntity) {
         String logFolderPath = "";
-        if (fileEntity instanceof TestCaseEntity) {
-            logFolderPath = getLogFolderLocation((TestCaseEntity) fileEntity);
+        if (fileEntity instanceof TestCaseEntity || fileEntity instanceof SystemFileEntity) {
+            logFolderPath = getTemporaryLogFolderLocation(fileEntity);
         } else if (fileEntity instanceof TestSuiteEntity) {
             logFolderPath = getLogFolderLocation((TestSuiteEntity) fileEntity);
         }

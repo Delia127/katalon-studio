@@ -35,6 +35,7 @@ import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestListenerController;
@@ -213,7 +214,7 @@ public class TreeEntityUtil {
         return new TestListenerTreeEntity(testListener, new TestListenerFolderTreeEntity(parent, null));
     }
 
-    public static SystemFileTreeEntity getFeatureTreeEntity(SystemFileEntity systemFile,
+    public static SystemFileTreeEntity getSystemFileTreeEntity(SystemFileEntity systemFile,
             FolderEntity parent) {
         return new SystemFileTreeEntity(systemFile, new FolderTreeEntity(parent, null));
     }
@@ -302,7 +303,7 @@ public class TreeEntityUtil {
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_PROFILES)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TEST_LISTENER)
-                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_FEATURES)) {
+                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_INCLUDE)) {
                 // Folder
                 FolderEntity folder = FolderController.getInstance().getFolderByDisplayId(project, id);
                 if (folder == null) {
@@ -328,6 +329,8 @@ public class TreeEntityUtil {
                     rootFolder = FolderController.getInstance().getProfileRoot(project);
                 } else if (FolderType.TESTLISTENER.equals(folder.getFolderType())) {
                     rootFolder = FolderController.getInstance().getTestListenerRoot(project);
+                } else if (FolderType.INCLUDE.equals(folder.getFolderType())) {
+                    rootFolder = FolderController.getInstance().getIncludeRoot(project);
                 }
 
                 if (rootFolder != null) {
@@ -338,7 +341,7 @@ public class TreeEntityUtil {
             }
 
             // Keyword Package
-            treeEntities.add(TreeEntityUtil.getPackageTreeEntity(id, project));
+            // treeEntities.add(TreeEntityUtil.getPackageTreeEntity(id, project));
         }
         return treeEntities;
     }
@@ -459,6 +462,12 @@ public class TreeEntityUtil {
                 if (testListenerEntity != null) {
                     treeEntities.add(getTestListenerTreeEntity(testListenerEntity, rootTestListenerFolder));
                 }
+            }
+
+            if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_INCLUDE)) {
+                SystemFileEntity systemFileEntity = SystemFileController.getInstance().getSystemFile(
+                        new File(project.getFolderLocation(), id).getAbsolutePath(), project);
+                treeEntities.add(getSystemFileTreeEntity(systemFileEntity, systemFileEntity.getParentFolder()));
             }
         }
         return treeEntities;
