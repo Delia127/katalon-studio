@@ -400,8 +400,6 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String KA_HOMEPAGE_NOTOKEN;
     
-    public static String MSG_SET_SCRIPT_VIEW_AS_DEFAULT;
-    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);

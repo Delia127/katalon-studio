@@ -17,56 +17,56 @@
 var typeTarget;
 var typeLock = 0;
 Recorder.inputTypes = ["text", "password", "file", "datetime", "datetime-local", "date", "month", "time", "week", "number", "range", "email", "url", "search", "tel", "color"];
-Recorder.addEventHandler('type', 'change', function (event) {
+Recorder.addEventHandler('type', 'change', function(event) {
     // © Chen-Chieh Ping, SideeX Team
     if (event.target.tagName && !preventType && typeLock == 0 && (typeLock = 1)) {
         // END
-        var tagName = event.target.tagName.toLowerCase();
-        var type = event.target.type;
-        if ('input' == tagName && Recorder.inputTypes.indexOf(type) >= 0) {
-            if (event.target.value.length > 0) {
-                this.record("type", this.locatorBuilders.buildAll(event.target), event.target.value);
+            var tagName = event.target.tagName.toLowerCase();
+            var type = event.target.type;
+            if ('input' == tagName && Recorder.inputTypes.indexOf(type) >= 0) {
+                if (event.target.value.length > 0) {
+                    this.record("type", this.locatorBuilders.buildAll(event.target), event.target.value);
 
-                // © Chen-Chieh Ping, SideeX Team
-                if (enterTarget != null) {
-                    var tempTarget = event.target.parentElement;
-                    var formChk = tempTarget.tagName.toLowerCase();
-                    while (formChk != 'form' && formChk != 'body') {
-                        tempTarget = tempTarget.parentElement;
-                        formChk = tempTarget.tagName.toLowerCase();
+                    // © Chen-Chieh Ping, SideeX Team
+                    if (enterTarget != null) {
+                        var tempTarget = event.target.parentElement;
+                        var formChk = tempTarget.tagName.toLowerCase();
+                        while (formChk != 'form' && formChk != 'body') {
+                            tempTarget = tempTarget.parentElement;
+                            formChk = tempTarget.tagName.toLowerCase();
+                        }
+                        if (formChk == 'form' && (tempTarget.hasAttribute("id") || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
+                            if (tempTarget.hasAttribute("id"))
+                                this.record("submit", [
+                                    ["id=" + tempTarget.id, "id"]
+                                ], "");
+                            else if (tempTarget.hasAttribute("name"))
+                                this.record("submit", [
+                                    ["name=" + tempTarget.name, "name"]
+                                ], "");
+                        } else
+                            this.record("sendKeys", this.locatorBuilders.buildAll(enterTarget), "${KEY_ENTER}");
+                        enterTarget = null;
                     }
-                    if (formChk == 'form' && (tempTarget.hasAttribute("id") || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
-                        if (tempTarget.hasAttribute("id"))
-                            this.record("submit", [
-                                ["id=" + tempTarget.id, "id"]
-                            ], "");
-                        else if (tempTarget.hasAttribute("name"))
-                            this.record("submit", [
-                                ["name=" + tempTarget.name, "name"]
-                            ], "");
-                    } else
-                        this.record("sendKeys", this.locatorBuilders.buildAll(enterTarget), "${KEY_ENTER}");
-                    enterTarget = null;
+                    // END
+                } else {
+                    this.record("type", this.locatorBuilders.buildAll(event.target), event.target.value);
                 }
-                // END
-            } else {
+            } else if ('textarea' == tagName) {
                 this.record("type", this.locatorBuilders.buildAll(event.target), event.target.value);
             }
-        } else if ('textarea' == tagName) {
-            this.record("type", this.locatorBuilders.buildAll(event.target), event.target.value);
         }
-    }
-    typeLock = 0;
+        typeLock = 0;
 });
 
-Recorder.addEventHandler('type', 'input', function (event) {
+Recorder.addEventHandler('type', 'input', function(event) {
     //console.log(event.target);
     typeTarget = event.target;
 });
 
 // © Jie-Lin You, SideeX Team
 var preventClickTwice = false;
-Recorder.addEventHandler('clickAt', 'click', function (event) {
+Recorder.addEventHandler('clickAt', 'click', function(event) {
     if (event.button == 0 && !preventClick && event.isTrusted) {
         if (!preventClickTwice) {
             var top = event.pageY,
@@ -82,13 +82,13 @@ Recorder.addEventHandler('clickAt', 'click', function (event) {
             var arrayTest = this.locatorBuilders.buildAll(event.target);
             preventClickTwice = true;
         }
-        setTimeout(function () { preventClickTwice = false; }, 30);
+        setTimeout(function() { preventClickTwice = false; }, 30);
     }
 }, true);
 // END
 
 // © Chen-Chieh Ping, SideeX Team
-Recorder.addEventHandler('doubleClickAt', 'dblclick', function (event) {
+Recorder.addEventHandler('doubleClickAt', 'dblclick', function(event) {
     var top = event.pageY,
         left = event.pageX;
     var element = event.target;
@@ -109,13 +109,13 @@ var preventType = false;
 var inp = document.getElementsByTagName("input");
 for (var i = 0; i < inp.length; i++) {
     if (Recorder.inputTypes.indexOf(inp[i].type) >= 0) {
-        inp[i].addEventListener("focus", function (event) {
+        inp[i].addEventListener("focus", function(event) {
             focusTarget = event.target;
             focusValue = focusTarget.value;
             tempValue = focusValue;
             preventType = false;
         });
-        inp[i].addEventListener("blur", function (event) {
+        inp[i].addEventListener("blur", function(event) {
             focusTarget = null;
             focusValue = null;
             tempValue = null;
@@ -129,7 +129,7 @@ var preventClick = false;
 var enterTarget = null;
 var enterValue = null;
 var tabCheck = null;
-Recorder.addEventHandler('sendKeys', 'keydown', function (event) {
+Recorder.addEventHandler('sendKeys', 'keydown', function(event) {
     if (event.target.tagName) {
         var key = event.keyCode;
         var tagName = event.target.tagName.toLowerCase();
@@ -163,46 +163,46 @@ Recorder.addEventHandler('sendKeys', 'keydown', function (event) {
                 }
                 if (typeTarget.tagName && !preventType && (typeLock = 1)) {
                     // END
-                    var tagName = typeTarget.tagName.toLowerCase();
-                    var type = typeTarget.type;
-                    if ('input' == tagName && Recorder.inputTypes.indexOf(type) >= 0) {
-                        if (typeTarget.value.length > 0) {
-                            this.record("type", this.locatorBuilders.buildAll(typeTarget), typeTarget.value);
+                        var tagName = typeTarget.tagName.toLowerCase();
+                        var type = typeTarget.type;
+                        if ('input' == tagName && Recorder.inputTypes.indexOf(type) >= 0) {
+                            if (typeTarget.value.length > 0) {
+                                this.record("type", this.locatorBuilders.buildAll(typeTarget), typeTarget.value);
 
-                            // © Chen-Chieh Ping, SideeX Team
-                            if (enterTarget != null) {
-                                var tempTarget = typeTarget.parentElement;
-                                var formChk = tempTarget.tagName.toLowerCase();
-                                while (formChk != 'form' && formChk != 'body') {
-                                    tempTarget = tempTarget.parentElement;
-                                    formChk = tempTarget.tagName.toLowerCase();
+                                // © Chen-Chieh Ping, SideeX Team
+                                if (enterTarget != null) {
+                                    var tempTarget = typeTarget.parentElement;
+                                    var formChk = tempTarget.tagName.toLowerCase();
+                                    while (formChk != 'form' && formChk != 'body') {
+                                        tempTarget = tempTarget.parentElement;
+                                        formChk = tempTarget.tagName.toLowerCase();
+                                    }
+                                    if (formChk == 'form' && (tempTarget.hasAttribute("id") || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
+                                        if (tempTarget.hasAttribute("id"))
+                                            this.record("submit", [
+                                                ["id=" + tempTarget.id, "id"]
+                                            ], "");
+                                        else if (tempTarget.hasAttribute("name"))
+                                            this.record("submit", [
+                                                ["name=" + tempTarget.name, "name"]
+                                            ], "");
+                                    } else
+                                        this.record("sendKeys", this.locatorBuilders.buildAll(enterTarget), "${KEY_ENTER}");
+                                    enterTarget = null;
                                 }
-                                if (formChk == 'form' && (tempTarget.hasAttribute("id") || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
-                                    if (tempTarget.hasAttribute("id"))
-                                        this.record("submit", [
-                                            ["id=" + tempTarget.id, "id"]
-                                        ], "");
-                                    else if (tempTarget.hasAttribute("name"))
-                                        this.record("submit", [
-                                            ["name=" + tempTarget.name, "name"]
-                                        ], "");
-                                } else
-                                    this.record("sendKeys", this.locatorBuilders.buildAll(enterTarget), "${KEY_ENTER}");
-                                enterTarget = null;
+                                // END
+                            } else {
+                                this.record("type", this.locatorBuilders.buildAll(typeTarget), typeTarget.value);
                             }
-                            // END
-                        } else {
+                        } else if ('textarea' == tagName) {
                             this.record("type", this.locatorBuilders.buildAll(typeTarget), typeTarget.value);
                         }
-                    } else if ('textarea' == tagName) {
-                        this.record("type", this.locatorBuilders.buildAll(typeTarget), typeTarget.value);
                     }
-                }
                 preventClick = true;
-                setTimeout(function () {
+                setTimeout(function() {
                     preventClick = false;
                 }, 500);
-                setTimeout(function () {
+                setTimeout(function() {
                     if (enterValue != event.target.value) enterTarget = null;
                 }, 50);
             }
@@ -217,7 +217,7 @@ Recorder.addEventHandler('sendKeys', 'keydown', function (event) {
                     this.record("type", this.locatorBuilders.buildAll(event.target), tempValue);
                 }
 
-                setTimeout(function () {
+                setTimeout(function() {
                     tempValue = focusTarget.value;
                 }, 250);
 
@@ -237,15 +237,15 @@ Recorder.addEventHandler('sendKeys', 'keydown', function (event) {
 // END
 
 // © Shuo-Heng Shih, SideeX Team
-Recorder.addEventHandler('dragAndDrop', 'mousedown', function (event) {
+Recorder.addEventHandler('dragAndDrop', 'mousedown', function(event) {
     var self = this;
     if (event.clientX < window.document.documentElement.clientWidth && event.clientY < window.document.documentElement.clientHeight) {
         this.mousedown = event;
-        this.mouseup = setTimeout(function () {
+        this.mouseup = setTimeout(function() {
             delete self.mousedown;
         }.bind(this), 200);
 
-        this.selectMouseup = setTimeout(function () {
+        this.selectMouseup = setTimeout(function() {
             self.selectMousedown = event;
         }.bind(this), 200);
     }
@@ -267,86 +267,80 @@ Recorder.addEventHandler('dragAndDrop', 'mousedown', function (event) {
 // END
 
 // © Shuo-Heng Shih, SideeX Team
-var preventAutomaticClick = false;
-Recorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
+Recorder.addEventHandler('dragAndDrop', 'mouseup', function(event) {
     clearTimeout(this.selectMouseup);
-    if (!preventAutomaticClick) {
-        
-        preventAutomaticClick = true;
-        setTimeout(function(){ preventAutomaticClick = false;}, 30);
+    if (this.selectMousedown) {
+        var x = event.clientX - this.selectMousedown.clientX;
+        var y = event.clientY - this.selectMousedown.clientY;
 
-        if (this.selectMousedown) {
-            var x = event.clientX - this.selectMousedown.clientX;
-            var y = event.clientY - this.selectMousedown.clientY;
-
-            function getSelectionText() {
-                var text = "";
-                var activeEl = window.document.activeElement;
-                var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
-                if (activeElTagName == "textarea" || activeElTagName == "input") {
-                    text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
-                } else if (window.getSelection) {
-                    text = window.getSelection().toString();
-                }
-                return text.trim();
+        function getSelectionText() {
+            var text = "";
+            var activeEl = window.document.activeElement;
+            var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+            if (activeElTagName == "textarea" || activeElTagName == "input") {
+                text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+            } else if (window.getSelection) {
+                text = window.getSelection().toString();
             }
+            return text.trim();
+        }
 
-            if (this.selectMousedown && event.button === 0 && (x + y) && (event.clientX < window.document.documentElement.clientWidth && event.clientY < window.document.documentElement.clientHeight) && getSelectionText() === '') {
-                var sourceRelateX = this.selectMousedown.pageX - this.selectMousedown.target.getBoundingClientRect().left - window.scrollX;
-                var sourceRelateY = this.selectMousedown.pageY - this.selectMousedown.target.getBoundingClientRect().top - window.scrollY;
-                var targetRelateX, targetRelateY;
-                if (!!this.mouseoverQ.length && this.mouseoverQ[1].relatedTarget == this.mouseoverQ[0].target && this.mouseoverQ[0].target == event.target) {
-                    targetRelateX = event.pageX - this.mouseoverQ[1].target.getBoundingClientRect().left - window.scrollX;
-                    targetRelateY = event.pageY - this.mouseoverQ[1].target.getBoundingClientRect().top - window.scrollY;
-                    // this.record("mouseDownAt", this.locatorBuilders.buildAll(this.selectMousedown.target), sourceRelateX + ',' + sourceRelateY);
-                    // this.record("mouseMoveAt", this.locatorBuilders.buildAll(this.mouseoverQ[1].target), targetRelateX + ',' + targetRelateY);
-                    // this.record("mouseUpAt", this.locatorBuilders.buildAll(this.mouseoverQ[1].target), targetRelateX + ',' + targetRelateY);
-                } else {
-                    targetRelateX = event.pageX - event.target.getBoundingClientRect().left - window.scrollX;
-                    targetRelateY = event.pageY - event.target.getBoundingClientRect().top - window.scrollY;
-                    // this.record("mouseDownAt", this.locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
-                    // this.record("mouseMoveAt", this.locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
-                    // this.record("mouseUpAt", this.locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
-                }
+        if (this.selectMousedown && event.button === 0 && (x + y) && (event.clientX < window.document.documentElement.clientWidth && event.clientY < window.document.documentElement.clientHeight) && getSelectionText() === '') {
+            var sourceRelateX = this.selectMousedown.pageX - this.selectMousedown.target.getBoundingClientRect().left - window.scrollX;
+            var sourceRelateY = this.selectMousedown.pageY - this.selectMousedown.target.getBoundingClientRect().top - window.scrollY;
+            var targetRelateX, targetRelateY;
+            if (!!this.mouseoverQ.length && this.mouseoverQ[1].relatedTarget == this.mouseoverQ[0].target && this.mouseoverQ[0].target == event.target) {
+                targetRelateX = event.pageX - this.mouseoverQ[1].target.getBoundingClientRect().left - window.scrollX;
+                targetRelateY = event.pageY - this.mouseoverQ[1].target.getBoundingClientRect().top - window.scrollY;
+                // this.record("mouseDownAt", this.locatorBuilders.buildAll(this.selectMousedown.target), sourceRelateX + ',' + sourceRelateY);
+                // this.record("mouseMoveAt", this.locatorBuilders.buildAll(this.mouseoverQ[1].target), targetRelateX + ',' + targetRelateY);
+                // this.record("mouseUpAt", this.locatorBuilders.buildAll(this.mouseoverQ[1].target), targetRelateX + ',' + targetRelateY);
+            } else {
+                targetRelateX = event.pageX - event.target.getBoundingClientRect().left - window.scrollX;
+                targetRelateY = event.pageY - event.target.getBoundingClientRect().top - window.scrollY;
+                // this.record("mouseDownAt", this.locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
+                // this.record("mouseMoveAt", this.locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
+                // this.record("mouseUpAt", this.locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
             }
-        } else {
+        }
+    } else {
+        if(this.mousedown){
             delete this.clickLocator;
             delete this.mouseup;
             var x = event.clientX - this.mousedown.clientX;
             var y = event.clientY - this.mousedown.clientY;
-            var self = this;
+    
             if (this.mousedown && this.mousedown.target !== event.target && !(x + y)) {
                 // this.record("mouseDown", this.locatorBuilders.buildAll(this.mousedown.target), '');
-                // this.record("mouseUp", this.locatorBuilders.buildAll(event.target), '');    
+                // this.record("mouseUp", this.locatorBuilders.buildAll(event.target), '');
             } else if (this.mousedown && this.mousedown.target === event.target) {
                 var self = this;
-                var target = this.locatorBuilders.buildAll(this.mousedown.target);                
-                setTimeout(function(){
-                    if(!document.contains(event.target))
-                        self.record('click', target, '');
-                }, 0);
+                var target = this.locatorBuilders.buildAll(this.mousedown.target);
+                // setTimeout(function() {
+                //     if (!self.clickLocator)
+                //         this.record("click", target, '');
+                // }.bind(this), 100);
             }
-
         }
-        delete this.mousedown;
-        delete this.selectMousedown;
-        delete this.mouseoverQ;
-        
     }
+    delete this.mousedown;
+    delete this.selectMousedown;
+    delete this.mouseoverQ;
+
 }, true);
 // END
 
 // © Shuo-Heng Shih, SideeX Team
-Recorder.addEventHandler('dragAndDropToObject', 'dragstart', function (event) {
+Recorder.addEventHandler('dragAndDropToObject', 'dragstart', function(event) {
     var self = this;
-    this.dropLocator = setTimeout(function () {
+    this.dropLocator = setTimeout(function() {
         self.dragstartLocator = event;
     }.bind(this), 200);
 }, true);
 // END
 
 // © Shuo-Heng Shih, SideeX Team
-Recorder.addEventHandler('dragAndDropToObject', 'drop', function (event) {
+Recorder.addEventHandler('dragAndDropToObject', 'drop', function(event) {
     clearTimeout(this.dropLocator);
     if (this.dragstartLocator && event.button == 0 && this.dragstartLocator.target !== event.target) {
         //value no option
@@ -359,12 +353,12 @@ Recorder.addEventHandler('dragAndDropToObject', 'drop', function (event) {
 
 // © Shuo-Heng Shih, SideeX Team
 var prevTimeOut = null;
-Recorder.addEventHandler('runScript', 'scroll', function (event) {
+Recorder.addEventHandler('runScript', 'scroll', function(event) {
     if (pageLoaded === true) {
         var self = this;
         this.scrollDetector = event.target;
         clearTimeout(prevTimeOut);
-        prevTimeOut = setTimeout(function () {
+        prevTimeOut = setTimeout(function() {
             delete self.scrollDetector;
         }.bind(self), 500);
     }
@@ -373,7 +367,7 @@ Recorder.addEventHandler('runScript', 'scroll', function (event) {
 
 // © Shuo-Heng Shih, SideeX Team
 var nowNode = 0;
-Recorder.addEventHandler('mouseOver', 'mouseover', function (event) {
+Recorder.addEventHandler('mouseOver', 'mouseover', function(event) {
     if (window.document.documentElement)
         nowNode = window.document.documentElement.getElementsByTagName('*').length;
     var self = this;
@@ -381,12 +375,12 @@ Recorder.addEventHandler('mouseOver', 'mouseover', function (event) {
         var clickable = this.findClickableElement(event.target);
         if (clickable) {
             this.nodeInsertedLocator = event.target;
-            setTimeout(function () {
+            setTimeout(function() {
                 delete self.nodeInsertedLocator;
             }.bind(self), 500);
 
             this.nodeAttrChange = this.locatorBuilders.buildAll(event.target);
-            this.nodeAttrChangeTimeout = setTimeout(function () {
+            this.nodeAttrChangeTimeout = setTimeout(function() {
                 delete self.nodeAttrChange;
             }.bind(self), 10);
         }
@@ -402,7 +396,7 @@ Recorder.addEventHandler('mouseOver', 'mouseover', function (event) {
 // END
 
 // © Shuo-Heng Shih, SideeX Team
-Recorder.addEventHandler('mouseOut', 'mouseout', function (event) {
+Recorder.addEventHandler('mouseOut', 'mouseout', function(event) {
     if (this.mouseoutLocator !== null && event.target === this.mouseoutLocator) {
         // this.record("mouseOut", this.locatorBuilders.buildAll(event.target), '');
     }
@@ -411,7 +405,7 @@ Recorder.addEventHandler('mouseOut', 'mouseout', function (event) {
 // END
 
 // © Shuo-Heng Shih, SideeX Team
-Recorder.addEventHandler('mouseOver', 'DOMNodeInserted', function (event) {
+Recorder.addEventHandler('mouseOver', 'DOMNodeInserted', function(event) {
     if (pageLoaded === true && window.document.documentElement.getElementsByTagName('*').length > nowNode) {
         var self = this;
         if (this.scrollDetector) {
@@ -422,7 +416,7 @@ Recorder.addEventHandler('mouseOver', 'DOMNodeInserted', function (event) {
             //     ]
             // ], '');
             pageLoaded = false;
-            setTimeout(function () {
+            setTimeout(function() {
                 pageLoaded = true;
             }.bind(self), 550);
             delete this.scrollDetector;
@@ -441,14 +435,14 @@ Recorder.addEventHandler('mouseOver', 'DOMNodeInserted', function (event) {
 // © Shuo-Heng Shih, SideeX Team
 var readyTimeOut = null;
 var pageLoaded = true;
-Recorder.addEventHandler('checkPageLoaded', 'readystatechange', function (event) {
+Recorder.addEventHandler('checkPageLoaded', 'readystatechange', function(event) {
     var self = this;
     if (window.document.readyState === 'loading') {
         pageLoaded = false;
     } else {
         pageLoaded = false;
         clearTimeout(readyTimeOut);
-        readyTimeOut = setTimeout(function () {
+        readyTimeOut = setTimeout(function() {
             pageLoaded = true;
         }.bind(self), 1500); //setReady after complete 1.5s
     }
@@ -456,7 +450,7 @@ Recorder.addEventHandler('checkPageLoaded', 'readystatechange', function (event)
 // END
 
 // © Ming-Hung Hsu, SideeX Team
-Recorder.addEventHandler('contextMenu', 'contextmenu', function (event) {
+Recorder.addEventHandler('contextMenu', 'contextmenu', function(event) {
     var myPort = browser.runtime.connect();
     var tmpText = this.locatorBuilders.buildAll(event.target);
     var tmpVal = getText(event.target);
@@ -478,7 +472,7 @@ Recorder.addEventHandler('contextMenu', 'contextmenu', function (event) {
 // © Yun-Wen Lin, SideeX Team
 var getEle;
 var checkFocus = 0;
-Recorder.addEventHandler('editContent', 'focus', function (event) {
+Recorder.addEventHandler('editContent', 'focus', function(event) {
     var editable = event.target.contentEditable;
     if (editable == 'true') {
         getEle = event.target;
@@ -489,7 +483,7 @@ Recorder.addEventHandler('editContent', 'focus', function (event) {
 // END
 
 // © Yun-Wen Lin, SideeX Team
-Recorder.addEventHandler('editContent', 'blur', function (event) {
+Recorder.addEventHandler('editContent', 'blur', function(event) {
     if (checkFocus == 1) {
         if (event.target == getEle) {
             if (getEle.innerHTML != contentTest) {
@@ -503,18 +497,18 @@ Recorder.addEventHandler('editContent', 'blur', function (event) {
 
 browser.runtime.sendMessage({
     attachRecorderRequest: true
-}).catch(function (reason) {
+}).catch(function(reason){
     // Failed silently if receiveing end does not exist
 });
 
 // Copyright 2005 Shinya Kasatani
-Recorder.prototype.getOptionLocator = function (option) {
+Recorder.prototype.getOptionLocator = function(option) {
     var label = option.text.replace(/^ *(.*?) *$/, "$1");
     if (label.match(/\xA0/)) { // if the text contains &nbsp;
-        return "label=regexp:" + label.replace(/[\(\)\[\]\\\^\$\*\+\?\.\|\{\}]/g, function (str) {
-            return '\\' + str
-        })
-            .replace(/\s+/g, function (str) {
+        return "label=regexp:" + label.replace(/[\(\)\[\]\\\^\$\*\+\?\.\|\{\}]/g, function(str) {
+                return '\\' + str
+            })
+            .replace(/\s+/g, function(str) {
                 if (str.match(/\xA0/)) {
                     if (str.length > 1) {
                         return "\\s+";
@@ -530,7 +524,7 @@ Recorder.prototype.getOptionLocator = function (option) {
     }
 };
 
-Recorder.prototype.findClickableElement = function (e) {
+Recorder.prototype.findClickableElement = function(e) {
     if (!e.tagName) return null;
     var tagName = e.tagName.toLowerCase();
     var type = e.type;
@@ -548,7 +542,7 @@ Recorder.prototype.findClickableElement = function (e) {
 };
 
 //select / addSelect / removeSelect
-Recorder.addEventHandler('select', 'focus', function (event) {
+Recorder.addEventHandler('select', 'focus', function(event) {
     if (event.target.nodeName) {
         var tagName = event.target.nodeName.toLowerCase();
         if ('select' == tagName && event.target.multiple) {
@@ -563,7 +557,7 @@ Recorder.addEventHandler('select', 'focus', function (event) {
     }
 }, true);
 
-Recorder.addEventHandler('select', 'change', function (event) {
+Recorder.addEventHandler('select', 'change', function(event) {
     if (event.target.tagName) {
         var tagName = event.target.tagName.toLowerCase();
         if ('select' == tagName) {
@@ -573,7 +567,7 @@ Recorder.addEventHandler('select', 'change', function (event) {
             } else {
                 var options = event.target.options;
                 for (var i = 0; i < options.length; i++) {
-                    if (options[i]._wasSelected == null) { }
+                    if (options[i]._wasSelected == null) {}
                     if (options[i]._wasSelected != options[i].selected) {
                         var value = this.getOptionLocator(options[i]);
                         if (options[i].selected) {

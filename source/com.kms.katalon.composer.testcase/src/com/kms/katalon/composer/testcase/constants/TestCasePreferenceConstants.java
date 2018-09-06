@@ -21,8 +21,6 @@ public interface TestCasePreferenceConstants extends PreferenceConstants {
 
     String TESTCASE_RECENT_TEST_OBJECTS = "recent.testObjects";
     
-    String TESTCASE_SCRIPT_VIEW_OPENED_FIRST_TIME = "scriptViewOpenedFirstTime";
-    
     String MANUAL = "manual.";
 
     String MANUAL_ALLOW_LINE_WRAPPING = MANUAL + "allow_line_wrapping";

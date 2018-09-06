@@ -14,6 +14,7 @@ import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.WebElementUtils;
@@ -158,7 +159,7 @@ public class HTMLActionJsonParser {
             switch (recordedActionName) {
                 case NAVIGATE_ACTION_KEY:
                     return new HTMLActionMapping(HTMLAction.Navigate, actionData, targetElement);
-                case INPUT_CHANGE_ACTION_KEY:             
+                case INPUT_CHANGE_ACTION_KEY:
                 	// TODO: Refactor contentEditable into a separate case
                 	 WebElementPropertyEntity contentEditability = targetElement.getProperty("contenteditable");
                      if(contentEditability != null && contentEditability.getValue().equals("true")){
@@ -181,8 +182,10 @@ public class HTMLActionJsonParser {
                             return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
                         case ELEMENT_TYPE_TEXTAREA:
                             return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
-                    }                    
-                   
+                        default:
+                        	break;
+                    }
+                    break;                   
                 case SELECT_ACTION_KEY:
                     return new HTMLActionMapping(HTMLAction.Select, actionData, targetElement);
                 case DESELECT_ACTION_KEY:
@@ -199,7 +202,7 @@ public class HTMLActionJsonParser {
                     }
                 case DOUBLE_CLICK_ACTION_KEY:
                     return new HTMLActionMapping(HTMLAction.DoubleClick, actionData, targetElement);
-                case SEND_KEYS_ACTION_KEY:
+                case SEND_KEYS_ACTION_KEY:                	
                     int keyCode = Integer.parseInt(actionData);
                     // Only handle enter key for now
                     if (keyCode != KEYCODE_ENTER) {

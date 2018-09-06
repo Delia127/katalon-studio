@@ -1,3 +1,4 @@
+var ku_locatorBuilders = new KULocatorBuilders(window);
 //Recursively loop through DOM elements and assign properties to object
 function treeHTML(element, object, currentWindow) {
     if (!element) {
@@ -20,9 +21,20 @@ function treeHTML(element, object, currentWindow) {
     }
 
     var xpath = createXPathFromElement(element);
-   // var xpath = ku_locatorBuilders.build(element);
+    var xpaths = ku_locatorBuilders.buildAll(element);
+   
 	if(xpath != null ) {
-        object['xpath'] = xpath
+        object['xpath'] = xpath;        
+        if(xpaths != null){
+            object['xpaths'] = {};
+            for(var key in xpaths){
+                if(xpaths.hasOwnProperty(key)){
+                    object['xpaths'][key] = xpaths[key];
+                }
+            }
+            console.log(neighborXpathsGenerator.getUsefulNeighborsText(element)[0]);
+            object['neighbor_text'] = neighborXpathsGenerator.getUsefulNeighborsText(element)[0];
+        }
     } else{
         object['xpath'] = '';
     }
