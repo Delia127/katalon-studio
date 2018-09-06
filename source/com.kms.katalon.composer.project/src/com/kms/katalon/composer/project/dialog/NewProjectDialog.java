@@ -517,16 +517,19 @@ public class NewProjectDialog extends TitleAreaDialog {
     
     /*
      * This method exists from 5.7 onward - it will explicitly assign a default SelectorMethod of XPATH 
-     * to newly created projects so that we can load default SelectorMethod for old and new projects appropriately
+     * to newly created BLANK projects so that we can load default SelectorMethod for old and new projects appropriately
      */
     private void setDefaultSelectorMethod(){
     	WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-    	try {
-			store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	
+    	if(store != null){
+        	try {
+    			store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+    	}
     }
     
     private void handleCreatingSampleBuiltInProject(SampleBuiltInProject sampleBuiltInProject) {
