@@ -254,7 +254,7 @@ public class GroovyUtil {
             outputKWLibFolder.clearHistory(null);
         }
 
-        IFolder outputSourceMainGroovy = outputParentFolder.getFolder("include/scripts/groovy");
+        IFolder outputSourceMainGroovy = outputParentFolder.getFolder("groovy");
         File outputSourceMainGroovyFolder = new File(outputSourceMainGroovy.getRawLocationURI());
         outputSourceMainGroovyFolder.mkdirs();
         outputSourceMainGroovy.refreshLocal(IResource.DEPTH_INFINITE, null);

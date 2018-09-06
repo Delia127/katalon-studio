@@ -7,12 +7,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.WordUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -334,15 +332,6 @@ public class KeywordNodeTooltip {
     }
 
     private void formatJavaDoc() {
-        text = "<ul class=\"blockListLast\">" +
-                "                            <li class=\"blockList\">" +
-                "                                <h4>@<a href='http://groovy.codehaus.org/api/groovy/transform/CompileStatic.html' title='CompileStatic'>CompileStatic</a>" +
-                "@com.kms.katalon.core.annotation.Keyword(keywordObject = StringConstants.KW_CATEGORIZE_REQUEST)" +
-                "static&nbsp;com.kms.katalon.core.testobject.ResponseObject <strong>sendRequestAndVerify</strong>(com.kms.katalon.core.testobject.RequestObject request, com.kms.katalon.core.model.FailureHandling flowControl)</h4>" +
-                "                                <p> Send a HTTP Request to web server and verify the response" +
-                "     <DL><DT><B>Returns:</B></DT><DD>@throws Exception</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>request</code> -  the object represents for a HTTP Request, user need to define it from Object Repository->New->Web Service Request, and get it by ObjectRepository.findRequestObject(\"requestObjectId\")</DD><DD>flowControl</DD></DL></p>" +
-                "                            </li>" +
-                "                        </ul>";
         text = text.replaceAll("<h4>", JAVADOC_HEADER)
                 .replaceAll("<DT><B>", JAVADOC_SECTION)
                 .replaceAll("(<DD>|</p>)\\s*", JAVADOC_SECTION_ITEM)
@@ -400,8 +389,6 @@ public class KeywordNodeTooltip {
         text = tipContent.toString();
         javaDocContent.setText(text);
         javaDocContent.setStyleRanges(styles.toArray(new StyleRange[] {}));
-        Point size = javaDocContent.computeSize(600, SWT.DEFAULT);
-        javaDocContent.setSize(size.x, size.y);
     }
 
     private String wrapSelectionItemLongLine(String line) {
