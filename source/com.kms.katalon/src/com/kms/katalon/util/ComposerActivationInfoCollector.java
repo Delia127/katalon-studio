@@ -76,8 +76,8 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         int result = new SignupDialog(null).open();
         switch (result) {
             case SignupDialog.OK:
-                SignupSurveyDialog dialog = new SignupSurveyDialog(null);
-                dialog.open();
+//                SignupSurveyDialog dialog = new SignupSurveyDialog(null);
+//                dialog.open();
                 return true;
             case SignupDialog.REQUEST_ACTIVATION_CODE:
                 return checkActivationDialog();
