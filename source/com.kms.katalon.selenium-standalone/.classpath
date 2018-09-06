@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="resources/lib/testng-6.11.jar"/>
-	<classpathentry exported="true" kind="lib" path="resources/lib/selenium-leg-rc-3.7.0.jar" sourcepath="C:/Users/thanhto/AppData/Local/Temp/decompiler/source/selenium-leg-rc-3.7.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/selenium-leg-rc-3.7.0.jar" sourcepath="C:/Users/thanhto/AppData/Local/Temp/decompiler/source/selenium-leg-rc-3.7.0-sources-1530591411917.jar"/>
 	<classpathentry exported="true" kind="lib" path="resources/lib/jna-4.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="resources/lib/jna-platform-4.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="resources/lib/selenium-server-standalone-3.7.1.jar"/>
