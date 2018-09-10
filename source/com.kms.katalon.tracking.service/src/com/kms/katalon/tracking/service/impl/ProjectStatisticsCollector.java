@@ -27,6 +27,7 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
@@ -95,7 +96,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         
         statistics.setRemoteWebDriverConfigured(isRemoteWebDriverConfigured());
         
-        statistics.setDefaultTestCaseView(getDefaultTestCaseView());
+        statistics.setWebLocatorConfig(getWebLocatorConfig());
         
         return statistics;
     }
@@ -150,7 +151,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
                         continue;
                     } else {
                         totalTestStepCount++;
-                    }                    
+                    }
                 }
             
             }
@@ -321,6 +322,11 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     
     private boolean isSlackIntegrated() {
         return SlackUtil.getInstance().isSlackEnabled();
+    }
+    
+    private String getWebLocatorConfig() throws IOException {
+        WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+        return store.getCapturedTestObjectSelectorMethod().toString();
     }
     
     private boolean isRemoteWebDriverConfigured() throws IOException {

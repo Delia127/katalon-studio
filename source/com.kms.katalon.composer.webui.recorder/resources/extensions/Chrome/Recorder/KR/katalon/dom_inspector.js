@@ -256,7 +256,7 @@ function spy_postData(url, object) {
     if (!object) {
         return;
     }
-    var data = 'element=' + encodeURIComponent(JSON.stringify(object));
+    var data = { keyword : 'element', obj : object, mode: 'INSPECT'  };
     if (detectChrome()) {
         chromePostData(url, data, function(response) {
             if (response) {

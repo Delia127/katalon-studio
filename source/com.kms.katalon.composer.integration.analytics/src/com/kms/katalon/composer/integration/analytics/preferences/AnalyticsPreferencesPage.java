@@ -246,7 +246,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     @Override
+
     public boolean performOk() {
+
 
         if (!isInitialized()) {
             return true;
@@ -403,6 +405,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         if (!isInitialized()) {
             return false;
         }
+
         boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection();
         return isAnalyticsIntegrated && !teams.isEmpty();
     }

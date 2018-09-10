@@ -50,14 +50,12 @@ import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
 import com.kms.katalon.composer.project.dialog.ProjectChoosingDialog;
 import com.kms.katalon.composer.project.handlers.NewProjectHandler;
 import com.kms.katalon.composer.project.handlers.OpenProjectHandler;
-import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class CloneRemoteProjectHandler {
@@ -69,10 +67,6 @@ public class CloneRemoteProjectHandler {
     private boolean shouldHandleProjectOpenAfterClone = false;
 
     private File destinationFolder = null;
-    
-    private ProjectEntity projectInfo;
-    
-    private SampleRemoteProject sample;
 
     @Inject
     EPartService partService;
@@ -92,10 +86,12 @@ public class CloneRemoteProjectHandler {
                     public void handleEvent(Event event) {
                         Object[] objects = getObjects(event);
 
-                        sample = (SampleRemoteProject) objects[0];
-                        projectInfo = (ProjectEntity) objects[1];
 
-                        File workdir = new File(projectInfo.getFolderLocation(), projectInfo.getName());
+                        SampleRemoteProject sample = (SampleRemoteProject) objects[0];
+                        String projectLocation = ((ProjectEntity) objects[1]).getLocation();
+
+
+                        File workdir = new File(projectLocation);
                         workdir.mkdirs();
 
                         Job job = new Job("Cloning remote project") {
@@ -194,11 +190,11 @@ public class CloneRemoteProjectHandler {
             }
         }
 
-        try {            
-            ProjectEntity project = ProjectController.getInstance().updateProjectInfo(projectFile, projectInfo);
+        try {
             shouldHandleProjectOpenAfterClone = true;
-            Trackings.trackCreatingSampleProject(sample.getName(), project.getUUID());
-            OpenProjectHandler.doOpenProject(null, project.getLocation(),
+
+            OpenProjectHandler.doOpenProject(null, projectFile.getAbsolutePath(),
+
                     UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),
                     PartServiceSingleton.getInstance().getPartService(),
                     ModelServiceSingleton.getInstance().getModelService(),

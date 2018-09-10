@@ -15,7 +15,7 @@ function getKatalonServerPort(callback) {
     chrome.storage.local.get(katalonServerPortStorage, function(result) {
         var port;
         if (!(katalonServerPortStorage in result)) {
-            port = port = (bowser.name == "Chrome") ? katalonServerPortForChrome : katalonServerPortForFirefox;
+            port = (bowser.name == "Chrome") ? (katalonServerPort ? katalonServerPort : katalonServerPortForChrome) : katalonServerPortForFirefox;
             setKatalonServerPort(port);
         } else {
             port = result[katalonServerPortStorage];
