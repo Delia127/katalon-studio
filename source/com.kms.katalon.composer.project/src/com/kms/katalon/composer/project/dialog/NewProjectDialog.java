@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
@@ -53,6 +54,7 @@ import com.kms.katalon.composer.project.sample.SampleProjectType;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.SelectorMethod;
@@ -137,17 +139,16 @@ public class NewProjectDialog extends TitleAreaDialog {
         txtProjectName = new Text(container, SWT.BORDER);
         txtProjectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         
-        Composite emptyComposite = new Composite(container, SWT.NONE);
-        emptyComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        emptyComposite.setLayout(new GridLayout(1, false));
+        Label lblProjectType = new Label(container, SWT.NONE);
+        lblProjectType.setText("Type");
         
         Composite projectTypeComposite = new Composite(container, SWT.NONE);
         projectTypeComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        projectTypeComposite.setLayout(new GridLayout(2, false));
+        projectTypeComposite.setLayout(new GridLayout(3, false));
 
         rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
-        GridData gdBlankProject = new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1);
-        rbWebServiceProjectType.setLayoutData(gdBlankProject);
+        GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
         rbWebServiceProjectType.setText(StringConstants.VIEW_OPTION_WEB_SERVICE_PROJECT);
         rbWebServiceProjectType.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -157,9 +158,8 @@ public class NewProjectDialog extends TitleAreaDialog {
         });
         
         rbGenericProjectType = new Button(projectTypeComposite, SWT.RADIO);
-        GridData gdSampleProject = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdSampleProject.horizontalIndent = 20;
-        rbGenericProjectType.setLayoutData(gdSampleProject);
+        GridData gdGenericProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        rbGenericProjectType.setLayoutData(gdGenericProjectType);
         rbGenericProjectType.setText(StringConstants.VIEW_OPTION_GENERIC_PROJECT);
         rbGenericProjectType.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -167,6 +167,23 @@ public class NewProjectDialog extends TitleAreaDialog {
                 populateGenericProjects();
             }
         });
+        
+        new HelpCompositeForDialog(projectTypeComposite, DocumentationMessageConstants.MANAGE_TEST_PROJECT) {
+            @Override
+            protected GridData createGridData() {
+                return new GridData(SWT.RIGHT, SWT.CENTER, true, false);
+            }
+            
+
+            @Override
+            protected GridLayout createLayout() {
+                GridLayout layout = new GridLayout();
+                layout.marginHeight = 0;
+                layout.marginBottom = 0;
+                layout.marginWidth = 0;
+                return layout;
+            }
+        };
         
         Label lblSampleProjects = new Label(container, SWT.NONE);
         lblSampleProjects.setText(StringConstants.VIEW_LBL_SAMPLE_PROJECT);
