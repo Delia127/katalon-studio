@@ -23,9 +23,9 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.integration.qtest.constant.ComposerIntegrationQtestMessageConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.helper.QTestActivationHelper;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
@@ -100,13 +100,11 @@ public class QTestActivationOfflineDialog extends AbstractDialog {
 
     @Override
     protected void registerControlModifyListeners() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     protected void setInput() {
-        // lblMessage.getParent().getParent().layout(true, true);
     }
 
     @Override
@@ -126,7 +124,7 @@ public class QTestActivationOfflineDialog extends AbstractDialog {
 
         lblMessage = new Label(messageCompsite, SWT.WRAP);
         lblMessage.setLayoutData(new GridData(GridData.FILL_BOTH));
-        lblMessage.setText(QTestMessageConstants.OFFLINE_ACTIVATION_HINT);
+        lblMessage.setText(ComposerIntegrationQtestMessageConstants.DIA_MSG_OFFLINE_ACTIVATION_HINT);
         lblMessage.setForeground(getShell().getDisplay().getSystemColor(SWT.COLOR_RED));
 
         Label lblRequestCode = new Label(body, SWT.NONE);
@@ -155,7 +153,7 @@ public class QTestActivationOfflineDialog extends AbstractDialog {
 
         Label lblNewLabelOne = new Label(body, SWT.NONE);
         lblNewLabelOne.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblNewLabelOne.setText(QTestMessageConstants.ACTIVATE_QTEST_CODE_LABEL);
+        lblNewLabelOne.setText(ComposerIntegrationQtestMessageConstants.DIA_LBL_OFFLINE_ACTIVATION_QTEST_CODE);
 
         txtActivationCode = new Text(body, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL);
         GridData gdActivationCode = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);

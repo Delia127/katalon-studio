@@ -27,10 +27,10 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.activation.dialog.ProxyConfigurationDialog;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.integration.qtest.constant.ComposerIntegrationQtestMessageConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.helper.QTestActivationHelper;
 
 public class QTestActivationDialog extends Dialog {
@@ -71,9 +71,11 @@ public class QTestActivationDialog extends Dialog {
 
     private void setInput() {
         if (!expiredActivation) {
-            setMessage(QTestMessageConstants.QTEST_ACTIVATION_PROMPT_ENTER_USERNAME_CODE, IMessageProvider.INFORMATION);
+            setMessage(ComposerIntegrationQtestMessageConstants.DIA_MSG_ENTER_USERNAME_CODE,
+                    IMessageProvider.INFORMATION);
         } else {
-            setMessage(QTestMessageConstants.REACTIVATION_EXPIRED_LICENSE_WARNING, IMessageProvider.WARNING);
+            setMessage(ComposerIntegrationQtestMessageConstants.DIA_WARN_EXPIRED_LICENSE,
+                    IMessageProvider.WARNING);
         }
 
         checkActivationStatus();
@@ -100,21 +102,20 @@ public class QTestActivationDialog extends Dialog {
         glContainer.horizontalSpacing = 15;
         glContainer.verticalSpacing = 10;
         container.setLayout(glContainer);
-        
+
         lblMessage = new Label(container, SWT.WRAP);
         lblMessage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        
 
         Label lblUsername = new Label(container, SWT.NONE);
         lblUsername.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-        lblUsername.setText(QTestMessageConstants.QTEST_USERNAME_LABEL);
+        lblUsername.setText(ComposerIntegrationQtestMessageConstants.DIA_LBL_QTEST_USERNAME);
 
         txtQTestUserName = new Text(container, SWT.BORDER);
         txtQTestUserName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblPassword = new Label(container, SWT.NONE);
         lblPassword.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblPassword.setText(QTestMessageConstants.QTEST_CODE_LABEL);
+        lblPassword.setText(ComposerIntegrationQtestMessageConstants.DIA_LBL_QTEST_CODE);
 
         txtActivationCode = new Text(container, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         GridData gdActivationCode = new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1);

@@ -21,6 +21,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.api.client.util.PemReader;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
@@ -64,10 +65,11 @@ public class QTestActivationHelper {
     public static boolean qTestOnlineActivate(String username, String activationCode, StringBuilder errorMessage) {
         try {
             JsonObject activationObject = new JsonObject();
-            activationObject.addProperty(QTestStringConstants.USERNAME, username);
-            activationObject.addProperty(QTestStringConstants.REQUEST_PROP_ACTIVATION_CODE, activationCode);
-            String result = ServerAPICommunicationUtil.post("/qtest-licenses/activate",
-                    activationObject.toString());
+            activationObject.addProperty(QTestStringConstants.USERNAME,
+                    StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(username)));
+            activationObject.addProperty(QTestStringConstants.REQUEST_PROP_ACTIVATION_CODE,
+                    StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(activationCode)));
+            String result = ServerAPICommunicationUtil.post("/qtest-licenses/activate", activationObject.toString());
 
             ResponseActivation responeOb = JsonUtil.fromJson(result, ResponseActivation.class);
 
@@ -92,26 +94,39 @@ public class QTestActivationHelper {
 
     public static ActivationStatus checkActivationStatus() {
         try {
-            String activationCode = getApplicationActivationCode();
-
-            if (StringUtils.isEmpty(activationCode)) {
-                return ActivationStatus.NOT_ACTIVATED;
-            }
-
-            RSAPublicKey publicKey = (RSAPublicKey) getPublicKey();
-            Algorithm algorithm = Algorithm.RSA256(publicKey, null);
-
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer(QTestStringConstants.KMS_SIGNED_THE_TOKEN_ISSUER)
-                    .build();
-            verifier.verify(activationCode);
-
-            return ActivationStatus.VALIDATED;
+            return getDecodedJwt() != null ? ActivationStatus.VALIDATED : ActivationStatus.NOT_ACTIVATED;
         } catch (TokenExpiredException tkExpiredException) {
             return ActivationStatus.EXPIRED;
         } catch (IOException | GeneralSecurityException e) {
             return ActivationStatus.NOT_ACTIVATED;
         }
+    }
+
+    private static DecodedJWT getDecodedJwt()
+            throws IOException, GeneralSecurityException{
+        String activationCode = getApplicationActivationCode();
+
+        if (StringUtils.isEmpty(activationCode)) {
+            return null;
+        }
+
+        RSAPublicKey publicKey = (RSAPublicKey) getPublicKey();
+        Algorithm algorithm = Algorithm.RSA256(publicKey, null);
+
+        JWTVerifier verifier = JWT.require(algorithm)
+                .withIssuer(QTestStringConstants.KMS_SIGNED_THE_TOKEN_ISSUER)
+                .build();
+        return verifier.verify(activationCode);
+    }
+
+    public static ActivationPayload getActivationPayload() throws IOException, GeneralSecurityException {
+        DecodedJWT jwt = getDecodedJwt();
+        if (jwt == null) {
+            return null;
+        }
+        ActivationPayload payload = new ActivationPayload();
+        payload.setExp(jwt.getExpiresAt());
+        return payload;
     }
 
     private static void getErrorMessage(StringBuilder errorMessage, String errorResponse) {
