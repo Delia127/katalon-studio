@@ -14,6 +14,7 @@ Export-Package: com.kms.katalon.core.annotation,
  com.kms.katalon.core.db,
  com.kms.katalon.core.driver;uses:="org.openqa.selenium",
  com.kms.katalon.core.driver.internal,
+ com.kms.katalon.core.event,
  com.kms.katalon.core.exception,
  com.kms.katalon.core.export,
  com.kms.katalon.core.helper,
@@ -62,6 +63,9 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
  org.apache.httpcomponents.httpmime,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ org.greenrobot.eventbus,
+ org.assertj.core,
+ org.junit
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

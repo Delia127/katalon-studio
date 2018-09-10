@@ -34,7 +34,7 @@ Require-Bundle: org.eclipse.jface,
  org.eclipse.osgi.services,
  org.eclipse.e4.core.di,
  com.kms.katalon.composer.resources,
- org.eclipse.e4.core.contexts
+ com.kms.katalon.tracking
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"

@@ -26,10 +26,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
@@ -97,7 +99,7 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
     public Composite createVerifyAndHighlightView(Composite parent, int layoutStyle) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(layoutStyle));
-        GridLayout gdVerifyView = new GridLayout(3, false);
+        GridLayout gdVerifyView = new GridLayout(4, false);
         gdVerifyView.marginWidth = 0;
         composite.setLayout(gdVerifyView);
 
@@ -120,6 +122,23 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         btnVerifyAndHighlight = new Button(composite, SWT.FLAT);
         btnVerifyAndHighlight.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         btnVerifyAndHighlight.setText(ObjectspyMessageConstants.DIA_LBL_VERIFY_AND_HIGHLIGHT);
+        
+
+        new HelpCompositeForDialog(composite, DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI) {
+     
+            @Override
+            protected GridData createGridData() {
+                return new GridData(SWT.LEFT, SWT.CENTER, false, false);
+            }
+            
+            @Override
+            protected GridLayout createLayout() {
+                GridLayout layout = new GridLayout();
+                layout.marginBottom = 0;
+                layout.marginWidth = 0;
+                return layout;
+            }
+        };
 
         registerControlModifyListeners();
 
@@ -210,7 +229,26 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
                     
                     //scroll to first element
                     org.openqa.selenium.WebElement firstElement = webElements.get(0);
-                    jsExecutor.executeScript("arguments[0].scrollIntoView(true);", firstElement);
+                    boolean isInViewPort = (Boolean)((JavascriptExecutor)webDriver).executeScript(
+                            "var elem = arguments[0],                 " +
+                            "  box = elem.getBoundingClientRect(),    " +
+                            "  cx = box.left + box.width / 2,         " +
+                            "  cy = box.top + box.height / 2,         " +
+                            "  e = document.elementFromPoint(cx, cy); " +
+                            "for (; e; e = e.parentElement) {         " +
+                            "  if (e === elem)                        " +
+                            "    return true;                         " +
+                            "}                                        " +
+                            "return false;                            "
+                            , firstElement);
+                    if (!isInViewPort) {
+                            jsExecutor.executeScript("arguments[0].scrollIntoView({" +
+                                                       " behavior: 'auto',         " + 
+                                                       " block: 'center',          " +
+                                                       " inline: 'center'          " +
+                                                       " });                       "
+                            , firstElement);
+                    }
                     
                     // highlight all elements
                     String highlightJS = getHighlightJS();

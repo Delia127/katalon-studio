@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -52,7 +53,7 @@ import com.kms.katalon.selenium.firefox.FirefoxWebExtension;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    private static final String FIREFOX_ADDON_UUID = "{932b2318-b453-4947-8d43-92ac9dcef9bf}";
+    private static final String FIREFOX_ADDON_UUID = "{fb8a3d9a-f885-4a21-baa7-dbb68c04f0c0}";
 
     private static final String HTTP = "http";
 
@@ -79,9 +80,10 @@ public class InspectSession implements Runnable {
     protected static final String IE_ABSOLUTE_PATH = "C:\\Program Files\\Internet Explorer\\iexplore.exe";
 
     protected static final String IE_32BIT_ABSOLUTE_PATH = "C:\\Program Files (x86)\\Internet Explorer\\iexplore.exe";
-
+    
     protected static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
-            + OBJECT_SPY_ADD_ON_NAME;
+            + OBJECT_SPY_ADD_ON_NAME + File.separator + "KR";
+    
 
     protected static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy.xpi";
@@ -106,6 +108,7 @@ public class InspectSession implements Runnable {
     private String startUrl;
 
     private boolean driverStarted = false;
+    
 
     public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
             ProjectEntity currentProject, Logger logger) {
@@ -189,18 +192,19 @@ public class InspectSession implements Runnable {
             }
             while (isRunFlag) {
                 try {
-                    Thread.sleep(5000);
-                    if (driver == null || ((RemoteWebDriver) driver).getSessionId() == null) {
+                    Thread.sleep(1000L);
+                    if (driver == null || driver.getTitle() == null) {
                         break;
                     }
                     driver.getWindowHandle();
+                } catch (NoSuchWindowException e) {
+                    break;
                 } catch (UnreachableBrowserException e) {
                     break;
                 } catch (WebDriverException e) {
                     if (e.getMessage().startsWith("chrome not reachable")) {
                         break;
                     }
-                    continue;
                 }
             }
         } catch (WebDriverException e) {
@@ -272,7 +276,8 @@ public class InspectSession implements Runnable {
         }
         generateVariableInitFileForChrome(chromeExtensionFolder);
         ChromeOptions options = new ChromeOptions();
-        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath());
+        //TODO - Thanh: investigate why getAbsolutePath() suddenly stops working
+        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         return capabilities;
@@ -305,7 +310,7 @@ public class InspectSession implements Runnable {
             File firefoxExtensionFolder = FileUtil.getExtensionBuildFolder();
             File firefoxAddonExtracted = new File(firefoxExtensionFolder, FIREFOX_ADDON_FOLDER_RELATIVE_PATH);
             if (firefoxAddonExtracted.exists()) {
-                return firefoxAddonExtracted;
+            	FileUtils.cleanDirectory(firefoxAddonExtracted);
             }
             File firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
             ZipUtil.extract(firefoxAddon, firefoxAddonExtracted);
@@ -342,7 +347,8 @@ public class InspectSession implements Runnable {
     }
 
     protected String getChromeExtensionPath() {
-        return CHROME_EXTENSION_RELATIVE_PATH;
+        //return CHROME_EXTENSION_RELATIVE_PATH;
+    	return CHROME_EXTENSION_RELATIVE_PATH;
     }
 
     protected String getFirefoxExtensionPath() {
@@ -356,4 +362,9 @@ public class InspectSession implements Runnable {
     public WebDriver getWebDriver() {
         return driver;
     }
+
+    public WebUIDriverType getWebUiDriverType() {
+        return webUiDriverType;
+    }
+
 }

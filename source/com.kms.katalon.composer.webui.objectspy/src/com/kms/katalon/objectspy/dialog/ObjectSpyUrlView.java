@@ -37,9 +37,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.greenrobot.eventbus.EventBus;
 import org.openqa.selenium.WebDriver;
 import org.osgi.framework.Bundle;
 
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
@@ -47,6 +50,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.objectspy.constants.ImageConstants;
@@ -66,6 +70,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
@@ -90,7 +95,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
 
     public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-utilities/ljdobmomdgdljniojadhoplhkpialdid"; //$NON-NLS-1$
 
-    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy"; //$NON-NLS-1$
+    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-automation-record"; //$NON-NLS-1$
 
     private Text txtStartUrl;
 
@@ -195,6 +200,8 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             startInspectSession(browser);
 
             invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
+//            sendEventForTracking();
+            Trackings.trackSpy("web");
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -213,6 +220,11 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
     private void startBrowser() {
         startObjectSpy(defaultBrowser, isInstant);
     }
+    
+    private void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.SPY, "web"));
+    }
 
     public void startServerWithPort(int port) throws Exception {
         closeInstantSession();
@@ -223,7 +235,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             server.stop();
         }
         try {
-            server = new HTMLElementCaptureServer(port, logger, elementCollector);
+            server = new HTMLElementCaptureServer(port, logger, elementCollector, AddonSocket.class);
             server.start();
         } catch (BindException e) {
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE,
@@ -307,6 +319,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
                 ImageConstants.IMG_16_ACTIVE_BROWSER);
         addActiveBrowserItem(activeBrowser, WebUIDriverType.CHROME_DRIVER);
+        addActiveBrowserItem(activeBrowser, WebUIDriverType.FIREFOX_DRIVER);
 
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             addNewBrowserItem(newBrowser, WebUIDriverType.IE_DRIVER);
@@ -493,6 +506,8 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         Win32Helper.switchFocusToBrowser(browser);
         currentInstantSocket.sendMessage(new StartInspectAddonMessage());
         invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
+//        sendEventForTracking();
+        Trackings.trackSpy("web");
     }
 
     protected void runInstantIE() throws Exception {

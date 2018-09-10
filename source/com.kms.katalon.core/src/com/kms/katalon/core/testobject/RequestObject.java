@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.kms.katalon.core.testobject.impl.HttpFileBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
@@ -40,6 +41,10 @@ public class RequestObject extends TestObject implements HttpMessage {
     private HttpBodyContent bodyContent;
 
     private String objectId;
+    
+    private String verificationScript;
+    
+    private Map<String, Object> variables;
 
     public RequestObject(String objectId) {
         this.objectId = objectId;
@@ -305,6 +310,22 @@ public class RequestObject extends TestObject implements HttpMessage {
      */
     public void setBodyContent(HttpBodyContent bodyContent) {
         this.bodyContent = bodyContent;
+    }
+
+    public String getVerificationScript() {
+        return verificationScript;
+    }
+
+    public void setVerificationScript(String verificationScript) {
+        this.verificationScript = verificationScript;
+    }
+
+    public Map<String, Object> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(Map<String, Object> variables) {
+        this.variables = variables;
     }
 
 }

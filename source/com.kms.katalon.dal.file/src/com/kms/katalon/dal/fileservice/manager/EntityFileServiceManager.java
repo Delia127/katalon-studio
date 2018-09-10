@@ -2,6 +2,8 @@ package com.kms.katalon.dal.fileservice.manager;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +32,7 @@ import com.kms.katalon.entity.util.Util;
 
 public class EntityFileServiceManager {
 
-    private static final String[] EXCLUDED_FOLDER = new String[] { ".svn", ".meta", ".DS_Store" };
+    private static final String[] EXCLUDED_FOLDER = new String[] { ".svn", ".meta", ".DS_Store", ".git" };
 
     public static final FileFilter fileFilter = new FileFilter() {
         List<String> list = Arrays.asList(EXCLUDED_FOLDER);
@@ -136,6 +138,8 @@ public class EntityFileServiceManager {
                         folderEntity.setFolderType(FolderType.KEYWORD);
                     } else if (FileServiceConstant.REPORT_ROOT_FOLDER_NAME.equals(fileName)) {
                         folderEntity.setFolderType(FolderType.REPORT);
+                    }  else if (FileServiceConstant.INCLUDE_SCRIPT_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.INCLUDE);
                     }
                     folderEntity.setProject(currentProject);
                 } else {
@@ -184,6 +188,27 @@ public class EntityFileServiceManager {
                         if (fileEntity != null && clazz.isInstance(fileEntity)) {
                             childrenEntities.add(clazz.cast(fileEntity));
                         }
+                    } catch (Exception e) {
+                        // ignore this file
+                    }
+                }
+            }
+            return childrenEntities;
+        }
+        return Collections.emptyList();
+    }
+    
+    
+    
+    
+    public static List<File> getFileChildren(FolderEntity parentFolder) throws Exception {
+        if (parentFolder != null) {
+            List<File> childrenEntities = new ArrayList<File>();
+            File localFolder = new File(parentFolder.getLocation());
+            if (localFolder.exists() && localFolder.isDirectory()) {
+                for (File localFile : localFolder.listFiles(fileFilter)) {
+                    try {
+                        childrenEntities.add(localFile);
                     } catch (Exception e) {
                         // ignore this file
                     }
@@ -292,7 +317,38 @@ public class EntityFileServiceManager {
         }
         return null;
     }
+    
+    public static FolderEntity copyKeywordFolder(FolderEntity folder, FolderEntity destinationFolder) throws Exception {
+        if (folder != null && destinationFolder != null) {
+            FolderEntity clonedFolder = folder.clone();
+            File fFolder = new File(destinationFolder.getLocation() + File.separator + folder.getName());
+            if (fFolder.exists()) {
+                // if folder existed, put a prefix "- Copy" into its name
+                String name = EntityService.getInstance().getAvailableName(destinationFolder.getLocation(),
+                        folder.getName() + Util.STRING_DUPLICATE_OF_PACKAGE_NAME, false);
+                clonedFolder.setName(name);
+            }
+            clonedFolder.setParentFolder(destinationFolder);
+            clonedFolder.setProject(destinationFolder.getProject());
+            clonedFolder.getIntegratedEntities().clear();
+            EntityService.getInstance().saveEntity(clonedFolder);
 
+            for (File entity : FolderFileServiceManager.getFileChildren(folder)) {
+                if (entity.isDirectory()) {
+                    FolderEntity tmpFolder = FolderFileServiceManager.getFolder(entity.getAbsolutePath());
+                    if (tmpFolder.getLocation() == null) {
+                        tmpFolder.setName(entity.getAbsolutePath());
+                    }
+                    copyKeywordFolder(tmpFolder, clonedFolder);
+                } else {
+                    Files.copy(Paths.get(entity.getPath()), Paths.get(clonedFolder.getLocation()+ File.separator + entity.getName()));
+                }
+            }
+            return clonedFolder;
+        }
+        return null;
+    }
+    
     public static <T extends FileEntity> T move(T entity, FolderEntity destinationFolder) throws Exception {
         if (entity != null && destinationFolder != null) {
             String oldName = entity.getName();

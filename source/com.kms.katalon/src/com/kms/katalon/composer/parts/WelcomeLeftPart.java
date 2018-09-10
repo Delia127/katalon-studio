@@ -114,12 +114,15 @@ public class WelcomeLeftPart extends Composite {
         addMenuSeparator(lowerComposite);
         addMenuItem(lowerComposite, ImageConstants.IMG_USER_GUIDE, StringConstants.PA_LBL_USER_GUIDE,
                 StringConstants.PA_LBL_USER_GUIDE_URL);
+        addMenuSeparator(lowerComposite);
+        addMenuItem(lowerComposite, ImageConstants.IMG_BUSSINESS_SUPPORT, StringConstants.PA_LBL_BUSINESS_SUPPORT,
+                StringConstants.URL_KATALON_SUPPORT_SERVICE);
     }
 
     private void addMenuItem(Composite parent, Image icon, String label, String url) {
         Composite holder = new Composite(parent, SWT.NONE);
         GridData gdHolder = new GridData(SWT.CENTER, SWT.FILL, true, false);
-        gdHolder.minimumWidth = 150;
+        gdHolder.minimumWidth = 170;
         holder.setLayoutData(gdHolder);
         holder.setBackground(BACKGROUND_COLOR);
         RowLayout rlMenuComposite = new RowLayout(SWT.VERTICAL);

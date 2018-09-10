@@ -5,6 +5,12 @@ import javax.inject.Inject;
 
 import org.codehaus.groovy.eclipse.refactoring.actions.FormatGroovyAction;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -22,7 +28,12 @@ import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenKeywordHandler {
 
@@ -64,12 +75,25 @@ public class OpenKeywordHandler {
                  if (editor != null) {
                      formatEditor(editor);
                  }
+                 if (isKeywordFile(iFile)) {
+                     Trackings.trackOpenObject("keyword");
+                 } else {
+                     Trackings.trackOpenObject("groovyScriptFile");
+                 }
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
                 MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                         StringConstants.HAND_ERROR_MSG_CANNOT_OPEN_KEYWORD_FILE);
             }
         }
+    }
+    
+    private boolean isKeywordFile(IFile scriptFile) throws Exception {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        FolderEntity keywordFolder = FolderController.getInstance().getKeywordRoot(project);
+        String keywordFolderPath = keywordFolder.getLocation();
+        String scriptFilePath = scriptFile.getLocation().toFile().getAbsolutePath();
+        return scriptFilePath.startsWith(keywordFolderPath);
     }
     
     private void formatEditor(ITextEditor editor) {

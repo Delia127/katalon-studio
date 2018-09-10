@@ -7,7 +7,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
-import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
+import com.kms.katalon.composer.parts.SavableCompositePart;
 
 /**
  * Handle close action when user hit Ctrl(Command) + W<br>
@@ -24,8 +24,8 @@ public class CloseHandler extends AbstractHandler {
 
     private MPart getCompositeParentPart(MPart part, EPartService partService) {
         for (MPart dirtyPart : partService.getParts()) {
-            if (dirtyPart.getObject() instanceof MultipleTabsCompositePart) {
-                MultipleTabsCompositePart compositePart = (MultipleTabsCompositePart) dirtyPart.getObject();
+            if (dirtyPart.getObject() instanceof SavableCompositePart) {
+                SavableCompositePart compositePart = (SavableCompositePart) dirtyPart.getObject();
                 List<MPart> childrenParts = compositePart.getChildParts();
                 if (childrenParts != null && compositePart.getChildParts().contains(part)) {
                     return dirtyPart;

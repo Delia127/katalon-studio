@@ -32,9 +32,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ACTIVE_BROWSER_PREFIX = ComposerWebuiRecorderMessageConstants.ACTIVE_BROWSER_PREFIX;
     public static final String MENU_ITEM_ACTIVE_BROWSERS = ComposerWebuiRecorderMessageConstants.MENU_ITEM_ACTIVE_BROWSERS;
     public static final String MENU_ITEM_NEW_BROWSERS = ComposerWebuiRecorderMessageConstants.MENU_ITEM_NEW_BROWSERS;
+    public static final String RECOMMENDED_BROWSER_POSTFIX = ComposerWebuiRecorderMessageConstants.RECOMMENDED_BROWSER_POSTFIX;
     public static final String HAND_ACTIVE_BROWSERS_DIA_TITLE = ComposerWebuiRecorderMessageConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE;
     public static final String HAND_ACTIVE_BROWSERS_DIA_MESSAGE = ComposerWebuiRecorderMessageConstants.HAND_ACTIVE_BROWSERS_DIA_MESSAGE;
     public static final String HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE = ComposerWebuiRecorderMessageConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE;
+    public static final String DIA_ITEM_MOVE_UP = ComposerWebuiRecorderMessageConstants.DIA_ITEM_MOVE_UP;
+    public static final String DIA_ITEM_MOVE_DOWN = ComposerWebuiRecorderMessageConstants.DIA_ITEM_MOVE_DOWN;
 
 	// RecordHandler
     public static final String HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS = ComposerWebuiRecorderMessageConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS;

@@ -12,6 +12,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ERROR_TITLE = ERROR;
 
     public static final String HAND_SAVE_DIA_MSG = MessageConstants.HAND_SAVE_DIA_MSG;
+    
+    public static final String HAND_SAVE_ALL_DIA_MSG = MessageConstants.HAND_SAVE_ALL_DIA_MSG;
 
     // GeneralPreferencePage
     public static final String PAGE_GRP_ON_NEXT_STARTING_APP = MessageConstants.PAGE_GRP_ON_NEXT_STARTING_APP;
@@ -52,12 +54,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_URL_GETTING_STARTED = MessageConstants.PA_URL_GETTING_STARTED;
 
     public static final String PA_LBL_USER_GUIDE = MessageConstants.PA_LBL_USER_GUIDE;
+    
+    public static final String PA_LBL_BUSINESS_SUPPORT = MessageConstants.PA_LBL_BUSINESS_SUPPORT;
 
     public static final String PA_TOOLTIP_ARTICLES = MessageConstants.PA_TOOLTIP_ARTICLES;
 
     public static final String PA_LBL_ARTICLES_DESCRIPTION = MessageConstants.PA_LBL_ARTICLES_DESCRIPTION;
 
     public static final String PA_LBL_USER_GUIDE_URL = MessageConstants.PA_URL_USER_GUIDE;
+    
+    public static final String URL_KATALON_SUPPORT_SERVICE = MessageConstants.URL_KATALON_SUPPORT_SERVICE;
 
     public static final String PA_LBL_RECENT_PROJECT = MessageConstants.PA_LBL_RECENT_PROJECT;
 
@@ -87,7 +93,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String BTN_CLEAR_TILE = MessageConstants.BTN_CLEAR_TILE;
 
-    public static final String BTN_ACTIVATE_TILE = MessageConstants.BTN_ACTIVATE_TILE;
+    public static final String BTN_ACTIVATE_TITLE = MessageConstants.BTN_ACTIVATE_TITLE;
 
     public static final String WAITTING_MESSAGE = MessageConstants.WAITTING_MESSAGE;
 
@@ -112,4 +118,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String SEND_ACTIVATION_INFO_FAILED = MessageConstants.SEND_ACTIVATION_INFO_FAILED;
 
     public static final String NETWORK_ERROR = MessageConstants.NETWORK_ERROR;
+    
+    public static final String MSG_FORUM_SEARCH = MessageConstants.MSG_FORUM_SEARCH;
 }

@@ -88,6 +88,9 @@ public class RunConfiguration {
 
     public static final String EXECUTION_PROFILE_PROPERTY = "executionProfile";
 
+    // This property is available for record - playback mode only. 
+    public static final String RECORD_CAPTURED_OBJECTS_FILE = "recordCapturedObjectsCache";
+
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
@@ -505,5 +508,9 @@ public class RunConfiguration {
                         JsonUtil.toJson(getReportProperties()
                                 .getOrDefault(StringConstants.CONF_PROPERTY_VIDEO_RECORDER_OPTION, StringUtils.EMPTY)),
                         VideoRecorderSetting.class);
+    }
+    
+    public static String getCapturedObjectsCacheFile() {
+        return getStringProperty(RECORD_CAPTURED_OBJECTS_FILE);
     }
 }

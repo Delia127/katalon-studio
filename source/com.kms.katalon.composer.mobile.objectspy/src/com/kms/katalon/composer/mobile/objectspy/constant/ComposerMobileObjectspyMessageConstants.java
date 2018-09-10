@@ -90,6 +90,12 @@ public class ComposerMobileObjectspyMessageConstants extends NLS {
     public static String DIA_TITLE_FOLDER_BROWSER;
 
     public static String ERR_MSG_CANNOT_COLLECT_APPS;
+    
+    public static String MSG_NO_DEVICES;
+    
+    public static String MSG_WRAPPED_NO_DEVICES_TROUBLESHOOTING_GUIDE;
+    
+    public static String NO_DEVICES_TROUBLESHOOTING_GUIDE_LINK;
 
     static {
         // initialize resource bundle

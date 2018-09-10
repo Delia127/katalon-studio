@@ -1,24 +1,41 @@
 package com.kms.katalon.composer.parts;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.common.CommandException;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataProvider;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -27,15 +44,20 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.project.handlers.NewSampleProjectHandler;
-import com.kms.katalon.composer.project.menu.RecentProjectParameterizedCommandBuilder;
+import com.kms.katalon.composer.project.dialog.NewProjectDialog;
+import com.kms.katalon.composer.project.handlers.NewSampleLocalProjectHandler;
+import com.kms.katalon.composer.project.menu.ProjectParameterizedCommandBuilder;
+import com.kms.katalon.composer.project.sample.SampleRemoteProject;
+import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
@@ -46,11 +68,16 @@ import com.kms.katalon.entity.project.ProjectEntity;
 
 public class WelcomeRightPart extends Composite {
 
-    private static final Color BACKGROUND_COLOR = ColorUtil.getCompositeBackgroundColor();
+//    private static final Color BACKGROUND_COLOR = ColorUtil.getCompositeBackgroundColor();
+    private static final Color BACKGROUND_COLOR = ColorUtil.getColor("#FAFAFA");
 
     private static final Color BLUE_COLOR = ColorUtil.getColor("#00A9FF");
 
     private static final Color TEXT_COLOR = ColorUtil.getColor("#444444");
+    
+    private static final Color STEP_DESCRIPTION_COLOR = ColorUtil.getColor("#212121");
+    
+    private static final Color SEPARATOR_COLOR = ColorUtil.getColor("#DCE1E3");
 
     private static final String KEY_ID = "ID";
 
@@ -84,6 +111,8 @@ public class WelcomeRightPart extends Composite {
 
     private static final int TAB_RECENTS_ID = 3;
 
+    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+
     private StackLayout stackLayout;
 
     private Composite tabComposite;
@@ -99,6 +128,16 @@ public class WelcomeRightPart extends Composite {
     private Composite recentsContent;
 
     private Composite recentsProjectHolder;
+    
+    private Composite testingTypeTabGroup;
+    
+//    private Composite testingTypeContentHolder;
+    
+    private Composite contentHolder;
+    
+    private StackLayout testingTypeStackLayout;
+    
+    private CLabel selectedTestingTypeTab;
 
     private CLabel tabGettingStarted;
 
@@ -107,6 +146,24 @@ public class WelcomeRightPart extends Composite {
     private CLabel tabRecents;
 
     private CommandCaller commandCaller = new CommandCaller();
+
+    private Thread thread;
+
+    private CLabel tabWebUi;
+
+    private CLabel tabMobile;
+
+    private CLabel tabApi;
+
+    private CLabel tabScripting;
+
+    private Composite webUiTabContent;
+
+    private Composite mobileTabContent;
+
+    private Composite apiTabContent;
+
+    private Composite scriptingTabContent;
 
     private static final SelectionAdapter linkSelectionAdapter = new SelectionAdapter() {
 
@@ -270,44 +327,357 @@ public class WelcomeRightPart extends Composite {
 
     private void createGettingStatedTabContent() {
         gettingStartedContent = createContentComposite(tabContentCompositeStack);
+        ((GridLayout) gettingStartedContent.getLayout()).marginHeight = 0;
+        
+        createTestingTypeTabHeader();
+        
+        createTabContentForTestingTypes();
+        
+        setExtraDataToTestingTypeTabs();
+        
+        registerListenersForTestingTypeTabs();
+        
+        handleSelectingTestingTypeTab(tabWebUi);
+    }
+    
+    private void createTestingTypeTabHeader() {
+        Composite wrapper = new Composite(gettingStartedContent, SWT.NONE);
+        GridLayout glWrapper = new GridLayout(1, false);
+        glWrapper.marginTop = 2;
+        glWrapper.marginBottom = 2;
+        wrapper.setLayout(glWrapper);
+        wrapper.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        
+        testingTypeTabGroup = new Composite(wrapper, SWT.NONE);
+        GridLayout glTabGroup = new GridLayout();
+        glTabGroup.marginHeight = 0;
+        testingTypeTabGroup.setLayout(glTabGroup);
+        testingTypeTabGroup.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, false));
+        
+        testingTypeTabGroup.addPaintListener(new PaintListener() {
+            @Override
+            public void paintControl(PaintEvent e) {
+                GC gc = e.gc;                
+                Point size = testingTypeTabGroup.getSize();
+                gc.setForeground(SEPARATOR_COLOR);
+                gc.setLineWidth(3);
+                gc.drawLine(0, size.y, size.x, size.y);
+            }            
+        });
+        
+        tabWebUi = createTestingTypeTab(MessageConstants.TAB_LBL_WEB_UI);
+        tabApi = createTestingTypeTab(MessageConstants.TAB_LBL_API);
+        tabMobile = createTestingTypeTab(MessageConstants.TAB_LBL_MOBILE);
+        tabScripting = createTestingTypeTab(MessageConstants.TAB_LBL_SCRIPTING);
+    }
+    
+    private CLabel createTestingTypeTab(String text) {
+        ((GridLayout) testingTypeTabGroup.getLayout()).numColumns++;
+        CLabel tabButton = new CLabel(testingTypeTabGroup, SWT.NONE);
+        tabButton.setText(text);
+        tabButton.setLeftMargin(15);
+        tabButton.setRightMargin(15);
+        tabButton.setBottomMargin(8);
+        tabButton.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
+        ControlUtils.setFontSize(tabButton, FONT_SIZE_SMALL);
+        
+        return tabButton;
+    }
+    
+    private void createTabContentForTestingTypes() {
+        testingTypeStackLayout = new StackLayout();
+        
+        Composite contentHolder = new Composite(gettingStartedContent, SWT.NONE);
+        contentHolder.setLayout(testingTypeStackLayout);
+        contentHolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        webUiTabContent = createWebUiTabContent(contentHolder);
+        mobileTabContent = createMobileTabContent(contentHolder);
+        apiTabContent = createApiTabContent(contentHolder);
+        scriptingTabContent = createScriptingTabContent(contentHolder);
+    }
+    
+    private void setExtraDataToTestingTypeTabs() {
+        tabWebUi.setData(KEY_CONTENT, webUiTabContent);
+        tabMobile.setData(KEY_CONTENT, mobileTabContent);        
+        tabApi.setData(KEY_CONTENT, apiTabContent);        
+        tabScripting.setData(KEY_CONTENT, scriptingTabContent);;
+    }
+    
+    private void registerListenersForTestingTypeTabs() {
+        registerListenersForTestingTypeTab(tabWebUi);
+        registerListenersForTestingTypeTab(tabMobile);
+        registerListenersForTestingTypeTab(tabApi);
+        registerListenersForTestingTypeTab(tabScripting);
+    }
 
-        Link introText = new Link(gettingStartedContent, SWT.NONE);
-        introText.setText(StringConstants.PA_URL_GETTING_STARTED);
+    private void registerListenersForTestingTypeTab(CLabel tab) {
+        tab.addListener(SWT.MouseDown, e -> {
+            handleSelectingTestingTypeTab(tab);
+        });
+
+        tab.addPaintListener(new PaintListener() {
+            @Override
+            public void paintControl(PaintEvent e) {
+                GC gc = e.gc;
+                if (tab == selectedTestingTypeTab) {
+                    Point size = tab.getSize();
+                    gc.setForeground(BLUE_COLOR);
+                    gc.setLineWidth(3);
+                    gc.drawLine(0, size.y, size.x, size.y);
+                } else {
+                    Point size = tab.getSize();
+                    gc.setForeground(SEPARATOR_COLOR);
+                    gc.setLineWidth(3);
+                    gc.drawLine(0, size.y, size.x, size.y);
+                }
+            }
+        });
+    }   
+    
+    private void handleSelectingTestingTypeTab(CLabel tab) {
+        selectedTestingTypeTab = tab;
+        
+        for (Control testingTypeTab : testingTypeTabGroup.getChildren()) {
+            testingTypeTab.setForeground(TEXT_COLOR);
+            ControlUtils.setFontStyle(testingTypeTab, SWT.NORMAL, -1);
+            testingTypeTab.redraw();
+        }
+        
+        tab.setForeground(BLUE_COLOR);
+        ControlUtils.setFontToBeBold(tab);
+        
+        testingTypeStackLayout.topControl = (Composite) tab.getData(KEY_CONTENT);
+        gettingStartedContent.layout(true, true);
+        tab.layout();
+    }
+    
+    private Composite createWebUiTabContent(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(1, false));
+        content.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+
+        createIntroLink(content, StringConstants.PA_URL_GETTING_STARTED);
+        
+        Composite main = new Composite(content, SWT.NONE);
+        main.setLayout(new GridLayout(1, false));
+        main.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_1, MessageConstants.URL_COMMON_STEP_RECORD,
+                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RECORD);
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_2, MessageConstants.URL_COMMON_STEP_RUN,
+                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RUN);
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_3, MessageConstants.URL_COMMON_STEP_VIEW_LOGGER,
+                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_LOG_VIEWER);
+
+        return content;
+    }
+    
+    private Composite createMobileTabContent(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(1, false));
+        content.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+
+        createIntroLink(content, StringConstants.PA_URL_GETTING_STARTED);
+        
+        Composite main = new Composite(content, SWT.NONE);
+        main.setLayout(new GridLayout(1, false));
+        main.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_1, MessageConstants.URL_MOBILE_RECORD,
+                ImageConstants.IMG_SCREEN_SHOT_MOBILE_RECORD);
+        
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            addGettingStartedStep(main, ImageConstants.IMG_STEP_2,
+                    MessageConstants.URL_MOBILE_CONFIG_AND_RECORD_STEP_MAC,
+                    ImageConstants.IMG_SCREEN_SHOT_MOBILE_CONFIG_AND_RECORD_STEP);
+        } else {
+            addGettingStartedStep(main, ImageConstants.IMG_STEP_2,
+                    MessageConstants.URL_MOBILE_CONFIG_AND_RECORD_STEP_WINDOWS,
+                    ImageConstants.IMG_SCREEN_SHOT_MOBILE_CONFIG_AND_RECORD_STEP);
+        }
+        
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_3, MessageConstants.URL_COMMON_STEP_RUN,
+                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RUN);
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_4, MessageConstants.URL_COMMON_STEP_VIEW_LOGGER,
+                ImageConstants.IMG_SCREEN_SHOT_MOBILE_LOG_VIEWER);
+
+        return content;
+    }
+    
+    private Composite createApiTabContent(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout());
+        content.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, true));
+
+        createIntroLink(content, StringConstants.PA_URL_GETTING_STARTED);
+
+        Composite main = new Composite(content, SWT.NONE);
+        main.setLayout(new GridLayout(2, false));
+        main.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        Composite contentLeft = new Composite(main, SWT.NONE);
+        contentLeft.setLayout(new GridLayout());
+        contentLeft.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
+        
+        addGettingStartedStep(contentLeft, ImageConstants.IMG_STEP_1, MessageConstants.URL_CREATE_WEB_SERVICE_REQUEST,
+                ImageConstants.IMG_SCREEN_SHOT_CREATE_WEB_SERVICE_REQUEST);
+        addGettingStartedStep(contentLeft, ImageConstants.IMG_STEP_2, MessageConstants.URL_TEST_WEB_SERVICE_REQUEST,
+                ImageConstants.IMG_SCREEN_SHOT_TEST_WEB_SERVICE_REQUEST);
+        
+        Composite contentRight = new Composite(main, SWT.NONE);
+        contentRight.setLayout(new GridLayout());
+        contentRight.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
+        
+        addGettingStartedStep(contentRight, ImageConstants.IMG_STEP_3, MessageConstants.URL_ADD_WEB_SERVICE_KEYWORD,
+                ImageConstants.IMG_SCREEN_SHOT_ADD_WEB_SERVICE_KEYWORD);
+        addGettingStartedStep(contentRight, ImageConstants.IMG_STEP_4, MessageConstants.URL_API_EXECUTE_TEST_CASE,
+                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RUN);
+        addGettingStartedStep(contentRight, ImageConstants.IMG_STEP_5, MessageConstants.URL_COMMON_STEP_VIEW_LOGGER,
+                ImageConstants.IMG_SCREEN_SHOT_API_LOG_VIEWER);
+
+        return content;
+    }
+    
+    private Composite createScriptingTabContent(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(1, false));
+        content.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+
+        createIntroLink(content, StringConstants.PA_URL_GETTING_STARTED);
+        
+        Composite main = new Composite(content, SWT.NONE);
+        main.setLayout(new GridLayout(1, false));
+        main.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+
+        addGettingStartedStep(main, ImageConstants.IMG_SCRIPT_BULLET, MessageConstants.URL_SCRIPT_NEW_TEST_CASE,
+                ImageConstants.IMG_SCREEN_SHOT_SCRIPT_NEW_TEST_CASE);
+        addGettingStartedStep(main, ImageConstants.IMG_SCRIPT_BULLET, MessageConstants.URL_ADD_OR_IMPORT_KEYWORDS,
+                ImageConstants.IMG_SCREEN_SHOT_ADD_OR_IMPORT_KEYWORDS);
+        addGettingStartedStep(main, ImageConstants.IMG_SCRIPT_BULLET, MessageConstants.URL_CREATE_TEST_LISTENER,
+                ImageConstants.IMG_SCREEN_SHOT_CREATE_TEST_LISTENER);
+        addGettingStartedStep(main, ImageConstants.IMG_SCRIPT_BULLET, MessageConstants.URL_BUILD_CMD,
+                ImageConstants.IMG_SCREEN_SHOT_BUILD_CMD);
+
+        return content;
+    }
+    
+    private void createIntroLink(Composite parent, String link) { 
+        Link introText = new Link(parent, SWT.NONE);
+        introText.setText(link);
         introText.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
         introText.setForeground(TEXT_COLOR);
         introText.setLinkForeground(TEXT_COLOR);
-        ControlUtils.setFontStyle(introText, SWT.ITALIC, FONT_SIZE_MEDIUM);
+        ControlUtils.setFontStyle(introText, SWT.ITALIC, FONT_SIZE_SMALL);
         introText.addSelectionListener(linkSelectionAdapter);
-
-        Composite holder = new Composite(gettingStartedContent, SWT.NONE);
-        holder.setLayout(new GridLayout());
-        holder.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
-
-        addGettingStartedStep(holder, ImageConstants.IMG_STEP_1, MessageConstants.URL_COMMON_STEP_RECORD,
-                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RECORD);
-        addGettingStartedStep(holder, ImageConstants.IMG_STEP_2, MessageConstants.URL_COMMON_STEP_RUN,
-                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RUN);
-        addGettingStartedStep(holder, ImageConstants.IMG_STEP_3, MessageConstants.URL_COMMON_STEP_VIEW_LOGGER,
-                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_LOG_VIEWER);
     }
-
+    
     private void createSamplesTabContent() {
         samplesContent = createContentComposite(tabContentCompositeStack);
 
         Composite holder = new Composite(samplesContent, SWT.NONE);
-        GridLayout glHolder = new GridLayout(2, true);
+        GridLayout glHolder = new GridLayout(3, true);
         glHolder.horizontalSpacing = 30;
         glHolder.verticalSpacing = 30;
         holder.setLayout(glHolder);
-        holder.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+        holder.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
 
+        thread = new Thread(() -> {
+            SampleRemoteProjectProvider sampleRemoteProjectProvider = new SampleRemoteProjectProvider();
+            List<SampleRemoteProject> sampleProjects = sampleRemoteProjectProvider.getSampleProjects();
+
+            List<Composite> composites = new ArrayList<>();
+            UISynchronizeService.syncExec(() -> {
+                samplesContent.setRedraw(false);
+                if (sampleProjects.size() <= 0) {
+                    addDefaultSampleProjects(holder);
+                }
+                Composite latestComposite = null;
+                for (SampleRemoteProject sample : sampleProjects) {
+                    latestComposite = addProjectBlock(holder, getDefaultImage(sample),
+                            ImageConstants.IMG_GITHUB_LOGO, sample.getName(), sample.getName(), new MouseAdapter() {
+
+                                @Override
+                                public void mouseUp(MouseEvent e) {
+                                    NewProjectDialog dialog = new NewProjectDialog(getShell(),
+                                            sample);
+                                    dialog.open();
+                                }
+                            });
+                    composites.add(latestComposite);
+                }
+
+                addProjectBlock(holder, ImageConstants.IMG_SAMPLE_MORE, MessageConstants.LBL_MORE_PROJECT,
+                        MessageConstants.LBL_MORE_PROJECT_TOOLTIP, new MouseAdapter() {
+
+                            @Override
+                            public void mouseUp(MouseEvent e) {
+                                Program.launch(MessageConstants.LBL_MORE_PROJECT_URL);
+                            }
+                        });
+
+                samplesContent.layout(true, true);
+                samplesContent.setRedraw(true);
+            });
+
+            sampleProjects.parallelStream().forEach(sample -> {
+                Map<Integer, File> imageFiles = sampleRemoteProjectProvider.getThumbnailFiles(sample);
+
+                int index = sampleProjects.indexOf(sample);
+                Composite composite = composites.get(index);
+                UISynchronizeService.asyncExec(() -> {
+                    if (isDisposed()) {
+                        return;
+                    }
+                    Label lblIcon = (Label) composite.getData("icon");
+                    if (imageFiles != null && imageFiles.size() > 0) {
+                        composite.setRedraw(false);
+                        lblIcon.setImage(createImage(getDisplay(), imageFiles));
+                        composite.setRedraw(true);
+
+                        lblIcon.addDisposeListener(new DisposeListener() {
+                            @Override
+                            public void widgetDisposed(DisposeEvent e) {
+                                imageFiles.entrySet().forEach(entry -> FileUtils.deleteQuietly(entry.getValue()));
+                            }
+                        });
+                    }
+                });
+            });
+        });
+        thread.start();
+
+        this.addDisposeListener(new DisposeListener() {
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                if (thread != null && !thread.isInterrupted()) {
+                    thread.interrupt();
+                }
+            }
+        });
+    }
+
+    private Image getDefaultImage(SampleRemoteProject sampleRemoteProject) {
+        switch (sampleRemoteProject.getType()) {
+            case MOBILE:
+                return ImageConstants.IMG_SAMPLE_MOBILE_PROJECT;
+            case WEBUI:
+                return ImageConstants.IMG_SAMPLE_WEB_UI_PROJECT;
+            case WS:
+                return ImageConstants.IMG_SAMPLE_WEB_SERVICE_PROJECT;
+            default:
+                return ImageConstants.IMG_SAMPLE_REMOTE;
+        }
+    }
+
+    private void addDefaultSampleProjects(Composite holder) {
         addProjectBlock(holder, ImageConstants.IMG_SAMPLE_WEB_UI_PROJECT, MessageConstants.PA_LBL_SAMPLE_WEB_UI_PROJECT,
                 MessageConstants.PA_TOOLTIP_SAMPLE_WEB_UI_PROJECT, new MouseAdapter() {
 
                     @Override
                     public void mouseUp(MouseEvent e) {
                         try {
-                            NewSampleProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
+                            NewSampleLocalProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
                                     SampleProjectProvider.SAMPLE_WEB_UI,
                                     EventBrokerSingleton.getInstance().getEventBroker());
                         } catch (Exception ex) {
@@ -322,7 +692,7 @@ public class WelcomeRightPart extends Composite {
                     @Override
                     public void mouseUp(MouseEvent e) {
                         try {
-                            NewSampleProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
+                            NewSampleLocalProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
                                     SampleProjectProvider.SAMPLE_WEB_SERVICE,
                                     EventBrokerSingleton.getInstance().getEventBroker());
                         } catch (Exception ex) {
@@ -336,7 +706,7 @@ public class WelcomeRightPart extends Composite {
                     @Override
                     public void mouseUp(MouseEvent e) {
                         try {
-                            NewSampleProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
+                            NewSampleLocalProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
                                     SampleProjectProvider.SAMPLE_MOBILE,
                                     EventBrokerSingleton.getInstance().getEventBroker());
                         } catch (Exception ex) {
@@ -344,14 +714,26 @@ public class WelcomeRightPart extends Composite {
                         }
                     }
                 });
-        addProjectBlock(holder, ImageConstants.IMG_SAMPLE_MORE, MessageConstants.LBL_MORE_PROJECT,
-                MessageConstants.LBL_MORE_PROJECT_TOOLTIP, new MouseAdapter() {
+    }
 
-                    @Override
-                    public void mouseUp(MouseEvent e) {
-                        Program.launch(MessageConstants.LBL_MORE_PROJECT_URL);
+    public Image createImage(Display display, Map<Integer, File> allImageFiles) {
+        Map<Integer, Image> allImages = allImageFiles.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> {
+                    try {
+                        return new Image(display, new FileInputStream(e.getValue()));
+                    } catch (IOException ex) {
+                        return ImageConstants.IMG_SAMPLE_REMOTE;
                     }
-                });
+                }));
+        ImageDataProvider dateProvider = new ImageDataProvider() {
+
+            @Override
+            public ImageData getImageData(int zoom) {
+                return allImages.get(zoom).getImageData();
+            }
+        };
+        return new Image(display, dateProvider);
     }
 
     private void createRecentsTabContent() {
@@ -362,7 +744,7 @@ public class WelcomeRightPart extends Composite {
         glHolder.horizontalSpacing = 30;
         glHolder.verticalSpacing = 30;
         recentsProjectHolder.setLayout(glHolder);
-        recentsProjectHolder.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+        recentsProjectHolder.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
 
         populateRecentProjects();
     }
@@ -393,7 +775,7 @@ public class WelcomeRightPart extends Composite {
             gl.numColumns = recentProjects.size();
         }
 
-        final RecentProjectParameterizedCommandBuilder commandBuilder = new RecentProjectParameterizedCommandBuilder();
+        final ProjectParameterizedCommandBuilder commandBuilder = new ProjectParameterizedCommandBuilder();
         for (ProjectEntity project : recentProjects) {
             addProjectBlock(recentsProjectHolder, ImageConstants.IMG_RECENT_PROJECT_FILE,
                     StringUtils.abbreviate(project.getName(), 36),
@@ -419,9 +801,9 @@ public class WelcomeRightPart extends Composite {
         GridLayout gl = new GridLayout(2, false);
         gl.marginHeight = 0;
         gl.marginWidth = 0;
-        gl.marginTop = 30;
+        gl.marginTop = 25;
         c.setLayout(gl);
-        c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        c.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         CLabel stepNumber = new CLabel(c, SWT.NONE);
         stepNumber.setImage(stepNumberImage);
@@ -429,50 +811,85 @@ public class WelcomeRightPart extends Composite {
 
         Link stepText = new Link(c, SWT.NONE);
         stepText.setText(text);
-        stepText.setForeground(TEXT_COLOR);
+        stepText.setForeground(STEP_DESCRIPTION_COLOR);
         stepText.setLinkForeground(BLUE_COLOR);
         stepText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-        ControlUtils.setFontStyle(stepText, SWT.NORMAL, FONT_SIZE_LARGE);
+        ControlUtils.setFontStyle(stepText, SWT.NORMAL, 12);
+//        ControlUtils.setFontToBeBold(stepText);
         stepText.addSelectionListener(linkSelectionAdapter);
 
         CLabel stepDetails = new CLabel(parent, SWT.NONE);
         stepDetails.setImage(stepDetailsImage);
-        stepDetails.setLeftMargin(45);
+        stepDetails.setLeftMargin(40);
         stepDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     }
 
-    private void addProjectBlock(Composite parent, Image icon, String label, String tooltip, MouseAdapter action) {
+    private Composite addProjectBlock(Composite parent, Image icon, String label, String tooltip, MouseAdapter action) {
+        return addProjectBlock(parent, icon, null, label, tooltip, action);
+    }
+
+    private Composite addProjectBlock(Composite parent, Image icon, Image subIcon, String label, String tooltip,
+            MouseAdapter action) {
         if (parent == null || parent.isDisposed()) {
-            return;
+            return null;
         }
         Composite c = new Composite(parent, SWT.BORDER);
         GridLayout gl = new GridLayout();
-        gl.marginHeight = 20;
-        gl.marginWidth = 30;
         c.setLayout(gl);
-        GridData ld = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        GridData ld = new GridData(SWT.FILL, SWT.TOP, true, true);
         ld.widthHint = 210;
-        ld.heightHint = 180;
+        ld.heightHint = 190;
         c.setLayoutData(ld);
         c.setCursor(CURSOR_HAND);
         c.addMouseListener(action);
         c.setToolTipText(tooltip);
 
-        Label lblIcon = new Label(c, SWT.NONE);
+        Composite imageComposite = new Composite(c, SWT.NONE);
+        GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        layoutData.heightHint = 120;
+        imageComposite.setLayoutData(layoutData);
+        imageComposite.setLayout(new GridLayout());
+        imageComposite.addMouseListener(action);
+
+        if (subIcon != null) {
+            Label lblSubIcon = new Label(imageComposite, SWT.NONE);
+            lblSubIcon.setAlignment(SWT.RIGHT);
+            lblSubIcon.setImage(subIcon);
+            lblSubIcon.setToolTipText(tooltip);
+            lblSubIcon.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false));
+            lblSubIcon.addMouseListener(action);
+        }
+
+        Label lblIcon = new Label(imageComposite, SWT.NONE);
         lblIcon.setAlignment(SWT.CENTER);
         lblIcon.setImage(icon);
         lblIcon.setToolTipText(tooltip);
-        lblIcon.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+        lblIcon.setLayoutData(new GridData(SWT.CENTER, SWT.BOTTOM, true, true));
         lblIcon.addMouseListener(action);
+        c.setData("icon", lblIcon);
 
-        Label lblText = new Label(c, SWT.WRAP);
-        lblText.setAlignment(SWT.CENTER);
+        Composite textComposite = new Composite(c, SWT.NONE);
+        GridData gdTextComposite = new GridData(SWT.FILL, SWT.BOTTOM, true, true);
+        gdTextComposite.heightHint = 60;
+        textComposite.setLayoutData(gdTextComposite);
+        textComposite.addMouseListener(action);
+
+        GridLayout glTextComposite = new GridLayout();
+        glTextComposite.marginWidth = 30;
+        glTextComposite.marginBottom = 5;
+        textComposite.setLayout(glTextComposite);
+
+        Text lblText = new Text(textComposite, SWT.WRAP | SWT.CENTER);
         lblText.setText(label);
         lblText.setToolTipText(tooltip);
         lblText.setForeground(TEXT_COLOR);
-        lblText.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, true));
         ControlUtils.setFontStyle(lblText, SWT.NORMAL, FONT_SIZE_MEDIUM);
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gridData.heightHint = 2 * lblText.getLineHeight();
+        lblText.setLayoutData(gridData);
         lblText.addMouseListener(action);
+        lblText.getLineCount();
+        return c;
     }
 
     private void clearRecentProjectBlocks() {

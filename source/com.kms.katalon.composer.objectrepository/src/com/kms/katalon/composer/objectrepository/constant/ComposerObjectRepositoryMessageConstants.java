@@ -64,6 +64,8 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
     public static String VIEW_LBL_SETTINGS;
 
     public static String VIEW_LBL_OBJ_PROPERTIES;
+    
+    public static String VIEW_LBL_OBJ_XPATHS;
 
     public static String VIEW_TITLE_TEST_OBJ_PROPERTIES;
 

@@ -79,6 +79,10 @@ public class GlobalMessageConstants extends NLS {
 
     public static String FOLDER;
 
+    public static String GIT;
+
+    public static String JAR;
+
     public static String PACKAGE;
 
     public static String DEFAULT_PACKAGE_NAME;
@@ -173,7 +177,13 @@ public class GlobalMessageConstants extends NLS {
 
     public static String ROOT_FOLDER_NAME_TEST_LISTENER;
 
+    public static String ROOT_FOLDER_NAME_FEATURES;
+    
+    public static String ROOT_FOLDER_NAME_INCLUDE;
+
     public static String FILE_NAME_GLOBAL_VARIABLE;
+
+    public static String INCLUDE_SCRIPTS_FOLDER;
 
     public static String NULL;
 
@@ -216,6 +226,8 @@ public class GlobalMessageConstants extends NLS {
     public static String APPIUM_INSTALLATION_GUIDE_MSG;
 
     public static String URL_TROUBLESHOOTING_MOBILE_TESTING;
+    
+    public static String DIA_LET_START;
 
     static {
         // initialize resource bundle

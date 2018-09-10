@@ -12,11 +12,11 @@
 	<artifactId>com.kms.katalon.repo</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0.0.qualifier</version>
-	
+
 	<properties>
 		<jetty.version>9.3.9.v20160517</jetty.version>
 	</properties>
-	
+
 	<repositories>
 		<repository>
 			<id>repo</id>
@@ -28,10 +28,10 @@
 		<plugins>
 			<plugin>
 				<!-- Add this to avoid issue https://github.com/reficio/p2-maven-plugin/issues/61 -->
-			    <groupId>org.eclipse.tycho</groupId>  
-			    <artifactId>tycho-maven-plugin</artifactId>  
-			    <version>0.20.0</version>
-			    <extensions>false</extensions>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>0.20.0</version>
+				<extensions>false</extensions>
 			</plugin>
 			<plugin>
 				<groupId>org.reficio</groupId>
@@ -109,7 +109,7 @@
 								</artifact>
 								<artifact>
 									<id>org.apache:xml.apis:1.4.01</id>
-								</artifact>								
+								</artifact>
 								<artifact>
 									<id>org.apache.commons:commons-email:1.4</id>
 								</artifact>
@@ -148,7 +148,7 @@
 								</artifact>
 								<artifact>
 									<id>org.apache.httpcomponents:httpcore:4.4.4</id>
-								</artifact>								
+								</artifact>
 								<artifact>
 									<id>org.apache.httpcomponents:httpmime:4.5.1</id>
 								</artifact>
@@ -231,17 +231,30 @@
 									<id>org.apache.commons:org.apache.commons.lang3:3.1.0</id>
 								</artifact>
 								<artifact>
-                                    <id>atu.testrecorder:screen-recorder:2.1</id>
-                                </artifact>
+									<id>atu.testrecorder:screen-recorder:2.1</id>
+								</artifact>
 								<artifact>
-                                    <id>org.junit:junit:4.12</id>
-                                </artifact>
+									<id>org.junit:junit:4.12</id>
+								</artifact>
 								<artifact>
-                                    <id>org.beanshell:bsh:2.0b4</id>
-                                </artifact>
+									<id>org.beanshell:bsh:2.0b4</id>
+								</artifact>
 								<artifact>
-                                    <id>org.apache.ant:ant-launcher:1.9.6</id>
-                                </artifact>
+									<id>org.apache.ant:ant-launcher:1.9.6</id>
+								</artifact>
+								<artifact>
+									<id>org.greenrobot:eventbus:3.1.1</id>
+								</artifact>
+								<artifact>
+									<id>org.assertj:assertj-core:3.10.0</id>
+								</artifact>
+								<artifact>
+									<id>io.cucumber:cucumber-java:3.0.2</id>
+								</artifact>
+								<artifact>
+									<id>io.cucumber:cucumber-junit:3.0.2</id>
+									<transitive>false</transitive>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>
@@ -266,20 +279,20 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-		  <id>central</id>
-		  <name>Maven Plugin Repository</name>
-		  <url>http://repo1.maven.org/maven2</url>
-		  <layout>default</layout>
-		  <snapshots>
-			<enabled>false</enabled>
-		  </snapshots>
-		  <releases>
-			<updatePolicy>never</updatePolicy>
-		  </releases>
+			<id>central</id>
+			<name>Maven Plugin Repository</name>
+			<url>http://repo1.maven.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
 		</pluginRepository>
 		<pluginRepository>
-            <id>reficio</id>
-            <url>http://repo.reficio.org/maven/</url>
-        </pluginRepository>
+			<id>reficio</id>
+			<url>http://repo.reficio.org/maven/</url>
+		</pluginRepository>
 	</pluginRepositories>
 </project>

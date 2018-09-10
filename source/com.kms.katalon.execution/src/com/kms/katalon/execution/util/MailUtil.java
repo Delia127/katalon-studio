@@ -148,8 +148,10 @@ public class MailUtil {
     private static EmailAttachment attach(List<ReportFormatType> attachmentOptions, TestSuiteLogRecord suiteLogRecord)
             throws Exception {
         File logFolder = new File(suiteLogRecord.getLogFolder());
+        
         // Zip html report with its dependencies
-        File tmpReportDir = new File(System.getProperty("java.io.tmpdir"), logFolder.getName());
+        File tmpReportDir = new File(System.getProperty("java.io.tmpdir"),
+                logFolder.getName() + "_" + System.currentTimeMillis());
         if (tmpReportDir.exists()) {
             tmpReportDir.delete();
         }
@@ -242,6 +244,7 @@ public class MailUtil {
             conf.setSubject(store.getEmailSubject());
             conf.setHtmlMessage(store.getEmailHTMLTemplate());
             conf.setAttachmentOptions(store.getReportFormatOptions());
+            conf.setSendEmailTestFailedOnly(store.isSendEmailTestFailedOnly());
             return conf;
         } catch (IOException | URISyntaxException | GeneralSecurityException e) {
             LogUtil.logError(e);

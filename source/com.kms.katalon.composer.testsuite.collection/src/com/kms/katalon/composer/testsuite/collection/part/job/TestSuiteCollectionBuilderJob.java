@@ -11,9 +11,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.MissingMobileDriverWarningDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -42,6 +39,7 @@ import com.kms.katalon.execution.launcher.TestSuiteCollectionLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestSuiteCollectionBuilderJob extends Job {
 
@@ -102,6 +100,9 @@ public class TestSuiteCollectionBuilderJob extends Job {
             TestSuiteCollectionLauncher launcher = new IDETestSuiteCollectionLauncher(executedEntity, launcherManager,
                     tsLaunchers, testSuiteCollectionEntity.getExecutionMode(), reportCollection);
             launcherManager.addLauncher(launcher);
+            
+            trackTestSuiteColletionExecution();
+            
             reportController.updateReportCollection(reportCollection);
             return Status.OK_STATUS;
         } catch (DALException e) {
@@ -109,9 +110,13 @@ public class TestSuiteCollectionBuilderJob extends Job {
             return Status.CANCEL_STATUS;
         } finally {
             monitor.done();
-            UsageInfoCollector
-                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
+//            UsageInfoCollector
+//                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
         }
+    }
+    
+    private void trackTestSuiteColletionExecution() {
+        Trackings.trackExecuteTestSuiteCollectionInGuiMode();
     }
 
     private boolean checkInstallWebDriver(TestSuiteRunConfiguration tsRunConfig) {

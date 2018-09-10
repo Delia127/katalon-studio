@@ -12,7 +12,8 @@ bin/
 hs_err_pid*
 
 # Maven
-target/
+target
+!source/third-party/cucumber-eclipse/cucumber.eclipse.p2updatesite/target
 
 # Eclipse
 .settings

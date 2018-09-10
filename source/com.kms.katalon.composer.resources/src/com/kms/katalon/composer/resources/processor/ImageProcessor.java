@@ -19,6 +19,14 @@ public class ImageProcessor {
         registerEntityImages();
         registerSubToolbarImages();
         registerCommonImages();
+        registerRecorderImages();
+    }
+
+    private void registerRecorderImages() {
+        ImageManager.registerImage(IImageKeys.START_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.PAUSE_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.RESUME_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.STOP_RECORDING_24);
     }
 
     private void registerCommonImages() {
@@ -92,6 +100,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.CHECK_16);
         ImageManager.registerImage(IImageKeys.FIT_SCREEN_16);
         ImageManager.registerImage(IImageKeys.FULL_SIZE_16);
+        ImageManager.registerImage(IImageKeys.CONFLICT_ELEMENT_STATUS_16);
+        ImageManager.registerImage(IImageKeys.NEW_ELEMENT_STATUS_16);
+        ImageManager.registerImage(IImageKeys.FORUM_SEARCH_BOX);
+        ImageManager.registerImage(IImageKeys.FORUM_SEARCH_ICON);
     }
 
     private void registerSubToolbarImages() {
@@ -195,6 +207,9 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.KEYWORD_16);
         ImageManager.registerImage(IImageKeys.PROFILE_FOLDER_ENTITY_16);
         ImageManager.registerImage(IImageKeys.PROFILE_ENTITY_16);
+        ImageManager.registerImage(IImageKeys.FEATURE_16);
+        ImageManager.registerImage(IImageKeys.FOLDER_FEATURE_16);
+        ImageManager.registerImage(IImageKeys.FOLDER_SOURCE_16);
     }
 
     private void registerTestCaseStepImages() {
@@ -321,6 +336,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FAQ_34);
         ImageManager.registerImage(IImageKeys.USER_GUIDE_34);
         ImageManager.registerImage(IImageKeys.TUTORIAL_34);
+        ImageManager.registerImage(IImageKeys.BUSINESS_SUPPORT_34);
         ImageManager.registerImage(IImageKeys.KATALON_LOGO_202);
         ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_29);
         ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_72);
@@ -340,6 +356,25 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.TAB_MIDDLE_ACTIVE);
         ImageManager.registerImage(IImageKeys.TAB_LAST_INACTIVE);
         ImageManager.registerImage(IImageKeys.TAB_LAST_ACTIVE);
+        ImageManager.registerImage(IImageKeys.SAMPLE_REMOTE_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.GITHUB_LOGO_55);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_MOBILE_RECORD);
+        ImageManager.registerImage(IImageKeys.STEP_1_26);
+        ImageManager.registerImage(IImageKeys.STEP_2_26);
+        ImageManager.registerImage(IImageKeys.STEP_3_26);
+        ImageManager.registerImage(IImageKeys.STEP_4_26);
+        ImageManager.registerImage(IImageKeys.STEP_5_26);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_MOBILE_CONFIG_AND_RECORD_STEP);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_MOBILE_LOG_VIEWER);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_CREATE_WEB_SERVICE_REQUEST);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_TEST_WEB_SERVICE_REQUEST);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_ADD_WEB_SERVICE_KEYWORD);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_API_LOG_VIEWER);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_SCRIPT_NEW_TEST_CASE);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_ADD_OR_IMPORT_KEYWORDS);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_CREATE_TEST_LISTENER);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_BUILD_CMD);
+        ImageManager.registerImage(IImageKeys.SCRIPT_BULLET);
     }
 
     private void registerIntroImages() {
@@ -349,6 +384,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_4);
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_5);
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_6);
+        ImageManager.registerImage(IImageKeys.INTRO_SCREEN_WELCOME);
     }
 
 }

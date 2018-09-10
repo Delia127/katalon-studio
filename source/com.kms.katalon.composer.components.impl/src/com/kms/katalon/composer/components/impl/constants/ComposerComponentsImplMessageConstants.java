@@ -125,6 +125,10 @@ public class ComposerComponentsImplMessageConstants extends NLS {
 
     public static String COMMAND_NAME_OPEN;
 
+    public static String COMMAND_NAME_IMPORT;
+
+    public static String COMMAND_NAME_EXPORT;
+
     public static String COMMAND_NAME_SPY_WEB_OBJECT;
 
     public static String COMMAND_NAME_SPY_MOBILE_OBJECT;
@@ -151,6 +155,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String VIEW_LBL_MATCH_COND;
 
     public static String VIEW_LBL_ADD_PROPERTY;
+    
+    public static String VIEW_LBL_ADD_XPATH;
 
     public static String VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK;
     

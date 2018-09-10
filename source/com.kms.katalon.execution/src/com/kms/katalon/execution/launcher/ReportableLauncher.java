@@ -19,6 +19,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
@@ -28,6 +29,7 @@ import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
@@ -96,6 +98,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                         getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
 
                 IRunConfiguration newConfig = getRunConfig().cloneConfig();
+                if (getRunConfig() instanceof AbstractRunConfiguration && 
+                        newConfig instanceof AbstractRunConfiguration) {
+                    ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
+                }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
                 rerunLauncher.getManager().addLauncher(rerunLauncher);
@@ -136,6 +142,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         EmailConfig emailConfig = ((TestSuiteExecutedEntity) getExecutedEntity())
                 .getEmailConfig(ProjectController.getInstance().getCurrentProject());
         if (emailConfig == null || !emailConfig.canSend()) {
+            return;
+        }
+
+        if (emailConfig.isSendEmailTestFailedOnly() && testSuiteLogRecord.getStatus() != null
+                && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
             return;
         }
 

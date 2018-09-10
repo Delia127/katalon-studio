@@ -69,6 +69,12 @@ function createElementForHotKey(hotKeyObject, parentDiv) {
     if (!hotKeyObject) {
         return;
     }
+    
+    if (hotKeyObject.useCtrlKey) {
+        addKbdElementToElement('Ctrl', parentDiv);
+        parentDiv.appendChild(document.createTextNode(space));
+    }
+
     if (hotKeyObject.useAltKey) {
         addKbdElementToElement('Alt', parentDiv);
         parentDiv.appendChild(document.createTextNode(space));

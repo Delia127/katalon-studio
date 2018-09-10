@@ -204,16 +204,23 @@ public abstract class BasicRequestor implements Requestor {
         String contentTypeHeader = conn.getHeaderField(RequestHeaderConstants.CONTENT_TYPE);
         String contentType = contentTypeHeader;
         String charset = "UTF-8";
-        if (contentTypeHeader != null && contentTypeHeader.contains("charset")) {
+        if (contentTypeHeader != null && contentTypeHeader.contains(";")) {
             // Content-Type: [content-type]; charset=[charset]
-            charset = contentTypeHeader.split(";")[1].split("=")[1].trim();
-            charset = StringUtils.remove(charset, '"');
-            responseObject.setContentCharset(charset);
             contentType = contentTypeHeader.split(";")[0].trim();
+            int charsetIdx = contentTypeHeader.lastIndexOf("charset=");
+            if (charsetIdx >= 0) {
+                int separatorIdx = StringUtils.indexOf(contentTypeHeader, ";", charsetIdx);
+                if (separatorIdx < 0) {
+                    separatorIdx = contentTypeHeader.length();
+                }
+                charset = contentTypeHeader.substring(charsetIdx + "charset=".length(), separatorIdx)
+                        .trim().replace("\"", "");
+            }
         }
 
         HttpTextBodyContent textBodyContent = new HttpTextBodyContent(sb.toString(), charset, contentType);
         responseObject.setBodyContent(textBodyContent);
+        responseObject.setContentCharset(charset);
     }
 
 }

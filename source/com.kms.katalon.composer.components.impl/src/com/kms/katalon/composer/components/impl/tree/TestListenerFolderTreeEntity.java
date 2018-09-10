@@ -53,9 +53,4 @@ public class TestListenerFolderTreeEntity extends FolderTreeEntity {
     public FolderEntity getObject() throws Exception {
         return super.getObject();
     }
-
-    @Override
-    public Image getEntryImage() throws Exception {
-        return getImage();
-    }
 }

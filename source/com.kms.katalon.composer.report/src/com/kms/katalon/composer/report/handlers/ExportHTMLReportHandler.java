@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.report.handlers;
 
-import java.awt.Desktop;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
@@ -46,9 +45,10 @@ public class ExportHTMLReportHandler {
 						if (!htmlFile.exists()) {
 							ReportUtil.writeLogRecordToFiles(report.getLocation());
 						}
-						FileUtils.copyFile(htmlFile, new File(exportDirectory,
-                                report.getDisplayName() + ReportEntity.EXTENSION_HTML_REPORT));
-						Program.launch(exportDirectory.toURI().toString());
+						File exportedHtml = new File(exportDirectory,
+                                report.getDisplayName() + ReportEntity.EXTENSION_HTML_REPORT);
+                        FileUtils.copyFile(htmlFile, exportedHtml);
+						Program.launch(exportedHtml.toURI().toString());
 					}
 				} catch (Throwable e) {
 					LoggerSingleton.logError(e);

@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.preferences;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.io.IOException;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
@@ -9,35 +11,37 @@ import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class GeneralPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
     public static final boolean AUTO_RESTORE_PREVIOUS_SESSION = true;
 
-    /**
-     * @deprecated This code doesn't work when applying for PlatformUI
-     */
+    public static ScopedPreferenceStore getGeneralStore() {
+        return getPreferenceStore(GeneralPreferenceDefaultValueInitializer.class);
+    }
+
     @Override
     public void initializeDefaultPreferences() {
-        IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
+        IPreferenceStore prefStore = getGeneralStore();
         prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
                 AUTO_RESTORE_PREVIOUS_SESSION);
         prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB, 1);
+        save();
     }
-    
-    public void applyDefaultValues() {
+
+    public boolean isFirstTimeSetup() {
         IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
-        prefStore.setValue(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
-                AUTO_RESTORE_PREVIOUS_SESSION);
-        prefStore.setValue(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION, true);
-        prefStore.setValue(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
-        prefStore.setValue(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB, 1);
+        if (prefStore.contains(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED)) {
+            return prefStore.getBoolean(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED);
+        }
+        return false;
     }
     
     public void save() {
         try {
-            ((IPersistentPreferenceStore) PlatformUI.getPreferenceStore()).save();
+            ((IPersistentPreferenceStore) getGeneralStore()).save();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }

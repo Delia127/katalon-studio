@@ -12,7 +12,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.kms.katalon.core.testobject.SelectorMethod;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 
 public class WebElement implements XPathProvider {
 
@@ -35,14 +37,20 @@ public class WebElement implements XPathProvider {
     private String name;
 
     private WebElementType type = WebElementType.ELEMENT;
+    
+    private String usefulNeighborText = "";
 
     private WebFrame parent;
 
     private List<WebElementPropertyEntity> properties = new ArrayList<>();
+    
+    private List<WebElementXpathEntity> xpaths = new ArrayList<>();
 
-    private SelectorMethod selectorMethod = SelectorMethod.BASIC;
+    private SelectorMethod selectorMethod = SelectorMethod.XPATH;
 
     private Map<SelectorMethod, String> selectorCollection = new HashMap<>();
+    
+    private FileEntity savedEntity;
 
     public WebElement(String name) {
         this.name = name;
@@ -63,6 +71,14 @@ public class WebElement implements XPathProvider {
 
     public WebElementType getType() {
         return type;
+    }
+    
+    public void setUsefulNeighborText(String text){
+    	this.usefulNeighborText = text;
+    }
+    
+    public String getUsefulNeighborText(){
+    	return this.usefulNeighborText;
     }
 
     public String getTag() {
@@ -131,6 +147,36 @@ public class WebElement implements XPathProvider {
     public boolean hasProperty() {
         return properties != null && properties.size() > 0;
     }
+    
+    public List<WebElementXpathEntity> getXpaths() {
+        return xpaths;
+    }
+
+    public void setXpaths(List<WebElementXpathEntity> xpaths) {
+        this.xpaths = xpaths;
+    }
+
+    public void addXpath(WebElementXpathEntity xpath) {
+        xpaths.add(xpath);
+    }
+
+    public void addXpath(String name, String value) {
+        addXpath(new WebElementXpathEntity(name, value));
+    }
+
+    public WebElementXpathEntity getXpath(String name) {
+        Optional<WebElementXpathEntity> property = xpaths.stream()
+                .filter(prop -> prop.getName().equals(name))
+                .findFirst();
+        if (property.isPresent()) {
+            return property.get();
+        }
+        return null;
+    }
+
+    public boolean hasXpath() {
+        return xpaths != null && xpaths.size() > 0;
+    }
 
     public boolean hasChild() {
         return false;
@@ -174,6 +220,23 @@ public class WebElement implements XPathProvider {
             clone.setSelectorValue(entry.getKey(), entry.getValue());
         });
         clone.setProperties(new ArrayList<>(getProperties()));
+        clone.setXpaths(new ArrayList<>(getXpaths()));
+        return clone;
+    }
+    
+    public WebElement clone() {
+        WebElement clone = softClone();
+        List<WebElementPropertyEntity> cloneProperties = new ArrayList<>();
+        List<WebElementXpathEntity> cloneXpaths = new ArrayList<>();
+        for (WebElementPropertyEntity webElementPropertyEntity : getProperties()) {
+            cloneProperties.add(webElementPropertyEntity.clone());
+        }
+        for (WebElementXpathEntity webElementXpathEntity : getXpaths()) {
+        	cloneXpaths.add(webElementXpathEntity.clone());
+        }
+        clone.setProperties(cloneProperties);
+        clone.setUsefulNeighborText(getUsefulNeighborText());
+        clone.setXpaths(cloneXpaths);
         return clone;
     }
 
@@ -211,7 +274,6 @@ public class WebElement implements XPathProvider {
                 .append(this.getType(), that.getType())
                 .append(this.getTag(), that.getTag())
                 .append(this.hasProperty(), that.hasProperty())
-                .append(this.getXpath(), that.getXpath())
                 .isEquals();
     }
 
@@ -233,5 +295,29 @@ public class WebElement implements XPathProvider {
 
     public Map<SelectorMethod, String> getSelectorCollection() {
         return selectorCollection;
+    }
+    
+    public WebPage getRoot() {
+        if (this instanceof WebPage) {
+            return (WebPage) this;
+        }
+        return getParent().getRoot();
+    }
+
+    public String getScriptId() {
+        WebPage root = getRoot();
+        if (root == this) {
+            return "Object Repository/" + getName(); 
+        }
+
+        return savedEntity != null ? savedEntity.getIdForDisplay() : root.getScriptId() + "/" + getName();
+    }
+
+    public FileEntity getSavedEntity() {
+        return savedEntity;
+    }
+
+    public void setSavedEntity(FileEntity savedEntity) {
+        this.savedEntity = savedEntity;
     }
 }
