@@ -264,7 +264,7 @@ public class InspectSession implements Runnable {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
         File file = getFirefoxAddonFile();
         if (file != null) {
-            firefoxProfile.addExtension(file.getName(), new FirefoxWebExtension(file, FIREFOX_ADDON_UUID));
+            firefoxProfile.addExtension(file);
         }
         return firefoxProfile;
     }
@@ -314,7 +314,7 @@ public class InspectSession implements Runnable {
             }
             File firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
             ZipUtil.extract(firefoxAddon, firefoxAddonExtracted);
-            return firefoxAddonExtracted;
+            return firefoxAddon;
         }
         return null;
     }
