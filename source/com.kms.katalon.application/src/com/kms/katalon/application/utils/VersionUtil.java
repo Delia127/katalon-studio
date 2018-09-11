@@ -1,12 +1,9 @@
 package com.kms.katalon.application.utils;
 
-import java.awt.Desktop;
-import java.net.URI;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.eclipse.swt.program.Program;
 
 import com.google.gson.JsonObject;

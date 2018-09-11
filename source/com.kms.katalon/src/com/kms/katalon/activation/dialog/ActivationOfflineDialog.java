@@ -1,8 +1,5 @@
 package com.kms.katalon.activation.dialog;
 
-import java.awt.Desktop;
-import java.net.URI;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;

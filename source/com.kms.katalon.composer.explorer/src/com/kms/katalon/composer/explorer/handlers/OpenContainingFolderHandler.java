@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.explorer.handlers;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.util.List;
 

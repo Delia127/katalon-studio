@@ -1,9 +1,7 @@
 package com.kms.katalon.composer.integration.kobiton.dialog;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 

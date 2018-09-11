@@ -12,13 +12,13 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -169,7 +169,7 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
                     .getQTestProject();
             URL url = QTestIntegrationTestCaseManager.navigatedUrlToQTestTestCase(qTestProject, qTestTestCase,
                     projectEntity.getFolderLocation());
-            DesktopUtils.openUri(url.toURI());
+            Program.launch(url.toString());
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_CASE,
                     e.getClass().getSimpleName());

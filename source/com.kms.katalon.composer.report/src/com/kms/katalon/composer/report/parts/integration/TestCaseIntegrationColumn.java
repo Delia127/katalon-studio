@@ -1,10 +1,5 @@
 package com.kms.katalon.composer.report.parts.integration;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.eclipse.swt.program.Program;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -23,9 +18,6 @@ public abstract class TestCaseIntegrationColumn implements IntegrationColumnCont
     }
     
     protected static void openBrowserToLink(String url) {
-        if (!Desktop.isDesktopSupported()) {
-            return;
-        }
         try {
             Program.launch(url);
         } catch (IllegalArgumentException exception) {

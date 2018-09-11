@@ -1,4 +1,4 @@
-katalonServerPort = '51782'
+katalonServerPort = '39263'
 katalonOnOffStatus = true
-spy_captureObjectHotKey = {"keyCode":192,"useAltKey":true,"useShiftKey":false,"useCtrlKey":false,"useMetaKey":false};
+spy_captureObjectHotKey = {"keyCode":90,"useAltKey":false,"useShiftKey":true,"useCtrlKey":true,"useMetaKey":false};
 spy_loadDomMapHotKey = {"keyCode":192,"useAltKey":true,"useShiftKey":false,"useCtrlKey":true,"useMetaKey":false};

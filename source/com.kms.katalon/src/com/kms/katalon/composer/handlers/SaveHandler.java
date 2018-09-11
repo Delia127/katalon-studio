@@ -1,6 +1,9 @@
 package com.kms.katalon.composer.handlers;
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
@@ -13,6 +16,9 @@ import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class SaveHandler extends AbstractHandler {
+    
+    @Inject
+    EPartService partService;
 
     @Override
     public boolean canExecute() {

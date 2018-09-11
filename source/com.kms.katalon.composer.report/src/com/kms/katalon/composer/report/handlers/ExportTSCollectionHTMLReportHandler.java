@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.report.handlers;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
