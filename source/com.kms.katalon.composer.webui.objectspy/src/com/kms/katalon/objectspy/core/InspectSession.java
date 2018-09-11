@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.InvalidPathException;
 import java.text.MessageFormat;
@@ -12,6 +13,11 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -20,6 +26,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.GeckoDriverService;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -49,11 +56,11 @@ import com.kms.katalon.objectspy.websocket.AddonHotKeyData;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
-import com.kms.katalon.selenium.firefox.FirefoxWebExtension;
+import com.kms.katalon.selenium.driver.CFirefoxDriver;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    private static final String FIREFOX_ADDON_UUID = "{fb8a3d9a-f885-4a21-baa7-dbb68c04f0c0}";
+    private static final String FIREFOX_ADDON_UUID = "{932b2318-b453-4947-8d43-92ac9dcef9bf}";
 
     private static final String HTTP = "http";
 
@@ -188,6 +195,15 @@ public class InspectSession implements Runnable {
             }
 
             if (webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
+                CFirefoxDriver firefoxDriver = (CFirefoxDriver) driver;
+                URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
+                CloseableHttpClient client = HttpClientBuilder.create().build();
+                HttpPost httpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/" + 
+                        ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
+                httpPost.setEntity(new StringEntity(String.format("{\"path\": \"%s\"}",
+                    getFirefoxAddonFileForLinux().getAbsolutePath())));
+                CloseableHttpResponse response = client.execute(httpPost);
+
                 handleForFirefoxAddon();
             }
             while (isRunFlag) {
@@ -246,7 +262,12 @@ public class InspectSession implements Runnable {
             return createChromDriverOptions();
         }
         if (driverType == WebUIDriverType.FIREFOX_DRIVER) {
-            return createFireFoxProfile();
+            try {
+                System.setProperty("webdriver.gecko.driver", DriverFactory.getGeckoDriverPath());
+            return GeckoDriverService.createDefaultService();
+            }catch (Exception e) {
+                return null;
+            }
         }
         if (driverType == WebUIDriverType.IE_DRIVER) {
             return createIEDesiredCapabilities();
@@ -262,10 +283,7 @@ public class InspectSession implements Runnable {
 
     protected FirefoxProfile createFireFoxProfile() throws IOException {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
-        File file = getFirefoxAddonFile();
-        if (file != null) {
-            firefoxProfile.addExtension(file);
-        }
+        firefoxProfile.addExtension(getFirefoxAddonFileForLinux());
         return firefoxProfile;
     }
 
@@ -304,7 +322,7 @@ public class InspectSession implements Runnable {
         return chromeExtension;
     }
 
-    protected File getFirefoxAddonFile() throws IOException {
+    protected File getFirefoxAddonExtractedFolder() throws IOException {
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
             File firefoxExtensionFolder = FileUtil.getExtensionBuildFolder();
@@ -314,7 +332,15 @@ public class InspectSession implements Runnable {
             }
             File firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
             ZipUtil.extract(firefoxAddon, firefoxAddonExtracted);
-            return firefoxAddon;
+            return firefoxAddonExtracted;
+        }
+        return null;
+    }
+    
+    protected File getFirefoxAddonFileForLinux() throws IOException {
+        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
+        if (extensionFolder.exists() && extensionFolder.isDirectory()) {
+            return new File(extensionFolder.getAbsolutePath(), FIREFOX_ADDON_RELATIVE_PATH);
         }
         return null;
     }
