@@ -51,7 +51,8 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  com.kms.katalon.application,
  com.kms.katalon.tracking,
  org.apache.httpcomponents.httpclient,
- org.apache.httpcomponents.httpcore
+ org.apache.httpcomponents.httpcore,
+ org.apache.commons.lang3
 Export-Package: com.kms.katalon.objectspy.components,
  com.kms.katalon.objectspy.constants,
  com.kms.katalon.objectspy.core,

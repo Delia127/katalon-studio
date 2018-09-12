@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -185,6 +186,21 @@ public class InspectSession implements Runnable {
 
             driver = DriverFactory.openWebDriver(webUiDriverType, projectDir, options);
             driverStarted = true;
+            if (webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
+                // Fix KAT-3652: Cannot Record/Spy with Firefox latest version (v.62.0)
+                CFirefoxDriver firefoxDriver = (CFirefoxDriver) driver;
+                URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
+                CloseableHttpClient client = HttpClientBuilder.create().build();
+                HttpPost httpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/" + 
+                        ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
+                String bodyContent = String.format("{\"path\": \"%s\"}", StringEscapeUtils.escapeJava(
+                                getFirefoxAddonFile().getAbsolutePath()));
+                httpPost.setEntity(new StringEntity(bodyContent));
+                client.execute(httpPost);
+
+                handleForFirefoxAddon();
+            }
+
             if (StringUtils.isNotEmpty(startUrl)) {
                 try {
                     driver.navigate().to(PathUtil.getUrl(startUrl, HTTP));
@@ -193,19 +209,6 @@ public class InspectSession implements Runnable {
                 }
             }
 
-            if (webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
-                // Fix KAT-3652: Cannot Record/Spy with Firefox latest version (v.62.0)
-                CFirefoxDriver firefoxDriver = (CFirefoxDriver) driver;
-                URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
-                CloseableHttpClient client = HttpClientBuilder.create().build();
-                HttpPost httpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/" + 
-                        ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
-                httpPost.setEntity(new StringEntity(String.format("{\"path\": \"%s\"}",
-                    getFirefoxAddonFile().getAbsolutePath())));
-                client.execute(httpPost);
-
-                handleForFirefoxAddon();
-            }
             while (isRunFlag) {
                 try {
                     Thread.sleep(1000L);
