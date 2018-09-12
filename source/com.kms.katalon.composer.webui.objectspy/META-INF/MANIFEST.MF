@@ -49,7 +49,9 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  com.kms.katalon.util,
  org.greenrobot.eventbus,
  com.kms.katalon.application,
- com.kms.katalon.tracking
+ com.kms.katalon.tracking,
+ org.apache.httpcomponents.httpclient,
+ org.apache.httpcomponents.httpcore
 Export-Package: com.kms.katalon.objectspy.components,
  com.kms.katalon.objectspy.constants,
  com.kms.katalon.objectspy.core,
