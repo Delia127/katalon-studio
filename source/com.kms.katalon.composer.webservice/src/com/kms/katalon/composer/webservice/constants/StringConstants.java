@@ -10,7 +10,10 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewWebServiceRequestObjectPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ;
-
+    
+    // ImportWebServiceRequestObjectsFromSwaggerPopupMenuContribution
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
+    
 	// RequestObjectPart
     public static final String PA_TITLE_HTTP = ComposerWebserviceMessageConstants.PA_TITLE_HTTP;
     public static final String PA_LBL_HTTP_HEADER = ComposerWebserviceMessageConstants.PA_LBL_HTTP_HEADER;

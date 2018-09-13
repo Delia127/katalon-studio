@@ -121,9 +121,6 @@ public class ObjectRepositoryController extends EntityController {
         if (parentFolder == null) {
             return null;
         }
-        
-        
-        
         List<WebServiceRequestEntity> newWSTestObjects = SwaggerParserUtil.parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
         
         for(WebServiceRequestEntity entity : newWSTestObjects){

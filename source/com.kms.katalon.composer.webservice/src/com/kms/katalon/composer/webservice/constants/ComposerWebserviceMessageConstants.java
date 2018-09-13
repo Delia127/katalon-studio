@@ -10,6 +10,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ;
 
     public static String MENU_CONTEXT_WEBSERVICE_REQ;
+    
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
 
     public static String PA_TITLE_HTTP;
 

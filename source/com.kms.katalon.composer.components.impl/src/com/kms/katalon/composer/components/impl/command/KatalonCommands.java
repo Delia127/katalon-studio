@@ -71,7 +71,9 @@ public class KatalonCommands {
     private static final String TEST_OBJECT = GlobalStringConstants.TEST_OBJECT;
 
     private static final String WEBSERVICE_OBJECT = ComposerComponentsImplMessageConstants.COMMAND_NAME_WEBSERVICE_OBJECT;
-
+    
+    private static final String WEBSERVICE_OBJECTS_FROM_SWAGGER = ComposerComponentsImplMessageConstants.COMMAND_NAME_WEBSERVICE_OBJECTS_FROM_SWAGGER;
+    
     private static final String TEST_CASE = GlobalStringConstants.TEST_CASE;
 
     private static final String TEST_SUITE = GlobalStringConstants.TEST_SUITE;
@@ -204,7 +206,7 @@ public class KatalonCommands {
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + WEBSERVICE_OBJECT)
                 .setEventName(EventConstants.WEBSERVICE_REQUEST_OBJECT_NEW));
         
-        rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + "Impot from swagger")
+        rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + WEBSERVICE_OBJECTS_FROM_SWAGGER)
                 .setEventName(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER));
         
         

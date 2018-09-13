@@ -24,6 +24,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -78,7 +79,6 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
             @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-    	
         try {
             ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
             if (parentTreeEntity == null) {
@@ -102,6 +102,8 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
             }
             
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
+            
         } catch (FilePathTooLongException e) {
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, e.getMessage());
         } catch (Exception e) {

@@ -10,6 +10,7 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_O9aygLEAEeSrwsGaXHfzzg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_ivOzULEEEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.NewWebServiceRequestObjectPopupMenuContribution"/>
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_D-UEALdvEeiB4sxFenOLSA" elementId="com.kms.katalon.composer.webservice.popupmenu.new.dynamicmenucontribution.swagger" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.ImportWebServiceRequestObjectsFromSwaggerPopupMenuContribution"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Sws24LEAEeSrwsGaXHfzzg" featurename="addons" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="application:Addon" xmi:id="_WAMm0LECEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.addons.WebServiceRequestObjectInjectionManagerAddon"/>
