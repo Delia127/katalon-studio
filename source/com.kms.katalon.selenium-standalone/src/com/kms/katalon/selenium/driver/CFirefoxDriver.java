@@ -5,10 +5,17 @@ import java.util.Map;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.GeckoDriverService;
 import org.openqa.selenium.remote.Response;
 
 public class CFirefoxDriver extends FirefoxDriver implements IDelayableDriver {
     private int actionDelayInMiliseconds;
+    private GeckoDriverService geckoDriverService;
+    
+    public CFirefoxDriver(GeckoDriverService driverService) {
+        super(driverService);
+        this.setGeckoDriverService(driverService);
+    }
 
     public CFirefoxDriver(Capabilities capabilities, int actionDelay) {
         super(new FirefoxOptions(capabilities));
@@ -24,5 +31,13 @@ public class CFirefoxDriver extends FirefoxDriver implements IDelayableDriver {
     @Override
     public int getActionDelay() {
         return actionDelayInMiliseconds;
+    }
+
+    public GeckoDriverService getGeckoDriverService() {
+        return geckoDriverService;
+    }
+
+    private void setGeckoDriverService(GeckoDriverService geckoDriverService) {
+        this.geckoDriverService = geckoDriverService;
     }
 }
