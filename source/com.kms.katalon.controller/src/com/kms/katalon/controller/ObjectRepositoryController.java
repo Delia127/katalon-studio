@@ -101,12 +101,12 @@ public class ObjectRepositoryController extends EntityController {
             throws Exception {
         if (parentFolder == null) {
             return null;
-        }
+        }       
 
         if (StringUtils.isBlank(wsTestObjectName)) {
             wsTestObjectName = StringConstants.CTRL_NEW_WS_REQUEST;
         }
-
+        
         WebServiceRequestEntity newWS = new WebServiceRequestEntity();
         newWS.setElementGuidId(Util.generateGuid());
         newWS.setName(getAvailableWebElementName(parentFolder, wsTestObjectName));
@@ -121,6 +121,8 @@ public class ObjectRepositoryController extends EntityController {
         if (parentFolder == null) {
             return null;
         }
+        
+        
         
         List<WebServiceRequestEntity> newWSTestObjects = SwaggerParserUtil.parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
         

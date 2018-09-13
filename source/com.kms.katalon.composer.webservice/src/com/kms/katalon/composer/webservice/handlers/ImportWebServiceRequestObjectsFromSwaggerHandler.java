@@ -78,7 +78,7 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
             @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-    	System.out.println("execute of ImportWebServiceRequestObjectsFromSwaggerHandler");
+    	
         try {
             ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
             if (parentTreeEntity == null) {
@@ -95,12 +95,13 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
             if (dialog.open() != Dialog.OK) {
                 return;
             }
-
+            
             List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
             for(WebServiceRequestEntity entity : requestEntities){
             	toController.saveNewTestObject(entity);
             }
-
+            
+            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
         } catch (FilePathTooLongException e) {
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, e.getMessage());
         } catch (Exception e) {

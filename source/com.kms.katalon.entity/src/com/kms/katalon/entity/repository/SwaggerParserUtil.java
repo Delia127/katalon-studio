@@ -15,10 +15,10 @@ import v2.io.swagger.models.Swagger;
 
 public class SwaggerParserUtil {
 	public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder, String fileLocation){
-		List<WebServiceRequestEntity> newWSTestObject = new ArrayList<WebServiceRequestEntity>();
-		Swagger swagger = new SwaggerParser().read(fileLocation);
-		
-		if(swagger != null){
+		List<WebServiceRequestEntity> newWSTestObject = new ArrayList<WebServiceRequestEntity>();	
+		try{
+			System.out.println(fileLocation);
+			Swagger swagger = new SwaggerParser().read(fileLocation);
 			String urlCommonPrefix = "https";
 			if(swagger.getSchemes() != null 
 					&& !swagger.getSchemes().isEmpty() 
@@ -41,8 +41,12 @@ public class SwaggerParserUtil {
 						props.add(new WebElementPropertyEntity(param.getName(), param.getPattern()));
 					});
 					entity.setRestParameters(props);
+					newWSTestObject.add(entity);
 				}
 			}
+			
+		} catch(Exception e){
+			System.out.println(e.getMessage());
 		}
 			
 		return newWSTestObject;
