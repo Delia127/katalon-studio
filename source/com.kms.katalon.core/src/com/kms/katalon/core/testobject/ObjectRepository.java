@@ -419,7 +419,7 @@ public class ObjectRepository {
     
     private static boolean isBodySupported(RequestObject requestObject) {
         String restRequestMethod = requestObject.getRestRequestMethod();
-        return !("GET".contains(restRequestMethod) || "DELETE".equals(restRequestMethod));
+        return !("GET".contains(restRequestMethod));
     }
 
     private static List<TestObjectProperty> parseProperties(List<Object> objects) {
