@@ -41,7 +41,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends AbstractDialog {
        
         Label label = new Label(methodComposite, SWT.NONE);        
         Button button = new Button(methodComposite, SWT.PUSH);
-        button.setText("Browse");
+        button.setText(StringConstants.BROWSE);
         button.addSelectionListener(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e) {
