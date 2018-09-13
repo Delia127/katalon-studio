@@ -848,7 +848,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 MPart editorPart = GroovyEditorUtil.createTestCaseEditorPart(
                         ResourcesPlugin.getWorkspace()
                                 .getRoot()
-                                .getFile(GroovyGuiUtil.getGroovyScriptForTestCase(testCase).getPath()),
+                                .getFile(GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(testCase).getPath()),
                         partStack, testCaseEditorId, partService, CHILD_TEST_CASE_EDITOR_PART_INDEX);
                 partService.activate(editorPart);
                 initComponent();

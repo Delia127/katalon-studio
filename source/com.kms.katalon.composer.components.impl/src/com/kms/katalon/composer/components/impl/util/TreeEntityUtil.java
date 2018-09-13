@@ -115,6 +115,11 @@ public class TreeEntityUtil {
                 createSelectedTreeEntityHierachy(folderEntity.getParentFolder(), rootFolder));
     }
 
+    public static FolderTreeEntity getTestCaseFolderTreeEntity(ProjectEntity project) throws Exception {
+        FolderEntity testCaseRoot = FolderController.getInstance().getTestCaseRoot(project);
+        return new FolderTreeEntity(testCaseRoot, null);
+    }
+    
     public static FolderTreeEntity getWebElementFolderTreeEntity(FolderEntity folderEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity webElementRoot = FolderController.getInstance().getObjectRepositoryRoot(projectEntity);
