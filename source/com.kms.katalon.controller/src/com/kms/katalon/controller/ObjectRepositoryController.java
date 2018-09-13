@@ -116,25 +116,21 @@ public class ObjectRepositoryController extends EntityController {
         return newWS;
     }
     
-    public WebServiceRequestEntity newWSTestObjectFromSwagger(FolderEntity parentFolder, String wsTestObjectName)
+    public List<WebServiceRequestEntity> newWSTestObjectsFromSwagger(FolderEntity parentFolder, String directoryOfJsonFile)
             throws Exception {
         if (parentFolder == null) {
             return null;
         }
-
-        if (StringUtils.isBlank(wsTestObjectName)) {
-            wsTestObjectName = StringConstants.CTRL_NEW_WS_REQUEST;
+        
+        List<WebServiceRequestEntity> newWSTestObjects = SwaggerParserUtil.parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
+        
+        for(WebServiceRequestEntity entity : newWSTestObjects){
+        	entity.setElementGuidId(Util.generateGuid());
+            entity.setParentFolder(parentFolder);
+            entity.setProject(parentFolder.getProject());
         }
-
-        String fileLocation = "";
-        WebServiceRequestEntity newWS = SwaggerParserUtil.parseFromFileLocationToWSTestObject(parentFolder, fileLocation);
-
-        newWS.setElementGuidId(Util.generateGuid());
-        newWS.setName(getAvailableWebElementName(parentFolder, wsTestObjectName));
-        newWS.setParentFolder(parentFolder);
-        newWS.setProject(parentFolder.getProject());
-            
-        return newWS;
+        
+        return newWSTestObjects;
     }
 
     /**

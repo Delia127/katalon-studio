@@ -72,7 +72,7 @@ public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEnt
     @Override
     protected void createEntity() {
         try {
-            entity = ObjectRepositoryController.getInstance().newWSTestObjectFromSwagger(parentFolder, getName());
+            entity = ObjectRepositoryController.getInstance().newWSTestObjectWithoutSave(parentFolder, getName());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

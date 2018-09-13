@@ -2,18 +2,35 @@ package com.kms.katalon.composer.webservice.handlers;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromSwaggerDialog;
-import com.kms.katalon.composer.webservice.view.NewRequestDialog;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -21,11 +38,47 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class ImportWebServiceRequestObjectsFromSwaggerHandler {
-	
+
+	@Inject
+	IEventBroker eventBroker;
+
+	@Inject
+	EModelService modelService;
+
+	@Inject
+	MApplication application;
+
+	@Inject
+	EPartService partService;
+
+	@Inject
+	IEclipseContext context;
+
 	private FolderTreeEntity objectRepositoryTreeRoot;
+
+    @PostConstruct
+    public void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER, new EventHandler() {
+        	
+            @Override
+            public void handleEvent(Event event) {
+                if (!canExecute()) {
+                    return;
+                }
+                execute(null, Display.getCurrent().getActiveShell());
+            }
+        });
+    }
 	
-	
-    public void execute(Object[] selectedObjects, Shell parentShell) {
+    @CanExecute
+    private boolean canExecute() {
+        return ProjectController.getInstance().getCurrentProject() != null;
+    }
+    
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
+            @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
+    	System.out.println("execute of ImportWebServiceRequestObjectsFromSwaggerHandler");
         try {
             ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
             if (parentTreeEntity == null) {
@@ -37,18 +90,15 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
 
             FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
             ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
-            String suggestedName = "";
-            
-            ImportWebServiceObjectsFromSwaggerDialog dialog = new ImportWebServiceObjectsFromSwaggerDialog(parentShell, parentFolderEntity, suggestedName);
+
+            ImportWebServiceObjectsFromSwaggerDialog dialog = new ImportWebServiceObjectsFromSwaggerDialog(parentShell, parentFolderEntity);
             if (dialog.open() != Dialog.OK) {
                 return;
             }
 
-            WebServiceRequestEntity requestEntity = (WebServiceRequestEntity) toController.saveNewTestObject(dialog.getEntity());
-            if (requestEntity == null) {
-                MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
-                        StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ);
-                return;
+            List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
+            for(WebServiceRequestEntity entity : requestEntities){
+            	toController.saveNewTestObject(entity);
             }
 
         } catch (FilePathTooLongException e) {
@@ -79,7 +129,10 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
         return null;
     }
 	
-	private void catchTestDataFolderTreeEntitiesRoot(List<Object> treeEntities) {
+	@Inject
+    @Optional
+    private void catchTestDataFolderTreeEntitiesRoot(
+            @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
         try {
             for(Object o : treeEntities) {
                 Object entityObject = ((ITreeEntity) o).getObject();
@@ -95,5 +148,4 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
         	LoggerSingleton.logError(e);
         }
     }
-
 }

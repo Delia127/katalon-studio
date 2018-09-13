@@ -81,6 +81,7 @@ public class NewWebServiceRequestObjectHandler {
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
             @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
         try {
+        	System.out.println("execute of NewWebServiceRequestObjectHandler");
             ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
             if (parentTreeEntity == null) {
                 if (objectRepositoryTreeRoot == null) {

@@ -203,6 +203,11 @@ public class KatalonCommands {
                 .addChild(KCommand.create(COMMAND_NAME_NEW + TEST_OBJECT).setEventName(EventConstants.TEST_OBJECT_NEW));
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + WEBSERVICE_OBJECT)
                 .setEventName(EventConstants.WEBSERVICE_REQUEST_OBJECT_NEW));
+        
+        rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + "Impot from swagger")
+                .setEventName(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER));
+        
+        
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + TEST_DATA).setEventName(EventConstants.TEST_DATA_NEW));
         rootCommand
                 .addChild(KCommand.create(COMMAND_NAME_NEW + CHECKPOINT).setEventName(EventConstants.CHECKPOINT_NEW));
