@@ -21,7 +21,7 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEntity> {
+public class ImportWebServiceObjectsFromSwaggerDialog extends CommonNewEntityDialog<WebServiceRequestEntity> {
 
     private String webServiveType = WebServiceRequestEntity.SERVICE_TYPES[1];
 
@@ -29,7 +29,7 @@ public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEnt
 
     private Combo cbbRequestType;
 
-    public NewRequestDialog(Shell parentShell, FolderEntity parentFolder, String suggestedName) {
+    public ImportWebServiceObjectsFromSwaggerDialog(Shell parentShell, FolderEntity parentFolder, String suggestedName) {
         super(parentShell, parentFolder, suggestedName);
         setDialogTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ);
         setDialogMsg(StringConstants.VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ);

@@ -15,6 +15,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
+import com.kms.katalon.entity.repository.SwaggerParserUtil;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -57,7 +58,8 @@ public class ObjectRepositoryController extends EntityController {
      * @throws Exception
      */
     public WebServiceRequestEntity newWSTestObject(FolderEntity parentFolder, String wsTestObjectName) throws Exception {
-        return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
+        //return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectFromSwagger(parentFolder, wsTestObjectName));
+    	return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
     }
 
     /**
@@ -111,6 +113,27 @@ public class ObjectRepositoryController extends EntityController {
         newWS.setParentFolder(parentFolder);
         newWS.setProject(parentFolder.getProject());
 
+        return newWS;
+    }
+    
+    public WebServiceRequestEntity newWSTestObjectFromSwagger(FolderEntity parentFolder, String wsTestObjectName)
+            throws Exception {
+        if (parentFolder == null) {
+            return null;
+        }
+
+        if (StringUtils.isBlank(wsTestObjectName)) {
+            wsTestObjectName = StringConstants.CTRL_NEW_WS_REQUEST;
+        }
+
+        String fileLocation = "";
+        WebServiceRequestEntity newWS = SwaggerParserUtil.parseFromFileLocationToWSTestObject(parentFolder, fileLocation);
+
+        newWS.setElementGuidId(Util.generateGuid());
+        newWS.setName(getAvailableWebElementName(parentFolder, wsTestObjectName));
+        newWS.setParentFolder(parentFolder);
+        newWS.setProject(parentFolder.getProject());
+            
         return newWS;
     }
 
