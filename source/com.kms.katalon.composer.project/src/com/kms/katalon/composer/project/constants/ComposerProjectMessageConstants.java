@@ -93,7 +93,7 @@ public class ComposerProjectMessageConstants extends NLS {
     
     public static String VIEW_OPTION_GENERIC_PROJECT;
     
-    public static String VIEW_LBL_SAMPLE_PROJECT;
+    public static String VIEW_LBL_PROJECT;
     
     public static String VIEW_LBL_REPOSITORY_URL;
 

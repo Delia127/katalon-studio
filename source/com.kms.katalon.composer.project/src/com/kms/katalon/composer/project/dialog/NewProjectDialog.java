@@ -185,8 +185,8 @@ public class NewProjectDialog extends TitleAreaDialog {
             }
         };
         
-        Label lblSampleProjects = new Label(container, SWT.NONE);
-        lblSampleProjects.setText(StringConstants.VIEW_LBL_SAMPLE_PROJECT);
+        Label lblProject = new Label(container, SWT.NONE);
+        lblProject.setText(StringConstants.VIEW_LBL_PROJECT);
         
         cbProjects = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
         cbProjects.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

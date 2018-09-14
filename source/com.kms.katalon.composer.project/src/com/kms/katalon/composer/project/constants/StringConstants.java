@@ -163,7 +163,7 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String VIEW_OPTION_GENERIC_PROJECT = ComposerProjectMessageConstants.VIEW_OPTION_GENERIC_PROJECT;
     
-    public static final String VIEW_LBL_SAMPLE_PROJECT = ComposerProjectMessageConstants.VIEW_LBL_SAMPLE_PROJECT;
+    public static final String VIEW_LBL_PROJECT = ComposerProjectMessageConstants.VIEW_LBL_PROJECT;
     
     public static final String VIEW_LBL_REPOSITORY_URL = ComposerProjectMessageConstants.VIEW_LBL_REPOSITORY_URL;
 
