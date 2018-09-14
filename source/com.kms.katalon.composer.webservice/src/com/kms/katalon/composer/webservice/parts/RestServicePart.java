@@ -394,7 +394,7 @@ public class RestServicePart extends WebServicePart {
     }
 
     private boolean isBodySupported(String requestMethod) {
-        return !("GET".equals(requestMethod) || "DELETE".equals(requestMethod));
+        return !("GET".equals(requestMethod));
     }
 
     @Override

@@ -1733,8 +1733,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected boolean isBodySupported() {
         String requestMethod = wsApiControl.getRequestMethod();
-        return !(WebServiceRequestEntity.GET_METHOD.equalsIgnoreCase(requestMethod)
-                || WebServiceRequestEntity.DELETE_METHOD.equalsIgnoreCase(requestMethod));
+        return !(WebServiceRequestEntity.GET_METHOD.equalsIgnoreCase(requestMethod));
     }
 
     protected boolean isSOAP() {
