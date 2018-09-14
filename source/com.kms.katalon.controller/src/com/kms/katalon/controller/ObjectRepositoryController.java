@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
@@ -15,10 +16,10 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
-import com.kms.katalon.entity.repository.SwaggerParserUtil;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.util.SwaggerParserUtil;
 import com.kms.katalon.entity.util.Util;
 
 @Creatable

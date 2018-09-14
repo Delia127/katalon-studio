@@ -64,3 +64,4 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.composer.testcase,
  com.kms.katalon.tracking,
  org.codehaus.groovy
+Export-Package: com.kms.katalon.composer.webservice.util

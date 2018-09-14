@@ -4,9 +4,13 @@ package com.kms.katalon.composer.webservice.view;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -35,11 +39,14 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends AbstractDialog {
 
 
     private Control createImportFromSwaggerControl(Composite parent, int column) {
-    	Composite methodComposite = new Composite(parent, SWT.WRAP);
-        FillLayout glMethodComposite = new FillLayout(SWT.VERTICAL);
+
+        Label label = new Label(parent, SWT.NONE);
+        label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        
+    	Composite methodComposite = new Composite(parent, SWT.NONE);
+    	GridLayout glMethodComposite = new GridLayout();
         methodComposite.setLayout(glMethodComposite);
-       
-        Label label = new Label(methodComposite, SWT.NONE);        
+        
         Button button = new Button(methodComposite, SWT.PUSH);
         button.setText(StringConstants.BROWSE);
         button.addSelectionListener(new SelectionAdapter()
@@ -89,8 +96,34 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends AbstractDialog {
 
 	@Override
 	protected Control createDialogContainer(Composite parent) {
-		createImportFromSwaggerControl(parent, 1);
+		Composite container = new Composite(parent, SWT.NONE);
+        GridLayout glMain = new GridLayout();
+        container.setLayout(glMain);
+        Composite bodyComposite = new Composite(container, SWT.NONE);
+        bodyComposite.setLayout(new FillLayout(SWT.VERTICAL));
+        bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        SashForm hSashForm = new SashForm(bodyComposite, SWT.NONE);
+        hSashForm.setSashWidth(0);
+        Composite leftPanelComposite = new Composite(hSashForm, SWT.NONE);
+        GridLayout glHtmlDomComposite = new GridLayout();
+        leftPanelComposite.setLayout(glHtmlDomComposite);        
+		createImportFromSwaggerControl(leftPanelComposite, 1);
 		return null;
+	}
+	
+	@Override
+	protected boolean isResizable() {
+	    return true;
+	}
+	
+	@Override
+	protected Point getInitialSize() {
+	    final Point size = super.getInitialSize();
+
+	    size.x = convertWidthInCharsToPixels(100);
+
+
+	    return size;
 	}
 
 }
