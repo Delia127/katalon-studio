@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -17,6 +19,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -40,8 +43,8 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends AbstractDialog {
 
     private Control createImportFromSwaggerControl(Composite parent, int column) {
 
-        Label label = new Label(parent, SWT.NONE);
-        label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        Text text = new Text(parent, SWT.BORDER);
+        text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         
     	Composite methodComposite = new Composite(parent, SWT.NONE);
     	GridLayout glMethodComposite = new GridLayout();
@@ -54,12 +57,21 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends AbstractDialog {
             public void widgetSelected(SelectionEvent e) {
             	FileDialog directoryDialog = new FileDialog(getParentShell());
                 String filePath = directoryDialog.open();          
-                label.setText(filePath);
+                text.setText(filePath);
                 directory = filePath;
             }
         });
+        
+        ModifyListener listener = new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+              directory = ((Text) e.widget).getText();
+            }
+          };
+          
+        text.addModifyListener(listener);
 
         return parent;
+    
     }
     
     

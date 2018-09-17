@@ -30,12 +30,12 @@ public class SwaggerParserUtil {
 	private final static String PATH = "path";
 	
 	@SuppressWarnings("unchecked")
-	public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder, String fileLocation){
+	public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder, String fileLocationOrUrl){
 		List<WebServiceRequestEntity> newWSTestObject = new ArrayList<WebServiceRequestEntity>();
 		
 		try{
 			
-			Swagger swagger = new SwaggerParser().read(fileLocation);
+			Swagger swagger = new SwaggerParser().read(fileLocationOrUrl);
 			String urlCommonPrefix = "https";
 			if(swagger.getSchemes() != null 
 					&& !swagger.getSchemes().isEmpty() 
