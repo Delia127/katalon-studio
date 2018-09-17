@@ -533,4 +533,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS = CoreWebuiMessageConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS;
 
     public static final String SET_ENCRYPTED_TEXT_KEYWORD = "setEncryptedText";
+    
+    public static final String KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD = CoreWebuiMessageConstants.KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD;
+    public static final String KW_LOG_INFO_USING_HEURISTIC_METHOD = CoreWebuiMessageConstants.KW_LOG_INFO_USING_HEURISTIC_METHOD;
 }
