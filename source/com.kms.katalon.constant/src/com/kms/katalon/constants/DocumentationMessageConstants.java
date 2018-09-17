@@ -112,6 +112,8 @@ public class DocumentationMessageConstants extends NLS {
 	public static String NEW_CHECKPOINT;
 	
 	public static String RECORDER_RUN_STEPS;
+	
+	public static String MANAGE_TEST_PROJECT;
 
     static {
         // initialize resource bundle
