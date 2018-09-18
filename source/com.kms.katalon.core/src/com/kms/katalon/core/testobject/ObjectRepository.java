@@ -2,7 +2,6 @@ package com.kms.katalon.core.testobject;
 
 import static com.kms.katalon.core.constants.StringConstants.ID_SEPARATOR;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -13,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -26,10 +26,15 @@ import com.google.common.reflect.TypeToken;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.main.ScriptEngine;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
+
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 public class ObjectRepository {
 
@@ -46,6 +51,8 @@ public class ObjectRepository {
     private static final String WEBELEMENT_FILE_EXTENSION = ".rs";
 
     private static final String WEB_ELEMENT_PROPERTY_NODE_NAME = "webElementProperties";
+    
+    private static final String WEB_ELEMENT_XPATH_NODE_NAME = "webElementXpaths";
 
     private static final String PROPERTY_NAME = "name";
 
@@ -209,7 +216,7 @@ public class ObjectRepository {
             return null;
         }
     }
-
+  
     private static TestObject findWebUIObject(String testObjectId, Element element, Map<String, Object> variables) {
         TestObject testObject = new TestObject(testObjectId);
 
@@ -270,6 +277,33 @@ public class ObjectRepository {
                 testObject.addProperty(objectProperty);
             }
         }
+        
+        for (Object xpathElementObject : element.elements(WEB_ELEMENT_XPATH_NODE_NAME)) {
+            TestObjectXpath objectXpath = new TestObjectXpath();
+            Element xpathElement = (Element) xpathElementObject;
+
+            String propertyName = StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_NAME));
+            ConditionType propertyCondition = ConditionType
+                    .fromValue(StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_CONDITION)));
+            String propertyValue = StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_VALUE));
+            boolean isPropertySelected = Boolean
+                    .valueOf(StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_IS_SELECTED)));
+
+            objectXpath.setName(propertyName);
+            objectXpath.setCondition(propertyCondition);
+            objectXpath.setValue(propertyValue);
+            objectXpath.setActive(isPropertySelected);
+
+            // Check if this element is inside a frame
+            if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                TestObject parentObject = findTestObject(propertyValue);
+                testObject.setParentObject(parentObject);
+            } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                testObject.setParentObjectShadowRoot(true);
+            } else {
+                testObject.addXpath(objectXpath);
+            }
+        }
 
         if (testObject == null || variables == null || variables.isEmpty()) {
             return testObject;
@@ -298,10 +332,11 @@ public class ObjectRepository {
 
         StrSubstitutor substitutor = new StrSubstitutor(variables);
         if ("SOAP".equals(serviceType)) {
-            requestObject.setWsdlAddress(reqElement.elementText("wsdlAddress"));
+            requestObject.setWsdlAddress(substitutor.replace(reqElement.elementText("wsdlAddress")));
             requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
             requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
-            requestObject.setSoapBody(reqElement.elementText("soapBody"));
+            requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
+            requestObject.setSoapBody(substitutor.replace(reqElement.elementText("soapBody")));
         } else if ("RESTful".equals(serviceType)) {
             requestObject.setRestUrl(substitutor.replace(reqElement.elementText("restUrl")));
             String requestMethod = reqElement.elementText("restRequestMethod");
@@ -333,16 +368,58 @@ public class ObjectRepository {
 //                }
             }
         }
+        
+        requestObject.setVariables(variables);
 
         String verificationScript = reqElement.elementText("verificationScript");
         requestObject.setVerificationScript(verificationScript);
 
         return requestObject;
     }
+    
+    @SuppressWarnings("unchecked")
+    public static RequestObject findRequestObject(String requestObjectId, File objectFile) {
+        try {
+            Element reqElement = new SAXReader().read(objectFile).getRootElement();
+            
+            List<Object> variableElements = reqElement.elements("variables");
+            Map<String, Object> variables = Collections.emptyMap();
+            if (variableElements != null) {
+                Map<String, String> rawVariables = parseRequestObjectVariables(variableElements);
+                variables = evaluateVariables(rawVariables);
+            }
+            
+            return findRequestObject(requestObjectId, reqElement, RunConfiguration.getProjectDir(), variables);
+        } catch (Exception e) {
+            logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
+                    requestObjectId, ExceptionsUtil.getMessageForThrowable(e)));
+            return null;
+        }
+    }
 
+    private static Map<String, String> parseRequestObjectVariables(List<Object> elements) {
+        Map<String, String> variableMap = elements.stream()
+            .collect(Collectors.toMap(element -> ((Element) element).elementText("name"),
+                   element -> ((Element) element).elementText("defaultValue")));
+        return variableMap;
+    }
+    
+    private static Map<String, Object> evaluateVariables(Map<String, String> rawVariables) 
+            throws IOException, ClassNotFoundException, ResourceException, ScriptException {
+        ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
+        Map<String, Object> evaluatedVariables = new HashMap<>();
+        for (Map.Entry<String, String> variableEntry : rawVariables.entrySet()) {
+            String variableName = variableEntry.getKey();
+            String variableValue = variableEntry.getValue();
+            Object evaluatedValue = scriptEngine.runScriptWithoutLogging(variableValue, new Binding());
+            evaluatedVariables.put(variableName, evaluatedValue);
+        }       
+        return evaluatedVariables;
+    }
+    
     private static boolean isBodySupported(RequestObject requestObject) {
         String restRequestMethod = requestObject.getRestRequestMethod();
-        return !("GET".contains(restRequestMethod) || "DELETE".equals(restRequestMethod));
+        return !("GET".contains(restRequestMethod));
     }
 
     private static List<TestObjectProperty> parseProperties(List<Object> objects) {

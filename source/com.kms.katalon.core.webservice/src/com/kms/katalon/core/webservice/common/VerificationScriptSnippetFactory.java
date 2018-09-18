@@ -22,11 +22,11 @@ public class VerificationScriptSnippetFactory {
     
     private static final String SNIPPET_SCRIPT_NODE = "script";
     
-    private static final String SNIPPET_IMPORT_NODE = "import";
+    private static final String SNIPPET_COMMON_NODE = "common";
     
     private static List<ScriptSnippet> snippets = new ArrayList<>();
     
-    private static ScriptSnippet snippetImport;
+    private static ScriptSnippet commonScriptSnippet;
     
     private static List<ScriptSnippet> loadSnippets() {
         
@@ -46,8 +46,8 @@ public class VerificationScriptSnippetFactory {
                 String snippetScript = snippetElement.element(SNIPPET_SCRIPT_NODE).getText().trim();
                 ScriptSnippet snippet = new ScriptSnippet(snippetName, snippetScript);
                 
-                if (snippet.getName().equals(SNIPPET_IMPORT_NODE)) {
-                    snippetImport = snippet;
+                if (snippet.getName().equals(SNIPPET_COMMON_NODE)) {
+                    commonScriptSnippet = snippet;
                 } else {
                     snippets.add(snippet);
                 }
@@ -66,10 +66,10 @@ public class VerificationScriptSnippetFactory {
         return snippets;
     }
     
-    public static ScriptSnippet getSnippetImport() {
-        if (snippetImport == null) {
+    public static ScriptSnippet getCommonScriptSnippet() {
+        if (commonScriptSnippet == null) {
             loadSnippets();
         }
-        return snippetImport;
+        return commonScriptSnippet;
     }
 }

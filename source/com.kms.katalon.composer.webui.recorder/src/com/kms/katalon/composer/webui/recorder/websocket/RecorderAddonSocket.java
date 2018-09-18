@@ -24,18 +24,26 @@ public class RecorderAddonSocket extends AddonSocket {
             String key = HTMLElementUtil.decodeURIComponent(message.substring(0, message.indexOf(EQUALS)));
 
             switch (key) {
-                case ELEMENT_KEY:
+                case ELEMENT_ACTION_KEY:                	
                     addNewAction(message.substring(message.indexOf(EQUALS) + 1, message.length()));
                     break;
+                default:
+                	super.handleOldElementMessage(message);
             }
         } catch (UnsupportedEncodingException e) {
             LoggerSingleton.logError(e);
         }
     }
+        
+    protected void seleniumSocketResponder(){
+        sendMessage(new AddonMessage(AddonCommand.START_RECORD));
+        System.out.println("WS: Start recording");        
+    }
 
     private void addNewAction(String value) {
         try {
             HTMLActionMapping actionMapping = HTMLActionJsonParser.parseJsonIntoHTMLActionMapping(value);
+            
             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.RECORDER_HTML_ACTION_CAPTURED,
                     actionMapping);
         } catch (JsonSyntaxException | UnsupportedEncodingException e) {

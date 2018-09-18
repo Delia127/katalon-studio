@@ -61,6 +61,8 @@ public class EventConstants {
     public static final String EXPLORER_EXPAND_TREE_ENTITY = "EXPLORER/EXPAND_TREE_ENTITY";
 
     public static final String EXPLORER_OPEN_SELECTED_ITEM = "EXPLORER/OPEN_SELECTED_ITEM";
+    
+    public static final String EXPLORER_OPEN_SELECTED_GROOVY_SCRIPT = "EXPLORER/OPEN_SELECTED_GROOVY_SCRIPT";
 
     public static final String EXPLORER_DELETE_SELECTED_ITEM = "EXPLORER/DELETE_SELECTED_ITEM";
 
@@ -291,6 +293,9 @@ public class EventConstants {
     // Execution Profile Event
     public static final String PROFILE_SELECTED_PROIFE_CHANGED = "PROFILE/SELECTED_PROFILE_CHANGE";
     
+    // Analytics Preference Event
+    public static final String IS_INTEGRATED = "SETTINGS/INTERGRATION/KATALON_ANALYTICS";
+
     // WS Verification Events
     public static final String WS_VERIFICATION_LOG_UPDATED = "WS_VERIFICATION/LOG_UPDATED";
 

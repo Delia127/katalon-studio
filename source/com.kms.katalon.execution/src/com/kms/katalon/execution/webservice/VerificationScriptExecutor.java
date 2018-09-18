@@ -28,17 +28,17 @@ public class VerificationScriptExecutor {
     
     private WSVerificationTestCaseEntity testCaseEntity;
     
-    public void execute(String testObjectId, String script, ResponseObject responseObject) throws Exception {
+    public void execute(String requestObjectId, String script, ResponseObject responseObject) throws Exception {
         
         testCaseEntity = createTestCaseEntity(script, responseObject);
         
-        WSVerificationRunConfiguration runConfig = new WSVerificationRunConfiguration(testObjectId, responseObject);
+        WSVerificationRunConfiguration runConfig = new WSVerificationRunConfiguration(requestObjectId, responseObject);
         runConfig.setExecutionProfile(ExecutionProfileStore.getInstance().getSelectedProfile());
 
         runConfig.build(testCaseEntity, new WSVerificationTestCaseExecutedEntity(testCaseEntity));
 
         LauncherManager launcherManager = LauncherManager.getInstance();
-        launcher = new VerificationScriptLauncher(testObjectId, launcherManager, runConfig, new Runnable() {
+        launcher = new VerificationScriptLauncher(requestObjectId, launcherManager, runConfig, new Runnable() {
             
             @Override
             public void run() {
@@ -46,7 +46,7 @@ public class VerificationScriptExecutor {
                 TestStatusValue[] statusValues = result.getResultValues();
                 
                 eventBroker.post(EventConstants.WS_VERIFICATION_EXECUTION_FINISHED,
-                        new Object[]{ testObjectId, statusValues[0]});
+                        new Object[]{ requestObjectId, statusValues[0]});
             }
         });
         launcherManager.addLauncher(launcher);

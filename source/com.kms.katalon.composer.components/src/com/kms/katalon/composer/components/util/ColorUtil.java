@@ -212,5 +212,9 @@ public class ColorUtil {
     public static Color getDisabledTextColor() {
         return getColor(DISABLED_TEXT_COLOR);
     }
+    
+    public static Color getHintForegroundColor() {
+        return getColor("#DC923C");
+    }
 
 }

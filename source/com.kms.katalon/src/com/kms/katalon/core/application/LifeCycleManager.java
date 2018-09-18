@@ -194,9 +194,11 @@ public class LifeCycleManager {
             }
 
             private boolean checkActivation(final IEventBroker eventBroker) {
+
                 if (VersionUtil.isDevelopmentBuild()) {
                     return true;
                 }
+
                 if (!(ComposerActivationInfoCollector.checkActivation())) {
                     eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                     PlatformUI.getWorkbench().close();
@@ -207,6 +209,7 @@ public class LifeCycleManager {
 //                        .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
 //                                RunningMode.GUI)));
 //                sendEventForTracking();
+                Trackings.trackOpenApplication(false, "gui");
                 
                 return true;
             }

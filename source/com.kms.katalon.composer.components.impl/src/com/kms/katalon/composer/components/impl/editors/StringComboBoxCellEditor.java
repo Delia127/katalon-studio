@@ -92,7 +92,7 @@ public class StringComboBoxCellEditor extends ComboBoxCellEditor {
         // keep selection if possible
         Object previousSelectedValue = getValue();
         super.setItems(newItems);
-        new AutoCompleteField(getControl(), new CComboContentAdapter(), newItems);
+        getAutoCompleteField(newItems);
         if ((previousSelectedValue != null) && (getControl() instanceof CCombo)) {
             for (int i = 0; i < newItems.length; i++) {
                 if (newItems[i].equals(previousSelectedValue)) {
@@ -100,5 +100,9 @@ public class StringComboBoxCellEditor extends ComboBoxCellEditor {
                 }
             }
         }
+    }
+    
+    public AutoCompleteField getAutoCompleteField(String[] newItems) {
+        return  new AutoCompleteField(getControl(), new CComboContentAdapter(), newItems);
     }
 }

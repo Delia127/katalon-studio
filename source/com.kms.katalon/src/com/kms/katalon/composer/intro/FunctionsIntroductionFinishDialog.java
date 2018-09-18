@@ -4,7 +4,8 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -36,27 +37,36 @@ public class FunctionsIntroductionFinishDialog extends Dialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite container = (Composite) super.createDialogArea(parent);
-        container.setLayout(new FillLayout(SWT.HORIZONTAL));
-
-        imageComposite = new ResizableBackgroundImageComposite(container, SWT.NONE, ImageConstants.IMG_INTRO_SCREEN_6);
+        org.eclipse.swt.layout.GridLayout containerLayout = new GridLayout();
+        containerLayout.marginWidth = 0;
+        containerLayout.marginHeight = 0;
+        container.setLayout(containerLayout);
+        
+        Composite imageComposite = new Composite(container, SWT.NONE);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gridData.widthHint = 960;
+        gridData.heightHint = 540;
+        imageComposite.setLayoutData(gridData);
+        
+        imageComposite.setBackgroundImage(ImageConstants.IMG_INTRO_SCREEN_WELCOME);
 
         return container;
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, StringConstants.DIA_OK, true);
-        createButton(parent, IDialogConstants.CANCEL_ID, StringConstants.DIA_CANCEL, false);
+        createButton(parent, IDialogConstants.OK_ID, StringConstants.DIA_LET_START, true);
+//        createButton(parent, IDialogConstants.CANCEL_ID, StringConstants.DIA_CANCEL, false);
     }
 
     @Override
     public void create() {
         super.create();
-        computeSizeHelper.computeDialogSize(imageComposite);
+      //  computeSizeHelper.computeDialogSize(imageComposite);
     }
 
-    @Override
-    protected Point getInitialSize() {
-        return computeSizeHelper.getBestSize();
-    }
+//    @Override
+//    protected Point getInitialSize() {
+//        return computeSizeHelper.getBestSize();
+//    }
 }

@@ -775,6 +775,12 @@ public class ExplorerPart {
                                         .equals(FolderType.REPORT.toString())) {
                             event.doit = false;
                         }
+                        if (item.getData() instanceof ITreeEntity) {
+                            ITreeEntity treeEntity = (ITreeEntity) item.getData();
+                            if (!treeEntity.isRemoveable()) {
+                                event.doit = false;
+                            }
+                        }
                     }
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);

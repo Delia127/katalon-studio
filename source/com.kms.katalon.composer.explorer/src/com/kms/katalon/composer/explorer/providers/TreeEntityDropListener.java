@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.SystemFileTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
@@ -24,7 +25,9 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
+import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -50,7 +53,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 ITreeEntity[] treeEntities = (ITreeEntity[]) event.data;
                 FolderTreeEntity targetTreeEntity = getDropDestinationFolder(event);
                 FolderEntity target = (FolderEntity) targetTreeEntity.getObject();
-                move(treeEntities, target);
+                move(treeEntities, target, targetTreeEntity);
                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity);
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, lastMovedTreeEntity);
             }
@@ -69,7 +72,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         }
     }
 
-    private void move(ITreeEntity[] treeEntities, FolderEntity targetFolder) throws Exception {
+    private void move(ITreeEntity[] treeEntities, FolderEntity targetFolder, FolderTreeEntity targetTreeEntity) throws Exception {
         FolderEntity rootTargetFolder = null;
         if (targetFolder.getFolderType().equals(FolderType.TESTCASE)) {
             rootTargetFolder = FolderController.getInstance().getTestCaseRoot(targetFolder.getProject());
@@ -84,6 +87,9 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         }
 
         for (ITreeEntity treeEntity : treeEntities) {
+            if (!treeEntity.isRemoveable()) {
+                continue;
+            }
             validateMovingAcrossArea(treeEntity, targetFolder);
             
             if (treeEntity instanceof FolderTreeEntity) {
@@ -126,6 +132,14 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 CheckpointEntity movedCheckpoint = EntityProcessingUtil.moveCheckpoint(
                         ((CheckpointTreeEntity) treeEntity).getObject(), targetFolder);
                 lastMovedTreeEntity = TreeEntityUtil.getCheckpointTreeEntity(movedCheckpoint);
+            } else if (treeEntity instanceof SystemFileTreeEntity) {
+                SystemFileTreeEntity systemFileTreeEntity = (SystemFileTreeEntity) treeEntity;
+                SystemFileEntity newSystemFile = 
+                        SystemFileController.getInstance().moveSystemFile(systemFileTreeEntity.getObject(), targetFolder);
+               if (newSystemFile != null) {
+                   lastMovedTreeEntity = new SystemFileTreeEntity(newSystemFile, targetTreeEntity);
+               }
+
             }
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity.getParent());
         }

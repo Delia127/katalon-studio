@@ -65,6 +65,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_LBL_SETTINGS = ComposerObjectRepositoryMessageConstants.VIEW_LBL_SETTINGS;
     public static final String VIEW_LBL_OBJ_PROPERTIES = ComposerObjectRepositoryMessageConstants.VIEW_LBL_OBJ_PROPERTIES;
     public static final String VIEW_TITLE_TEST_OBJ_PROPERTIES = ComposerObjectRepositoryMessageConstants.VIEW_TITLE_TEST_OBJ_PROPERTIES;
+    public static final String VIEW_LBL_OBJ_XPATHS = ComposerObjectRepositoryMessageConstants.VIEW_LBL_OBJ_XPATHS;
 
     // TestObjectReferencesDialog
     public static final String DIA_MSG_HEADER_TEST_OBJECT_REFERENCES = ComposerObjectRepositoryMessageConstants.DIA_MSG_HEADER_TEST_OBJECT_REFERENCES;

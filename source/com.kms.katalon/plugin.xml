@@ -23,7 +23,7 @@
 		    name="rendererFactoryUri"
 		    value="bundleclass://com.kms.katalon/com.kms.katalon.composer.components.CustomWorkbenchRendererFactory">
 		</property>
-         <property
+	   <property
                name="windowImages"
                value="icons/branding_16.png,icons/branding_32.png,icons/branding_48.png,icons/branding_64.png,icons/branding_128.png,icons/branding_256.png">
          </property>
@@ -34,7 +34,7 @@
          <property
                name="aboutText"
                value="%productBlurb">
-         </property>
+         </property>       
          <property
                name="startupForegroundColor"
                value="404040">

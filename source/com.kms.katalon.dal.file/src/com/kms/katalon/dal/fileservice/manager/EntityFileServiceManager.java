@@ -32,7 +32,7 @@ import com.kms.katalon.entity.util.Util;
 
 public class EntityFileServiceManager {
 
-    private static final String[] EXCLUDED_FOLDER = new String[] { ".svn", ".meta", ".DS_Store" };
+    private static final String[] EXCLUDED_FOLDER = new String[] { ".svn", ".meta", ".DS_Store", ".git" };
 
     public static final FileFilter fileFilter = new FileFilter() {
         List<String> list = Arrays.asList(EXCLUDED_FOLDER);
@@ -138,6 +138,8 @@ public class EntityFileServiceManager {
                         folderEntity.setFolderType(FolderType.KEYWORD);
                     } else if (FileServiceConstant.REPORT_ROOT_FOLDER_NAME.equals(fileName)) {
                         folderEntity.setFolderType(FolderType.REPORT);
+                    }  else if (FileServiceConstant.INCLUDE_SCRIPT_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.INCLUDE);
                     }
                     folderEntity.setProject(currentProject);
                 } else {
