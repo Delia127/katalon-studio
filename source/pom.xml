@@ -150,7 +150,7 @@
 				<artifactId>tycho-compiler-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
-					<maxmem>2048m</maxmem>
+					<maxmem>4048m</maxmem>
 					<excludeResources>
 						<excludeResource>**/*.groovy</excludeResource>
 					</excludeResources>
