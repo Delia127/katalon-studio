@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
-import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
@@ -39,8 +38,21 @@ public class ReportController extends EntityController {
         return (ReportController) _instance;
     }
 
-    public String getTestCaseLogFolder(TestCaseEntity testCase) throws DALException {
-        return getDataProviderSetting().getReportDataProvider().getTemporaryLogDirectory(testCase);
+    public String getTestCaseLogFolder(TestCaseEntity testCase) throws Exception {
+        return getDataProviderSetting().getReportDataProvider().getLogDirectory(testCase);
+    }
+
+    /**
+     * s
+     * 
+     * @param testCase
+     * @return report folder's name
+     * @throws Exception
+     */
+    public String generateReportFolder(TestCaseEntity testCase) throws Exception {
+        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider()
+                .getLogDirectory((TestCaseEntity) testCase);
+        return generateReportFolder(testCaseRootLogFolder);
     }
 
     public String generateReportFolder(TestSuiteEntity testSuite) throws Exception {
@@ -48,13 +60,7 @@ public class ReportController extends EntityController {
         return generateReportFolder(testSuiteRootLogFolder);
     }
 
-    public String generateTemporaryExecutionFolder(FileEntity testCase) throws DALException, InterruptedException {
-        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider()
-                .getTemporaryLogDirectory(testCase);
-        return generateReportFolder(testCaseRootLogFolder);
-    }
-
-    private String generateReportFolder(String reportRootFolderPath) throws InterruptedException {
+    private String generateReportFolder(String reportRootFolderPath) throws Exception {
         // create report folder if it doesn't exist
         long current = Calendar.getInstance().getTimeInMillis();
         File reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
@@ -68,7 +74,7 @@ public class ReportController extends EntityController {
     }
 
     public File getLogFile(TestCaseEntity testCase, String reportFolderName) throws Exception {
-        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getTemporaryLogDirectory(testCase);
+        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getLogDirectory(testCase);
         File testCaseReportFolderAtRuntime = new File(testCaseRootLogFolder, reportFolderName);
 
         return new File(testCaseReportFolderAtRuntime, LOG_FILE_NAME);
@@ -82,7 +88,7 @@ public class ReportController extends EntityController {
     }
 
     public File getExecutionSettingFile(TestCaseEntity testCase, String reportFolderName) throws Exception {
-        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getTemporaryLogDirectory(testCase);
+        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getLogDirectory(testCase);
         File testCaseReportFolderAtRuntime = new File(testCaseRootLogFolder, reportFolderName);
 
         return new File(testCaseReportFolderAtRuntime, EXECUTION_SETTING_FILE_NAME);

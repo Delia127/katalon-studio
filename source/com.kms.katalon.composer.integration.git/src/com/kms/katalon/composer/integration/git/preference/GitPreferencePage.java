@@ -65,12 +65,12 @@ public class GitPreferencePage extends FieldEditorPreferencePageWithHelp {
     }
 
     @Override
-    public boolean hasDocumentation() {
+    protected boolean hasDocumentation() {
         return true;
     }
 
     @Override
-    public String getDocumentationUrl() {
+    protected String getDocumentationUrl() {
         return DocumentationMessageConstants.PREFERENCE_GIT;
     }
 }

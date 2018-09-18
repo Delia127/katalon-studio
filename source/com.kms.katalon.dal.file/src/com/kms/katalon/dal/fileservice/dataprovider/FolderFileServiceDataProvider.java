@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.kms.katalon.dal.IFolderDataProvider;
 import com.kms.katalon.dal.exception.DALException;
-import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.entity.file.FileEntity;
@@ -32,9 +31,6 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
         if (folder != null) {
             if (folder.getFolderType() == FolderType.REPORT) {
                 return FolderFileServiceManager.getChildReportsOfFolder(folder);
-            } else if (folder.getFolderType() == FolderType.INCLUDE) {
-                return new FileServiceDataProviderSetting().getSystemFileDataProvider()
-                        .getChildren(folder);
             }
             return FolderFileServiceManager.getChildren(folder);
         }
@@ -102,9 +98,6 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
 
     @Override
     public FolderEntity moveFolder(FolderEntity folder, FolderEntity destinationFolder) throws Exception {
-        if (destinationFolder.getFolderType() == FolderType.INCLUDE) {
-            return new FileServiceDataProviderSetting().getSystemFileDataProvider().moveFolder(folder, destinationFolder);
-        }
         return FolderFileServiceManager.moveFolder(folder, destinationFolder);
     }
 
@@ -131,10 +124,5 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
     @Override
     public FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
         return FolderFileServiceManager.getProfileRoot(project);
-    }
-
-    @Override
-    public FolderEntity getIncludeRoot(ProjectEntity project) throws DALException {
-        return FolderFileServiceManager.getSourceRoot(project);
     }
 }

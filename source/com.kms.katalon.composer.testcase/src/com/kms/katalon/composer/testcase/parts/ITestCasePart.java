@@ -9,13 +9,20 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
-public interface ITestCasePart extends IVariablePart {
-
+public interface ITestCasePart {
     TestCaseEntity getTestCase();
+
+    void setDirty(boolean isDirty);
+
+    void addVariables(VariableEntity[] variables);
+
+    VariableEntity[] getVariables();
 
     TestCaseTreeTableInput getTreeTableInput();
 
     List<AstTreeTableNode> getDragNodes();
 
     void createDynamicGotoMenu(Menu menu);
+
+    void deleteVariables(List<VariableEntity> variableList);
 }

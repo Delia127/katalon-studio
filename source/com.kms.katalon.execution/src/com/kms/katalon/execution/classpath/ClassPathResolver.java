@@ -15,7 +15,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 public class ClassPathResolver {
     private static final String LIB_BIN_FOLDER = "lib";
     private static final String KEYWORD_BIN_FOLDER = "keyword";
-    private static final String GROOVY_SOURCE_BIN_FOLDER = "groovy";
     private static final String BIN_FOLDER= "bin";
 
     private ClassPathResolver() {
@@ -58,7 +57,6 @@ public class ClassPathResolver {
         String binFolderRelativePath = project.getFolderLocation() + File.separator + BIN_FOLDER + File.separator;
         classPathLocs.add(binFolderRelativePath + KEYWORD_BIN_FOLDER);
         classPathLocs.add(binFolderRelativePath + LIB_BIN_FOLDER);
-        classPathLocs.add(binFolderRelativePath + GROOVY_SOURCE_BIN_FOLDER);
 
         return classPathLocs.toArray(new String[classPathLocs.size()]);
     }

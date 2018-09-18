@@ -62,5 +62,4 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.google.gson,
  com.kms.katalon.util,
  com.kms.katalon.composer.testcase,
- com.kms.katalon.tracking,
- org.codehaus.groovy
+ com.kms.katalon.tracking

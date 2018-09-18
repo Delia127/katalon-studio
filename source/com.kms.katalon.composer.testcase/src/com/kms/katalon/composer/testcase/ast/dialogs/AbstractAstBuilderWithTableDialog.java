@@ -56,10 +56,4 @@ public abstract class AbstractAstBuilderWithTableDialog extends AbstractAstBuild
         setInput();
         return container;
     }
-    
-    @Override
-    protected void okPressed() {
-        tableViewer.applyEditorValue();
-        super.okPressed();
-    }
 }

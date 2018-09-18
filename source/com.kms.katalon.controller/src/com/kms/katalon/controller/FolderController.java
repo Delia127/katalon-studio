@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -14,7 +12,6 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
@@ -225,36 +222,6 @@ public class FolderController extends EntityController implements Serializable {
 
     public FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
         return getDataProviderSetting().getFolderDataProvider().getProfileRoot(project);
-    }
-
-    public FolderEntity getIncludeRoot(ProjectEntity project) throws DALException {
-        return getDataProviderSetting().getFolderDataProvider().getIncludeRoot(project);
-    }
-    
-    public boolean isSourceFolder(ProjectEntity project, FolderEntity folderEntity) {
-        List<String> sourceFolders = project.getSourceContent().getSourceFolderList()
-                .stream().map(source -> source.getUrl()).collect(Collectors.toList());
-        return folderEntity.getFolderType() == FolderType.INCLUDE && 
-                sourceFolders.contains(
-                        StringUtils.replace(folderEntity.getRelativePath(), "\\", "/"));
-    }
-    
-    public boolean isSystemFolder(ProjectEntity project, FolderEntity folderEntity) {
-        List<String> systemFolder = project.getSourceContent().getSystemFolderList()
-                .stream().map(source -> source.getUrl()).collect(Collectors.toList());
-        return folderEntity.getFolderType() == FolderType.INCLUDE &&
-                systemFolder.contains(folderEntity.getRelativePath());
-    }
-    
-    public boolean isAncentorSystemFolder(ProjectEntity project, FolderEntity folderEntity) {
-        List<String> systemFolder = project.getSourceContent().getSystemFolderList()
-                .stream().map(source -> source.getUrl()).collect(Collectors.toList());
-
-        String folderRelativePath = folderEntity.getRelativePath();
-        return folderEntity.getFolderType() == FolderType.INCLUDE &&
-                systemFolder.stream().filter(s -> {
-                    return s.equals(folderRelativePath) || s.startsWith(folderRelativePath + "/");
-                }).findAny().isPresent();
     }
 
 }

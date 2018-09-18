@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.security.GeneralSecurityException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
@@ -25,7 +25,6 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -36,6 +35,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
 
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.internal.ProxyUtil;
@@ -59,22 +59,23 @@ public class HttpClientProxyBuilder {
         return clientContext;
     }
 
-    public static HttpClientProxyBuilder create(ProxyInformation proxyInfo) throws URISyntaxException, IOException,
-            NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+    public static HttpClientProxyBuilder create(ProxyInformation proxyInfo)
+            throws URISyntaxException, IOException, GeneralSecurityException {
         Proxy proxy = ProxyUtil.getProxy(proxyInfo);
 
-        SSLContextBuilder builder = new SSLContextBuilder();
-        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), new HostnameVerifier() {
+        HttpClientBuilder clientBuilder = HttpClients.custom().setSSLHostnameVerifier(new HostnameVerifier() {
 
             @Override
-            public boolean verify(String hostname, SSLSession session) {
+            public boolean verify(String arg0, SSLSession arg1) {
                 return true;
             }
-        });
+        }).setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
 
-        HttpClientBuilder clientBuilder = HttpClients.custom();
-        clientBuilder.setSSLSocketFactory(sslsf);
+            @Override
+            public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                return true;
+            }
+        }).build());
         HttpClientContext context = HttpClientContext.create();
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
             HttpHost httpHost = new HttpHost(proxyInfo.getProxyServerAddress(), proxyInfo.getProxyServerPort());
@@ -92,8 +93,6 @@ public class HttpClientProxyBuilder {
                     .setDefaultCredentialsProvider(credentialsProvider)
                     .setConnectionManager(getSystemConnectionManager(proxy))
                     .setSSLHostnameVerifier(new NoopHostnameVerifier());
-        } else {
-            clientBuilder.setSSLHostnameVerifier(new NoopHostnameVerifier());
         }
 
         return new HttpClientProxyBuilder(clientBuilder, context);
@@ -111,14 +110,15 @@ public class HttpClientProxyBuilder {
     }
 
     private static HttpClientConnectionManager getSystemConnectionManager(Proxy proxy) {
-        Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory>create()
+        Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory> create()
                 .register("http", PlainConnectionSocketFactory.INSTANCE)
                 .register("https", new SSLConnectionSocketFactory(SSLContexts.createSystemDefault()) {
                     @Override
                     public Socket createSocket(final HttpContext context) {
                         return new Socket(proxy);
                     }
-                }).build();
+                })
+                .build();
         return new PoolingHttpClientConnectionManager(reg);
     }
 }

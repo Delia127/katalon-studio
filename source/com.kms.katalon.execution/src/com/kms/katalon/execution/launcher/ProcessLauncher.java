@@ -182,9 +182,6 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
 
     protected void postExecutionComplete() {
         try {
-            if (process == null) {
-                return;
-            }
             if (process.getOutputStreamHandler() != null) {
                 process.getOutputStreamHandler().close();
             }

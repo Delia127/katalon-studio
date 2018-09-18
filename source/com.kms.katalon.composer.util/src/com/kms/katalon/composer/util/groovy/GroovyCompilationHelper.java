@@ -264,7 +264,7 @@ public class GroovyCompilationHelper {
             String formattedContent = CodeFormatterUtil.format(CodeFormatter.K_CLASS_BODY_DECLARATIONS, originalContent,
                     indent, lineDelimiter, parentPackage.getJavaProject());
             formattedContent = Strings.trimLeadingTabsAndSpaces(formattedContent);
-            // buf.replace(range.getOffset(), range.getLength(), formattedContent);
+            buf.replace(range.getOffset(), range.getLength(), formattedContent);
 
             if (needsSave) {
                 cu.commitWorkingCopy(true, null);

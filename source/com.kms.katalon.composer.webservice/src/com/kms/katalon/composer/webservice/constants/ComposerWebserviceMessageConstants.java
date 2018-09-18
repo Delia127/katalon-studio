@@ -18,8 +18,6 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PA_LBL_HTTP_BODY;
     
     public static String PA_LBL_VERIFICATION;
-    
-    public static String PA_LBL_VARIABLE;
 
     public static String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
 

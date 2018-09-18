@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -22,10 +23,8 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.utils.ApplicationProxyUtil;
-import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
-import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
@@ -33,7 +32,7 @@ import com.kms.katalon.core.network.ProxyServerType;
 import com.kms.katalon.execution.preferences.ProxyPreferenceDefaultValueInitializer;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 
-public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
+public class ProxyConfigurationPreferencesPage extends PreferencePage {
     private Text txtAddress;
 
     private Text txtPort;
@@ -289,15 +288,5 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
                     ComposerExecutionMessageConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG);
             return false;
         }
-    }
-    
-    @Override
-    public boolean hasDocumentation() {
-        return true;
-    }
-    
-    @Override
-    public String getDocumentationUrl() {
-        return DocumentationMessageConstants.PREFERENCE_PROXY;
     }
 }

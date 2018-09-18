@@ -29,8 +29,6 @@ public class WebElementEntity extends FileEntity {
     private String elementGuidId;
 
     private List<WebElementPropertyEntity> webElementProperties;
-    
-    private List<WebElementXpathEntity> webElementXpaths;
 
     private String imagePath;
 
@@ -43,7 +41,6 @@ public class WebElementEntity extends FileEntity {
     public WebElementEntity() {
         super();
         webElementProperties = new ArrayList<WebElementPropertyEntity>(0);
-        webElementXpaths = new ArrayList<WebElementXpathEntity>(0);
         setSelectorCollection(new HashMap<>());
         elementGuidId = defaultElementGUID;
 
@@ -67,14 +64,6 @@ public class WebElementEntity extends FileEntity {
     public void setWebElementProperties(List<WebElementPropertyEntity> webElementProperties) {
         this.webElementProperties = webElementProperties;
     }
-    
-    public List<WebElementXpathEntity> getWebElementXpaths() {
-        return this.webElementXpaths;
-    }
-
-    public void setWebElementXpaths(List<WebElementXpathEntity> webElementXpaths) {
-        this.webElementXpaths = webElementXpaths;
-    }
 
     @Override
     public WebElementEntity clone() {
@@ -89,12 +78,6 @@ public class WebElementEntity extends FileEntity {
         for (WebElementPropertyEntity webElementProperty : getWebElementProperties()) {
             newWebElement.getWebElementProperties().add(webElementProperty.clone());
         }
-        
-        newWebElement.getWebElementXpaths().clear();
-        for (WebElementXpathEntity webElementXpath : getWebElementXpaths()) {
-            newWebElement.getWebElementXpaths().add(webElementXpath.clone());
-        }
-
         newWebElement.setImagePath(getImagePath());
         newWebElement.setUseRalativeImagePath(getUseRalativeImagePath());
         newWebElement.setSelectorMethod(getSelectorMethod());
@@ -127,9 +110,7 @@ public class WebElementEntity extends FileEntity {
         }
         WebElementEntity that = (WebElementEntity) obj;
         isEquals = isEquals && new EqualsBuilder()
-                .append(this.getWebElementProperties(), that.getWebElementProperties()).isEquals()
-                && new EqualsBuilder()
-                .append(this.getWebElementXpaths(), that.getWebElementXpaths()).isEquals();
+                .append(this.getWebElementProperties(), that.getWebElementProperties()).isEquals();
         return isEquals;
     }
 
@@ -156,25 +137,11 @@ public class WebElementEntity extends FileEntity {
                 .findFirst();
         return optResult.isPresent() ? optResult.get() : null;
     }
-    
+
     public String getPropertyValue(String propertyName) {
         WebElementPropertyEntity prop = getProperty(propertyName);
         return prop != null ? prop.getValue() : StringUtils.EMPTY;
     }
-    
-    public WebElementXpathEntity getXpath(String xpathName) {
-        Optional<WebElementXpathEntity> optResult = getWebElementXpaths().stream()
-                .filter(p -> p.getName().equals(xpathName)
-                        && MATCH_CONDITION.EQUAL.toString().equals(p.getMatchCondition()))
-                .findFirst();
-        return optResult.isPresent() ? optResult.get() : null;
-    }
-
-    public String getXpathValue(String xpathName) {
-        WebElementXpathEntity prop = getXpath(xpathName);
-        return prop != null ? prop.getValue() : StringUtils.EMPTY;
-    }
-
 
     public WebElementSelectorMethod getSelectorMethod() {
         return selectorMethod;

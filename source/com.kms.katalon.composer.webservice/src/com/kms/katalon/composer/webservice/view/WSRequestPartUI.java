@@ -69,8 +69,6 @@ public class WSRequestPartUI {
 
     private MPart bodyPart;
     
-    private MPart variablePart;
-    
     private MCompositePart verificationPart;
 
     private MPart scriptEditorPart;
@@ -195,15 +193,6 @@ public class WSRequestPartUI {
         verificationToolbarPart.setContributionURI(CHILD_PART_OBJECT_URI);
 //        verificationPartSashContainer.getChildren().add(verificationToolbarPart);
         
-        String variablePartId = getVariablePartId(requestObject);
-        variablePart = modelService.createModelElement(MPart.class);
-        variablePart.setElementId(variablePartId);
-        variablePart.setContributionURI(CHILD_PART_OBJECT_URI);
-        variablePart.setLabel(StringConstants.PA_LBL_VARIABLE);
-        variablePart.setCloseable(false);
-        variablePart.getTags().add(IPresentationEngine.NO_MOVE);
-        bottomLeftPartStack.getChildren().add(variablePart);
-        
         String responsePartId = getResponsePartId(requestObject);
         responsePart = modelService.createModelElement(MPart.class);
         responsePart.setElementId(responsePartId);
@@ -219,7 +208,6 @@ public class WSRequestPartUI {
         partService.activate(bodyPart);
         partService.activate(scriptEditorPart);
         partService.activate(snippetPart);
-        partService.activate(variablePart);
 //        partService.activate(verificationToolbarPart);
         
         tabFolder = (CTabFolder) bottomLeftPartStack.getWidget();
@@ -228,7 +216,7 @@ public class WSRequestPartUI {
 
         initComponents();
     }
-
+    
     private IFile createTempScriptFile(WebServiceRequestEntity requestObject)
             throws IOException, CoreException {
         String wsTempFolderPath = ProjectController.getInstance().getWebServiceTempDir();
@@ -285,8 +273,6 @@ public class WSRequestPartUI {
             public void controlMoved(ControlEvent e) {
             }
         });
-        
-//        ((WebServiceVariablePart) variablePart.getObject()).initComponents();
     }
     
     private void calculateLeftPartsWeight() {
@@ -347,10 +333,6 @@ public class WSRequestPartUI {
     private String getBodyPartId(WebServiceRequestEntity requestObject) {
         return getBottomLeftPartStackId(requestObject) + ".body";
     }
-    
-    private String getVariablePartId(WebServiceRequestEntity requestObject) {
-        return getBottomLeftPartStackId(requestObject) + ".variable";
-    }
 
     private String getVerificationPartId(WebServiceRequestEntity requestObject) {
         return getBottomLeftPartStackId(requestObject) + ".verification";
@@ -396,10 +378,6 @@ public class WSRequestPartUI {
         return bodyPart;
     }
     
-    public MPart getVariablePart() {
-        return variablePart;
-    }
-    
     public MCompositePart getVerificationPart() {
         return verificationPart;
     }
@@ -430,10 +408,6 @@ public class WSRequestPartUI {
     
     public Composite getBodyPartComposite() {
         return getPartComposite(bodyPart);
-    }
-    
-    public Composite getVariablePartComposite() {
-        return getPartComposite(variablePart);
     }
     
     public Composite getVerificationPartComposite() {

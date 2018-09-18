@@ -1,14 +1,11 @@
 package com.kms.katalon.composer.webservice.support;
 
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-import org.eclipse.jface.fieldassist.AutoCompleteField;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.widgets.Control;
 
-import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.webservice.constants.HttpHeaderConstants;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -37,7 +34,7 @@ public class PropertyNameEditingSupport extends EditingSupport {
     @Override
     protected CellEditor getCellEditor(Object element) {
         if (isHeaderField) {
-            return new HttpHeaderNameCellEditor(element, HttpHeaderConstants.PRE_DEFINDED_HTTP_HEADER_FIELD_NAMES);
+            return new StringComboBoxCellEditor(viewer.getTable(), HttpHeaderConstants.PRE_DEFINDED_HTTP_HEADER_FIELD_NAMES);
         }
         return new TextCellEditor(viewer.getTable());
     }
@@ -64,30 +61,6 @@ public class PropertyNameEditingSupport extends EditingSupport {
                 property.setName((String) value);
                 if (this.dirtyable != null) this.dirtyable.setDirty(true);
                 this.viewer.update(element, null);
-            }
-        }
-    }
-    
-    private class HttpHeaderNameCellEditor extends StringComboBoxCellEditor {
-        
-        private Object element;
-
-        public HttpHeaderNameCellEditor(Object element, String[] items) {
-            super(viewer.getTable(), items);
-            this.element = element;
-        }
-        
-        @Override
-        public AutoCompleteField getAutoCompleteField(String[] newItems) {
-            return  new AutoCompleteField(getControl(), new HeaderNameComboContentAdapter(), newItems); 
-        }
-
-        private class HeaderNameComboContentAdapter extends CComboContentAdapter {
-            @Override
-            public void setControlContents(Control control, String text,
-                    int cursorPosition) {
-                super.setControlContents(control, text, cursorPosition);
-                PropertyNameEditingSupport.this.setValue(element, text);
             }
         }
     }

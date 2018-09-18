@@ -11,7 +11,7 @@ public class ToolBarForMPart extends ToolBar {
     private static final String ELEMENT_ID_SUFFIX = "_toolbar";
 
     public ToolBarForMPart(MPart part) {
-        super((CTabFolder) part.getParent().getWidget(), SWT.FLAT | SWT.RIGHT);
+        super((CTabFolder) part.getParent().getWidget(), SWT.FLAT);
         MToolBar mToolbar = MMenuFactory.INSTANCE.createToolBar();
         mToolbar.setElementId(part.getElementId() + ELEMENT_ID_SUFFIX);
         mToolbar.setWidget(this);

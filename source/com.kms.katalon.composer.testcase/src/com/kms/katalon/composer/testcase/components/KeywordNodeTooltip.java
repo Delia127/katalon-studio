@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -74,8 +73,6 @@ public class KeywordNodeTooltip {
 
     private boolean isOpeningKeywordDescription = false;
 
-    private Point location;
-
     private static KeywordNodeTooltip currentTooltip = null;
 
     public KeywordNodeTooltip(Control control) {
@@ -86,7 +83,7 @@ public class KeywordNodeTooltip {
         return tip;
     }
 
-    private void initComponents(Composite parent) { 
+    private void initComponents(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.marginWidth = 0;
@@ -99,12 +96,14 @@ public class KeywordNodeTooltip {
         composite.setLayout(layout);
         composite.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
         composite.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-        
+
         javaDocContent = new StyledText(composite, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         GridData gdJavaDocContent = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gdJavaDocContent.widthHint = preferedWidth;
+        gdJavaDocContent.heightHint = preferedHeight - TOOLBAR_DEFAULT_HEIGHT;
+        javaDocContent.setLayoutData(gdJavaDocContent);
         javaDocContent.setLeftMargin(20);
         javaDocContent.setTopMargin(5);
-        javaDocContent.setLayoutData(gdJavaDocContent);
 
         Label lbl = new Label(composite, SWT.SEPARATOR | SWT.SHADOW_OUT | SWT.HORIZONTAL);
         GridData gd = new GridData();
@@ -159,7 +158,7 @@ public class KeywordNodeTooltip {
         toolBar.addListener(SWT.MouseMove, listener);
         openKeywordDescToolItem.addListener(SWT.Selection, listener);
         toolBar.pack();
-
+        parent.pack();
         formatJavaDoc();
     }
 
@@ -198,6 +197,7 @@ public class KeywordNodeTooltip {
     private void createTooltip() {
         tip = new Shell(control.getShell(), SWT.ON_TOP | SWT.TOOL | SWT.RESIZE);
         tip.setLayout(new FillLayout());
+        tip.setMinimumSize(preferedWidth / 2, preferedHeight / 2);
         initComponents(tip);
     }
 
@@ -224,13 +224,8 @@ public class KeywordNodeTooltip {
 
     public void show(Point p) {
         hide();
-        location = p;
         createTooltip();
-        tip.setLocation(p);
-             
-        Point tipSize = getBestSizeForKeywordDescriptionPopup();
-        tip.setSize(tipSize);
-        
+        tip.setLocation(getLocation(p));
         if (currentTooltip != null && currentTooltip != this) {
             currentTooltip.hide();
         }
@@ -239,22 +234,6 @@ public class KeywordNodeTooltip {
         tip.setVisible(true);
     }
 
-    private Point getBestSizeForKeywordDescriptionPopup() {
-        Monitor currentMonitor = null;
-        for (Monitor monitor : Display.getCurrent().getMonitors()) {
-            if (monitor.getClientArea().contains(location)) {
-                currentMonitor = monitor;
-                break;
-            }
-        }
-        Rectangle displayRect = currentMonitor.getClientArea();
-        int width = preferedWidth;
-        if (location.x + width > displayRect.x + displayRect.width ) {
-            width = displayRect.x + displayRect.width - location.x;
-        }
-        return new Point(width, preferedHeight);
-    }
-    
     private Point getLocation(Point suggestionLoc) {
         Rectangle bounds = Display.getCurrent().getBounds();
         Point tipSize = tip.getSize();
@@ -389,12 +368,12 @@ public class KeywordNodeTooltip {
         text = tipContent.toString();
         javaDocContent.setText(text);
         javaDocContent.setStyleRanges(styles.toArray(new StyleRange[] {}));
+
     }
 
     private String wrapSelectionItemLongLine(String line) {
         GC graphicContext = new GC(javaDocContent);
-        int limWidth = 600;
-        
+        int limWidth = javaDocContent.getSize().x;
         String[] words = line.split("\\s{1,}");
         StringBuilder temp = new StringBuilder("\t\t");
         StringBuilder result = new StringBuilder();
@@ -417,7 +396,6 @@ public class KeywordNodeTooltip {
                 result.append(System.lineSeparator() + temp.toString());
             }
         }
-        
         graphicContext.dispose();
         return result.toString();
     }

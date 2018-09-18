@@ -24,7 +24,6 @@ import com.kms.katalon.composer.integration.jira.JiraUIComponent;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.composer.integration.jira.constant.StringConstants;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
-import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.integration.jira.JiraObjectToEntityConverter;
 import com.kms.katalon.integration.jira.entity.JiraIssue;
@@ -119,13 +118,4 @@ public class JiraTestCaseIntegrationView extends AbstractTestCaseIntegrationView
         lblDisplayDiscription.setText(StringUtils.defaultString(fields.getDescription()));
     }
 
-    @Override
-    public boolean hasDocumentation() {
-        return true;
-    }
-    
-    @Override
-    public String getDocumentationUrl() {
-        return DocumentationMessageConstants.TEST_CASE_INTEGRATION_JIRA;
-    }
 }

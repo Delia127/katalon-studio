@@ -57,7 +57,7 @@ public class ExecuteTestCaseJob extends Job {
 
             startLauncher();
             
-            Trackings.trackExecuteTestCase(launchMode.toString(), runConfig.getName());
+            Trackings.trackExecuteTestCase(launchMode.toString());
             
             monitor.worked(1);
 
@@ -80,7 +80,7 @@ public class ExecuteTestCaseJob extends Job {
 //                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
         }
     }
-    
+
     protected void startLauncher() {
         LauncherManager launcherManager = LauncherManager.getInstance();
         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);

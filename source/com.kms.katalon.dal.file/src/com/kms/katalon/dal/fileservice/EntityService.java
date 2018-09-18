@@ -132,9 +132,7 @@ public final class EntityService {
                 com.kms.katalon.entity.checkpoint.CsvCheckpointSourceInfo.class,
                 com.kms.katalon.entity.checkpoint.DatabaseCheckpointSourceInfo.class,
                 com.kms.katalon.entity.checkpoint.CheckpointSourceInfo.class,
-                com.kms.katalon.dal.fileservice.adapter.CheckpointDataXmlAdapter.class,
-                com.kms.katalon.entity.project.SourceContent.class,
-                com.kms.katalon.entity.project.SourceFolderConfiguration.class};
+                com.kms.katalon.dal.fileservice.adapter.CheckpointDataXmlAdapter.class };
     }
 
     public Marshaller getMarshaller() {

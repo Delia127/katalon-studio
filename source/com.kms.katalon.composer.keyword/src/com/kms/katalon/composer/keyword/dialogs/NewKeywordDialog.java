@@ -1,9 +1,5 @@
 package com.kms.katalon.composer.keyword.dialogs;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -14,28 +10,21 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -78,19 +67,13 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         setDialogMsg(StringConstants.DIA_MSG_CREATE_KEYWORD);
         this.rootPackage = rootPackage;
         this.parentPackage = parentPackage;
-        setHelpAvailable(true);
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         Control area = super.createDialogArea(parent);
-        setInput();
         addControlModifyListeners();
         return area;
-    }
-
-    private void setInput() {
-        txtName.forceFocus();
     }
 
     @Override
@@ -100,88 +83,7 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         }
         
         createPackageNameControl(container, 3);
-        super.setLblName(StringConstants.MSG_CLASS_NAME_TITLE);
         return super.createDialogBodyArea(parent);
-    }
-
-    @Override
-    protected Control createButtonBar(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
-        GridLayout layout = new GridLayout();
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        layout.horizontalSpacing = 0;
-        composite.setLayout(layout);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-        composite.setFont(parent.getFont());
-
-        // create help control if needed
-        if (isHelpAvailable()) {
-            Control helpControl = createHelpControl(composite);
-            ((GridData) helpControl.getLayoutData()).horizontalIndent = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
-        }
-        doCreateButtonBar(composite);
-
-        return composite;
-    }
-    
-    protected Control doCreateButtonBar(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
-        // create a layout with spacing and margins appropriate for the font
-        // size.
-        GridLayout layout = new GridLayout();
-        layout.numColumns = 0; // this is incremented by createButton
-        layout.makeColumnsEqualWidth = true;
-        layout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
-        layout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
-        layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
-        layout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
-        composite.setLayout(layout);
-        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_END
-                | GridData.VERTICAL_ALIGN_CENTER);
-        composite.setLayoutData(data);
-        composite.setFont(parent.getFont());
-
-        // Add the buttons to the button bar.
-        createButtonsForButtonBar(composite);
-        return composite;
-    }
-    
-    @Override
-    protected Control createHelpControl(Composite parent) {
-        Image helpImage = JFaceResources.getImage(DLG_IMG_HELP);
-        if (helpImage != null) {
-            return createHelpImageButton(parent, helpImage);
-        }
-        return createHelpLink(parent);
-    }
-
-    private Link createHelpLink(Composite parent) {
-        Link link = new Link(parent, SWT.WRAP | SWT.NO_FOCUS);
-        ((GridLayout) parent.getLayout()).numColumns++;
-        link.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-        link.setText("<a>"+ "https://vnexpress.net/"+"</a>"); //$NON-NLS-1$ //$NON-NLS-2$
-        link.setToolTipText(IDialogConstants.HELP_LABEL);
-        return link;
-    }
-    
-    private ToolBar createHelpImageButton(Composite parent, Image image) {
-        ToolBar toolBar = new ToolBar(parent, SWT.FLAT | SWT.NO_FOCUS);
-        ((GridLayout) parent.getLayout()).numColumns++;
-//        toolBar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-        toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true));
-        final Cursor cursor = new Cursor(parent.getDisplay(), SWT.CURSOR_HAND);
-        toolBar.setCursor(cursor);
-        toolBar.addDisposeListener(e -> cursor.dispose());
-        ToolItem fHelpButton = new ToolItem(toolBar, SWT.CHECK);
-        fHelpButton.setImage(image);
-        fHelpButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                openBrowserToLink("https://docs.katalon.com/x/8gAM");
-            }
-        });
-        return toolBar;
     }
 
     @Override
@@ -485,17 +387,6 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
                 }
             }
             return highest;
-        }
-    }
-    
-    private void openBrowserToLink(String url) {
-        if (!Desktop.isDesktopSupported()) {
-            return;
-        }
-        try {
-            Desktop.getDesktop().browse(new URI(url));
-        } catch (IOException | URISyntaxException exception) {
-            LoggerSingleton.logError(exception);
         }
     }
 }

@@ -118,7 +118,7 @@ public class TestCaseExecutor {
         }
         testCaseResult.getTestStatus().setStatusValue(getResultByError(t));
         String message = MessageFormat.format(StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, testCase.getTestCaseId(),
-                ExceptionsUtil.getStackTraceForThrowable(t));
+                ExceptionsUtil.getMessageForThrowable(t));
         testCaseResult.setMessage(message);
         logError(t, message);
 

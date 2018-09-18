@@ -79,6 +79,12 @@ public class SaveAllHandler {
 //            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
 //                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
 //            sendEventForTracking();
+            Trackings.trackSaveAll();
         }
+    }
+    
+    private void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.SAVE_ALL, null));
     }
 }

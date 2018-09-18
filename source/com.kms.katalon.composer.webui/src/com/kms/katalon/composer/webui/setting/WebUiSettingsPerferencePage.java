@@ -218,9 +218,7 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         txtDefaultIEHangTimeout
                 .setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_WAIT_FOR_IE_HANGING));
         try {
-            store.setDefaultCapturedTestObjectAttributeLocators();
-            store.setDefaultCapturedTestObjectXpathLocators();
-            store.setDefaultCapturedTestObjectSelectionMethods();
+            store.setDefaultCapturedTestObjectLocators();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }

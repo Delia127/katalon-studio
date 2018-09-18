@@ -75,7 +75,7 @@ public class ScriptEngine extends GroovyScriptEngine {
         return executingScriptClassLoader;
     }
 
-    protected GroovyClassLoader getVariableValuateClassLoader() throws ClassNotFoundException {
+    private GroovyClassLoader getVariableValuateClassLoader() throws ClassNotFoundException {
         if (variableEvaluateClassLoader == null) {
             variableEvaluateClassLoader = new GroovyClassLoader(getParentClassLoader(),
                     configurationProvider.getConfigForCollectingVariable());

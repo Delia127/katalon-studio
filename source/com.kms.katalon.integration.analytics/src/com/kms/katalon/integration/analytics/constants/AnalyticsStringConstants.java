@@ -26,8 +26,6 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_API_TEAMS = "/api/v1/teams";
     
-    public static final String ANALYTICS_USERS_ME = "/api/v1/users/me";
-    
     public static final String ANALYTICS_API_KATALON_TEST_REPORTS = "/api/v1/katalon-test-reports";
     
     public static final String ANALYTICS_API_UPLOAD_URL = "/api/v1/files/upload-url";

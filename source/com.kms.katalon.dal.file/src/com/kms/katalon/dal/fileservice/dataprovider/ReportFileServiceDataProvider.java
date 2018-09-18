@@ -13,25 +13,21 @@ import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.ReportFileServiceManager;
-import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class ReportFileServiceDataProvider implements IReportDataProvider {
-    
+
     @Override
-    public String getTemporaryLogDirectory(FileEntity systemFileEntity) throws DALException {
-        File systemFileLogDir = new File(FileServiceConstant.TEMP_DIR, systemFileEntity.getIdForDisplay());
-        try {
-            ReportFileServiceManager.ensureFolderExist(systemFileLogDir);
-            return systemFileLogDir.getAbsolutePath();
-        } catch (Exception e) {
-            throw new DALException(e);
-        }
+    public String getLogDirectory(TestCaseEntity testCase) throws Exception {
+        File testCaseLogDir = new File(FileServiceConstant.TEMP_DIR + File.separator + testCase.getIdForDisplay());
+        ReportFileServiceManager.ensureFolderExist(testCaseLogDir);
+        return testCaseLogDir.getAbsolutePath();
     }
 
     @Override

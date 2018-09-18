@@ -8,32 +8,6 @@
 				<xml-element java-attribute="UUID"/>
 				<xml-element java-attribute="pageLoadTimeout"/>
 				<xml-transient java-attribute="folderLocation"/>
-				<xml-element java-attribute="sourceContent"/>
-			</java-attributes>
-		</java-type>
-		<java-type name="SourceContent">
-			<xml-root-element name="SourceContent"/>
-			<java-attributes>
-				<xml-element java-attribute="sourceFolderList" name="sourceFolderConfiguration">
-					<xml-element-wrapper type="SourceFolderConfiguration"
-						name="sourceFolderList" />
-				</xml-element>
-				<xml-element java-attribute="systemFolderList" name="systemFolderConfiguration">
-					<xml-element-wrapper type="SourceFolderConfiguration"
-						name="systemFolderList" />
-				</xml-element>
-			</java-attributes>
-		</java-type>
-		<java-type name="SourceFolderConfiguration">
-			<xml-root-element name="SourceFolderConfiguration"/>
-			<java-attributes>
-				<xml-element java-attribute="url"/>
-			</java-attributes>
-		</java-type>
-		<java-type name="SystemFolderConfiguration">
-			<xml-root-element name="SystemFolderConfiguration"/>
-			<java-attributes>
-				<xml-element java-attribute="url"/>
 			</java-attributes>
 		</java-type>
 	</java-types>

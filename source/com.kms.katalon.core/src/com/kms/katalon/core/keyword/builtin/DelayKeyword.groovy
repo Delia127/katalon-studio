@@ -48,7 +48,7 @@ public class DelayKeyword extends AbstractKeyword {
     public void delay(Object second, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DELAYING_BROWSER_IN_SEC, second))
-            int secondIntValue = (int) Integer.valueOf(String.valueOf(second))
+            int secondIntValue = Integer.valueOf(String.valueOf(second))
             try {
                 Thread.sleep(secondIntValue * 1000)
             } catch (InterruptedException e) {

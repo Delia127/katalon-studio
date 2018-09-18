@@ -122,6 +122,7 @@ public class OpenProjectHandler {
             InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
 
+        Trackings.trackOpenApplication(ProjectController.getInstance().getCurrentProject(), false, RunningMode.GUI.getMode());
         eventBroker.post(EventConstants.PROJECT_RESTORE_SESSION, null);
     }
 
@@ -149,7 +150,7 @@ public class OpenProjectHandler {
                                 if (project != null) {
                                     // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, application);
-                                    Trackings.trackOpenProject(project);
+                                    Trackings.trackOpenObject("project");
                                 }
                                 eventBrokerService.post(EventConstants.EXPLORER_RELOAD_INPUT,
                                         TreeEntityUtil.getAllTreeEntity(project));

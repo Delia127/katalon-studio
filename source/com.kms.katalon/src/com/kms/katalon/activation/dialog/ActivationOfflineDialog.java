@@ -172,7 +172,7 @@ public class ActivationOfflineDialog extends Dialog {
     @Override
     protected void createButtonsForButtonBar(final Composite parent) {
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, false);
-        btnActivate = createButton(parent, IDialogConstants.OK_ID, StringConstants.BTN_ACTIVATE_TITLE, true);
+        btnActivate = createButton(parent, IDialogConstants.OK_ID, StringConstants.BTN_ACTIVATE_TILE, true);
         enableActivateButton();
     }
 

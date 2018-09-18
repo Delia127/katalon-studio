@@ -75,7 +75,7 @@ public class PropertyNameEditingSupport extends EditingSupport {
         }
     }
 
-    public class PropertyNameChangeOperation extends AbstractOperation {
+    private class PropertyNameChangeOperation extends AbstractOperation {
 
         private WebElementPropertyEntity property;
 

@@ -307,8 +307,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PAGE_EXTERNAL_LIB_JOB_TASK_REBUILD_PROJECT = ComposerExecutionMessageConstants.PAGE_EXTERNAL_LIB_JOB_TASK_REBUILD_PROJECT;
 
     public static final String PAGE_EXTERNAL_LIB_MSG_UNABLE_UPDATE_PROJECT = ComposerExecutionMessageConstants.PAGE_EXTERNAL_LIB_MSG_UNABLE_UPDATE_PROJECT;
-
-    public static final String DIA_MSG_SEND_EMAIL_REPORT_FOR_FAILED_TEST_ONLY = ComposerExecutionMessageConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_FAILED_TEST_ONLY;
-
-    public static final String DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES = ComposerExecutionMessageConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES;
 }

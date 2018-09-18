@@ -169,7 +169,7 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_RADIO_LABEL_XPATH;
 
-    public static String DIA_RADIO_LABEL_ATTRIBUTES;
+    public static String DIA_RADIO_LABEL_BASIC;
 
     public static String DIA_COL_LABEL_CONDITION;
 

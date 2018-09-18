@@ -2,7 +2,6 @@ package com.kms.katalon.core.main;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -117,16 +116,6 @@ public class TestCaseMain {
         Thread.sleep(DELAY_TIME);
         return new RawTestScriptExecutor(testScript, testCaseBinding, engine, eventManager,
                 new InternalTestCaseContext(testCaseId)).execute(flowControl);
-    }
-
-    public static TestResult runFeatureFile(String featureFile) throws InterruptedException {
-        Thread.sleep(DELAY_TIME);
-        String verificationScript = MessageFormat
-                .format("import com.kms.katalon.core.cucumber.keyword.CucumberBuiltinKeywords as CucumberKW\n" +
-
-                        "CucumberKW.runFeatureFile(''{0}'')", featureFile);
-        return new WSVerificationExecutor(verificationScript, engine, eventManager, true)
-                .execute(FailureHandling.STOP_ON_FAILURE);
     }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,

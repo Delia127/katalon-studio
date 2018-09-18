@@ -53,12 +53,12 @@ public class JiraSettingPage extends PreferencePageWithHelp {
     }
 
     @Override
-    public boolean hasDocumentation() {
+    protected boolean hasDocumentation() {
         return true;
     }
 
     @Override
-    public String getDocumentationUrl() {
+    protected String getDocumentationUrl() {
         return DocumentationMessageConstants.SETTINGS_JIRA;
     }
 }

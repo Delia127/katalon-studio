@@ -19,15 +19,8 @@ public abstract class AbstractDialog extends Dialog {
 
     private String dialogTitle = StringConstants.EMPTY;
 
-    private boolean hasSeparator;
-
     public AbstractDialog(Shell parentShell) {
-        this(parentShell, true);
-    }
-    
-    public AbstractDialog(Shell parentShell, boolean hasSeparator) {
         super(parentShell);
-        this.hasSeparator = hasSeparator;
     }
 
     /**
@@ -44,10 +37,8 @@ public abstract class AbstractDialog extends Dialog {
 
         createDialogContainer(mainContainer);
 
-        if (hasSeparator) {
-            Label label = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
-            label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        }
+        Label label = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         return mainComposite;
     }

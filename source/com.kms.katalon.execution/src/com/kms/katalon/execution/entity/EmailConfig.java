@@ -37,8 +37,6 @@ public class EmailConfig {
 
     private boolean sendAttachment = false;
     
-    private boolean sendEmailTestFailedOnly = false;
-    
     private List<ReportFormatType> attachmentOptions;
 
     public void setSendAttachment(boolean sendAttachment) {
@@ -47,14 +45,6 @@ public class EmailConfig {
 
     public boolean isSendAttachmentEnable() {
         return sendAttachment;
-    }
-    
-    public void setSendEmailTestFailedOnly(boolean enable) {
-        this.sendEmailTestFailedOnly = enable;
-    }
-
-    public boolean isSendEmailTestFailedOnly() {
-        return sendEmailTestFailedOnly;
     }
 
     public boolean canSend() {

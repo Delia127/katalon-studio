@@ -4,7 +4,7 @@ import java.util.List;
 
 public class AnalyticsTeamPage {
 
-    private List<AnalyticsTeam> teams;
+    private List<AnalyticsTeam> content;
     
     private Long totalElements;
     
@@ -20,12 +20,12 @@ public class AnalyticsTeamPage {
     
     private Long numberOfElements;
 
-    public List<AnalyticsTeam> getTeams() {
-        return teams;
+    public List<AnalyticsTeam> getContent() {
+        return content;
     }
 
-    public void setTeams(List<AnalyticsTeam> teams) {
-        this.teams = teams;
+    public void setContent(List<AnalyticsTeam> content) {
+        this.content = content;
     }
 
     public Long getTotalElements() {

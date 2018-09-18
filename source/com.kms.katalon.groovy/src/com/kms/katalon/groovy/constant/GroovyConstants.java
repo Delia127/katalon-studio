@@ -68,9 +68,8 @@ public class GroovyConstants {
         classList.add(Checkpoint.class.getName());
         classList.add(GlobalVariableParser.INTERNAL_PACKAGE_NAME + "."
                 + GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME);
-        DEFAULT_KEYWORD_CONTRIBUTOR_IMPORTS.entrySet().forEach(e -> {
-            classList.add(e.getValue() + " as " + e.getKey());
-        });
+        classList.addAll(DEFAULT_STATIC_METHOD_IMPORTS.values());
+        classList.addAll(DEFAULT_KEYWORD_CONTRIBUTOR_IMPORTS.values());
         return classList.toArray(new String[classList.size()]);
     }
 

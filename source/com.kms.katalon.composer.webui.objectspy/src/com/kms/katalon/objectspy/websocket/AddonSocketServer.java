@@ -58,7 +58,7 @@ public class AddonSocketServer {
 
             // Add WebSocket endpoint to javax.websocket layer
             wscontainer.addEndpoint(socketClass);
-            System.out.println("port in start = " + port);
+
             server.start();
             server.dump(System.err);
         } catch (Exception e) {

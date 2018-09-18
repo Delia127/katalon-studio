@@ -36,7 +36,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -58,7 +57,6 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
-import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
@@ -78,33 +76,27 @@ public class ObjectPropertiesView extends Composite
 
     private static final String RADIO_LABEL_XPATH = ObjectspyMessageConstants.DIA_RADIO_LABEL_XPATH;
 
-    private static final String RADIO_LABEL_ATTRIBUTES = ObjectspyMessageConstants.DIA_RADIO_LABEL_ATTRIBUTES;
+    private static final String RADIO_LABEL_BASIC = ObjectspyMessageConstants.DIA_RADIO_LABEL_BASIC;
 
     private static final String COL_LABEL_CONDITION = ObjectspyMessageConstants.DIA_COL_LABEL_CONDITION;
 
-    private Table tProperty, tXpath;
+    private Table tProperty;
 
-    private TableViewer tvProperty, tvXpath;
+    private TableViewer tvProperty;
 
-    private TableViewerColumn cvProperty, cvCondition, cvValue, cvSelected;
-    
-    private TableViewerColumn cvXpathName, cvXpathValue, cvXpathSelected;
+    private TableViewerColumn cvName, cvCondition, cvValue, cvSelected;
 
     private TableColumn cName, cCondition, cValue, cSelected;
-    
-    private TableColumn cXpathName, cXpathValue, cXpathSelected;
 
     private Text txtName;
 
-    private Button radioAttributes, radioXpath, radioCss;
+    private Button radioBasic, radioXpath, radioCss;
 
     private ToolItem btnAdd, btnDelete, btnClear;
 
     private Label lblHelp;
 
     private Composite radioBtnComposite;
-    
-    private Composite compositeAttributeToolbar;
 
     private ToolBar toolbar;
 
@@ -117,8 +109,6 @@ public class ObjectPropertiesView extends Composite
     private Map<SelectorMethod, Button> selectorButtons = new HashMap<>();
 
     private Composite tableAndButtonsComposite;
-    
-    private Composite xpathTableComposite, propertyTableComposite;
 
     private int lastHeight = -1;
 
@@ -142,29 +132,19 @@ public class ObjectPropertiesView extends Composite
         ldTableAndButtons.marginHeight = 0;
         tableAndButtonsComposite.setLayout(ldTableAndButtons);
 
-        createAttributeToolbarButtons(tableAndButtonsComposite);
+        createToolbarButtons(tableAndButtonsComposite);
 
         createPropertyTable(tableAndButtonsComposite);
-        
-        createXpathTable(tableAndButtonsComposite);        
-        
-        showComposite(propertyTableComposite, false);
-        
-        showComposite(xpathTableComposite, true);
-        
-        showComposite(compositeAttributeToolbar, false);
 
         addControlListeners();
 
         enableControls();
 
         subscribeEvents();
-
     }
     
-    
-    @SuppressWarnings("unused")
-	private void displayPropertiesTableComposite(boolean visible) {
+
+    private void displayPropertiesTableComposite(boolean visible) {
         GridData gdPropertiesComposite = (GridData) tableAndButtonsComposite.getLayoutData();
         gdPropertiesComposite.exclude = !visible;
         gdPropertiesComposite.heightHint = lastHeight;
@@ -194,7 +174,6 @@ public class ObjectPropertiesView extends Composite
         txtName.setText(webElement != null ? webElement.getName() : StringUtils.EMPTY);
         populateSelectionMethod();
         updateWebObjectProperties();
-        updateWebObjectXpaths();
         sendPropertiesChangedEvent();
     }
 
@@ -233,7 +212,7 @@ public class ObjectPropertiesView extends Composite
 
     private void createObjectSelectionMethodOptions(Composite parent) {
         Composite methodComposite = new Composite(parent, SWT.NONE);
-        methodComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        methodComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
         GridLayout glMethodComposite = new GridLayout(2, false);
         glMethodComposite.marginWidth = 0;
         glMethodComposite.marginHeight = 0;
@@ -244,14 +223,14 @@ public class ObjectPropertiesView extends Composite
         lblObjectDetectMethod.setText(LBL_OBJECT_SELECTION_METHOD);
 
         lblHelp = new Label(methodComposite, SWT.NONE);
-        GridData gdLblHelp = new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1);
+        GridData gdLblHelp = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
         gdLblHelp.heightHint = 20;
         lblHelp.setLayoutData(gdLblHelp);
         lblHelp.setImage(ImageConstants.IMG_16_HELP);
         lblHelp.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_HAND));
 
         radioBtnComposite = new Composite(parent, SWT.NONE);
-        radioBtnComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
+        radioBtnComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
         RowLayout rlRadioBtnComposite = new RowLayout(SWT.HORIZONTAL);
         rlRadioBtnComposite.marginTop = 0;
         rlRadioBtnComposite.marginRight = 0;
@@ -261,52 +240,48 @@ public class ObjectPropertiesView extends Composite
         rlRadioBtnComposite.fill = true;
         radioBtnComposite.setLayout(rlRadioBtnComposite);
 
+        radioBasic = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
+        radioBasic.setText(RADIO_LABEL_BASIC);
+        radioBasic.setSelection(true);
+        selectorButtons.put(SelectorMethod.BASIC, radioBasic);
+
         radioXpath = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
         radioXpath.setText(RADIO_LABEL_XPATH);
-        radioXpath.setSelection(true);
         selectorButtons.put(SelectorMethod.XPATH, radioXpath);
-
-        radioAttributes = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
-        radioAttributes.setText(RADIO_LABEL_ATTRIBUTES);        
-        selectorButtons.put(SelectorMethod.BASIC, radioAttributes);
-
 
         radioCss = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
         radioCss.setText(RADIO_LABEL_CSS);
         selectorButtons.put(SelectorMethod.CSS, radioCss);
     }
 
-    private void createAttributeToolbarButtons(Composite parent) {
-		compositeAttributeToolbar = new Composite(parent, SWT.NONE);
-		compositeAttributeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		compositeAttributeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
-		
-        toolbar = new ToolBar(compositeAttributeToolbar, SWT.FLAT | SWT.RIGHT);
-       
-        btnAdd = new ToolItem(toolbar, SWT.NONE);
+    private void createToolbarButtons(Composite parent) {
+        toolbar = new ToolBar(parent, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
+        toolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        btnAdd = new ToolItem(toolbar, SWT.FLAT);
         btnAdd.setText(StringConstants.ADD);
         btnAdd.setImage(ImageConstants.IMG_16_ADD);
 
-        btnDelete = new ToolItem(toolbar, SWT.NONE);
+        btnDelete = new ToolItem(toolbar, SWT.FLAT);
         btnDelete.setText(StringConstants.DELETE);
         btnDelete.setImage(ImageConstants.IMG_16_DELETE);
         btnDelete.setDisabledImage(ImageConstants.IMG_16_DELETE_DISABLED);
 
-        btnClear = new ToolItem(toolbar, SWT.NONE);
+        btnClear = new ToolItem(toolbar, SWT.FLAT);
         btnClear.setText(StringConstants.CLEAR);
         btnClear.setImage(ImageConstants.IMG_16_CLEAR);
         btnClear.setDisabledImage(ImageConstants.IMG_16_CLEAR_DISABLED);
     }
 
     private void createPropertyTable(Composite parent) {
-    	propertyTableComposite = new Composite(parent, SWT.NONE);
+        Composite tableComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.heightHint = 100;
-        propertyTableComposite.setLayoutData(ldTableComposite);
+        tableComposite.setLayoutData(ldTableComposite);
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
-        propertyTableComposite.setLayout(tableColumnLayout);
+        tableComposite.setLayout(tableColumnLayout);
 
-        tvProperty = new TableViewer(propertyTableComposite,
+        tvProperty = new TableViewer(tableComposite,
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         tvProperty.setContentProvider(ArrayContentProvider.getInstance());
         tProperty = tvProperty.getTable();
@@ -314,10 +289,10 @@ public class ObjectPropertiesView extends Composite
         tProperty.setLinesVisible(true);
         tvProperty.setInput(Collections.emptyList());
 
-        cvProperty = new TableViewerColumn(tvProperty, SWT.LEFT);
-        cName = cvProperty.getColumn();
+        cvName = new TableViewerColumn(tvProperty, SWT.LEFT);
+        cName = cvName.getColumn();
         cName.setText(StringConstants.DIA_COL_NAME);
-        cvProperty.setLabelProvider(new ColumnLabelProvider() {
+        cvName.setLabelProvider(new ColumnLabelProvider() {
 
             @Override
             public String getText(Object element) {
@@ -325,7 +300,7 @@ public class ObjectPropertiesView extends Composite
             }
         });
 
-        cvProperty.setEditingSupport(new EditingSupport(cvProperty.getViewer()) {
+        cvName.setEditingSupport(new EditingSupport(cvName.getViewer()) {
 
             @Override
             protected void setValue(Object element, Object value) {
@@ -509,116 +484,13 @@ public class ObjectPropertiesView extends Composite
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(20, 100));
         tableColumnLayout.setColumnData(cCondition, new ColumnWeightData(20, 100));
         tableColumnLayout.setColumnData(cValue, new ColumnWeightData(50, 150));
-        tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(5, 30, false));       
+        tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(5, 30, false));
     }
-    
-    
-    private void createXpathTable(Composite parent) {
-    	xpathTableComposite = new Composite(parent, SWT.NONE);
-        GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
-        ldTableComposite.heightHint = 100;
-        xpathTableComposite.setLayoutData(ldTableComposite);
-        TableColumnLayout tableColumnLayout = new TableColumnLayout();
-        xpathTableComposite.setLayout(tableColumnLayout);
-
-        tvXpath = new TableViewer(xpathTableComposite,
-                SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-       		
-        tvXpath.setContentProvider(ArrayContentProvider.getInstance());
-        tXpath = tvXpath.getTable();
-        tXpath.setHeaderVisible(true);
-        tXpath.setLinesVisible(true);
-        tvXpath.setInput(Collections.emptyList());
-
-        
-        cvXpathName = new TableViewerColumn(tvXpath, SWT.LEFT);
-        cXpathName = cvXpathName.getColumn();
-        cXpathName.setText(StringConstants.DIA_COL_NAME);
-        cvXpathName.setLabelProvider(new ColumnLabelProvider() {
-
-            @Override
-            public String getText(Object element) {
-                return ((WebElementXpathEntity) element).getName();
-            }
-        });
-       
-        
-        cvXpathValue = new TableViewerColumn(tvXpath, SWT.LEFT);
-        cXpathValue = cvXpathValue.getColumn();
-        cXpathValue.setText(StringConstants.DIA_COL_VALUE);
-        cvXpathValue.setLabelProvider(new ColumnLabelProvider() {
-
-            @Override
-            public String getText(Object element) {
-                return ((WebElementXpathEntity) element).getValue();
-            }
-        });
-        cvXpathValue.setEditingSupport(new EditingSupport(cvXpathValue.getViewer()) {
-            @Override	
-            protected void setValue(Object element, Object value) {
-                if (!canEdit(element)) {
-                    return;
-                }
-                WebElementXpathEntity webElementXpath = (WebElementXpathEntity) element;
-                String newXpathValue = String.valueOf(value);
-                webElementXpath.setValue(newXpathValue);
-                tvXpath.update(element, null);
-                sendPropertiesChangedEvent();
-                refreshCapturedObjectsTree();
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                if (!canEdit(element)) {
-                    return StringConstants.EMPTY;
-                }
-                return ((WebElementXpathEntity) element).getValue();
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                return new TextCellEditor(tXpath);
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                return isWebElementXpath(element);
-            }
-        });
-        
-        tableColumnLayout.setColumnData(cXpathName, new ColumnWeightData(50, 150));
-        tableColumnLayout.setColumnData(cXpathValue, new ColumnWeightData(50, 150));
-
-    }
-    
-	private void showComposite(Composite composite, boolean isVisible) {
-		composite.setVisible(isVisible);
-		((GridData) composite.getLayoutData()).exclude = !isVisible;
-		composite.getParent().layout();
-	}
-    
 
     private boolean isWebElementProperty(Object element) {
         return element != null
                 && WebElementPropertyEntity.class.getSimpleName().equals(element.getClass().getSimpleName());
     }
-    
-    private boolean isWebElementXpath(Object element) {
-        return element != null
-                && WebElementXpathEntity.class.getSimpleName().equals(element.getClass().getSimpleName());
-    }
-    
-
-    // Set all xpaths to de-selected state
-    private void deselectAllXpaths(){
-    	List<WebElementXpathEntity> xpaths = getXpaths();
-    	
-    	for(WebElementXpathEntity xpath : xpaths){
-    		xpath.setIsSelected(false);
-    	}
-    	
-    }
-    
 
     private void addControlListeners() {
         txtName.addModifyListener(new ModifyListener() {
@@ -634,18 +506,15 @@ public class ObjectPropertiesView extends Composite
         });
 
         /** Object selection method selection listeners */
-        radioAttributes.addSelectionListener(new SelectionAdapter() {
+        radioBasic.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (webElement == null || !radioAttributes.getSelection()) {
+                if (webElement == null || !radioBasic.getSelection()) {
                     return;
                 }
-                enableControls();
                 webElement.setSelectorMethod(SelectorMethod.BASIC);
-                showComposite(propertyTableComposite, true);
-                showComposite(xpathTableComposite, false);         
-                showComposite(compositeAttributeToolbar, true);
+                displayPropertiesTableComposite(true);
                 sendPropertiesChangedEvent();
             }
         });
@@ -657,11 +526,8 @@ public class ObjectPropertiesView extends Composite
                 if (webElement == null || !radioXpath.getSelection()) {
                     return;
                 }
-                disableControls();
                 webElement.setSelectorMethod(SelectorMethod.XPATH);
-                showComposite(propertyTableComposite, false);
-                showComposite(xpathTableComposite, true);      
-                showComposite(compositeAttributeToolbar, false);
+                displayPropertiesTableComposite(false);
                 sendPropertiesChangedEvent();
             }
         });
@@ -674,9 +540,7 @@ public class ObjectPropertiesView extends Composite
                     return;
                 }
                 webElement.setSelectorMethod(SelectorMethod.CSS);
-                showComposite(propertyTableComposite, false);
-                showComposite(xpathTableComposite, false);       
-                showComposite(compositeAttributeToolbar, false);
+                displayPropertiesTableComposite(false);
                 sendPropertiesChangedEvent();
             }
         });
@@ -703,7 +567,6 @@ public class ObjectPropertiesView extends Composite
 
                 webElement.addProperty(property);
                 updateWebObjectProperties();
-                updateWebObjectXpaths();
                 refreshCapturedObjectsTree();
                 sendPropertiesChangedEvent();
             }
@@ -713,7 +576,7 @@ public class ObjectPropertiesView extends Composite
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (webElement == null || !webElement.hasProperty()) {                	
+                if (webElement == null || !webElement.hasProperty()) {
                     return;
                 }
 
@@ -728,9 +591,7 @@ public class ObjectPropertiesView extends Composite
                         .map(i -> properties.get(i))
                         .collect(Collectors.toList());
                 properties.removeAll(selectedProperties);
-                
                 updateWebObjectProperties();
-                updateWebObjectXpaths();
                 refreshCapturedObjectsTree();
                 sendPropertiesChangedEvent();
             }
@@ -744,7 +605,6 @@ public class ObjectPropertiesView extends Composite
                     getProperties().clear();
                 }
                 updateWebObjectProperties();
-                updateWebObjectXpaths();
                 refreshCapturedObjectsTree();
                 sendPropertiesChangedEvent();
             }
@@ -764,15 +624,6 @@ public class ObjectPropertiesView extends Composite
                 btnDelete.setEnabled(hasPropertySelected());
             }
         });
-        
-        tvXpath.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                btnDelete.setEnabled(hasXpathSelected());
-            }
-        });
-        
-        
     }
 
     private void sendPropertiesChangedEvent() {
@@ -813,19 +664,6 @@ public class ObjectPropertiesView extends Composite
 
         return properties.stream().filter(property -> property.getIsSelected()).count() == properties.size();
     }
-    
-    private boolean isAllXpathEnabled() {
-        if (webElement == null) {
-            return false;
-        }
-
-        List<WebElementXpathEntity> xpaths = getXpaths();
-        if (xpaths == null || xpaths.isEmpty()) {
-            return false;
-        }
-
-        return xpaths.stream().filter(xpath -> xpath.getIsSelected()).count() == xpaths.size();
-    }
 
     private void setAllProperty(boolean isSelected) {
         if (webElement == null) {
@@ -839,20 +677,6 @@ public class ObjectPropertiesView extends Composite
 
         properties.forEach(property -> property.setIsSelected(isSelected));
         updateWebObjectProperties();
-    }
-    
-    private void setAllXpath(boolean isSelected) {
-        if (webElement == null) {
-            return;
-        }
-
-        List<WebElementXpathEntity> xpaths = getXpaths();
-        if (xpaths == null || xpaths.isEmpty()) {
-            return;
-        }
-
-        xpaths.forEach(xpath -> xpath.setIsSelected(isSelected));
-        updateWebObjectXpaths();
     }
 
     private WebElementPropertyEntity openAddPropertyDialog() {
@@ -894,13 +718,6 @@ public class ObjectPropertiesView extends Composite
             txtName.setEditable(isEnabled);
         }
     }
-    
-    private void disableControls(){
-    	
-        btnAdd.setEnabled(false);
-        btnDelete.setEnabled(false);
-        btnClear.setEnabled(false);
-    }
 
     public void refreshTable(WebElement selectedElement) {
         if (selectedElement != null) {
@@ -912,7 +729,6 @@ public class ObjectPropertiesView extends Composite
         }
         setWebElement(selectedElement);
         tvProperty.refresh();
-        tvXpath.refresh();
     }
 
     protected void updateWebObjectProperties() {
@@ -920,13 +736,9 @@ public class ObjectPropertiesView extends Composite
         List<WebElementPropertyEntity> properties = webElement == null ? Collections.emptyList() : getProperties();
         tvProperty.setInput(properties);
         if (webElement == null) {
-            showComposite(propertyTableComposite, true);
-            showComposite(xpathTableComposite, false);          
-            showComposite(compositeAttributeToolbar, false);
+            displayPropertiesTableComposite(true);
         } else {
-            showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.BASIC);
-            showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);  
-            showComposite(compositeAttributeToolbar,  webElement.getSelectorMethod() == SelectorMethod.BASIC);
+            displayPropertiesTableComposite(webElement.getSelectorMethod() == SelectorMethod.BASIC);
         }
         cSelected.setText(getCheckboxIcon(isAllPropetyEnabled()));
         boolean hasProperty = !properties.isEmpty();
@@ -935,36 +747,11 @@ public class ObjectPropertiesView extends Composite
         refreshCapturedObjectsTree();
         // TODO Use eventbroker to send out the objectSelectionMethod so that selection editor can repopulate data
     }
-    
-    protected void updateWebObjectXpaths(){
-    	tXpath.removeAll();
-        List<WebElementXpathEntity> xpaths = webElement == null ? Collections.emptyList() : getXpaths();
-        tvXpath.setInput(xpaths);
-        if (webElement == null) {
-        	  showComposite(propertyTableComposite, false);
-              showComposite(xpathTableComposite, true);     
-              showComposite(compositeAttributeToolbar, false);
-        } else {
-	           showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.BASIC);
-	           showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);     
-	           showComposite(compositeAttributeToolbar,  webElement.getSelectorMethod() == SelectorMethod.BASIC);
-        }       
-       
-        boolean hasXpath = !xpaths.isEmpty();
-        btnDelete.setEnabled(hasXpath && hasXpathSelected());
-        btnClear.setEnabled(hasXpath);
-        refreshCapturedObjectsTree();
-        // TODO Use eventbroker to send out the objectSelectionMethod so that selection editor can repopulate data
-    }
 
     private List<WebElementPropertyEntity> getProperties() {
         return webElement.getProperties();
     }
 
-    private List<WebElementXpathEntity> getXpaths() {
-        return webElement.getXpaths();
-    }
-    
     private void subscribeEvents() {
         // TODO Subscribe events
 
@@ -988,11 +775,6 @@ public class ObjectPropertiesView extends Composite
 
     private boolean hasPropertySelected() {
         StructuredSelection selection = (StructuredSelection) tvProperty.getSelection();
-        return selection != null && selection.getFirstElement() != null;
-    }
-    
-    private boolean hasXpathSelected() {
-        StructuredSelection selection = (StructuredSelection) tvXpath.getSelection();
         return selection != null && selection.getFirstElement() != null;
     }
 

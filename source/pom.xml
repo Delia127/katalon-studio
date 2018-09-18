@@ -30,7 +30,6 @@
 		<module>com.kms.katalon.composer.integration.slack</module>
 		<module>com.kms.katalon.composer.integration.git</module>
 		<module>com.kms.katalon.composer.integration.kobiton</module>
-		<module>com.kms.katalon.composer.integration.cucumber</module>
 		<module>com.kms.katalon.composer.keyword</module>
 		<module>com.kms.katalon.composer.mobile.objectspy</module>
 		<module>com.kms.katalon.composer.mobile.recorder</module>
@@ -59,7 +58,6 @@
 		<module>com.kms.katalon.core.mobile</module>
 		<module>com.kms.katalon.core.webservice</module>
 		<module>com.kms.katalon.core.webui</module>
-		<module>com.kms.katalon.core.cucumber</module>
 		<module>com.kms.katalon.core</module>
 		<module>com.kms.katalon.custom</module>
 		<module>com.kms.katalon.dal.file</module>
@@ -113,7 +111,6 @@
 		<linux32ResourcesDirectory>linux32Resources</linux32ResourcesDirectory>
 		<linux64ResourcesDirectory>linux64Resources</linux64ResourcesDirectory>
 		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
-		<cucumberRepo>file:///${basedir}/../third-party/cucumber-eclipse/cucumber.eclipse.p2updatesite/target/repository</cucumberRepo>
 	</properties>
 
 	<repositories>
@@ -128,13 +125,6 @@
 			<url>${egit_repo_url}</url>
 			<layout>p2</layout>
 		</repository>
-
-		<repository>
-			<id>cucumber_repo</id>
-			<url>${cucumberRepo}</url>
-			<layout>p2</layout>
-		</repository>
-
 	</repositories>
 
 	<build>

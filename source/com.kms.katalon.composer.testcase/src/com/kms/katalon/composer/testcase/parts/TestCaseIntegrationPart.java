@@ -1,11 +1,12 @@
 package com.kms.katalon.composer.testcase.parts;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -21,13 +22,14 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.testcase.integration.TestCaseIntegrationFactory;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
+import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationViewBuilder;
 
 public class TestCaseIntegrationPart {
 	private ToolBar toolBar;
 	private Composite container;
 	private MPart mpart;
 	private TestCaseCompositePart parentTestCaseCompositePart;
-	private String documentationUrl;
+
 
 	private Map<String, AbstractTestCaseIntegrationView> integrationCompositeMap;
 
@@ -128,13 +130,6 @@ public class TestCaseIntegrationPart {
 		clearContainer();
 		
 		integrationCompositeMap.get(key).createContainer(container);
-		
-		AbstractTestCaseIntegrationView integrationView = integrationCompositeMap.get(key);
-		if (integrationView.hasDocumentation()) {
-		    documentationUrl = integrationView.getDocumentationUrl();
-		} else {
-		    documentationUrl = StringUtils.EMPTY;
-		}
 
 		container.layout(true, true);
 	}
@@ -142,10 +137,6 @@ public class TestCaseIntegrationPart {
 
 	public boolean isParentDirty() {
 		return parentTestCaseCompositePart.getDirty().isDirty();
-	}
-	
-	public String getDocumentationUrl() {
-	    return documentationUrl;
 	}
 
 }

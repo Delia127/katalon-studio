@@ -10,7 +10,6 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
-import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.webui.constants.StringConstants;
 import com.kms.katalon.execution.webui.constants.WebUiExecutionSettingConstants;
@@ -32,12 +31,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
      * In the format of pair value: <code>property-name-1,is-selected-1;property-name-2,is-selected-2;...</code>
      */
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES = "id,true;name,true;alt,true;checked,true;form,true;href,true;placeholder,true;selected,true;src,true;title,true;type,true;text,true;linked_text,true";
-    
-    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true;";
-    
-    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
-    
-    
+
     public static WebUiExecutionSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         if (projectEntity == null) {
@@ -101,59 +95,21 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
                 EXECUTION_DEFAULT_WAIT_FOR_IE_HANGING);
     }
 
-    public void setDefaultCapturedTestObjectAttributeLocators() throws IOException {
+    public void setDefaultCapturedTestObjectLocators() throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
                 DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES);
     }
 
-    public void setCapturedTestObjectAttributeLocators(List<Pair<String, Boolean>> locators) throws IOException {
+    public void setCapturedTestObjectLocators(List<Pair<String, Boolean>> locators) throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
-                flattenStringBooleanList(locators));
+                flatList(locators));
     }
 
-    public List<Pair<String, Boolean>> getCapturedTestObjectXpathLocators() throws IOException {
-        return parseStringBooleanString(
-                getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS,
-                        DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS));
-    }
-    
-    public List<Pair<String,Boolean>> getDefaultCapturedObjectXpathLocators() throws IOException{
-    	 return parseStringBooleanString(
-                 getString(DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS, DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS));
-    }
-    
-    public void setDefaultCapturedTestObjectXpathLocators() throws IOException {
-        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS,
-        		DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS);
-    }
-
-    public void setCapturedTestObjectXpathLocators(List<Pair<String, Boolean>> locators) throws IOException {
-        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS,
-                flattenStringBooleanList(locators));
-    }
-
-    public List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocators() throws IOException {
-        return parseStringBooleanString(
+    public List<Pair<String, Boolean>> getCapturedTestObjectLocators() throws IOException {
+        return parseStringList(
                 getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
                         DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES));
     }
-    
-    public void setDefaultCapturedTestObjectSelectionMethods() throws IOException {
-        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD,
-        		DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD);
-    }
-
-    public void setCapturedTestObjectSelectorMethod(SelectorMethod selectorMethod) throws IOException {
-        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD,
-        		selectorMethod.toString());
-    }
-
-    public SelectorMethod getCapturedTestObjectSelectorMethod() throws IOException {
-        return parseSelectorMethodString(
-                getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD,
-                		DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD));
-    }
-    
 
     /**
      * @param list List&lt;Pair&lt;String, Boolean>>
@@ -161,7 +117,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
      * @see #parseStringList
      * @see com.kms.katalon.util.collections.Pair
      */
-    private String flattenStringBooleanList(List<Pair<String, Boolean>> list) {
+    private String flatList(List<Pair<String, Boolean>> list) {
         if (list == null || list.isEmpty()) {
             return StringConstants.EMPTY;
         }
@@ -174,7 +130,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
      * @see #flatList
      * @see com.kms.katalon.util.collections.Pair
      */
-    private List<Pair<String, Boolean>> parseStringBooleanString(String str) {
+    private List<Pair<String, Boolean>> parseStringList(String str) {
         if (str == null || str.isEmpty()) {
             return Collections.emptyList();
         }
@@ -182,12 +138,6 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
                 .map(i -> i.split(","))
                 .map(i -> new Pair<String, Boolean>(i[0], Boolean.valueOf(i[1])))
                 .collect(Collectors.toList());
-    }    
-    
-    private SelectorMethod parseSelectorMethodString(String str) {
-        if (str == null || str.isEmpty()) {
-        	return SelectorMethod.BASIC;
-        }
-        return SelectorMethod.valueOf(str);
-    }    
+    }
+
 }

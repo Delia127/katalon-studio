@@ -13,6 +13,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -76,8 +77,6 @@ public class TestSuiteRepoDialog extends Dialog {
     protected Control createDialogArea(Composite parent) {
         container = (Composite) super.createDialogArea(parent);
         GridLayout gridLayout = (GridLayout) container.getLayout();
-        GridData gridData = (GridData) container.getLayoutData();
-        gridData.widthHint = 500;
         gridLayout.numColumns = 3;
 
         Label lblNewLabel = new Label(container, SWT.NONE);
@@ -130,6 +129,11 @@ public class TestSuiteRepoDialog extends Dialog {
         addButtonSelectionListeners();
         initilize();
         validate();
+    }
+
+    @Override
+    protected Point getInitialSize() {
+        return new Point(500, super.getInitialSize().y);
     }
 
     @Override

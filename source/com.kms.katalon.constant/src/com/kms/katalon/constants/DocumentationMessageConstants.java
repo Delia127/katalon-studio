@@ -45,9 +45,7 @@ public class DocumentationMessageConstants extends NLS {
 
     public static String PREFERENCE_MOBILE_MACOS;
 
-    public static String TEST_CASE_INTEGRATION_QTEST;
-    
-    public static String TEST_CASE_INTEGRATION_JIRA;
+    public static String TEST_CASE_INTEGRATION;
 
     public static String TEST_SUITE_INTEGRATION;
 
@@ -98,20 +96,6 @@ public class DocumentationMessageConstants extends NLS {
     public static String SETTINGS_KATALON_ANALYTICS;
 
 	public static String SETTINGS_WEBLOCATORS;
-	
-	public static String PREFERENCE_PROXY;
-	
-	public static String SETTING_TEST_CASE;
-	
-	public static String SETTING_REPORT;
-	
-	public static String SETTING_NETWORK;
-	
-	public static String PREFERENCE_GENERAL;
-	
-	public static String NEW_CHECKPOINT;
-	
-	public static String RECORDER_RUN_STEPS;
 
     static {
         // initialize resource bundle

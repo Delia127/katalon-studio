@@ -83,10 +83,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     private Map<ReportFormatType, Button> formatOptionCheckboxes;
 
     private Button chckEncrypt;
-    
-    private Button sendEmailFailedTestRadio;
-    
-    private Button sendEmailAllcasesRadio;
 
     public MailSettingsPage() {
         super();
@@ -110,8 +106,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
         createReportFormatGroup(container);
 
-        addSendTestFailedOnlyCheckbox(container);
-        
         createSendTestEmailButton(container);
 
         registerControlListers();
@@ -142,8 +136,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             settingStore.getReportFormatOptions().forEach(format -> {
                 formatOptionCheckboxes.get(format).setSelection(true);
             });
-            sendEmailFailedTestRadio.setSelection(settingStore.isSendEmailTestFailedOnly());
-            sendEmailAllcasesRadio.setSelection(!settingStore.isSendEmailTestFailedOnly());
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
@@ -288,7 +280,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             settingStore.setEmailBcc(txtBcc.getText());
             settingStore.setRecipients(txtRecipients.getText(), encrytionEnabled);
             settingStore.setReportFormatOptions(getSelectedAttachmentOptions());
-            settingStore.setSendEmailTestFailedOnly(sendEmailFailedTestRadio.getSelection());
             return super.performOk();
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
@@ -353,25 +344,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
             formatOptionCheckboxes.put(formatType, btnFormmatingType);
         }
-    }
-    
-    private void addSendTestFailedOnlyCheckbox(Composite container) {
-        Composite radioSelectionComposite = new Composite(container, SWT.NONE);
-        radioSelectionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        
-        GridLayout glRadioSelection = new GridLayout(1, false);
-        glRadioSelection.marginHeight = 0;
-        glRadioSelection.marginWidth = 0;
-        glRadioSelection.marginLeft = 10;
-        radioSelectionComposite.setLayout(glRadioSelection);
-        
-        sendEmailAllcasesRadio = new Button(radioSelectionComposite, SWT.RADIO);
-        sendEmailAllcasesRadio.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 1, 1));
-        sendEmailAllcasesRadio.setText(StringConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES);
-        
-        sendEmailFailedTestRadio = new Button(radioSelectionComposite, SWT.RADIO);
-        sendEmailFailedTestRadio.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 1, 1));
-        sendEmailFailedTestRadio.setText(StringConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_FAILED_TEST_ONLY);
     }
 
     private void createSendTestEmailButton(Composite parent) {
@@ -478,12 +450,12 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     }
 
     @Override
-    public boolean hasDocumentation() {
+    protected boolean hasDocumentation() {
         return true;
     }
 
     @Override
-    public String getDocumentationUrl() {
+    protected String getDocumentationUrl() {
         return DocumentationMessageConstants.SETTINGS_EMAIL;
     }
 

@@ -29,12 +29,4 @@ public abstract class AbstractTestCaseIntegrationView {
 		
 		return integrationPart.isParentDirty();
 	}
-	
-	public boolean hasDocumentation() {
-	    return false;
-	}
-	
-	public String getDocumentationUrl() {
-	    return "";
-	}
 }

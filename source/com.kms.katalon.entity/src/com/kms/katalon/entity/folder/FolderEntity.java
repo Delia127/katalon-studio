@@ -49,9 +49,7 @@ public class FolderEntity extends IntegratedFileEntity {
         REPORT("Report"),
         CHECKPOINT("Checkpoint"),
         TESTLISTENER("Test listener"),
-        PROFILE("Profiles"),
-        FEATURE("Feature"),
-        INCLUDE("Source");
+        PROFILE("Profiles");
 
         private final String text;
 

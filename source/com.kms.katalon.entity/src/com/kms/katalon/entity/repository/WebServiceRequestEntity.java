@@ -3,8 +3,6 @@ package com.kms.katalon.entity.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kms.katalon.entity.variable.VariableEntity;
-
 public class WebServiceRequestEntity extends WebElementEntity {
 
     private static final long serialVersionUID = 1L;
@@ -61,8 +59,6 @@ public class WebServiceRequestEntity extends WebElementEntity {
     private String verificationScript;
 
     private String migratedVersion;
-    
-    private List<VariableEntity> variables = new ArrayList<>();
 
     public String getSoapRequestMethod() {
         return soapRequestMethod;
@@ -199,13 +195,5 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public void setVerificationScript(String verificationScript) {
         this.verificationScript = verificationScript;
-    }
-
-    public List<VariableEntity> getVariables() {
-        return variables;
-    }
-
-    public void setVariables(List<VariableEntity> variables) {
-        this.variables = variables;
     }
 }

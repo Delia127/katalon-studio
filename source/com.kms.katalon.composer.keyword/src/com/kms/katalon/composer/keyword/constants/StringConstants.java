@@ -100,6 +100,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_IMPORT= ComposerKeywordMessageConstants.MSG_IMPORT;
 
     public static final String MSG_EXPORT = ComposerKeywordMessageConstants.MSG_EXPORT;
-    
-    public static final String MSG_CLASS_NAME_TITLE = ComposerKeywordMessageConstants.MSG_CLASS_NAME_TITLE;
 }

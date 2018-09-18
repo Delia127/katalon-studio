@@ -66,7 +66,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
@@ -259,25 +258,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         sashForm.setWeights(getSashFormChildsWeights());
 
         return container;
-    }
-    
-    @Override
-    protected Control createButtonBar(Composite parent) {
-        Control buttonBar = super.createButtonBar(parent);
-        Control[] children = ((Composite) buttonBar).getChildren();
-        for (Control child : children) {
-            if (child instanceof HelpCompositeForDialog) {
-                Composite helpComposite = (Composite) child;
-                helpComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
-                GridLayout layout = (GridLayout) helpComposite.getLayout();
-                layout.marginBottom = 0;
-                layout.marginRight = 0;
-                helpComposite.getParent().layout(true, true);
-                break;
-            }
-        }
-        
-        return buttonBar;
     }
 
     @Override

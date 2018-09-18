@@ -206,7 +206,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                     return DocumentationMessageConstants.TEST_CASE_SCRIPT;
                 }
                 if (partObject instanceof TestCaseIntegrationPart) {
-                    return ((TestCaseIntegrationPart) partObject).getDocumentationUrl();
+                    return DocumentationMessageConstants.TEST_CASE_INTEGRATION;
                 }
                 if (partObject instanceof TestCasePropertiesPart) {
                     return DocumentationMessageConstants.TEST_CASE_PROPERTIES;

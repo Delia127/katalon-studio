@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -85,15 +84,9 @@ public class ConsoleExecutor {
     }
 
     private void trackExecution(LauncherOptionParser launcherOption) {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
         if (launcherOption instanceof TestSuiteLauncherOptionParser) {
-            String[] browserType = new String[]{ StringUtils.EMPTY };
-            ((TestSuiteLauncherOptionParser) launcherOption).getConsoleOptionList()
-                .stream()
-                .filter(option -> option.getOption().equals(ConsoleMain.BROWSER_TYPE_OPTION))
-                .findFirst()
-                .ifPresent(option -> browserType[0] = (String) option.getValue());
-            
-            Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(), browserType[0]);
+            Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated());
         } else if (launcherOption instanceof TestSuiteCollectionLauncherOptionParser) {
             Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated());
         }

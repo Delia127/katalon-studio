@@ -253,8 +253,6 @@ public class GlobalStringConstants {
 
     public static final String ROOT_FOLDER_NAME_TEST_LISTENER = GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_LISTENER;
 
-    public static final String ROOT_FOLDER_NAME_INCLUDE = GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE;
-
     public static final String FILE_NAME_GLOBAL_VARIABLE = GlobalMessageConstants.FILE_NAME_GLOBAL_VARIABLE;
     
     // Entity keyword
@@ -309,8 +307,6 @@ public class GlobalStringConstants {
     public static final String DIA_YES = GlobalMessageConstants.DIA_YES;
 
     public static final String DIA_NO = GlobalMessageConstants.DIA_NO;
-    
-    public static final String DIA_LET_START = GlobalMessageConstants.DIA_LET_START;
 
     public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
 
