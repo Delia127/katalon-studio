@@ -230,7 +230,12 @@ public class RestServicePart extends WebServicePart {
         tblParams.setInput(params);
         tblParams.refresh();
     }
-
+    
+    private void updateParamsTable(WebServiceRequestEntity entity){
+        tblParams.setInput(entity.getRestParameters());
+        tblParams.refresh();
+    }
+    
     private List<WebElementPropertyEntity> extractRestParameters(String url) throws MalformedURLException {
         List<WebElementPropertyEntity> paramEntities;
         urlBuilder = new URLBuilder(url);

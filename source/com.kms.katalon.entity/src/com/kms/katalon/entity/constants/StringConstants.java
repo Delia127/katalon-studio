@@ -42,4 +42,9 @@ public class StringConstants extends GlobalStringConstants {
 
 	// WrongEntityVersionException
 	public static final String EXC_WRONG_ENTITY_VER = EntityMessageConstants.EXC_WRONG_ENTITY_VER;
+	
+	// SparserInvalidException
+	public static final String EXC_INVALID_SWAGGER_FILE = EntityMessageConstants.EXC_INVALID_SWAGGER_FILE;
+	
+	public static final String DEFAULT_WEB_SERVICE_NAME = EntityMessageConstants.DEFAULT_WEB_SERVICE_NAME;
 }

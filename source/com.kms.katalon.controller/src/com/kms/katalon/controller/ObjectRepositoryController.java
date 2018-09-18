@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
@@ -18,6 +19,7 @@ import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.util.SwaggerParserUtil;
 import com.kms.katalon.entity.util.Util;
 
 @Creatable
@@ -57,7 +59,8 @@ public class ObjectRepositoryController extends EntityController {
      * @throws Exception
      */
     public WebServiceRequestEntity newWSTestObject(FolderEntity parentFolder, String wsTestObjectName) throws Exception {
-        return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
+        //return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectFromSwagger(parentFolder, wsTestObjectName));
+    	return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
     }
 
     /**
@@ -99,12 +102,12 @@ public class ObjectRepositoryController extends EntityController {
             throws Exception {
         if (parentFolder == null) {
             return null;
-        }
+        }       
 
         if (StringUtils.isBlank(wsTestObjectName)) {
             wsTestObjectName = StringConstants.CTRL_NEW_WS_REQUEST;
         }
-
+        
         WebServiceRequestEntity newWS = new WebServiceRequestEntity();
         newWS.setElementGuidId(Util.generateGuid());
         newWS.setName(getAvailableWebElementName(parentFolder, wsTestObjectName));
@@ -112,6 +115,22 @@ public class ObjectRepositoryController extends EntityController {
         newWS.setProject(parentFolder.getProject());
 
         return newWS;
+    }
+    
+    public List<WebServiceRequestEntity> newWSTestObjectsFromSwagger(FolderEntity parentFolder, String directoryOfJsonFile)
+            throws Exception {
+        if (parentFolder == null) {
+            return null;
+        }
+        List<WebServiceRequestEntity> newWSTestObjects = SwaggerParserUtil.parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
+        
+        for(WebServiceRequestEntity entity : newWSTestObjects){
+        	entity.setElementGuidId(Util.generateGuid());
+            entity.setParentFolder(parentFolder);
+            entity.setProject(parentFolder.getProject());
+        }
+        
+        return newWSTestObjects;
     }
 
     /**

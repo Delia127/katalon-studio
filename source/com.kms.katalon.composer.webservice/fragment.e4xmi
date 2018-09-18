@@ -2,9 +2,11 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_ZlSRULAJEeSCYqis2RzKwg">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_db8jgLD-EeSrwsGaXHfzzg" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_zzY_QLEBEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.command.add" commandName="New WebService Object"/>
+    <elements xsi:type="commands:Command" xmi:id="_bvRngLdeEeiB4sxFenOLSA" elementId="com.kms.katalon.composer.webservice.command.swagger" commandName="Import WebService Objects from Swagger"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8gBDELD_EeSrwsGaXHfzzg" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_FFTWgLEDEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.NewWebServiceRequestObjectHandler" command="_zzY_QLEBEeSrwsGaXHfzzg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_WwCtYLdeEeiB4sxFenOLSA" elementId="com.kms.katalon.composer.webservice.handler.swagger" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromSwaggerHandler" command="_bvRngLdeEeiB4sxFenOLSA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_O9aygLEAEeSrwsGaXHfzzg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_ivOzULEEEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.NewWebServiceRequestObjectPopupMenuContribution"/>
@@ -19,5 +21,8 @@
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_9jHaYNvYEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newWsRequest" label="Web Service Request" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/ws_test_object_16.png" command="_zzY_QLEBEeSrwsGaXHfzzg">
       <persistedState key="index" value="5"/>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_vDFG8LoxEeiPEsh0J3cdMw" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.importFrom">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_D-UEALdvEeiB4sxFenOLSA" elementId="com.kms.katalon.composer.webservice.popupmenu.new.dynamicmenucontribution.swagger" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.ImportWebServiceRequestObjectsFromSwaggerPopupMenuContribution"/>
   </fragments>
 </fragment:ModelFragments>
