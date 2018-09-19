@@ -170,6 +170,8 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID;
 
     public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS;
+    
+    public static String KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR;
 
     public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_WITH_X_BY_Y_FAIL_TRY_AGAIN;
     
@@ -187,7 +189,11 @@ public class CoreWebuiMessageConstants extends NLS {
     
     public static String KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_HEURISTIC_METHOD;
     
-    public static String KW_LOG_INFO_SUGGESTION_IN_SELECTING_ATTRIBUTES_FOR_LOCATOR;      
+    public static String KW_LOG_INFO_SUGGESTION_IN_SELECTING_ATTRIBUTES_FOR_LOCATOR; 
+    
+    public static String KW_LOG_INFO_SUGGESTION_IN_TROUBLESHOOTING_ELEMENT_INTERACTION_ISSUES;
+    
+    public static String KW_LOG_INFO_SUGGESTION_IN_OPTIMIZING_OBJECT_DEFINITION;
 
     public static String KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP;
 
