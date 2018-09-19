@@ -31,6 +31,8 @@ public class ImageConstants {
     public static final String WS_SOAP12_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_SOAP12_METHOD_16);
 
     public static final String WS_SOAP_GET_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_SOAP_GET_METHOD_16);
+    
+    public static final Image WS_ADD_TO_TEST_CASE_24 = ImageManager.getImage(IImageKeys.NEW_24);
 
     public static final String WS_SOAP_POST_METHOD_16 = ImageManager
             .getImageURLString(IImageKeys.WS_SOAP_POST_METHOD_16);

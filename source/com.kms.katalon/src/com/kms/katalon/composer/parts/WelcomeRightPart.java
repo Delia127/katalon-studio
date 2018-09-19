@@ -56,6 +56,8 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.project.dialog.NewProjectDialog;
 import com.kms.katalon.composer.project.handlers.NewSampleLocalProjectHandler;
 import com.kms.katalon.composer.project.menu.ProjectParameterizedCommandBuilder;
+import com.kms.katalon.composer.project.sample.SampleLocalProject;
+import com.kms.katalon.composer.project.sample.SampleProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
@@ -657,8 +659,8 @@ public class WelcomeRightPart extends Composite {
         });
     }
 
-    private Image getDefaultImage(SampleRemoteProject sampleRemoteProject) {
-        switch (sampleRemoteProject.getType()) {
+    private Image getDefaultImage(SampleProject sampleProject) {
+        switch (sampleProject.getType()) {
             case MOBILE:
                 return ImageConstants.IMG_SAMPLE_MOBILE_PROJECT;
             case WEBUI:
@@ -671,49 +673,36 @@ public class WelcomeRightPart extends Composite {
     }
 
     private void addDefaultSampleProjects(Composite holder) {
-        addProjectBlock(holder, ImageConstants.IMG_SAMPLE_WEB_UI_PROJECT, MessageConstants.PA_LBL_SAMPLE_WEB_UI_PROJECT,
-                MessageConstants.PA_TOOLTIP_SAMPLE_WEB_UI_PROJECT, new MouseAdapter() {
-
-                    @Override
-                    public void mouseUp(MouseEvent e) {
-                        try {
-                            NewSampleLocalProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
-                                    SampleProjectProvider.SAMPLE_WEB_UI,
-                                    EventBrokerSingleton.getInstance().getEventBroker());
-                        } catch (Exception ex) {
-                            MessageDialog.openError(null, StringConstants.ERROR, ex.getMessage());
-                        }
-                    }
+        List<SampleLocalProject> localProjects = SampleProjectProvider.getInstance().getSampleProjects();
+        localProjects.stream()
+            .forEach(project -> {
+                addProjectBlock(holder, getDefaultImage(project), project.getName(),
+                        getTooltipForSampleLocalProject(project), new MouseAdapter() {
+                            @Override
+                            public void mouseUp(MouseEvent e) {
+                                try {
+                                    NewSampleLocalProjectHandler.doCreateNewSampleProject(
+                                            Display.getCurrent().getActiveShell(), project,
+                                                EventBrokerSingleton.getInstance().getEventBroker());
+                                } catch (Exception ex) {
+                                    MessageDialog.openError(null, StringConstants.ERROR, ex.getMessage());
+                                }
+                            }
                 });
-        addProjectBlock(holder, ImageConstants.IMG_SAMPLE_WEB_SERVICE_PROJECT,
-                MessageConstants.PA_LBL_SAMPLE_WEB_SERVICE_PROJECT,
-                MessageConstants.PA_TOOLTIP_SAMPLE_WEB_SERVICE_PROJECT, new MouseAdapter() {
-
-                    @Override
-                    public void mouseUp(MouseEvent e) {
-                        try {
-                            NewSampleLocalProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
-                                    SampleProjectProvider.SAMPLE_WEB_SERVICE,
-                                    EventBrokerSingleton.getInstance().getEventBroker());
-                        } catch (Exception ex) {
-                            MessageDialog.openError(null, StringConstants.ERROR, ex.getMessage());
-                        }
-                    }
-                });
-        addProjectBlock(holder, ImageConstants.IMG_SAMPLE_MOBILE_PROJECT, MessageConstants.PA_LBL_SAMPLE_MOBILE_PROJECT,
-                MessageConstants.PA_TOOLTIP_SAMPLE_MOBILE_PROJECT, new MouseAdapter() {
-
-                    @Override
-                    public void mouseUp(MouseEvent e) {
-                        try {
-                            NewSampleLocalProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
-                                    SampleProjectProvider.SAMPLE_MOBILE,
-                                    EventBrokerSingleton.getInstance().getEventBroker());
-                        } catch (Exception ex) {
-                            MessageDialog.openError(null, StringConstants.ERROR, ex.getMessage());
-                        }
-                    }
-                });
+            });
+    }
+    
+    private String getTooltipForSampleLocalProject(SampleLocalProject sampleLocalProject) {
+        switch (sampleLocalProject.getType()) {
+            case MOBILE:
+                return MessageConstants.PA_TOOLTIP_SAMPLE_MOBILE_PROJECT;
+            case WEBUI:
+                return MessageConstants.PA_TOOLTIP_SAMPLE_WEB_UI_PROJECT;
+            case WS:
+                return MessageConstants.PA_TOOLTIP_SAMPLE_WEB_SERVICE_PROJECT;
+            default:
+                return null;
+        }
     }
 
     public Image createImage(Display display, Map<Integer, File> allImageFiles) {

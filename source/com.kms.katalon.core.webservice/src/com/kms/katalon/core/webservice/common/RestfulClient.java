@@ -130,6 +130,13 @@ public class RestfulClient extends BasicRequestor {
         // Default if not set
         httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
         setHttpConnectionHeaders(httpConnection, request);
+        httpConnection.setDoOutput(true);
+        
+        // Send post request
+        OutputStream os = httpConnection.getOutputStream();
+        request.getBodyContent().writeTo(os);
+        os.flush();
+        os.close();
 
         return response(httpConnection);
     }
