@@ -361,6 +361,8 @@ public interface IImageKeys {
     public static final String WS_POST_METHOD_16 = "entity/ws_post_16.png"; //$NON-NLS-1$
 
     public static final String WS_PUT_METHOD_16 = "entity/ws_put_16.png"; //$NON-NLS-1$
+    
+    public static final String WS_PATCH_METHOD_16 = "entity/ws_patch_16.png"; //$NON-NLS-1$
 
     public static final String WS_DELETE_METHOD_16 = "entity/ws_delete_16.png"; //$NON-NLS-1$
 

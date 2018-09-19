@@ -34,4 +34,6 @@ public class ImageConstants {
 
     public static final String WS_SOAP_POST_METHOD_16 = ImageManager
             .getImageURLString(IImageKeys.WS_SOAP_POST_METHOD_16);
+    
+    public static final String WS_PATCH_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_PATCH_METHOD_16);
 }
