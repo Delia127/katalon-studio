@@ -848,8 +848,6 @@ public class WebUiCommonHelper extends KeywordHelper {
         WebElement bestMatchElement = bestMatchEntry.getKey();
         List<String> matchingAttributes = bestMatchEntry.getValue();
         logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD, matchingAttributes));
-        logger.logInfo(StringConstants.KW_LOG_INFO_SUGGESTION_IN_TROUBLESHOOTING_ELEMENT_INTERACTION_ISSUES);
-        logger.logInfo(StringConstants.KW_LOG_INFO_SUGGESTION_IN_OPTIMIZING_OBJECT_DEFINITION);
         return bestMatchElement;
     }
 
