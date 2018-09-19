@@ -42,6 +42,9 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends AbstractDialog {
 
 
     private Control createImportFromSwaggerControl(Composite parent, int column) {
+    	
+    	Label label = new Label(parent, SWT.NONE);
+    	label.setText("File location or URL: ");
 
         Text text = new Text(parent, SWT.BORDER);
         text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
