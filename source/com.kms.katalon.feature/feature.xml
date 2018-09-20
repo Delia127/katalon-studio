@@ -2458,6 +2458,13 @@
          unpack="false"/>
 
    <plugin
+         id="io.swagger.annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="io.swagger.core"
          download-size="0"
          install-size="0"
@@ -2472,7 +2479,28 @@
          unpack="false"/>
 
    <plugin
-         id="io.swagger.parser"
+         id="io.swagger.parser-v2"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.yaml.snakeyaml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.validation.api"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -2480,6 +2508,13 @@
 
    <plugin
          id="io.swagger.parser-core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.swagger.parser-v2-converter"
          download-size="0"
          install-size="0"
          version="0.0.0"
