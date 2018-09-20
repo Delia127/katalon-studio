@@ -11,7 +11,7 @@ public class StringConstants extends GlobalStringConstants {
 	// NewWebServiceRequestObjectPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ;
     
-    // ImportWebServiceRequestObjectsFromSwaggerPopupMenuContribution
+    // ImportWebServicesPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
     
 	// RequestObjectPart
@@ -82,4 +82,5 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LBL_FILE_SIZE = ComposerWebserviceMessageConstants.LBL_FILE_SIZE;
     
     public static final String DIA_TITLE_TEST_CASE_BROWSER = ComposerWebserviceMessageConstants.DIA_TITLE_TEST_CASE_BROWSER;
+	public static final String MSG_IMPORT = ComposerWebserviceMessageConstants.MSG_IMPORT;
 }

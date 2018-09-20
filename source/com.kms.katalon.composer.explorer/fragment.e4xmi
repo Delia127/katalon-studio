@@ -17,7 +17,6 @@
       <tags>NoClose</tags>
       <menus xsi:type="menu:PopupMenu" xmi:id="_xkKI0B3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu">
         <children xsi:type="menu:Menu" xmi:id="_SIa3EF8vEeik14jXU-tU4w" elementId="com.kms.katalon.composer.explorer.popupmenu.new" label="New"/>
-        <children xsi:type="menu:Menu" xmi:id="_k4R8ULowEeiPEsh0J3cdMw" elementId="com.kms.katalon.composer.explorer.popupmenu.importFrom" label="Import"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_3XD7kB3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu.open" label="Open" command="_DfqvoB7uEeSCzrWY6RMEZw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_DkjBoCH5EeSLeYgXIq1FKQ" elementId="com.kms.katalon.composer.explorer.popupmenu.rename" label="Rename" command="_ZMWQgCH5EeSLeYgXIq1FKQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_PlaG8CNjEeSA7eQW_3uciQ" elementId="com.kms.katalon.composer.explorer.popupmenu.copy" label="Copy" command="_X1bcYCNjEeSA7eQW_3uciQ"/>

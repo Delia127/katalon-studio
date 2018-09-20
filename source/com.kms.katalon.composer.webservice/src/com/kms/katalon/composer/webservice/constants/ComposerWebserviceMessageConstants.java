@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerWebserviceMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
 
+	public static String MSG_IMPORT;
+
     public static String HAND_NEW_REQUEST;
 
     public static String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ;

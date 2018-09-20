@@ -12,6 +12,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.e4.ui.workbench.modeling.ISelectionListener;
 
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -50,7 +51,7 @@ public class ImportWebServiceRequestObjectsFromSwaggerPopupMenuContribution {
 	public void aboutToShow(List<MMenuElement> menuItems) {
 		try {
 		    Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-			if (getParentTreeEntity(selectedObjects) != null) {
+			if (getParentTreeEntity(selectedObjects) != null && canExecute(selectedObjects)) {
 				MHandledMenuItem newTestObjectPopupMenuItem = MenuFactory.createPopupMenuItem(
 						commandService.createCommand(NEW_WEBSERVICE_REQ_SWAGGER_COMMAND_ID, null), 
 						WEBSERVICE_REQ_SWAGGER_POPUP_MENUITEM_LABEL, ConstantsHelper.getApplicationURI());
@@ -63,6 +64,23 @@ public class ImportWebServiceRequestObjectsFromSwaggerPopupMenuContribution {
 		}
 	}
 	
+	private boolean canExecute(Object[] selectedObjects) throws Exception {
+		if (selectedObjects == null || selectedObjects.length != 1) return false;
+		ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
+		
+		if (treeEntity instanceof FolderTreeEntity) {
+			FolderEntity folder = (FolderEntity) treeEntity.getObject();
+			if (folder == null) return false;
+			
+			switch (folder.getFolderType()) {
+			case WEBELEMENT:
+				return true;
+			default:
+				break;			
+			}
+		}
+		return false;
+	}
 	
 	private static ITreeEntity getParentTreeEntity(Object[] selectedObjects) throws Exception {
 		if(selectedObjects == null){
