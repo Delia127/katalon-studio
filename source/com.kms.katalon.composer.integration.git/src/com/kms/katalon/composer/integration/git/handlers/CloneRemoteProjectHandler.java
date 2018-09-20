@@ -55,7 +55,9 @@ import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 
 @SuppressWarnings("restriction")
 public class CloneRemoteProjectHandler {
@@ -67,6 +69,8 @@ public class CloneRemoteProjectHandler {
     private boolean shouldHandleProjectOpenAfterClone = false;
 
     private File destinationFolder = null;
+    
+    private ProjectType projectType;
 
     @Inject
     EPartService partService;
@@ -89,7 +93,7 @@ public class CloneRemoteProjectHandler {
 
                         SampleRemoteProject sample = (SampleRemoteProject) objects[0];
                         String projectLocation = ((ProjectEntity) objects[1]).getLocation();
-
+                        projectType = ((ProjectEntity) objects[1]).getType();
 
                         File workdir = new File(projectLocation);
                         workdir.mkdirs();
@@ -192,7 +196,9 @@ public class CloneRemoteProjectHandler {
 
         try {
             shouldHandleProjectOpenAfterClone = true;
-
+            
+            updateProjectType(projectFile);
+            
             OpenProjectHandler.doOpenProject(null, projectFile.getAbsolutePath(),
 
                     UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),
@@ -207,6 +213,13 @@ public class CloneRemoteProjectHandler {
         return;
     }
 
+    private void updateProjectType(File projectFile) throws Exception {
+        ProjectEntity project = ProjectController.getInstance().getProject(projectFile.getAbsolutePath());
+        project.setType(projectType);
+        project.setFolderLocation(destinationFolder.getAbsolutePath());
+        ProjectController.getInstance().updateProject(project);
+    }
+    
     public void openReadme(File repoLocation) {
         File readme = new File(repoLocation, "README.md");
         if (!readme.exists()) {
