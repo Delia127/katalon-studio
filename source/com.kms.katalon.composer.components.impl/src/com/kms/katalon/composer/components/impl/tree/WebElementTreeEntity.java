@@ -4,6 +4,7 @@ import static com.kms.katalon.entity.repository.WebServiceRequestEntity.DELETE_M
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.GET_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.POST_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PUT_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PATCH_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP12;
 import java.io.File;
@@ -73,6 +74,8 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
                         return ImageConstants.IMG_16_WS_PUT_METHOD;
                     case DELETE_METHOD:
                         return ImageConstants.IMG_16_WS_DELETE_METHOD;
+                    case PATCH_METHOD:
+                        return ImageConstants.IMG_16_WS_PATCH_METHOD;
                     default:
                         return ImageConstants.IMG_16_WS_GET_METHOD;
                 }
