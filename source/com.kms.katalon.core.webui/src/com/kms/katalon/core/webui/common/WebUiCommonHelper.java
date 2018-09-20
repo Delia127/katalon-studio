@@ -749,8 +749,11 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
-           
+            
+            // If this code is reached, then it's definitely a WebElementNotFoundException
             findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
+            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));      
+
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
@@ -780,7 +783,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     	if(objectInsideShadowDom){
     		 return Collections.emptyList();
     	}
-    	
+    	logger.logInfo(StringConstants.KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD);
     	List<WebElement> webElements = new ArrayList<>();
     	
     	testObject.getXpaths().forEach(xpath ->{
@@ -805,6 +808,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (objectInsideShadowDom) {
             return Collections.emptyList();
         }
+        logger.logInfo(StringConstants.KW_LOG_INFO_USING_HEURISTIC_METHOD);
         By unionLocator = WebUiCommonHelper.buildUnionXpath(testObject);
         List<WebElement> webElements = webDriver.findElements(unionLocator);
         if (webElements == null || webElements.isEmpty()) {

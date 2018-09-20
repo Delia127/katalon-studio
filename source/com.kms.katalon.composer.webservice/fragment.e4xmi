@@ -22,7 +22,7 @@
       <persistedState key="index" value="5"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_vDFG8LoxEeiPEsh0J3cdMw" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.importFrom">
-    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_D-UEALdvEeiB4sxFenOLSA" elementId="com.kms.katalon.composer.webservice.popupmenu.new.dynamicmenucontribution.swagger" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.ImportWebServiceRequestObjectsFromSwaggerPopupMenuContribution"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_vDFG8LoxEeiPEsh0J3cdMw" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="index:1">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_D-UEALdvEeiB4sxFenOLSA" elementId="com.kms.katalon.composer.explorer.popupmenu.importWebServices" label="Import" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.ImportWebServicesPopupMenuContribution"/>
   </fragments>
 </fragment:ModelFragments>

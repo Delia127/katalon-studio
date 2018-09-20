@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerWebserviceMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
 
+	public static String MSG_IMPORT;
+
     public static String HAND_NEW_REQUEST;
 
     public static String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ;
@@ -183,6 +185,14 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String SHOW_SNIPPETS;
     
     public static String MENU_ITEM_TEST_REQUEST_AND_VERIFY;
+    
+    public static String MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE;
+    
+    public static String MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE;
+    
+    public static String MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE;
+    
+    public static String DIA_TITLE_TEST_CASE_BROWSER;
     
     static {
         // initialize resource bundle
