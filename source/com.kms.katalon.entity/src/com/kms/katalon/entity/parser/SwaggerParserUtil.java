@@ -185,10 +185,14 @@ public class SwaggerParserUtil {
 			}
 			
 		} catch (Exception ex) {
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), com.kms.katalon.entity.constants.StringConstants.ERROR,
-					com.kms.katalon.entity.constants.StringConstants.EXC_INVALID_SWAGGER_FILE);
+			// Do nothing
         } finally {
-        	return (newWSTestObject.size() > 0 ) ? newWSTestObject : null; 
+	    	if(newWSTestObject.size() > 0 ) { 
+	    		return newWSTestObject;
+	    	}
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), com.kms.katalon.entity.constants.StringConstants.ERROR,
+					com.kms.katalon.entity.constants.StringConstants.EXC_INVALID_WSDL_FILE);
+			return null;
         }
 	}
 	

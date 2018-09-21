@@ -16,11 +16,16 @@ public class WSDLParserUtil {
 		
 		try{
 			
+			
 		} catch (Exception ex) {
+			// Do nothing			
+	    } finally {
+	    	if(newWSTestObject.size() > 0 ) { 
+	    		return newWSTestObject;
+	    	} 
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), com.kms.katalon.entity.constants.StringConstants.ERROR,
 					com.kms.katalon.entity.constants.StringConstants.EXC_INVALID_WSDL_FILE);
-	    } finally {
-	    	return (newWSTestObject.size() > 0 ) ? newWSTestObject : null; 
+			return null;
 	    }		
 	}
 }
