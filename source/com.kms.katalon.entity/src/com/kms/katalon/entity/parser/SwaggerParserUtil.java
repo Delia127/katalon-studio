@@ -2,17 +2,14 @@ package com.kms.katalon.entity.parser;
 
 import v2.io.swagger.parser.SwaggerParser;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.constants.StringConstants;
+import com.kms.katalon.entity.dialog.ImportErrorDialog;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -21,19 +18,13 @@ import com.kms.katalon.entity.webservice.FormDataBodyParameter;
 import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
 import com.kms.katalon.entity.webservice.UrlEncodedBodyParameter;
 
-import v2.io.swagger.models.ArrayModel;
-import v2.io.swagger.models.ComposedModel;
 import v2.io.swagger.models.HttpMethod;
-import v2.io.swagger.models.Model;
-import v2.io.swagger.models.ModelImpl;
 import v2.io.swagger.models.Operation;
 import v2.io.swagger.models.Path;
-import v2.io.swagger.models.RefModel;
 import v2.io.swagger.models.Scheme;
 import v2.io.swagger.models.Swagger;
 import v2.io.swagger.models.parameters.FormParameter;
 import v2.io.swagger.models.parameters.Parameter;
-import v2.io.swagger.models.properties.Property;
 
 public class SwaggerParserUtil {
 	private final static String IN_QUERY = "query";
@@ -190,8 +181,8 @@ public class SwaggerParserUtil {
 	    	if(newWSTestObject.size() > 0 ) { 
 	    		return newWSTestObject;
 	    	}
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), com.kms.katalon.entity.constants.StringConstants.ERROR,
-					com.kms.katalon.entity.constants.StringConstants.EXC_INVALID_WSDL_FILE);
+	    	ImportErrorDialog dialog = new ImportErrorDialog(Display.getCurrent().getActiveShell(), StringConstants.EXC_INVALID_SWAGGER_FILE);
+            dialog.open();
 			return null;
         }
 	}

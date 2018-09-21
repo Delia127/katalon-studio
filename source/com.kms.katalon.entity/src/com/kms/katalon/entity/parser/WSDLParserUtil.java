@@ -3,9 +3,11 @@ package com.kms.katalon.entity.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.webservice.util.WSDLHelper;
+import com.kms.katalon.entity.constants.StringConstants;
+import com.kms.katalon.entity.dialog.ImportErrorDialog;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
@@ -16,6 +18,8 @@ public class WSDLParserUtil {
 		
 		try{
 			
+			WSDLHelper
+                    .newInstance(fileLocationOrUrl, null);
 			
 		} catch (Exception ex) {
 			// Do nothing			
@@ -23,8 +27,8 @@ public class WSDLParserUtil {
 	    	if(newWSTestObject.size() > 0 ) { 
 	    		return newWSTestObject;
 	    	} 
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), com.kms.katalon.entity.constants.StringConstants.ERROR,
-					com.kms.katalon.entity.constants.StringConstants.EXC_INVALID_WSDL_FILE);
+	    	ImportErrorDialog dialog = new ImportErrorDialog(Display.getCurrent().getActiveShell(), StringConstants.EXC_INVALID_WSDL_FILE);
+            dialog.open();
 			return null;
 	    }		
 	}
