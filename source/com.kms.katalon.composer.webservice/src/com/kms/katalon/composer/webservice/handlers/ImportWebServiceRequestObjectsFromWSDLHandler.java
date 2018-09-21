@@ -28,6 +28,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromSwaggerDialog;
+import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromWSDLDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
@@ -37,7 +38,7 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public class ImportWebServiceRequestObjectsFromSwaggerHandler {
+public class ImportWebServiceRequestObjectsFromWSDLHandler {
 
 	@Inject
 	IEventBroker eventBroker;
@@ -58,7 +59,7 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
 
     @PostConstruct
     public void registerEventHandler() {
-        eventBroker.subscribe(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER, new EventHandler() {
+        eventBroker.subscribe(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL, new EventHandler() {
         	
             @Override
             public void handleEvent(Event event) {
@@ -90,26 +91,23 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
             FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
             ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
 
-            ImportWebServiceObjectsFromSwaggerDialog dialog = new ImportWebServiceObjectsFromSwaggerDialog(parentShell, parentFolderEntity);
+            ImportWebServiceObjectsFromWSDLDialog dialog = new ImportWebServiceObjectsFromWSDLDialog(parentShell, parentFolderEntity);
             
             if (dialog.open() == Dialog.OK) {
-            	
-            	 List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
-                 for(WebServiceRequestEntity entity : requestEntities){
-                 	toController.saveNewTestObject(entity);
-                 }
-                 
-                 eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
+                
+                List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
+                for(WebServiceRequestEntity entity : requestEntities){
+                	toController.saveNewTestObject(entity);
+                }
+                
+                eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
             }
-           
             
         } catch (FilePathTooLongException e) {
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, e.getMessage());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
-                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ);
         }
     }
 	

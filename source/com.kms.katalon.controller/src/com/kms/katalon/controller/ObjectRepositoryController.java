@@ -14,12 +14,13 @@ import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.parser.SwaggerParserUtil;
+import com.kms.katalon.entity.parser.WSDLParserUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
-import com.kms.katalon.entity.util.SwaggerParserUtil;
 import com.kms.katalon.entity.util.Util;
 
 @Creatable
@@ -132,6 +133,22 @@ public class ObjectRepositoryController extends EntityController {
         
         return newWSTestObjects;
     }
+    
+
+	public List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(FolderEntity parentFolder, String directory) throws Exception {
+        if (parentFolder == null) {
+            return null;
+        }
+        List<WebServiceRequestEntity> newWSTestObjects = WSDLParserUtil.parseFromFileLocationToWSTestObject(parentFolder, directory);
+        
+        for(WebServiceRequestEntity entity : newWSTestObjects){
+        	entity.setElementGuidId(Util.generateGuid());
+            entity.setParentFolder(parentFolder);
+            entity.setProject(parentFolder.getProject());
+        }
+        
+        return newWSTestObjects;
+    }
 
     /**
      * Save a NEW Test Object or Web Service entity.<br>
@@ -233,4 +250,5 @@ public class ObjectRepositoryController extends EntityController {
 
         return childWebElements;
     }
+
 }

@@ -16,6 +16,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromSwaggerHandler;
+import com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromWSDLHandler;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -57,10 +58,14 @@ public class ImportWebServicesPopupMenuContribution {
                     && FolderType.WEBELEMENT.equals(((FolderTreeEntity) selectedObject).getObject().getFolderType())) {
 
                 MMenu importMenu = getImportMenu();
-                MDirectMenuItem folderMenuItem = getSwaggerMenu();
+                MDirectMenuItem swaggerMenuItem = getSwaggerMenu();
 
-                folderMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportWebServiceRequestObjectsFromSwaggerHandler.class.getName());
-                importMenu.getChildren().add(folderMenuItem);
+                swaggerMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportWebServiceRequestObjectsFromSwaggerHandler.class.getName());
+                importMenu.getChildren().add(swaggerMenuItem);
+                
+                MDirectMenuItem wsdlMenuItem = getWSDLMenu();
+                wsdlMenuItem.setContributionURI(CM_IMPORT_COMPOSER_BUNDLE_URI + ImportWebServiceRequestObjectsFromWSDLHandler.class.getName());
+                importMenu.getChildren().add(wsdlMenuItem);
                 
                 if (importMenu.getChildren().size() > 0) {
                     menuItems.add(0, importMenu);
@@ -81,6 +86,13 @@ public class ImportWebServicesPopupMenuContribution {
     private MDirectMenuItem getSwaggerMenu() {
         MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
         dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER);
+        dynamicItem.setContributorURI(CONTRIBUTOR_URI);
+        return dynamicItem;
+    }
+    
+    private MDirectMenuItem getWSDLMenu() {
+        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
+        dynamicItem.setLabel(StringConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }

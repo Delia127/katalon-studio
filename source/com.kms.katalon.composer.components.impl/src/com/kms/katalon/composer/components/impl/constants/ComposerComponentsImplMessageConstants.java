@@ -140,6 +140,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String COMMAND_NAME_WEBSERVICE_OBJECT;
     
     public static String COMMAND_NAME_WEBSERVICE_OBJECTS_FROM_SWAGGER;
+    
+    public static String COMMAND_NAME_WEBSERVICE_OBJECTS_FROM_WSDL;
 
     public static String KATALON_QA_URL;
 

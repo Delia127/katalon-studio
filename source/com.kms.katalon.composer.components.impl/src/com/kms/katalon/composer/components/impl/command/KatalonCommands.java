@@ -74,6 +74,8 @@ public class KatalonCommands {
     
     private static final String WEBSERVICE_OBJECTS_FROM_SWAGGER = ComposerComponentsImplMessageConstants.COMMAND_NAME_WEBSERVICE_OBJECTS_FROM_SWAGGER;
     
+    private static final String WEBSERVICE_OBJECTS_FROM_WSDL = ComposerComponentsImplMessageConstants.COMMAND_NAME_WEBSERVICE_OBJECTS_FROM_WSDL;
+    
     private static final String TEST_CASE = GlobalStringConstants.TEST_CASE;
 
     private static final String TEST_SUITE = GlobalStringConstants.TEST_SUITE;
@@ -208,6 +210,9 @@ public class KatalonCommands {
         
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + WEBSERVICE_OBJECTS_FROM_SWAGGER)
                 .setEventName(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER));
+        
+        rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + WEBSERVICE_OBJECTS_FROM_WSDL)
+                .setEventName(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL));
         
         
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + TEST_DATA).setEventName(EventConstants.TEST_DATA_NEW));

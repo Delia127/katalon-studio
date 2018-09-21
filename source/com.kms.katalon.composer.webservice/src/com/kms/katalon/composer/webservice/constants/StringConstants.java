@@ -14,6 +14,9 @@ public class StringConstants extends GlobalStringConstants {
     // ImportWebServicesPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
     
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
+    
+    
 	// RequestObjectPart
     public static final String PA_TITLE_HTTP = ComposerWebserviceMessageConstants.PA_TITLE_HTTP;
     public static final String PA_LBL_HTTP_HEADER = ComposerWebserviceMessageConstants.PA_LBL_HTTP_HEADER;
@@ -48,11 +51,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ;
     
     // ImportWebService
-    public static final String WIEW_TITLE_SWAGGER = ComposerWebserviceMessageConstants.WIEW_TITLE_SWAGGER;
-    public static final String VIEW_LBL_NAME_SWAGGER = NAME;
-    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;
-    public static final String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ_SWAGGER;
-    
+    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;   
+    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
 
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;

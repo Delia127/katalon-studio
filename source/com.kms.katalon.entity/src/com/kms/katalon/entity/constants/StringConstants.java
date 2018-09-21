@@ -46,5 +46,7 @@ public class StringConstants extends GlobalStringConstants {
 	// SparserInvalidException
 	public static final String EXC_INVALID_SWAGGER_FILE = EntityMessageConstants.EXC_INVALID_SWAGGER_FILE;
 	
+	public static final String EXC_INVALID_WSDL_FILE = EntityMessageConstants.EXC_INVALID_WSDL_FILE;
+	
 	public static final String DEFAULT_WEB_SERVICE_NAME = EntityMessageConstants.DEFAULT_WEB_SERVICE_NAME;
 }

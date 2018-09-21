@@ -13,6 +13,7 @@ Export-Package: com.kms.katalon.entity;uses:="com.kms.katalon.entity.folder,com.
  com.kms.katalon.entity.global,
  com.kms.katalon.entity.integration,
  com.kms.katalon.entity.link,
+ com.kms.katalon.entity.parser,
  com.kms.katalon.entity.project;uses:="com.kms.katalon.entity.file",
  com.kms.katalon.entity.report;uses:="com.kms.katalon.entity.file",
  com.kms.katalon.entity.repository;

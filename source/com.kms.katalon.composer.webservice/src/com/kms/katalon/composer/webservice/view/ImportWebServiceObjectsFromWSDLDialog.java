@@ -29,20 +29,20 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public class ImportWebServiceObjectsFromSwaggerDialog  extends AbstractDialog {
+public class ImportWebServiceObjectsFromWSDLDialog  extends AbstractDialog {
 
     private FolderEntity parentFolder;
     private List<WebServiceRequestEntity> webServiceRequestEntities;
     private String directory = "";
     
-    public ImportWebServiceObjectsFromSwaggerDialog(Shell parentShell, FolderEntity parentFolder) {
+    public ImportWebServiceObjectsFromWSDLDialog(Shell parentShell, FolderEntity parentFolder) {
         super(parentShell);
     	this.parentFolder = parentFolder;
-        setDialogTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);
+        setDialogTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL);
     }
 
 
-    private Control createImportFromSwaggerControl(Composite parent, int column) {
+    private Control createImportFromWSDLControl(Composite parent, int column) {
     	
     	Label label = new Label(parent, SWT.NONE);
     	label.setText("File location or URL: ");
@@ -81,7 +81,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends AbstractDialog {
     
     public void createWebServiceRequestEntities() throws Exception{  
     	webServiceRequestEntities = ObjectRepositoryController.getInstance().
-    			newWSTestObjectsFromSwagger(parentFolder, directory);
+    			newWSTestObjectsFromWSDL(parentFolder, directory);  
     }
     
     public List<WebServiceRequestEntity> getWebServiceRequestEntities(){
@@ -127,7 +127,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends AbstractDialog {
         Composite leftPanelComposite = new Composite(hSashForm, SWT.NONE);
         GridLayout glHtmlDomComposite = new GridLayout();
         leftPanelComposite.setLayout(glHtmlDomComposite);        
-		createImportFromSwaggerControl(leftPanelComposite, 1);
+		createImportFromWSDLControl(leftPanelComposite, 1);
 		return null;
 	}
 	

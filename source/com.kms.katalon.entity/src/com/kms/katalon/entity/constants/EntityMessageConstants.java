@@ -34,6 +34,8 @@ public class EntityMessageConstants extends NLS {
     public static String EXC_WRONG_ENTITY_VER;
     
     public static String EXC_INVALID_SWAGGER_FILE;
+    
+    public static String EXC_INVALID_WSDL_FILE;
 
     public static String DEFAULT_WEB_SERVICE_NAME;
     

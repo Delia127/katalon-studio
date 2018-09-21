@@ -3,10 +3,12 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_db8jgLD-EeSrwsGaXHfzzg" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_zzY_QLEBEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.command.add" commandName="New WebService Object"/>
     <elements xsi:type="commands:Command" xmi:id="_bvRngLdeEeiB4sxFenOLSA" elementId="com.kms.katalon.composer.webservice.command.swagger" commandName="Import WebService Objects from Swagger"/>
+    <elements xsi:type="commands:Command" xmi:id="_yCTLsL1TEeiPK8Af4AU-RQ" elementId="com.kms.katalon.composer.webservice.command.wsdl" commandName="Import WebService Objects from WSDL"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8gBDELD_EeSrwsGaXHfzzg" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_FFTWgLEDEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.NewWebServiceRequestObjectHandler" command="_zzY_QLEBEeSrwsGaXHfzzg"/>
     <elements xsi:type="commands:Handler" xmi:id="_WwCtYLdeEeiB4sxFenOLSA" elementId="com.kms.katalon.composer.webservice.handler.swagger" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromSwaggerHandler" command="_bvRngLdeEeiB4sxFenOLSA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_1oG0wL1TEeiPK8Af4AU-RQ" elementId="com.kms.katalon.composer.webservice.handler.wsdl" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportWebServiceRequestObjectsFromWSDLHandler" command="_yCTLsL1TEeiPK8Af4AU-RQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_O9aygLEAEeSrwsGaXHfzzg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_ivOzULEEEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.NewWebServiceRequestObjectPopupMenuContribution"/>

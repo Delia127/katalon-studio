@@ -15,6 +15,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     
     public static String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
 
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
+    
     public static String PA_TITLE_HTTP;
 
     public static String PA_LBL_HTTP_HEADER;
@@ -49,6 +51,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String WIEW_TITLE_SWAGGER;
     
+    public static String WIEW_TITLE_WSDL;
+    
     public static String VIEW_LBL_REQ_TYPE;
 
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ;
@@ -58,6 +62,10 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ;
     
     public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ_SWAGGER;
+    
+    public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
+    
+    public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ_WSDL;
     
     public static String VIEW_MENU_CONTEXT_INSERT_PROP;
 

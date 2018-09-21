@@ -1,4 +1,4 @@
-package com.kms.katalon.entity.util;
+package com.kms.katalon.entity.parser;
 
 import v2.io.swagger.parser.SwaggerParser;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class SwaggerParserUtil {
 	private final static String ACCEPT_FORM_DATA = "form-data";
 	private final static String ACCEPT_URL_ENCODED = "x-www-form-urlencoded";
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "finally" })
 	public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder, String fileLocationOrUrl){
 		
 		List<WebServiceRequestEntity> newWSTestObject = new ArrayList<WebServiceRequestEntity>();
@@ -59,14 +59,14 @@ public class SwaggerParserUtil {
 			
 			urlCommonPrefix += "://" + swagger.getHost() + swagger.getBasePath();	
 		
-			for(Object oPathEntry : safeSet(swagger.getPaths().entrySet())){
+			for(Object oPathEntry : SafeUtils.safeSet(swagger.getPaths().entrySet())){
 				if(oPathEntry != null){
 					
 					Entry<String, Path> pathEntry = (Entry<String, Path>) oPathEntry;					
 					Path aPath = pathEntry.getValue();												
 					String urlCommonPrefix2 = urlCommonPrefix;				
 					String katalonVariablePath = "";
-					String[] pathAndVariables = safeString(pathEntry.getKey()).split("[\\{||\\}]");
+					String[] pathAndVariables = SafeUtils.safeString(pathEntry.getKey()).split("[\\{||\\}]");
 					
 					katalonVariablePath += pathAndVariables[0];
 					// Replace every occurrence of { .. } with ${ .. }
@@ -78,14 +78,14 @@ public class SwaggerParserUtil {
 					
 					urlCommonPrefix2 += katalonVariablePath;
 					
-					for(Object oMethodAndOperation : safeSet(aPath.getOperationMap().entrySet())){
+					for(Object oMethodAndOperation : SafeUtils.safeSet(aPath.getOperationMap().entrySet())){
 						if(oMethodAndOperation != null){
 							
 							Entry<HttpMethod, Operation> methodAndOperation = (Entry<HttpMethod, Operation>) oMethodAndOperation;							
 							Operation operation = methodAndOperation.getValue();						
 							WebServiceRequestEntity entity = new WebServiceRequestEntity();
 							HttpMethod method = methodAndOperation.getKey();		
-							String wsObjectName = safeString(operation.getOperationId());
+							String wsObjectName = SafeUtils.safeString(operation.getOperationId());
 							List<WebElementPropertyEntity> parametersInQuery = new ArrayList<>();
 							List<WebElementPropertyEntity> parametersInHeader = new ArrayList<>();
 							List<VariableEntity> parametersInPath = new ArrayList<>();
@@ -99,12 +99,12 @@ public class SwaggerParserUtil {
 							entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
 							entity.setRestRequestMethod(method.toString());
 							
-							for(Object oParam : safeList(operation.getParameters())){
+							for(Object oParam : SafeUtils.safeList(operation.getParameters())){
 								if(oParam != null){
 									
 									Parameter param = (Parameter) oParam;									
-									String name = safeString(param.getName());
-									String pattern = safeString(param.getPattern());
+									String name = SafeUtils.safeString(param.getName());
+									String pattern = SafeUtils.safeString(param.getPattern());
 									
 									switch(param.getIn()){
 										case IN_QUERY:
@@ -139,7 +139,7 @@ public class SwaggerParserUtil {
 							}	
 							
 
-							for(Object produce : safeList(operation.getProduces())){
+							for(Object produce : SafeUtils.safeList(operation.getProduces())){
 								if(produce != null && !((String) produce).isEmpty()){
 									WebElementPropertyEntity produceProperty = new WebElementPropertyEntity("Content-type", (String) produce);
 									parametersInHeader.add(produceProperty);
@@ -147,7 +147,7 @@ public class SwaggerParserUtil {
 							}					
 							
 							String consumeType = StringUtils.EMPTY;
-							for(Object consume : safeList(operation.getConsumes())){
+							for(Object consume : SafeUtils.safeList(operation.getConsumes())){
 								if(consume != null && !((String) consume).isEmpty()){
 									WebElementPropertyEntity consumeProperty = new WebElementPropertyEntity("Accept", (String) consume);
 									parametersInHeader.add(consumeProperty);
@@ -187,22 +187,9 @@ public class SwaggerParserUtil {
 		} catch (Exception ex) {
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), com.kms.katalon.entity.constants.StringConstants.ERROR,
 					com.kms.katalon.entity.constants.StringConstants.EXC_INVALID_SWAGGER_FILE);
+        } finally {
+        	return (newWSTestObject.size() > 0 ) ? newWSTestObject : null; 
         }
-			
-		return newWSTestObject;
-	}
-	
-	public static List<?> safeList(List<?> list){
-		return list == null ? Collections.EMPTY_LIST : list;
-	}
-	
-	public static String safeString(String string){
-		return string == null ? StringUtils.EMPTY : string;
-	}
-	
-	public static Set<?> safeSet(Set<?> entrySet){
-		return entrySet == null ? Collections.EMPTY_SET : entrySet;
-		
 	}
 	
 }
