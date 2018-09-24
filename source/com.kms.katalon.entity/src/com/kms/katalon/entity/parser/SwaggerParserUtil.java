@@ -5,11 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.swt.widgets.Display;
-
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.constants.StringConstants;
-import com.kms.katalon.entity.dialog.ImportErrorDialog;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -34,10 +31,11 @@ public class SwaggerParserUtil {
 	private final static String ACCEPT_FORM_DATA = "form-data";
 	private final static String ACCEPT_URL_ENCODED = "x-www-form-urlencoded";
 
+
 	@SuppressWarnings({ "unchecked", "finally" })
-	public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder, String fileLocationOrUrl){
+	public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder, String fileLocationOrUrl) throws Exception{
 		
-		List<WebServiceRequestEntity> newWSTestObject = new ArrayList<WebServiceRequestEntity>();
+		List<WebServiceRequestEntity> newWSTestObjects = new ArrayList<WebServiceRequestEntity>();
 		
 		try{
 			Swagger swagger = new SwaggerParser().read(fileLocationOrUrl);
@@ -169,21 +167,19 @@ public class SwaggerParserUtil {
 							entity.setRestParameters(parametersInQuery);
 							entity.setVariables(parametersInPath);
 							entity.setHttpHeaderProperties(parametersInHeader);
-							newWSTestObject.add(entity);
+							newWSTestObjects.add(entity);
 						}
 					}
 				}
 			}
 			
 		} catch (Exception ex) {
-			// Do nothing
+			throw ex;
         } finally {
-	    	if(newWSTestObject.size() > 0 ) { 
-	    		return newWSTestObject;
-	    	}
-	    	ImportErrorDialog dialog = new ImportErrorDialog(Display.getCurrent().getActiveShell(), StringConstants.EXC_INVALID_SWAGGER_FILE);
-            dialog.open();
-			return null;
+	    	if(newWSTestObjects.size() > 0 ) { 
+	    		return newWSTestObjects;
+	    	} else 
+	    		return null;
         }
 	}
 	

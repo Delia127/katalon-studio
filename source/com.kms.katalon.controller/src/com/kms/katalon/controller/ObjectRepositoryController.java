@@ -135,18 +135,8 @@ public class ObjectRepositoryController extends EntityController {
     }
     
 
-	public List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(FolderEntity parentFolder, String directory) throws Exception {
-        if (parentFolder == null) {
-            return null;
-        }
-        List<WebServiceRequestEntity> newWSTestObjects = WSDLParserUtil.parseFromFileLocationToWSTestObject(parentFolder, directory);
-        
-        for(WebServiceRequestEntity entity : newWSTestObjects){
-        	entity.setElementGuidId(Util.generateGuid());
-            entity.setParentFolder(parentFolder);
-            entity.setProject(parentFolder.getProject());
-        }
-        
+	public List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(String requestMethod, String directory) throws Exception {
+        List<WebServiceRequestEntity> newWSTestObjects = WSDLParserUtil.parseFromFileLocationToWSTestObject(requestMethod, directory);
         return newWSTestObjects;
     }
 

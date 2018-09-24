@@ -30,6 +30,7 @@ import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromSwaggerDialog;
 import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromWSDLDialog;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
@@ -37,6 +38,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.util.Util;
 
 public class ImportWebServiceRequestObjectsFromWSDLHandler {
 
@@ -91,15 +93,25 @@ public class ImportWebServiceRequestObjectsFromWSDLHandler {
             FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
             ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
 
-            ImportWebServiceObjectsFromWSDLDialog dialog = new ImportWebServiceObjectsFromWSDLDialog(parentShell, parentFolderEntity);
+            ImportWebServiceObjectsFromWSDLDialog dialog = new ImportWebServiceObjectsFromWSDLDialog(parentShell);
             
+            String [] requestMethods = new String[]{WebServiceRequestEntity.SOAP, WebServiceRequestEntity.SOAP12};
             if (dialog.open() == Dialog.OK) {
-                
-                List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
-                for(WebServiceRequestEntity entity : requestEntities){
-                	toController.saveNewTestObject(entity);
-                }
-                
+            	for(int i = 0; i < requestMethods.length; i++){
+            		String requestMethod = requestMethods[i];
+
+                	List<WebServiceRequestEntity> soapRequestEntities = dialog.getWebServiceRequestEntities(requestMethod);
+                	if(soapRequestEntities != null && soapRequestEntities.size() > 0 ){
+                    	FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolderEntity, requestMethod);
+                        FolderTreeEntity newFolderTree = new FolderTreeEntity(folder, parentTreeEntity);
+                        for(WebServiceRequestEntity entity : soapRequestEntities){
+                        	entity.setElementGuidId(Util.generateGuid());
+                        	entity.setParentFolder(folder);
+                        	entity.setProject(folder.getProject());
+                        	toController.saveNewTestObject(entity);
+                        }
+                	}
+            	}
                 eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
             }

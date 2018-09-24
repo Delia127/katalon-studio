@@ -42,6 +42,7 @@ Require-Bundle: org.apache.commons.lang;bundle-version="2.6.0",
  io.swagger.core;bundle-version="2.0.0",
  io.swagger.models;bundle-version="2.0.0",
  io.swagger.parser-v2;bundle-version="2.0.0",
- org.eclipse.jface
+ org.eclipse.jface,
+ wsdl4j;bundle-version="1.6.2"
 Import-Package: com.kms.katalon.composer.webservice.util,
  org.json
