@@ -28,6 +28,9 @@ public class ApiQuickStartMenuContribution {
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject == null) {
+            return;
+        }
         if (currentProject.getType() == ProjectType.WEBSERVICE) {
             MHandledMenuItem quickStartMenuItem = MenuFactory.createPopupMenuItem(
                     commandService.createCommand(OPEN_QUICK_START_DIALOG_COMMAND_ID, null),

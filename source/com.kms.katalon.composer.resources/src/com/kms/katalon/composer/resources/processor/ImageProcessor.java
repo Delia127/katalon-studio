@@ -20,6 +20,11 @@ public class ImageProcessor {
         registerSubToolbarImages();
         registerCommonImages();
         registerRecorderImages();
+        registerHistoryRequestImages();
+    }
+
+    private void registerHistoryRequestImages() {
+        ImageManager.registerImage(IImageKeys.HISTORY_REQUEST_16);
     }
 
     private void registerRecorderImages() {

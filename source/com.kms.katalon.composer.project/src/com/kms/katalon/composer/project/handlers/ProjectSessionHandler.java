@@ -31,6 +31,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -80,7 +81,8 @@ public class ProjectSessionHandler {
                     }
                     String[] expandedEntities = rememberExpandedTreeEntities();
                     String[] openedEntities = rememberOpenedEntities();
-                    saveSessionEntities(openedEntities, expandedEntities);
+                    String[] draftEntities = rememberDraftEntities();
+                    saveSessionEntities(openedEntities, expandedEntities, draftEntities);
                 } catch (Exception e) {
                     logError(e);
                 }
@@ -140,7 +142,12 @@ public class ProjectSessionHandler {
                             .getOpenedTreeEntitiesFromIds(
                                     Arrays.asList(sessionEntities.getOpenedEntities()));
 
-                    monitor.beginTask("Restoring Previous Session...", treeEntities.size());
+                    String[] draftEntities = sessionEntities.getDraftEntities();
+                    if (draftEntities == null) {
+                        draftEntities = new String[0];
+                    }
+
+                    monitor.beginTask("Restoring Previous Session...", treeEntities.size() + draftEntities.length);
                     for (ITreeEntity entity : treeEntities) {
                         if (monitor.isCanceled()) {
                             return Status.CANCEL_STATUS;
@@ -156,6 +163,15 @@ public class ProjectSessionHandler {
                         }
                         monitor.worked(1);
                     }
+                    
+                    for (String partId : draftEntities) {
+                        if (monitor.isCanceled()) {
+                            return Status.CANCEL_STATUS;
+                        }
+                        eventBroker.post(EventConstants.EXPLORER_OPEN_ITEM_BY_PART_ID, partId);
+                        monitor.worked(1);
+                    }
+
                     return Status.OK_STATUS;
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
@@ -184,6 +200,10 @@ public class ProjectSessionHandler {
         return openedEntityIds.toArray(new String[0]);
     }
 
+    private String[] rememberDraftEntities() {
+        return EntityPartUtil.getDraftEntities(partService.getParts());
+    }
+
     private MPart getTestExplorerPart() {
         return (MPart) modelService.find(IdConstants.EXPLORER_PART_ID, application);
     }
@@ -200,11 +220,14 @@ public class ProjectSessionHandler {
         private String[] openedEntities;
 
         private String[] expandedEntities;
+        
+        private String[] draftEntities;
 
         public static LastSessionEntities empty() {
             LastSessionEntities sessionEntities = new LastSessionEntities();
             sessionEntities.openedEntities = new String[0];
             sessionEntities.expandedEntities = new String[0];
+            sessionEntities.draftEntities = new String[0];
             return sessionEntities;
         }
 
@@ -221,6 +244,10 @@ public class ProjectSessionHandler {
             }
             return expandedEntities;
         }
+
+        public String[] getDraftEntities() {
+            return draftEntities;
+        }
     }
 
     private LastSessionEntities getSessionEntities() {
@@ -232,10 +259,12 @@ public class ProjectSessionHandler {
         return JsonUtil.fromJson(lastSessionEntities, LastSessionEntities.class);
     }
 
-    private void saveSessionEntities(String[] openedEntities, String[] expandedEntities) throws IOException {
+    private void saveSessionEntities(String[] openedEntities, String[] expandedEntities,
+            String[] draftEntities) throws IOException {
         LastSessionEntities sessionEntities = new LastSessionEntities();
         sessionEntities.openedEntities = openedEntities;
         sessionEntities.expandedEntities = expandedEntities;
+        sessionEntities.draftEntities = draftEntities;
         IPreferenceStore store = PreferenceStoreManager.getPreferenceStore(getClass());
         store.setValue(ProjectPreferenceConstants.LATEST_SESSION_ENTITIES, JsonUtil.toJson(sessionEntities));
         ((IPersistentPreferenceStore) store).save();

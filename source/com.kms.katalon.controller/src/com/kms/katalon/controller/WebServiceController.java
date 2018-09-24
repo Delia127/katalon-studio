@@ -1,6 +1,8 @@
 package com.kms.katalon.controller;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import com.kms.katalon.core.network.ProxyInformation;
@@ -9,6 +11,7 @@ import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.webservice.common.ServiceRequestFactory;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 
 public class WebServiceController extends EntityController {
 
@@ -37,5 +40,9 @@ public class WebServiceController extends EntityController {
             ProxyInformation proxyInformation, Map<String, Object> variables) throws Exception {
         RequestObject requestObject = getRequestObject(entity, projectDir, variables);
         return ServiceRequestFactory.getInstance(requestObject, projectDir, proxyInformation).send(requestObject);
+    }
+    
+    public List<RequestHistoryEntity> getRequestHistories() {
+        return Collections.emptyList();
     }
 }

@@ -214,4 +214,9 @@ public class ObjectRepositoryController extends EntityController {
 
         return childWebElements;
     }
+
+    public void updateDraftTestObject(WebServiceRequestEntity originalWsObject) {
+        // TODO Auto-generated method stub
+        
+    }
 }
