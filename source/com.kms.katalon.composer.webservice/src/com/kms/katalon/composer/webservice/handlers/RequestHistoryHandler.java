@@ -82,7 +82,7 @@ public class RequestHistoryHandler {
                 ProjectEntity project = ProjectController.getInstance().getCurrentProject();
                 MPart mpart = partService.findPart(IdConstants.COMPOSER_REQUEST_HISTORY_PART_ID);
                 if (project.getType() == ProjectType.WEBSERVICE) {
-                    if (mpart == null || !mpart.isToBeRendered()) {
+                    if (mpart == null) {
                         MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID,
                                 application);
                         mpart = modelService.createModelElement(MPart.class);
@@ -96,13 +96,10 @@ public class RequestHistoryHandler {
                         partService.showPart(mpart, PartState.ACTIVATE);
                         stack.setSelectedElement(mpart);
                     } else {
-                        if (!mpart.isVisible()) {
-                            mpart.setVisible(true);
-                            mpart.getParent().setSelectedElement(mpart);
-                        }
+                        mpart.getParent().setSelectedElement(mpart);
                     }
                 } else {
-                    if (mpart != null && mpart.isVisible()) {
+                    if (mpart != null) {
                         partService.hidePart(mpart);
                     }
                 }
