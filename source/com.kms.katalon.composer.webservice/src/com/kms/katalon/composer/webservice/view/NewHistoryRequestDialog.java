@@ -140,7 +140,11 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
             txtRequestMethod.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)
                     ? request.getRestRequestMethod() : request.getSoapRequestMethod());
 
-            txtUrl.setText(request.getRestUrl());
+            txtRequestMethod.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)
+                    ? request.getRestRequestMethod() : request.getSoapRequestMethod());
+
+            txtUrl.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)
+                    ? request.getRestUrl() : request.getWsdlAddress());
 
             container.layout(true);
 
