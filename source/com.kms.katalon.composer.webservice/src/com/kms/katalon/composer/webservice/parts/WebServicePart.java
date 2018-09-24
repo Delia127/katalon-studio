@@ -158,7 +158,6 @@ import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageCo
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
-import com.kms.katalon.composer.webservice.view.ApiQuickStartDialog;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
 import com.kms.katalon.composer.webservice.view.WSRequestPartUI;
 import com.kms.katalon.composer.webservice.view.WebServiceAPIControl;
@@ -512,13 +511,11 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
             @Override
             public void widgetSelected(SelectionEvent event) {
-//                if (event.detail == SWT.ARROW) {
-//                    showDropdown(event);
-//                } else {
-//                    sendRequest(false);
-//                }
-                ApiQuickStartDialog dialog = new ApiQuickStartDialog(Display.getCurrent().getActiveShell());
-                dialog.open();
+                if (event.detail == SWT.ARROW) {
+                    showDropdown(event);
+                } else {
+                    sendRequest(false);
+                }
             }
 
             @Override

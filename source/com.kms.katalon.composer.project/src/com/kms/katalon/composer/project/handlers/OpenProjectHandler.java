@@ -28,7 +28,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -121,6 +120,7 @@ public class OpenProjectHandler {
             @UIEventTopic(EventConstants.NEW_WS_PROJECT_OPEN) final String projectPk) throws InvocationTargetException,
             InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
+        TimeUnit.SECONDS.sleep(1);
         eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
     }
     

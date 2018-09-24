@@ -58,6 +58,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class CloneRemoteProjectHandler {
@@ -71,6 +72,8 @@ public class CloneRemoteProjectHandler {
     private File destinationFolder = null;
     
     private ProjectType projectType;
+    
+    private SampleRemoteProject sample;
 
     @Inject
     EPartService partService;
@@ -91,7 +94,7 @@ public class CloneRemoteProjectHandler {
                         Object[] objects = getObjects(event);
 
 
-                        SampleRemoteProject sample = (SampleRemoteProject) objects[0];
+                        sample = (SampleRemoteProject) objects[0];
                         String projectLocation = ((ProjectEntity) objects[1]).getLocation();
                         projectType = ((ProjectEntity) objects[1]).getType();
 
@@ -197,7 +200,9 @@ public class CloneRemoteProjectHandler {
         try {
             shouldHandleProjectOpenAfterClone = true;
             
-            updateProjectType(projectFile);
+            ProjectEntity project = updateProjectType(projectFile);
+            
+            Trackings.trackCreatingSampleProject(sample.getName(), project.getUUID());
             
             OpenProjectHandler.doOpenProject(null, projectFile.getAbsolutePath(),
 
@@ -213,11 +218,12 @@ public class CloneRemoteProjectHandler {
         return;
     }
 
-    private void updateProjectType(File projectFile) throws Exception {
+    private ProjectEntity updateProjectType(File projectFile) throws Exception {
         ProjectEntity project = ProjectController.getInstance().getProject(projectFile.getAbsolutePath());
         project.setType(projectType);
         project.setFolderLocation(destinationFolder.getAbsolutePath());
         ProjectController.getInstance().updateProject(project);
+        return project;
     }
     
     public void openReadme(File repoLocation) {

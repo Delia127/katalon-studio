@@ -184,7 +184,7 @@ public class ComposerWebserviceMessageConstants extends NLS {
     
     public static String DIA_TITLE_TEST_CASE_BROWSER;
     
-    public static String DIA_TITLE_QUICKSTART;
+    public static String TITLE_QUICKSTART;
     
     public static String QUICKSTART_NEW_REST_REQUEST;
     

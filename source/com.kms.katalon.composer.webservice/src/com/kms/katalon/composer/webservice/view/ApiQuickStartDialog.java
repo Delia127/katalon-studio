@@ -46,7 +46,7 @@ public class ApiQuickStartDialog extends Dialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        shell.setText(StringConstants.DIA_TITLE_QUICKSTART);
+        shell.setText(StringConstants.TITLE_QUICKSTART);
     }
     
     @Override
@@ -127,26 +127,26 @@ public class ApiQuickStartDialog extends Dialog {
     }
     
     private void createNewRestRequest() {
-        
+        //TODO New Rest Request (a.Duy)
     }
     
     private void createNewSoapRequest() {
-        
+        //TODO New Soap Request (a.Duy)
     }
     
     private void importSwaggerFromFile() {
-        
+        //TODO import Swagger from File (e.Thanh)
     }
     
     private void importSwaggerFromUrl() {
-        
+        //TODO import Swagger from Url (e.Thanh)
     }
     
     private void importWsdlFromFile() {
-        
+        //TODO import Wsdl from File (e.Thanh)
     }
     
     private void importWsdlFromUrl() {
-        
+        //TODO import Wsdl from Url (e.Thanh)
     }
 }
