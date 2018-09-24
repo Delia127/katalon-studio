@@ -99,6 +99,9 @@ public class EventConstants {
     public static final String EXPLORER_DELETE_TEST_CASE_FOLDER = "EXPLORER/DELETE_TEST_CASE_FOLDER";
 
     public static final String EXPLORER_OPEN_ITEM_BY_PART_ID = "EXPLORER/OPEN_ITEM_BY_PART_ID";
+
+    public static final String EXPLORER_OPEN_DRAFT_WEBSERVICE = "EXPLORER/OPEN_DRAFT_WEBSERVICE";
+
     // Folder Events
     public static final String FOLDER_REFRESH_CHILDREN = "EXPLORER/REFRESH_CHILDREN";
 

@@ -15,16 +15,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 
 public class ApiQuickStartDialog extends Dialog {
 
     private static final Point ITEM_IMG_SIZE = new Point(64, 64);
-    
+
     public ApiQuickStartDialog(Shell parentShell) {
         super(parentShell);
-        
+
     }
 
     @Override
@@ -34,26 +39,26 @@ public class ApiQuickStartDialog extends Dialog {
         gdBody.widthHint = 400;
         body.setLayoutData(gdBody);
         body.setLayout(new GridLayout(2, false));
-        
+
         createNewRestRequestItem(body);
         createNewSoapRequestItem(body);
         createImportRestRequestItem(body);
         createImportSoapRequestItem(body);
-        
+
         return super.createDialogArea(parent);
     }
-    
+
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         shell.setText(StringConstants.TITLE_QUICKSTART);
     }
-    
+
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, true);
     }
-       
+
     private Composite createNewRestRequestItem(Composite parent) {
         Composite item = createQuickStartItem(parent, ImageConstants.WS_NEW_REST_REQUEST_64);
         addLinkTextToQuickStartItem(item, StringConstants.QUICKSTART_NEW_REST_REQUEST, e -> {
@@ -61,7 +66,7 @@ public class ApiQuickStartDialog extends Dialog {
         });
         return item;
     }
-    
+
     private Composite createNewSoapRequestItem(Composite parent) {
         Composite item = createQuickStartItem(parent, ImageConstants.WS_NEW_SOAP_REQUEST_64);
         addLinkTextToQuickStartItem(item, StringConstants.QUICKSTART_NEW_SOAP_REQUEST, e -> {
@@ -69,7 +74,7 @@ public class ApiQuickStartDialog extends Dialog {
         });
         return item;
     }
-    
+
     private Composite createImportRestRequestItem(Composite parent) {
         Composite item = createQuickStartItem(parent, ImageConstants.WS_IMPORT_REST_REQUEST_64);
         addLinkTextToQuickStartItem(item, StringConstants.QUICKSTART_IMPORT_SWAGGER_FROM_FILE, e -> {
@@ -80,7 +85,7 @@ public class ApiQuickStartDialog extends Dialog {
         });
         return item;
     }
-    
+
     private Composite createImportSoapRequestItem(Composite parent) {
         Composite item = createQuickStartItem(parent, ImageConstants.WS_IMPORT_SOAP_REQUEST_64);
         addLinkTextToQuickStartItem(item, StringConstants.QUICKSTART_IMPORT_WSDL_FROM_FILE, e -> {
@@ -91,7 +96,7 @@ public class ApiQuickStartDialog extends Dialog {
         });
         return item;
     }
-    
+
     private Composite createQuickStartItem(Composite parent, Image image) {
         Composite item = new Composite(parent, SWT.NONE);
         item.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -99,7 +104,7 @@ public class ApiQuickStartDialog extends Dialog {
         glItem.marginTop = 10;
         item.setLayout(glItem);
         item.setBackground(parent.getBackground());
-        
+
         Composite imgComposite = new Composite(item, SWT.NONE);
         GridData gdImg = new GridData(SWT.CENTER, SWT.FILL, true, true);
         gdImg.widthHint = ITEM_IMG_SIZE.x;
@@ -110,13 +115,13 @@ public class ApiQuickStartDialog extends Dialog {
         imgComposite.addPaintListener(e -> {
             e.gc.drawImage(image, 0, 0);
         });
-        
+
         return item;
     }
-    
+
     private void addLinkTextToQuickStartItem(Composite item, String text, Listener selectionListener) {
         Color textColor = Display.getCurrent().getSystemColor(SWT.COLOR_BLUE);
-        
+
         CLabel lblItemText = new CLabel(item, SWT.NONE);
         lblItemText.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
         lblItemText.setText(text);
@@ -125,28 +130,36 @@ public class ApiQuickStartDialog extends Dialog {
         lblItemText.setBackground(item.getBackground());
         lblItemText.addListener(SWT.MouseDown, selectionListener);
     }
-    
+
     private void createNewRestRequest() {
-        //TODO New Rest Request (a.Duy)
+        DraftWebServiceRequestEntity entity = ObjectRepositoryController.getInstance()
+                .newDraftWebServiceEntity(ProjectController.getInstance().getCurrentProject());
+        entity.setServiceType(DraftWebServiceRequestEntity.RESTFUL);
+        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_OPEN_DRAFT_WEBSERVICE, entity);
+        close();
     }
-    
+
     private void createNewSoapRequest() {
-        //TODO New Soap Request (a.Duy)
+        DraftWebServiceRequestEntity entity = ObjectRepositoryController.getInstance()
+                .newDraftWebServiceEntity(ProjectController.getInstance().getCurrentProject());
+        entity.setServiceType(DraftWebServiceRequestEntity.SOAP);
+        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_OPEN_DRAFT_WEBSERVICE, entity);
+        close();
     }
-    
+
     private void importSwaggerFromFile() {
-        //TODO import Swagger from File (e.Thanh)
+        // TODO import Swagger from File (e.Thanh)
     }
-    
+
     private void importSwaggerFromUrl() {
-        //TODO import Swagger from Url (e.Thanh)
+        // TODO import Swagger from Url (e.Thanh)
     }
-    
+
     private void importWsdlFromFile() {
-        //TODO import Wsdl from File (e.Thanh)
+        // TODO import Wsdl from File (e.Thanh)
     }
-    
+
     private void importWsdlFromUrl() {
-        //TODO import Wsdl from Url (e.Thanh)
+        // TODO import Wsdl from Url (e.Thanh)
     }
 }

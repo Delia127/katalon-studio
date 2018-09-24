@@ -57,16 +57,16 @@ public class OpenWebServiceRequestObjectHandler {
                 }
             }
         });
-        
+
         eventBroker.subscribe(EventConstants.WORKSPACE_DRAFT_PART_CLOSED, new EventServiceAdapter() {
-            
+
             @Override
             public void handleEvent(Event event) {
                 java.util.Optional<DraftWebServiceRequestEntity> optional = getDraftWebService(event);
                 if (!optional.isPresent()) {
                     return;
                 }
-                
+
                 WebServicePreferenceStore store = new WebServicePreferenceStore();
                 try {
                     store.removeDraftRequest(optional.get(), ProjectController.getInstance().getCurrentProject());
@@ -85,6 +85,21 @@ public class OpenWebServiceRequestObjectHandler {
                         openDraftRequest(optional.get());
                     } catch (IOException | CoreException e) {
                         LoggerSingleton.logError(e);
+                    }
+                }
+            }
+        });
+
+        eventBroker.subscribe(EventConstants.EXPLORER_OPEN_DRAFT_WEBSERVICE, new EventServiceAdapter() {
+            @Override
+            public void handleEvent(Event event) {
+                Object object = getObject(event);
+                if (object instanceof DraftWebServiceRequestEntity) {
+                    try {
+                        openDraftRequest((DraftWebServiceRequestEntity) object);
+                    } catch (IOException | CoreException e) {
+                        MultiStatusErrorDialog.showErrorDialog("Unalbe to open request", e.getMessage(),
+                                ExceptionsUtil.getStackTraceForThrowable(e));
                     }
                 }
             }
@@ -144,7 +159,7 @@ public class OpenWebServiceRequestObjectHandler {
         draftWebServiceEntity.setDraftUid(historyRequest.getUid());
         try {
             openDraftRequest(draftWebServiceEntity);
-            
+
             WebServicePreferenceStore store = new WebServicePreferenceStore();
             store.saveDraftRequest(draftWebServiceEntity, ProjectController.getInstance().getCurrentProject());
             Trackings.trackOpenObject("webServiceHistoryRequest");

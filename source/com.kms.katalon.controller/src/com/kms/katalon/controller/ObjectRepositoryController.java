@@ -14,6 +14,7 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -82,6 +83,21 @@ public class ObjectRepositoryController extends EntityController {
         newWebElement.setName(getAvailableWebElementName(parentFolder, testObjectName));
         newWebElement.setParentFolder(parentFolder);
         newWebElement.setProject(parentFolder.getProject());
+
+        return newWebElement;
+    }
+    
+    /**
+     * Create new Test Object without save
+     * 
+     * @param parentFolder
+     * @param testObjectName Test Object name. Default name (New Element) will be used if this null or empty
+     * @return {@link WebElementEntity}
+     * @throws Exception
+     */
+    public DraftWebServiceRequestEntity newDraftWebServiceEntity(ProjectEntity project) {
+        DraftWebServiceRequestEntity newWebElement = new DraftWebServiceRequestEntity();
+        newWebElement.setProject(project);
 
         return newWebElement;
     }
