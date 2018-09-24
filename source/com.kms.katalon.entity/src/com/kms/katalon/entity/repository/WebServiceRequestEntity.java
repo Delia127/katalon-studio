@@ -20,6 +20,8 @@ public class WebServiceRequestEntity extends WebElementEntity {
     public static final String POST_METHOD = "POST";
 
     public static final String PUT_METHOD = "PUT";
+    
+    public static final String PATCH_METHOD = "PATCH";
 
     public static final String DELETE_METHOD = "DELETE";
 
@@ -28,7 +30,7 @@ public class WebServiceRequestEntity extends WebElementEntity {
     public static final String[] SOAP_REQUEST_METHODS = new String[] { SOAP, SOAP12, GET_METHOD, POST_METHOD };
 
     public static final String[] REST_REQUEST_METHODS = new String[] { GET_METHOD, POST_METHOD, PUT_METHOD,
-            DELETE_METHOD };
+            PATCH_METHOD , DELETE_METHOD, };
 
     private String serviceType = SOAP; // Default
 

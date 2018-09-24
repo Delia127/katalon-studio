@@ -44,4 +44,6 @@ public class ImageConstants {
     public static final Image WS_IMPORT_REST_REQUEST_64 = ImageManager.getImage(IImageKeys.WS_IMPORT_REST_REQUEST_64);
     
     public static final Image WS_IMPORT_SOAP_REQUEST_64 = ImageManager.getImage(IImageKeys.WS_IMPORT_SOAP_REQUEST_64);
+
+    public static final String WS_PATCH_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_PATCH_METHOD_16);
 }

@@ -197,6 +197,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.WS_NEW_SOAP_REQUEST_64);
         ImageManager.registerImage(IImageKeys.WS_IMPORT_REST_REQUEST_64);
         ImageManager.registerImage(IImageKeys.WS_IMPORT_SOAP_REQUEST_64);
+        ImageManager.registerImage(IImageKeys.WS_PATCH_METHOD_16);
         ImageManager.registerImage(IImageKeys.RBT_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.TXT_TEST_OBJECT_16);
 
