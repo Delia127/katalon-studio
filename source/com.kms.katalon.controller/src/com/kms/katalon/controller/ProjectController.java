@@ -223,7 +223,7 @@ public class ProjectController extends EntityController {
         return new File(getDataProviderSetting().getProjectDataProvider().getSystemTempFolder(), "non-removable")
                 .getAbsolutePath();
     }
-    
+
     public String getInternalSettingDir() {
         return getDataProviderSetting().getProjectDataProvider().getInternalSettingFolder();
     }

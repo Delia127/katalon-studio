@@ -675,4 +675,7 @@ public interface IImageKeys {
     
     public static final String FORUM_SEARCH_ICON = "search_13.png"; //$NON-NLS-1$
 
+    // History Request
+    public static final String HISTORY_REQUEST_16 = "history_request_16.png";
+
 }

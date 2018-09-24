@@ -63,4 +63,5 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.util,
  com.kms.katalon.composer.testcase,
  com.kms.katalon.tracking,
- org.codehaus.groovy
+ org.codehaus.groovy,
+ com.kms.katalon.preferences

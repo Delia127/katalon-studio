@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,12 +47,14 @@ import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
 import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditorsComposite;
 import com.kms.katalon.composer.webservice.util.WebServiceUtil;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.URLBuilder;
@@ -174,6 +177,10 @@ public class RestServicePart extends WebServicePart {
                         if (runVerificationScript) {
                             executeVerificationScript(responseObject);
                         }
+                        
+                        RequestHistoryEntity requestHistoryEntity = new RequestHistoryEntity(
+                                new Date(), (WebServiceRequestEntity) getWSRequestObject().clone());
+                        eventBroker.post(EventConstants.WS_VERIFICATION_FINISHED, new Object[] { requestHistoryEntity });
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
                     } finally {
@@ -385,7 +392,6 @@ public class RestServicePart extends WebServicePart {
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
         if (isBodySupported(requestMethod) && requestBodyEditor.getHttpBodyType() != null) {
-            originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
             originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
         }
 

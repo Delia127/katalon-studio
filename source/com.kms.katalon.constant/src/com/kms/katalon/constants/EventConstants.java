@@ -11,6 +11,8 @@ public class EventConstants {
     
     public static final String ACTIVATION_CHECKED = "ACTIVATION/CHECKED";
 
+    public static final String WORKSPACE_DRAFT_PART_CLOSED = "WORKSPACE/DRAFT_PART_CLOSED";
+
     // Project Events
     public static final String PROJECT_ALL = "PROJECT/*";
 
@@ -94,6 +96,7 @@ public class EventConstants {
 
     public static final String EXPLORER_DELETE_TEST_CASE_FOLDER = "EXPLORER/DELETE_TEST_CASE_FOLDER";
 
+    public static final String EXPLORER_OPEN_ITEM_BY_PART_ID = "EXPLORER/OPEN_ITEM_BY_PART_ID";
     // Folder Events
     public static final String FOLDER_REFRESH_CHILDREN = "EXPLORER/REFRESH_CHILDREN";
 
@@ -162,6 +165,8 @@ public class EventConstants {
     public static final String WEBSERVICE_REQUEST_OBJECT_NEW = "WSOBJECT/NEW";
 
     public static final String WEBSERVICE_REQUEST_OBJECT_OPEN = "WSOBJECT/OPEN";
+    
+    public static final String WEBSERVICE_REQUEST_DRAFT_UPDATED = "WSOBJECT/DRAFT_UPDATED";
 
     // Report Event
     public static final String REPORT_OPEN = "REPORT/OPEN";
@@ -300,6 +305,8 @@ public class EventConstants {
     public static final String WS_VERIFICATION_LOG_UPDATED = "WS_VERIFICATION/LOG_UPDATED";
 
     public static final String WS_VERIFICATION_EXECUTION_FINISHED = "WS_VERIFICATION/EXECUTION_FINISHED";
+
+    public static final String WS_VERIFICATION_FINISHED = "WS_VERIFICATION/FINISHED";
     
     // WebUI Recording Events
     public static final String WEBUI_VERIFICATION_LOG_UPDATED = "WEBUI_VERIFICATION/LOG_UPDATED";

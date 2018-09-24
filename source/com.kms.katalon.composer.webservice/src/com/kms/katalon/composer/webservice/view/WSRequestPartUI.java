@@ -39,6 +39,7 @@ import com.kms.katalon.composer.webservice.parts.WSRequestChildPart;
 import com.kms.katalon.composer.webservice.parts.WebServicePart;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
@@ -54,13 +55,13 @@ public class WSRequestPartUI {
             + SoapServicePart.class.getName();
 
     private static final String CHILD_PART_OBJECT_URI = BUNDLE_URI_WEBSERVICE + WSRequestChildPart.class.getName();
-    
+
     private WebServiceRequestEntity requestObject;
-    
+
     private MCompositePart compositePart;
 
     private MPart apiControlsPart;
-    
+
     private MPartStack bottomLeftPartStack;
 
     private MPart authorizationPart;
@@ -68,9 +69,9 @@ public class WSRequestPartUI {
     private MPart headersPart;
 
     private MPart bodyPart;
-    
+
     private MPart variablePart;
-    
+
     private MCompositePart verificationPart;
 
     private MPart scriptEditorPart;
@@ -84,19 +85,22 @@ public class WSRequestPartUI {
     private MPartSashContainer leftPartSashContainer;
 
     private MPart verificationToolbarPart;
-    
-    private WSRequestPartUI(WebServiceRequestEntity requestObject, MPartStack stack) 
-            throws IOException, CoreException {
-       
+
+    private WSRequestPartUI(MPartStack stack, WebServiceRequestEntity requestObject) throws IOException, CoreException {
+
         EPartService partService = PartServiceSingleton.getInstance().getPartService();
         EModelService modelService = ModelServiceSingleton.getInstance().getModelService();
-        
+
         this.requestObject = requestObject;
-        
+
         String compositePartId = getCompositePartId(requestObject);
         compositePart = modelService.createModelElement(MCompositePart.class);
         compositePart.setElementId(compositePartId);
-        compositePart.setLabel(requestObject.getName());
+        if (requestObject instanceof DraftWebServiceRequestEntity) {
+            compositePart.setLabel("(Draft) " + requestObject.getRestUrl());
+        } else {
+            compositePart.setLabel(requestObject.getName());
+        }
         compositePart.setCloseable(true);
         if (WebServiceRequestEntity.SOAP.equals(requestObject.getServiceType())) {
             compositePart.setContributionURI(WEBSERVICE_SOAP_OBJECT_PART_URI);
@@ -104,7 +108,11 @@ public class WSRequestPartUI {
             compositePart.setContributionURI(WEBSERVICE_REST_OBJECT_PART_URI);
         }
         compositePart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
-        compositePart.setTooltip(requestObject.getIdForDisplay());
+        if (requestObject instanceof DraftWebServiceRequestEntity) {
+            compositePart.setLabel("(Draft) " + requestObject.getRestUrl());
+        } else {
+            compositePart.setLabel(requestObject.getIdForDisplay());
+        }
         compositePart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
         stack.getChildren().add(compositePart);
 
@@ -168,33 +176,33 @@ public class WSRequestPartUI {
         verificationPart.setCloseable(false);
         verificationPart.getTags().add(IPresentationEngine.NO_MOVE);
         bottomLeftPartStack.getChildren().add(verificationPart);
-        
+
         String verificationPartSashContainerId = getVerificationPartSashContainerId(requestObject);
         MPartSashContainer verificationPartSashContainer = modelService.createModelElement(MPartSashContainer.class);
         verificationPartSashContainer.setElementId(verificationPartSashContainerId);
         verificationPartSashContainer.setHorizontal(true);
         verificationPartSashContainer.getTags().add(IPresentationEngine.NO_MOVE);
         verificationPart.getChildren().add(verificationPartSashContainer);
-        
+
         String scriptEditorPartId = getScriptEditorPartId(requestObject);
         IFile tempScriptFile = createTempScriptFile(requestObject);
         tempScriptFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
         scriptEditorPart = GroovyEditorUtil.createEditorPart(tempScriptFile, partService);
         scriptEditorPart.setElementId(scriptEditorPartId);
         verificationPartSashContainer.getChildren().add(scriptEditorPart);
-        
+
         String snippetPartId = getSnippetPartId(requestObject);
         snippetPart = modelService.createModelElement(MPart.class);
         snippetPart.setElementId(snippetPartId);
         snippetPart.setContributionURI(CHILD_PART_OBJECT_URI);
         verificationPartSashContainer.getChildren().add(snippetPart);
-        
+
         String verificationToolbarPartId = getVerificationToolbarPartId(requestObject);
         verificationToolbarPart = modelService.createModelElement(MPart.class);
         verificationToolbarPart.setElementId(verificationToolbarPartId);
         verificationToolbarPart.setContributionURI(CHILD_PART_OBJECT_URI);
-//        verificationPartSashContainer.getChildren().add(verificationToolbarPart);
-        
+        // verificationPartSashContainer.getChildren().add(verificationToolbarPart);
+
         String variablePartId = getVariablePartId(requestObject);
         variablePart = modelService.createModelElement(MPart.class);
         variablePart.setElementId(variablePartId);
@@ -203,7 +211,7 @@ public class WSRequestPartUI {
         variablePart.setCloseable(false);
         variablePart.getTags().add(IPresentationEngine.NO_MOVE);
         bottomLeftPartStack.getChildren().add(variablePart);
-        
+
         String responsePartId = getResponsePartId(requestObject);
         responsePart = modelService.createModelElement(MPart.class);
         responsePart.setElementId(responsePartId);
@@ -220,17 +228,16 @@ public class WSRequestPartUI {
         partService.activate(scriptEditorPart);
         partService.activate(snippetPart);
         partService.activate(variablePart);
-//        partService.activate(verificationToolbarPart);
-        
+        // partService.activate(verificationToolbarPart);
+
         tabFolder = (CTabFolder) bottomLeftPartStack.getWidget();
-        
+
         calculateWeightsForVerificationChildParts();
 
         initComponents();
     }
 
-    private IFile createTempScriptFile(WebServiceRequestEntity requestObject)
-            throws IOException, CoreException {
+    private IFile createTempScriptFile(WebServiceRequestEntity requestObject) throws IOException, CoreException {
         String wsTempFolderPath = ProjectController.getInstance().getWebServiceTempDir();
         File wsTempFolder = new File(wsTempFolderPath);
         if (!wsTempFolder.exists()) {
@@ -249,46 +256,46 @@ public class WSRequestPartUI {
 
         return tempIFile;
     }
-    
+
     private void initComponents() {
         WebServicePart webServicePart = (WebServicePart) compositePart.getObject();
 
         webServicePart.setOriginalWsObject(requestObject);
-        
+
         webServicePart.initComponents(this);
-        
+
         calculateLeftPartsWeight();
-        
+
         webServicePart.getComposite().addControlListener(new ControlListener() {
-            
+
             @Override
             public void controlResized(ControlEvent e) {
                 calculateLeftPartsWeight();
             }
-            
+
             @Override
             public void controlMoved(ControlEvent e) {
                 // TODO Auto-generated method stub
-                
+
             }
         });
-        
+
         Composite verificationPartComposite = getVerificationPartComposite();
         verificationPartComposite.addControlListener(new ControlListener() {
-            
+
             @Override
             public void controlResized(ControlEvent e) {
                 calculateWeightsForVerificationChildParts();
             }
-            
+
             @Override
             public void controlMoved(ControlEvent e) {
             }
         });
-        
-//        ((WebServiceVariablePart) variablePart.getObject()).initComponents();
+
+        // ((WebServiceVariablePart) variablePart.getObject()).initComponents();
     }
-    
+
     private void calculateLeftPartsWeight() {
         WSRequestChildPart apiControlsPartObject = (WSRequestChildPart) apiControlsPart.getObject();
         Point apiControlsCompositeSize = apiControlsPartObject.getComposite().getChildren()[0].computeSize(SWT.DEFAULT,
@@ -300,23 +307,27 @@ public class WSRequestPartUI {
         apiControlsPart.setContainerData(String.valueOf(apiControlsPartWeight));
         bottomLeftPartStack.setContainerData(String.valueOf(1000 - apiControlsPartWeight));
     }
-    
+
     private void calculateWeightsForVerificationChildParts() {
         Composite verificationPartComposite = getVerificationPartComposite();
-        
+
         int verificationPartWidth = verificationPartComposite.getSize().x;
         long snippetPartWeight = Math.round(((double) 250 / verificationPartWidth) * 1000);
         long editorPartWeight = 1000 - snippetPartWeight;
-        
+
         snippetPart.setContainerData(String.valueOf(snippetPartWeight));
         scriptEditorPart.setContainerData(String.valueOf(editorPartWeight));
     }
-    
-    public static WSRequestPartUI create(WebServiceRequestEntity requestObject, MPartStack stack) throws IOException, CoreException {
-        return new WSRequestPartUI(requestObject, stack);
+
+    public static WSRequestPartUI create(WebServiceRequestEntity requestObject, MPartStack stack)
+            throws IOException, CoreException {
+        return new WSRequestPartUI(stack, requestObject);
     }
-    
+
     private String getCompositePartId(WebServiceRequestEntity requestObject) {
+        if (requestObject instanceof DraftWebServiceRequestEntity) {
+            return EntityPartUtil.getDraftRequestPartId(((DraftWebServiceRequestEntity) requestObject).getDraftUid());
+        }
         return EntityPartUtil.getTestObjectPartId(requestObject.getId());
     }
 
@@ -347,7 +358,7 @@ public class WSRequestPartUI {
     private String getBodyPartId(WebServiceRequestEntity requestObject) {
         return getBottomLeftPartStackId(requestObject) + ".body";
     }
-    
+
     private String getVariablePartId(WebServiceRequestEntity requestObject) {
         return getBottomLeftPartStackId(requestObject) + ".variable";
     }
@@ -355,19 +366,19 @@ public class WSRequestPartUI {
     private String getVerificationPartId(WebServiceRequestEntity requestObject) {
         return getBottomLeftPartStackId(requestObject) + ".verification";
     }
-    
+
     private String getVerificationPartSashContainerId(WebServiceRequestEntity requestObject) {
         return getVerificationPartId(requestObject) + ".partsash";
     }
-    
+
     private String getScriptEditorPartId(WebServiceRequestEntity requestObject) {
         return getVerificationPartSashContainerId(requestObject) + ".editor";
     }
-    
+
     private String getSnippetPartId(WebServiceRequestEntity requestObject) {
         return getVerificationPartSashContainerId(requestObject) + ".snippet";
     }
-    
+
     private String getVerificationToolbarPartId(WebServiceRequestEntity requestObject) {
         return getVerificationPartSashContainerId(requestObject) + ".toolbar";
     }
@@ -379,8 +390,8 @@ public class WSRequestPartUI {
     public MCompositePart getCompositePart() {
         return compositePart;
     }
-    
-    public  MPart getApiControlsPart() {
+
+    public MPart getApiControlsPart() {
         return apiControlsPart;
     }
 
@@ -395,11 +406,11 @@ public class WSRequestPartUI {
     public MPart getBodyPart() {
         return bodyPart;
     }
-    
+
     public MPart getVariablePart() {
         return variablePart;
     }
-    
+
     public MCompositePart getVerificationPart() {
         return verificationPart;
     }
@@ -407,51 +418,51 @@ public class WSRequestPartUI {
     public MPart getScriptEditorPart() {
         return scriptEditorPart;
     }
-    
+
     public MPart getSnippetPart() {
         return snippetPart;
     }
-    
+
     public MPart getResponsePart() {
         return responsePart;
     }
-    
+
     public Composite getApiControlsPartComposite() {
         return getPartComposite(apiControlsPart);
     }
-    
+
     public Composite getAuthorizationPartComposite() {
         return getPartComposite(authorizationPart);
     }
-    
+
     public Composite getHeadersPartComposite() {
         return getPartComposite(headersPart);
     }
-    
+
     public Composite getBodyPartComposite() {
         return getPartComposite(bodyPart);
     }
-    
+
     public Composite getVariablePartComposite() {
         return getPartComposite(variablePart);
     }
-    
+
     public Composite getVerificationPartComposite() {
         return getPartComposite(verificationPart);
     }
-    
+
     public Composite getSnippetPartComposite() {
         return getPartComposite(snippetPart);
     }
-    
+
     public Composite getVerificationToolbarPartComposite() {
         return getPartComposite(verificationToolbarPart);
     }
-    
+
     public Composite getResponsePartComposite() {
         return getPartComposite(responsePart);
     }
-    
+
     private Composite getPartComposite(MPart part) {
         Object partElement = part.getObject();
         if (partElement instanceof WSRequestChildPart) {
@@ -460,11 +471,11 @@ public class WSRequestPartUI {
             return null;
         }
     }
-    
+
     public CTabFolder getTabFolder() {
         return tabFolder;
     }
-    
+
     public CTabItem getAuthorizationTab() {
         return tabFolder.getItem(0);
     }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_ZlSRULAJEeSCYqis2RzKwg">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_ZlSRULAJEeSCYqis2RzKwg">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_db8jgLD-EeSrwsGaXHfzzg" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_zzY_QLEBEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.command.add" commandName="New WebService Object"/>
   </fragments>
@@ -19,5 +19,8 @@
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_9jHaYNvYEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newWsRequest" label="Web Service Request" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/ws_test_object_16.png" command="_zzY_QLEBEeSrwsGaXHfzzg">
       <persistedState key="index" value="5"/>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pCnjYLGsEeiUrd1MrY8dUg" featurename="children" parentElementId="com.kms.katalon.composer.partstack.explorer" positionInList="after:com.kms.katalon.composer.part.explorer">
+    <elements xsi:type="basic:Part" xmi:id="_renrwLGsEeiUrd1MrY8dUg" elementId="com.kms.katalon.composer.webservice.part.requestHistory" toBeRendered="false" visible="false" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.parts.RequestHistoryPart" label="Request History" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/history_request_16.png"/>
   </fragments>
 </fragment:ModelFragments>

@@ -34,4 +34,28 @@ public class ImageConstants {
 
     public static final String WS_SOAP_POST_METHOD_16 = ImageManager
             .getImageURLString(IImageKeys.WS_SOAP_POST_METHOD_16);
+    
+    public static final Image IMG_WS_TEST_OBJECT_16 = ImageManager.getImage(IImageKeys.WS_TEST_OBJECT_16);
+    
+    public static final Image IMG_URL_16_WS_TEST_OBJECT = ImageManager.getImage(IImageKeys.WS_TEST_OBJECT_16);
+    
+    public static final Image IMG_WS_DELETE_METHOD_16 = ImageManager.getImage(IImageKeys.WS_DELETE_METHOD_16);
+    
+    public static final Image IMG_WS_GET_METHOD_16 = ImageManager.getImage(IImageKeys.WS_GET_METHOD_16);
+    
+    public static final Image IMG_WS_POST_METHOD_16 = ImageManager.getImage(IImageKeys.WS_POST_METHOD_16);
+    
+    public static final Image IMG_WS_PUT_METHOD_16 = ImageManager.getImage(IImageKeys.WS_PUT_METHOD_16);
+
+    public static final Image IMG_WS_SOAP_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP_METHOD_16);
+
+    public static final Image IMG_WS_SOAP12_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP12_METHOD_16);
+
+    public static final Image IMG_WS_SOAP_GET_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP_GET_METHOD_16);
+
+    public static final Image IMG_WS_SOAP_POST_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP_POST_METHOD_16);
+    
+    public static final Image IMG_16_SAVE = ImageManager.getImage(IImageKeys.SAVE_16);
+
+    public static final Image IMG_16_DELETE = ImageManager.getImage(IImageKeys.DELETE_16);
 }
