@@ -72,4 +72,13 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LBL_FILE_SIZE = ComposerWebserviceMessageConstants.LBL_FILE_SIZE;
     
     public static final String DIA_TITLE_TEST_CASE_BROWSER = ComposerWebserviceMessageConstants.DIA_TITLE_TEST_CASE_BROWSER;
+
+    // Quick Start Dialog
+    public static final String DIA_TITLE_QUICKSTART = ComposerWebserviceMessageConstants.DIA_TITLE_QUICKSTART;
+    public static final String QUICKSTART_NEW_REST_REQUEST = ComposerWebserviceMessageConstants.QUICKSTART_NEW_REST_REQUEST;
+    public static final String QUICKSTART_NEW_SOAP_REQUEST = ComposerWebserviceMessageConstants.QUICKSTART_NEW_SOAP_REQUEST;
+    public static final String QUICKSTART_IMPORT_SWAGGER_FROM_FILE = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_SWAGGER_FROM_FILE;
+    public static final String QUICKSTART_IMPORT_SWAGGER_FROM_URL = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_SWAGGER_FROM_URL;
+    public static final String QUICKSTART_IMPORT_WSDL_FROM_FILE = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_WSDL_FROM_FILE;
+    public static final String QUICKSTART_IMPORT_WSDL_FROM_URL = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_WSDL_FROM_URL;
 }

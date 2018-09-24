@@ -17,6 +17,8 @@ public class EventConstants {
     public static final String PROJECT_CREATED = "PROJECT/CREATED";
 
     public static final String PROJECT_OPEN = "PROJECT/OPEN";
+    
+    public static final String NEW_WS_PROJECT_OPEN = "PROJECT/OPEN_NEW_WS_PROJECT";
 
     public static final String PROJECT_OPENED = "PROJECT/OPENED";
 
@@ -320,4 +322,7 @@ public class EventConstants {
     public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";
 
     public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
+    
+    // Api Quick Start Dialog
+    public static final String API_QUICK_START_DIALOG_OPEN = "API/OPEN_QUICK_START_DIALOG";
 }

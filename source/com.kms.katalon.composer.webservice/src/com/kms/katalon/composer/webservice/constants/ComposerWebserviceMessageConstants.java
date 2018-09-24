@@ -184,6 +184,20 @@ public class ComposerWebserviceMessageConstants extends NLS {
     
     public static String DIA_TITLE_TEST_CASE_BROWSER;
     
+    public static String DIA_TITLE_QUICKSTART;
+    
+    public static String QUICKSTART_NEW_REST_REQUEST;
+    
+    public static String QUICKSTART_NEW_SOAP_REQUEST;
+    
+    public static String QUICKSTART_IMPORT_SWAGGER_FROM_FILE;
+    
+    public static String QUICKSTART_IMPORT_SWAGGER_FROM_URL;
+    
+    public static String QUICKSTART_IMPORT_WSDL_FROM_FILE;
+    
+    public static String QUICKSTART_IMPORT_WSDL_FROM_URL;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);

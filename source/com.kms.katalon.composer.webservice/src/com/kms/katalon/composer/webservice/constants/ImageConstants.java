@@ -36,4 +36,12 @@ public class ImageConstants {
 
     public static final String WS_SOAP_POST_METHOD_16 = ImageManager
             .getImageURLString(IImageKeys.WS_SOAP_POST_METHOD_16);
+    
+    public static final Image WS_NEW_REST_REQUEST_64 = ImageManager.getImage(IImageKeys.WS_NEW_REST_REQUEST_64);
+    
+    public static final Image WS_NEW_SOAP_REQUEST_64 = ImageManager.getImage(IImageKeys.WS_NEW_SOAP_REQUEST_64);
+    
+    public static final Image WS_IMPORT_REST_REQUEST_64 = ImageManager.getImage(IImageKeys.WS_IMPORT_REST_REQUEST_64);
+    
+    public static final Image WS_IMPORT_SOAP_REQUEST_64 = ImageManager.getImage(IImageKeys.WS_IMPORT_SOAP_REQUEST_64);
 }

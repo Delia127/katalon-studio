@@ -60,6 +60,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 
