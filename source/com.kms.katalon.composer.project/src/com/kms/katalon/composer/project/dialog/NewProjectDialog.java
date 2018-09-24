@@ -2,12 +2,13 @@ package com.kms.katalon.composer.project.dialog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.MarshalException;
 
@@ -19,7 +20,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -44,17 +44,25 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
-import com.kms.katalon.composer.project.sample.SampleBuiltInProject;
+import com.kms.katalon.composer.project.handlers.OpenProjectHandler;
+import com.kms.katalon.composer.project.sample.SampleLocalProject;
+import com.kms.katalon.composer.project.sample.SampleProject;
+import com.kms.katalon.composer.project.sample.SampleProjectType;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewProjectDialog extends TitleAreaDialog {
@@ -65,8 +73,12 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     private static final int PROJECT_DESC_DISPLAY_LINE_NUMBER = 4;
     
+    private static final String BLANK_PROJECT = StringConstants.BLANK_PROJECT;
+    
     private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
+    private List<SampleProject> sampleProjects = new ArrayList<>();
+    
     private Text txtProjectName;
 
     private Text txtProjectLocation;
@@ -77,11 +89,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     private ProjectEntity project;
     
-    private SampleRemoteProject sampleRemoteProject;
-    
-    private String sampleBuiltInProjectType;
-    
-    private SampleBuiltInProject sampleBuiltInProject;
+    private SampleProject initialSampleProject;
 
     private boolean showError;
 
@@ -89,34 +97,22 @@ public class NewProjectDialog extends TitleAreaDialog {
     
     private String title;
     
-    private Combo cbSampleProjects;
+    private Combo cbProjects;
     
     private Text txtRepoUrl;
     
-    private Button radioBlankProject;
+    private Button rbWebServiceProjectType;
     
-    private Button radioSampleProject;
-    
-    private List<SampleRemoteProject> sampleRemoteProjects = new ArrayList<>();
-    
-    private List<SampleBuiltInProject> sampleBuiltInProjects = new ArrayList<>();
-    
-    private List<String> sampleProjectNames;
+    private Button rbGenericProjectType;
 
     public NewProjectDialog(Shell parentShell) {
         this(parentShell, (SampleRemoteProject) null);
     }
     
-    public NewProjectDialog(Shell parentShell, SampleRemoteProject sampleRemoteProject) {
+    public NewProjectDialog(Shell parentShell, SampleProject sampleProject) {
         super(parentShell);
         this.title = StringConstants.VIEW_TITLE_NEW_PROJ;
-        this.sampleRemoteProject = sampleRemoteProject;
-    }
-    
-    public NewProjectDialog(Shell parentShell, String sampleBuiltInProjectType) {
-        super(parentShell);
-        this.title = StringConstants.VIEW_TITLE_NEW_PROJ;
-        this.sampleBuiltInProjectType = sampleBuiltInProjectType;
+        this.initialSampleProject = sampleProject;
     }
 
     public NewProjectDialog(Shell parentShell, ProjectEntity project) {
@@ -124,9 +120,11 @@ public class NewProjectDialog extends TitleAreaDialog {
         this.project = project;
         this.title = StringConstants.VIEW_TITLE_PROJECT_PROPERTIES;
     }
-
+    
     @Override
     protected Control createDialogArea(Composite parent) {
+        initSampleProjects();
+        
         Composite area = (Composite) super.createDialogArea(parent);
 
         getShell().setText(title);
@@ -143,42 +141,57 @@ public class NewProjectDialog extends TitleAreaDialog {
         txtProjectName = new Text(container, SWT.BORDER);
         txtProjectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         
-        Composite emptyComposite = new Composite(container, SWT.NONE);
-        emptyComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        emptyComposite.setLayout(new GridLayout(1, false));
+        Label lblProjectType = new Label(container, SWT.NONE);
+        lblProjectType.setText("Type");
         
         Composite projectTypeComposite = new Composite(container, SWT.NONE);
         projectTypeComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        projectTypeComposite.setLayout(new GridLayout(2, false));
-        
-        radioBlankProject = new Button(projectTypeComposite, SWT.RADIO);
-        GridData gdBlankProject = new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1);
-        radioBlankProject.setLayoutData(gdBlankProject);
-        radioBlankProject.setText(StringConstants.VIEW_OPTION_BLANK_PROJECT);
-        radioBlankProject.addSelectionListener(new SelectionAdapter() {
+        projectTypeComposite.setLayout(new GridLayout(3, false));
+
+        rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
+        GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
+        rbWebServiceProjectType.setText(StringConstants.VIEW_OPTION_WEB_SERVICE_PROJECT);
+        rbWebServiceProjectType.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setSampleProjectGroupEnabled(false);
+                populateWebServiceProjects();
             }
         });
         
-        radioSampleProject = new Button(projectTypeComposite, SWT.RADIO);
-        GridData gdSampleProject = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdSampleProject.horizontalIndent = 20;
-        radioSampleProject.setLayoutData(gdSampleProject);
-        radioSampleProject.setText(StringConstants.VIEW_OPTION_SAMPLE_PROJECT);
-        radioSampleProject.addSelectionListener(new SelectionAdapter() {
+        rbGenericProjectType = new Button(projectTypeComposite, SWT.RADIO);
+        GridData gdGenericProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        rbGenericProjectType.setLayoutData(gdGenericProjectType);
+        rbGenericProjectType.setText(StringConstants.VIEW_OPTION_GENERIC_PROJECT);
+        rbGenericProjectType.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setSampleProjectGroupEnabled(true);
+                populateGenericProjects();
             }
         });
         
-        Label lblSampleProjects = new Label(container, SWT.NONE);
-        lblSampleProjects.setText(StringConstants.VIEW_LBL_SAMPLE_PROJECT);
+        new HelpCompositeForDialog(projectTypeComposite, DocumentationMessageConstants.MANAGE_TEST_PROJECT) {
+            @Override
+            protected GridData createGridData() {
+                return new GridData(SWT.RIGHT, SWT.CENTER, true, false);
+            }
+            
+
+            @Override
+            protected GridLayout createLayout() {
+                GridLayout layout = new GridLayout();
+                layout.marginHeight = 0;
+                layout.marginBottom = 0;
+                layout.marginWidth = 0;
+                return layout;
+            }
+        };
         
-        cbSampleProjects = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
-        cbSampleProjects.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        Label lblProject = new Label(container, SWT.NONE);
+        lblProject.setText(StringConstants.VIEW_LBL_PROJECT);
+        
+        cbProjects = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
+        cbProjects.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         
         Label lblRepoUrl = new Label(container, SWT.NONE);
         lblRepoUrl.setText(StringConstants.VIEW_LBL_REPOSITORY_URL);
@@ -218,90 +231,61 @@ public class NewProjectDialog extends TitleAreaDialog {
         Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        populateSampleProjects();
+        if (initialSampleProject != null) {
+            if (initialSampleProject.getType() == SampleProjectType.WS) {
+                populateWebServiceProjects();
+                rbWebServiceProjectType.setSelection(true);
+            } else {
+                populateGenericProjects();
+                rbGenericProjectType.setSelection(true);
+            }
+            cbProjects.select(cbProjects.indexOf(initialSampleProject.getName()));
+        } else {
+            populateGenericProjects();
+            rbGenericProjectType.setSelection(true);
+            cbProjects.select(0);
+        }
+        showRepoUrlBySelectedProject();
         
         addControlModifyListeners();
        
         return area;
     }
     
-    private void populateSampleProjects() {
-        if (sampleRemoteProject != null) {
-            setSampleProjectGroupEnabled(true);
-            
-            loadSampleRemoteProjects();
-            
-            int sampleProjectIdx = sampleProjectNames.indexOf(sampleRemoteProject.getName());
-            if (sampleProjectIdx >= 0) {
-                cbSampleProjects.select(sampleProjectIdx);
-            }
-            
-            setRepoUrlBasedOnSampleProjectSelection();
-        } else if (sampleBuiltInProjectType != null) {
-            setSampleProjectGroupEnabled(true);
-            
-            loadSampleBuiltInProjects();
-            
-            int sampleProjectIdx = -1;
-            for (SampleBuiltInProject sample : sampleBuiltInProjects) {
-                sampleProjectIdx++;
-                if (sample.getType().equals(sampleBuiltInProjectType)) {
-                    break;
-                }
-            }
-            
-            if (sampleProjectIdx >= 0) {
-                cbSampleProjects.select(sampleProjectIdx);
-            }
-        } else {
-            setSampleProjectGroupEnabled(false);
-            radioBlankProject.setSelection(true);
-            
-            loadSampleRemoteProjects();
-            if (sampleRemoteProjects.size() > 0) {
-                cbSampleProjects.select(0);
-                setRepoUrlBasedOnSampleProjectSelection();
-            } else {
-                loadSampleBuiltInProjects();
-                cbSampleProjects.select(0);
-            }
+    private void initSampleProjects() {
+        List<SampleRemoteProject> remoteSamples = SampleRemoteProjectProvider.getCachedProjects();
+        if (remoteSamples.size() > 0) {
+            sampleProjects.addAll(remoteSamples);
+        } else { //if remote samples are not available, use local ones
+            List<SampleLocalProject> localSamples = SampleProjectProvider.getInstance().getSampleProjects();
+            sampleProjects.addAll(localSamples);
         }
     }
     
-    private void setSampleProjectGroupEnabled(boolean enabled) {
-        radioSampleProject.setSelection(enabled);
-        cbSampleProjects.setEnabled(enabled);
-        txtRepoUrl.setEnabled(enabled);
+    private void populateGenericProjects() {
+        populateProjects(SampleProjectType.WEBUI, SampleProjectType.MOBILE,
+                SampleProjectType.WS, SampleProjectType.MIXED);
     }
     
-    private void loadSampleRemoteProjects() {
-        sampleRemoteProjects = SampleRemoteProjectProvider.getCachedProjects();
-        
-        sampleProjectNames = sampleRemoteProjects
-                .stream()
-                .map(sample -> sample.getName())
-                .collect(Collectors.toList());
-        
-        cbSampleProjects.setItems(sampleProjectNames.toArray(new String[sampleProjectNames.size()]));
+    private void populateWebServiceProjects() {
+        populateProjects(SampleProjectType.WS);
     }
     
-    private void loadSampleBuiltInProjects() {
-        sampleBuiltInProjects = new ArrayList<>();
-        sampleBuiltInProjects.add(new SampleBuiltInProject(SampleProjectProvider.SAMPLE_WEB_UI, StringConstants.SAMPLE_WEB_UI_PROJECT));
-        sampleBuiltInProjects.add(new SampleBuiltInProject(SampleProjectProvider.SAMPLE_MOBILE, StringConstants.SAMPLE_MOBILE_PROJECT));
-        sampleBuiltInProjects.add(new SampleBuiltInProject(SampleProjectProvider.SAMPLE_WEB_SERVICE, StringConstants.SAMPLE_WEB_SERVICE_PROJECT));
+    private void populateProjects(SampleProjectType... sampleProjectTypes) {
+        List<SampleProjectType> sampleProjectTypeList = Arrays.asList(sampleProjectTypes);
         
-        sampleProjectNames = sampleBuiltInProjects
-                .stream()
-                .map(project -> project.getName())
-                .collect(Collectors.toList());
+        cbProjects.removeAll();
         
-        cbSampleProjects.setItems(sampleProjectNames.toArray(new String[sampleProjectNames.size()]));
-    }
-    
-    private void setRepoUrlBasedOnSampleProjectSelection() {
-        SampleRemoteProject selectedSampleProject = sampleRemoteProjects.get(cbSampleProjects.getSelectionIndex());
-        txtRepoUrl.setText(selectedSampleProject.getSourceUrl());
+        cbProjects.add(BLANK_PROJECT);
+        
+        sampleProjects.stream()
+            .filter(sample -> sampleProjectTypeList.contains(sample.getType()))
+            .forEach(sample -> {
+                cbProjects.add(sample.getName());
+                cbProjects.setData(sample.getName(), sample);
+            });
+        
+        cbProjects.select(0);
     }
 
     private Composite createFileChooserComposite(Composite parent) {
@@ -376,18 +360,25 @@ public class NewProjectDialog extends TitleAreaDialog {
             }
         });
         
-        cbSampleProjects.addSelectionListener(new SelectionAdapter() {
+        cbProjects.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (areRemoteSamplesAvailable()) {
-                    setRepoUrlBasedOnSampleProjectSelection();
-                }
+                showRepoUrlBySelectedProject();
             }
         });
     }
     
-    private boolean areRemoteSamplesAvailable() {
-        return sampleRemoteProjects.size() > 0;
+    private void showRepoUrlBySelectedProject() {
+        txtRepoUrl.setText(StringUtils.EMPTY);
+        
+        int selectionIdx = cbProjects.getSelectionIndex();
+        String selectedProjectName = cbProjects.getItem(selectionIdx);
+        if (!selectedProjectName.equals(BLANK_PROJECT)) {
+            Object sampleProject = cbProjects.getData(selectedProjectName);
+            if (sampleProject instanceof SampleRemoteProject) {
+                txtRepoUrl.setText(((SampleRemoteProject) sampleProject).getSourceUrl());
+            }
+        }
     }
 
     @Override
@@ -480,44 +471,66 @@ public class NewProjectDialog extends TitleAreaDialog {
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
         
-        boolean useSampleProject = radioSampleProject.getSelection();
-        if (useSampleProject) {
-            if (areRemoteSamplesAvailable()) {
-                sampleRemoteProject = sampleRemoteProjects.get(cbSampleProjects.getSelectionIndex());
-                handleCreatingSampleRemoteProject(sampleRemoteProject);
-            } else {
-                sampleBuiltInProject = sampleBuiltInProjects.get(cbSampleProjects.getSelectionIndex());
-                handleCreatingSampleBuiltInProject(sampleBuiltInProject);
+        int selectionIdx = cbProjects.getSelectionIndex();
+        String selectedProjectName = cbProjects.getItem(selectionIdx);
+        if (!selectedProjectName.equals(BLANK_PROJECT)) {
+            Object selectedSampleProject = cbProjects.getData(selectedProjectName);
+            if (selectedSampleProject instanceof SampleRemoteProject) {
+                handleCreatingSampleRemoteProject((SampleRemoteProject) selectedSampleProject);
+            } else if (selectedSampleProject instanceof SampleLocalProject) {
+                handleCreatingSampleBuiltInProject((SampleLocalProject) selectedSampleProject);
             }
         } else {
             handleCreatingBlankProject();
         }
         
+        setDefaultSelectorMethod();
+                
         super.okPressed();
     }
-
+    
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();
         String projectLocation = getProjectLocation();
         String projectDescription = getProjectDescription();
+        ProjectType projectType = getSelectedProjectType();
         
         ProjectEntity projectEntity = new ProjectEntity();
         projectEntity.setName(projectName);
         projectEntity.setFolderLocation(projectLocation);
         projectEntity.setDescription(projectDescription);
+        projectEntity.setType(projectType);
         
         EventBrokerSingleton.getInstance().getEventBroker()
-            .post(EventConstants.GIT_CLONE_REMOTE_PROJECT, new Object[] { sampleRemoteProject, projectEntity });
+            .post(EventConstants.GIT_CLONE_REMOTE_PROJECT, new Object[] { sampleRemoteProject, projectEntity, false });
     }
     
-    private void handleCreatingSampleBuiltInProject(SampleBuiltInProject sampleBuiltInProject) {
+    /*
+     * This method exists from 5.7 onward - it will explicitly assign a default SelectorMethod of XPATH 
+     * to newly created BLANK projects so that we can load default SelectorMethod for old and new projects appropriately
+     */
+    private void setDefaultSelectorMethod(){
+    	WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+    	
+    	if(store != null){
+        	try {
+    			store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+    	}
+    }
+    
+    private void handleCreatingSampleBuiltInProject(SampleLocalProject sampleBuiltInProject) {
         try {
             String projectName = getProjectName();
             String projectParentLocation = getProjectLocation();
             String projectDescription = getProjectDescription();
+            ProjectType projectType = getSelectedProjectType();
     
             String projectLocation = new File(projectParentLocation, projectName).getAbsolutePath();
-            SampleProjectProvider.getInstance().extractSampleWebUIProject(sampleBuiltInProject.getType(), projectLocation);
+            SampleProjectProvider.getInstance().extractSampleWebUIProject(sampleBuiltInProject, projectLocation);
             FileUtils.forceDelete(ProjectController.getInstance().getProjectFile(projectLocation));
     
             ProjectEntity newProject = ProjectController.getInstance().newProjectEntity(projectName, projectDescription,
@@ -525,8 +538,9 @@ public class NewProjectDialog extends TitleAreaDialog {
             if (newProject == null) {
                 return;
             }
+            updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
-            Trackings.trackCreatingSampleProject(sampleBuiltInProject.getType(), newProject.getUUID());
+            Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID());
     
             // Open created project
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
@@ -541,11 +555,14 @@ public class NewProjectDialog extends TitleAreaDialog {
             String projectName = getProjectName();
             String projectLocation = getProjectLocation();
             String projectDescription = getProjectDescription();
+            ProjectType projectType = getSelectedProjectType();
             
-            ProjectEntity newProject = createNewProject(projectName, projectLocation, projectDescription);
+            ProjectEntity newProject = createNewProject(projectName, projectLocation,
+                    projectDescription);
             if (newProject == null) {
                 return;
             }
+            updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
             
             Trackings.trackCreatingProject();
@@ -579,6 +596,19 @@ public class NewProjectDialog extends TitleAreaDialog {
                     StringConstants.HAND_ERROR_MSG_NEW_PROJ_LOCATION_INVALID);
         }
         return null;
+    }
+    
+    private void updateProjectType(ProjectEntity project, ProjectType type) throws Exception {
+        project.setType(type);
+        ProjectController.getInstance().updateProject(project);
+    }
+    
+    private ProjectType getSelectedProjectType() {
+        if (rbGenericProjectType.getSelection()) {
+            return ProjectType.GENERIC;
+        } else {
+            return ProjectType.WEBSERVICE;
+        }
     }
 
     @Override

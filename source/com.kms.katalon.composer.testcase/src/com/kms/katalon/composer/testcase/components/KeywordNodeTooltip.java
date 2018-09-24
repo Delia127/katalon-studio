@@ -74,6 +74,8 @@ public class KeywordNodeTooltip {
 
     private boolean isOpeningKeywordDescription = false;
 
+    private Point location;
+
     private static KeywordNodeTooltip currentTooltip = null;
 
     public KeywordNodeTooltip(Control control) {
@@ -84,7 +86,7 @@ public class KeywordNodeTooltip {
         return tip;
     }
 
-    private void initComponents(Composite parent) {
+    private void initComponents(Composite parent) { 
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.marginWidth = 0;
@@ -97,7 +99,7 @@ public class KeywordNodeTooltip {
         composite.setLayout(layout);
         composite.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
         composite.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-
+        
         javaDocContent = new StyledText(composite, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         GridData gdJavaDocContent = new GridData(SWT.FILL, SWT.FILL, true, true);
         javaDocContent.setLeftMargin(20);
@@ -222,10 +224,12 @@ public class KeywordNodeTooltip {
 
     public void show(Point p) {
         hide();
+        location = p;
         createTooltip();
         tip.setLocation(p);
              
-        setBestSizeForTooltip(p, preferedWidth, preferedHeight);
+        Point tipSize = getBestSizeForKeywordDescriptionPopup();
+        tip.setSize(tipSize);
         
         if (currentTooltip != null && currentTooltip != this) {
             currentTooltip.hide();
@@ -235,7 +239,7 @@ public class KeywordNodeTooltip {
         tip.setVisible(true);
     }
 
-    private void setBestSizeForTooltip(Point location, int preferedWidth, int preferedHeight) {
+    private Point getBestSizeForKeywordDescriptionPopup() {
         Monitor currentMonitor = null;
         for (Monitor monitor : Display.getCurrent().getMonitors()) {
             if (monitor.getClientArea().contains(location)) {
@@ -248,7 +252,7 @@ public class KeywordNodeTooltip {
         if (location.x + width > displayRect.x + displayRect.width ) {
             width = displayRect.x + displayRect.width - location.x;
         }
-        tip.setSize(width, preferedHeight);
+        return new Point(width, preferedHeight);
     }
     
     private Point getLocation(Point suggestionLoc) {
@@ -385,12 +389,12 @@ public class KeywordNodeTooltip {
         text = tipContent.toString();
         javaDocContent.setText(text);
         javaDocContent.setStyleRanges(styles.toArray(new StyleRange[] {}));
-
     }
 
     private String wrapSelectionItemLongLine(String line) {
         GC graphicContext = new GC(javaDocContent);
-        int limWidth = javaDocContent.getSize().x;
+        int limWidth = 600;
+        
         String[] words = line.split("\\s{1,}");
         StringBuilder temp = new StringBuilder("\t\t");
         StringBuilder result = new StringBuilder();
@@ -413,6 +417,7 @@ public class KeywordNodeTooltip {
                 result.append(System.lineSeparator() + temp.toString());
             }
         }
+        
         graphicContext.dispose();
         return result.toString();
     }

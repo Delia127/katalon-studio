@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -517,8 +518,20 @@ public class WebUiCommonHelper extends KeywordHelper {
                 if (cssLocatorValue != null) {
                     return cssLocatorValue;
                 }
-                XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());
+                XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());                
                 return xpathBuilder.build(); 
+            case XPATH:
+            	String ret =  to.getSelectorCollection().get(selectorMethod);
+            	if(ret == null || ret.isEmpty()){	
+            		if(to.getXpaths() != null && !to.getXpaths().isEmpty()){
+                		ret = to.getXpaths().get(0).getValue();
+            		}else{
+            			ret = StringUtils.EMPTY;
+            		}
+            	}
+            	return ret;
+            case CSS:
+            	return to.getSelectorCollection().get(selectorMethod);
             default:
                 return to.getSelectorCollection().get(selectorMethod);
         }
@@ -544,6 +557,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         XPathBuilder xpathBuilder = new XPathBuilder(properties);
         return By.xpath(xpathBuilder.build(aggregationType));
     }
+    
     
     /**
      * Build locators, each corresponds to a single condition ("text" or "xpath")
@@ -679,6 +693,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                     && testObject.isParentObjectShadowRoot();
             By defaultLocator = null;
             String cssLocator = null;
+            String locatorString = null;
             final TestObject parentObject = testObject.getParentObject();
             WebElement shadowRootElement = null;
             if (objectInsideShadowDom) {
@@ -688,6 +703,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                             MessageFormat.format(StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP,
                                     testObject.getObjectId()));
                 }
+                locatorString = cssLocator;
                 logger.logInfo(
                         MessageFormat.format(CoreWebuiMessageConstants.MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT,
                                 testObject.getObjectId(), testObject.getParentObject().getObjectId()));
@@ -705,6 +721,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                             MessageFormat.format(StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP,
                                     testObject.getObjectId()));
                 }
+                locatorString = defaultLocator.toString();
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
                         testObject.getObjectId(), defaultLocator.toString(), timeOut));
             }
@@ -735,8 +752,12 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
-            // when normal method fails
-            List<WebElement> webElements = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
+            
+            // If this code is reached, then it's definitely a WebElementNotFoundException
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
+            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
+            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));      
+
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
@@ -747,6 +768,39 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
         }
         return Collections.emptyList();
+    }
+    
+    private static void findWebElementsByOtherMethods(
+    		WebDriver webDriver, 
+    		boolean objectInsideShadowDom, 
+    		TestObject testObject){
+
+        List<WebElement> webElementsFoundByHeuristicMethod = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
+        List<WebElement> webElementsFoundByTrialAndErrorMethod = findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);       
+    }
+    
+    private static List<WebElement> findWebElementsUsingTrialAndErrorMethod(
+    		WebDriver webDriver, 
+    		boolean objectInsideShadowDom, 
+    		TestObject testObject){
+    	
+    	if(objectInsideShadowDom){
+    		 return Collections.emptyList();
+    	}
+    	logger.logInfo(StringConstants.KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD);
+    	List<WebElement> webElements = new ArrayList<>();
+    	
+    	testObject.getXpaths().forEach(xpath ->{
+            By byXpath =  By.xpath(xpath.getValue());
+            List<WebElement> webElementsByThisXpath = webDriver.findElements(byXpath);
+            if(webElementsByThisXpath != null && !webElementsByThisXpath.isEmpty()){
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_TRIAL_AND_ERROR_METHOD, testObject.getObjectId(), xpath.getValue()));
+            	webElements.addAll(webElementsByThisXpath);
+            }            
+    	});
+        logger.logInfo(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_TRIAL_AND_ERROR_METHOD);
+    	
+    	return webElements;
     }
 
 
@@ -793,9 +847,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 (left, right) -> left.getValue().size() - right.getValue().size());
         WebElement bestMatchElement = bestMatchEntry.getKey();
         List<String> matchingAttributes = bestMatchEntry.getValue();
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD, testObject.getObjectId(), matchingAttributes));
-        logger.logInfo(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_HEURISTIC_METHOD);
-        logger.logInfo(StringConstants.KW_LOG_INFO_SUGGESTION_IN_SELECTING_ATTRIBUTES_FOR_LOCATOR);
+        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD, matchingAttributes));
         return bestMatchElement;
     }
 

@@ -279,4 +279,7 @@ public class ProjectController extends EntityController {
         return getDataProviderSetting().getProjectDataProvider().updateProjectEntity(projectFile, newInfo);
     }
     
+    public ProjectEntity getProject(String projectFileLocation) throws Exception  {
+        return getDataProviderSetting().getProjectDataProvider().getProject(projectFileLocation);
+    }
 }

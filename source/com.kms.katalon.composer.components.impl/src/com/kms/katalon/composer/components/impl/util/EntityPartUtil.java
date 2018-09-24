@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -256,5 +257,22 @@ public class EntityPartUtil {
             }
         }
         return ids;
+    }
+    
+    public static MCompositePart findTestCaseCompositePart(TestCaseEntity testCaseEntity) {
+        EModelService modelService = ModelServiceSingleton.getInstance().getModelService();
+        MApplication application = ApplicationSingleton.getInstance().getApplication();        
+        String testCasePartId = getTestCaseCompositePartId(testCaseEntity.getId());
+        
+        MCompositePart testCasePart = null;
+        
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
+                application);
+        if (stack != null) {
+            testCasePart = (MCompositePart) modelService.find(testCasePartId, stack);
+    
+        }
+        
+        return testCasePart;
     }
 }

@@ -7,6 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -34,6 +40,7 @@ import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -54,6 +61,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
@@ -104,24 +112,46 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.controls.ToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
+import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
+import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapEntryExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.IVariablePart;
+import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableViewEvent;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -147,8 +177,10 @@ import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
@@ -236,6 +268,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.List, InputValueType.Map };
+
+    @Inject
+    private ESelectionService selectionService;
 
     @Inject
     protected MApplication application;
@@ -498,6 +533,163 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 sendRequest(true);
             }
         });
+
+        wsApiControl.addAddRequestToTestCaseSelectionListener(new DropdownToolItemSelectionListener() {
+
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                if (event.detail == SWT.ARROW) {
+                    showDropdown(event);
+                }
+            }
+
+            @Override
+            protected Menu getMenu() {
+                return wsApiControl.getAddRequestToTestCaseMenu();
+            }
+        });
+
+        wsApiControl.addAddRequestToNewTestCaseSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                try {
+                    addSendRequestStatementToNewTestCase();
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                            StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+                }
+            }
+        });
+
+        wsApiControl.addAddRequestToExistingTestCaseSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                try {
+                    addSendRequestStatementToExistingTestCase();
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                            StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+                }
+            }
+        });
+    }
+
+    private void addSendRequestStatementToNewTestCase() throws Exception {
+        Object[] selectedTreeEntities = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+        ITreeEntity parentTreeEntity = NewTestCaseHandler.findParentTreeEntity(selectedTreeEntities);
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        if (parentTreeEntity == null) {
+            FolderTreeEntity testCaseTreeRoot = TreeEntityUtil.getTestCaseFolderTreeEntity(project);
+            parentTreeEntity = testCaseTreeRoot;
+        }
+
+        TestCaseEntity testCaseEntity = NewTestCaseHandler.doCreateNewTestCase(parentTreeEntity, eventBroker);
+
+        if (testCaseEntity != null) {
+            addSendRequestStatementToTestCase(testCaseEntity);
+        }
+    }
+
+    private void addSendRequestStatementToExistingTestCase() throws Exception {
+        TestCaseEntity selectedTestCaseEntity = selectTestCase();
+        if (selectedTestCaseEntity != null) {
+            eventBroker.send(EventConstants.TESTCASE_OPEN, selectedTestCaseEntity);
+            addSendRequestStatementToTestCase(selectedTestCaseEntity);
+        }
+    }
+
+    private TestCaseEntity selectTestCase() throws Exception {
+        TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
+                new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+        dialog.setAllowMultiple(false);
+        dialog.setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
+
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject != null) {
+            FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
+            dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
+        }
+
+        if (dialog.open() == Window.OK) {
+            TestCaseTreeEntity testCaseTreeEntity = (TestCaseTreeEntity) dialog.getFirstResult();
+            TestCaseEntity testCaseEntity = testCaseTreeEntity.getObject();
+            return testCaseEntity;
+        } else {
+            return null;
+        }
+    }
+
+    private void addSendRequestStatementToTestCase(TestCaseEntity testCaseEntity)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        MCompositePart testCaseCompositePart = waitForTestCasePartVisible(testCaseEntity);
+
+        TestCaseCompositePart partObject = (TestCaseCompositePart) testCaseCompositePart.getObject();
+        partObject.loadTreeTableInput();
+        if (partObject != null) {
+            TestCaseTreeTableInput tcTreeTableInput = partObject.getChildTestCasePart().getTreeTableInput();
+            ScriptNodeWrapper mainClassNode = tcTreeTableInput.getMainClassNode();
+
+            ExpressionStatementWrapper sendRequestMethodCallStatement = buildSendRequestStatement(mainClassNode);
+
+            tcTreeTableInput.addNewAstObject(sendRequestMethodCallStatement, tcTreeTableInput.getSelectedNode(),
+                    NodeAddType.Add);
+
+            partObject.refreshScript();
+            tcTreeTableInput.refresh();
+        }
+    }
+
+    private MCompositePart waitForTestCasePartVisible(TestCaseEntity testCaseEntity)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<MCompositePart> future = executor.submit(() -> {
+            MCompositePart testCaseCompositePart = null;
+            while (testCaseCompositePart == null) {
+                Thread.sleep(300);
+                testCaseCompositePart = (MCompositePart) EntityPartUtil.findTestCaseCompositePart(testCaseEntity);
+            }
+            return testCaseCompositePart;
+        });
+
+        return future.get(30, TimeUnit.SECONDS);
+    }
+
+    private ExpressionStatementWrapper buildSendRequestStatement(ASTNodeWrapper parentNode) {
+        MethodCallExpressionWrapper sendRequestMethodCall = AstKeywordsInputUtil.generateBuiltInKeywordExpression("WS",
+                "sendRequest", parentNode);
+        ArgumentListExpressionWrapper sendRequestMethodCallArgumentList = sendRequestMethodCall.getArguments();
+
+        MethodCallExpressionWrapper findTestObjectMethodCall = AstEntityInputUtil.createNewFindTestObjectMethodCall(
+                getWSRequestObject().getIdForDisplay(), sendRequestMethodCallArgumentList);
+        ArgumentListExpressionWrapper findTestObjectMethodCallArgumentList = findTestObjectMethodCall.getArguments();
+
+        MapExpressionWrapper variableMapExpression = new MapExpressionWrapper(findTestObjectMethodCallArgumentList);
+
+        VariableEntity[] requestVariables = variableView.getVariables();
+        for (VariableEntity variable : requestVariables) {
+            MapEntryExpressionWrapper newMapEntry = new MapEntryExpressionWrapper(variableMapExpression);
+
+            newMapEntry.setKeyExpression(new ConstantExpressionWrapper(variable.getName(), newMapEntry));
+
+            ExpressionWrapper valueExpression = GroovyWrapperParser
+                    .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue());
+            newMapEntry.setValueExpression(valueExpression);
+
+            variableMapExpression.addExpression(newMapEntry);
+        }
+
+        findTestObjectMethodCallArgumentList.addExpression(variableMapExpression);
+
+        // replace the default created argument of sendRequest method with
+        // findTestObject method call
+        sendRequestMethodCallArgumentList.removeExpression(0);
+        sendRequestMethodCallArgumentList.addExpression(findTestObjectMethodCall);
+
+        return new ExpressionStatementWrapper(sendRequestMethodCall);
     }
 
     protected abstract void sendRequest(boolean runVerificationScript);
@@ -733,7 +925,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     /**
-     * @param composite Composite with GridData layout
+     * @param composite
+     * Composite with GridData layout
      * @param isVisible
      */
     protected void setCompositeVisible(Composite composite, boolean isVisible) {
@@ -784,7 +977,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             public void widgetSelected(SelectionEvent e) {
                 txtPassword.setEchoChar(PASSWORD_CHAR_MASK); // show as dot
                 if (chkShowPassword.getSelection()) {
-                    txtPassword.setEchoChar(RAW_PASSWORD_CHAR_MASK); // show the text
+                    txtPassword.setEchoChar(RAW_PASSWORD_CHAR_MASK); // show the
+                                                                     // text
                 }
             }
         });
@@ -1003,9 +1197,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         createResponseVerificationResult(reponseDetailsTabFolder);
 
-        // CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
+        // CTabItem responseVerificationLogTab = new
+        // CTabItem(reponseDetailsTabFolder, SWT.NONE);
         // responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
-        //
         reponseDetailsTabFolder.setSelection(0);
     }
 
@@ -1400,21 +1594,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
                     @Override
                     public void documentAboutToBeChanged(DocumentEvent event) {
-                        // TODO Auto-generated method stub
                     }
                 });
-
-        // verificationScriptEditor.addPropertyListener(new IPropertyListener() {
-        // @Override
-        // public void propertyChanged(Object source, int propId) {
-        // if (source instanceof GroovyEditor && propId == ISaveablePart.PROP_DIRTY) {
-        // if (verificationScriptEditor.isDirty()) {
-        // WebServicePart.this.dirtyable.setDirty(true);
-        // tabVerification.setText(StringConstants.PA_LBL_VERIFICATION);
-        // }
-        // }
-        // }
-        // });
     }
 
     @Override
@@ -1583,7 +1764,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     public String getEntityId() {
         return getWSRequestObject().getIdForDisplay();
     }
-    
+
     @Override
     public boolean isDraft() {
         return getWSRequestObject() instanceof DraftWebServiceRequestEntity;
@@ -1751,8 +1932,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected boolean isBodySupported() {
         String requestMethod = wsApiControl.getRequestMethod();
-        return !(WebServiceRequestEntity.GET_METHOD.equalsIgnoreCase(requestMethod)
-                || WebServiceRequestEntity.DELETE_METHOD.equalsIgnoreCase(requestMethod));
+        return !(WebServiceRequestEntity.GET_METHOD.equalsIgnoreCase(requestMethod));
     }
 
     protected boolean isSOAP() {
@@ -1833,7 +2013,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             });
         }
     }
-    
+
     @PreDestroy
     public void preDestroy() {
         if (originalWsObject instanceof DraftWebServiceRequestEntity) {

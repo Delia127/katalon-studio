@@ -6,6 +6,7 @@ import static com.kms.katalon.entity.repository.WebServiceRequestEntity.POST_MET
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PUT_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP12;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PATCH_METHOD;
 
 import org.eclipse.swt.graphics.Image;
 
@@ -25,6 +26,8 @@ public class WebServiceUtil {
                     return ImageConstants.WS_PUT_METHOD_16;
                 case DELETE_METHOD:
                     return ImageConstants.WS_DELETE_METHOD_16;
+                case PATCH_METHOD:
+                    return ImageConstants.WS_PATCH_METHOD_16;
                 // New rest web service request.
                 default:
                     return ImageConstants.WS_GET_METHOD_16;

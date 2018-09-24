@@ -24,8 +24,7 @@ public class RecorderAddonSocket extends AddonSocket {
             String key = HTMLElementUtil.decodeURIComponent(message.substring(0, message.indexOf(EQUALS)));
 
             switch (key) {
-                case ELEMENT_ACTION_KEY:
-                	System.out.println(message);
+                case ELEMENT_ACTION_KEY:                	
                     addNewAction(message.substring(message.indexOf(EQUALS) + 1, message.length()));
                     break;
                 default:
@@ -44,6 +43,7 @@ public class RecorderAddonSocket extends AddonSocket {
     private void addNewAction(String value) {
         try {
             HTMLActionMapping actionMapping = HTMLActionJsonParser.parseJsonIntoHTMLActionMapping(value);
+            
             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.RECORDER_HTML_ACTION_CAPTURED,
                     actionMapping);
         } catch (JsonSyntaxException | UnsupportedEncodingException e) {

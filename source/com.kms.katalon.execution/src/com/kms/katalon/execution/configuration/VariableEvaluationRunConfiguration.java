@@ -2,10 +2,8 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class VariableEvaluationRunConfiguration extends AbstractRunConfiguration {

@@ -81,6 +81,7 @@ public class AddonSocket {
     	sendMessage(new StartInspectAddonMessage());
         System.out.println("WS: Start inspecting");        
     }
+    
     private void setupSession() {
         session.setMaxTextMessageBufferSize(DEFAULT_MAX_TEXT_MESSAGE_SIZE);
     }

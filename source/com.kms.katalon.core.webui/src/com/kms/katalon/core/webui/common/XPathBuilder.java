@@ -42,7 +42,7 @@ public class XPathBuilder {
     private List<String> predicates;
 
     private List<TestObjectProperty> properties;
-
+    
     public XPathBuilder(List<TestObjectProperty> properties) {
         this.properties = properties;
     }

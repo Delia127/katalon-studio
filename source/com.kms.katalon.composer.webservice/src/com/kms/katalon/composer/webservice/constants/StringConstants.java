@@ -20,6 +20,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = ComposerWebserviceMessageConstants.VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
     public static final String PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT = ComposerWebserviceMessageConstants.PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT;
     public static final String PA_URL_W3_HTTP_STATUS = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html";
+    public static final String MENU_ITEM_TEST_REQUEST_AND_VERIFY = ComposerWebserviceMessageConstants.MENU_ITEM_TEST_REQUEST_AND_VERIFY;
+    public static final String MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE = ComposerWebserviceMessageConstants.MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE;
+    public static final String MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE = ComposerWebserviceMessageConstants.MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE;
 
 	// RestRequestObjectPart
     public static final String PA_TITLE_REST = ComposerWebserviceMessageConstants.PA_TITLE_REST;
@@ -57,7 +60,8 @@ public class StringConstants extends GlobalStringConstants {
 
 
     public static final String MSG_CANNOT_OPEN_REQUEST = ComposerWebserviceMessageConstants.MSG_CANNOT_OPEN_REQUEST;
-
+    public static final String MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE = ComposerWebserviceMessageConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE;
+    
     public static final String DIA_BTN_BROWSE = BROWSE;
     public static final String LBL_FILE_PATH = ComposerWebserviceMessageConstants.LBL_FILE_PATH;
     
@@ -66,6 +70,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MEGABYTES_UNIT = ComposerWebserviceMessageConstants.MEGABYTES_UNIT;
     public static final String MSG_SPECIFIED_FILE_NOT_EXIST_WARN = ComposerWebserviceMessageConstants.MSG_SPECIFIED_FILE_NOT_EXIST_WARN;
     public static final String LBL_FILE_SIZE = ComposerWebserviceMessageConstants.LBL_FILE_SIZE;
-
-    public static final String MENU_ITEM_TEST_REQUEST_AND_VERIFY = ComposerWebserviceMessageConstants.MENU_ITEM_TEST_REQUEST_AND_VERIFY;
+    
+    public static final String DIA_TITLE_TEST_CASE_BROWSER = ComposerWebserviceMessageConstants.DIA_TITLE_TEST_CASE_BROWSER;
 }

@@ -177,6 +177,14 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MENU_ITEM_TEST_REQUEST_AND_VERIFY;
     
     public static String RequestHistoryHandler_PA_TITLE_REQUEST_HISTORY;
+
+    public static String MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE;
+    
+    public static String MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE;
+    
+    public static String MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE;
+    
+    public static String DIA_TITLE_TEST_CASE_BROWSER;
     
     static {
         // initialize resource bundle
