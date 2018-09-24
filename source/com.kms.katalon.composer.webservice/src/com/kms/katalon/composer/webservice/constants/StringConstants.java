@@ -10,12 +10,13 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewWebServiceRequestObjectPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ;
-    
     // ImportWebServicesPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
-    
     public static final String MENU_CONTEXT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
-    
+	
+	// SparserInvalidException
+	public static final String EXC_INVALID_SWAGGER_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_SWAGGER_FILE;	
+	public static final String EXC_INVALID_WSDL_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_WSDL_FILE;
     
 	// RequestObjectPart
     public static final String PA_TITLE_HTTP = ComposerWebserviceMessageConstants.PA_TITLE_HTTP;

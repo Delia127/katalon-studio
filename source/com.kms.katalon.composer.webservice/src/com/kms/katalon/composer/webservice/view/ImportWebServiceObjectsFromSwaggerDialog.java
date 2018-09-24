@@ -52,7 +52,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends TitleAreaDialog {
         	createWebServiceRequestEntities();            
     	} catch(Exception e){
     		closeTheDialog = false;
-    		setErrorMessage("Something wrong");
+    		setErrorMessage(StringConstants.EXC_INVALID_SWAGGER_FILE);
     	} finally {
     		if(closeTheDialog == true){
     	        super.okPressed();
@@ -114,4 +114,10 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends TitleAreaDialog {
 	    return false;
 	}
 	
+	@Override
+	protected void configureShell(Shell newShell)
+	{
+	  super.configureShell(newShell);
+	  newShell.setText(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);
+	}
 }

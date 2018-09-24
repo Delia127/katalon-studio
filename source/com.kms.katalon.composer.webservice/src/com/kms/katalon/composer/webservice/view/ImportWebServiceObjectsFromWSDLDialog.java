@@ -71,7 +71,7 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends TitleAreaDialog {
         	createWebServiceRequestEntities();
     	} catch(Exception e){
     		closeTheDialog = false;
-    		setErrorMessage("Something wrong");
+    		setErrorMessage(StringConstants.EXC_INVALID_WSDL_FILE);
     	} finally {
     		if(closeTheDialog == true){
     	        super.okPressed();
@@ -113,5 +113,12 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends TitleAreaDialog {
 	@Override
 	protected boolean isResizable() {
 	    return false;
+	}
+	
+	@Override
+	protected void configureShell(Shell newShell)
+	{
+	  super.configureShell(newShell);
+	  newShell.setText(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL);
 	}
 }
