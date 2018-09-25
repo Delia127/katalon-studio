@@ -12,48 +12,73 @@ import java.util.logging.SimpleFormatter;
 public class SystemConsoleHandler extends ConsoleHandler {
 
     private static final String ANSI_CONSOLE_ESCAPE = "\u001b[";
+    
+    private static final String ANSI_CONSOLE_RESET = ANSI_CONSOLE_ESCAPE + "0m";
+    
     private static final Map<String, String> recordLevelWithPaddingLookup = new ConcurrentHashMap<>();
+    
+    private static final Map<Integer, String> foregroundColorPrefixLookup = new ConcurrentHashMap<>();
 
     public SystemConsoleHandler() {
         super();
         SimpleFormatter formatter = new SimpleFormatter() {
 
             public String format(LogRecord record) {
-                int recordLevel = record.getLevel().intValue();
                 
-                String color = null;
-                String bold = ""; // "1;" means bold
-                String colorPrefix = "";
-                String colorSuffix = "";
+                String foregroundColorPrefix = getForegroundColor(record);
                 
-                if (recordLevel == LogLevel.PASSED.getValue()) {
-                    color = "40"; // green
-                } else if (recordLevel == LogLevel.WARNING.getValue() 
-                        || recordLevel == LogLevel.FAILED.getValue() 
-                        || recordLevel == LogLevel.ERROR.getValue()
-                        || recordLevel == LogLevel.ABORTED.getValue()
-                        || recordLevel == LogLevel.INCOMPLETE.getValue()) {
-                    color = "1"; // red
-                } else if (recordLevel == LogLevel.NOT_RUN.getValue()) {
-                    color = "6"; // cyan
-                } else if (recordLevel == LogLevel.RUN_DATA.getValue()) {
-                    color = "12"; // blue
-                }
-                if (color != null) {
-                    colorPrefix = ANSI_CONSOLE_ESCAPE + bold + "38;5;" + color + "m"; // xterm colors https://github.com/sindresorhus/xterm-colors
-                    colorSuffix = ANSI_CONSOLE_ESCAPE + "0m";
+                String foregroundColorSuffix = "";
+                if (foregroundColorPrefix != null) {
+                    foregroundColorSuffix = ANSI_CONSOLE_RESET;
                 }
 
                 String recordLevelWithPadding = getRecordLevelWithPadding(record);
                 
-                return colorPrefix 
+                String message = record.getMessage()
+                        .replaceAll("\r\n", foregroundColorSuffix + "\r\n" + foregroundColorPrefix)
+                        .replaceAll("[^\r]\n", foregroundColorSuffix + "\n" + foregroundColorPrefix);
+                
+                return foregroundColorPrefix
                         + XMLLoggerParser.getRecordDate(record) 
                         + " " 
                         + recordLevelWithPadding 
                         + " : "
-                        + record.getMessage() 
-                        + colorSuffix 
+                        + message
+                        + foregroundColorSuffix 
                         + "\r\n";
+            }
+
+            private String getForegroundColor(LogRecord record) {
+                
+                int recordLevel = record.getLevel().intValue();
+                String foregroundColorPrefix = foregroundColorPrefixLookup.get(recordLevel);
+                
+                if (foregroundColorPrefix == null) {
+
+                    String foregroundColor = null;
+                    
+                    if (recordLevel == LogLevel.PASSED.getValue()) {
+                        foregroundColor = "2"; // green
+                    } else if (recordLevel == LogLevel.WARNING.getValue() 
+                            || recordLevel == LogLevel.FAILED.getValue() 
+                            || recordLevel == LogLevel.ERROR.getValue()
+                            || recordLevel == LogLevel.ABORTED.getValue()
+                            || recordLevel == LogLevel.INCOMPLETE.getValue()) {
+                        foregroundColor = "9"; // red
+                    } else if (recordLevel == LogLevel.NOT_RUN.getValue()) {
+                        foregroundColor = "6"; // cyan
+                    } else if (recordLevel == LogLevel.RUN_DATA.getValue()) {
+                        foregroundColor = "12"; // blue
+                    }
+                    if (foregroundColor == null) {
+                        foregroundColorPrefix = "";
+                    } else {
+                        foregroundColorPrefix = ANSI_CONSOLE_ESCAPE + "38;5;" + foregroundColor + "m"; // xterm colors https://github.com/sindresorhus/xterm-colors
+                    }
+                    
+                    foregroundColorPrefixLookup.put(recordLevel, foregroundColorPrefix);
+                }
+                return foregroundColorPrefix;
             }
 
             private String getRecordLevelWithPadding(LogRecord record) {
