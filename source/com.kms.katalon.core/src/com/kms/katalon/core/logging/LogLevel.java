@@ -13,7 +13,7 @@ public enum LogLevel {
     WARNING(1004),
     FAILED(1005),
     ERROR(1006),
-    ABORTED(1009),
+    ABORTED(1009), // not use
     INCOMPLETE(1010),
     NOT_RUN(999),
     RUN_DATA(2000);

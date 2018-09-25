@@ -1,5 +1,6 @@
 package com.kms.katalon.core.logging;
 
+import java.io.PrintStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.ConsoleHandler;
@@ -17,13 +18,43 @@ public class SystemConsoleHandler extends ConsoleHandler {
         SimpleFormatter formatter = new SimpleFormatter() {
 
             public String format(LogRecord record) {
-                String recordLevelWithPadding = getRecordLevelWithPadding(record);
+                int recordLevel = record.getLevel().intValue();
+                
+                Integer color = null;
+                String colorPrefix = "";
+                String colorSuffix = "";
+                
+                if (recordLevel == LogLevel.PASSED.getValue()) {
+                    color = 32;
+                } else if (recordLevel == LogLevel.WARNING.getValue() 
+                        || recordLevel == LogLevel.FAILED.getValue() 
+                        || recordLevel == LogLevel.ERROR.getValue()
+                        || recordLevel == LogLevel.ABORTED.getValue()) {
+                    color = 31;
+                } else if (recordLevel == LogLevel.INCOMPLETE.getValue()) {
+                    color = 33;
+                } else if (recordLevel == LogLevel.NOT_RUN.getValue()) {
+                    color = 36;
+                }
+                if (color != null) {
+                    colorPrefix = "\u001b[1;" + color + "m";
+                    colorSuffix = "\u001b[0m";
+                }
 
-                return XMLLoggerParser.getRecordDate(record) + " " + recordLevelWithPadding + " : "
-                        + record.getMessage() + "\r\n";
+                String recordLevelWithPadding = getRecordLevelWithPadding(record);
+                
+                return colorPrefix 
+                        + XMLLoggerParser.getRecordDate(record) 
+                        + " " 
+                        + recordLevelWithPadding 
+                        + " : "
+                        + record.getMessage() 
+                        + colorSuffix 
+                        + "\r\n";
             }
 
             private String getRecordLevelWithPadding(LogRecord record) {
+
                 String originalRecordLevel = record.getLevel().toString();
                 String recordLevelWithPadding = recordLevelWithPaddingLookup.get(originalRecordLevel);
                 if (recordLevelWithPadding == null) {
@@ -48,10 +79,7 @@ public class SystemConsoleHandler extends ConsoleHandler {
         try {
             String message = getFormatter().format(record);
             int recordLevel = record.getLevel().intValue();
-            if (recordLevel == LogLevel.START.getValue()
-                    || recordLevel == LogLevel.END.getValue()) {
-            } else if (recordLevel >= LogLevel.WARNING.getValue()) {
-                System.err.write(message.getBytes());
+            if (recordLevel == LogLevel.END.getValue()) {
             } else {
                 System.out.write(message.getBytes());
             }
