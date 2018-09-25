@@ -96,7 +96,7 @@ public class RequestHistoryHandler {
                         partService.showPart(mpart, PartState.ACTIVATE);
                         stack.setSelectedElement(mpart);
                     } else {
-                        mpart.getParent().setSelectedElement(mpart);
+                        partService.showPart(mpart, PartState.ACTIVATE);
                     }
                 } else {
                     if (mpart != null) {
