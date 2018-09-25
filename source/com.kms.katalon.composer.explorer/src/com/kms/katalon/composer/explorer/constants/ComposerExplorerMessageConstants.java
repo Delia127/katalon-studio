@@ -34,6 +34,8 @@ public class ComposerExplorerMessageConstants extends NLS {
     public static String TOOLTIP_MESSAGE_PROPERTIES_ENTITY;
     
     public static String ERROR_CANNOT_FIND_CONTAINING_FOLDER;
+    
+    public static String CONTR_MENU_CONTEXT_IMPORT_OBJECTS;
 
     static {
         // initialize resource bundle

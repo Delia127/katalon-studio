@@ -51,4 +51,6 @@ public class StringConstants extends GlobalStringConstants {
 
     // EntityTooltip
     public static final String TOOLTIP_MESSAGE_PROPERTIES_ENTITY = ComposerExplorerMessageConstants.TOOLTIP_MESSAGE_PROPERTIES_ENTITY;
+    
+    public static final String CONTR_MENU_CONTEXT_IMPORT_OBJECTS = ComposerExplorerMessageConstants.CONTR_MENU_CONTEXT_IMPORT_OBJECTS;
 }

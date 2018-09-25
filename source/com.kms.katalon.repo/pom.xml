@@ -255,6 +255,9 @@
 									<id>io.cucumber:cucumber-junit:3.0.2</id>
 									<transitive>false</transitive>
 								</artifact>
+								<artifact>
+									<id>io.swagger:swagger-parser:2.0.0-rc1</id>
+								</artifact> 	
 							</artifacts>
 						</configuration>
 					</execution>
