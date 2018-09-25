@@ -114,6 +114,8 @@
 		<linux64ResourcesDirectory>linux64Resources</linux64ResourcesDirectory>
 		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
 		<cucumberRepo>file:///${basedir}/../third-party/cucumber-eclipse/cucumber.eclipse.p2updatesite/target/repository</cucumberRepo>
+
+		<ansiConsoleRepoUrl>https://www.mihai-nita.net/eclipse</ansiConsoleRepoUrl>
 	</properties>
 
 	<repositories>
@@ -266,4 +268,4 @@
 			<version>1.11</version>
 		</dependency>
 	</dependencies>
-</project> 
+</project>
