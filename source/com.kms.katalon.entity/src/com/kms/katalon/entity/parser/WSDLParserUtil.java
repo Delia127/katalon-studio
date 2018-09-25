@@ -22,6 +22,9 @@ public class WSDLParserUtil {
 		List<WebServiceRequestEntity> newWSTestObjects = new ArrayList<WebServiceRequestEntity>();
 		
 		try{
+			WSDLHelper wsdlHelperInstance = WSDLHelper.newInstance(url, null);
+			List<String> operationNames = wsdlHelperInstance.getOperationNamesByRequestMethod(requestMethod);
+			Map<String, List<String>> paramMap = wsdlHelperInstance.getParamMap();
 			new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell()).run(true, true,
 					new IRunnableWithProgress() {
 						@Override
@@ -29,12 +32,9 @@ public class WSDLParserUtil {
 								throws InvocationTargetException,
 								InterruptedException {
 							try {
-
-								WSDLHelper wsdlHelperInstance = WSDLHelper.newInstance(url, null);
-								List<String> operationNames = wsdlHelperInstance.getOperationNamesByRequestMethod(requestMethod);
 								monitor.beginTask(
 										"Background operations are running...", IProgressMonitor.UNKNOWN);
-								Map<String, List<String>> paramMap = wsdlHelperInstance.getParamMap();
+
 								monitor.worked(1);
 								for(Object objOperationName: SafeUtils.safeList(operationNames)){
 									if(objOperationName != null){
