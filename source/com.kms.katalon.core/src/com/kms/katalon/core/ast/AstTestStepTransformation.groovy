@@ -51,11 +51,11 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     private static final List<ImportNode> importNodes = new ArrayList<ImportNode>()
 
-    private static final String KEYWORD_DEFAULT_NAME = "Statement"
+    private static final String KEYWORD_DEFAULT_NAME = "Execute: "
 
     private static final String RUN_METHOD_NAME = "run"
 
-    private static final String COMMENT_STATEMENT_KEYWORD_NAME = "Comment";
+    private static final String COMMENT_STATEMENT_KEYWORD_NAME = "";
 
     private static final String KEYWORD_LOGGER_LOG_NOT_RUN_METHOD_NAME = "logNotRun";
 
@@ -163,12 +163,12 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         if (ifStatement.getElseBlock() instanceof IfStatement) {
             deferedStatements.push(
-                    new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else " +
+                    new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + "Else " +
                     AstTextValueUtil.getInstance().getTextValue(ifStatement.getElseBlock()),
                     ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
         } else {
             deferedStatements.push(
-                    new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else",
+                    new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + "Else",
                     ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
             if (!(ifStatement.getElseBlock() instanceof BlockStatement)) {
                 BlockStatement elseBlock = new BlockStatement();
@@ -204,7 +204,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         Stack<Statement> deferedStatements = new Stack<Statement>();
         deferedStatements.push(
-                new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Finally",
+                new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + "Finally",
                 tryCatchStatement.getFinallyStatement(), indexMap, nestedLevel - 1)));
         visit(tryCatchStatement.getFinallyStatement(), deferedStatements, nestedLevel);
     }
@@ -223,7 +223,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         Stack<Statement> deferedStatements = new Stack<Statement>();
         deferedStatements.push(
-                new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Default",
+                new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + "Default",
                 switchStatement.getDefaultStatement(), indexMap, nestedLevel)));
         visit(switchStatement.getDefaultStatement(), deferedStatements, nestedLevel + 1);
     }
@@ -292,7 +292,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         while (commentStatementsStack != null && !commentStatementsStack.isEmpty()) {
             Statement commentStatement = commentStatementsStack.pop();
             blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(
-                    COMMENT_STATEMENT_KEYWORD_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
+                    COMMENT_STATEMENT_KEYWORD_NAME + AstTextValueUtil.getInstance().getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
             commentNumber++;
         }
         return commentNumber;
@@ -309,7 +309,7 @@ public class AstTestStepTransformation implements ASTTransformation {
             if (customKeywordName != null) {
                 keywordName = customKeywordName;
             } else {
-                keywordName = KEYWORD_DEFAULT_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(statement);
+                keywordName = KEYWORD_DEFAULT_NAME + AstTextValueUtil.getInstance().getTextValue(statement);
             }
         }
         return keywordName;
