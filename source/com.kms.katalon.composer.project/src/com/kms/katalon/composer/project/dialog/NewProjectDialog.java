@@ -48,6 +48,7 @@ import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
+import com.kms.katalon.composer.project.handlers.OpenProjectHandler;
 import com.kms.katalon.composer.project.sample.SampleLocalProject;
 import com.kms.katalon.composer.project.sample.SampleProject;
 import com.kms.katalon.composer.project.sample.SampleProjectType;
