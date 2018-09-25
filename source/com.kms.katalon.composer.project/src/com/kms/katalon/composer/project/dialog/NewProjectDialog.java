@@ -60,6 +60,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -491,14 +492,16 @@ public class NewProjectDialog extends TitleAreaDialog {
         String projectName = getProjectName();
         String projectLocation = getProjectLocation();
         String projectDescription = getProjectDescription();
+        ProjectType projectType = getSelectedProjectType();
         
         ProjectEntity projectEntity = new ProjectEntity();
         projectEntity.setName(projectName);
         projectEntity.setFolderLocation(projectLocation);
         projectEntity.setDescription(projectDescription);
+        projectEntity.setType(projectType);
         
         EventBrokerSingleton.getInstance().getEventBroker()
-            .post(EventConstants.GIT_CLONE_REMOTE_PROJECT, new Object[] { sampleRemoteProject, projectEntity });
+            .post(EventConstants.GIT_CLONE_REMOTE_PROJECT, new Object[] { sampleRemoteProject, projectEntity, false });
     }
     
     /*
@@ -523,6 +526,7 @@ public class NewProjectDialog extends TitleAreaDialog {
             String projectName = getProjectName();
             String projectParentLocation = getProjectLocation();
             String projectDescription = getProjectDescription();
+            ProjectType projectType = getSelectedProjectType();
     
             String projectLocation = new File(projectParentLocation, projectName).getAbsolutePath();
             SampleProjectProvider.getInstance().extractSampleWebUIProject(sampleBuiltInProject, projectLocation);
@@ -533,6 +537,7 @@ public class NewProjectDialog extends TitleAreaDialog {
             if (newProject == null) {
                 return;
             }
+            updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
             Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID());
     
@@ -549,17 +554,24 @@ public class NewProjectDialog extends TitleAreaDialog {
             String projectName = getProjectName();
             String projectLocation = getProjectLocation();
             String projectDescription = getProjectDescription();
+            ProjectType projectType = getSelectedProjectType();
             
-            ProjectEntity newProject = createNewProject(projectName, projectLocation, projectDescription);
+            ProjectEntity newProject = createNewProject(projectName, projectLocation,
+                    projectDescription);
             if (newProject == null) {
                 return;
             }
+            updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
             
             Trackings.trackCreatingProject();
     
             // Open created project
-            eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            if (getSelectedProjectType() == ProjectType.WEBSERVICE) {
+                eventBroker.send(EventConstants.NEW_WS_PROJECT_OPEN, newProject.getId());
+            } else {
+                eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            }
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     ex.getMessage());
@@ -587,6 +599,19 @@ public class NewProjectDialog extends TitleAreaDialog {
                     StringConstants.HAND_ERROR_MSG_NEW_PROJ_LOCATION_INVALID);
         }
         return null;
+    }
+    
+    private void updateProjectType(ProjectEntity project, ProjectType type) throws Exception {
+        project.setType(type);
+        ProjectController.getInstance().updateProject(project);
+    }
+    
+    private ProjectType getSelectedProjectType() {
+        if (rbGenericProjectType.getSelection()) {
+            return ProjectType.GENERIC;
+        } else {
+            return ProjectType.WEBSERVICE;
+        }
     }
 
     @Override

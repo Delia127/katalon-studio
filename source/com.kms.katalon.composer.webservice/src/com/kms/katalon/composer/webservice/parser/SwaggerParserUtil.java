@@ -1,15 +1,17 @@
-package com.kms.katalon.entity.parser;
+package com.kms.katalon.composer.webservice.parser;
 
 import v2.io.swagger.parser.SwaggerParser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
+
+import com.kms.katalon.composer.webservice.util.SafeUtils;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.constants.StringConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.entity.webservice.FormDataBodyParameter;
 import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
@@ -83,7 +85,7 @@ public class SwaggerParserUtil {
 							ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParams = new 
 									ParameterizedBodyContent<UrlEncodedBodyParameter>();
 							
-							entity.setName(wsObjectName.isEmpty() ? StringConstants.DEFAULT_WEB_SERVICE_NAME : wsObjectName);
+							entity.setName(wsObjectName.isEmpty() ? "Web service Object" : wsObjectName);
 							entity.setRestUrl(urlCommonPrefix2);
 							entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
 							entity.setRestRequestMethod(method.toString());
@@ -183,4 +185,21 @@ public class SwaggerParserUtil {
         }
 	}
 	
+	
+	public static List<WebServiceRequestEntity> newWSTestObjectsFromSwagger(FolderEntity parentFolder, String directoryOfJsonFile)
+	            throws Exception {
+        if (parentFolder == null) {
+            return null;
+        }
+        List<WebServiceRequestEntity> newWSTestObjects = SwaggerParserUtil.parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
+        
+        for(WebServiceRequestEntity entity : newWSTestObjects){
+        	entity.setElementGuidId(Util.generateGuid());
+            entity.setParentFolder(parentFolder);
+            entity.setProject(parentFolder.getProject());
+        }
+        
+        return newWSTestObjects;
+    }
+
 }

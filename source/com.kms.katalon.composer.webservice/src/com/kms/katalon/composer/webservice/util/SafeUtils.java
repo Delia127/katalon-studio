@@ -1,4 +1,4 @@
-package com.kms.katalon.entity.parser;
+package com.kms.katalon.composer.webservice.util;
 
 import java.util.Collections;
 import java.util.List;

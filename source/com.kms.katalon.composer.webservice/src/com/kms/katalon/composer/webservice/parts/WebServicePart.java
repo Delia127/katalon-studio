@@ -176,6 +176,7 @@ import com.kms.katalon.core.webservice.common.ScriptSnippet;
 import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -587,7 +588,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
 
         TestCaseEntity testCaseEntity = NewTestCaseHandler.doCreateNewTestCase(parentTreeEntity, eventBroker);
-        
+
         if (testCaseEntity != null) {
             addSendRequestStatementToTestCase(testCaseEntity);
         }
@@ -606,7 +607,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
         dialog.setAllowMultiple(false);
         dialog.setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
-        
+
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject != null) {
             FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
@@ -925,7 +926,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     /**
      * @param composite
-     *            Composite with GridData layout
+     * Composite with GridData layout
      * @param isVisible
      */
     protected void setCompositeVisible(Composite composite, boolean isVisible) {
@@ -1199,7 +1200,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         // CTabItem responseVerificationLogTab = new
         // CTabItem(reponseDetailsTabFolder, SWT.NONE);
         // responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
-        //
         reponseDetailsTabFolder.setSelection(0);
     }
 
@@ -1580,9 +1580,11 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
         eventBroker.subscribe(EventConstants.WS_VERIFICATION_LOG_UPDATED, this);
         eventBroker.subscribe(EventConstants.WS_VERIFICATION_EXECUTION_FINISHED, this);
+        eventBroker.subscribe(EventConstants.WEBSERVICE_REQUEST_DRAFT_UPDATED, this);
 
         IFileEditorInput editorInput = (IFileEditorInput) verificationScriptEditor.getEditorInput();
-        verificationScriptEditor.getDocumentProvider().getDocument(editorInput)
+        verificationScriptEditor.getDocumentProvider()
+                .getDocument(editorInput)
                 .addDocumentListener(new IDocumentListener() {
                     @Override
                     public void documentChanged(DocumentEvent event) {
@@ -1592,23 +1594,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
                     @Override
                     public void documentAboutToBeChanged(DocumentEvent event) {
-                        // TODO Auto-generated method stub
                     }
                 });
-
-        // verificationScriptEditor.addPropertyListener(new IPropertyListener()
-        // {
-        // @Override
-        // public void propertyChanged(Object source, int propId) {
-        // if (source instanceof GroovyEditor && propId ==
-        // ISaveablePart.PROP_DIRTY) {
-        // if (verificationScriptEditor.isDirty()) {
-        // WebServicePart.this.dirtyable.setDirty(true);
-        // tabVerification.setText(StringConstants.PA_LBL_VERIFICATION);
-        // }
-        // }
-        // }
-        // });
     }
 
     @Override
@@ -1628,6 +1615,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             WebServiceRequestEntity webElement = (WebServiceRequestEntity) data[1];
             mPart.setLabel(webElement.getName());
             mPart.setElementId(EntityPartUtil.getTestObjectPartId(webElement.getId()));
+            populateDataToUI();
+            return;
+        }
+
+        if (EventConstants.WEBSERVICE_REQUEST_DRAFT_UPDATED.equals(event.getTopic())) {
+            originalWsObject = (WebServiceRequestEntity) eventData;
+            mPart.setLabel("(Draft) " + originalWsObject.getRestUrl());
             populateDataToUI();
             return;
         }
@@ -1732,10 +1726,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             saveVerificationScript();
             preSaving();
 
-            ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
-            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
-                    new Object[] { originalWsObject.getId(), originalWsObject });
-            eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
+            if (originalWsObject instanceof DraftWebServiceRequestEntity) {
+                eventBroker.post(EventConstants.WEBSERVICE_REQUEST_DRAFT_UPDATED, originalWsObject);
+            } else {
+                ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
+                eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
+                        new Object[] { originalWsObject.getId(), originalWsObject });
+                eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
+            }
             dirtyable.setDirty(false);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -1765,6 +1763,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Override
     public String getEntityId() {
         return getWSRequestObject().getIdForDisplay();
+    }
+
+    @Override
+    public boolean isDraft() {
+        return getWSRequestObject() instanceof DraftWebServiceRequestEntity;
+    }
+
+    @Override
+    public String getPartId() {
+        return mPart.getElementId();
     }
 
     @Override
@@ -1827,8 +1835,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected void populateOAuth1FromHeader() {
         oauth1Headers.clear();
-        oauth1Headers.addAll(tblHeaders.getInput().stream()
-                .filter(header -> header.getName().startsWith(AUTH_META_PREFIX)).collect(Collectors.toList()));
+        oauth1Headers.addAll(tblHeaders.getInput()
+                .stream()
+                .filter(header -> header.getName().startsWith(AUTH_META_PREFIX))
+                .collect(Collectors.toList()));
         if (oauth1Headers.isEmpty()) {
             return;
         }
@@ -1899,7 +1909,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     protected void populateBasicAuthFromHeader() {
-        java.util.Optional<WebElementPropertyEntity> authHeader = tblHeaders.getInput().stream()
+        java.util.Optional<WebElementPropertyEntity> authHeader = tblHeaders.getInput()
+                .stream()
                 .filter(i -> HTTP_HEADER_AUTHORIZATION.equalsIgnoreCase(i.getName())
                         && StringUtils.startsWithIgnoreCase(i.getValue(), BASIC_AUTH_PREFIX_VALUE))
                 .findFirst();
@@ -1935,7 +1946,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected String getPrettyHeaders(ResponseObject reponseObject) {
         StringBuilder sb = new StringBuilder();
         reponseObject.getHeaderFields().forEach((key, value) -> sb.append((key == null) ? "" : key + ": ")
-                .append(StringUtils.join(value, "\t")).append("\r\n"));
+                .append(StringUtils.join(value, "\t"))
+                .append("\r\n"));
         return sb.toString();
     }
 
@@ -1951,8 +1963,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
 
         ui.getAuthorizationPartComposite().layout(true, true);
-        // sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH,
-        // SWT.DEFAULT));
+        // sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
     }
 
     public void updateIconURL(String imageURL) {
@@ -2001,6 +2012,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 }
             });
         }
-
     }
+
+    @PreDestroy
+    public void preDestroy() {
+        if (originalWsObject instanceof DraftWebServiceRequestEntity) {
+            ((DraftWebServiceRequestEntity) originalWsObject).getDraftUid();
+        }
+    }
+
 }

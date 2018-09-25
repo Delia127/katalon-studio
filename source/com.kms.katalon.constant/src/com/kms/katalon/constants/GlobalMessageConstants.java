@@ -228,6 +228,8 @@ public class GlobalMessageConstants extends NLS {
     public static String URL_TROUBLESHOOTING_MOBILE_TESTING;
     
     public static String DIA_LET_START;
+    
+    public static String DIA_NAME_EXISTED;
 
     static {
         // initialize resource bundle

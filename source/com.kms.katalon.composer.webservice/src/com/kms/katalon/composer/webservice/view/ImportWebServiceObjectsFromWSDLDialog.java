@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.parser.WSDLParserUtil;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
@@ -36,16 +37,14 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
 
     
     private void createSoapWebServiceRequestEntities() throws Exception{
-    	soapWebServiceRequestEntities = ObjectRepositoryController.getInstance().
-    			newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP, directory);  
+    	soapWebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP, directory);  
     	if(soapWebServiceRequestEntities == null){
     		throw new Exception();
     	}
     }
     
     private void createSoap12WebServiceRequestEntities() throws Exception{
-    	soap12WebServiceRequestEntities = ObjectRepositoryController.getInstance().
-    			newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP12, directory);  
+    	soap12WebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP12, directory);  
     	if(soap12WebServiceRequestEntities == null){
     		throw new Exception();
     	}

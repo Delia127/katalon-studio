@@ -1,17 +1,16 @@
-package com.kms.katalon.entity.parser;
+package com.kms.katalon.composer.webservice.parser;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
+import com.kms.katalon.composer.webservice.util.SafeUtils;
 import com.kms.katalon.composer.webservice.util.WSDLHelper;
 import com.kms.katalon.composer.webservice.util.XmlUtils;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -75,4 +74,10 @@ public class WSDLParserUtil {
 	    		return null;
 	    }
 	}
+
+	public static List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(String requestMethod, String directory) throws Exception {
+        List<WebServiceRequestEntity> newWSTestObjects = WSDLParserUtil.parseFromFileLocationToWSTestObject(requestMethod, directory);
+        return newWSTestObjects;
+    }
+
 }

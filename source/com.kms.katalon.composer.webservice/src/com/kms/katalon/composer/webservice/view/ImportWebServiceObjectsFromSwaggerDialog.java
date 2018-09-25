@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.parser.SwaggerParserUtil;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -40,8 +41,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     }
     
     public void createWebServiceRequestEntities() throws Exception{  
-    	webServiceRequestEntities = ObjectRepositoryController.getInstance().
-    			newWSTestObjectsFromSwagger(parentFolder, directory);
+    	webServiceRequestEntities = SwaggerParserUtil.newWSTestObjectsFromSwagger(parentFolder, directory);
     }
     
     public List<WebServiceRequestEntity> getWebServiceRequestEntities(){

@@ -198,6 +198,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     
     public static String MENU_ITEM_TEST_REQUEST_AND_VERIFY;
     
+    public static String RequestHistoryHandler_PA_TITLE_REQUEST_HISTORY;
+
     public static String MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE;
     
     public static String MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE;
@@ -205,6 +207,20 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE;
     
     public static String DIA_TITLE_TEST_CASE_BROWSER;
+    
+    public static String TITLE_QUICKSTART;
+    
+    public static String QUICKSTART_NEW_REST_REQUEST;
+    
+    public static String QUICKSTART_NEW_SOAP_REQUEST;
+    
+    public static String QUICKSTART_IMPORT_SWAGGER_FROM_FILE;
+    
+    public static String QUICKSTART_IMPORT_SWAGGER_FROM_URL;
+    
+    public static String QUICKSTART_IMPORT_WSDL_FROM_FILE;
+    
+    public static String QUICKSTART_IMPORT_WSDL_FROM_URL;
     
     static {
         // initialize resource bundle

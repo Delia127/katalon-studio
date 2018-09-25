@@ -13,7 +13,6 @@ Export-Package: com.kms.katalon.entity;uses:="com.kms.katalon.entity.folder,com.
  com.kms.katalon.entity.global,
  com.kms.katalon.entity.integration,
  com.kms.katalon.entity.link,
- com.kms.katalon.entity.parser,
  com.kms.katalon.entity.project;uses:="com.kms.katalon.entity.file",
  com.kms.katalon.entity.report;uses:="com.kms.katalon.entity.file",
  com.kms.katalon.entity.repository;
@@ -38,13 +37,6 @@ Require-Bundle: org.apache.commons.lang;bundle-version="2.6.0",
  com.kms.katalon.core,
  org.apache.commons.io,
  org.eclipse.jface,
- io.swagger.annotations;bundle-version="2.0.0",
- io.swagger.core;bundle-version="2.0.0",
- io.swagger.models;bundle-version="2.0.0",
- io.swagger.parser-v2;bundle-version="2.0.0",
  org.eclipse.jface,
- wsdl4j;bundle-version="1.6.2"
-Import-Package: com.kms.katalon.composer.components.impl.dialogs,
- com.kms.katalon.composer.webservice.util,
- org.eclipse.core.runtime;version="3.5.0",
+ org.eclipse.core.runtime,
  org.json
