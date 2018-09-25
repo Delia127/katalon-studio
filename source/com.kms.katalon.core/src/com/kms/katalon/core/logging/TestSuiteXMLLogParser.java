@@ -105,7 +105,7 @@ public class TestSuiteXMLLogParser {
                                     || StringConstants.LOG_END_SUITE_METHOD.equals(sourceMethodName)) {
                                 processEndLog(stack, xmlLogRecord);
                             }
-                        } else if (LogLevel.INIT.toString().equals(xmlLogRecord.getLevel().getName())) {
+                        } else if (LogLevel.RUN_DATA.toString().equals(xmlLogRecord.getLevel().getName())) {
                             testSuiteLogRecord.addRunData(xmlLogRecord.getProperties());
                         } else {
                             Object object = stack.peekLast();
