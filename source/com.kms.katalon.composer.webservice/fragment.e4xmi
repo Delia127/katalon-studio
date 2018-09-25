@@ -3,10 +3,18 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_db8jgLD-EeSrwsGaXHfzzg" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_zzY_QLEBEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.command.add" commandName="New WebService Object"/>
     <elements xsi:type="commands:Command" xmi:id="_pjJiML_REei7vMo3iHZklw" elementId="com.kms.katalon.composer.webservice.command.quickstart" commandName="Quick Start"/>
+    <elements xsi:type="commands:Command" xmi:id="_ZF6pwMCMEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.command.newRestRequest" commandName="New REST Request"/>
+    <elements xsi:type="commands:Command" xmi:id="_dP9oUMCMEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.command.importRestRequest" commandName="Import Swagger from File/URL"/>
+    <elements xsi:type="commands:Command" xmi:id="_mokWcMCMEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.command.newSoapRequest" commandName="New SOAP Request"/>
+    <elements xsi:type="commands:Command" xmi:id="_86L-YMCMEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.command.importWsdl" commandName="Import WSDL from File/URL"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8gBDELD_EeSrwsGaXHfzzg" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_FFTWgLEDEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.NewWebServiceRequestObjectHandler" command="_zzY_QLEBEeSrwsGaXHfzzg"/>
     <elements xsi:type="commands:Handler" xmi:id="_0x-LEL_REei7vMo3iHZklw" elementId="com.kms.katalon.composer.webservice.handler.quickstart" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.OpenApiQuickStartHandler" command="_pjJiML_REei7vMo3iHZklw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_Ut-jsMCNEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handler.newRestRequest" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.NewRestRequestHandler" command="_ZF6pwMCMEeilOqZQeGeZMA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_q6oMEMCNEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handler.importSwagger" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportSwaggerHandler" command="_dP9oUMCMEeilOqZQeGeZMA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_z81zcMCNEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handler.newSoapRequest" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.NewSoapRequestHandler" command="_mokWcMCMEeilOqZQeGeZMA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_14PwMMCNEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handler.importWSDL" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.ImportWsdlHandler" command="_86L-YMCMEeilOqZQeGeZMA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_O9aygLEAEeSrwsGaXHfzzg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_ivOzULEEEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.NewWebServiceRequestObjectPopupMenuContribution"/>
@@ -24,5 +32,12 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VcgZgL_QEei7vMo3iHZklw" featurename="children" parentElementId="com.kms.katalon.composer.menu.help">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_bZHh4L_QEei7vMo3iHZklw" elementId="com.kms.katalon.composer.webservice.dynamicmenucontribution.apiquickstart" label="Quick Start" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.ApiQuickStartMenuContribution"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_J6CXcMB2EeilOqZQeGeZMA" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.webservice" positionInList="">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_1s-_kMCGEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newRestRequest" label="New REST Request" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/create_new_request_rest_24px.png" tooltip="New REST Request" command="_ZF6pwMCMEeilOqZQeGeZMA"/>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_mKSw8MCKEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handledtoolitem.importRest" label="Import Swagger from File/URL" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/import_rest_24px.png" tooltip="Import Swagger from File/URL" command="_dP9oUMCMEeilOqZQeGeZMA"/>
+    <elements xsi:type="menu:ToolBarSeparator" xmi:id="_BrYucMCLEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.toolbarseparator.0"/>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_Gns3cMCLEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newSoapRequest" label="New SOAP Request" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/create_new_request_soap_24px.png" tooltip="New SOAP Request" command="_mokWcMCMEeilOqZQeGeZMA"/>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_JNVc8MCLEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handledtoolitem.importWSDL" label="Import WSDL from File/URL" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/import_soap_24px.png" tooltip="Import WSDL from File/URL" command="_86L-YMCMEeilOqZQeGeZMA"/>
   </fragments>
 </fragment:ModelFragments>
