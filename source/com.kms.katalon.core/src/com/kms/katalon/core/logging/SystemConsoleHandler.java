@@ -11,6 +11,7 @@ import java.util.logging.SimpleFormatter;
 
 public class SystemConsoleHandler extends ConsoleHandler {
 
+    private static final String ANSI_CONSOLE_ESCAPE = "\u001b[";
     private static final Map<String, String> recordLevelWithPaddingLookup = new ConcurrentHashMap<>();
 
     public SystemConsoleHandler() {
@@ -20,25 +21,27 @@ public class SystemConsoleHandler extends ConsoleHandler {
             public String format(LogRecord record) {
                 int recordLevel = record.getLevel().intValue();
                 
-                Integer color = null;
+                String color = null;
+                String bold = ""; // "1;" means bold
                 String colorPrefix = "";
                 String colorSuffix = "";
                 
                 if (recordLevel == LogLevel.PASSED.getValue()) {
-                    color = 32;
+                    color = "40"; // green
                 } else if (recordLevel == LogLevel.WARNING.getValue() 
                         || recordLevel == LogLevel.FAILED.getValue() 
                         || recordLevel == LogLevel.ERROR.getValue()
-                        || recordLevel == LogLevel.ABORTED.getValue()) {
-                    color = 31;
-                } else if (recordLevel == LogLevel.INCOMPLETE.getValue()) {
-                    color = 33;
+                        || recordLevel == LogLevel.ABORTED.getValue()
+                        || recordLevel == LogLevel.INCOMPLETE.getValue()) {
+                    color = "1"; // red
                 } else if (recordLevel == LogLevel.NOT_RUN.getValue()) {
-                    color = 36;
+                    color = "6"; // cyan
+                } else if (recordLevel == LogLevel.RUN_DATA.getValue()) {
+                    color = "12"; // blue
                 }
                 if (color != null) {
-                    colorPrefix = "\u001b[1;" + color + "m";
-                    colorSuffix = "\u001b[0m";
+                    colorPrefix = ANSI_CONSOLE_ESCAPE + bold + "38;5;" + color + "m"; // xterm colors https://github.com/sindresorhus/xterm-colors
+                    colorSuffix = ANSI_CONSOLE_ESCAPE + "0m";
                 }
 
                 String recordLevelWithPadding = getRecordLevelWithPadding(record);
