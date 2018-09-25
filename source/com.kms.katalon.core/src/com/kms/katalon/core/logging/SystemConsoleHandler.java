@@ -35,8 +35,8 @@ public class SystemConsoleHandler extends ConsoleHandler {
                 String recordLevelWithPadding = getRecordLevelWithPadding(record);
                 
                 String message = record.getMessage()
-                        .replaceAll("\r\n", foregroundColorSuffix + "\r\n" + foregroundColorPrefix)
-                        .replaceAll("[^\r]\n", foregroundColorSuffix + "\n" + foregroundColorPrefix);
+                        .replaceAll("\r\n", "\n")
+                        .replaceAll("\n", foregroundColorSuffix + "\r\n" + foregroundColorPrefix);
                 
                 return foregroundColorPrefix
                         + XMLLoggerParser.getRecordDate(record) 
