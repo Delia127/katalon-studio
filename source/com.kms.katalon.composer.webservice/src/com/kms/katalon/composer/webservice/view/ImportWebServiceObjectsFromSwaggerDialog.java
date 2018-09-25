@@ -4,12 +4,14 @@ package com.kms.katalon.composer.webservice.view;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -20,12 +22,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public class ImportWebServiceObjectsFromSwaggerDialog  extends TitleAreaDialog {
+public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDialog {
 
     private FolderEntity parentFolder;
     private List<WebServiceRequestEntity> webServiceRequestEntities;
@@ -52,7 +55,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends TitleAreaDialog {
         	createWebServiceRequestEntities();            
     	} catch(Exception e){
     		closeTheDialog = false;
-    		setErrorMessage(StringConstants.EXC_INVALID_SWAGGER_FILE);
+    		setMessage(StringConstants.EXC_INVALID_SWAGGER_FILE, IMessageProvider.ERROR);
     	} finally {
     		if(closeTheDialog == true){
     	        super.okPressed();
@@ -60,14 +63,24 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends TitleAreaDialog {
     	}
     }
 
+	@Override
+	protected boolean isResizable() {
+	    return false;
+	}
+	
+	@Override
+	protected void configureShell(Shell newShell)
+	{
+	  super.configureShell(newShell);
+	  newShell.setText(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);
+	}
 
-    @Override
-	protected Control createDialogArea(Composite parent) {
-        setTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);
-		// top level composite
-        Composite parentComposite = (Composite) super.createDialogArea(parent);
+	@Override
+	protected Composite createContentArea(Composite parent) {
+
+        setDialogTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);
         // create a composite with standard margins and spacing
-        Composite composite = new Composite(parentComposite, SWT.NONE);
+        Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
         layout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
@@ -106,18 +119,25 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends TitleAreaDialog {
           };
           
         text.addModifyListener(listener);
-		return parentComposite;
+		return composite;
+	}
+
+	@Override
+	protected void registerControlModifyListeners() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void setInput() {
+		// TODO Auto-generated method stub
+		
 	}
 	
-	@Override
-	protected boolean isResizable() {
-	    return false;
-	}
-	
-	@Override
-	protected void configureShell(Shell newShell)
-	{
-	  super.configureShell(newShell);
-	  newShell.setText(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);
-	}
+    @Override
+    protected Point getInitialSize() {
+    	final Point size = super.getInitialSize();
+        size.x = convertWidthInCharsToPixels(75);
+        return size;
+    }
 }
