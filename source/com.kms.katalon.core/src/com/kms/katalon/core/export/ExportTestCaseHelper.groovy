@@ -77,7 +77,7 @@ public class ExportTestCaseHelper {
             if (calledTestCase == null) {
                 throw new IllegalArgumentException("Called test case is null");
             }
-            logger.logInfo("Starting to call test case '" + calledTestCase.getTestCaseId() + "'");
+            logger.logInfo("Calling Test Case '" + calledTestCase.getTestCaseId() + "'");
             //			TestStatusEntity result = TestCaseMain.runTestCase(calledTestCase.getTestCaseId(), new TestCaseBinding(
             //					calledTestCase.getTestCaseId(), binding), flowControl);
             TestCase testCase = TestCaseFactory.findTestCase(calledTestCase.getTestCaseId());
