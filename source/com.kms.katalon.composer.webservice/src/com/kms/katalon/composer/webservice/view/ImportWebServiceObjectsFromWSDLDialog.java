@@ -9,9 +9,12 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -122,6 +125,12 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
             }
           };
         text.addModifyListener(listener);
+		messageLabel.addSelectionListener(new SelectionAdapter(){
+		    @Override
+		    public void widgetSelected(SelectionEvent e) {
+		        Program.launch("https://www.w3.org/TR/wsdl/");
+		    }
+		});
 		return composite;
 	}
 

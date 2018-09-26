@@ -14,6 +14,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -72,7 +73,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
 	protected void configureShell(Shell newShell)
 	{
 	  super.configureShell(newShell);
-	  newShell.setText(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);
+	  newShell.setText(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);		
 	}
 
 	@Override
@@ -119,6 +120,13 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
           };
           
         text.addModifyListener(listener);
+		
+		messageLabel.addSelectionListener(new SelectionAdapter(){
+		    @Override
+		    public void widgetSelected(SelectionEvent e) {
+		        Program.launch("https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md");
+		    }
+		});
 		return composite;
 	}
 
