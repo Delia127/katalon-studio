@@ -66,6 +66,7 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.apache.commons.lang3,
  org.greenrobot.eventbus,
  org.assertj.core,
- org.junit
+ org.junit,
+ org.fusesource.jansi
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

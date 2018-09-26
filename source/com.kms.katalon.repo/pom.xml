@@ -255,6 +255,9 @@
 									<id>io.cucumber:cucumber-junit:3.0.2</id>
 									<transitive>false</transitive>
 								</artifact>
+                                <artifact>
+                                    <id>org.fusesource.jansi:jansi:1.17.1</id>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>

@@ -2458,13 +2458,6 @@
          unpack="false"/>
 
    <plugin
-         id="net.mihai-nita.ansicon.plugin"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="name.schedenig.eclipse.grepconsole"
          download-size="0"
          install-size="0"
@@ -2473,6 +2466,13 @@
 
    <plugin
          id="name.schedenig.eclipse.popupnotifications"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.fusesource.jansi"
          download-size="0"
          install-size="0"
          version="0.0.0"

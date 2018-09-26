@@ -115,7 +115,6 @@
 		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
 		<cucumberRepo>file:///${basedir}/../third-party/cucumber-eclipse/cucumber.eclipse.p2updatesite/target/repository</cucumberRepo>
 
-		<ansiConsoleRepoUrl>https://www.mihai-nita.net/eclipse</ansiConsoleRepoUrl>
 		<grepConsoleRepoUrl>http://eclipse.schedenig.name</grepConsoleRepoUrl>
 	</properties>
 
