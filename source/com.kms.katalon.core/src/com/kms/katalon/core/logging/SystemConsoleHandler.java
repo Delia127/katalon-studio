@@ -91,7 +91,9 @@ public class SystemConsoleHandler extends ConsoleHandler {
         try {
             String message = getFormatter().format(record);
             int recordLevel = record.getLevel().intValue();
-            if (recordLevel != LogLevel.RUN_DATA.getValue() 
+            if (recordLevel == LogLevel.END.getValue()) {
+                
+            } else if (recordLevel != LogLevel.RUN_DATA.getValue() 
                     && recordLevel >= LogLevel.WARNING.getValue()) {
                 System.err.write(message.getBytes());
             } else {

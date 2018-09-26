@@ -51,8 +51,6 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     private static final List<ImportNode> importNodes = new ArrayList<ImportNode>()
 
-    private static final String KEYWORD_DEFAULT_NAME = "Statement"
-
     private static final String RUN_METHOD_NAME = "run"
 
     private static final String COMMENT_STATEMENT_KEYWORD_NAME = "Comment";
@@ -163,12 +161,12 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         if (ifStatement.getElseBlock() instanceof IfStatement) {
             deferedStatements.push(
-                    new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else " +
+                    new ExpressionStatement(createNewStartKeywordMethodCall("Else " +
                     AstTextValueUtil.getInstance().getTextValue(ifStatement.getElseBlock()),
                     ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
         } else {
             deferedStatements.push(
-                    new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else",
+                    new ExpressionStatement(createNewStartKeywordMethodCall("Else",
                     ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
             if (!(ifStatement.getElseBlock() instanceof BlockStatement)) {
                 BlockStatement elseBlock = new BlockStatement();
@@ -204,7 +202,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         Stack<Statement> deferedStatements = new Stack<Statement>();
         deferedStatements.push(
-                new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Finally",
+                new ExpressionStatement(createNewStartKeywordMethodCall("Finally",
                 tryCatchStatement.getFinallyStatement(), indexMap, nestedLevel - 1)));
         visit(tryCatchStatement.getFinallyStatement(), deferedStatements, nestedLevel);
     }
@@ -223,7 +221,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         Stack<Statement> deferedStatements = new Stack<Statement>();
         deferedStatements.push(
-                new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Default",
+                new ExpressionStatement(createNewStartKeywordMethodCall("Default",
                 switchStatement.getDefaultStatement(), indexMap, nestedLevel)));
         visit(switchStatement.getDefaultStatement(), deferedStatements, nestedLevel + 1);
     }
@@ -300,18 +298,7 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     @CompileStatic
     private String getKeywordNameForStatement(Statement statement) {
-        String keywordName = null;
-        String builtinKeywordName = getBuiltinKeywordMethodCallStatement(statement);
-        if (builtinKeywordName != null) {
-            keywordName = builtinKeywordName;
-        } else {
-            String customKeywordName = getCustomKeywordMethodCallStatement(statement);
-            if (customKeywordName != null) {
-                keywordName = customKeywordName;
-            } else {
-                keywordName = KEYWORD_DEFAULT_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(statement);
-            }
-        }
+        String keywordName = AstTextValueUtil.getInstance().getTextValue(statement);
         return keywordName;
     }
 

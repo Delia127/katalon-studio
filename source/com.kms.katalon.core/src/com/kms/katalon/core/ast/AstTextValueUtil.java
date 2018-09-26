@@ -8,6 +8,7 @@ import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.BooleanExpression;
 import org.codehaus.groovy.ast.expr.CastExpression;
+import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ClosureListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
@@ -17,6 +18,7 @@ import org.codehaus.groovy.ast.expr.MapExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.NotExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
+import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
 import org.codehaus.groovy.ast.expr.TupleExpression;
 import org.codehaus.groovy.ast.stmt.AssertStatement;
 import org.codehaus.groovy.ast.stmt.BreakStatement;
@@ -35,17 +37,17 @@ import org.codehaus.groovy.syntax.Types;
 
 public class AstTextValueUtil {
     private static AstTextValueUtil _instance;
-    
+
     protected AstTextValueUtil() {
     }
-    
+
     public static AstTextValueUtil getInstance() {
         if (_instance == null) {
             _instance = new AstTextValueUtil();
         }
         return _instance;
     }
-    
+
     public String getTextValue(Object object) {
         if (object instanceof Statement) {
             return getTextValue((Statement) object);
@@ -175,6 +177,8 @@ public class AstTextValueUtil {
             return getTextValue((BinaryExpression) expression);
         } else if (expression instanceof ConstantExpression) {
             return getTextValue((ConstantExpression) expression);
+        } else if (expression instanceof StaticMethodCallExpression) {
+            return getTextValue((StaticMethodCallExpression) expression);
         } else if (expression instanceof MethodCallExpression) {
             return getTextValue((MethodCallExpression) expression);
         } else if (expression instanceof TupleExpression) {
@@ -191,6 +195,8 @@ public class AstTextValueUtil {
             return getTextValue((BooleanExpression) expression);
         } else if (expression instanceof ArgumentListExpression) {
             return getTextValue((ArgumentListExpression) expression);
+        } else if (expression instanceof ClassExpression) {
+            return getTextValue((ClassExpression) expression);
         } else if (expression != null) {
             return expression.getText();
         } else {
@@ -241,12 +247,23 @@ public class AstTextValueUtil {
         return getTextValue(binaryExpression.getLeftExpression()) + " " + binaryExpression.getOperation().getText()
                 + " " + getTextValue(binaryExpression.getRightExpression());
     }
+    
+    public String getTextValue(StaticMethodCallExpression methodCallExpression) {
+        String object = methodCallExpression.getOwnerType().getTypeClass().getSimpleName();
+        String meth = methodCallExpression.getMethod();
+        String args = getTextValue(methodCallExpression.getArguments());
+        return (object.equals("this") ? "" : object + ".") + meth + args;
+    }
 
     public String getTextValue(MethodCallExpression methodCallExpression) {
         String object = getTextValue(methodCallExpression.getObjectExpression());
         String meth = methodCallExpression.getMethod().getText();
         String args = getTextValue(methodCallExpression.getArguments());
         return (object.equals("this") ? "" : object + ".") + meth + args;
+    }
+    
+    public String getTextValue(ClassExpression classExpression) {
+        return classExpression.getType().getTypeClass().getSimpleName();
     }
 
     public String getTextValue(TupleExpression tupleExpression) {
