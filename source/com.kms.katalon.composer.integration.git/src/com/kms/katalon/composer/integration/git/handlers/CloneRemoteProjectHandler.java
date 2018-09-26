@@ -58,10 +58,9 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
-<<<<<<< HEAD
+
 import com.kms.katalon.tracking.service.Trackings;
-=======
->>>>>>> origin/Release-5.8.0
+
 
 @SuppressWarnings("restriction")
 public class CloneRemoteProjectHandler {
@@ -75,11 +74,9 @@ public class CloneRemoteProjectHandler {
     private File destinationFolder = null;
     
     private ProjectType projectType;
-<<<<<<< HEAD
-    
+
     private SampleRemoteProject sample;
-=======
->>>>>>> origin/Release-5.8.0
+
 
     @Inject
     EPartService partService;
