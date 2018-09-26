@@ -45,7 +45,8 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
 
             return images.getImage(imageKey);
         } else {
-            return ImageConstants.IMG_16_LOGVIEW_INFO;
+            return null;
+//            return ImageConstants.IMG_16_LOGVIEW_INFO;
         }
 
     }

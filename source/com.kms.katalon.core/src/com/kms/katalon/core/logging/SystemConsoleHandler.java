@@ -72,7 +72,7 @@ public class SystemConsoleHandler extends ConsoleHandler {
                 if (recordLevelWithPadding == null) {
                     String recordLevel = originalRecordLevel;
                     String recordPadding = "";
-                    int longestRecordLevelLength = LogLevel.INCOMPLETE.toString().length();
+                    int longestRecordLevelLength = LogLevel.RUN_DATA.toString().length(); // INCOMPLETE never gets logged
                     for (int i = 0; i < longestRecordLevelLength - recordLevel.length(); i++) {
                         recordPadding += " ";
                     }
