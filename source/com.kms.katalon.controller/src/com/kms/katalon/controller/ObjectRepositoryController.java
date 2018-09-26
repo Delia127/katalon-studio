@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
@@ -58,7 +59,8 @@ public class ObjectRepositoryController extends EntityController {
      * @throws Exception
      */
     public WebServiceRequestEntity newWSTestObject(FolderEntity parentFolder, String wsTestObjectName) throws Exception {
-        return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
+        //return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectFromSwagger(parentFolder, wsTestObjectName));
+    	return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
     }
 
     /**
@@ -115,12 +117,12 @@ public class ObjectRepositoryController extends EntityController {
             throws Exception {
         if (parentFolder == null) {
             return null;
-        }
+        }       
 
         if (StringUtils.isBlank(wsTestObjectName)) {
             wsTestObjectName = StringConstants.CTRL_NEW_WS_REQUEST;
         }
-
+        
         WebServiceRequestEntity newWS = new WebServiceRequestEntity();
         newWS.setElementGuidId(Util.generateGuid());
         newWS.setName(getAvailableWebElementName(parentFolder, wsTestObjectName));
@@ -129,6 +131,7 @@ public class ObjectRepositoryController extends EntityController {
 
         return newWS;
     }
+    
 
     /**
      * Save a NEW Test Object or Web Service entity.<br>

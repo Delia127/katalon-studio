@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.webservice.view;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -16,19 +18,28 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
+import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.util.Util;
 
 public class ApiQuickStartDialog extends Dialog {
 
     private static final Point ITEM_IMG_SIZE = new Point(64, 64);
+    private ITreeEntity parentTreeEntity;
 
-    public ApiQuickStartDialog(Shell parentShell) {
+    public ApiQuickStartDialog(ITreeEntity parentTreeEntity, Shell parentShell) {
         super(parentShell);
+        this.parentTreeEntity = parentTreeEntity;
 
     }
 
@@ -77,22 +88,16 @@ public class ApiQuickStartDialog extends Dialog {
 
     private Composite createImportRestRequestItem(Composite parent) {
         Composite item = createQuickStartItem(parent, ImageConstants.WS_IMPORT_REST_REQUEST_64);
-        addLinkTextToQuickStartItem(item, StringConstants.QUICKSTART_IMPORT_SWAGGER_FROM_FILE, e -> {
-            importSwaggerFromFile();
-        });
-        addLinkTextToQuickStartItem(item, StringConstants.QUICKSTART_IMPORT_SWAGGER_FROM_URL, e -> {
-            importSwaggerFromUrl();
+        addLinkTextToQuickStartItem(item, StringConstants.QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL, e -> {
+            importSwaggerFromFileOrUrl();
         });
         return item;
     }
 
     private Composite createImportSoapRequestItem(Composite parent) {
         Composite item = createQuickStartItem(parent, ImageConstants.WS_IMPORT_SOAP_REQUEST_64);
-        addLinkTextToQuickStartItem(item, StringConstants.QUICKSTART_IMPORT_WSDL_FROM_FILE, e -> {
-            importWsdlFromFile();
-        });
         addLinkTextToQuickStartItem(item, StringConstants.QUICKSTART_IMPORT_WSDL_FROM_URL, e -> {
-            importWsdlFromUrl();
+        	importWsdlFromUrl();
         });
         return item;
     }
@@ -147,19 +152,63 @@ public class ApiQuickStartDialog extends Dialog {
         close();
     }
 
-    private void importSwaggerFromFile() {
-        // TODO import Swagger from File (e.Thanh)
-    }
+    private void importSwaggerFromFileOrUrl() {
+        FolderEntity parentFolderEntity;
+		try {
+			parentFolderEntity = (FolderEntity) this.parentTreeEntity.getObject();
+			ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
 
-    private void importSwaggerFromUrl() {
-        // TODO import Swagger from Url (e.Thanh)
-    }
-
-    private void importWsdlFromFile() {
-        // TODO import Wsdl from File (e.Thanh)
+	        ImportWebServiceObjectsFromSwaggerDialog dialog = new ImportWebServiceObjectsFromSwaggerDialog(Display.getCurrent().getActiveShell(), parentFolderEntity);
+	        
+	        if (dialog.open() == Dialog.OK) {
+	        	
+	        	 List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
+	             for(WebServiceRequestEntity entity : requestEntities){
+	             	toController.saveNewTestObject(entity);
+	             }
+	             
+	             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+	             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
+	             close();
+	        }
+		} catch (Exception e) {
+			LoggerSingleton.logError(e);
+		}
+        
     }
 
     private void importWsdlFromUrl() {
-        // TODO import Wsdl from Url (e.Thanh)
+		try {
+	        FolderEntity parentFolderEntity;
+			parentFolderEntity = (FolderEntity) this.parentTreeEntity.getObject();
+
+	        ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
+
+	        ImportWebServiceObjectsFromWSDLDialog dialog = new ImportWebServiceObjectsFromWSDLDialog(Display.getCurrent().getActiveShell());
+	        
+	        String [] requestMethods = new String[]{WebServiceRequestEntity.SOAP, WebServiceRequestEntity.SOAP12};
+	        if (dialog.open() == Dialog.OK) {
+	        	for(int i = 0; i < requestMethods.length; i++){
+	        		String requestMethod = requestMethods[i];
+
+	            	List<WebServiceRequestEntity> soapRequestEntities = dialog.getWebServiceRequestEntities(requestMethod);
+	            	if(soapRequestEntities != null && soapRequestEntities.size() > 0 ){
+	                	FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolderEntity, requestMethod);
+	                    FolderTreeEntity newFolderTree = new FolderTreeEntity(folder, parentTreeEntity);
+	                    for(WebServiceRequestEntity entity : soapRequestEntities){
+	                    	entity.setElementGuidId(Util.generateGuid());
+	                    	entity.setParentFolder(folder);
+	                    	entity.setProject(folder.getProject());
+	                    	toController.saveNewTestObject(entity);
+	                    }
+	            	}
+	        	}
+	        	EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+	            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
+	            close();
+	        }
+		} catch (Exception e) {
+			LoggerSingleton.logError(e);
+		}
     }
 }
