@@ -14,8 +14,6 @@ import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
-import com.kms.katalon.entity.parser.SwaggerParserUtil;
-import com.kms.katalon.entity.parser.WSDLParserUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
@@ -134,27 +132,6 @@ public class ObjectRepositoryController extends EntityController {
         return newWS;
     }
     
-    public List<WebServiceRequestEntity> newWSTestObjectsFromSwagger(FolderEntity parentFolder, String directoryOfJsonFile)
-            throws Exception {
-        if (parentFolder == null) {
-            return null;
-        }
-        List<WebServiceRequestEntity> newWSTestObjects = SwaggerParserUtil.parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
-        
-        for(WebServiceRequestEntity entity : newWSTestObjects){
-        	entity.setElementGuidId(Util.generateGuid());
-            entity.setParentFolder(parentFolder);
-            entity.setProject(parentFolder.getProject());
-        }
-        
-        return newWSTestObjects;
-    }
-    
-
-	public List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(String requestMethod, String directory) throws Exception {
-        List<WebServiceRequestEntity> newWSTestObjects = WSDLParserUtil.parseFromFileLocationToWSTestObject(requestMethod, directory);
-        return newWSTestObjects;
-    }
 
     /**
      * Save a NEW Test Object or Web Service entity.<br>

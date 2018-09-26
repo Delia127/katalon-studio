@@ -88,9 +88,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String TITLE_QUICKSTART = ComposerWebserviceMessageConstants.TITLE_QUICKSTART;
     public static final String QUICKSTART_NEW_REST_REQUEST = ComposerWebserviceMessageConstants.QUICKSTART_NEW_REST_REQUEST;
     public static final String QUICKSTART_NEW_SOAP_REQUEST = ComposerWebserviceMessageConstants.QUICKSTART_NEW_SOAP_REQUEST;
-    public static final String QUICKSTART_IMPORT_SWAGGER_FROM_FILE = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_SWAGGER_FROM_FILE;
-    public static final String QUICKSTART_IMPORT_SWAGGER_FROM_URL = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_SWAGGER_FROM_URL;
-    public static final String QUICKSTART_IMPORT_WSDL_FROM_FILE = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_WSDL_FROM_FILE;
+    public static final String QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL;
     public static final String QUICKSTART_IMPORT_WSDL_FROM_URL = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_WSDL_FROM_URL;
 	public static final String MSG_IMPORT = ComposerWebserviceMessageConstants.MSG_IMPORT;
 }

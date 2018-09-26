@@ -52,7 +52,6 @@ import com.ibm.wsdl.extensions.http.HTTPAddressImpl;
 import com.ibm.wsdl.extensions.http.HTTPBindingImpl;
 import com.ibm.wsdl.extensions.soap.SOAPAddressImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12AddressImpl;
-import com.kms.katalon.entity.parser.SafeUtils;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 /**

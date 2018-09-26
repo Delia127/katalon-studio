@@ -9,9 +9,12 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -20,6 +23,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.parser.WSDLParserUtil;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
@@ -36,16 +40,14 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
 
     
     private void createSoapWebServiceRequestEntities() throws Exception{
-    	soapWebServiceRequestEntities = ObjectRepositoryController.getInstance().
-    			newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP, directory);  
+    	soapWebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP, directory);  
     	if(soapWebServiceRequestEntities == null){
     		throw new Exception();
     	}
     }
     
     private void createSoap12WebServiceRequestEntities() throws Exception{
-    	soap12WebServiceRequestEntities = ObjectRepositoryController.getInstance().
-    			newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP12, directory);  
+    	soap12WebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP12, directory);  
     	if(soap12WebServiceRequestEntities == null){
     		throw new Exception();
     	}
@@ -123,6 +125,12 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
             }
           };
         text.addModifyListener(listener);
+		messageLabel.addSelectionListener(new SelectionAdapter(){
+		    @Override
+		    public void widgetSelected(SelectionEvent e) {
+		        Program.launch("https://www.w3.org/TR/wsdl/");
+		    }
+		});
 		return composite;
 	}
 
