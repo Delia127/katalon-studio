@@ -189,7 +189,7 @@ public class ApiQuickStartDialog extends Dialog {
 	        String [] requestMethods = new String[]{WebServiceRequestEntity.SOAP, WebServiceRequestEntity.SOAP12};
 	        if (dialog.open() == Dialog.OK) {
 	        	for(int i = 0; i < requestMethods.length; i++){
-	        		String requestMethod = requestMethods[i];
+	        		String requestMethod = requestMethods[i]; 
 
 	            	List<WebServiceRequestEntity> soapRequestEntities = dialog.getWebServiceRequestEntities(requestMethod);
 	            	if(soapRequestEntities != null && soapRequestEntities.size() > 0 ){
