@@ -314,7 +314,7 @@ public class KeywordLogger {
     public void logRunData(String dataKey, String dataValue) {
         Map<String, String> attributeMap = new HashMap<String, String>();
         attributeMap.put(dataKey, dataValue);
-        logMessage(LogLevel.RUN_DATA, "'" + dataKey + "' = '" + dataValue + "'",
+        logMessage(LogLevel.RUN_DATA, dataKey + " = " + dataValue,
                 attributeMap);
     }
 
