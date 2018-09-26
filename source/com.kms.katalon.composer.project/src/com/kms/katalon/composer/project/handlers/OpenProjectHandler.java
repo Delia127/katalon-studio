@@ -27,6 +27,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -37,6 +38,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -167,6 +169,13 @@ public class OpenProjectHandler {
 
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
+                    
+                    
+//                        PlatformUI.getWorkbench()
+//                            .getActiveWorkbenchWindow()
+//                            .getActivePage()
+//                            .hideActionSet("com.kms.katalon.composer.execution.runMode");
+                    
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {

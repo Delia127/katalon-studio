@@ -100,6 +100,8 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -413,13 +415,16 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.ID_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnId, new ColumnWeightData(50, 300));
 
-        TableViewerColumn tbvcRunWith = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tblclmnEnviroment = tbvcRunWith.getColumn();
-        tblclmnEnviroment.setText(StringConstants.PA_TABLE_COLUMN_RUN_WITH);
-        tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
-        tbvcRunWith.setLabelProvider(
-                new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject.getType() != ProjectType.WEBSERVICE) {
+            TableViewerColumn tbvcRunWith = new TableViewerColumn(tableViewer, SWT.NONE);
+            TableColumn tblclmnEnviroment = tbvcRunWith.getColumn();
+            tblclmnEnviroment.setText(StringConstants.PA_TABLE_COLUMN_RUN_WITH);
+            tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
+            tbvcRunWith.setLabelProvider(
+                    new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
+            tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
+        }
 
         TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();

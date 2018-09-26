@@ -100,6 +100,8 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -117,7 +119,7 @@ public class TestStepManualComposite {
 
     private Tree childTableTree;
 
-    private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
+    private ToolItem tltmAddWSKeywordStep, tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
     
     private Label spacer;
     
@@ -238,6 +240,14 @@ public class TestStepManualComposite {
         } else { // for ClosureDialog
             ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
             toolbar = toolBarManager.createControl(parent);
+        }
+        
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject.getType() == ProjectType.WEBSERVICE) {
+            tltmAddWSKeywordStep = new ToolItem(toolbar, SWT.NONE);
+            tltmAddWSKeywordStep.setText(StringConstants.PA_BTN_ADD_WEB_SERVICE_KEYWORD);
+            tltmAddWSKeywordStep.setImage(ImageConstants.IMG_16_ADD);
+            tltmAddWSKeywordStep.addSelectionListener(selectionListener);
         }
 
         tltmAddStep = new ToolItem(toolbar, SWT.DROP_DOWN);
@@ -662,6 +672,10 @@ public class TestStepManualComposite {
 
     public void performToolItemSelected(ToolItem toolItem, SelectionEvent selectionEvent) {
         getTreeTable().applyEditorValue();
+        if (toolItem.equals(tltmAddWSKeywordStep)) {
+            addDefaultWebServiceKeyword();
+            return;
+        }
         if (toolItem.equals(tltmAddStep)) {
             openToolItemMenu(toolItem, selectionEvent);
             return;
@@ -680,6 +694,10 @@ public class TestStepManualComposite {
         if (toolItem.equals(tltmRecent)) {
             openRecentKeywordItems();
         }
+    }
+    
+    private void addDefaultWebServiceKeyword() {
+        treeTableInput.addNewDefaultWebServiceKeyword(NodeAddType.Add);
     }
 
     private void openRecentKeywordItems() {
