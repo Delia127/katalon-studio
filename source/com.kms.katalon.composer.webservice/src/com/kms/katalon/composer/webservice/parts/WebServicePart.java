@@ -176,8 +176,8 @@ import com.kms.katalon.core.webservice.common.ScriptSnippet;
 import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -262,8 +262,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private static final String HIDE_SNIPPETS = ComposerWebserviceMessageConstants.HIDE_SNIPPETS;
 
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
-
-    private static final int MIN_PART_WIDTH = 400;
 
     private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
@@ -440,6 +438,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         responseComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         populateDataToUI();
+        updatePartImage();
         registerListeners();
     }
 
@@ -1620,9 +1619,17 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
 
         if (EventConstants.WEBSERVICE_REQUEST_DRAFT_UPDATED.equals(event.getTopic())) {
-            originalWsObject = (WebServiceRequestEntity) eventData;
-            mPart.setLabel("(Draft) " + originalWsObject.getRestUrl());
-            populateDataToUI();
+            if (!(originalWsObject instanceof DraftWebServiceRequestEntity)
+                    || !(eventData instanceof DraftWebServiceRequestEntity)) {
+                return;
+            }
+
+            DraftWebServiceRequestEntity data = (DraftWebServiceRequestEntity) eventData;
+            if (data.getDraftUid().equals(((DraftWebServiceRequestEntity) originalWsObject).getDraftUid())) {
+                originalWsObject = data;
+                mPart.setLabel("(Draft) " + ((DraftWebServiceRequestEntity) originalWsObject).getNameAsUrl());
+                populateDataToUI();
+            }
             return;
         }
 
@@ -1975,6 +1982,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
         mPart.setIconURI(imageURL);
     }
+
+    protected abstract void updatePartImage();
 
     public void updateDirty(boolean dirty) {
         dirtyable.setDirty(dirty);

@@ -97,7 +97,7 @@ public class WSRequestPartUI {
         compositePart = modelService.createModelElement(MCompositePart.class);
         compositePart.setElementId(compositePartId);
         if (requestObject instanceof DraftWebServiceRequestEntity) {
-            compositePart.setLabel("(Draft) " + requestObject.getRestUrl());
+            compositePart.setLabel("(Draft) " + ((DraftWebServiceRequestEntity) requestObject).getNameAsUrl());
         } else {
             compositePart.setLabel(requestObject.getName());
         }
@@ -109,7 +109,7 @@ public class WSRequestPartUI {
         }
         compositePart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
         if (requestObject instanceof DraftWebServiceRequestEntity) {
-            compositePart.setTooltip("(Draft) " + requestObject.getRestUrl());
+            compositePart.setTooltip("(Draft) " + ((DraftWebServiceRequestEntity) requestObject).getNameAsUrl());
         } else {
             compositePart.setTooltip(requestObject.getIdForDisplay());
         }

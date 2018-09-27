@@ -395,8 +395,7 @@ public class RestServicePart extends WebServicePart {
             originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
         }
 
-        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
-                originalWsObject.getRestRequestMethod()));
+        updatePartImage();
     }
 
     private boolean isBodySupported(String requestMethod) {
@@ -452,5 +451,11 @@ public class RestServicePart extends WebServicePart {
         if (progress != null) {
             progress.getProgressMonitor().setCanceled(true);
         }
+    }
+
+    @Override
+    protected void updatePartImage() {
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
+                originalWsObject.getRestRequestMethod()));
     }
 }
