@@ -127,6 +127,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogViewerPart implements EventHandler, LauncherListener {
 
+    private static final String MESSAGE_PART_DELIMITER = "\n\n";
+
     private static final int RIGHT_CLICK = 3;
 
     private static final int AFTER_STATUS_MENU_INDEX = 1;
@@ -562,11 +564,19 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void showFailureTreeLogMessage(ILogParentTreeNode logParentTreeNode) throws Exception {
+        String prologue = logParentTreeNode.getMessage() 
+                + MESSAGE_PART_DELIMITER 
+                + "Start: " + logParentTreeNode.getRecordStart().getLogTimeString()
+                + MESSAGE_PART_DELIMITER
+                + "Elapsed time: " + logParentTreeNode.getFullElapsedTime();
+        
         if (logParentTreeNode.getResult() != null) {
             XmlLogRecord result = logParentTreeNode.getResult();
             LogLevel resultLevel = LogLevel.valueOf(logParentTreeNode.getResult().getLevel());
             if (resultLevel == LogLevel.FAILED || resultLevel == LogLevel.ERROR) {
-                StringBuilder messageBuilder = new StringBuilder(result.getMessage());
+                StringBuilder messageBuilder = new StringBuilder(prologue)
+                        .append(MESSAGE_PART_DELIMITER)
+                        .append(result.getMessage());
                 List<StyleRange> styleRanges = new ArrayList<StyleRange>();
                 if (result.getExceptions() != null) {
                     messageBuilder.append("\n");
@@ -605,10 +615,10 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     txtMessage.setStyleRanges(styleRanges.toArray(new StyleRange[0]));
                 }
             } else {
-                txtMessage.setText(result.getMessage());
+                txtMessage.setText(prologue + MESSAGE_PART_DELIMITER + result.getMessage());
             }
         } else {
-            txtMessage.setText(StringConstants.EMPTY);
+            txtMessage.setText(prologue + MESSAGE_PART_DELIMITER + StringConstants.EMPTY);
         }
     }
 
@@ -744,6 +754,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         lblMessage.setBackground(whiteBackgroundColor);
 
         txtMessage = new StyledText(compositeTreeNodeProperties, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+        txtMessage.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
         txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
         txtMessage.addListener(SWT.MouseDown, mouseDownListener);
@@ -1074,6 +1085,12 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 lblNumErrors.setText(Integer.toString(result.getNumErrors()));
 
                 lblNumTestcases.getParent().getParent().layout();
+                
+                if (numExecuted == result.getNumPasses()) {
+                    progressBar.setState(SWT.NORMAL);
+                } else {
+                    progressBar.setState(SWT.ERROR);
+                }
             }
         });
     }

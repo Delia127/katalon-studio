@@ -39,7 +39,8 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
                         return ImageConstants.IMG_16_LOGVIEW_NOT_RUN;
                     }
                 } else if (logParentNode.getParent() == null) {
-                    return com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_TEST_SUITE;
+                    return null;
+//                    return com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_TEST_SUITE;
                 }
             }
 
