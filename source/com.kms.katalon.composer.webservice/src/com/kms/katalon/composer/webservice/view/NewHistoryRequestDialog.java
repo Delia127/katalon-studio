@@ -124,7 +124,7 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
     @Override
     protected void setInput() {
         try {
-            setMessage("Enter a Web Serivce Request name", IMessageProvider.INFORMATION);
+            setMessage("Enter a Web Service Request name", IMessageProvider.INFORMATION);
 
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
             parentFolder = FolderController.getInstance().getObjectRepositoryRoot(currentProject);

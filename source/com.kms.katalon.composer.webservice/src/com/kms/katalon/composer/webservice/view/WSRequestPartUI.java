@@ -109,9 +109,9 @@ public class WSRequestPartUI {
         }
         compositePart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
         if (requestObject instanceof DraftWebServiceRequestEntity) {
-            compositePart.setLabel("(Draft) " + requestObject.getRestUrl());
+            compositePart.setTooltip("(Draft) " + requestObject.getRestUrl());
         } else {
-            compositePart.setLabel(requestObject.getIdForDisplay());
+            compositePart.setTooltip(requestObject.getIdForDisplay());
         }
         compositePart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
         stack.getChildren().add(compositePart);
