@@ -5,7 +5,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.constants.GlobalMessageConstants;
 

@@ -27,7 +27,6 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
-import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.ToolControlImpl;
 import org.eclipse.e4.ui.workbench.addons.minmax.TrimStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -60,7 +59,6 @@ import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.SystemFileEntity;
-import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
@@ -136,10 +134,6 @@ public abstract class AbstractExecutionHandler {
                             return true;
                         }
                     }
-                }
-                
-                if (ProjectController.getInstance().getCurrentProject().getType() == ProjectType.WEBSERVICE) {
-                    
                 }
                 return false;
             }
