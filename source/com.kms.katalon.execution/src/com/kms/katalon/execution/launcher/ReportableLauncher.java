@@ -184,8 +184,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_SIMPLE_HTML);
             ReportUtil.writeSimpleHTMLReport(suiteLog, reportFolder);
 
-            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
-            ReportUtil.writeJsonReport(suiteLog, reportFolder);
+//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
+//            ReportUtil.writeJsonReport(suiteLog, reportFolder);
 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
             ReportUtil.writeJUnitReport(suiteLog, reportFolder);

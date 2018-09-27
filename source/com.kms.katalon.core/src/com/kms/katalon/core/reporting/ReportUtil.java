@@ -141,7 +141,7 @@ public class ReportUtil {
 
         writeSimpleHTMLReport(suiteLogEntity, logFolder);
 
-        writeJsonReport(suiteLogEntity, logFolder);
+//        writeJsonReport(suiteLogEntity, logFolder);
 
         writeJUnitReport(suiteLogEntity, logFolder);
     }
@@ -241,26 +241,26 @@ public class ReportUtil {
         marshaller.marshal(tss, new File(logFolder, "JUnit_Report.xml"));
     }
 
-    public static void writeJsonReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
-        List<String> excludedFieldNames = Arrays.asList(suiteLogEntity.getJsonExcludedFields());
-        ExclusionStrategy excludeFields = new ExclusionStrategy() {
-
-            @Override
-            public boolean shouldSkipField(FieldAttributes paramFieldAttributes) {
-                return excludedFieldNames.size() == 0 ? false
-                        : excludedFieldNames.contains(paramFieldAttributes.getName());
-            }
-
-            @Override
-            public boolean shouldSkipClass(Class<?> paramClass) {
-                return false;
-            }
-        };
-        String json = new GsonBuilder().addSerializationExclusionStrategy(excludeFields)
-                .create()
-                .toJson(suiteLogEntity);
-        FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json, StringConstants.DF_CHARSET);
-    }
+//    public static void writeJsonReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
+//        List<String> excludedFieldNames = Arrays.asList(suiteLogEntity.getJsonExcludedFields());
+//        ExclusionStrategy excludeFields = new ExclusionStrategy() {
+//
+//            @Override
+//            public boolean shouldSkipField(FieldAttributes paramFieldAttributes) {
+//                return excludedFieldNames.size() == 0 ? false
+//                        : excludedFieldNames.contains(paramFieldAttributes.getName());
+//            }
+//
+//            @Override
+//            public boolean shouldSkipClass(Class<?> paramClass) {
+//                return false;
+//            }
+//        };
+//        String json = new GsonBuilder().addSerializationExclusionStrategy(excludeFields)
+//                .create()
+//                .toJson(suiteLogEntity);
+//        FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json, StringConstants.DF_CHARSET);
+//    }
 
     public static void writeTSCollectionHTMLReport(String reportTitle, String tsReportsJson, File destDir)
             throws IOException, URISyntaxException {
