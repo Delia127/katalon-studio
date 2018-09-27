@@ -58,7 +58,7 @@ public class RequestHistoryStyleCellProvider extends TypeCheckedStyleCellLabelPr
 
     @Override
     protected String getElementToolTipText(IRequestHistoryItem element) {
-        return getText(element);
+        return getText(element).replace("&","&&");
     }
 
     @Override
