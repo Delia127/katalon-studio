@@ -53,8 +53,6 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     private static final String RUN_METHOD_NAME = "run"
 
-    private static final String COMMENT_STATEMENT_KEYWORD_NAME = "Comment";
-
     private static final String KEYWORD_LOGGER_LOG_NOT_RUN_METHOD_NAME = "logNotRun";
 
     @CompileStatic
@@ -161,13 +159,16 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         if (ifStatement.getElseBlock() instanceof IfStatement) {
             deferedStatements.push(
-                    new ExpressionStatement(createNewStartKeywordMethodCall("Else " +
-                    AstTextValueUtil.getInstance().getTextValue(ifStatement.getElseBlock()),
-                    ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
+                    new ExpressionStatement(
+                        createNewStartKeywordMethodCall("else " +
+                            AstTextValueUtil.getInstance().getTextValue(ifStatement.getElseBlock()),
+                            ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
         } else {
             deferedStatements.push(
-                    new ExpressionStatement(createNewStartKeywordMethodCall("Else",
-                    ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
+                    new ExpressionStatement(
+                        createNewStartKeywordMethodCall(
+                            "else", 
+                            ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
             if (!(ifStatement.getElseBlock() instanceof BlockStatement)) {
                 BlockStatement elseBlock = new BlockStatement();
                 elseBlock.getStatements().add(ifStatement.getElseBlock());
@@ -289,8 +290,11 @@ public class AstTestStepTransformation implements ASTTransformation {
         int commentNumber = 0;
         while (commentStatementsStack != null && !commentStatementsStack.isEmpty()) {
             Statement commentStatement = commentStatementsStack.pop();
-            blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(
-                    COMMENT_STATEMENT_KEYWORD_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
+            blockStatement.getStatements().add(
+                index, 
+                new ExpressionStatement(
+                createNewStartKeywordMethodCall(
+                    AstTextValueUtil.getInstance().getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
             commentNumber++;
         }
         return commentNumber;

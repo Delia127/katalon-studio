@@ -1,5 +1,9 @@
 package com.kms.katalon.core.ast;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
@@ -34,6 +38,7 @@ import org.codehaus.groovy.ast.stmt.TryCatchStatement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.syntax.Types;
+import org.testng.collections.CollectionUtils;
 
 public class AstTextValueUtil {
     private static AstTextValueUtil _instance;
@@ -94,7 +99,7 @@ public class AstTextValueUtil {
     }
 
     public String getTextValue(IfStatement ifStatement) {
-        return "If " + "(" + getTextValue(ifStatement.getBooleanExpression()) + ")";
+        return "if " + "(" + getTextValue(ifStatement.getBooleanExpression()) + ")";
     }
 
     public String getTextValue(ExpressionStatement expressionStatement) {
@@ -128,20 +133,20 @@ public class AstTextValueUtil {
     }
 
     public String getTextValue(ForStatement forStatement) {
-        return "For (" + getInputTextValue(forStatement) + ")";
+        return "for (" + getInputTextValue(forStatement) + ")";
     }
 
     public String getTextValue(WhileStatement whileStatement) {
-        return "While " + "(" + getTextValue(whileStatement.getBooleanExpression()) + ")";
+        return "while " + "(" + getTextValue(whileStatement.getBooleanExpression()) + ")";
     }
 
     public String getTextValue(TryCatchStatement catchStatement) {
-        return ("Try");
+        return ("try");
     }
 
     public String getTextValue(ThrowStatement throwStatement) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Throw ");
+        stringBuilder.append("throw ");
         stringBuilder.append(getTextValue(throwStatement.getExpression()));
         return stringBuilder.toString();
     }
@@ -149,7 +154,7 @@ public class AstTextValueUtil {
     public String getTextValue(CatchStatement catchStatement) {
         StringBuilder stringBuilder = new StringBuilder();
         new GroovyParser(stringBuilder).parse(new Parameter[] { catchStatement.getVariable() });
-        return ("Catch (" + stringBuilder.toString() + ")");
+        return ("catch (" + stringBuilder.toString() + ")");
     }
 
     public String getTextValue(SwitchStatement switchStatement) {
@@ -169,7 +174,7 @@ public class AstTextValueUtil {
     }
 
     public String getTextValue(BreakStatement breakStatement) {
-        return "Break";
+        return "break";
     }
 
     public String getTextValue(Expression expression) {
@@ -249,21 +254,34 @@ public class AstTextValueUtil {
     }
     
     public String getTextValue(StaticMethodCallExpression methodCallExpression) {
-        String object = methodCallExpression.getOwnerType().getTypeClass().getSimpleName();
+        String fullyQualifiedObject = methodCallExpression.getOwnerType().getTypeClass().getName();
         String meth = methodCallExpression.getMethod();
         String args = getTextValue(methodCallExpression.getArguments());
-        return (object.equals("this") ? "" : object + ".") + meth + args;
+        return getMethodCallTextValue(fullyQualifiedObject, meth, args);
+    }
+
+    private String getMethodCallTextValue(String fullyQualifiedObject, String meth, String args) {
+        String object;
+        if (fullyQualifiedObject.equals("this") || 
+                fullyQualifiedObject.startsWith("com.kms.katalon") ||
+                fullyQualifiedObject.startsWith("CustomKeywords")) {
+            object = "";
+        } else {
+            String[] tokens = fullyQualifiedObject.split("\\.");
+            object = tokens[tokens.length - 1] + ".";
+        }
+        return object + meth + args;
     }
 
     public String getTextValue(MethodCallExpression methodCallExpression) {
-        String object = getTextValue(methodCallExpression.getObjectExpression());
+        String fullyQualifiedObject = getTextValue(methodCallExpression.getObjectExpression());
         String meth = methodCallExpression.getMethod().getText();
         String args = getTextValue(methodCallExpression.getArguments());
-        return (object.equals("this") ? "" : object + ".") + meth + args;
+        return getMethodCallTextValue(fullyQualifiedObject, meth, args);
     }
     
     public String getTextValue(ClassExpression classExpression) {
-        return classExpression.getType().getTypeClass().getSimpleName();
+        return classExpression.getType().getTypeClass().getName();
     }
 
     public String getTextValue(TupleExpression tupleExpression) {
