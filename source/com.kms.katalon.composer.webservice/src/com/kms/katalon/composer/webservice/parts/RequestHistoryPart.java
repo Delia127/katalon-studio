@@ -58,6 +58,7 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
@@ -220,15 +221,17 @@ public class RequestHistoryPart implements IRequestHistoryListener {
                     return;
                 }
 
-                NewHistoryRequestResult result = dialog.getResult();
-
-                WebServiceRequestEntity entity = selectedTreeItem.getRequestHistoryEntity().getRequest();
-                entity.setName(result.getName());
-                entity.setParentFolder(result.getParentFolder());
-                entity.setDescription(result.getDescription());
-                ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                entity.setProject(currentProject);
                 try {
+                    NewHistoryRequestResult result = dialog.getResult();
+
+                    WebServiceRequestEntity entity = JsonUtil.fromJson(JsonUtil.toJson(selectedTreeItem
+                            .getRequestHistoryEntity().getRequest().clone()), WebServiceRequestEntity.class);
+                    entity.setName(result.getName());
+                    entity.setParentFolder(result.getParentFolder());
+                    entity.setDescription(result.getDescription());
+                    ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+                    entity.setProject(currentProject);
+
                     entity = (WebServiceRequestEntity) ObjectRepositoryController.getInstance()
                             .saveNewTestObject(entity);
                     WebElementTreeEntity treeEntity = new WebElementTreeEntity(entity,
