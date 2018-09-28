@@ -73,9 +73,9 @@ Require-Bundle: net.sf.supercsv.super-csv,
  net.lightbody.bmp.mitm,
  bcpkix,
  bcprov,
- io.netty.all;bundle-version="4.0.51",
- com.fasterxml.jackson.core.jackson-databind;bundle-version="2.4.1",
- com.fasterxml.jackson.core.jackson-core;bundle-version="2.4.1",
- com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.4.1"
+ io.netty.all,
+ com.fasterxml.jackson.core.jackson-databind,
+ com.fasterxml.jackson.core.jackson-core,
+ com.fasterxml.jackson.core.jackson-annotations
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

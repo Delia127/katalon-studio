@@ -5,7 +5,11 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
@@ -15,6 +19,9 @@ import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.core.har.Har;
+import net.lightbody.bmp.core.har.HarEntry;
+import net.lightbody.bmp.core.har.HarLog;
+import net.lightbody.bmp.core.har.HarRequest;
 import net.lightbody.bmp.proxy.CaptureType;
 
 public class BrowserMobProxyManager {
@@ -87,9 +94,17 @@ public class BrowserMobProxyManager {
                 
                 Har har = browserMobProxy.endHar();
                 String comment = JsonOutput.toJson(requestInformation);
-                har.getLog().getEntries().stream().forEach(entry -> {
-                    entry.setComment(comment);
-                });
+                HarLog harLog = har.getLog();
+                List<HarEntry> originalEntries = harLog.getEntries();
+                List<KatalonHarEntry> newEntries = originalEntries.stream()
+                        .map(entry -> {
+                            KatalonHarEntry katalonEntry = new KatalonHarEntry(entry);
+                            katalonEntry.set_katalonRequestInformation(requestInformation);
+                            return katalonEntry;
+                        })
+                        .collect(Collectors.toList());
+                originalEntries.clear();
+                originalEntries.addAll(newEntries);
                 har.writeTo(file);
             }
         } catch (Exception e) {
