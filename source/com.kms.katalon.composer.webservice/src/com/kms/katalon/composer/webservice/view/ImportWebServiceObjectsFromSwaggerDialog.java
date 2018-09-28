@@ -78,8 +78,10 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
 
 	@Override
 	protected Composite createContentArea(Composite parent) {
-
+		// Set title and default message
         setDialogTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);
+        setMessage(StringConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER, IMessageProvider.INFORMATION);
+		
         // create a composite with standard margins and spacing
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -120,7 +122,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
           };
           
         text.addModifyListener(listener);
-		
+        
 		messageLabel.addSelectionListener(new SelectionAdapter(){
 		    @Override
 		    public void widgetSelected(SelectionEvent e) {
