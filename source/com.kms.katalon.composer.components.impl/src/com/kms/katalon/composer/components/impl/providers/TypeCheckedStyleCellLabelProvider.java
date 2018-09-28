@@ -141,7 +141,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
             Rectangle layoutBounds = textLayout.getBounds();
             int y = textBounds.y + Math.max(0, (textBounds.height - layoutBounds.height) / 2);
 
-            Rectangle saveClipping = gc.getClipping();
+            //Rectangle saveClipping = gc.getClipping();
             //gc.setClipping(textBounds);
             textLayout.draw(gc, startX, y);
             

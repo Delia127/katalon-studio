@@ -270,6 +270,10 @@ public class WSRequestPartUI {
 
             @Override
             public void controlResized(ControlEvent e) {
+                Composite wsComposite = webServicePart.getComposite();
+                if (wsComposite == null || wsComposite.isDisposed()) {
+                    return;
+                }
                 calculateLeftPartsWeight();
             }
 

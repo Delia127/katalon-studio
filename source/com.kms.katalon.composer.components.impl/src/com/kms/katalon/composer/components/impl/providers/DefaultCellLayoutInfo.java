@@ -6,7 +6,7 @@ public class DefaultCellLayoutInfo implements CellLayoutInfo {
 
     @Override
     public int getLeftMargin() {
-        return Platform.OS_WIN32.equals(Platform.getOS()) ? 0 : 5;
+        return Platform.OS_WIN32.equals(Platform.getOS()) ? 0 : 2;
     }
 
     @Override
@@ -16,6 +16,6 @@ public class DefaultCellLayoutInfo implements CellLayoutInfo {
 
     @Override
     public int getSpace() {
-        return Platform.OS_WIN32.equals(Platform.getOS()) ? 5 : 2;
+        return 5;
     }
 }
