@@ -40,6 +40,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testcase.TestCaseFactory;
+import com.kms.katalon.core.util.BrowserMobProxyManager;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 import groovy.lang.Binding;
@@ -168,6 +169,9 @@ public class TestCaseExecutor {
 
     private void postExecution() {
         errorCollector.getErrors().addAll(0, parentErrors);
+        if (testCaseContext.isMainTestCase()) {
+            BrowserMobProxyManager.shutdownProxy();
+        }
     }
 
     @SuppressWarnings("unchecked")

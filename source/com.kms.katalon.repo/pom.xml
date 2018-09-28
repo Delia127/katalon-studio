@@ -258,6 +258,15 @@
                                 <artifact>
                                     <id>org.fusesource.jansi:jansi:1.17.1</id>
                                 </artifact>
+                                <artifact>
+                                    <id>net.lightbody.bmp:browsermob-core:2.1.5</id>
+                                    <excludes>
+                                        <exclude>com.fasterxml.jackson.core:*:*:*</exclude>
+                                        <exclude>com.google.guava:*:*:*</exclude>
+                                        <exclude>org.seleniumhq.selenium:*:*:*</exclude>
+                                        <exclude>org.slf4j:*:*:*</exclude>
+                                    </excludes>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>

@@ -67,6 +67,15 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.greenrobot.eventbus,
  org.assertj.core,
  org.junit,
- org.fusesource.jansi
+ org.fusesource.jansi,
+ net.lightbody.bmp.browsermob-core,
+ net.lightbody.bmp.littleproxy,
+ net.lightbody.bmp.mitm,
+ bcpkix,
+ bcprov,
+ io.netty.all;bundle-version="4.0.51",
+ com.fasterxml.jackson.core.jackson-databind;bundle-version="2.4.1",
+ com.fasterxml.jackson.core.jackson-core;bundle-version="2.4.1",
+ com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.4.1"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

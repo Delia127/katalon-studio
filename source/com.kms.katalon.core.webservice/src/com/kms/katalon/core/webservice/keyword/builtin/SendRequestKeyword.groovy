@@ -2,6 +2,7 @@ package com.kms.katalon.core.webservice.keyword.builtin
 
 import groovy.transform.CompileStatic
 import java.text.MessageFormat
+import java.util.UUID
 import java.util.regex.Pattern
 import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.annotation.internal.Action
@@ -15,6 +16,8 @@ import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.RequestObject
 import com.kms.katalon.core.testobject.ResponseObject
+import com.kms.katalon.core.util.BrowserMobProxyManager
+import com.kms.katalon.core.util.RequestInformation
 import com.kms.katalon.core.webservice.common.ServiceRequestFactory
 import com.kms.katalon.core.webservice.constants.StringConstants
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
@@ -40,15 +43,22 @@ public class SendRequestKeyword extends WebserviceAbstractKeyword {
 
     @CompileStatic
     public ResponseObject sendRequest(RequestObject request, FailureHandling flowControl) throws Exception {
-        Object object = KeywordMain.runKeyword({
-            WebServiceCommonHelper.checkRequestObject(request)
-            ResponseObject responseObject = ServiceRequestFactory.getInstance(request).send(request)
-            logger.logPassed(StringConstants.KW_LOG_PASSED_SEND_REQUEST_SUCCESS)
-            return responseObject
-        }, flowControl, StringConstants.KW_LOG_FAILED_CANNOT_SEND_REQUEST)
-        if (object instanceof ResponseObject) {
-            return (ResponseObject) object
+        try {
+            BrowserMobProxyManager.newHar()
+            Object object = KeywordMain.runKeyword({
+                WebServiceCommonHelper.checkRequestObject(request)
+                ResponseObject responseObject = ServiceRequestFactory.getInstance(request).send(request)
+                logger.logPassed(StringConstants.KW_LOG_PASSED_SEND_REQUEST_SUCCESS)
+                return responseObject
+            }, flowControl, StringConstants.KW_LOG_FAILED_CANNOT_SEND_REQUEST)
+            if (object instanceof ResponseObject) {
+                return (ResponseObject) object
+            }
+            return null
+        } finally {
+            RequestInformation requestInformation = new RequestInformation();
+            requestInformation.setTestObjectId(request.getObjectId());
+            BrowserMobProxyManager.endHar(requestInformation);
         }
-        return null
     }
 }
