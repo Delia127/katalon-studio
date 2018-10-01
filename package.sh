@@ -62,12 +62,12 @@ if [ ! -d "${BRANCH_FOLDER}" ]; then
   mkdir "${BRANCH_FOLDER}"
 fi
 
-cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
-mv "${MAC_PACKAGE}" "${BRANCH_FOLDER}/"
-cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
-cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
-mkdir -p $KATABUILD
-mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
-cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
-umount $KATABUILD
+sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
+sudo mv "${MAC_PACKAGE}" "${BRANCH_FOLDER}/"
+sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
+sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
+sudo mkdir -p $KATABUILD
+sudo mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
+rsync -rl $DISTRIBUTION_FOLDER/* $KATABUILD/
+sudo umount $KATABUILD
 echo "Distribute packages ... Done"
