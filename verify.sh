@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BRANCH="$1"
+BRANCH=${JOB_BASE_NAME}
 
 PRODUCT_NAME="Katalon\ Studio"
 VOLUME_DIR="/Volumes/${PRODUCT_NAME}"
