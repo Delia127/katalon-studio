@@ -67,7 +67,7 @@ sudo mv "${MAC_PACKAGE}" "${BRANCH_FOLDER}/"
 sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
 sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
 sudo mkdir -p $KATABUILD
-sudo mount_smbfs //katabuild:[katalon2018]@192.168.37.103/Katalon/public $KATABUILD
+sudo mount_smbfs //katalon:Kat#0926@192.168.37.103/Katalon/public $KATABUILD
 rsync -rl $DISTRIBUTION_FOLDER/* $KATABUILD/
 sudo umount $KATABUILD
 echo "Distribute packages ... Done"
