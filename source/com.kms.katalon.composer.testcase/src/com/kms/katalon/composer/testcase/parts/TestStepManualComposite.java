@@ -73,7 +73,9 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransfer;
 import com.kms.katalon.composer.testcase.model.ExecuteFromTestStepEntity;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
@@ -94,6 +96,7 @@ import com.kms.katalon.composer.testcase.support.OutputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.TestObjectEditingSupport;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestcase;
 import com.kms.katalon.constants.EventConstants;
@@ -697,7 +700,10 @@ public class TestStepManualComposite {
     }
     
     private void addDefaultWebServiceKeyword() {
-        treeTableInput.addNewDefaultWebServiceKeyword(NodeAddType.Add);
+        MethodCallExpressionWrapper sendRequestMethodCall = AstKeywordsInputUtil.generateBuiltInKeywordExpression("WS",
+                "sendRequest", treeTableInput.getMainClassNode());
+        treeTableInput.addNewAstObject(new ExpressionStatementWrapper(sendRequestMethodCall),
+                treeTableInput.getSelectedNode(), NodeAddType.Add);
     }
 
     private void openRecentKeywordItems() {

@@ -78,6 +78,7 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
@@ -287,6 +288,13 @@ public class GenerateCommandDialog extends AbstractDialog {
         btnChangeConfiguration.setImage(ImageConstants.IMG_16_EDIT);
         btnChangeConfiguration.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
         btnChangeConfiguration.setText(StringConstants.EDIT);
+        
+        
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject.getType() == ProjectType.WEBSERVICE) {
+            ((GridData) configurationComposite.getLayoutData()).exclude = true;
+            configurationComposite.setVisible(false);
+        }
     }
 
     private void createConfigurationDataComposite() {

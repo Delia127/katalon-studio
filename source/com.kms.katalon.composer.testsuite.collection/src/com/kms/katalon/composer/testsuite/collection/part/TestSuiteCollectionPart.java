@@ -415,16 +415,15 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.ID_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnId, new ColumnWeightData(50, 300));
 
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        if (currentProject.getType() != ProjectType.WEBSERVICE) {
-            TableViewerColumn tbvcRunWith = new TableViewerColumn(tableViewer, SWT.NONE);
-            TableColumn tblclmnEnviroment = tbvcRunWith.getColumn();
-            tblclmnEnviroment.setText(StringConstants.PA_TABLE_COLUMN_RUN_WITH);
-            tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
-            tbvcRunWith.setLabelProvider(
-                    new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
-            tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
-        }
+        
+        TableViewerColumn tbvcRunWith = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnEnviroment = tbvcRunWith.getColumn();
+        tblclmnEnviroment.setText(StringConstants.PA_TABLE_COLUMN_RUN_WITH);
+        tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
+        tbvcRunWith.setLabelProvider(
+                new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
+        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
+
 
         TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();
@@ -461,6 +460,14 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         ColumnViewerUtil.setTableActivation(tableViewer);
         hookDropTestSuiteEvent();
         hookDragTestSuiteEvent();
+        
+        //KAT-3580: hide the "Run With" and "Run Configuration" columns in test suite collection view
+        //for API projects
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        if (project.getType() == ProjectType.WEBSERVICE) {
+            tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(0, 0));
+            tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(0, 0));
+        }
     }
 
     private void hookDragTestSuiteEvent() {
