@@ -7,6 +7,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,15 +61,15 @@ import com.kms.katalon.composer.webservice.util.WebServiceUtil;
 import com.kms.katalon.composer.webservice.view.xml.ColorManager;
 import com.kms.katalon.composer.webservice.view.xml.XMLConfiguration;
 import com.kms.katalon.composer.webservice.view.xml.XMLPartitionScanner;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
-import com.kms.katalon.core.testobject.ObjectRepository;
-import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -249,6 +250,10 @@ public class SoapServicePart extends WebServicePart {
                         if (runVerificationScript) {
                             executeVerificationScript(responseObject);
                         }
+
+                        RequestHistoryEntity requestHistoryEntity = new RequestHistoryEntity(
+                                new Date(), (WebServiceRequestEntity) getWSRequestObject().clone());
+                        eventBroker.post(EventConstants.WS_VERIFICATION_FINISHED, new Object[] { requestHistoryEntity });
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
                     } finally {

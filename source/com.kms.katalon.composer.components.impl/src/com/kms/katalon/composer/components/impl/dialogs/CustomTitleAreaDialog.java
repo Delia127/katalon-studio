@@ -9,11 +9,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
 public abstract class CustomTitleAreaDialog extends AbstractDialog {
 
-    private Label messageLabel;
+    protected Link messageLabel;
     private Label imageLabel;
 
     public CustomTitleAreaDialog(Shell parentShell) {
@@ -33,7 +34,7 @@ public abstract class CustomTitleAreaDialog extends AbstractDialog {
         titleComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         imageLabel = new Label(titleComposite, SWT.NONE);
         imageLabel.setLayoutData(new GridData(SWT.TOP, SWT.TOP, false, false));
-        messageLabel = new Label(titleComposite, SWT.WRAP);
+        messageLabel = new Link(titleComposite, SWT.WRAP);
         messageLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         Composite area = createContentArea(container);
