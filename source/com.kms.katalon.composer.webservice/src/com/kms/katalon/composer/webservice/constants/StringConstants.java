@@ -54,6 +54,8 @@ public class StringConstants extends GlobalStringConstants {
     // ImportWebService
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;   
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
+    public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
+    public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
 
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;
@@ -89,6 +91,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String QUICKSTART_NEW_REST_REQUEST = ComposerWebserviceMessageConstants.QUICKSTART_NEW_REST_REQUEST;
     public static final String QUICKSTART_NEW_SOAP_REQUEST = ComposerWebserviceMessageConstants.QUICKSTART_NEW_SOAP_REQUEST;
     public static final String QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL;
+    public static final String QUICKSTART_IMPORT_WSDL_FROM_FILE = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_WSDL_FROM_FILE;
     public static final String QUICKSTART_IMPORT_WSDL_FROM_URL = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_WSDL_FROM_URL;
 	public static final String MSG_IMPORT = ComposerWebserviceMessageConstants.MSG_IMPORT;
 }

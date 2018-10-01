@@ -35,19 +35,19 @@ import com.kms.katalon.entity.util.Util;
 public class ApiQuickStartDialog extends Dialog {
 
     private static final Point ITEM_IMG_SIZE = new Point(64, 64);
+
     private ITreeEntity parentTreeEntity;
 
     public ApiQuickStartDialog(ITreeEntity parentTreeEntity, Shell parentShell) {
         super(parentShell);
         this.parentTreeEntity = parentTreeEntity;
-
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite body = new Composite(parent, SWT.NONE);
         GridData gdBody = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gdBody.widthHint = 400;
+        gdBody.widthHint = 380;
         body.setLayoutData(gdBody);
         body.setLayout(new GridLayout(2, false));
 

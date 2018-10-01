@@ -147,17 +147,6 @@ public class NewProjectDialog extends TitleAreaDialog {
         projectTypeComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         projectTypeComposite.setLayout(new GridLayout(3, false));
 
-        rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
-        GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
-        rbWebServiceProjectType.setText(StringConstants.VIEW_OPTION_WEB_SERVICE_PROJECT);
-        rbWebServiceProjectType.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                populateWebServiceProjects();
-            }
-        });
-        
         rbGenericProjectType = new Button(projectTypeComposite, SWT.RADIO);
         GridData gdGenericProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         rbGenericProjectType.setLayoutData(gdGenericProjectType);
@@ -168,6 +157,17 @@ public class NewProjectDialog extends TitleAreaDialog {
                 populateGenericProjects();
             }
         });
+        
+        rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
+        GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
+        rbWebServiceProjectType.setText(StringConstants.VIEW_OPTION_WEB_SERVICE_PROJECT);
+        rbWebServiceProjectType.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                populateWebServiceProjects();
+            }
+        });               
         
         new HelpCompositeForDialog(projectTypeComposite, DocumentationMessageConstants.MANAGE_TEST_PROJECT) {
             @Override
