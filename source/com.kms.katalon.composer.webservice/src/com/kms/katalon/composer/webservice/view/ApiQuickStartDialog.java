@@ -90,7 +90,7 @@ public class ApiQuickStartDialog extends Dialog {
 
     private Composite createImportSoapRequestItem(Composite parent) {
         Composite item = createQuickStartItem(parent, ImageConstants.WS_IMPORT_SOAP_REQUEST_64,
-                StringConstants.QUICKSTART_IMPORT_WSDL_FROM_URL, e -> importWsdlFromUrl());
+                StringConstants.QUICKSTART_IMPORT_WSDL_FROM_FILE_OR_URL, e -> importWsdlFromUrl());
         return item;
     }
 
