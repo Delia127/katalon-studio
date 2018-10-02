@@ -54,8 +54,8 @@ rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
 
 # Distribute packages to shared folder
-mkdir -p ${HOME}/Public/KatalonStudio/
-DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio"
+mkdir -p ${HOME}/Public/KatalonStudio/${1}/${BUILD_ID}_${GIT_COMMIT}
+DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/${1}/${BUILD_ID}_${GIT_COMMIT}"
 BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${BUILD_ID}_${GIT_COMMIT}" # JOB_BASE_NAME
 
 if [ ! -d "${BRANCH_FOLDER}" ]; then
