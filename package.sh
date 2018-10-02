@@ -38,7 +38,7 @@ echo "Process Linux package ... Done"
 
 # Process MacOS package
 echo "Process MacOS package ..."
-tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
+#tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
 
 chmod +x "${KATALON_MAC}"
 chmod +x "${CHROME_DRIVER_MAC}"
