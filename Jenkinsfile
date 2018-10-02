@@ -4,7 +4,7 @@ node {
     }  
     stage('Build') {
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
-	// Start neccessary services to prepare required library if needed
+	// Start neccessary services to prepare required libraries if needed
 	build job: 'StartServices'
     	if (env.BRANCH_NAME == 'release') {
     		sh '''
