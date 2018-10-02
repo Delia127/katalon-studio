@@ -731,7 +731,6 @@ public class WebUiCommonHelper extends KeywordHelper {
             long miliseconds = System.currentTimeMillis();
             while (timeCount < timeOut) {
                 try {
-                	System.out.println(useAllNeighbors);
                     List<WebElement> webElements = null;
                     if (objectInsideShadowDom) {
                         webElements = doFindElementsInsideShadowDom(testObject, timeOut, webDriver, cssLocator,

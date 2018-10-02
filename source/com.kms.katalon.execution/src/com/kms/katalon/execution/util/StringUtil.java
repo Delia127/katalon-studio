@@ -30,20 +30,4 @@ public class StringUtil {
         }
         return childrenString;
     }
-    
-    /**
-     * @param str String in the format of key1,value1;key2,value2;...
-     * @return List&lt;Pair&lt;String, Boolean>>
-     * @see #flatList
-     * @see com.kms.katalon.util.collections.Pair
-     */
-    public static List<Pair<String, Boolean>> parseStringBooleanString(String str) {
-        if (str == null || str.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return Stream.of(str.split(";"))
-                .map(i -> i.split(","))
-                .map(i -> new Pair<String, Boolean>(i[0], Boolean.valueOf(i[1])))
-                .collect(Collectors.toList());
-    } 
 }
