@@ -55,7 +55,7 @@ echo "Process MacOS package ... Done"
 
 # Distribute packages to shared folder
 mkdir -p ${HOME}/Public/KatalonStudio/${1}/${BUILD_ID}
-DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/${1}/${BUILD_ID}
+DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/${1}/${BUILD_ID}"
 BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${BUILD_ID}" # JOB_BASE_NAME
 
 if [ ! -d "${BRANCH_FOLDER}" ]; then
