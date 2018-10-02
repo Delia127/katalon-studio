@@ -753,10 +753,20 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
+                        
             // If this code is reached, then it's definitely a WebElementNotFoundException
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
-            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
+            List<WebElement> tryAutoApplyNeighborXpaths = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
+            if(useAllNeighbors == false){
+                throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
+            }
+            
+            if(tryAutoApplyNeighborXpaths!= null && tryAutoApplyNeighborXpaths.size() > 0) {
+                logger.logInfo(MessageFormat.format(
+                        StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS, tryAutoApplyNeighborXpaths.size(),
+                        testObject.getObjectId(), defaultLocator.toString(), timeOut));
+                return tryAutoApplyNeighborXpaths;
+            }
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
@@ -770,16 +780,16 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
-    private static void findWebElementsByOtherMethods(
+    private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
     		TestObject testObject){
 
-        List<WebElement> webElementsFoundByHeuristicMethod = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
-        List<WebElement> webElementsFoundByTrialAndErrorMethod = findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);       
+        findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
+        return findWebElementsByAutoApplyNeighborXpaths(webDriver, objectInsideShadowDom, testObject);
     }
     
-    private static List<WebElement> findWebElementsUsingTrialAndErrorMethod(
+    private static List<WebElement> findWebElementsByAutoApplyNeighborXpaths(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
     		TestObject testObject){
