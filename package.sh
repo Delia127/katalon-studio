@@ -2,7 +2,6 @@
 KATABUILD=/tmp/katabuild
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
-MAC_PRODUCT_NAME="Katalon\ Studio"
 
 WINDOWS_32_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_32.zip"
 WINDOWS_64_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_64.zip"
@@ -14,7 +13,7 @@ LINUX_64_FILE="${LINUX_64_DIR}.tar.gz"
 MAC_NAME="${PRODUCT_NAME}_MacOS"
 MAC_DIR="${PACKAGE_FOLDER}"
 MAC_FILE="${MAC_DIR}/${MAC_NAME}.tar.gz"
-MAC_APP="${MAC_DIR}/${MAC_PRODUCT_NAME}.app"
+MAC_APP="${MAC_DIR}/${PRODUCT_NAME}.app"
 MAC_PACKAGE="${MAC_DIR}/${PRODUCT_NAME}.dmg"
 
 CHROME_DRIVER="${LINUX_64_DIR}/configuration/resources/drivers/chromedriver_linux64/chromedriver"
