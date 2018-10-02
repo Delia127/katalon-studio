@@ -3,7 +3,9 @@ node {
         checkout scm
     }  
     stage('Build') {
-	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why    
+	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
+	// Start neccessary services to prepare required library if needed
+	build job: 'StartService'
     	if (env.BRANCH_NAME == 'release') {
     		sh '''
 		    cd source
