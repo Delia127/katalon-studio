@@ -567,7 +567,11 @@ public class NewProjectDialog extends TitleAreaDialog {
             Trackings.trackCreatingProject();
     
             // Open created project
-            eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            if (getSelectedProjectType() == ProjectType.WEBSERVICE) {
+                eventBroker.send(EventConstants.NEW_WS_PROJECT_OPEN, newProject.getId());
+            } else {
+                eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            }
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     ex.getMessage());

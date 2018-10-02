@@ -141,9 +141,6 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
             txtRequestMethod.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)
                     ? request.getRestRequestMethod() : request.getSoapRequestMethod());
 
-            txtRequestMethod.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)
-                    ? request.getRestRequestMethod() : request.getSoapRequestMethod());
-
             String url = WebServiceRequestEntity.RESTFUL.equals(serviceType)
                     ? request.getRestUrl() : request.getWsdlAddress();
             txtUrl.setText(url.replace("&", "&&"));

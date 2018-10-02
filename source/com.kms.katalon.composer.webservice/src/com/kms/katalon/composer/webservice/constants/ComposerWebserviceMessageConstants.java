@@ -5,12 +5,22 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerWebserviceMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
 
+	public static String EXC_INVALID_SWAGGER_FILE;
+
+	public static String EXC_INVALID_WSDL_FILE;
+
+	public static String MSG_IMPORT;
+
     public static String HAND_NEW_REQUEST;
 
     public static String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ;
 
     public static String MENU_CONTEXT_WEBSERVICE_REQ;
+    
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
 
+    public static String MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
+    
     public static String PA_TITLE_HTTP;
 
     public static String PA_LBL_HTTP_HEADER;
@@ -43,12 +53,28 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String WIEW_TITLE_NEW;
 
+    public static String WIEW_TITLE_SWAGGER;
+    
+    public static String WIEW_TITLE_WSDL;
+    
     public static String VIEW_LBL_REQ_TYPE;
 
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ;
+    
+    public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;
 
     public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ;
-
+    
+    public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ_SWAGGER;
+    
+    public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
+    
+    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
+    
+    public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ_WSDL;
+    
+    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
+    
     public static String VIEW_MENU_CONTEXT_INSERT_PROP;
 
     public static String VIEW_MENU_CONTEXT_DEL_PROPS;
@@ -185,6 +211,20 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE;
     
     public static String DIA_TITLE_TEST_CASE_BROWSER;
+    
+    public static String TITLE_QUICKSTART;
+    
+    public static String QUICKSTART_NEW_REST_REQUEST;
+    
+    public static String QUICKSTART_NEW_SOAP_REQUEST;
+    
+    public static String QUICKSTART_IMPORT_SWAGGER_FROM_FILE;
+    
+    public static String QUICKSTART_IMPORT_SWAGGER_FROM_URL;
+    
+    public static String QUICKSTART_IMPORT_WSDL_FROM_FILE;
+    
+    public static String QUICKSTART_IMPORT_WSDL_FROM_URL;
     
     static {
         // initialize resource bundle

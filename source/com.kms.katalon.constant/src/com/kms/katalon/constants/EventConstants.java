@@ -1,6 +1,7 @@
 package com.kms.katalon.constants;
 
 public class EventConstants {
+	
     // Property's name of event that is broadcast by IEventBroker
     public static final String EVENT_DATA_PROPERTY_NAME = "org.eclipse.e4.data";
 
@@ -19,6 +20,8 @@ public class EventConstants {
     public static final String PROJECT_CREATED = "PROJECT/CREATED";
 
     public static final String PROJECT_OPEN = "PROJECT/OPEN";
+    
+    public static final String NEW_WS_PROJECT_OPEN = "PROJECT/OPEN_NEW_WS_PROJECT";
 
     public static final String PROJECT_OPENED = "PROJECT/OPENED";
 
@@ -97,6 +100,9 @@ public class EventConstants {
     public static final String EXPLORER_DELETE_TEST_CASE_FOLDER = "EXPLORER/DELETE_TEST_CASE_FOLDER";
 
     public static final String EXPLORER_OPEN_ITEM_BY_PART_ID = "EXPLORER/OPEN_ITEM_BY_PART_ID";
+
+    public static final String EXPLORER_OPEN_DRAFT_WEBSERVICE = "EXPLORER/OPEN_DRAFT_WEBSERVICE";
+
     // Folder Events
     public static final String FOLDER_REFRESH_CHILDREN = "EXPLORER/REFRESH_CHILDREN";
 
@@ -167,6 +173,10 @@ public class EventConstants {
     public static final String WEBSERVICE_REQUEST_OBJECT_OPEN = "WSOBJECT/OPEN";
     
     public static final String WEBSERVICE_REQUEST_DRAFT_UPDATED = "WSOBJECT/DRAFT_UPDATED";
+
+	public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER = "WSOBJECT/SWAGGER";
+	
+	public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL = "WSOBJECT/WSDL";
 
     // Report Event
     public static final String REPORT_OPEN = "REPORT/OPEN";
@@ -327,4 +337,7 @@ public class EventConstants {
     public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";
 
     public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
+    
+    // Api Quick Start Dialog
+    public static final String API_QUICK_START_DIALOG_OPEN = "API/OPEN_QUICK_START_DIALOG";
 }

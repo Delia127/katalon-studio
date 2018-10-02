@@ -8,12 +8,14 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.SaveWebElementInfoEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -57,7 +59,8 @@ public class ObjectRepositoryController extends EntityController {
      * @throws Exception
      */
     public WebServiceRequestEntity newWSTestObject(FolderEntity parentFolder, String wsTestObjectName) throws Exception {
-        return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
+        //return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectFromSwagger(parentFolder, wsTestObjectName));
+    	return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
     }
 
     /**
@@ -85,6 +88,21 @@ public class ObjectRepositoryController extends EntityController {
 
         return newWebElement;
     }
+    
+    /**
+     * Create new Test Object without save
+     * 
+     * @param parentFolder
+     * @param testObjectName Test Object name. Default name (New Element) will be used if this null or empty
+     * @return {@link WebElementEntity}
+     * @throws Exception
+     */
+    public DraftWebServiceRequestEntity newDraftWebServiceEntity(ProjectEntity project) {
+        DraftWebServiceRequestEntity newWebElement = new DraftWebServiceRequestEntity();
+        newWebElement.setProject(project);
+
+        return newWebElement;
+    }
 
     /**
      * Create new Web Service Test Object without save
@@ -99,12 +117,12 @@ public class ObjectRepositoryController extends EntityController {
             throws Exception {
         if (parentFolder == null) {
             return null;
-        }
+        }       
 
         if (StringUtils.isBlank(wsTestObjectName)) {
             wsTestObjectName = StringConstants.CTRL_NEW_WS_REQUEST;
         }
-
+        
         WebServiceRequestEntity newWS = new WebServiceRequestEntity();
         newWS.setElementGuidId(Util.generateGuid());
         newWS.setName(getAvailableWebElementName(parentFolder, wsTestObjectName));
@@ -113,6 +131,7 @@ public class ObjectRepositoryController extends EntityController {
 
         return newWS;
     }
+    
 
     /**
      * Save a NEW Test Object or Web Service entity.<br>

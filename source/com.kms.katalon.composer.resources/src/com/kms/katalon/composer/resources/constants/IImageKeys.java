@@ -373,6 +373,14 @@ public interface IImageKeys {
     public static final String WS_SOAP_GET_METHOD_16 = "entity/ws_soap_get_16.png"; //$NON-NLS-1$
 
     public static final String WS_SOAP_POST_METHOD_16 = "entity/ws_soap_post_16.png"; //$NON-NLS-1$
+    
+    public static final String WS_NEW_REST_REQUEST_64 = "entity/new_request_rest_64.png"; //$NON-NLS-1$
+    
+    public static final String WS_NEW_SOAP_REQUEST_64 = "entity/new_request_soap_64.png"; //$NON-NLS-1$
+    
+    public static final String WS_IMPORT_REST_REQUEST_64 = "entity/import_rest_64.png"; //$NON-NLS-1$
+    
+    public static final String WS_IMPORT_SOAP_REQUEST_64 = "entity/import_soap_64.png"; //$NON-NLS-1$
 
     public static final String RBT_TEST_OBJECT_16 = "entity/rbt_test_object_16.png"; //$NON-NLS-1$
 
