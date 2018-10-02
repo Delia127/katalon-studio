@@ -688,7 +688,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
             
-                        
+            Boolean useAllNeighbors = RunConfiguration.getAutoApplyNeighborXpaths();
+                 
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
             By defaultLocator = null;
@@ -730,6 +731,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             long miliseconds = System.currentTimeMillis();
             while (timeCount < timeOut) {
                 try {
+                	System.out.println(useAllNeighbors);
                     List<WebElement> webElements = null;
                     if (objectInsideShadowDom) {
                         webElements = doFindElementsInsideShadowDom(testObject, timeOut, webDriver, cssLocator,
@@ -752,11 +754,10 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
-            
             // If this code is reached, then it's definitely a WebElementNotFoundException
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
-            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));      
+            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
 
         } catch (TimeoutException e) {
             // timeOut, do nothing

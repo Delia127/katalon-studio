@@ -113,6 +113,8 @@ public class ExecutionMessageConstants extends NLS {
 
     public static String LBL_DEFAULT_EXECUTION;
     
+    public static String LBL_APPLY_NEIGHBOR_XPATHS;
+    
     // ConsoleOptionBuilder
     public static String CONSOLE_RUN_CONFIGURATION_NOT_FOUND;
 

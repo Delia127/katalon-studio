@@ -36,6 +36,8 @@ import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
     private static final String LBL_DEFAULT_EXECUTION = ExecutionMessageConstants.LBL_DEFAULT_EXECUTION;
+    
+    private static final String LBL_APPLY_NEIGHBOR_XPATHS = ExecutionMessageConstants.LBL_APPLY_NEIGHBOR_XPATHS;
 
     public static final short TIMEOUT_MIN_VALUE = 0;
 
@@ -48,6 +50,8 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
     private Composite container;
 
     private Combo cbDefaultBrowser;
+    
+    private Combo cbApplyNeighborXpaths;
 
     private Text txtDefaultElementTimeout;
 
@@ -86,6 +90,16 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         GridData gdCbDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdCbDefaultBrowser.widthHint = INPUT_WIDTH * 2;
         cbDefaultBrowser.setLayoutData(gdCbDefaultBrowser);
+        
+        Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
+        lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
+        GridData gdLblApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblApplyNeighborXpaths.setLayoutData(gdLblApplyNeighborXpaths);
+
+        cbApplyNeighborXpaths = new Combo(comp, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
+        GridData gdCbApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdCbApplyNeighborXpaths.widthHint = INPUT_WIDTH * 2;
+        cbApplyNeighborXpaths.setLayoutData(gdCbApplyNeighborXpaths);
 
         Label lblDefaultElementTimeout = new Label(comp, SWT.NONE);
         lblDefaultElementTimeout.setText(StringConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT);
@@ -195,6 +209,16 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
             cbDefaultBrowser.setItems(runConfigIdList);
             cbDefaultBrowser.select(selectedIndex);
         }
+        
+        // Apply neighbor xpaths set to false        
+        String[] trueOrFalse = new String[]{"false", "true"};
+        cbApplyNeighborXpaths.setItems(trueOrFalse);
+        if(store.getAutoApplyNeighborXpathsEnabled() == false){
+            cbApplyNeighborXpaths.select(0);
+        }else{
+        	cbApplyNeighborXpaths.select(1);
+        }
+
         txtDefaultElementTimeout.setText(Integer.toString(store.getElementTimeout()));
 
         chckOpenReport.setSelection(store.isPostExecOpenReport());
@@ -238,6 +262,11 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
                 selectedExecutionConfiguration = cbDefaultBrowser.getText();
                 store.setExecutionConfiguration(selectedExecutionConfiguration);
             }
+            
+            if(cbApplyNeighborXpaths != null){
+            	store.setApplyNeighborXpathsEnabled(cbApplyNeighborXpaths.getSelectionIndex() == 1 ? true : false);
+            }
+            
             if (txtDefaultElementTimeout != null) {
                 store.setElementTimeout(Integer.parseInt(txtDefaultElementTimeout.getText()));
             }
