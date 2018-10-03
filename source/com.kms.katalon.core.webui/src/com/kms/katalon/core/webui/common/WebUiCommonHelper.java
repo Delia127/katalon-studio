@@ -757,12 +757,12 @@ public class WebUiCommonHelper extends KeywordHelper {
 
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             
-            // If auto applying neighbor XPaths is disabled, no need to go further
+
+            List<WebElement> tryAutoApplyNeighborXpaths = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, useAllNeighbors);    
             if(useAllNeighbors == false){
                 throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
             }
-
-            List<WebElement> tryAutoApplyNeighborXpaths = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, useAllNeighbors);           
+       
             if(tryAutoApplyNeighborXpaths!= null && tryAutoApplyNeighborXpaths.size() > 0) {
                 return tryAutoApplyNeighborXpaths;
             }
