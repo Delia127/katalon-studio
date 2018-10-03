@@ -73,12 +73,14 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
 
     @Override
     protected void okPressed() {
+    	Button ok = getButton(IDialogConstants.OK_ID);
     	boolean closeTheDialog = true;
     	try{
         	createWebServiceRequestEntities();
     	} catch(Exception e){
     		closeTheDialog = false;
     		setMessage(StringConstants.EXC_INVALID_WSDL_FILE, IMessageProvider.ERROR);
+    		ok.setEnabled(false);
     	} finally {
     		if(closeTheDialog == true){
     	        super.okPressed();
@@ -138,6 +140,10 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
         
         ModifyListener listener = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
+            	Button ok = getButton(IDialogConstants.OK_ID);
+            	if(ok.isEnabled() == false){
+            		ok.setEnabled(true);
+            	}
               directory = ((Text) e.widget).getText();
             }
           };
