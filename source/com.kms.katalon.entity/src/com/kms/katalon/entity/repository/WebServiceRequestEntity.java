@@ -15,6 +15,8 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public static final String RESTFUL = "RESTful";
 
+    public static final String REST = "REST";
+
     public static final String GET_METHOD = "GET";
 
     public static final String POST_METHOD = "POST";

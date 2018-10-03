@@ -25,7 +25,10 @@ public class RequestHistoryTreeItem implements IRequestHistoryItem {
 
     @Override
     public String getName() {
-        return requestHistoryEntity.getRequest().getRestUrl();
+        WebServiceRequestEntity request = requestHistoryEntity.getRequest();
+        String type = request.getServiceType();
+        return WebServiceRequestEntity.RESTFUL.equals(type) ? request.getRestUrl()
+                : request.getWsdlAddress();
     }
 
     @Override

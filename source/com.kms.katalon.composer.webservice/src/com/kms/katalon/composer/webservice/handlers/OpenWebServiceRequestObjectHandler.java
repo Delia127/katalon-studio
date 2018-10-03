@@ -52,21 +52,19 @@ public class OpenWebServiceRequestObjectHandler {
             @Override
             public void handleEvent(Event event) {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object.getClass() == WebServiceRequestEntity.class) {
+                if (object != null && WebServiceRequestEntity.class.isInstance(object)) {
                     openRequestObject((WebServiceRequestEntity) object);
                 }
             }
         });
-
+        
         eventBroker.subscribe(EventConstants.WORKSPACE_DRAFT_PART_CLOSED, new EventServiceAdapter() {
-
             @Override
             public void handleEvent(Event event) {
                 java.util.Optional<DraftWebServiceRequestEntity> optional = getDraftWebService(event);
                 if (!optional.isPresent()) {
                     return;
                 }
-
                 WebServicePreferenceStore store = new WebServicePreferenceStore();
                 try {
                     store.removeDraftRequest(optional.get(), ProjectController.getInstance().getCurrentProject());
@@ -159,7 +157,6 @@ public class OpenWebServiceRequestObjectHandler {
         draftWebServiceEntity.setDraftUid(historyRequest.getUid());
         try {
             openDraftRequest(draftWebServiceEntity);
-
             WebServicePreferenceStore store = new WebServicePreferenceStore();
             store.saveDraftRequest(draftWebServiceEntity, ProjectController.getInstance().getCurrentProject());
             Trackings.trackOpenObject("webServiceHistoryRequest");

@@ -19,4 +19,10 @@ public class DraftWebServiceRequestEntity extends WebServiceRequestEntity {
         this.draftUid = draftUid;
     }
 
+   public String getNameAsUrl() {
+       if (DraftWebServiceRequestEntity.RESTFUL.equals(getServiceType())) {
+           return getRestUrl();
+       }
+       return getWsdlAddress();
+   }
 }

@@ -81,7 +81,7 @@ public class CommonPropertiesDialog<T extends FileEntity> extends AbstractDialog
         setModified(false);
         txtId.setText(getEntity().getIdForDisplay());
         txtName.setText(getEntity().getName());
-        txtDescription.setText(getEntity().getDescription());
+        txtDescription.setText(StringUtils.defaultString(getEntity().getDescription()));
     }
 
     @Override
