@@ -2,6 +2,7 @@
 KATABUILD=/tmp/katabuild
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
+MAC_PRODUCT_Name="Katalon\ Studio"
 
 WINDOWS_32_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_32.zip"
 WINDOWS_64_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_64.zip"
@@ -13,8 +14,8 @@ LINUX_64_FILE="${LINUX_64_DIR}.tar.gz"
 MAC_NAME="${PRODUCT_NAME}_MacOS"
 MAC_DIR="${PACKAGE_FOLDER}"
 MAC_FILE="${MAC_DIR}/${MAC_NAME}.tar.gz"
-MAC_APP="${MAC_DIR}/${PRODUCT_NAME}.app"
-MAC_PACKAGE="${MAC_DIR}/${PRODUCT_NAME}.dmg"
+MAC_APP="${MAC_DIR}/com.kms.katalon.product.product/macosx/cocoa/x86_64/${MAC_PRODUCT_NAME}.app"
+MAC_PACKAGE="${MAC_DIR}/com.kms.katalon.product.product/macosx/cocoa/x86_64/${MAC_PRODUCT_NAME}.dmg"
 
 CHROME_DRIVER="${LINUX_64_DIR}/configuration/resources/drivers/chromedriver_linux64/chromedriver"
 FF_DRIVER="${LINUX_64_DIR}/configuration/resources/drivers/firefox_linux64/geckodriver"
@@ -38,7 +39,7 @@ echo "Process Linux package ... Done"
 
 # Process MacOS package
 echo "Process MacOS package ..."
-tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
+#tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
 
 chmod +x "${KATALON_MAC}"
 chmod +x "${CHROME_DRIVER_MAC}"
@@ -56,7 +57,7 @@ echo "Process MacOS package ... Done"
 # Distribute packages to shared folder
 mkdir -p ${HOME}/Public/KatalonStudio/
 DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
-BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${GIT_COMMIT}" # JOB_BASE_NAME
+BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/" # JOB_BASE_NAME
 
 if [ ! -d "${BRANCH_FOLDER}" ]; then
   mkdir "${BRANCH_FOLDER}"
