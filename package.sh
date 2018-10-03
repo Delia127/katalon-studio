@@ -1,6 +1,6 @@
 #!/bin/bash
 KATABUILD=/tmp/katabuild
-PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
+PACKAGE_FOLDER="/Users/katalon/kata/source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
 MAC_PRODUCT_NAME="Katalon Studio"
 
