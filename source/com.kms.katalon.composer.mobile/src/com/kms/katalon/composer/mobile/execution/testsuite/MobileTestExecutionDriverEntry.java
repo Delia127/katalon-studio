@@ -30,7 +30,8 @@ public abstract class MobileTestExecutionDriverEntry extends TestExecutionDriver
     @Override
     public RunConfigurationDescription toConfigurationEntity(RunConfigurationDescription previousDescription) {
         Map<String, String> runConfigurationData = new HashMap<>();
-        if (previousDescription != null && previousDescription.getRunConfigurationId().equals(getName())) {
+        if (previousDescription != null && previousDescription.getRunConfigurationId() != null
+                && previousDescription.getRunConfigurationId().equals(getName())) {
             runConfigurationData.clear();
         }
         return RunConfigurationDescription.from(groupName, getName(), runConfigurationData,

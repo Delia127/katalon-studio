@@ -683,22 +683,24 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 getWSRequestObject().getIdForDisplay(), sendRequestMethodCallArgumentList);
         ArgumentListExpressionWrapper findTestObjectMethodCallArgumentList = findTestObjectMethodCall.getArguments();
 
-        MapExpressionWrapper variableMapExpression = new MapExpressionWrapper(findTestObjectMethodCallArgumentList);
-
         VariableEntity[] requestVariables = variableView.getVariables();
-        for (VariableEntity variable : requestVariables) {
-            MapEntryExpressionWrapper newMapEntry = new MapEntryExpressionWrapper(variableMapExpression);
+        if (requestVariables.length > 0) {
+            MapExpressionWrapper variableMapExpression = new MapExpressionWrapper(findTestObjectMethodCallArgumentList);
+            
+            for (VariableEntity variable : requestVariables) {
+                MapEntryExpressionWrapper newMapEntry = new MapEntryExpressionWrapper(variableMapExpression);
 
-            newMapEntry.setKeyExpression(new ConstantExpressionWrapper(variable.getName(), newMapEntry));
+                newMapEntry.setKeyExpression(new ConstantExpressionWrapper(variable.getName(), newMapEntry));
 
-            ExpressionWrapper valueExpression = GroovyWrapperParser
-                    .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue());
-            newMapEntry.setValueExpression(valueExpression);
+                ExpressionWrapper valueExpression = GroovyWrapperParser
+                        .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue());
+                newMapEntry.setValueExpression(valueExpression);
 
-            variableMapExpression.addExpression(newMapEntry);
-        }
+                variableMapExpression.addExpression(newMapEntry);
+            }
 
-        findTestObjectMethodCallArgumentList.addExpression(variableMapExpression);
+            findTestObjectMethodCallArgumentList.addExpression(variableMapExpression);
+        }     
 
         // replace the default created argument of sendRequest method with
         // findTestObject method call

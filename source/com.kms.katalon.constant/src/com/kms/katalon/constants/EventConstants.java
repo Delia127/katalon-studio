@@ -173,7 +173,7 @@ public class EventConstants {
     public static final String WEBSERVICE_REQUEST_OBJECT_OPEN = "WSOBJECT/OPEN";
     
     public static final String WEBSERVICE_REQUEST_DRAFT_UPDATED = "WSOBJECT/DRAFT_UPDATED";
-
+	
 	public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER = "WSOBJECT/SWAGGER";
 	
 	public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL = "WSOBJECT/WSDL";

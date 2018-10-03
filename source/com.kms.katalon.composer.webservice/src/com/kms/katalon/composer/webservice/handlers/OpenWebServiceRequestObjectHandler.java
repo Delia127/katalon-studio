@@ -57,14 +57,16 @@ public class OpenWebServiceRequestObjectHandler {
                 }
             }
         });
-        
+
         eventBroker.subscribe(EventConstants.WORKSPACE_DRAFT_PART_CLOSED, new EventServiceAdapter() {
+
             @Override
             public void handleEvent(Event event) {
                 java.util.Optional<DraftWebServiceRequestEntity> optional = getDraftWebService(event);
                 if (!optional.isPresent()) {
                     return;
                 }
+
                 WebServicePreferenceStore store = new WebServicePreferenceStore();
                 try {
                     store.removeDraftRequest(optional.get(), ProjectController.getInstance().getCurrentProject());
@@ -156,10 +158,20 @@ public class OpenWebServiceRequestObjectHandler {
                 .fromJson(JsonUtil.toJson(historyRequest.getRequest()), DraftWebServiceRequestEntity.class);
         draftWebServiceEntity.setDraftUid(historyRequest.getUid());
         try {
-            openDraftRequest(draftWebServiceEntity);
+            MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+            String partId = EntityPartUtil.getDraftRequestPartId(draftWebServiceEntity.getDraftUid());
+            if (stack != null) {
+                MPart mPart = (MPart) modelService.find(partId, application);
+                if (mPart == null) {
+                    WSRequestPartUI.create(draftWebServiceEntity, stack);
+                    Trackings.trackOpenDraftRequest(draftWebServiceEntity.getServiceType(), "history");
+                } else {
+                    stack.setSelectedElement(mPart);
+                }
+            }
+
             WebServicePreferenceStore store = new WebServicePreferenceStore();
             store.saveDraftRequest(draftWebServiceEntity, ProjectController.getInstance().getCurrentProject());
-            Trackings.trackOpenObject("webServiceHistoryRequest");
         } catch (IOException | CoreException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog("Unable to open request", e.getMessage(),
@@ -174,8 +186,6 @@ public class OpenWebServiceRequestObjectHandler {
             MPart mPart = (MPart) modelService.find(partId, application);
             if (mPart == null) {
                 WSRequestPartUI.create(draftRequest, stack);
-                
-                Trackings.trackOpenDraftRequest(draftRequest.getServiceType(), "history");
             } else {
                 stack.setSelectedElement(mPart);
             }

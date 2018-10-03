@@ -25,8 +25,19 @@ public class ToolbarProcessor {
     public static final String KATALON_TOOLITEM_NEW_ID = "com.kms.katalon.composer.toolbar.new";
 
     public static final String KATALON_MAIN_TOOLBAR_ID = "com.kms.katalon.composer.toolbar";
-    
+
+    public static final String KATALON_MAIN_GENERIC_TOOLBAR_ID = "com.kms.katalon.composer.toolbar.generic";
+
+    public static final String KATALON_MAIN_WEBSERVICE_TOOLBAR_ID = "com.kms.katalon.composer.toolbar.webservice";
+
     public static final String KATALON_EXECUTION_TOOLBAR_ID = "com.kms.katalon.composer.toolbar.execution";
+    
+    public static final String[] TOOLBAR_IDS = new String[] {
+            KATALON_MAIN_TOOLBAR_ID,
+            KATALON_MAIN_WEBSERVICE_TOOLBAR_ID,
+            KATALON_MAIN_GENERIC_TOOLBAR_ID,
+            KATALON_EXECUTION_TOOLBAR_ID
+    };
 
     private static final String INDEX_KEY = "index";
 
@@ -37,39 +48,41 @@ public class ToolbarProcessor {
 
     @Execute
     public void run(@Optional IEclipseContext context, MApplication app) {
-        MUIElement uiElement = modelService.find(KATALON_MAIN_TOOLBAR_ID, app);
-        if (uiElement == null) {
-            return;
-        }
-
-        EList<MToolBarElement> toolItems = (EList<MToolBarElement>) ((MToolBar) uiElement).getChildren();
-        ECollections.sort(toolItems, new CustomComparator(toolItems.size()));
-
-        // Initial disabled icon
-        toolItems.forEach(item -> {
-            String disabledIconURI = item.getPersistedState().get(IPresentationEngine.DISABLED_ICON_IMAGE_KEY);
-            if (disabledIconURI == null) {
+        for (String id : TOOLBAR_IDS) {
+            MUIElement uiElement = modelService.find(id, app);
+            if (uiElement == null) {
                 return;
             }
-            item.getTransientData().put(IPresentationEngine.DISABLED_ICON_IMAGE_KEY, disabledIconURI);
-            if (newToolItem == null && KATALON_TOOLITEM_NEW_ID.equals(item.getElementId())) {
-                newToolItem = (MHandledToolItem) item;
+
+            EList<MToolBarElement> toolItems = (EList<MToolBarElement>) ((MToolBar) uiElement).getChildren();
+            ECollections.sort(toolItems, new CustomComparator(toolItems.size()));
+
+            // Initial disabled icon
+            toolItems.forEach(item -> {
+                String disabledIconURI = item.getPersistedState().get(IPresentationEngine.DISABLED_ICON_IMAGE_KEY);
+                if (disabledIconURI == null) {
+                    return;
+                }
+                item.getTransientData().put(IPresentationEngine.DISABLED_ICON_IMAGE_KEY, disabledIconURI);
+                if (newToolItem == null && KATALON_TOOLITEM_NEW_ID.equals(item.getElementId())) {
+                    newToolItem = (MHandledToolItem) item;
+                }
+            });
+
+            if (newToolItem == null) {
+                return;
             }
-        });
 
-        if (newToolItem == null) {
-            return;
+            MMenu mMenu = newToolItem.getMenu();
+            if (mMenu == null) {
+                return;
+            }
+            EList<MMenuElement> menuItems = (EList<MMenuElement>) mMenu.getChildren();
+            ECollections.sort(menuItems, new CustomComparator(menuItems.size()));
+
+            // cache New tool item in eclipse context
+            context.set(KATALON_TOOLITEM_NEW_ID, newToolItem);
         }
-
-        MMenu mMenu = newToolItem.getMenu();
-        if (mMenu == null) {
-            return;
-        }
-        EList<MMenuElement> menuItems = (EList<MMenuElement>) mMenu.getChildren();
-        ECollections.sort(menuItems, new CustomComparator(menuItems.size()));
-
-        // cache New tool item in eclipse context
-        context.set(KATALON_TOOLITEM_NEW_ID, newToolItem);
     }
 
     private class CustomComparator implements Comparator<MUIElement> {

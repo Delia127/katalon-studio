@@ -1,9 +1,6 @@
 package com.kms.katalon.composer.webservice.view;
 
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -17,9 +14,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -104,8 +99,7 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
 	protected Composite createContentArea(Composite parent) {
 
         setDialogTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL);
-        setMessage(StringConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL, IMessageProvider.INFORMATION);
-        
+		
         // create a composite with standard margins and spacing
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -116,26 +110,12 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
         composite.setLayout(layout);
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
     	Label label = new Label(composite, SWT.NONE);
-    	label.setText("File location or URL: ");
+    	label.setText("URL : ");
         Text text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     	Composite methodComposite = new Composite(composite, SWT.NONE);
     	GridLayout glMethodComposite = new GridLayout();
         methodComposite.setLayout(glMethodComposite);
-        
-        Button button = new Button(methodComposite, SWT.PUSH);
-        button.setText(StringConstants.BROWSE);
-        button.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e) {
-            	FileDialog directoryDialog = new FileDialog(getParentShell());
-                String filePath = directoryDialog.open();          
-                text.setText(filePath);
-                directory = filePath;
-            }
-        });
-        
-        
         ModifyListener listener = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
               directory = ((Text) e.widget).getText();
