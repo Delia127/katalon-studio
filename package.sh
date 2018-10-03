@@ -2,7 +2,7 @@
 KATABUILD=/tmp/katabuild
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
-MAC_PRODUCT_Name="Katalon\ Studio"
+MAC_PRODUCT_NAME="Katalon\ Studio"
 
 WINDOWS_32_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_32.zip"
 WINDOWS_64_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_64.zip"
