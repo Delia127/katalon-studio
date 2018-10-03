@@ -78,9 +78,6 @@ public class CloneRemoteProjectHandler {
     
     private SampleRemoteProject sample;
 
-    private SampleRemoteProject sample;
-
-
     @Inject
     EPartService partService;
 
