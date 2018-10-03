@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -124,7 +125,7 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
     @Override
     protected void setInput() {
         try {
-            setMessage("Enter a Web Serivce Request name", IMessageProvider.INFORMATION);
+            setMessage("Enter a Web Service Request name", IMessageProvider.INFORMATION);
 
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
             parentFolder = FolderController.getInstance().getObjectRepositoryRoot(currentProject);
@@ -140,8 +141,10 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
             txtRequestMethod.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)
                     ? request.getRestRequestMethod() : request.getSoapRequestMethod());
 
-            txtUrl.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)
-                    ? request.getRestUrl() : request.getWsdlAddress());
+
+            String url = WebServiceRequestEntity.RESTFUL.equals(serviceType)
+                    ? request.getRestUrl() : request.getWsdlAddress();
+            txtUrl.setText(url.replace("&", "&&"));
 
             container.layout(true);
 
@@ -296,5 +299,11 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
     @Override
     public String getDialogTitle() {
         return "Save to Object Repository";
+    }
+    
+    @Override
+    protected Point getInitialSize() {
+        Point preferredSize = super.getInitialSize();
+        return new Point(Math.min(500, preferredSize.x), preferredSize.y);
     }
 }

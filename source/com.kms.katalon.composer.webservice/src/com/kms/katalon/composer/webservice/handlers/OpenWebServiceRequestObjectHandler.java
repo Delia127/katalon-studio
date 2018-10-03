@@ -52,14 +52,13 @@ public class OpenWebServiceRequestObjectHandler {
             @Override
             public void handleEvent(Event event) {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object.getClass() == WebServiceRequestEntity.class) {
+                if (object != null && WebServiceRequestEntity.class.isInstance(object)) {
                     openRequestObject((WebServiceRequestEntity) object);
                 }
             }
         });
-
+        
         eventBroker.subscribe(EventConstants.WORKSPACE_DRAFT_PART_CLOSED, new EventServiceAdapter() {
-
             @Override
             public void handleEvent(Event event) {
                 java.util.Optional<DraftWebServiceRequestEntity> optional = getDraftWebService(event);

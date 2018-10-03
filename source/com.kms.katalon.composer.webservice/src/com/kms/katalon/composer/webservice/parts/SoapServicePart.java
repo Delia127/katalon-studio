@@ -80,11 +80,11 @@ public class SoapServicePart extends WebServicePart {
     private static final String[] FILTER_NAMES = new String[] { "XML content files (*.xml, *.wsdl, *.txt)" };
 
     protected SoapResponseBodyEditorsComposite soapResponseBodyEditor;
-    
+
     private ProgressMonitorDialogWithThread progress;
 
     private CCombo ccbOperation;
-    
+
     protected SoapRequestMessageEditor requestBodyEditor;
 
     @Override
@@ -109,7 +109,6 @@ public class SoapServicePart extends WebServicePart {
         Label lblOperation = new Label(operationComposite, SWT.NONE);
         lblOperation.setText(StringConstants.PA_LBL_SERVICE_FUNCTION);
         GridData gdLblOperation = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-        gdLblOperation.widthHint = 102;
         lblOperation.setLayoutData(gdLblOperation);
 
         ccbOperation = new CCombo(operationComposite, SWT.BORDER | SWT.FLAT | SWT.READ_ONLY);
@@ -124,8 +123,7 @@ public class SoapServicePart extends WebServicePart {
 
         Button btnLoadFromWSDL = new Button(operationComposite, SWT.FLAT);
         btnLoadFromWSDL.setText(StringConstants.LBL_LOAD_FROM_WSDL);
-        GridData gdBtnLoadFromWSDL = new GridData(SWT.CENTER, SWT.FILL, false, false);
-        gdBtnLoadFromWSDL.widthHint = 100; // same width with send button
+        GridData gdBtnLoadFromWSDL = new GridData(SWT.LEFT, SWT.FILL, false, false);
         btnLoadFromWSDL.setLayoutData(gdBtnLoadFromWSDL);
         btnLoadFromWSDL.addSelectionListener(new SelectionAdapter() {
 
@@ -175,7 +173,7 @@ public class SoapServicePart extends WebServicePart {
             }
         });
     }
-    
+
     @Override
     protected void sendRequest(boolean runVerificationScript) {
         if (dirtyable.isDirty()) {
@@ -190,11 +188,11 @@ public class SoapServicePart extends WebServicePart {
         clearPreviousResponse();
 
         String requestURL = wsApiControl.getRequestURL().trim();
-//        if (isInvalidURL(requestURL)) {
-//            LoggerSingleton.logError("URL is invalid");
-//            MessageDialog.openError(null, StringConstants.ERROR, "URL is invalid");
-//            return;
-//        }
+        // if (isInvalidURL(requestURL)) {
+        // LoggerSingleton.logError("URL is invalid");
+        // MessageDialog.openError(null, StringConstants.ERROR, "URL is invalid");
+        // return;
+        // }
 
         if (ccbOperation.getText().isEmpty()) {
             LoggerSingleton.logError("Service Function is empty");
@@ -225,12 +223,12 @@ public class SoapServicePart extends WebServicePart {
                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
-                        
+
                         Map<String, String> evaluatedVariables = evaluateRequestVariables();
 
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
                                 projectDir, ProxyPreferences.getProxyInformation(),
-                                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
+                                Collections.<String, Object> unmodifiableMap(evaluatedVariables));
 
                         if (monitor.isCanceled()) {
                             return;
@@ -251,9 +249,10 @@ public class SoapServicePart extends WebServicePart {
                             executeVerificationScript(responseObject);
                         }
 
-                        RequestHistoryEntity requestHistoryEntity = new RequestHistoryEntity(
-                                new Date(), (WebServiceRequestEntity) getWSRequestObject().clone());
-                        eventBroker.post(EventConstants.WS_VERIFICATION_FINISHED, new Object[] { requestHistoryEntity });
+                        RequestHistoryEntity requestHistoryEntity = new RequestHistoryEntity(new Date(),
+                                (WebServiceRequestEntity) getWSRequestObject().clone());
+                        eventBroker.post(EventConstants.WS_VERIFICATION_FINISHED,
+                                new Object[] { requestHistoryEntity });
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
                     } finally {
@@ -271,8 +270,7 @@ public class SoapServicePart extends WebServicePart {
             MultiStatusErrorDialog.showErrorDialog(
                     ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST, target.getMessage(),
                     ExceptionsUtil.getStackTraceForThrowable(target));
-        } catch (InterruptedException ignored) {
-        }
+        } catch (InterruptedException ignored) {}
         displayResponseContentBasedOnSendingState(false);
     }
 
@@ -307,7 +305,6 @@ public class SoapServicePart extends WebServicePart {
         originalWsObject.setHttpHeaderProperties(httpHeaders);
 
         originalWsObject.setSoapBody(requestBodyEditor.getHttpBodyContent());
-        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(), originalWsObject.getSoapRequestMethod()));
     }
 
     @Override
@@ -327,8 +324,8 @@ public class SoapServicePart extends WebServicePart {
         populateOAuth1FromHeader();
         renderAuthenticationUI(ccbAuthType.getText());
 
-//        requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
-        requestBodyEditor.setInput((WebServiceRequestEntity)originalWsObject.clone());
+        // requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
+        requestBodyEditor.setInput((WebServiceRequestEntity) originalWsObject.clone());
         dirtyable.setDirty(false);
     }
 
@@ -413,6 +410,12 @@ public class SoapServicePart extends WebServicePart {
         }
 
         return null;
+    }
+
+    @Override
+    protected void updatePartImage() {
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
+                originalWsObject.getSoapRequestMethod()));
     }
 
 }

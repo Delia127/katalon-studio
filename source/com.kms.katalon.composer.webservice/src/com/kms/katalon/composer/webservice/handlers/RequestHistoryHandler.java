@@ -45,20 +45,12 @@ public class RequestHistoryHandler {
     @Inject
     MApplication application;
 
-    private WebServicePreferenceStore store;
+    private WebServicePreferenceStore store = new WebServicePreferenceStore();
 
     private IRequestHistoryListener listener;
 
     @PostConstruct
     public void initialEventListeners() {
-        eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, new EventServiceAdapter() {
-
-            @Override
-            public void handleEvent(Event event) {
-                store = new WebServicePreferenceStore();
-            }
-        });
-
         eventBroker.subscribe(EventConstants.WS_VERIFICATION_FINISHED, new EventServiceAdapter() {
 
             @Override
