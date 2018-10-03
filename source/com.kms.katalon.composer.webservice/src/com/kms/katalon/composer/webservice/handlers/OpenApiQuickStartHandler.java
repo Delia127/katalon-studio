@@ -29,50 +29,50 @@ public class OpenApiQuickStartHandler {
 
     @Inject
     private IEventBroker eventBroker;
-    
-    private FolderTreeEntity objectRepositoryTreeRoot;    
-    
+
+    private FolderTreeEntity objectRepositoryTreeRoot;
+
     @PostConstruct
     public void registerEventHandler() {
-        eventBroker.subscribe(EventConstants.API_QUICK_START_DIALOG_OPEN,
-                new EventServiceAdapter() {
+        eventBroker.subscribe(EventConstants.API_QUICK_START_DIALOG_OPEN, new EventServiceAdapter() {
 
-                    @Override
-                    public void handleEvent(Event event) {
-                    	execute(null);   
-                    }           
+            @Override
+            public void handleEvent(Event event) {
+                execute(null);
+            }
         });
-          
+
     }
-    
+
     @CanExecute
     public boolean canExecute() {
         return true;
     }
-    
+
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects) {
 
-		try {
-	    	ITreeEntity parentTreeEntity;
-			parentTreeEntity = findParentTreeEntity(selectedObjects);
+        try {
+            ITreeEntity parentTreeEntity;
+            parentTreeEntity = findParentTreeEntity(selectedObjects);
 
-	        if (parentTreeEntity == null) {
-	            if (objectRepositoryTreeRoot == null) {
-	                return;
-	            }
-	            parentTreeEntity = objectRepositoryTreeRoot;
-	        }
-	        
-	        ApiQuickStartDialog quickStartDialog = new ApiQuickStartDialog(parentTreeEntity, Display.getCurrent().getActiveShell());
-	        quickStartDialog.open();   
-	        
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
+            if (parentTreeEntity == null) {
+                if (objectRepositoryTreeRoot == null) {
+                    return;
+                }
+                parentTreeEntity = objectRepositoryTreeRoot;
+            }
+
+            ApiQuickStartDialog quickStartDialog = new ApiQuickStartDialog(parentTreeEntity,
+                    Display.getCurrent().getActiveShell());
+            quickStartDialog.open();
+
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
-    
-	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
+
+    public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
         if (selectedObjects != null) {
             for (Object entity : selectedObjects) {
                 if (entity instanceof ITreeEntity) {
@@ -90,24 +90,24 @@ public class OpenApiQuickStartHandler {
         }
         return null;
     }
-	
-	@Inject
+
+    @Inject
     @Optional
     private void catchTestDataFolderTreeEntitiesRoot(
             @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
         try {
-            for(Object o : treeEntities) {
+            for (Object o : treeEntities) {
                 Object entityObject = ((ITreeEntity) o).getObject();
                 if (entityObject instanceof FolderEntity) {
                     FolderEntity folder = (FolderEntity) entityObject;
                     if (folder.getFolderType() == FolderType.WEBELEMENT) {
-                    	objectRepositoryTreeRoot = (FolderTreeEntity) o;
+                        objectRepositoryTreeRoot = (FolderTreeEntity) o;
                         return;
                     }
                 }
             }
         } catch (Exception e) {
-        	LoggerSingleton.logError(e);
+            LoggerSingleton.logError(e);
         }
     }
 }

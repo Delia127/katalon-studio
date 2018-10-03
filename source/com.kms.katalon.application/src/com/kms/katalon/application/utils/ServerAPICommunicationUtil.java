@@ -27,7 +27,7 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
-    public static final String DEVELOPMENT_URL_API = "http://localhost:3000/api";
+    public static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
 
     private static final String PRODUCTION_URL_API = "https://update.katalon.com/api";
     
