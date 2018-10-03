@@ -60,6 +60,9 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.tracking.service.Trackings;
 
+import com.kms.katalon.tracking.service.Trackings;
+
+
 @SuppressWarnings("restriction")
 public class CloneRemoteProjectHandler {
     private static final int FETCH_TIMEOUT_IN_MILLIS = 15000;
@@ -74,6 +77,9 @@ public class CloneRemoteProjectHandler {
     private ProjectType projectType;
     
     private SampleRemoteProject sample;
+
+    private SampleRemoteProject sample;
+
 
     @Inject
     EPartService partService;

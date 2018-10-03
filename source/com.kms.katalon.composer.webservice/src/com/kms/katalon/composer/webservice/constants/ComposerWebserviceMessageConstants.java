@@ -69,7 +69,11 @@ public class ComposerWebserviceMessageConstants extends NLS {
     
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
     
+    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
+    
     public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ_WSDL;
+    
+    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
     
     public static String VIEW_MENU_CONTEXT_INSERT_PROP;
 
@@ -213,8 +217,14 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String QUICKSTART_NEW_REST_REQUEST;
     
     public static String QUICKSTART_NEW_SOAP_REQUEST;
-    
+
     public static String QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL;
+
+    public static String QUICKSTART_IMPORT_SWAGGER_FROM_FILE;
+    
+    public static String QUICKSTART_IMPORT_SWAGGER_FROM_URL;
+    
+    public static String QUICKSTART_IMPORT_WSDL_FROM_FILE;
 
     public static String QUICKSTART_IMPORT_WSDL_FROM_URL;
     
