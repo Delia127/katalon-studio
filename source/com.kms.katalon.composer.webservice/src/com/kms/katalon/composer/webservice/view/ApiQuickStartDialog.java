@@ -72,13 +72,13 @@ public class ApiQuickStartDialog extends Dialog {
 
     private Composite createNewRestRequestItem(Composite parent) {
         Composite item = createQuickStartItem(parent, ImageConstants.WS_NEW_REST_REQUEST_64,
-                StringConstants.QUICKSTART_NEW_REST_REQUEST, e -> createNewRestRequest());
+                StringConstants.QUICKSTART_NEW_DRAFT_REST_REQUEST, e -> createNewRestRequest());
         return item;
     }
 
     private Composite createNewSoapRequestItem(Composite parent) {
         Composite item = createQuickStartItem(parent, ImageConstants.WS_NEW_SOAP_REQUEST_64,
-                StringConstants.QUICKSTART_NEW_SOAP_REQUEST, e -> createNewSoapRequest());
+                StringConstants.QUICKSTART_NEW_DRAFT_SOAP_REQUEST, e -> createNewSoapRequest());
         return item;
     }
 

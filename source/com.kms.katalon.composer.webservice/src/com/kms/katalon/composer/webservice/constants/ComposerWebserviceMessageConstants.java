@@ -214,9 +214,9 @@ public class ComposerWebserviceMessageConstants extends NLS {
     
     public static String TITLE_QUICKSTART;
     
-    public static String QUICKSTART_NEW_REST_REQUEST;
+    public static String QUICKSTART_NEW_DRAFT_REST_REQUEST;
     
-    public static String QUICKSTART_NEW_SOAP_REQUEST;
+    public static String QUICKSTART_NEW_DRAFT_SOAP_REQUEST;
     
     public static String QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL;
     

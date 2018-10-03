@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.MarshalException;
 
@@ -541,8 +542,12 @@ public class NewProjectDialog extends TitleAreaDialog {
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
             Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID());
     
-            // Open created project
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            
+            TimeUnit.SECONDS.sleep(1);
+            if (getSelectedProjectType() == ProjectType.WEBSERVICE) {
+                eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -566,11 +571,11 @@ public class NewProjectDialog extends TitleAreaDialog {
             
             Trackings.trackCreatingProject();
     
-            // Open created project
+            eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            
+            TimeUnit.SECONDS.sleep(1);
             if (getSelectedProjectType() == ProjectType.WEBSERVICE) {
-                eventBroker.send(EventConstants.NEW_WS_PROJECT_OPEN, newProject.getId());
-            } else {
-                eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+                eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
             }
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
