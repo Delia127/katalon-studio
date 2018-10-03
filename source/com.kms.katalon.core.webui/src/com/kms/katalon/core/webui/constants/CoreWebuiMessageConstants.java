@@ -181,7 +181,9 @@ public class CoreWebuiMessageConstants extends NLS {
     
     public static String KW_LOG_INFO_USING_HEURISTIC_METHOD;
     
-    public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_AUTO_APPLYING_NEIGHBOR_XPATHS;
+    public static String KW_LOG_INFO_FOUND_WEB_ELEMENT_AUTO_APPLYING_NEIGHBOR_XPATHS;
+    
+    public static String KW_LOG_INFO_NOT_FOUND_WEB_ELEMENT_AUTO_APPLYING_NEIGHBOR_XPATHS;
     
     public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD;
     

@@ -754,15 +754,15 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
-                        
-            // If this code is reached, then it's definitely a WebElementNotFoundException
+
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-            List<WebElement> tryAutoApplyNeighborXpaths = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, useAllNeighbors);
             
+            // If auto applying neighbor XPaths is disabled, no need to go further
             if(useAllNeighbors == false){
                 throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
             }
-            
+
+            List<WebElement> tryAutoApplyNeighborXpaths = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, useAllNeighbors);           
             if(tryAutoApplyNeighborXpaths!= null && tryAutoApplyNeighborXpaths.size() > 0) {
                 return tryAutoApplyNeighborXpaths;
             }
@@ -811,15 +811,20 @@ public class WebUiCommonHelper extends KeywordHelper {
     	if(workingNeighborXpath.isPresent()){
     		String xpath = workingNeighborXpath.get();
     		By byXpath =  By.xpath(xpath);
-    		webElements = webDriver.findElements(byXpath);
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_AUTO_APPLYING_NEIGHBOR_XPATHS, 
-            		testObject.getObjectId(), xpath));
+    		List<WebElement> neighborXpathsElements = webDriver.findElements(byXpath);
+    		if(neighborXpathsElements != null && neighborXpathsElements.size() > 0){
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_AUTO_APPLYING_NEIGHBOR_XPATHS, 
+                		testObject.getObjectId(), xpath));
+                webElements = neighborXpathsElements;
+    		} else {
+    			logger.logInfo(StringConstants.KW_LOG_INFO_NOT_FOUND_WEB_ELEMENT_AUTO_APPLYING_NEIGHBOR_XPATHS);
+    		}
     	}
     	
     	if(useAllNeighbors == false){
-            logger.logInfo(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_AUTO_APPLYING_NEIGHBOR_XPATHS);
-            
+            logger.logInfo(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_AUTO_APPLYING_NEIGHBOR_XPATHS);            
     	}
+    	
     	return webElements;
     }
 
