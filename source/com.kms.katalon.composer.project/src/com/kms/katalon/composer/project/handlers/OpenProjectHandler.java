@@ -113,7 +113,17 @@ public class OpenProjectHandler {
             InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
     }
-
+    
+    @Inject
+    @Optional
+    private void openNewWsProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+            @UIEventTopic(EventConstants.NEW_WS_PROJECT_OPEN) final String projectPk) throws InvocationTargetException,
+            InterruptedException {
+        doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
+        TimeUnit.SECONDS.sleep(1);
+        eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
+    }
+    
     @Inject
     @Optional
     private void restoreOpenProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
@@ -166,7 +176,6 @@ public class OpenProjectHandler {
 
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
-                    
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {

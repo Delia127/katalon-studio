@@ -48,7 +48,6 @@ import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
-import com.kms.katalon.composer.project.handlers.OpenProjectHandler;
 import com.kms.katalon.composer.project.sample.SampleLocalProject;
 import com.kms.katalon.composer.project.sample.SampleProject;
 import com.kms.katalon.composer.project.sample.SampleProjectType;
@@ -148,17 +147,6 @@ public class NewProjectDialog extends TitleAreaDialog {
         projectTypeComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         projectTypeComposite.setLayout(new GridLayout(3, false));
 
-        rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
-        GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
-        rbWebServiceProjectType.setText(StringConstants.VIEW_OPTION_WEB_SERVICE_PROJECT);
-        rbWebServiceProjectType.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                populateWebServiceProjects();
-            }
-        });
-        
         rbGenericProjectType = new Button(projectTypeComposite, SWT.RADIO);
         GridData gdGenericProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         rbGenericProjectType.setLayoutData(gdGenericProjectType);
@@ -169,6 +157,17 @@ public class NewProjectDialog extends TitleAreaDialog {
                 populateGenericProjects();
             }
         });
+        
+        rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
+        GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
+        rbWebServiceProjectType.setText(StringConstants.VIEW_OPTION_WEB_SERVICE_PROJECT);
+        rbWebServiceProjectType.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                populateWebServiceProjects();
+            }
+        });               
         
         new HelpCompositeForDialog(projectTypeComposite, DocumentationMessageConstants.MANAGE_TEST_PROJECT) {
             @Override
@@ -568,7 +567,11 @@ public class NewProjectDialog extends TitleAreaDialog {
             Trackings.trackCreatingProject();
     
             // Open created project
-            eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            if (getSelectedProjectType() == ProjectType.WEBSERVICE) {
+                eventBroker.send(EventConstants.NEW_WS_PROJECT_OPEN, newProject.getId());
+            } else {
+                eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            }
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     ex.getMessage());

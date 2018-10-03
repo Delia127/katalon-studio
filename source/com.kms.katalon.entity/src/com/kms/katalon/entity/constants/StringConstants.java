@@ -42,4 +42,6 @@ public class StringConstants extends GlobalStringConstants {
 
 	// WrongEntityVersionException
 	public static final String EXC_WRONG_ENTITY_VER = EntityMessageConstants.EXC_WRONG_ENTITY_VER;
+	
+	public static final String DEFAULT_WEB_SERVICE_NAME = EntityMessageConstants.DEFAULT_WEB_SERVICE_NAME;
 }
