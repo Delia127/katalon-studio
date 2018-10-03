@@ -174,6 +174,8 @@ public class OpenWebServiceRequestObjectHandler {
             MPart mPart = (MPart) modelService.find(partId, application);
             if (mPart == null) {
                 WSRequestPartUI.create(draftRequest, stack);
+                
+                Trackings.trackOpenDraftRequest(draftRequest.getServiceType(), "history");
             } else {
                 stack.setSelectedElement(mPart);
             }

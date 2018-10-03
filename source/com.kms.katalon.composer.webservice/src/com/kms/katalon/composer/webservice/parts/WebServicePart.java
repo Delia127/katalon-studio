@@ -176,7 +176,6 @@ import com.kms.katalon.core.webservice.common.ScriptSnippet;
 import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -478,7 +477,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected void createAPIControls(Composite parent) {
         String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
-        wsApiControl = new WebServiceAPIControl(parent, isSOAP(), endPoint);
+        wsApiControl = new WebServiceAPIControl(parent, isSOAP(), isDraft(), endPoint);
         wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -534,48 +533,61 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             }
         });
 
-        wsApiControl.addAddRequestToTestCaseSelectionListener(new DropdownToolItemSelectionListener() {
-
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                if (event.detail == SWT.ARROW) {
-                    showDropdown(event);
+        if (!isDraft()) {
+            wsApiControl.addAddRequestToTestCaseSelectionListener(new DropdownToolItemSelectionListener() {
+    
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    if (event.detail == SWT.ARROW) {
+                        showDropdown(event);
+                    } else {
+                        Trackings.trackClickAddingRequestToTestCase(true);
+                        try {
+                            addSendRequestStatementToNewTestCase();
+                        } catch (Exception e) {
+                            LoggerSingleton.logError(e);
+                            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                                    StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+                        }
+                    }
                 }
-            }
-
-            @Override
-            protected Menu getMenu() {
-                return wsApiControl.getAddRequestToTestCaseMenu();
-            }
-        });
-
-        wsApiControl.addAddRequestToNewTestCaseSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                try {
-                    addSendRequestStatementToNewTestCase();
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                            StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+    
+                @Override
+                protected Menu getMenu() {
+                    return wsApiControl.getAddRequestToTestCaseMenu();
                 }
-            }
-        });
-
-        wsApiControl.addAddRequestToExistingTestCaseSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                try {
-                    addSendRequestStatementToExistingTestCase();
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                            StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+            });
+    
+            wsApiControl.addAddRequestToNewTestCaseSelectionListener(new SelectionAdapter() {
+    
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    Trackings.trackClickAddingRequestToTestCase(true);
+                    try {
+                        addSendRequestStatementToNewTestCase();
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                                StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+                    }
                 }
-            }
-        });
+            });
+    
+            wsApiControl.addAddRequestToExistingTestCaseSelectionListener(new SelectionAdapter() {
+    
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    Trackings.trackClickAddingRequestToTestCase(false);
+                    try {
+                        addSendRequestStatementToExistingTestCase();
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                                StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+                    }
+                }
+            });
+        }
     }
 
     private void addSendRequestStatementToNewTestCase() throws Exception {
@@ -592,6 +604,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         if (testCaseEntity != null) {
             addSendRequestStatementToTestCase(testCaseEntity);
         }
+        
+        Trackings.trackAddRequestToTestCase(true);
     }
 
     private void addSendRequestStatementToExistingTestCase() throws Exception {
@@ -600,6 +614,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             eventBroker.send(EventConstants.TESTCASE_OPEN, selectedTestCaseEntity);
             addSendRequestStatementToTestCase(selectedTestCaseEntity);
         }
+        
+        Trackings.trackAddRequestToTestCase(false);
     }
 
     private TestCaseEntity selectTestCase() throws Exception {

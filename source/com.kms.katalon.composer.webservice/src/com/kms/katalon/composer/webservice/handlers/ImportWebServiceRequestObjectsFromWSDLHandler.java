@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.webservice.handlers;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -27,7 +30,6 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromSwaggerDialog;
 import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromWSDLDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
@@ -39,6 +41,7 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.util.Util;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ImportWebServiceRequestObjectsFromWSDLHandler {
 
@@ -112,6 +115,9 @@ public class ImportWebServiceRequestObjectsFromWSDLHandler {
                         }
                 	}
             	}
+            	
+            	trackImportWSDL(dialog.getWSDLSpecLocation());
+            	
                 eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
             }
@@ -123,6 +129,16 @@ public class ImportWebServiceRequestObjectsFromWSDLHandler {
         }
     }
 	
+
+    private void trackImportWSDL(String wsdlSpecLocation) {
+        try {
+            Paths.get(wsdlSpecLocation);
+            Trackings.trackImportWSDL("file");
+        } catch (Throwable t) {
+            Trackings.trackImportWSDL("url");
+        }
+    }
+    
 	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
         if (selectedObjects != null) {
             for (Object entity : selectedObjects) {

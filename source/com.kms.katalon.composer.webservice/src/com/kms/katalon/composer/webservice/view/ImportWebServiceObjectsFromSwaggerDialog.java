@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -17,7 +16,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -26,9 +24,9 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.parser.SwaggerParserUtil;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDialog {
 
@@ -38,6 +36,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     
     public ImportWebServiceObjectsFromSwaggerDialog(Shell parentShell, FolderEntity parentFolder) {
         super(parentShell);
+        Trackings.trackOpenImportingSwagger();
     	this.parentFolder = parentFolder;
     }
     
@@ -53,7 +52,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     protected void okPressed() {
     	boolean closeTheDialog = true;
     	try{
-        	createWebServiceRequestEntities();            
+        	createWebServiceRequestEntities();
     	} catch(Exception e){
     		closeTheDialog = false;
     		setMessage(StringConstants.EXC_INVALID_SWAGGER_FILE, IMessageProvider.ERROR);
@@ -64,7 +63,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     	}
     }
 
-	@Override
+    @Override
 	protected boolean isResizable() {
 	    return false;
 	}
@@ -149,5 +148,9 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     	final Point size = super.getInitialSize();
         size.x = convertWidthInCharsToPixels(75);
         return size;
+    }
+    
+    public String getSwaggerSpecLocation() {
+        return directory;
     }
 }
