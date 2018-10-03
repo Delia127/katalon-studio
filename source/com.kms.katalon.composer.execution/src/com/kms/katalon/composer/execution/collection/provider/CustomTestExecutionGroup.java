@@ -28,7 +28,7 @@ public class CustomTestExecutionGroup implements TestExecutionGroup {
 
     @Override
     public int preferredOrder() {
-        return 3;
+        return 4;
     }
 
     @Override
