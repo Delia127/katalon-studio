@@ -103,6 +103,8 @@ public class NewProjectDialog extends TitleAreaDialog {
     private Button rbWebServiceProjectType;
     
     private Button rbGenericProjectType;
+    
+    private boolean okButtonClicked = false;
 
     public NewProjectDialog(Shell parentShell) {
         this(parentShell, (SampleRemoteProject) null);
@@ -320,6 +322,7 @@ public class NewProjectDialog extends TitleAreaDialog {
                 checkInput();
             }
         });
+        
         if (Platform.getOS().equals(Platform.OS_MACOSX)) {
             txtProjectName.addKeyListener(new KeyAdapter() {
                 @Override
@@ -459,6 +462,9 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     private void checkInput() {
+        if (okButtonClicked) {
+            return;
+        }
         setErrorMessage(null);
         getButton(Dialog.OK).setEnabled(
                 validateProjectFolderLocation() && validateProjectName() && validateProjectNameDuplication());
@@ -466,6 +472,8 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     @Override
     protected void okPressed() {
+        okButtonClicked = true;
+        
         name = txtProjectName.getText();
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
