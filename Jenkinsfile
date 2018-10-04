@@ -1,8 +1,4 @@
 node {
-    lock(resource: "lock_${env.NODE_NAME}_${env.BRANCH_NAME}", inversePrecedence: true) {
-	      milestone 1
-	      sh "fastlane build_release"
-     }
     stage('Check out') {
 	    retry(3){
         	checkout scm
