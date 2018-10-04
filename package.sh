@@ -61,7 +61,7 @@ DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
 BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}" # JOB_BASE_NAME
 
 if [ ! -d "${BRANCH_FOLDER}" ]; then
-  mkdir -p "${BRANCH_FOLDER}"
+  sudo mkdir -p $BRANCH_FOLDER
 fi
 
 sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
