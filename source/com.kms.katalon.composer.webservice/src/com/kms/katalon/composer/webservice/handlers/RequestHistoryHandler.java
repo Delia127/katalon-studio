@@ -45,6 +45,8 @@ public class RequestHistoryHandler {
 
     @Inject
     MApplication application;
+    
+    private RequestHistoryEntity lastestRequest;;
 
     private WebServicePreferenceStore store = new WebServicePreferenceStore();
 
@@ -122,7 +124,11 @@ public class RequestHistoryHandler {
     }
 
     public void addRequestHistory(RequestHistoryEntity requestHistory, ProjectEntity project) throws IOException {
+        if (lastestRequest != null && lastestRequest.getRequest().equals(requestHistory.getRequest())) {
+            store.removeRequestHistory(lastestRequest, project);
+        }
         store.addRequestHistory(requestHistory, project);
+        lastestRequest = requestHistory;
     }
 
     public IRequestHistoryListener getListener() {
