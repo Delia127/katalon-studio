@@ -103,8 +103,8 @@ public class SwaggerParserUtil {
 											break;
 										case IN_PATH:
 											VariableEntity variable = new VariableEntity();
-											variable.setName(name);								
-											variable.setDefaultValue(pattern);
+											variable.setName(name);											
+											variable.setDefaultValue("''");
 											parametersInPath.add(variable);
 											break;
 										case IN_BODY:

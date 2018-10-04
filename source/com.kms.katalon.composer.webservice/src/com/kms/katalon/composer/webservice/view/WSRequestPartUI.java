@@ -302,6 +302,9 @@ public class WSRequestPartUI {
 
     private void calculateLeftPartsWeight() {
         WSRequestChildPart apiControlsPartObject = (WSRequestChildPart) apiControlsPart.getObject();
+        if (apiControlsPartObject == null) {
+            return;
+        }
         Point apiControlsCompositeSize = apiControlsPartObject.getComposite().getChildren()[0].computeSize(SWT.DEFAULT,
                 SWT.DEFAULT);
 

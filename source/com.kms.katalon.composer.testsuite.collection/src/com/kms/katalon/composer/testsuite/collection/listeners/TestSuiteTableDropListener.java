@@ -19,6 +19,7 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransferData;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
@@ -147,7 +148,8 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
         try {
             TestSuiteEntity testSuiteEntity = TestSuiteController.getInstance().getTestSuite(testSuite.getId());
             TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration.newInstance(testSuiteEntity,
-                    TestExecutionGroupCollector.getInstance().getDefaultConfiguration());
+                    TestExecutionGroupCollector.getInstance().getDefaultConfiguration(
+                            ProjectController.getInstance().getCurrentProject()));
             insertTestSuiteRunConfiguration(newTestSuiteRunConfig, index);
             addedTestSuiteRunConfiguration.add(newTestSuiteRunConfig);
         } catch (Exception e) {

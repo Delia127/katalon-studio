@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Web Service Execution
+Bundle-SymbolicName: com.kms.katalon.execution.webservice;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.kms.katalon.execution,
+ com.kms.katalon.entity
+Export-Package: com.kms.katalon.execution.webservice.contribution

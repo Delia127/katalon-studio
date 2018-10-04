@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.MarshalException;
 
@@ -103,6 +104,8 @@ public class NewProjectDialog extends TitleAreaDialog {
     private Button rbWebServiceProjectType;
     
     private Button rbGenericProjectType;
+    
+    private boolean okButtonClicked = false;
 
     public NewProjectDialog(Shell parentShell) {
         this(parentShell, (SampleRemoteProject) null);
@@ -320,6 +323,7 @@ public class NewProjectDialog extends TitleAreaDialog {
                 checkInput();
             }
         });
+        
         if (Platform.getOS().equals(Platform.OS_MACOSX)) {
             txtProjectName.addKeyListener(new KeyAdapter() {
                 @Override
@@ -459,6 +463,9 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     private void checkInput() {
+        if (okButtonClicked) {
+            return;
+        }
         setErrorMessage(null);
         getButton(Dialog.OK).setEnabled(
                 validateProjectFolderLocation() && validateProjectName() && validateProjectNameDuplication());
@@ -466,6 +473,8 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     @Override
     protected void okPressed() {
+        okButtonClicked = true;
+        
         name = txtProjectName.getText();
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
@@ -541,8 +550,12 @@ public class NewProjectDialog extends TitleAreaDialog {
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
             Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID());
     
-            // Open created project
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            
+            TimeUnit.SECONDS.sleep(1);
+            if (getSelectedProjectType() == ProjectType.WEBSERVICE) {
+                eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -566,11 +579,11 @@ public class NewProjectDialog extends TitleAreaDialog {
             
             Trackings.trackCreatingProject();
     
-            // Open created project
+            eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            
+            TimeUnit.SECONDS.sleep(1);
             if (getSelectedProjectType() == ProjectType.WEBSERVICE) {
-                eventBroker.send(EventConstants.NEW_WS_PROJECT_OPEN, newProject.getId());
-            } else {
-                eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+                eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
             }
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,

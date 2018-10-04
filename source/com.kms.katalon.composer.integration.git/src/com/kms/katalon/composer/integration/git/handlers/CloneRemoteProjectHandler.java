@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -75,8 +76,6 @@ public class CloneRemoteProjectHandler {
     private File destinationFolder = null;
     
     private ProjectType projectType;
-    
-    private SampleRemoteProject sample;
 
     @Inject
     EPartService partService;
@@ -213,6 +212,11 @@ public class CloneRemoteProjectHandler {
                     PartServiceSingleton.getInstance().getPartService(),
                     ModelServiceSingleton.getInstance().getModelService(),
                     ApplicationSingleton.getInstance().getApplication());
+            
+            TimeUnit.SECONDS.sleep(1);
+            if (projectType == ProjectType.WEBSERVICE) {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), GitStringConstants.ERROR,

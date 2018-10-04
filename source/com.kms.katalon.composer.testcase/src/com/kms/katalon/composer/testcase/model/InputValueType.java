@@ -37,7 +37,6 @@ public enum InputValueType implements InputValueEditorProvider {
     String,
     Number,
     Boolean,
-    Null,
     Variable,
     MethodCall,
     List,
@@ -67,9 +66,6 @@ public enum InputValueType implements InputValueEditorProvider {
     }
 
     public boolean isEditable(Object astObject) {
-        if (this == Null) {
-            return false;
-        }
         return true;
     }
 
@@ -149,8 +145,6 @@ public enum InputValueType implements InputValueEditorProvider {
                 return new ConstantExpressionWrapper(0, parent);
             case Boolean:
                 return new ConstantExpressionWrapper(true, parent);
-            case Null:
-                return new ConstantExpressionWrapper(parent);
             case Binary:
                 return new BinaryExpressionWrapper(parent);
             case Variable:
@@ -276,8 +270,6 @@ public enum InputValueType implements InputValueEditorProvider {
             case Condition:
             case Boolean:
                 return isClassAssignable(java.lang.Boolean.class, paramType);
-            case Null:
-                return !paramType.isPrimitive() && isClassAssignable(java.lang.Boolean.class, paramType);
             case Class:
                 return isClassAssignable(Type.class, paramType);
             case List:
