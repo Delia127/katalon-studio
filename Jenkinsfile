@@ -24,8 +24,8 @@ node {
 		    cd source
 		    /usr/local/bin/mvn clean verify -Pstag
 	        '''
-    	}       
-*/    }
+*/    	}       
+    }
     stage('Package') {
         sh '''
             sudo ./package.sh ${JOB_BASE_NAME}
