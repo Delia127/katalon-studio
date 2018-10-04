@@ -58,7 +58,7 @@ echo "Process MacOS package ... Done"
 # Distribute packages to shared folder
 mkdir -p ${HOME}/Public/KatalonStudio/
 DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
-BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}" # JOB_BASE_NAME
+BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${JOB_BASE_NAME}" # JOB_BASE_NAME
 
 if [ ! -d "${BRANCH_FOLDER}" ]; then
   sudo mkdir -p $BRANCH_FOLDER
