@@ -176,9 +176,6 @@ public class OpenProjectHandler {
 
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
-                    
-                    
-                    
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {
