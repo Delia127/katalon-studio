@@ -57,14 +57,16 @@ public class OpenWebServiceRequestObjectHandler {
                 }
             }
         });
-        
+
         eventBroker.subscribe(EventConstants.WORKSPACE_DRAFT_PART_CLOSED, new EventServiceAdapter() {
+
             @Override
             public void handleEvent(Event event) {
                 java.util.Optional<DraftWebServiceRequestEntity> optional = getDraftWebService(event);
                 if (!optional.isPresent()) {
                     return;
                 }
+
                 WebServicePreferenceStore store = new WebServicePreferenceStore();
                 try {
                     store.removeDraftRequest(optional.get(), ProjectController.getInstance().getCurrentProject());
@@ -157,6 +159,7 @@ public class OpenWebServiceRequestObjectHandler {
         draftWebServiceEntity.setDraftUid(historyRequest.getUid());
         try {
             openDraftRequest(draftWebServiceEntity);
+
             WebServicePreferenceStore store = new WebServicePreferenceStore();
             store.saveDraftRequest(draftWebServiceEntity, ProjectController.getInstance().getCurrentProject());
             Trackings.trackOpenObject("webServiceHistoryRequest");

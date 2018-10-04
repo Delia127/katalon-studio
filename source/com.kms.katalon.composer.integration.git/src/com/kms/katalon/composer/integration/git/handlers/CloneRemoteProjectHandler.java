@@ -58,6 +58,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.tracking.service.Trackings;
 
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -74,9 +75,8 @@ public class CloneRemoteProjectHandler {
     private File destinationFolder = null;
     
     private ProjectType projectType;
-
+    
     private SampleRemoteProject sample;
-
 
     @Inject
     EPartService partService;

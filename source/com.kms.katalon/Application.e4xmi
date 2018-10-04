@@ -156,6 +156,12 @@
           <menu xmi:id="_x0pbMNujEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.new.menu" label=""/>
         </children>
       </children>
+      <children xsi:type="menu:ToolBar" xmi:id="_echTUMCSEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.toolbar.generic" toBeRendered="false" visible="false">
+        <tags>NoMove</tags>
+      </children>
+      <children xsi:type="menu:ToolBar" xmi:id="_nf1kYMCGEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.toolbar.webservice" toBeRendered="false" visible="false">
+        <tags>NoMove</tags>
+      </children>
       <children xsi:type="menu:ToolControl" xmi:id="_1-cu4OJUEeSyVPtKyNklew" elementId="PerspectiveSpacer" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.LayoutModifierToolControl">
         <tags>stretch</tags>
       </children>
