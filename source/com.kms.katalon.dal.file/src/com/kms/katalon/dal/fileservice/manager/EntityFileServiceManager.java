@@ -119,7 +119,8 @@ public class EntityFileServiceManager {
                 if (currentProject == null) return;
                 String projectFolderLocation = currentProject.getFolderLocation();
 
-                if (!parentFolderLocation.toLowerCase().startsWith(projectFolderLocation.toLowerCase())) return;
+                if (!parentFolderLocation.toLowerCase().equalsIgnoreCase(projectFolderLocation.toLowerCase()) &&
+                    !parentFolderLocation.toLowerCase().startsWith(projectFolderLocation.toLowerCase() + File.separator)) return;
 
                 if (projectFolderLocation.equalsIgnoreCase(parentFolderLocation) && entity instanceof FolderEntity) {
                     String fileName = localFile.getName();

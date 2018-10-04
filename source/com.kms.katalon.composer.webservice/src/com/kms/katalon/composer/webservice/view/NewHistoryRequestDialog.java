@@ -136,7 +136,9 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
 
             WebServiceRequestEntity request = requestHistory.getRequest();
             String serviceType = request.getServiceType();
-            txtRequestType.setText(serviceType);
+            // Fix KAT-3704
+            txtRequestType.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)
+                   ? WebServiceRequestEntity.REST : serviceType);
 
             txtRequestMethod.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)
                     ? request.getRestRequestMethod() : request.getSoapRequestMethod());
@@ -256,6 +258,7 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
     protected void okPressed() {
         result = new NewHistoryRequestResult();
         result.name = txtName.getText();
+        result.description = txtDescription.getText();
         result.parentFolder = parentFolder;
         super.okPressed();
     }
