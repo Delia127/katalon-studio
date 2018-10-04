@@ -22,7 +22,10 @@ public interface TestExecutionConfigurationProvider extends TestExecutionItem {
     CellEditor getRunConfigurationDataCellEditor(Composite parent);
     
     Map<String, String> changeRunConfigurationData(Shell shell, Map<String, String> runConfigurationData);
-    
+
+    /**
+     * Displayed data in Run With column of Test Suite Collection
+     */
     String displayRunConfigurationData(Map<String, String> runConfigurationData);
     
     /**

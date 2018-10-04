@@ -61,9 +61,8 @@ public class OpenWebServiceRequestObjectHandler {
                 }
             }
         });
-
+        
         eventBroker.subscribe(EventConstants.WORKSPACE_DRAFT_PART_CLOSED, new EventServiceAdapter() {
-
             @Override
             public void handleEvent(Event event) {
                 java.util.Optional<DraftWebServiceRequestEntity> optional = getDraftWebService(event);

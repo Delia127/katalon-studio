@@ -33,6 +33,9 @@ import com.kms.katalon.composer.report.provider.ReportActionColumnLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportCollectionTableLabelProvider;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 
@@ -124,6 +127,13 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+        
+        //KAT-3580: hide "Environment" column for API projects
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject.getType() == ProjectType.WEBSERVICE) {
+            tblclmnEnvironment.setWidth(0);
+            tblclmnEnvironment.setResizable(false);
+        }
     }
 
     @Override
