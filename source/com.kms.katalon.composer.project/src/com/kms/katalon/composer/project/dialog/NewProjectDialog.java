@@ -71,13 +71,13 @@ public class NewProjectDialog extends TitleAreaDialog {
     private static final int PROJECT_DESC_TEXT_LEFT_MARGIN = 3;
 
     private static final int PROJECT_DESC_DISPLAY_LINE_NUMBER = 4;
-    
+
     private static final String BLANK_PROJECT = StringConstants.BLANK_PROJECT;
-    
+
     private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
     private List<SampleProject> sampleProjects = new ArrayList<>();
-    
+
     private Text txtProjectName;
 
     private Text txtProjectLocation;
@@ -87,27 +87,27 @@ public class NewProjectDialog extends TitleAreaDialog {
     private String name, loc, desc;
 
     private ProjectEntity project;
-    
+
     private SampleProject initialSampleProject;
 
     private boolean showError;
 
     private Button btnFolderChooser;
-    
+
     private String title;
-    
+
     private Combo cbProjects;
-    
+
     private Text txtRepoUrl;
-    
+
     private Button rbWebServiceProjectType;
-    
+
     private Button rbGenericProjectType;
 
     public NewProjectDialog(Shell parentShell) {
         this(parentShell, (SampleRemoteProject) null);
     }
-    
+
     public NewProjectDialog(Shell parentShell, SampleProject sampleProject) {
         super(parentShell);
         this.title = StringConstants.VIEW_TITLE_NEW_PROJ;
@@ -119,11 +119,11 @@ public class NewProjectDialog extends TitleAreaDialog {
         this.project = project;
         this.title = StringConstants.VIEW_TITLE_PROJECT_PROPERTIES;
     }
-    
+
     @Override
     protected Control createDialogArea(Composite parent) {
         initSampleProjects();
-        
+
         Composite area = (Composite) super.createDialogArea(parent);
 
         getShell().setText(title);
@@ -139,10 +139,10 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         txtProjectName = new Text(container, SWT.BORDER);
         txtProjectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        
+
         Label lblProjectType = new Label(container, SWT.NONE);
         lblProjectType.setText("Type");
-        
+
         Composite projectTypeComposite = new Composite(container, SWT.NONE);
         projectTypeComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         projectTypeComposite.setLayout(new GridLayout(3, false));
@@ -157,7 +157,7 @@ public class NewProjectDialog extends TitleAreaDialog {
                 populateGenericProjects();
             }
         });
-        
+
         rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
         GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
@@ -167,14 +167,13 @@ public class NewProjectDialog extends TitleAreaDialog {
             public void widgetSelected(SelectionEvent e) {
                 populateWebServiceProjects();
             }
-        });               
-        
+        });
+
         new HelpCompositeForDialog(projectTypeComposite, DocumentationMessageConstants.MANAGE_TEST_PROJECT) {
             @Override
             protected GridData createGridData() {
                 return new GridData(SWT.RIGHT, SWT.CENTER, true, false);
             }
-            
 
             @Override
             protected GridLayout createLayout() {
@@ -185,20 +184,20 @@ public class NewProjectDialog extends TitleAreaDialog {
                 return layout;
             }
         };
-        
+
         Label lblProject = new Label(container, SWT.NONE);
         lblProject.setText(StringConstants.VIEW_LBL_PROJECT);
-        
+
         cbProjects = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
         cbProjects.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        
+
         Label lblRepoUrl = new Label(container, SWT.NONE);
         lblRepoUrl.setText(StringConstants.VIEW_LBL_REPOSITORY_URL);
-        
+
         txtRepoUrl = new Text(container, SWT.BORDER);
         txtRepoUrl.setEditable(false);
         txtRepoUrl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        
+
         // Add
         l = new Label(container, SWT.NONE);
         l.setText(StringConstants.VIEW_LBL_LOCATION);
@@ -245,45 +244,43 @@ public class NewProjectDialog extends TitleAreaDialog {
             cbProjects.select(0);
         }
         showRepoUrlBySelectedProject();
-        
+
         addControlModifyListeners();
-       
+
         return area;
     }
-    
+
     private void initSampleProjects() {
         List<SampleRemoteProject> remoteSamples = SampleRemoteProjectProvider.getCachedProjects();
         if (remoteSamples.size() > 0) {
             sampleProjects.addAll(remoteSamples);
-        } else { //if remote samples are not available, use local ones
+        } else { // if remote samples are not available, use local ones
             List<SampleLocalProject> localSamples = SampleProjectProvider.getInstance().getSampleProjects();
             sampleProjects.addAll(localSamples);
         }
     }
-    
+
     private void populateGenericProjects() {
-        populateProjects(SampleProjectType.WEBUI, SampleProjectType.MOBILE,
-                SampleProjectType.WS, SampleProjectType.MIXED);
+        populateProjects(SampleProjectType.WEBUI, SampleProjectType.MOBILE, SampleProjectType.WS,
+                SampleProjectType.MIXED);
     }
-    
+
     private void populateWebServiceProjects() {
         populateProjects(SampleProjectType.WS);
     }
-    
+
     private void populateProjects(SampleProjectType... sampleProjectTypes) {
         List<SampleProjectType> sampleProjectTypeList = Arrays.asList(sampleProjectTypes);
-        
+
         cbProjects.removeAll();
-        
+
         cbProjects.add(BLANK_PROJECT);
-        
-        sampleProjects.stream()
-            .filter(sample -> sampleProjectTypeList.contains(sample.getType()))
-            .forEach(sample -> {
-                cbProjects.add(sample.getName());
-                cbProjects.setData(sample.getName(), sample);
-            });
-        
+
+        sampleProjects.stream().filter(sample -> sampleProjectTypeList.contains(sample.getType())).forEach(sample -> {
+            cbProjects.add(sample.getName());
+            cbProjects.setData(sample.getName(), sample);
+        });
+
         cbProjects.select(0);
     }
 
@@ -320,28 +317,6 @@ public class NewProjectDialog extends TitleAreaDialog {
                 checkInput();
             }
         });
-        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-            txtProjectName.addKeyListener(new KeyAdapter() {
-                @Override
-                public void keyReleased(KeyEvent e) {
-                    checkInput();
-                }
-
-            });
-        }
-        // On MAC OS, with some input source language that enable Auto correct spelling (ex: Telex or VNI)
-        // if the input text not accept by the system then when the input control lost focus the text will be remove as
-        // default.
-        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-            txtProjectName.addFocusListener(new FocusAdapter() {
-                @Override
-                public void focusLost(FocusEvent e) {
-                    String projectName = txtProjectName.getText();
-                    super.focusLost(e);
-                    txtProjectName.setText(projectName);
-                }
-            });
-        }
 
         if (btnFolderChooser == null) {
             return;
@@ -358,7 +333,7 @@ public class NewProjectDialog extends TitleAreaDialog {
                 txtProjectLocation.setText(path);
             }
         });
-        
+
         cbProjects.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -366,10 +341,10 @@ public class NewProjectDialog extends TitleAreaDialog {
             }
         });
     }
-    
+
     private void showRepoUrlBySelectedProject() {
         txtRepoUrl.setText(StringUtils.EMPTY);
-        
+
         int selectionIdx = cbProjects.getSelectionIndex();
         String selectedProjectName = cbProjects.getItem(selectionIdx);
         if (!selectedProjectName.equals(BLANK_PROJECT)) {
@@ -469,7 +444,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         name = txtProjectName.getText();
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
-        
+
         int selectionIdx = cbProjects.getSelectionIndex();
         String selectedProjectName = cbProjects.getItem(selectionIdx);
         if (!selectedProjectName.equals(BLANK_PROJECT)) {
@@ -482,56 +457,56 @@ public class NewProjectDialog extends TitleAreaDialog {
         } else {
             handleCreatingBlankProject();
         }
-        
+
         setDefaultSelectorMethod();
-                
+
         super.okPressed();
     }
-    
+
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();
         String projectLocation = getProjectLocation();
         String projectDescription = getProjectDescription();
         ProjectType projectType = getSelectedProjectType();
-        
+
         ProjectEntity projectEntity = new ProjectEntity();
         projectEntity.setName(projectName);
         projectEntity.setFolderLocation(projectLocation);
         projectEntity.setDescription(projectDescription);
         projectEntity.setType(projectType);
-        
-        EventBrokerSingleton.getInstance().getEventBroker()
-            .post(EventConstants.GIT_CLONE_REMOTE_PROJECT, new Object[] { sampleRemoteProject, projectEntity, false });
+
+        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.GIT_CLONE_REMOTE_PROJECT,
+                new Object[] { sampleRemoteProject, projectEntity, false });
     }
-    
+
     /*
-     * This method exists from 5.7 onward - it will explicitly assign a default SelectorMethod of XPATH 
+     * This method exists from 5.7 onward - it will explicitly assign a default SelectorMethod of XPATH
      * to newly created BLANK projects so that we can load default SelectorMethod for old and new projects appropriately
      */
-    private void setDefaultSelectorMethod(){
-    	WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-    	
-    	if(store != null){
-        	try {
-    			store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
-    		} catch (IOException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}
-    	}
+    private void setDefaultSelectorMethod() {
+        WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+
+        if (store != null) {
+            try {
+                store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
-    
+
     private void handleCreatingSampleBuiltInProject(SampleLocalProject sampleBuiltInProject) {
         try {
             String projectName = getProjectName();
             String projectParentLocation = getProjectLocation();
             String projectDescription = getProjectDescription();
             ProjectType projectType = getSelectedProjectType();
-    
+
             String projectLocation = new File(projectParentLocation, projectName).getAbsolutePath();
             SampleProjectProvider.getInstance().extractSampleWebUIProject(sampleBuiltInProject, projectLocation);
             FileUtils.forceDelete(ProjectController.getInstance().getProjectFile(projectLocation));
-    
+
             ProjectEntity newProject = ProjectController.getInstance().newProjectEntity(projectName, projectDescription,
                     projectParentLocation, true);
             if (newProject == null) {
@@ -540,14 +515,14 @@ public class NewProjectDialog extends TitleAreaDialog {
             updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
             Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID());
-    
+
             // Open created project
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-   }
-    
+    }
+
     @SuppressWarnings("restriction")
     private void handleCreatingBlankProject() {
         try {
@@ -555,17 +530,16 @@ public class NewProjectDialog extends TitleAreaDialog {
             String projectLocation = getProjectLocation();
             String projectDescription = getProjectDescription();
             ProjectType projectType = getSelectedProjectType();
-            
-            ProjectEntity newProject = createNewProject(projectName, projectLocation,
-                    projectDescription);
+
+            ProjectEntity newProject = createNewProject(projectName, projectLocation, projectDescription);
             if (newProject == null) {
                 return;
             }
             updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
-            
+
             Trackings.trackCreatingProject();
-    
+
             // Open created project
             if (getSelectedProjectType() == ProjectType.WEBSERVICE) {
                 eventBroker.send(EventConstants.NEW_WS_PROJECT_OPEN, newProject.getId());
@@ -581,14 +555,14 @@ public class NewProjectDialog extends TitleAreaDialog {
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_PROJ);
         }
     }
-    
+
     @SuppressWarnings("restriction")
     private ProjectEntity createNewProject(String projectName, String projectLocation, String projectDescription)
             throws Exception {
         try {
             ProjectEntity newProject = ProjectController.getInstance().addNewProject(projectName, projectDescription,
                     projectLocation);
-//            EntityTrackingHelper.trackProjectCreated();
+            // EntityTrackingHelper.trackProjectCreated();
             return newProject;
         } catch (MarshalException ex) {
             if (!(ex.getLinkedException() instanceof FileNotFoundException)) {
@@ -600,12 +574,12 @@ public class NewProjectDialog extends TitleAreaDialog {
         }
         return null;
     }
-    
+
     private void updateProjectType(ProjectEntity project, ProjectType type) throws Exception {
         project.setType(type);
         ProjectController.getInstance().updateProject(project);
     }
-    
+
     private ProjectType getSelectedProjectType() {
         if (rbGenericProjectType.getSelection()) {
             return ProjectType.GENERIC;
@@ -618,7 +592,7 @@ public class NewProjectDialog extends TitleAreaDialog {
     protected Point getInitialSize() {
         return getShell().computeSize(convertHorizontalDLUsToPixels(350), SWT.DEFAULT, true);
     }
-    
+
     @Override
     protected boolean isResizable() {
         return true;
