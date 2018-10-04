@@ -65,6 +65,7 @@ public class OpenWebServiceRequestObjectHandler {
                 if (!optional.isPresent()) {
                     return;
                 }
+
                 WebServicePreferenceStore store = new WebServicePreferenceStore();
                 try {
                     store.removeDraftRequest(optional.get(), ProjectController.getInstance().getCurrentProject());
@@ -157,6 +158,7 @@ public class OpenWebServiceRequestObjectHandler {
         draftWebServiceEntity.setDraftUid(historyRequest.getUid());
         try {
             openDraftRequest(draftWebServiceEntity);
+
             WebServicePreferenceStore store = new WebServicePreferenceStore();
             store.saveDraftRequest(draftWebServiceEntity, ProjectController.getInstance().getCurrentProject());
             Trackings.trackOpenObject("webServiceHistoryRequest");
