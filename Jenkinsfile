@@ -1,4 +1,9 @@
 node {
+    properties properties: [
+	  ...
+	  disableConcurrentBuilds(),
+	  ...
+  ]
     stage('Check out') {
 	    retry(3){
         	checkout scm
