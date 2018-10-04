@@ -15,7 +15,7 @@ LINUX_64_FILE="${LINUX_64_DIR}.tar.gz"
 MAC_NAME="${PRODUCT_NAME}_MacOS"
 MAC_DIR="${PACKAGE_FOLDER}"
 MAC_FILE="${MAC_DIR}/${MAC_NAME}.tar.gz"
-MAC_APP="${MAC_DIR}/${MAC_PRODUCT_NAME}.app"
+MAC_APP="${MAC_DIR}/${PRODUCT_NAME}.app"
 MAC_PACKAGE="${MAC_DIR}/${PRODUCT_NAME}.dmg"
 
 CHROME_DRIVER="${LINUX_64_DIR}/configuration/resources/drivers/chromedriver_linux64/chromedriver"
@@ -56,9 +56,9 @@ rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
 
 # Distribute packages to shared folder
-mkdir -p ${HOME}/Public/KatalonStudio/${1}/${BUILD_ID}_${GIT_COMMIT}
-DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/${1}/${BUILD_ID}_${GIT_COMMIT}"
-BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${BUILD_ID}_${GIT_COMMIT}" # JOB_BASE_NAME
+mkdir -p ${HOME}/Public/KatalonStudio/
+DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
+BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}" # JOB_BASE_NAME
 
 if [ ! -d "${BRANCH_FOLDER}" ]; then
   mkdir "${BRANCH_FOLDER}"
