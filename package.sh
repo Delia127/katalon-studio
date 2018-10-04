@@ -1,4 +1,5 @@
 #!/bin/bash
+ulimit 99999999999
 KATABUILD=/tmp/katabuild
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
