@@ -7,6 +7,10 @@ node {
     stage('Build') {
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
 	// Start neccessary services to prepare required libraries if needed
+	lock(resource: "lock_${env.NODE_NAME}_${env.BRANCH_NAME}", inversePrecedence: true) {
+	      milestone 1
+	      sh "fastlane build_release"
+        }
 	build job: 'StartServices'
     	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
     		sh '''
