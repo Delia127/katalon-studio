@@ -3,7 +3,7 @@ ulimit 99999999999
 KATABUILD=/tmp/katabuild
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
-MAC_PRODUCT_NAME="Katalon\ Studio"
+MAC_PRODUCT_NAME="Katalon Studio"
 
 WINDOWS_32_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_32.zip"
 WINDOWS_64_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_64.zip"
@@ -40,8 +40,7 @@ echo "Process Linux package ... Done"
 
 # Process MacOS package
 echo "Process MacOS package ..."
-sudo cp "${MAC_APP}" "${MAC_DIR}"
-#tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
+tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
 
 chmod +x "${KATALON_MAC}"
 chmod +x "${CHROME_DRIVER_MAC}"
@@ -57,9 +56,9 @@ rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
 
 # Distribute packages to shared folder
-mkdir -p ${HOME}/Public/KatalonStudio/
-DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
-BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/" # JOB_BASE_NAME
+mkdir -p ${HOME}/Public/KatalonStudio/${1}/${BUILD_ID}_${GIT_COMMIT}
+DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/${1}/${BUILD_ID}_${GIT_COMMIT}"
+BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${BUILD_ID}_${GIT_COMMIT}" # JOB_BASE_NAME
 
 if [ ! -d "${BRANCH_FOLDER}" ]; then
   mkdir "${BRANCH_FOLDER}"
