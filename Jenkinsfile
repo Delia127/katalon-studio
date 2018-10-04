@@ -1,6 +1,8 @@
 node {
     stage('Check out') {
-        checkout scm
+	    retry(3){
+        	checkout scm
+	    }
     }  
     stage('Build') {
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
