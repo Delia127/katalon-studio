@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IStatus;
@@ -75,7 +76,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.TestObject, InputValueType.TestData, InputValueType.Property, InputValueType.List,
             InputValueType.Map };
 
@@ -242,7 +243,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
                     ExpressionWrapper expression = GroovyWrapperParser
                             .parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
                     if (expression == null) {
-                        return null;
+                    	return TreeEntityUtil.getReadableKeywordName(InputValueType.String.getName());
                     }
                     InputValueType valueType = AstValueUtil.getTypeValue(expression);
                     if (valueType != null) {
@@ -264,12 +265,12 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
             @Override
             public String getText(Object element) {
                 if (!(element instanceof VariableEntity) || ((VariableEntity) element).getDefaultValue() == null) {
-                    return "";
+                    return StringUtils.EMPTY;
                 }
                 ExpressionWrapper expression = GroovyWrapperParser
                         .parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
                 if (expression == null) {
-                    return "";
+                    return StringUtils.EMPTY;
                 }
                 return expression.getText();
             }

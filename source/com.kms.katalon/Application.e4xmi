@@ -5,7 +5,7 @@
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_hQQH8BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspectiveStack" selectedElement="_hQQH8RYMEeSUMbyEN2kbFQ">
       <children xsi:type="advanced:Perspective" xmi:id="_hQQH8RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspective.keyword" selectedElement="_hQQH8hYMEeSUMbyEN2kbFQ" label="Keyword" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keyword_perspective_16.png" tooltip="Keyword Perspective">
         <children xsi:type="basic:PartSashContainer" xmi:id="_hQQH8hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.partsashcontainer.main" horizontal="true">
-          <children xsi:type="basic:PartSashContainer" xmi:id="_QR8UECXxEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.partsashcontainer.left" containerData="20" selectedElement="_Uxwj0BYtEeSNBMuqFX2a9Q">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_QR8UECXxEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.partsashcontainer.left" containerData="25" selectedElement="_Uxwj0BYtEeSNBMuqFX2a9Q">
             <children xsi:type="basic:PartStack" xmi:id="_Uxwj0BYtEeSNBMuqFX2a9Q" elementId="com.kms.katalon.composer.partstack.explorer" containerData="60">
               <tags>NoMove</tags>
             </children>
@@ -15,7 +15,7 @@
               <tags>NoMove</tags>
             </children>
           </children>
-          <children xsi:type="basic:PartSashContainer" xmi:id="_GOwXsBbNEeS-5cX7m-w1IA" elementId="com.kms.katalon.composer.partsashcontainer.right" containerData="80">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_GOwXsBbNEeS-5cX7m-w1IA" elementId="com.kms.katalon.composer.partsashcontainer.right" containerData="75">
             <children xsi:type="basic:PartSashContainer" xmi:id="_XxfwgNLcEeSctqH8QULjSg" elementId="com.kms.katalon.partsashcontainer.main" containerData="70" selectedElement="_hkPqAD8NEeSqW-o8jtXO1g" horizontal="true">
               <children xsi:type="advanced:Placeholder" xmi:id="_hkPqAD8NEeSqW-o8jtXO1g" elementId="org.eclipse.ui.editorss" containerData="80" ref="_2Ev6oD8CEeSqW-o8jtXO1g"/>
               <children xsi:type="basic:PartStack" xmi:id="_uOwOINa1EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline" visible="false" containerData="20">

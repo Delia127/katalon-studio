@@ -239,8 +239,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TOOLBAR_TIP_RECORD_TEST = ComposerTestcaseMessageConstants.PA_TOOLBAR_TIP_RECORD_TEST;
 
     public static final String PA_LBL_NAME = NAME;
+    
+    
 
     public static final String PA_BTN_TIP_ADD = ADD;
+    
+    public static final String PA_BTN_ADD_WEB_SERVICE_KEYWORD = ComposerTestcaseMessageConstants.PA_BTN_ADD_WEB_SERVICE_KEYWORD;
 
     public static final String PA_BTN_TIP_INSERT = INSERT;
 

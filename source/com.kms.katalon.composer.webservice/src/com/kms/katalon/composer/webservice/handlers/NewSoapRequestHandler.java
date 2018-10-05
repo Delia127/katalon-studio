@@ -35,7 +35,8 @@ public class NewSoapRequestHandler {
                 .newDraftWebServiceEntity(currentProject);
         draftWebService.setServiceType(DraftWebServiceRequestEntity.SOAP);
         try {
-            context.get(OpenWebServiceRequestObjectHandler.class).openDraftRequest(draftWebService);
+            OpenWebServiceRequestObjectHandler handler = context.get(OpenWebServiceRequestObjectHandler.class);
+            handler.openDraftRequest(draftWebService);
             Trackings.trackOpenDraftRequest(draftWebService.getServiceType(), "button");
         } catch (IOException | CoreException e) {
             MultiStatusErrorDialog.showErrorDialog("Unable to open request", e.getMessage(),

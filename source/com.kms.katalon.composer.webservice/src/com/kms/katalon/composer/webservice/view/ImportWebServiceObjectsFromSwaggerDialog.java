@@ -119,7 +119,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
           };
           
         text.addModifyListener(listener);
-		
+
 		messageLabel.addSelectionListener(new SelectionAdapter(){
 		    @Override
 		    public void widgetSelected(SelectionEvent e) {

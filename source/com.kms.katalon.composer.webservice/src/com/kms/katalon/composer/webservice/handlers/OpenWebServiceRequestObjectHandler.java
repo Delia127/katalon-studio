@@ -14,6 +14,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -45,6 +46,9 @@ public class OpenWebServiceRequestObjectHandler {
 
     @Inject
     IEclipseContext context;
+    
+    @Inject
+    EPartService partService;
 
     @PostConstruct
     public void registerEventHandler(IEventBroker eventBroker) {
@@ -57,9 +61,8 @@ public class OpenWebServiceRequestObjectHandler {
                 }
             }
         });
-
+        
         eventBroker.subscribe(EventConstants.WORKSPACE_DRAFT_PART_CLOSED, new EventServiceAdapter() {
-
             @Override
             public void handleEvent(Event event) {
                 java.util.Optional<DraftWebServiceRequestEntity> optional = getDraftWebService(event);
@@ -188,6 +191,19 @@ public class OpenWebServiceRequestObjectHandler {
                 WSRequestPartUI.create(draftRequest, stack);
             } else {
                 stack.setSelectedElement(mPart);
+            }
+            setSelectedExplorerPart();
+        }
+    }
+    
+    private void setSelectedExplorerPart() {
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID,
+                application);
+        if (stack != null) {
+            MPart requestHistoryPart = partService.findPart(IdConstants.COMPOSER_REQUEST_HISTORY_PART_ID);
+            if (requestHistoryPart != null && !stack.getSelectedElement().getElementId()
+                    .equals(requestHistoryPart.getElementId())) {
+                stack.setSelectedElement(requestHistoryPart);
             }
         }
     }
