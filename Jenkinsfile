@@ -1,11 +1,6 @@
 node {
-    pipelineJob('KatalonStudio') {
-	  properties {
-	    disableConcurrentBuilds()  
-	  }
- }
     stage('Check out') {
-	    retry(3){
+	    retry(2){
         	checkout scm
 	    }
     }  
