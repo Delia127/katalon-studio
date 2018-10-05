@@ -10,6 +10,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
@@ -44,21 +45,15 @@ public class RequestHistoryHandler {
 
     @Inject
     MApplication application;
+    
+    private RequestHistoryEntity lastestRequest;;
 
-    private WebServicePreferenceStore store;
+    private WebServicePreferenceStore store = new WebServicePreferenceStore();
 
     private IRequestHistoryListener listener;
 
     @PostConstruct
     public void initialEventListeners() {
-        eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, new EventServiceAdapter() {
-
-            @Override
-            public void handleEvent(Event event) {
-                store = new WebServicePreferenceStore();
-            }
-        });
-
         eventBroker.subscribe(EventConstants.WS_VERIFICATION_FINISHED, new EventServiceAdapter() {
 
             @Override
@@ -81,10 +76,12 @@ public class RequestHistoryHandler {
             public void handleEvent(Event event) {
                 ProjectEntity project = ProjectController.getInstance().getCurrentProject();
                 MPart mpart = partService.findPart(IdConstants.COMPOSER_REQUEST_HISTORY_PART_ID);
+
+                MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID,
+                        application);
+                MStackElement selectedPart = stack.getSelectedElement(); 
                 if (project.getType() == ProjectType.WEBSERVICE) {
                     if (mpart == null) {
-                        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID,
-                                application);
                         mpart = modelService.createModelElement(MPart.class);
                         mpart.setElementId(IdConstants.COMPOSER_REQUEST_HISTORY_PART_ID);
                         mpart.setLabel(ComposerWebserviceMessageConstants.RequestHistoryHandler_PA_TITLE_REQUEST_HISTORY);
@@ -94,7 +91,6 @@ public class RequestHistoryHandler {
                         stack.getChildren().add(mpart);
 
                         partService.showPart(mpart, PartState.ACTIVATE);
-                        stack.setSelectedElement(mpart);
                     } else {
                         partService.showPart(mpart, PartState.ACTIVATE);
                     }
@@ -103,6 +99,8 @@ public class RequestHistoryHandler {
                         partService.hidePart(mpart);
                     }
                 }
+
+                stack.setSelectedElement(selectedPart); 
 
                 if (listener != null) {
                     listener.resetInput();
@@ -126,7 +124,11 @@ public class RequestHistoryHandler {
     }
 
     public void addRequestHistory(RequestHistoryEntity requestHistory, ProjectEntity project) throws IOException {
+        if (lastestRequest != null && lastestRequest.getRequest().equals(requestHistory.getRequest())) {
+            store.removeRequestHistory(lastestRequest, project);
+        }
         store.addRequestHistory(requestHistory, project);
+        lastestRequest = requestHistory;
     }
 
     public IRequestHistoryListener getListener() {

@@ -40,10 +40,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.greenrobot.eventbus.EventBus;
 
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -71,13 +68,13 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.application.Application;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
@@ -230,6 +227,17 @@ public class GenerateCommandDialog extends AbstractDialog {
         createConfigurationDataComposite();
 
         createExecutionProfileComposite();
+        
+
+
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject.getType() == ProjectType.WEBSERVICE) {
+            ((GridData) configurationComposite.getLayoutData()).exclude = true;
+            configurationComposite.setVisible(false);
+
+            ((GridData) configurationDataComposite.getLayoutData()).exclude = true;
+            configurationDataComposite.setVisible(false);
+        }
     }
 
     private void createExecutionProfileComposite() {
@@ -562,7 +570,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 onRunConfigurationDataChanged();
             }
         });
-        
+
         btnChangeProfile.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -573,10 +581,10 @@ public class GenerateCommandDialog extends AbstractDialog {
                             .filter(p -> p.getName().equals(runConfigDescription.getProfileName()))
                             .findFirst()
                             .orElse(null);
-                    ExecutionProfileSelectionDialog dialog = new ExecutionProfileSelectionDialog(getParentShell(), profiles,
-                            selectedProfile);
+                    ExecutionProfileSelectionDialog dialog = new ExecutionProfileSelectionDialog(getParentShell(),
+                            profiles, selectedProfile);
                     if (dialog.open() != ExecutionProfileSelectionDialog.OK) {
-                        return ;
+                        return;
                     }
                     runConfigDescription.setProfileName(dialog.getSelectedProfile().getName());
                     updateExecutionProfileLabel();
@@ -606,8 +614,14 @@ public class GenerateCommandDialog extends AbstractDialog {
     private void onRunConfigurationChanged(RunConfigurationDescription configurationDescription) {
         try {
             this.testExecutionItem = getSelectedExecutionItem(configurationDescription);
+            if (testExecutionItem != null && !testExecutionItem.shouldBeDisplayed(project)) {
+                this.testExecutionItem = null;
+            }
             if (testExecutionItem == null) {
-                this.runConfigDescription = new RunConfigurationDescription();
+                this.runConfigDescription = TestExecutionGroupCollector.getInstance().getDefaultConfiguration(
+                        ProjectController.getInstance().getCurrentProject());
+
+                this.testExecutionItem = getSelectedExecutionItem(this.runConfigDescription);
             } else {
                 this.runConfigDescription = configurationDescription;
             }
@@ -656,7 +670,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void updateConfigurationDataCompositeLayout() {
         updateControlLayout(configurationDataComposite,
-                testExecutionItem != null && testExecutionItem.requiresExtraConfiguration());
+                testExecutionItem != null && testExecutionItem.requiresExtraConfiguration()
+                && testExecutionItem.shouldBeDisplayed(project));
     }
 
     private void updateRunConfigurationLabel() {
@@ -665,7 +680,12 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
         lblRunConfiguration.setText(testExecutionItem.getName());
         try {
-            lblRunConfiguration.setImage(ImageUtil.loadImage(testExecutionItem.getImageUrlAsString()));
+            String imageUrlAsString = testExecutionItem.getImageUrlAsString();
+            if (StringUtils.isNotEmpty(imageUrlAsString)) {
+                lblRunConfiguration.setImage(ImageUtil.loadImage(imageUrlAsString));
+            } else {
+                lblRunConfiguration.setImage(null);
+            }
         } catch (MalformedURLException e) {
             LoggerSingleton.logError(e);
         }
@@ -695,6 +715,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 .getGroup(runConfigurationDescription.getGroupName());
         if (group == null) {
             resetLabel(lblRunConfiguration, ComposerExecutionMessageConstants.DIA_TITLE_RUN_CONFIG_SELECTION);
+            return null;
         }
         Optional<TestExecutionItem> executionItemOpt = group.getItem(runConfigurationId);
         if (!executionItemOpt.isPresent()) {
@@ -760,13 +781,13 @@ public class GenerateCommandDialog extends AbstractDialog {
         try {
             GeneratedCommandDialog generatedCommandDialog = new GeneratedCommandDialog(getShell(), generateCommand());
             generatedCommandDialog.open();
-            
+
             Trackings.trackGenerateCmd();
         } catch (Exception e) {
             MessageDialog.openWarning(getShell(), StringConstants.WARN_TITLE, e.getMessage());
         }
     }
-    
+
     private void savePropertyFile(String fileLocation) throws Exception {
         if (isBlank(fileLocation)) {
             throw new Exception(StringConstants.DIA_MSG_PLS_SPECIFY_FILE_LOCATION);

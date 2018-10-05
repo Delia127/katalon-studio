@@ -263,8 +263,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
 
-    private static final int MIN_PART_WIDTH = 400;
-
     private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.List, InputValueType.Map };
@@ -440,6 +438,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         responseComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         populateDataToUI();
+        updatePartImage();
         registerListeners();
     }
 
@@ -1630,9 +1629,17 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
 
         if (EventConstants.WEBSERVICE_REQUEST_DRAFT_UPDATED.equals(event.getTopic())) {
-            originalWsObject = (WebServiceRequestEntity) eventData;
-            mPart.setLabel("(Draft) " + originalWsObject.getRestUrl());
-            populateDataToUI();
+            if (!(originalWsObject instanceof DraftWebServiceRequestEntity)
+                    || !(eventData instanceof DraftWebServiceRequestEntity)) {
+                return;
+            }
+
+            DraftWebServiceRequestEntity data = (DraftWebServiceRequestEntity) eventData;
+            if (data.getDraftUid().equals(((DraftWebServiceRequestEntity) originalWsObject).getDraftUid())) {
+                originalWsObject = data;
+                mPart.setLabel("(Draft) " + ((DraftWebServiceRequestEntity) originalWsObject).getNameAsUrl());
+                populateDataToUI();
+            }
             return;
         }
 
@@ -1985,6 +1992,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
         mPart.setIconURI(imageURL);
     }
+
+    protected abstract void updatePartImage();
 
     public void updateDirty(boolean dirty) {
         dirtyable.setDirty(dirty);

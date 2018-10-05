@@ -141,10 +141,11 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
             Rectangle layoutBounds = textLayout.getBounds();
             int y = textBounds.y + Math.max(0, (textBounds.height - layoutBounds.height) / 2);
 
-            Rectangle saveClipping = gc.getClipping();
-            gc.setClipping(textBounds);
-            textLayout.draw(gc, textBounds.x + startX, y);
-            gc.setClipping(saveClipping);
+            //Rectangle saveClipping = gc.getClipping();
+            //gc.setClipping(textBounds);
+            textLayout.draw(gc, startX, y);
+            
+            //gc.setClipping(saveClipping);
         }
     }
 
@@ -154,9 +155,9 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         if (image != null) {
             int y = eventBounds.y + Math.max(0, (eventBounds.height - image.getBounds().height) / 2);
             gc.drawImage(image, eventBounds.x + startX, y);
-            startX += getSpace() + Math.max(0, image.getBounds().width - eventBounds.width);
+            startX += getSpace() + image.getBounds().width;
         }
-        return startX;
+        return startX + eventBounds.x;
     }
 
     protected Rectangle getTextBounds(Rectangle originalBounds) {

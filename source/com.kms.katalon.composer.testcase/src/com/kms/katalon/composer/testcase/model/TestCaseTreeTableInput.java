@@ -106,6 +106,8 @@ public class TestCaseTreeTableInput {
     private static final String OPERATION_LABEL_DRAG_AND_DROP_AST_NODES = "dragAndDropAstNodes";
 
     private static final String GROOVY_NEW_LINE_CHARACTER = "\n";
+    
+    private static final String WEB_SERVICE_KEYWORDS_CLASS_ALIAS_NAME = "WS"; 
 
     /**
      * Enum for adding items into tree table
@@ -943,6 +945,10 @@ public class TestCaseTreeTableInput {
                 TreeTableMenuItemConstants.getMenuItemID(
                         TestCasePreferenceDefaultValueInitializer.getDefaultKeywordType().getAliasName()),
                 getSelectedNode(), addType);
+    }
+    
+    public void addNewDefaultWebServiceKeyword(NodeAddType addType) {
+        addNewAstObject(TreeTableMenuItemConstants.getMenuItemID(WEB_SERVICE_KEYWORDS_CLASS_ALIAS_NAME), getSelectedNode(), addType);
     }
 
     private void addNewBuiltInKeyword(AstTreeTableNode destinationNode, NodeAddType addType, String className) {

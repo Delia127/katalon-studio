@@ -16,4 +16,10 @@
             name="Network">
       </page>
    </extension>
+   <extension
+         point="com.kms.katalon.composer.execution.tetSuiteExecutionItem">
+      <client
+            item="com.kms.katalon.composer.webservice.execution.WebServiceExecutionGroup">
+      </client>
+   </extension>
 </plugin>

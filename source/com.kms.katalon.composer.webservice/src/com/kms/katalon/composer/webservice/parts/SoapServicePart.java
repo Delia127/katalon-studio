@@ -109,7 +109,6 @@ public class SoapServicePart extends WebServicePart {
         Label lblOperation = new Label(operationComposite, SWT.NONE);
         lblOperation.setText(StringConstants.PA_LBL_SERVICE_FUNCTION);
         GridData gdLblOperation = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-        gdLblOperation.widthHint = 102;
         lblOperation.setLayoutData(gdLblOperation);
 
         ccbOperation = new CCombo(operationComposite, SWT.BORDER | SWT.FLAT | SWT.READ_ONLY);
@@ -124,8 +123,7 @@ public class SoapServicePart extends WebServicePart {
 
         Button btnLoadFromWSDL = new Button(operationComposite, SWT.FLAT);
         btnLoadFromWSDL.setText(StringConstants.LBL_LOAD_FROM_WSDL);
-        GridData gdBtnLoadFromWSDL = new GridData(SWT.CENTER, SWT.FILL, false, false);
-        gdBtnLoadFromWSDL.widthHint = 100; // same width with send button
+        GridData gdBtnLoadFromWSDL = new GridData(SWT.LEFT, SWT.FILL, false, false);
         btnLoadFromWSDL.setLayoutData(gdBtnLoadFromWSDL);
         btnLoadFromWSDL.addSelectionListener(new SelectionAdapter() {
 
@@ -252,9 +250,10 @@ public class SoapServicePart extends WebServicePart {
                             executeVerificationScript(responseObject);
                         }
 
-                        RequestHistoryEntity requestHistoryEntity = new RequestHistoryEntity(
-                                new Date(), (WebServiceRequestEntity) getWSRequestObject().clone());
-                        eventBroker.post(EventConstants.WS_VERIFICATION_FINISHED, new Object[] { requestHistoryEntity });
+                        RequestHistoryEntity requestHistoryEntity = new RequestHistoryEntity(new Date(),
+                                (WebServiceRequestEntity) getWSRequestObject().clone());
+                        eventBroker.post(EventConstants.WS_VERIFICATION_FINISHED,
+                                new Object[] { requestHistoryEntity });
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
                     } finally {
@@ -307,6 +306,7 @@ public class SoapServicePart extends WebServicePart {
         originalWsObject.setHttpHeaderProperties(httpHeaders);
 
         originalWsObject.setSoapBody(requestBodyEditor.getHttpBodyContent());
+
         updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
                 originalWsObject.getSoapRequestMethod()));
     }
@@ -414,6 +414,12 @@ public class SoapServicePart extends WebServicePart {
         }
 
         return null;
+    }
+
+    @Override
+    protected void updatePartImage() {
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
+                originalWsObject.getSoapRequestMethod()));
     }
 
 }

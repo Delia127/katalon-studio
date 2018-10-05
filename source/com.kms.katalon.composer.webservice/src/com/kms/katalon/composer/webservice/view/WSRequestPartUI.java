@@ -97,7 +97,7 @@ public class WSRequestPartUI {
         compositePart = modelService.createModelElement(MCompositePart.class);
         compositePart.setElementId(compositePartId);
         if (requestObject instanceof DraftWebServiceRequestEntity) {
-            compositePart.setLabel("(Draft) " + requestObject.getRestUrl());
+            compositePart.setLabel("(Draft) " + ((DraftWebServiceRequestEntity) requestObject).getNameAsUrl());
         } else {
             compositePart.setLabel(requestObject.getName());
         }
@@ -109,9 +109,9 @@ public class WSRequestPartUI {
         }
         compositePart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
         if (requestObject instanceof DraftWebServiceRequestEntity) {
-            compositePart.setLabel("(Draft) " + requestObject.getRestUrl());
+            compositePart.setTooltip("(Draft) " + ((DraftWebServiceRequestEntity) requestObject).getNameAsUrl());
         } else {
-            compositePart.setLabel(requestObject.getIdForDisplay());
+            compositePart.setTooltip(requestObject.getIdForDisplay());
         }
         compositePart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
         stack.getChildren().add(compositePart);
@@ -270,6 +270,10 @@ public class WSRequestPartUI {
 
             @Override
             public void controlResized(ControlEvent e) {
+                Composite wsComposite = webServicePart.getComposite();
+                if (wsComposite == null || wsComposite.isDisposed()) {
+                    return;
+                }
                 calculateLeftPartsWeight();
             }
 
@@ -298,6 +302,9 @@ public class WSRequestPartUI {
 
     private void calculateLeftPartsWeight() {
         WSRequestChildPart apiControlsPartObject = (WSRequestChildPart) apiControlsPart.getObject();
+        if (apiControlsPartObject == null) {
+            return;
+        }
         Point apiControlsCompositeSize = apiControlsPartObject.getComposite().getChildren()[0].computeSize(SWT.DEFAULT,
                 SWT.DEFAULT);
 
