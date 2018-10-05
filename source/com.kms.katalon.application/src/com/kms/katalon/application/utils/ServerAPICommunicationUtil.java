@@ -28,7 +28,7 @@ import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
     public static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
-
+    
     private static final String PRODUCTION_URL_API = "https://update.katalon.com/api";
     
     public static final String DEVELOPMENT_WEB_URL = "https://wp-dev.katalon.com";
@@ -235,9 +235,9 @@ public class ServerAPICommunicationUtil {
         sc.init(null, getTrustManagers(), new java.security.SecureRandom());
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-        HttpURLConnection uc = null;
-        uc = (HttpURLConnection) url.openConnection(proxy);
-//        uc.setHostnameVerifier(getHostnameVerifier());
+        HttpsURLConnection uc = null;
+        uc = (HttpsURLConnection) url.openConnection(proxy);
+        uc.setHostnameVerifier(getHostnameVerifier());
         uc.setRequestMethod(method);
         uc.setRequestProperty("Content-Type", "application/json");
         uc.setUseCaches(false);
