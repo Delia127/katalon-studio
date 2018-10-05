@@ -46,11 +46,23 @@ public class WebServicePreferenceStore {
     public void addRequestHistory(RequestHistoryEntity requestHistory, ProjectEntity project) throws IOException {
         List<RequestHistoryEntity> currentRequestHistories = new ArrayList<>(getHistoryRequestEntities(project));
         Map<String, List<RequestHistoryEntity>> requestHistoriesPerProject = new HashMap<>(getRequestHistoriesIndice());
+
         currentRequestHistories.add(requestHistory);
         requestHistoriesPerProject.put(project.getUUID(), currentRequestHistories);
         getStore().setValue("requestHistories", JsonUtil.toJson(requestHistoriesPerProject));
         getStore().save();
     }
+    
+    public void removeRequestHistory(RequestHistoryEntity requestHistory, ProjectEntity project) throws IOException {
+        List<RequestHistoryEntity> currentRequestHistories = new ArrayList<>(getHistoryRequestEntities(project));
+        Map<String, List<RequestHistoryEntity>> requestHistoriesPerProject = new HashMap<>(getRequestHistoriesIndice());
+
+        currentRequestHistories.remove(requestHistory);
+        requestHistoriesPerProject.put(project.getUUID(), currentRequestHistories);
+        getStore().setValue("requestHistories", JsonUtil.toJson(requestHistoriesPerProject));
+        getStore().save();
+    }
+
 
     public void setRequestHistoryEntities(List<RequestHistoryEntity> requestHistoryEntities, ProjectEntity project)
             throws IOException {

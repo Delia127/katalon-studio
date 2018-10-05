@@ -27,7 +27,6 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromSwaggerDialog;
 import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromWSDLDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;

@@ -367,29 +367,10 @@ public class RequestHistoryPart implements IRequestHistoryListener {
 
     @Override
     public void addHistoryRequest(RequestHistoryEntity addedRequest) {
+        reloadTreeData();
+
         RequestDateTreeItem dateItem = contentProvider.findElementByDate(addedRequest.getReceivedResponseTime());
-        if (dateItem == null) {
-            reloadTreeData();
-            dateItem = contentProvider.findElementByDate(addedRequest.getReceivedResponseTime());
-            RequestHistoryTreeItem treeItem = new RequestHistoryTreeItem(addedRequest, dateItem);
-            treeViewer.setSelection(new StructuredSelection(treeItem));
-            Event event = new Event();
-            treeViewer.getTree().notifyListeners(SWT.Selection, event);
-            return;
-        }
-
         RequestHistoryTreeItem historyItem = new RequestHistoryTreeItem(addedRequest, dateItem);
-        List<RequestHistoryTreeItem> items = dateItem.getItems();
-        items.add(historyItem);
-        items.sort(new Comparator<RequestHistoryTreeItem>() {
-
-            @Override
-            public int compare(RequestHistoryTreeItem dateItem, RequestHistoryTreeItem dateItem2) {
-                return dateItem.getRequestHistoryEntity().getReceivedResponseTime().before(
-                        dateItem2.getRequestHistoryEntity().getReceivedResponseTime()) ? 1 : -1;
-            }
-        });
-        dateItem.setItems(items);
         treeViewer.refresh(dateItem);
         treeViewer.setSelection(new StructuredSelection(historyItem));
         Event event = new Event();
