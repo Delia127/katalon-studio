@@ -99,7 +99,8 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
 	protected Composite createContentArea(Composite parent) {
 
         setDialogTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL);
-		
+        setMessage(StringConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL, IMessageProvider.INFORMATION);
+
         // create a composite with standard margins and spacing
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
