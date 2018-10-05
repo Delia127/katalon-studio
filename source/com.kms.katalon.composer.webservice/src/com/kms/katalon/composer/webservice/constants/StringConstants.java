@@ -56,7 +56,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
-
+ 
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;
 	public static final String VIEW_COL_VALUE = VALUE;
