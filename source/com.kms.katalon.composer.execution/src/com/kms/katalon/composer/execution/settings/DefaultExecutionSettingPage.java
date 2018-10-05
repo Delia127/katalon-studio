@@ -50,12 +50,10 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
     private Composite container;
 
     private Combo cbDefaultBrowser;
-    
-    private Combo cbApplyNeighborXpaths;
 
     private Text txtDefaultElementTimeout;
 
-    private Button chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
+    private Button chckApplyNeighborXpaths, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
 
     private IRunConfigurationContributor[] runConfigs;
 
@@ -90,16 +88,6 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         GridData gdCbDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdCbDefaultBrowser.widthHint = INPUT_WIDTH * 2;
         cbDefaultBrowser.setLayoutData(gdCbDefaultBrowser);
-        
-        Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
-        lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
-        GridData gdLblApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblApplyNeighborXpaths.setLayoutData(gdLblApplyNeighborXpaths);
-
-        cbApplyNeighborXpaths = new Combo(comp, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
-        GridData gdCbApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdCbApplyNeighborXpaths.widthHint = INPUT_WIDTH * 2;
-        cbApplyNeighborXpaths.setLayoutData(gdCbApplyNeighborXpaths);
 
         Label lblDefaultElementTimeout = new Label(comp, SWT.NONE);
         lblDefaultElementTimeout.setText(StringConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT);
@@ -110,6 +98,15 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         GridData gdTxtDefaultElementTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdTxtDefaultElementTimeout.widthHint = INPUT_WIDTH;
         txtDefaultElementTimeout.setLayoutData(gdTxtDefaultElementTimeout);
+        
+        Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
+        lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
+        GridData gdLblApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblApplyNeighborXpaths.setLayoutData(gdLblApplyNeighborXpaths);
+        
+        chckApplyNeighborXpaths= new Button(comp, SWT.CHECK);
+        GridData gdChckApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        chckApplyNeighborXpaths.setLayoutData(gdChckApplyNeighborXpaths);
 
         Group grpAfterExecuting = new Group(container, SWT.NONE);
         grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);
@@ -117,7 +114,7 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         glGrpAfterExecuting.marginLeft = 15;
         grpAfterExecuting.setLayout(glGrpAfterExecuting);
         grpAfterExecuting.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
+        
         chckOpenReport = new Button(grpAfterExecuting, SWT.CHECK);
         chckOpenReport.setText(StringConstants.PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY);
 
@@ -209,18 +206,9 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
             cbDefaultBrowser.setItems(runConfigIdList);
             cbDefaultBrowser.select(selectedIndex);
         }
-        
-        // Apply neighbor xpaths set to false        
-        String[] trueOrFalse = new String[]{"false", "true"};
-        cbApplyNeighborXpaths.setItems(trueOrFalse);
-        if(store.getAutoApplyNeighborXpathsEnabled() == false){
-            cbApplyNeighborXpaths.select(0);
-        }else{
-        	cbApplyNeighborXpaths.select(1);
-        }
 
+        chckApplyNeighborXpaths.setSelection(store.isAutoApplyNeighborXpathsEnabled());
         txtDefaultElementTimeout.setText(Integer.toString(store.getElementTimeout()));
-
         chckOpenReport.setSelection(store.isPostExecOpenReport());
         chckQuitDriversTestCase.setSelection(store.isPostTestCaseExecQuitDriver());
         chckQuitDriversTestSuite.setSelection(store.isPostTestSuiteExecQuitDriver());
@@ -263,8 +251,8 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
                 store.setExecutionConfiguration(selectedExecutionConfiguration);
             }
             
-            if(cbApplyNeighborXpaths != null){
-            	store.setApplyNeighborXpathsEnabled(cbApplyNeighborXpaths.getSelectionIndex() == 1 ? true : false);
+            if (chckApplyNeighborXpaths != null) {
+            	store.setApplyNeighborXpathsEnabled(chckApplyNeighborXpaths.getSelection());
             }
             
             if (txtDefaultElementTimeout != null) {

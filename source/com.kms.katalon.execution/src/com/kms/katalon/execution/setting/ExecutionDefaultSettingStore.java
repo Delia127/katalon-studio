@@ -137,7 +137,7 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     			value);
     }
     
-    public Boolean getAutoApplyNeighborXpathsEnabled(){
+    public Boolean isAutoApplyNeighborXpathsEnabled() {
     	try{
     	return getBoolean(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED, 
         					DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED);
@@ -146,8 +146,7 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     	}
     }
     
-    public Boolean getDefaultAutoApplyNeighborXpathsEnabled(){
+    public Boolean getDefaultAutoApplyNeighborXpathsEnabled() {
     	return DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED;
     }
-
 }
