@@ -83,7 +83,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
 		// Set title and default message
         setDialogTitle(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER);
         setMessage(StringConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER, IMessageProvider.INFORMATION);
-		
+			
         // create a composite with standard margins and spacing
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -93,7 +93,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
         layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
         composite.setLayout(layout);
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-
+ 
     	
     	Label label = new Label(composite, SWT.NONE);
     	label.setText("File location or URL: ");
