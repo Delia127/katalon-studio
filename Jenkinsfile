@@ -34,9 +34,4 @@ node {
                 '''
         }
     }
-     post {
-        changed {
-           echo 'think was change before'
-        }
-    }
 }
