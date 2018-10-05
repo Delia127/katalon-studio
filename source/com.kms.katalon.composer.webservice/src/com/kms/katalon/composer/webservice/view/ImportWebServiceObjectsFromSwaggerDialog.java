@@ -26,6 +26,7 @@ import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.parser.SwaggerParserUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDialog {
 
@@ -35,6 +36,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     
     public ImportWebServiceObjectsFromSwaggerDialog(Shell parentShell, FolderEntity parentFolder) {
         super(parentShell);
+        Trackings.trackOpenImportingSwagger();
     	this.parentFolder = parentFolder;
     }
     
@@ -50,7 +52,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     protected void okPressed() {
     	boolean closeTheDialog = true;
     	try{
-        	createWebServiceRequestEntities();            
+        	createWebServiceRequestEntities();
     	} catch(Exception e){
     		closeTheDialog = false;
     		setMessage(StringConstants.EXC_INVALID_SWAGGER_FILE, IMessageProvider.ERROR);
@@ -61,7 +63,7 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     	}
     }
 
-	@Override
+    @Override
 	protected boolean isResizable() {
 	    return false;
 	}
@@ -146,5 +148,9 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     	final Point size = super.getInitialSize();
         size.x = convertWidthInCharsToPixels(75);
         return size;
+    }
+    
+    public String getSwaggerSpecLocation() {
+        return directory;
     }
 }

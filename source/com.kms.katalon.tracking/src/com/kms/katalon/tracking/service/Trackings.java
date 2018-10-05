@@ -143,6 +143,10 @@ public class Trackings {
                 "newProject", "sampleProjectType", sampleProjectType);
     }
     
+    public static void trackOpenDraftRequest(String webServiceType, String openBy) {
+        trackUserAction("openDraftRequest", "requestType", webServiceType, "openBy", openBy);
+    }
+    
     public static void trackOpenObject(String objectType) {
         String action = "open" + StringUtils.capitalize(objectType);
         trackUserAction(action);
@@ -232,12 +236,52 @@ public class Trackings {
         trackUserAction("newTestStep", "type", stepType);
     }
     
-    public static void trackTestWebServiceObject(boolean withVerification) {
-        trackUserAction("testWebServiceObject", "verify", withVerification);
+    public static void trackTestWebServiceObject(boolean withVerification, boolean isDraftRequest) {
+        trackUserAction("testWebServiceObject", "verify", withVerification, "isDraft", isDraftRequest);
     }
     
     public static void trackAddApiVariable() {
         trackUserAction("addApiVariable");
+    }
+    
+    public static void trackOpenImportingSwagger() {
+        trackUserAction("openImportingSwagger");
+    }
+    
+    public static void trackOpenImportingWsdl() {
+        trackUserAction("openImportingWSDL");
+    }
+    
+    public static void trackImportSwagger(String importType) {
+        trackUserAction("importSwagger", "type", importType);
+    }
+    
+    public static void trackImportWSDL(String importType) {
+        trackUserAction("importWSDL", "type", importType);
+    }
+    
+    public static void trackClickSavingDraftRequest() {
+        trackUserAction("clickSavingDraftRequest");
+    }
+    
+    public static void trackSaveDraftRequest() {
+        trackUserAction("saveDraftRequest");
+    }
+    
+    public static void trackClickDeletingDraftRequest() {
+        trackUserAction("clickDeletingDraftRequest");
+    }
+    
+    public static void trackDeleteDraftRequest(int numberOfDeletedRequests) {
+        trackUserAction("deleteDraftRequest", "deletedRequestCount", numberOfDeletedRequests);
+    }
+    
+    public static void trackClickAddingRequestToTestCase(boolean addToNewTestCase) {
+        trackUserAction("clickAddingRequestToTestCase", "addType", addToNewTestCase ? "new" : "existing");
+    }
+    
+    public static void trackAddRequestToTestCase(boolean addToNewTestCase) {
+        trackUserAction("addRequestToTestCase", "addType", addToNewTestCase ? "new" : "existing");
     }
     
     private static void trackUserAction(String actionName, Object... properties) {
@@ -251,6 +295,7 @@ public class Trackings {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject != null) {
             propertiesObject.addProperty("projectId", currentProject.getUUID());
+            propertiesObject.addProperty("projectType", currentProject.getType().toString());
         }
         
         if (properties != null) {

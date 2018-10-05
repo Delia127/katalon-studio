@@ -23,6 +23,7 @@ import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.parser.WSDLParserUtil;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialog {
 
@@ -32,10 +33,9 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
     
     public ImportWebServiceObjectsFromWSDLDialog(Shell parentShell) {
         super(parentShell);
+        Trackings.trackOpenImportingWsdl();
     }
-
-
-    
+   
     private void createSoapWebServiceRequestEntities() throws Exception{
     	soapWebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP, directory);  
     	if(soapWebServiceRequestEntities == null){
@@ -81,7 +81,7 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
     	}
     }
 
-	@Override
+    @Override
 	protected boolean isResizable() {
 	    return false;
 	}
@@ -154,5 +154,9 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
     	final Point size = super.getInitialSize();
         size.x = convertWidthInCharsToPixels(75);
         return size;
+    }
+    
+    public String getWSDLSpecLocation() {
+        return directory;
     }
 }

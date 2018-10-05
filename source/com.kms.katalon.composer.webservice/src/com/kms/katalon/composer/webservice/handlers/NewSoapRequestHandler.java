@@ -16,6 +16,7 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewSoapRequestHandler {
     @Inject
@@ -36,6 +37,7 @@ public class NewSoapRequestHandler {
         try {
             OpenWebServiceRequestObjectHandler handler = context.get(OpenWebServiceRequestObjectHandler.class);
             handler.openDraftRequest(draftWebService);
+            Trackings.trackOpenDraftRequest(draftWebService.getServiceType(), "button");
         } catch (IOException | CoreException e) {
             MultiStatusErrorDialog.showErrorDialog("Unable to open request", e.getMessage(),
                     ExceptionsUtil.getStackTraceForThrowable(e));
