@@ -1637,7 +1637,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             DraftWebServiceRequestEntity data = (DraftWebServiceRequestEntity) eventData;
             if (data.getDraftUid().equals(((DraftWebServiceRequestEntity) originalWsObject).getDraftUid())) {
                 originalWsObject = data;
-                mPart.setLabel("(Draft) " + ((DraftWebServiceRequestEntity) originalWsObject).getNameAsUrl());
+                mPart.setLabel("(Draft) " + WSRequestPartUI.getShortenLabel(originalWsObject));
                 populateDataToUI();
             }
             return;

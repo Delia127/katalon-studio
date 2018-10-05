@@ -45,6 +45,8 @@ import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class WSRequestPartUI {
+    
+    public static final int MAX_LABEL_LENGTH = 40;
 
     private static final String BUNDLE_URI_WEBSERVICE = "bundleclass://com.kms.katalon.composer.webservice/";
 
@@ -97,7 +99,8 @@ public class WSRequestPartUI {
         compositePart = modelService.createModelElement(MCompositePart.class);
         compositePart.setElementId(compositePartId);
         if (requestObject instanceof DraftWebServiceRequestEntity) {
-            compositePart.setLabel("(Draft) " + ((DraftWebServiceRequestEntity) requestObject).getNameAsUrl());
+            String label = getShortenLabel(requestObject);
+            compositePart.setLabel("(Draft) " + label);
         } else {
             compositePart.setLabel(requestObject.getName());
         }
@@ -235,6 +238,12 @@ public class WSRequestPartUI {
         calculateWeightsForVerificationChildParts();
 
         initComponents();
+    }
+
+    public static String getShortenLabel(WebServiceRequestEntity requestObject) {
+        String label = ((DraftWebServiceRequestEntity) requestObject).getNameAsUrl();
+        label = label.length() <= MAX_LABEL_LENGTH ? label : label.substring(0, MAX_LABEL_LENGTH) + "...";
+        return label;
     }
 
     private IFile createTempScriptFile(WebServiceRequestEntity requestObject) throws IOException, CoreException {
