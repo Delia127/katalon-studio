@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.webservice.handlers;
 
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -118,12 +119,12 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
     }
 	
     private void trackImportSwagger(String swaggerSpecLocation) {
-        Path filePath = Paths.get(swaggerSpecLocation);
-        if (Files.isRegularFile(filePath)) {
-            Trackings.trackImportSwagger("file");
-        } else {
-            Trackings.trackImportSwagger("url");
-        }
+    	try{
+    	   	 Paths.get(swaggerSpecLocation);
+ 			Trackings.trackImportSwagger("file");
+    	} catch (Throwable e){
+    			Trackings.trackImportSwagger("url");
+    	}
     }
     
 	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
