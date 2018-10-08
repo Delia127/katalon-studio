@@ -3,23 +3,31 @@ package com.kms.katalon.composer.execution.handlers;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.contributions.IContributionFactory;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MDynamicMenuContribution;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.service.event.Event;
 
+import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.menu.AbstractExecutionMenuContribution;
 import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
 import com.kms.katalon.composer.execution.menu.ExistingExecutionHandledMenuItem;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -27,13 +35,52 @@ import com.kms.katalon.execution.util.ExecutionUtil;
 @SuppressWarnings("restriction")
 public class ExecuteHandler extends AbstractExecutionHandler {
     private static final String TEMP_ID = "tempId";
+    
+    private static final String EXECUTION_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.run";
+    
+    private static final String DEBUG_EXECUTION_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.debug";
 
     @Inject
     private IContributionFactory contributionFactory;
+    
+    @Inject
+    private IEventBroker eventBroker;
 
     @Override
     protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException {
         return null;
+    }
+    
+    private MHandledToolItem runToolItem;
+    
+    private MHandledToolItem debugToolItem;
+    
+    private MMenu executionMenu;
+    
+    private MMenu debugExecutionMenu;
+    
+    @PostConstruct
+    public void init() {
+        runToolItem = (MHandledToolItem) modelService.find(EXECUTION_TOOL_ITEM_ID, application);
+        debugToolItem = (MHandledToolItem) modelService.find(DEBUG_EXECUTION_TOOL_ITEM_ID, application);
+        executionMenu = runToolItem.getMenu();
+        debugExecutionMenu = debugToolItem.getMenu();
+        eventBroker.subscribe(EventConstants.PROJECT_OPENED,
+                new EventServiceAdapter() {
+
+                    @Override
+                    public void handleEvent(Event event) {
+                        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+                        if (currentProject.getType() == ProjectType.WEBSERVICE) {
+                            runToolItem.setMenu(null);
+                            debugToolItem.setMenu(null);
+                        } else {
+                            runToolItem.setMenu(executionMenu);
+                            debugToolItem.setMenu(debugExecutionMenu);
+                        }
+                    }
+            
+        });
     }
 
     @Execute
@@ -43,7 +90,7 @@ public class ExecuteHandler extends AbstractExecutionHandler {
             if (defaultRunContributor == null) {
                 return;
             }
-            ExecutionHandledMenuItem defaultMenuItem = findDefaultMenuItem(toolItem.getMenu());
+            ExecutionHandledMenuItem defaultMenuItem = findDefaultMenuItem(getMenu(toolItem));
             if (defaultMenuItem == null) {
                 return;
             }
@@ -53,6 +100,16 @@ public class ExecuteHandler extends AbstractExecutionHandler {
                     .format(StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_TEST_SCRIPT_ROOT_CAUSE, e.getMessage()));
             LoggerSingleton.logError(e);
         }
+    }
+    
+    private MMenu getMenu(MHandledToolItem toolItem) {
+        if (toolItem.getElementId().equals(EXECUTION_TOOL_ITEM_ID)) {
+            return executionMenu;
+        }
+        if (toolItem.getElementId().equals(DEBUG_EXECUTION_TOOL_ITEM_ID)) {
+            return debugExecutionMenu;
+        }
+        return null;
     }
 
     public ExecutionHandledMenuItem findDefaultMenuItem(MMenu parentMenu) {

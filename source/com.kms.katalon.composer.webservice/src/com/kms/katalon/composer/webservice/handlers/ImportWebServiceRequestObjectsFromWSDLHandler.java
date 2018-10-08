@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.webservice.handlers;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -27,7 +28,6 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromSwaggerDialog;
 import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromWSDLDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
@@ -39,30 +39,31 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.util.Util;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ImportWebServiceRequestObjectsFromWSDLHandler {
 
-	@Inject
-	IEventBroker eventBroker;
+    @Inject
+    IEventBroker eventBroker;
 
-	@Inject
-	EModelService modelService;
+    @Inject
+    EModelService modelService;
 
-	@Inject
-	MApplication application;
+    @Inject
+    MApplication application;
 
-	@Inject
-	EPartService partService;
+    @Inject
+    EPartService partService;
 
-	@Inject
-	IEclipseContext context;
+    @Inject
+    IEclipseContext context;
 
-	private FolderTreeEntity objectRepositoryTreeRoot;
+    private FolderTreeEntity objectRepositoryTreeRoot;
 
     @PostConstruct
     public void registerEventHandler() {
         eventBroker.subscribe(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL, new EventHandler() {
-        	
+
             @Override
             public void handleEvent(Event event) {
                 if (!canExecute()) {
@@ -72,12 +73,12 @@ public class ImportWebServiceRequestObjectsFromWSDLHandler {
             }
         });
     }
-	
+
     @CanExecute
     private boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;
     }
-    
+
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
             @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
@@ -94,36 +95,50 @@ public class ImportWebServiceRequestObjectsFromWSDLHandler {
             ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
 
             ImportWebServiceObjectsFromWSDLDialog dialog = new ImportWebServiceObjectsFromWSDLDialog(parentShell);
-            
-            String [] requestMethods = new String[]{WebServiceRequestEntity.SOAP, WebServiceRequestEntity.SOAP12};
-            if (dialog.open() == Dialog.OK) {
-            	for(int i = 0; i < requestMethods.length; i++){
-            		String requestMethod = requestMethods[i];
 
-                	List<WebServiceRequestEntity> soapRequestEntities = dialog.getWebServiceRequestEntities(requestMethod);
-                	if(soapRequestEntities != null && soapRequestEntities.size() > 0 ){
-                    	FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolderEntity, requestMethod);
+            String[] requestMethods = new String[] { WebServiceRequestEntity.SOAP, WebServiceRequestEntity.SOAP12 };
+            if (dialog.open() == Dialog.OK) {
+                for (int i = 0; i < requestMethods.length; i++) {
+                    String requestMethod = requestMethods[i];
+
+                    List<WebServiceRequestEntity> soapRequestEntities = dialog
+                            .getWebServiceRequestEntities(requestMethod);
+                    if (soapRequestEntities != null && soapRequestEntities.size() > 0) {
+                        FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolderEntity,
+                                requestMethod);
                         FolderTreeEntity newFolderTree = new FolderTreeEntity(folder, parentTreeEntity);
-                        for(WebServiceRequestEntity entity : soapRequestEntities){
-                        	entity.setElementGuidId(Util.generateGuid());
-                        	entity.setParentFolder(folder);
-                        	entity.setProject(folder.getProject());
-                        	toController.saveNewTestObject(entity);
+                        for (WebServiceRequestEntity entity : soapRequestEntities) {
+                            entity.setElementGuidId(Util.generateGuid());
+                            entity.setParentFolder(folder);
+                            entity.setProject(folder.getProject());
+                            toController.saveNewTestObject(entity);
                         }
-                	}
-            	}
+                    }
+                }
+
+                trackImportWSDL(dialog.getWSDLSpecLocation());
+
                 eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
             }
-            
+
         } catch (FilePathTooLongException e) {
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, e.getMessage());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
     }
-	
-	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
+
+    private void trackImportWSDL(String wsdlSpecLocation) {
+        try {
+            Paths.get(wsdlSpecLocation);
+            Trackings.trackImportWSDL("file");
+        } catch (Throwable t) {
+            Trackings.trackImportWSDL("url");
+        }
+    }
+
+    public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
         if (selectedObjects != null) {
             for (Object entity : selectedObjects) {
                 if (entity instanceof ITreeEntity) {
@@ -141,24 +156,24 @@ public class ImportWebServiceRequestObjectsFromWSDLHandler {
         }
         return null;
     }
-	
-	@Inject
+
+    @Inject
     @Optional
     private void catchTestDataFolderTreeEntitiesRoot(
             @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
         try {
-            for(Object o : treeEntities) {
+            for (Object o : treeEntities) {
                 Object entityObject = ((ITreeEntity) o).getObject();
                 if (entityObject instanceof FolderEntity) {
                     FolderEntity folder = (FolderEntity) entityObject;
                     if (folder.getFolderType() == FolderType.WEBELEMENT) {
-                    	objectRepositoryTreeRoot = (FolderTreeEntity) o;
+                        objectRepositoryTreeRoot = (FolderTreeEntity) o;
                         return;
                     }
                 }
             }
         } catch (Exception e) {
-        	LoggerSingleton.logError(e);
+            LoggerSingleton.logError(e);
         }
     }
 }

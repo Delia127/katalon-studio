@@ -62,6 +62,7 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.DateTimes;
 
 public class RequestHistoryPart implements IRequestHistoryListener {
@@ -208,6 +209,7 @@ public class RequestHistoryPart implements IRequestHistoryListener {
         imgBtnSave.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                Trackings.trackClickSavingDraftRequest();
                 ITreeSelection structuredSelection = treeViewer.getStructuredSelection();
                 if (structuredSelection == null || structuredSelection.isEmpty() || structuredSelection.size() != 1
                         || !(structuredSelection.getFirstElement() instanceof RequestHistoryTreeItem)) {
@@ -234,6 +236,9 @@ public class RequestHistoryPart implements IRequestHistoryListener {
 
                     entity = (WebServiceRequestEntity) ObjectRepositoryController.getInstance()
                             .saveNewTestObject(entity);
+                    
+                    Trackings.trackSaveDraftRequest();
+                    
                     WebElementTreeEntity treeEntity = new WebElementTreeEntity(entity,
                             TreeEntityUtil.createSelectedTreeEntityHierachy(entity.getParentFolder(),
                                     FolderController.getInstance().getObjectRepositoryRoot(currentProject)));
@@ -249,6 +254,7 @@ public class RequestHistoryPart implements IRequestHistoryListener {
         imgBtnDelete.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                Trackings.trackClickDeletingDraftRequest();
                 ITreeSelection structuredSelection = treeViewer.getStructuredSelection();
                 if (structuredSelection == null || structuredSelection.isEmpty()) {
                     return;
@@ -272,6 +278,7 @@ public class RequestHistoryPart implements IRequestHistoryListener {
                     imgBtnDelete.setEnabled(false);
                     requestHistoryHandler.removeRequestHistories(new ArrayList<>(removedEntities),
                             ProjectController.getInstance().getCurrentProject());
+                    Trackings.trackDeleteDraftRequest(removedEntities.size());
                 } catch (IOException ex) {
                     MultiStatusErrorDialog.showErrorDialog("Unable to remove selected items", ex.getMessage(),
                             ExceptionsUtil.getStackTraceForThrowable(ex));
@@ -367,29 +374,10 @@ public class RequestHistoryPart implements IRequestHistoryListener {
 
     @Override
     public void addHistoryRequest(RequestHistoryEntity addedRequest) {
+        reloadTreeData();
+
         RequestDateTreeItem dateItem = contentProvider.findElementByDate(addedRequest.getReceivedResponseTime());
-        if (dateItem == null) {
-            reloadTreeData();
-            dateItem = contentProvider.findElementByDate(addedRequest.getReceivedResponseTime());
-            RequestHistoryTreeItem treeItem = new RequestHistoryTreeItem(addedRequest, dateItem);
-            treeViewer.setSelection(new StructuredSelection(treeItem));
-            Event event = new Event();
-            treeViewer.getTree().notifyListeners(SWT.Selection, event);
-            return;
-        }
-
         RequestHistoryTreeItem historyItem = new RequestHistoryTreeItem(addedRequest, dateItem);
-        List<RequestHistoryTreeItem> items = dateItem.getItems();
-        items.add(historyItem);
-        items.sort(new Comparator<RequestHistoryTreeItem>() {
-
-            @Override
-            public int compare(RequestHistoryTreeItem dateItem, RequestHistoryTreeItem dateItem2) {
-                return dateItem.getRequestHistoryEntity().getReceivedResponseTime().before(
-                        dateItem2.getRequestHistoryEntity().getReceivedResponseTime()) ? 1 : -1;
-            }
-        });
-        dateItem.setItems(items);
         treeViewer.refresh(dateItem);
         treeViewer.setSelection(new StructuredSelection(historyItem));
         Event event = new Event();

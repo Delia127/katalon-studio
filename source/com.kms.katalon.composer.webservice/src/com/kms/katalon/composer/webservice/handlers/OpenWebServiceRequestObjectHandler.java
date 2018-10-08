@@ -14,6 +14,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -45,6 +46,9 @@ public class OpenWebServiceRequestObjectHandler {
 
     @Inject
     IEclipseContext context;
+    
+    @Inject
+    EPartService partService;
 
     @PostConstruct
     public void registerEventHandler(IEventBroker eventBroker) {
@@ -65,6 +69,7 @@ public class OpenWebServiceRequestObjectHandler {
                 if (!optional.isPresent()) {
                     return;
                 }
+
                 WebServicePreferenceStore store = new WebServicePreferenceStore();
                 try {
                     store.removeDraftRequest(optional.get(), ProjectController.getInstance().getCurrentProject());
@@ -156,10 +161,20 @@ public class OpenWebServiceRequestObjectHandler {
                 .fromJson(JsonUtil.toJson(historyRequest.getRequest()), DraftWebServiceRequestEntity.class);
         draftWebServiceEntity.setDraftUid(historyRequest.getUid());
         try {
-            openDraftRequest(draftWebServiceEntity);
+            MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+            String partId = EntityPartUtil.getDraftRequestPartId(draftWebServiceEntity.getDraftUid());
+            if (stack != null) {
+                MPart mPart = (MPart) modelService.find(partId, application);
+                if (mPart == null) {
+                    WSRequestPartUI.create(draftWebServiceEntity, stack);
+                    Trackings.trackOpenDraftRequest(draftWebServiceEntity.getServiceType(), "history");
+                } else {
+                    stack.setSelectedElement(mPart);
+                }
+            }
+
             WebServicePreferenceStore store = new WebServicePreferenceStore();
             store.saveDraftRequest(draftWebServiceEntity, ProjectController.getInstance().getCurrentProject());
-            Trackings.trackOpenObject("webServiceHistoryRequest");
         } catch (IOException | CoreException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog("Unable to open request", e.getMessage(),
@@ -176,6 +191,19 @@ public class OpenWebServiceRequestObjectHandler {
                 WSRequestPartUI.create(draftRequest, stack);
             } else {
                 stack.setSelectedElement(mPart);
+            }
+            setSelectedExplorerPart();
+        }
+    }
+    
+    private void setSelectedExplorerPart() {
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID,
+                application);
+        if (stack != null) {
+            MPart requestHistoryPart = partService.findPart(IdConstants.COMPOSER_REQUEST_HISTORY_PART_ID);
+            if (requestHistoryPart != null && !stack.getSelectedElement().getElementId()
+                    .equals(requestHistoryPart.getElementId())) {
+                stack.setSelectedElement(requestHistoryPart);
             }
         }
     }

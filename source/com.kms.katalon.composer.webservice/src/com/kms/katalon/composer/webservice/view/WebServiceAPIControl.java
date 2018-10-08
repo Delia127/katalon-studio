@@ -48,13 +48,13 @@ public class WebServiceAPIControl extends Composite {
     
     private MenuItem mniAddRequestToExistingTestCase;
 
-    public WebServiceAPIControl(Composite parent, boolean isSOAP, String url) {
+    public WebServiceAPIControl(Composite parent, boolean isSOAP, boolean isDraft, String url) {
         super(parent, SWT.NONE);
-        createControl(url);
+        createControl(url, isDraft);
         setInput(isSOAP);
     }
 
-    private void createControl(String url) {
+    private void createControl(String url, boolean isDraft) {
         GridLayout gridLayout = new GridLayout(3, false);
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
@@ -91,18 +91,20 @@ public class WebServiceAPIControl extends Composite {
         
         btnSend.setData(menuSend);
         
-        btnAddRequestToTestCase = new ToolItem(toolbar, SWT.DROP_DOWN);
-        btnAddRequestToTestCase.setImage(ImageConstants.WS_ADD_TO_TEST_CASE_24);
-        
-        menuAddRequestToTestCase = new Menu(btnAddRequestToTestCase.getParent().getShell());
-        mniAddRequestToNewTestCase = new MenuItem(menuAddRequestToTestCase, SWT.PUSH);
-        mniAddRequestToNewTestCase.setText(StringConstants.MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE);
-        mniAddRequestToNewTestCase.setID(0);
-        mniAddRequestToExistingTestCase = new MenuItem(menuAddRequestToTestCase, SWT.PUSH);
-        mniAddRequestToExistingTestCase.setText(StringConstants.MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE);
-        mniAddRequestToExistingTestCase.setID(1);
-        
-        btnAddRequestToTestCase.setData(menuAddRequestToTestCase);
+        if (!isDraft) {
+            btnAddRequestToTestCase = new ToolItem(toolbar, SWT.DROP_DOWN);
+            btnAddRequestToTestCase.setImage(ImageConstants.WS_ADD_TO_TEST_CASE_24);
+            
+            menuAddRequestToTestCase = new Menu(btnAddRequestToTestCase.getParent().getShell());
+            mniAddRequestToNewTestCase = new MenuItem(menuAddRequestToTestCase, SWT.PUSH);
+            mniAddRequestToNewTestCase.setText(StringConstants.MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE);
+            mniAddRequestToNewTestCase.setID(0);
+            mniAddRequestToExistingTestCase = new MenuItem(menuAddRequestToTestCase, SWT.PUSH);
+            mniAddRequestToExistingTestCase.setText(StringConstants.MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE);
+            mniAddRequestToExistingTestCase.setID(1);
+            
+            btnAddRequestToTestCase.setData(menuAddRequestToTestCase);
+        }
         
         toolbar.setLayoutData(new GridData(SWT.CENTER, SWT.RIGHT, false, true));
 
