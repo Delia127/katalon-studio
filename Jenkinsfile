@@ -5,7 +5,7 @@ node {
         build job: 'StartServices'
     }
     stage('Check out') {
-	    retry(2){
+	    retry(3){
         	checkout scm
 	    }
     }
