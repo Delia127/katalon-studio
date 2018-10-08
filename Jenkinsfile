@@ -1,6 +1,7 @@
 node {
     stage('Prepare'){
 	// Start neccessary services to prepare required libraries if needed
+	deleteDir()
         build job: 'StartServices'
     }
     stage('Check out') {
