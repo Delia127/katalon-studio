@@ -220,7 +220,7 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         try {
             store.setDefaultCapturedTestObjectAttributeLocators();
             store.setDefaultCapturedTestObjectXpathLocators();
-            store.setDefaultCapturedTestObjectSelectionMethods();
+            store.setDefaultCapturedTestObjectSelectorMethods();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -688,7 +689,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
             
-                        
+            Boolean useAllNeighbors = RunConfiguration.getAutoApplyNeighborXpaths();
+                 
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
             By defaultLocator = null;
@@ -752,11 +754,18 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
-            
-            // If this code is reached, then it's definitely a WebElementNotFoundException
+
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
-            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));      
+            
+
+            List<WebElement> tryAutoApplyNeighborXpaths = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, useAllNeighbors);    
+            if(useAllNeighbors == false){
+                throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
+            }
+       
+            if(tryAutoApplyNeighborXpaths!= null && tryAutoApplyNeighborXpaths.size() > 0) {
+                return tryAutoApplyNeighborXpaths;
+            }
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
@@ -770,41 +779,58 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
-    private static void findWebElementsByOtherMethods(
+    private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
-    		TestObject testObject){
+    		TestObject testObject,
+    		Boolean useAllNeighbors){
 
-        List<WebElement> webElementsFoundByHeuristicMethod = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
-        List<WebElement> webElementsFoundByTrialAndErrorMethod = findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);       
+        return findWebElementsByAutoApplyNeighborXpaths(webDriver, objectInsideShadowDom, testObject, useAllNeighbors);
     }
     
-    private static List<WebElement> findWebElementsUsingTrialAndErrorMethod(
+    private static List<WebElement> findWebElementsByAutoApplyNeighborXpaths(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
-    		TestObject testObject){
+    		TestObject testObject,
+    		Boolean useAllNeighbors){
     	
     	if(objectInsideShadowDom){
     		 return Collections.emptyList();
     	}
-    	logger.logInfo(StringConstants.KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD);
-    	List<WebElement> webElements = new ArrayList<>();
     	
-    	testObject.getXpaths().forEach(xpath ->{
-            By byXpath =  By.xpath(xpath.getValue());
-            List<WebElement> webElementsByThisXpath = webDriver.findElements(byXpath);
-            if(webElementsByThisXpath != null && !webElementsByThisXpath.isEmpty()){
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_TRIAL_AND_ERROR_METHOD, testObject.getObjectId(), xpath.getValue()));
-            	webElements.addAll(webElementsByThisXpath);
-            }            
-    	});
-        logger.logInfo(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_TRIAL_AND_ERROR_METHOD);
+    	List<WebElement> webElements = new ArrayList<>();
+    	logger.logInfo(StringConstants.KW_LOG_INFO_AUTO_APPLYING_NEIGHBOR_XPATHS);    	
+    	
+    	Optional<String> workingNeighborXpath = 
+    			testObject.getXpaths()
+    			.stream()
+    			.filter(xpath -> xpath.getName().equals("xpath:neighbor"))
+    			.map(xpath -> xpath.getValue())
+    			.findFirst();
+    	
+    	if(workingNeighborXpath.isPresent()){
+    		String xpath = workingNeighborXpath.get();
+    		By byXpath =  By.xpath(xpath);
+    		List<WebElement> neighborXpathsElements = webDriver.findElements(byXpath);
+    		if(neighborXpathsElements != null && neighborXpathsElements.size() > 0){
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_AUTO_APPLYING_NEIGHBOR_XPATHS, 
+                		testObject.getObjectId(), xpath));
+                webElements = neighborXpathsElements;
+    		} else {
+    			logger.logInfo(StringConstants.KW_LOG_INFO_NOT_FOUND_WEB_ELEMENT_AUTO_APPLYING_NEIGHBOR_XPATHS);
+    		}
+    	}
+    	
+    	if(useAllNeighbors == false){
+            logger.logInfo(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_AUTO_APPLYING_NEIGHBOR_XPATHS);            
+    	}
     	
     	return webElements;
     }
 
 
-    private static List<WebElement> findWebElementsUsingHeuristicMethod(
+    @SuppressWarnings("unused")
+	private static List<WebElement> findWebElementsUsingHeuristicMethod(
             WebDriver webDriver, 
             boolean objectInsideShadowDom,
             TestObject testObject) {

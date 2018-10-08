@@ -233,6 +233,7 @@ public abstract class AbstractExecutionHandler {
         try {
             AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
                     projectDir);
+           
             if (runConfiguration == null) {
                 return;
             }
