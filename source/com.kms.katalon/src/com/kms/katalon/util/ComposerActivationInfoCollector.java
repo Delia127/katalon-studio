@@ -115,8 +115,8 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
 //        }
     }
 
-    public static String getActivationRequestCode() {
-        String requestCodePropName = ApplicationStringConstants.APP_PROP_ACTIVATION_REQUEST_CODE;
+    public static String genRequestActivationInfo() {
+        String requestCodePropName = ApplicationStringConstants.REQUEST_CODE_PROP_NAME;
         String requestActivationCode = ApplicationInfo.getAppProperty(requestCodePropName);
 
         if (requestActivationCode == null || requestActivationCode.trim().length() < 1) {

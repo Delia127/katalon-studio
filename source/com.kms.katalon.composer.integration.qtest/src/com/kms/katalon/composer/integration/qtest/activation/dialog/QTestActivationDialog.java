@@ -213,7 +213,7 @@ public class QTestActivationDialog extends Dialog {
         btnActivate = new Button(btnComposite, SWT.NONE);
         GridData gdBtnActivate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         btnActivate.setLayoutData(gdBtnActivate);
-        btnActivate.setText(StringConstants.BTN_ACTIVATE_TILE);
+        btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
 
         btnClear.addSelectionListener(new SelectionAdapter() {
             @Override

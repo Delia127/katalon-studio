@@ -164,7 +164,7 @@ public class QTestActivationHelper {
         String encodedActivationCode = CryptoUtil
                 .encode(CryptoUtil.getDefault(Integer.toString(getHostNameHashValue()), activationCode));
         ApplicationInfo.setAppProperty(QTestStringConstants.APP_PROP_ACTIVATION_CODE, encodedActivationCode, true);
-        ApplicationInfo.removeAppProperty(ApplicationStringConstants.APP_PROP_ACTIVATION_REQUEST_CODE);
+        ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
     }
 
     private static String getApplicationActivationCode() throws IOException, GeneralSecurityException {

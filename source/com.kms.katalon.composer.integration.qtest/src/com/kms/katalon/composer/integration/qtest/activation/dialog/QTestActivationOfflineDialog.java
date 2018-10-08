@@ -84,7 +84,7 @@ public class QTestActivationOfflineDialog extends AbstractDialog {
     @Override
     protected void createButtonsForButtonBar(final Composite parent) {
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, false);
-        btnActivate = createButton(parent, IDialogConstants.OK_ID, StringConstants.BTN_ACTIVATE_TILE, true);
+        btnActivate = createButton(parent, IDialogConstants.OK_ID, StringConstants.BTN_ACTIVATE_TITLE, true);
         enableActivateButton();
     }
 
@@ -135,7 +135,7 @@ public class QTestActivationOfflineDialog extends AbstractDialog {
         GridData gdActivationRequest = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdActivationRequest.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
         txtRequestCode.setLayoutData(gdActivationRequest);
-        txtRequestCode.setText(ComposerActivationInfoCollector.getActivationRequestCode());
+        txtRequestCode.setText(ComposerActivationInfoCollector.genRequestActivationInfo());
         txtRequestCode.setBackground(ColorUtil.getDisabledItemBackgroundColor());
 
         new Label(body, SWT.NONE);
