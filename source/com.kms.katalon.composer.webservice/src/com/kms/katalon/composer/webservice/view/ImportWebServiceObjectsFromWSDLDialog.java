@@ -16,6 +16,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -120,6 +121,21 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
     	Composite methodComposite = new Composite(composite, SWT.NONE);
     	GridLayout glMethodComposite = new GridLayout();
         methodComposite.setLayout(glMethodComposite);
+        
+        Button button = new Button(methodComposite, SWT.PUSH);
+        button.setText(StringConstants.BROWSE);
+        button.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e) {
+            	FileDialog directoryDialog = new FileDialog(getParentShell());
+                String filePath = directoryDialog.open();          
+                text.setText(filePath);
+                directory = filePath;
+            }
+        });
+        
+        
+        
         ModifyListener listener = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
               directory = ((Text) e.widget).getText();
