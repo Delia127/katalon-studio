@@ -41,6 +41,7 @@ public class EvaluateRunConfigurationContributionsHandler {
 			@Override
 			public void run() throws Exception {
 				if (o instanceof IRunConfigurationContributor) {
+					System.out.println(o.toString());
 					IRunConfigurationContributor contributor = (IRunConfigurationContributor) o;
 					RunConfigurationCollector.getInstance().addBuiltinRunConfigurationContributor(contributor);
 				}

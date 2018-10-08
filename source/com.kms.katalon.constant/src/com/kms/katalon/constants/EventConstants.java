@@ -340,4 +340,7 @@ public class EventConstants {
     
     // Api Quick Start Dialog
     public static final String API_QUICK_START_DIALOG_OPEN = "API/OPEN_QUICK_START_DIALOG";
-}
+    
+    // Web Service Execution Events
+    public static final String WEBSERVICE_EXECUTE = "WEBSERVICE/EXECUTE";
+};
