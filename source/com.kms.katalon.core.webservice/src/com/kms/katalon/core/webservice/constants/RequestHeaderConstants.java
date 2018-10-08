@@ -22,6 +22,8 @@ public class RequestHeaderConstants {
     public static final String PUT = "PUT";
 
     public static final String DELETE = "DELETE";
+    
+    public static final String PATCH = "PATCH";
 
     public static final String AUTHORIZATION = "Authorization";
 

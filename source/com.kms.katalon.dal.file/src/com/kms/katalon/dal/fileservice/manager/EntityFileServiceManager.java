@@ -32,7 +32,7 @@ import com.kms.katalon.entity.util.Util;
 
 public class EntityFileServiceManager {
 
-    private static final String[] EXCLUDED_FOLDER = new String[] { ".svn", ".meta", ".DS_Store" };
+    private static final String[] EXCLUDED_FOLDER = new String[] { ".svn", ".meta", ".DS_Store", ".git" };
 
     public static final FileFilter fileFilter = new FileFilter() {
         List<String> list = Arrays.asList(EXCLUDED_FOLDER);
@@ -119,7 +119,8 @@ public class EntityFileServiceManager {
                 if (currentProject == null) return;
                 String projectFolderLocation = currentProject.getFolderLocation();
 
-                if (!parentFolderLocation.toLowerCase().startsWith(projectFolderLocation.toLowerCase())) return;
+                if (!parentFolderLocation.toLowerCase().equalsIgnoreCase(projectFolderLocation.toLowerCase()) &&
+                    !parentFolderLocation.toLowerCase().startsWith(projectFolderLocation.toLowerCase() + File.separator)) return;
 
                 if (projectFolderLocation.equalsIgnoreCase(parentFolderLocation) && entity instanceof FolderEntity) {
                     String fileName = localFile.getName();
@@ -138,6 +139,8 @@ public class EntityFileServiceManager {
                         folderEntity.setFolderType(FolderType.KEYWORD);
                     } else if (FileServiceConstant.REPORT_ROOT_FOLDER_NAME.equals(fileName)) {
                         folderEntity.setFolderType(FolderType.REPORT);
+                    }  else if (FileServiceConstant.INCLUDE_SCRIPT_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.INCLUDE);
                     }
                     folderEntity.setProject(currentProject);
                 } else {

@@ -27,7 +27,7 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
     public static final int RUN_WITH_COLUMN_IDX = 2;
 
     public static final int RUN_WITH_DATA_COLUMN_IDX = 3;
-    
+
     public static final int PROFILE_COLUMN_IDX = 4;
 
     public static final int RUN_COLUMN_IDX = 5;
@@ -70,12 +70,15 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
     private Image getImageForRunConfigurationColumn(TestSuiteRunConfiguration element) {
         TestExecutionConfigurationProvider executionProvider = getOriginalConfigProvider(element);
         try {
-            return executionProvider != null ? ImageUtil.loadImage(executionProvider.getImageUrlAsString())
-                    : IMG_16_WARN_TABLE_ITEM;
+            String imageUrlAsString = executionProvider.getImageUrlAsString();
+            if (StringUtils.isNotEmpty(imageUrlAsString)) {
+                return executionProvider != null ? ImageUtil.loadImage(imageUrlAsString) : IMG_16_WARN_TABLE_ITEM;
+            }
         } catch (MalformedURLException e) {
             LoggerSingleton.logError(e);
-            return null;
         }
+
+        return null;
     }
 
     @Override
@@ -92,8 +95,9 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
                         : StringUtils.EMPTY;
             case RUN_WITH_DATA_COLUMN_IDX:
                 Map<String, String> configurationData = runConfiguration.getRunConfigurationData();
-                return configurationData != null ? getOriginalConfigProvider(element)
-                        .displayRunConfigurationData(configurationData) : StringUtils.EMPTY;
+                return configurationData != null
+                        ? getOriginalConfigProvider(element).displayRunConfigurationData(configurationData)
+                        : StringUtils.EMPTY;
             case RUN_WITH_COLUMN_IDX:
                 RunConfigurationDescription configuration = runConfiguration;
                 return configuration != null ? configuration.getRunConfigurationId() : StringUtils.EMPTY;

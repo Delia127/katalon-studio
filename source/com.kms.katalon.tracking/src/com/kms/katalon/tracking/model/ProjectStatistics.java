@@ -48,6 +48,10 @@ public class ProjectStatistics {
 
     private int profileCount = 0;
     
+    private int featureFileCount = 0;
+    
+    private int groovyScriptFileCount = 0;
+    
     private boolean gitIntegrated = false;
     
     private boolean jiraIntegrated = false;
@@ -59,6 +63,8 @@ public class ProjectStatistics {
     private boolean qTestIntegrated = false;
     
     private boolean remoteWebDriverConfigured = false;
+    
+    private String webLocatorConfig;
 
     public String getProjectId() {
         return projectId;
@@ -244,6 +250,22 @@ public class ProjectStatistics {
         this.profileCount = profileCount;
     }
 
+    public int getFeatureFileCount() {
+        return featureFileCount;
+    }
+
+    public void setFeatureFileCount(int featureFileCount) {
+        this.featureFileCount = featureFileCount;
+    }
+
+    public int getGroovyScriptFileCount() {
+        return groovyScriptFileCount;
+    }
+
+    public void setGroovyScriptFileCount(int groovyScriptFileCount) {
+        this.groovyScriptFileCount = groovyScriptFileCount;
+    }
+
     public boolean isGitIntegrated() {
         return gitIntegrated;
     }
@@ -291,4 +313,13 @@ public class ProjectStatistics {
     public void setRemoteWebDriverConfigured(boolean remoteWebDriverConfigured) {
         this.remoteWebDriverConfigured = remoteWebDriverConfigured;
     }
+
+    public String getWebLocatorConfig() {
+        return webLocatorConfig;
+    }
+
+    public void setWebLocatorConfig(String webLocatorConfig) {
+        this.webLocatorConfig = webLocatorConfig;
+    }
+
 }

@@ -1,7 +1,10 @@
 package com.kms.katalon.activation.dialog;
 
 import java.awt.Desktop;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.security.GeneralSecurityException;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
@@ -25,11 +28,17 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.activation.dialog.SignupDialog.AuthenticationInfo;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.CryptoUtil;
 
 public class ActivationDialog extends Dialog {
 
@@ -119,7 +128,7 @@ public class ActivationDialog extends Dialog {
         gdBtnActivate.heightHint = 26;
         gdBtnActivate.widthHint = 72;
         btnActivate.setLayoutData(gdBtnActivate);
-        btnActivate.setText(StringConstants.BTN_ACTIVATE_TILE);
+        btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
 
         Link linkForgotPass = new Link(composite, SWT.NONE);
         linkForgotPass.setText(StringConstants.LINK_LABEL_FORGOT_PASS_TEXT);
@@ -184,7 +193,13 @@ public class ActivationDialog extends Dialog {
             @Override
             public void mouseUp(MouseEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(StringConstants.REGISTER_LINK));
+                    SignupDialog signupDialog = new SignupDialog(getShell());
+                    if (signupDialog.open() == SignupDialog.OK) {
+                        AuthenticationInfo authenticationInfo = signupDialog.getAuthenticationInfo();
+                        setInitialKASettings(authenticationInfo.getEmail(), authenticationInfo.getPassword());
+                        setReturnCode(Window.OK);
+                        close();
+                    }
                 } catch (Exception ex) {
                     LogUtil.logError(ex);
                 }
@@ -226,11 +241,13 @@ public class ActivationDialog extends Dialog {
         lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
         lblError.setText(StringConstants.WAITTING_MESSAGE);
 
+        String username = txtUserName.getText();
+        String password = txtPassword.getText();
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
                 StringBuilder errorMessage = new StringBuilder();
-                boolean result = ActivationInfoCollector.activate(txtUserName.getText(), txtPassword.getText(),
+                boolean result = ActivationInfoCollector.activate(username, password,
                         errorMessage);
                 lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
                 if (result == true) {
@@ -241,6 +258,35 @@ public class ActivationDialog extends Dialog {
                 }
             }
         });
+
+        setInitialKASettings(username, password);
+    }
+    
+    private ScopedPreferenceStore getPreferenceStore() {
+        return PreferenceStoreManager.getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
+    }
+
+    
+    public void setInitialKASettings(String txtUsername, String txtPassword) {
+        ScopedPreferenceStore preferenceStore = getPreferenceStore();
+
+            String email;
+            try {
+                email = CryptoUtil.encode(CryptoUtil.getDefault(txtUsername));
+                String password = CryptoUtil.encode(CryptoUtil.getDefault(txtPassword));
+                preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL,
+                        email);
+                preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD,
+                       password);
+            } catch (UnsupportedEncodingException | GeneralSecurityException e1) {
+                LoggerSingleton.logError(e1);
+            }
+
+        try {
+            preferenceStore.save();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private void enableActivateButton() {

@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -36,6 +35,7 @@ import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.composer.keyword.dialogs.NewRenamePackageDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -63,42 +63,40 @@ public class NewPackageHandler {
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
             ITreeEntity selectedTreeEntity = null;
             Object parentTreeEntity = null;
-            Object parent = null;
+            IPackageFragment packageFragment = null;
+            IPackageFragmentRoot packageRoot = null;
 
-            if (ArrayUtils.isEmpty(selectedObjects) || findParentTreeEntity(selectedObjects) == null) {
-                selectedTreeEntity = keywordFolderTreeRoot;
-            } else if (selectedObjects[0] instanceof ITreeEntity
-                    && StringUtils.equals(((ITreeEntity) selectedObjects[0]).getKeyWord(), KeywordTreeEntity.KEY_WORD)) {
+            if (selectedObjects[0] instanceof ITreeEntity) {
                 selectedTreeEntity = (ITreeEntity) selectedObjects[0];
             }
 
             if (selectedTreeEntity != null) {
                 if (selectedTreeEntity instanceof FolderTreeEntity) {
-                    parent = GroovyUtil.getKeywordSourceRootFolder(((FolderEntity) selectedTreeEntity.getObject())
-                            .getProject());
+                    FolderEntity folder = (FolderEntity) selectedTreeEntity.getObject();
                     parentTreeEntity = selectedTreeEntity;
+
+                    IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance()
+                            .getCurrentProject());
+                    packageRoot = JavaCore.create(groovyProject).getPackageFragmentRoot(groovyProject.getFolder(folder.getRelativePath())); // default package
                 } else if (selectedTreeEntity instanceof KeywordTreeEntity) {
                     if (selectedTreeEntity.getParent() != null
                             && selectedTreeEntity.getParent() instanceof PackageTreeEntity) {
-                        parent = ((PackageTreeEntity) selectedTreeEntity.getParent()).getObject();
+                        packageFragment = (IPackageFragment) ((PackageTreeEntity) selectedTreeEntity.getParent()).getObject();
+                        
                         parentTreeEntity = ((PackageTreeEntity) selectedTreeEntity.getParent()).getParent();
+
+                        packageRoot = (IPackageFragmentRoot) packageFragment.getParent();
                     }
                 } else if (selectedTreeEntity instanceof PackageTreeEntity) {
-                    parent = ((PackageTreeEntity) selectedTreeEntity).getObject();
+                    packageFragment = (IPackageFragment) ((PackageTreeEntity) selectedTreeEntity).getObject();
                     parentTreeEntity = selectedTreeEntity.getParent();
+
+                    packageRoot = (IPackageFragmentRoot) packageFragment.getParent();
                 }
             }
 
-            if (parent != null) {
-                IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance()
-                        .getCurrentProject());
-                IPackageFragmentRoot root = JavaCore.create(groovyProject).getPackageFragmentRoot(
-                        groovyProject.getFolder(StringConstants.ROOT_FOLDER_NAME_KEYWORD));
-                NewRenamePackageDialog dialog = new NewRenamePackageDialog(parentShell, root, true);
-                // get current name
-                if (!(selectedTreeEntity instanceof FolderTreeEntity)) {
-                    dialog.setName(((IPackageFragment) parent).getElementName());
-                }
+            if (packageRoot != null) {
+                NewRenamePackageDialog dialog = new NewRenamePackageDialog(parentShell, packageRoot, true);
                 dialog.open();
                 if (dialog.getReturnCode() == Dialog.OK) {
                     if (dialog.getName().length() > StringConstants.MAX_PKG_AND_CLASS_NAME_LENGTH) {
@@ -109,7 +107,7 @@ public class NewPackageHandler {
                     }
                     // Create package
                     IProgressMonitor monitor = new NullProgressMonitor();
-                    IPackageFragment newPackageFragment = root.createPackageFragment(dialog.getName(), true, monitor);
+                    IPackageFragment newPackageFragment = packageRoot.createPackageFragment(dialog.getName(), true, monitor);
                     if (monitor.isCanceled()) {
                         throw new InterruptedException();
                     }
@@ -139,6 +137,9 @@ public class NewPackageHandler {
             if (parentTreeEntity instanceof FolderTreeEntity) {
                 FolderEntity parentFolder = (FolderEntity) parentTreeEntity.getObject();
                 if (parentFolder.getFolderType() == FolderType.KEYWORD) {
+                    return parentTreeEntity;
+                }
+                if (FolderController.getInstance().isSourceFolder(ProjectController.getInstance().getCurrentProject(), parentFolder)) {
                     return parentTreeEntity;
                 }
             } else if (parentTreeEntity instanceof KeywordTreeEntity || parentTreeEntity instanceof PackageTreeEntity) {

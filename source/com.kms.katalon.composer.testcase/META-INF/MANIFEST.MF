@@ -52,6 +52,7 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.codehaus.groovy.eclipse.core,
  com.kms.katalon.util,
  com.kms.katalon.application,
+ com.kms.katalon.integration.analytics,
  org.greenrobot.eventbus,
  com.kms.katalon.tracking
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

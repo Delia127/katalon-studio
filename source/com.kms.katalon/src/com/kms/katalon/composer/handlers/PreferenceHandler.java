@@ -10,6 +10,7 @@ import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.ui.internal.ide.dialogs.IDEWorkbenchPreferencePage;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.constants.EventConstants;
@@ -91,7 +92,7 @@ public class PreferenceHandler extends AbstractHandler {
         TreeViewer dialogTreeViewer = dialog.getTreeViewer();
         dialogTreeViewer.setComparator(new PreferencePageViewerComparator());
         dialog.setMinimumPageSize(500, 500);
-
+        
         if (DEFAULT_PREFERENCE_PAGE_ID.equals(dialog.getSelectedNodePreference())) {
             dialogTreeViewer.expandToLevel(dialog.getPreferenceManager().find(DEFAULT_PREFERENCE_PAGE_ID), 1);
         }

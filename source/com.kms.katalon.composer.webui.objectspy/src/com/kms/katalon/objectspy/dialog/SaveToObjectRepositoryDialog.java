@@ -53,6 +53,8 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
@@ -111,8 +113,16 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
             Object[] expandedHTMLElements) {
         super(parentShell, new EntityLabelProvider(), new FolderProvider(),
                 new EntityViewerFilter(new FolderProvider()));
+        List<WebPage> tmpPages = new ArrayList<>();
+        
+        for(Object wp : expandedHTMLElements){
+        	if(wp instanceof WebPage){
+            	tmpPages.add((WebPage) wp );
+        	}
+        }
+        
         this.isCheckable = isCheckable;
-        this.wrapConflictStatusPages = convertToConflictWebPageWrapper(pages);
+        this.wrapConflictStatusPages = convertToConflictWebPageWrapper(tmpPages);      
         this.store = PreferenceStoreManager.getPreferenceStore(this.getClass());
         this.leftTreeContentProvider = new ResolveConflictWebElementTreeContentProvider(true);
         setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
@@ -124,12 +134,12 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     private List<ConflictWebElementWrapper> convertToConflictWebPageWrapper(List<WebPage> inputPages) {
         List<ConflictWebElementWrapper> conflictPages = new ArrayList<>();
         List<WebPage> flatPages = flattenWebPages(inputPages);
-
+        
         for (WebPage webPage : flatPages) {
             ConflictWebElementWrapper webPageWrapper = new ConflictWebElementWrapper(webPage, false);
             List<ConflictWebElementWrapper> childListWrapper = new ArrayList<>();
 
-            for (WebElement webElement : webPage.getChildren()) {
+            for (WebElement webElement : webPage.getChildren()) {            	
                 ConflictWebElementWrapper childWrapper = new ConflictWebElementWrapper(webElement, false);
                 childWrapper.setParent(webPageWrapper);
                 childListWrapper.add(childWrapper);

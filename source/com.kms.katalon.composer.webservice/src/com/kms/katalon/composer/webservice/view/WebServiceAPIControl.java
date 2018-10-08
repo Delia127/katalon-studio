@@ -39,14 +39,22 @@ public class WebServiceAPIControl extends Composite {
     private Menu menuSend;
     
     private MenuItem mniSendAndVerify;
+    
+    private ToolItem btnAddRequestToTestCase;
+    
+    private Menu menuAddRequestToTestCase;
+    
+    private MenuItem mniAddRequestToNewTestCase;
+    
+    private MenuItem mniAddRequestToExistingTestCase;
 
-    public WebServiceAPIControl(Composite parent, boolean isSOAP, String url) {
+    public WebServiceAPIControl(Composite parent, boolean isSOAP, boolean isDraft, String url) {
         super(parent, SWT.NONE);
-        createControl(url);
+        createControl(url, isDraft);
         setInput(isSOAP);
     }
 
-    private void createControl(String url) {
+    private void createControl(String url, boolean isDraft) {
         GridLayout gridLayout = new GridLayout(3, false);
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
@@ -82,6 +90,21 @@ public class WebServiceAPIControl extends Composite {
         mniSendAndVerify.setID(0);
         
         btnSend.setData(menuSend);
+        
+        if (!isDraft) {
+            btnAddRequestToTestCase = new ToolItem(toolbar, SWT.DROP_DOWN);
+            btnAddRequestToTestCase.setImage(ImageConstants.WS_ADD_TO_TEST_CASE_24);
+            
+            menuAddRequestToTestCase = new Menu(btnAddRequestToTestCase.getParent().getShell());
+            mniAddRequestToNewTestCase = new MenuItem(menuAddRequestToTestCase, SWT.PUSH);
+            mniAddRequestToNewTestCase.setText(StringConstants.MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE);
+            mniAddRequestToNewTestCase.setID(0);
+            mniAddRequestToExistingTestCase = new MenuItem(menuAddRequestToTestCase, SWT.PUSH);
+            mniAddRequestToExistingTestCase.setText(StringConstants.MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE);
+            mniAddRequestToExistingTestCase.setID(1);
+            
+            btnAddRequestToTestCase.setData(menuAddRequestToTestCase);
+        }
         
         toolbar.setLayoutData(new GridData(SWT.CENTER, SWT.RIGHT, false, true));
 
@@ -121,6 +144,27 @@ public class WebServiceAPIControl extends Composite {
             return;
         }
         mniSendAndVerify.addSelectionListener(selectionListener);
+    }
+    
+    public void addAddRequestToTestCaseSelectionListener(SelectionListener selectionListener) {
+        if (selectionListener == null) {
+            return;
+        }
+        btnAddRequestToTestCase.addSelectionListener(selectionListener);
+    }
+    
+    public void addAddRequestToNewTestCaseSelectionListener(SelectionListener selectionListener) {
+        if (selectionListener == null) {
+            return;
+        }
+        mniAddRequestToNewTestCase.addSelectionListener(selectionListener);
+    }
+    
+    public void addAddRequestToExistingTestCaseSelectionListener(SelectionListener selectionListener) {
+        if (selectionListener == null) {
+            return;
+        }
+        mniAddRequestToExistingTestCase.addSelectionListener(selectionListener);
     }
 
     private void setInput(boolean isSOAP) {
@@ -185,5 +229,9 @@ public class WebServiceAPIControl extends Composite {
     
     public Menu getSendMenu() {
         return menuSend;
+    }
+    
+    public Menu getAddRequestToTestCaseMenu() {
+        return menuAddRequestToTestCase;
     }
 }

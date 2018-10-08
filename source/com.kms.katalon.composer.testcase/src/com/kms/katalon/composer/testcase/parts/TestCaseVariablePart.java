@@ -8,7 +8,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
@@ -77,7 +76,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.TestObject, InputValueType.TestData, InputValueType.Property, InputValueType.List,
             InputValueType.Map };
 

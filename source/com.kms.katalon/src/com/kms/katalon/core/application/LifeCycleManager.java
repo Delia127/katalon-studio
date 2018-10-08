@@ -206,6 +206,7 @@ public class LifeCycleManager {
 //                        .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
 //                                RunningMode.GUI)));
 //                sendEventForTracking();
+                Trackings.trackOpenApplication(false, "gui");
                 
                 return true;
             }

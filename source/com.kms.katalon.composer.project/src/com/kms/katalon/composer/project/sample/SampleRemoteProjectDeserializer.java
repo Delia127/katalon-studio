@@ -11,7 +11,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.kms.katalon.composer.project.sample.SampleRemoteProject.ProjectType;
 
 public class SampleRemoteProjectDeserializer implements JsonDeserializer<SampleRemoteProject> {
 
@@ -23,7 +22,7 @@ public class SampleRemoteProjectDeserializer implements JsonDeserializer<SampleR
         sampleRemoteProject.setName(jsObject.get("name").getAsString());
         sampleRemoteProject.setSourceUrl(jsObject.get("source_url").getAsString());
         sampleRemoteProject.setDefaultBranch(jsObject.get("default_branch").getAsString());
-        sampleRemoteProject.setType(ProjectType.fromString(jsObject.get("type").getAsString()));
+        sampleRemoteProject.setType(SampleProjectType.fromString(jsObject.get("type").getAsString()));
 
         JsonObject thumbnailsJson = jsObject.get("thumbnails").getAsJsonObject();
         Map<Integer, String> thumbnails = new HashMap<>();

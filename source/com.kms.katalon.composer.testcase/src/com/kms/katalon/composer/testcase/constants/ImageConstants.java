@@ -83,4 +83,6 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
     public static final Image IMG_16_WS = ImageManager.getImage(IImageKeys.SAMPLE_WEB_SERVICE_16);
 
     public static final Image IMG_16_CUSTOM = ImageManager.getImage(IImageKeys.CUSTOM_EXECUTION_16);
+    
+    public static final Image IMG_16_CUCUMBER = ImageManager.getImage(IImageKeys.FEATURE_16);
 }

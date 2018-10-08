@@ -4,6 +4,9 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
+
 public interface TestExecutionItem {
 
     String getName();
@@ -30,5 +33,9 @@ public interface TestExecutionItem {
             }
         }
         return Optional.empty();
+    }
+
+    default boolean shouldBeDisplayed(ProjectEntity project) {
+        return project != null && project.getType() != ProjectType.WEBSERVICE;
     }
 }

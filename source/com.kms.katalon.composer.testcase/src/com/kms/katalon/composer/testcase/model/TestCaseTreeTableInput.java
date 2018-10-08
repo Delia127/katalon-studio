@@ -100,11 +100,14 @@ import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestCaseTreeTableInput {
     private static final String OPERATION_LABEL_DRAG_AND_DROP_AST_NODES = "dragAndDropAstNodes";
 
     private static final String GROOVY_NEW_LINE_CHARACTER = "\n";
+    
+    private static final String WEB_SERVICE_KEYWORDS_CLASS_ALIAS_NAME = "WS"; 
 
     /**
      * Enum for adding items into tree table
@@ -892,6 +895,7 @@ public class TestCaseTreeTableInput {
         }
 
         executeOperation(new AddCallTestCaseStepsOperation(statementsToAdd, destinationNode, addType, variablesToAdd));
+        Trackings.trackAddNewTestStep("callTestCase");
     }
 
     private TestCaseEntity[] collectCalledTestCases() throws Exception {
@@ -942,10 +946,15 @@ public class TestCaseTreeTableInput {
                         TestCasePreferenceDefaultValueInitializer.getDefaultKeywordType().getAliasName()),
                 getSelectedNode(), addType);
     }
+    
+    public void addNewDefaultWebServiceKeyword(NodeAddType addType) {
+        addNewAstObject(TreeTableMenuItemConstants.getMenuItemID(WEB_SERVICE_KEYWORDS_CLASS_ALIAS_NAME), getSelectedNode(), addType);
+    }
 
     private void addNewBuiltInKeyword(AstTreeTableNode destinationNode, NodeAddType addType, String className) {
         addNewBuiltInKeyword(destinationNode, addType,
                 KeywordController.getInstance().getBuiltInKeywordClassByName(className));
+        Trackings.trackAddNewTestStep(className);
     }
 
     private void addNewBuiltInKeyword(AstTreeTableNode destinationNode, NodeAddType addType,
@@ -996,6 +1005,7 @@ public class TestCaseTreeTableInput {
             return;
         }
         addNewAstObject(customKeywordStatement, destinationNode, addType);
+        Trackings.trackAddNewTestStep("custom");
     }
 
     public ASTNodeWrapper getParentNodeForNewMethodCall(AstTreeTableNode destinationNode) {

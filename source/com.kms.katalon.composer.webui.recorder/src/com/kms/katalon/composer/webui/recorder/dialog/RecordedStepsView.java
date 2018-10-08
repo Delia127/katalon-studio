@@ -81,7 +81,7 @@ import com.kms.katalon.util.CryptoUtil;
 import com.kms.katalon.util.listener.EventListener;
 
 public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpyEvent> {
-    
+
     private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
     private TestCaseTreeTableInput treeTableInput;
@@ -105,11 +105,11 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         wrapper.addDefaultImports();
         wrapper.addImport(Keys.class);
     }
-    
+
     public void setCapturedObjectsView(CapturedObjectsView capturedObjectsView) {
         this.capturedObjectsView = capturedObjectsView;
     }
-    
+
     public CapturedObjectsView getCapturedObjectsView() {
         return capturedObjectsView;
     }
@@ -129,8 +129,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
 
         addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_ITEM, 200, 0,
                 new AstTreeItemLabelProvider(), new ItemColumnEditingSupport(treeViewer, this));
-        addTreeTableColumn(treeViewer, treeColumnLayout,
-                StringConstants.PA_COL_OBJ, 150, 0, new AstTreeLabelProvider(),
+        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_OBJ, 150, 0, new AstTreeLabelProvider(),
                 new CapturedElementEditingSupport(treeViewer, this));
         addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_INPUT, 150, 0,
                 new AstTreeLabelProvider(), new InputColumnEditingSupport(treeViewer, this));
@@ -162,7 +161,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 }
             }
         });
-        
 
         createTreeTableMenu();
 
@@ -270,15 +268,17 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     }
 
     private void secureSetTextAction(HTMLActionMapping newAction) {
-        newAction.setAction(HTMLAction.SetEncryptedText);
-        HTMLActionParamValueType passwordParam = newAction.getData()[0];
-        ConstantExpressionWrapper stringWrapper = (ConstantExpressionWrapper) passwordParam.getValue();
-        String password = stringWrapper.getValueAsString();
-        try {
-            stringWrapper.setValue(CryptoUtil.encode(CryptoUtil.getDefault(password)));
-        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            LoggerSingleton.logError(e);
-        }
+    	if(newAction.getAction() != HTMLAction.SendKeys){
+    		 newAction.setAction(HTMLAction.SetEncryptedText);
+    	        HTMLActionParamValueType passwordParam = newAction.getData()[0];
+    	        ConstantExpressionWrapper stringWrapper = (ConstantExpressionWrapper) passwordParam.getValue();
+    	        String password = stringWrapper.getValueAsString();
+    	        try {
+    	            stringWrapper.setValue(CryptoUtil.encode(CryptoUtil.getDefault(password)));
+    	        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
+    	            LoggerSingleton.logError(e);
+    	        }
+    	}       
     }
 
     private boolean preventDuplicatedActions(HTMLActionMapping newAction, AstBuiltInKeywordTreeTableNode latestNode,
@@ -319,7 +319,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         return HTMLAction.SetText.getMappedKeywordMethod().equals(latestKeywordName)
                 && HTMLAction.SetText.getName().equals(newActionName)
                 || HTMLAction.SetEncryptedText.getMappedKeywordMethod().equals(latestKeywordName)
-                && HTMLAction.SetEncryptedText.getName().equals(newActionName);
+                        && HTMLAction.SetEncryptedText.getName().equals(newActionName);
     }
 
     public AstBuiltInKeywordTreeTableNode getLatestNode() {
@@ -351,23 +351,25 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         if (items == null || items.length == 0) {
             return Collections.emptyList();
         }
-        
+
         List<AstTreeTableNode> nodes = new ArrayList<>();
         for (TreeItem i : items) {
             if (i.getData() instanceof AstTreeTableNode) {
                 nodes.add((AstTreeTableNode) i.getData());
             }
         }
-        
+
         return nodes;
     }
-    
-    public void addSimpleKeyword(String keywordName) {
+
+    public void addSimpleKeyword(String keywordName, boolean hasParam) {
         String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
         MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
                 keywordName, treeTableInput.getMainClassNode());
-        ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
-        arguments.addExpression(new ConstantExpressionWrapper(""));
+        if (hasParam) {
+            ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
+            arguments.addExpression(new ConstantExpressionWrapper(""));
+        }
         ExpressionStatementWrapper openBrowserStmt = new ExpressionStatementWrapper(methodCallExpressionWrapper);
         treeTableInput.addNewAstObject(openBrowserStmt, null, NodeAddType.Add);
         treeViewer.refresh();
@@ -382,14 +384,14 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 break;
             case SELENIUM_SESSION_STARTED:
             case ADDON_SESSION_STARTED:
-                //reset window ID
+                // reset window ID
                 windowId = "";
                 break;
             default:
                 break;
         }
     }
-    
+
     public Composite createVariableTab(Composite parent) {
         variableView = new TestCaseVariableView(this);
         Composite component = variableView.createComponents(parent);
@@ -398,7 +400,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         gl.marginHeight = 0;
         return component;
     }
-    
+
     public void removeTestStep() {
         boolean hasSelection = !treeViewer.getStructuredSelection().isEmpty();
         if (hasSelection) {
@@ -425,7 +427,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
             treeTableInput.paste(treeTableInput.getSelectedNode(), NodeAddType.Add);
         }
     }
-    
+
     private void runFromFirstSelectedStep() {
         boolean hasSelection = !treeViewer.getStructuredSelection().isEmpty();
         if (hasSelection) {
@@ -439,7 +441,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
             eventBroker.post(EventConstants.WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD, null);
         }
     }
-    
+
     private void runAllSteps() {
         eventBroker.post(EventConstants.WEBUI_VERIFICATION_RUN_ALL_STEPS_CMD, null);
     }
@@ -483,9 +485,11 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                     }
                 }
             };
+
             private String createMenuItemLabel(String text, String keyCombination) {
                 return text + "\t" + keyCombination; //$NON-NLS-1$
             }
+
             @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
                 Menu menu = tree.getMenu();
@@ -497,14 +501,16 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 menu = new Menu(tree);
 
                 MenuItem runFromThisStepMenuItem = new MenuItem(menu, SWT.PUSH);
-                runFromThisStepMenuItem.setText(createMenuItemLabel(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_HERE,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
+                runFromThisStepMenuItem.setText(
+                        createMenuItemLabel(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_HERE, KeyEventUtil
+                                .geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
                 runFromThisStepMenuItem.addSelectionListener(selectionListener);
                 runFromThisStepMenuItem.setID(TreeTableMenuItemConstants.RUN_FROM_THIS_STEP_ID);
                 runFromThisStepMenuItem.setEnabled(hasSelection);
 
                 MenuItem runSelectedStepsMenuItem = new MenuItem(menu, SWT.PUSH);
-                runSelectedStepsMenuItem.setText(createMenuItemLabel(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
+                runSelectedStepsMenuItem.setText(createMenuItemLabel(
+                        ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
                         KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
                 runSelectedStepsMenuItem.addSelectionListener(selectionListener);
                 runSelectedStepsMenuItem.setID(TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID);
@@ -539,11 +545,11 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 pasteMenuItem.addSelectionListener(selectionListener);
                 pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
                 pasteMenuItem.setEnabled(getTreeTableInput().canPaste());
-                
+
                 tree.setMenu(menu);
 
-//                addFailureHandlingSubMenu(menu);
-//;
+                // addFailureHandlingSubMenu(menu);
+                // ;
                 new MenuItem(menu, SWT.SEPARATOR);
 
                 MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
@@ -561,7 +567,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 enableMenuItem.setEnabled(hasSelection);
             }
         });
-        
+
         tree.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -620,6 +626,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 }
             }
         });
-        
+
     }
 }

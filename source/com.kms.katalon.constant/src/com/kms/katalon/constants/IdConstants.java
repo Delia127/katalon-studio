@@ -93,6 +93,8 @@ public interface IdConstants {
 
     // Test Object Part content
     public static final String TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testobject";
+    
+    public static final String DRAFT_REQUEST_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".draftRequest";
 
     // Test Suite Part content
     public static final String TESTSUITE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testsuite";
@@ -112,6 +114,9 @@ public interface IdConstants {
     // Test Data Part content
     public static final String TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
             + ".testSuiteCollection";
+
+    public static final String FEATURE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
+            + ".feature";
 
     // Report Part content
     public static final String REPORT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".report";
@@ -196,8 +201,14 @@ public interface IdConstants {
 
     public static final String WORKBENCH_WINDOW_ID = "org.eclipse.ui.workbench";
 
+    public static final String QTEST_INTEGRATION_BUNDLE_ID = "com.kms.katalon.composer.integration.qtest";
+
     // Groovy
     public static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
+    
+    public static final String CUCUMBER_EDITOR_ID = "cucumber.eclipse.editor.editors.Editor";
+
+    public static final String COMPABILITY_EDITOR_ID = "org.eclipse.e4.ui.compatibility.editor";
 
     // Log viewer part
     public static final String LOG_VIEWER_TOOL_ITEM_ALL_ID = "com.kms.katalon.composer.execution.logviewer.all";
@@ -280,5 +291,5 @@ public interface IdConstants {
 
     public static final String COMPOSER_PARTSTACK_LEFT_OUTLINE_ID = "com.kms.katalon.partstack.left.outline";
 
-    public static final String QTEST_INTEGRATION_BUNDLE_ID = "com.kms.katalon.composer.integration.qtest";
+    public static final String COMPOSER_REQUEST_HISTORY_PART_ID = "com.kms.katalon.composer.webservice.part.requestHistory";
 }

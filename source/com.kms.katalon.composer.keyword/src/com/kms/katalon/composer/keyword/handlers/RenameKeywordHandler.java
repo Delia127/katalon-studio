@@ -20,6 +20,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.dialogs.RenameKeywordDialog;
@@ -76,6 +77,8 @@ public class RenameKeywordHandler extends RenamePackageHandler {
                         throw new InterruptedException();
                     }
 
+                    eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity);
+                    
                     refreshParentAndSelect(parentTreeEntity, dialog.getName() + GroovyConstants.GROOVY_FILE_EXTENSION);
                 }
             }

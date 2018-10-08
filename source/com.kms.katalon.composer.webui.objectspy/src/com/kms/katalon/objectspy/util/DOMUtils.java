@@ -99,7 +99,6 @@ public class DOMUtils {
 		List<String> paths = new ArrayList<String>();
 		while (xpath.lastIndexOf("/") != -1) {
 			paths.add(0, xpath);
-			System.out.println(xpath);
 			xpath = xpath.substring(0, xpath.lastIndexOf("/"));
 		}
 		return paths.toArray(new String[paths.size()]);

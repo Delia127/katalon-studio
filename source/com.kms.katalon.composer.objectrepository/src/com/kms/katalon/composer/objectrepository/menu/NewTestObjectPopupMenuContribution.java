@@ -18,6 +18,9 @@ import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.composer.objectrepository.handler.NewTestObjectHandler;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 
 @SuppressWarnings("restriction")
 public class NewTestObjectPopupMenuContribution {
@@ -45,6 +48,11 @@ public class NewTestObjectPopupMenuContribution {
 
 	@AboutToShow
 	public void aboutToShow(List<MMenuElement> menuItems) {
+	    ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+	    if (project.getType() == ProjectType.WEBSERVICE) {
+	        return;
+	    }
+	    
 		try {
 			Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
 			if (selectedObjects == null) return;

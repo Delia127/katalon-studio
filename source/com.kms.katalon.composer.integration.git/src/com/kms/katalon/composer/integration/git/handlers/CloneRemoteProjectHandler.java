@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -57,7 +58,9 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.tracking.service.Trackings;
+
 
 @SuppressWarnings("restriction")
 public class CloneRemoteProjectHandler {
@@ -70,7 +73,10 @@ public class CloneRemoteProjectHandler {
 
     private File destinationFolder = null;
     
-    private ProjectEntity projectInfo;
+    private ProjectType projectType;
+
+    private SampleRemoteProject sample;
+
 
     @Inject
     EPartService partService;
@@ -90,12 +96,12 @@ public class CloneRemoteProjectHandler {
                     public void handleEvent(Event event) {
                         Object[] objects = getObjects(event);
 
-                        SampleRemoteProject sample = (SampleRemoteProject) objects[0];
-                        projectInfo = (ProjectEntity) objects[1];
-                        
-                        Trackings.trackCreatingSampleProject(sample.getName());
 
-                        File workdir = new File(projectInfo.getFolderLocation(), projectInfo.getName());
+                        sample = (SampleRemoteProject) objects[0];
+                        String projectLocation = ((ProjectEntity) objects[1]).getLocation();
+                        projectType = ((ProjectEntity) objects[1]).getType();
+
+                        File workdir = new File(projectLocation);
                         workdir.mkdirs();
 
                         Job job = new Job("Cloning remote project") {
@@ -194,14 +200,24 @@ public class CloneRemoteProjectHandler {
             }
         }
 
-        try {            
-            ProjectEntity project = ProjectController.getInstance().updateProjectInfo(projectFile, projectInfo);
+        try {
             shouldHandleProjectOpenAfterClone = true;
-            OpenProjectHandler.doOpenProject(null, project.getLocation(),
+            
+            ProjectEntity project = updateProjectType(projectFile);
+            
+            Trackings.trackCreatingSampleProject(sample.getName(), project.getUUID());
+            
+            OpenProjectHandler.doOpenProject(null, projectFile.getAbsolutePath(),
+
                     UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),
                     PartServiceSingleton.getInstance().getPartService(),
                     ModelServiceSingleton.getInstance().getModelService(),
                     ApplicationSingleton.getInstance().getApplication());
+            
+            TimeUnit.SECONDS.sleep(1);
+            if (projectType == ProjectType.WEBSERVICE) {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), GitStringConstants.ERROR,
@@ -210,6 +226,14 @@ public class CloneRemoteProjectHandler {
         return;
     }
 
+    private ProjectEntity updateProjectType(File projectFile) throws Exception {
+        ProjectEntity project = ProjectController.getInstance().getProject(projectFile.getAbsolutePath());
+        project.setType(projectType);
+        project.setFolderLocation(destinationFolder.getAbsolutePath());
+        ProjectController.getInstance().updateProject(project);
+        return project;
+    }
+    
     public void openReadme(File repoLocation) {
         File readme = new File(repoLocation, "README.md");
         if (!readme.exists()) {

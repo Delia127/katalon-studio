@@ -19,6 +19,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
@@ -141,6 +142,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         EmailConfig emailConfig = ((TestSuiteExecutedEntity) getExecutedEntity())
                 .getEmailConfig(ProjectController.getInstance().getCurrentProject());
         if (emailConfig == null || !emailConfig.canSend()) {
+            return;
+        }
+
+        if (emailConfig.isSendEmailTestFailedOnly() && testSuiteLogRecord.getStatus() != null
+                && testSuiteLogRecord.getStatus().getStatusValue() != TestStatusValue.FAILED) {
             return;
         }
 
