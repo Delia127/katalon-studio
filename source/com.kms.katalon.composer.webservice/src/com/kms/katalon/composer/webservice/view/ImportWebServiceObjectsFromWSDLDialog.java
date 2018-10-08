@@ -138,7 +138,11 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
         
         ModifyListener listener = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
-              directory = ((Text) e.widget).getText();
+            	Button ok = getButton(IDialogConstants.OK_ID);
+            	if(ok.isEnabled() == false){
+            		ok.setEnabled(true);
+            	}
+            	directory = ((Text) e.widget).getText();
             }
           };
         text.addModifyListener(listener);
