@@ -81,8 +81,7 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
         Label lblDefaultBrowser = new Label(comp, SWT.NONE);
         lblDefaultBrowser.setText(LBL_DEFAULT_EXECUTION);
-        GridData gdLblDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblDefaultBrowser.setLayoutData(gdLblDefaultBrowser);
+        lblDefaultBrowser.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
         cbDefaultBrowser = new Combo(comp, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
         GridData gdCbDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -91,8 +90,7 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
         Label lblDefaultElementTimeout = new Label(comp, SWT.NONE);
         lblDefaultElementTimeout.setText(StringConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT);
-        GridData gdLblDefaultElementTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblDefaultElementTimeout.setLayoutData(gdLblDefaultElementTimeout);
+        lblDefaultElementTimeout.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
         txtDefaultElementTimeout = new Text(comp, SWT.BORDER);
         GridData gdTxtDefaultElementTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -101,12 +99,10 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         
         Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
         lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
-        GridData gdLblApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblApplyNeighborXpaths.setLayoutData(gdLblApplyNeighborXpaths);
+        lblApplyNeighborXpaths.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         
         chckApplyNeighborXpaths= new Button(comp, SWT.CHECK);
-        GridData gdChckApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        chckApplyNeighborXpaths.setLayoutData(gdChckApplyNeighborXpaths);
+        chckApplyNeighborXpaths.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
         Group grpAfterExecuting = new Group(container, SWT.NONE);
         grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);
