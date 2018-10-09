@@ -33,6 +33,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
@@ -45,6 +46,7 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -135,8 +137,7 @@ public class NewStepDefinitionHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
         try {
-            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-            ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
+            ITreeEntity parentTreeEntity = getParentTreeEntity();
 
             FolderTreeEntity rootParentFolder = null;
             IPackageFragment packageFragment = null;
@@ -222,6 +223,21 @@ public class NewStepDefinitionHandler {
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+    }
+    
+    private ITreeEntity getParentTreeEntity() throws Exception {
+    	  Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+          ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
+          
+          if (parentTreeEntity == null) {
+          	ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+          	FolderEntity includeRootFolder = FolderController.getInstance().getIncludeRoot(project);
+          	FolderEntity groovyScriptFolder = FolderController.getInstance().getGroovyScriptRoot(project);
+          	FolderTreeEntity treeEntity = new FolderTreeEntity(groovyScriptFolder,
+          			TreeEntityUtil.createSelectedTreeEntityHierachy(groovyScriptFolder.getParentFolder(), includeRootFolder));
+          	parentTreeEntity = treeEntity;
+          }
+          return parentTreeEntity;
     }
 
     private class SampleCustomKeywordScriptBuilder {
