@@ -690,7 +690,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
             
-            Boolean useAllNeighbors = RunConfiguration.getAutoApplyNeighborXpaths();
+            Boolean smartXPathsEnabled = RunConfiguration.getAutoApplyNeighborXpaths();
                  
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
@@ -759,8 +759,8 @@ public class WebUiCommonHelper extends KeywordHelper {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             
 
-            List<WebElement> tryAutoApplyNeighborXpaths = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, useAllNeighbors);    
-            if(useAllNeighbors == false){
+            List<WebElement> tryAutoApplyNeighborXpaths = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);    
+            if(smartXPathsEnabled == false){
                 throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
             }
        
@@ -784,9 +784,9 @@ public class WebUiCommonHelper extends KeywordHelper {
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
     		TestObject testObject,
-    		Boolean useAllNeighbors){
+    		Boolean smartXPathsEnabled){
 
-        return findWebElementsByAutoApplyNeighborXpaths(webDriver, objectInsideShadowDom, testObject, useAllNeighbors);
+        return findWebElementsByAutoApplyNeighborXpaths(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
     }
     
     private static List<WebElement> findWebElementsByAutoApplyNeighborXpaths(
@@ -799,63 +799,55 @@ public class WebUiCommonHelper extends KeywordHelper {
     		 return Collections.emptyList();
     	}    	
     	
-    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_START);  
-    	
-    	List<WebElement> elementsFoundByNeighborXPaths = new ArrayList<>();
-    	List<WebElement> elementsFoundBeforeNeighborXPaths = new ArrayList<>();
-    	String reusableTmpXPath = StringUtils.EMPTY;
+    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_START);
+    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_TRIGGER);
+    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_LEARN_ABOUT);
+    	logger.logInfo("");
+    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_USING);
 
+    	List<WebElement> elementsFoundBeforeNeighborXPaths = new ArrayList<>();
+    	
     	List<TestObjectXpath> allXPaths = testObject.getXpaths();
-    	Optional<String> workingNeighborXpath = 
+    	
+    	Optional<TestObjectXpath> workingNeighborXPath = 
     			allXPaths
     			.stream()
     			.filter(xpath -> xpath.getName().equals("xpath:neighbor"))
-    			.map(xpath -> xpath.getValue())
     			.findFirst();
     	
-    	if(workingNeighborXpath.isPresent()){
-    		int firstNeighborXPathIndex = allXPaths.indexOf(workingNeighborXpath);
-    		
-    		for(int i = 0; i < firstNeighborXPathIndex; i++){
-    			TestObjectXpath anXPathBeforeNeigbor = allXPaths.get(i);
-		   		By byAnXPathBeforeNeighbor =  By.xpath(anXPathBeforeNeigbor.getValue());
-	    		List<WebElement> elementsFoundByThisXPath = webDriver.findElements(byAnXPathBeforeNeighbor);
-                reusableTmpXPath = anXPathBeforeNeigbor.getValue();
-	    		if(elementsFoundByThisXPath != null 
-	    				&& elementsFoundByThisXPath.size() > 0){
-	                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS, 
-	                		testObject.getObjectId(), anXPathBeforeNeigbor.getValue()));
-	                elementsFoundBeforeNeighborXPaths = elementsFoundByThisXPath;
-	    			break;
-	    		}
-    		}
-    		
-    		// Checking useAllNeighbors every time before we want to return
-    		// makes sure every desired log is displayed 
-    		if(elementsFoundBeforeNeighborXPaths.size() > 0 && smartXPathsEnabled == true){
-    	    	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_OFF_SMART_XPATHS);
-    			return elementsFoundBeforeNeighborXPaths;
-    		}
-
-    		reusableTmpXPath = workingNeighborXpath.get();
-    		By byXpath =  By.xpath(reusableTmpXPath);
-    		List<WebElement> neighborXpathsElements = webDriver.findElements(byXpath);
-    		if(neighborXpathsElements != null && neighborXpathsElements.size() > 0){
+    	// Use Neighbor as the stop condition if exists, otherwise just loop through all XPaths
+    	int firstNeighborXPathIndex = allXPaths.size();
+    	if(workingNeighborXPath.isPresent()){
+    		firstNeighborXPathIndex = allXPaths.indexOf(workingNeighborXPath.get());
+    	}
+		for(int i = 0; i < firstNeighborXPathIndex; i++){
+			TestObjectXpath thisXPath = allXPaths.get(i);
+	   		By byThisXPath =  By.xpath(thisXPath.getValue());
+    		List<WebElement> elementsFoundByThisXPath = webDriver.findElements(byThisXPath);
+    		if(elementsFoundByThisXPath != null 
+    				&& elementsFoundByThisXPath.size() > 0){
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS, 
-                		testObject.getObjectId(), reusableTmpXPath));
-                elementsFoundByNeighborXPaths = neighborXpathsElements;
+                		testObject.getObjectId(), thisXPath.getValue()));
+                elementsFoundBeforeNeighborXPaths = elementsFoundByThisXPath;
+    			break;
     		}
-    	} else{
-    		logger.logInfo(StringConstants.KW_LOG_INFO_NOT_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS);
-    	}
-    	
-    	if(smartXPathsEnabled == true){
+		}
+		
+		// Checking useAllNeighbors every time before we want to return
+		// makes sure every desired log is displayed 
+		if(elementsFoundBeforeNeighborXPaths.size() > 0 && smartXPathsEnabled == true){
+			logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION);
+	    	logger.logInfo("");
 	    	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_OFF_SMART_XPATHS);
-        	return elementsFoundByNeighborXPaths;
-    	}else{
-        	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_ON_SMART_XPATHS);
-    	}
-    	
+	    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
+			return elementsFoundBeforeNeighborXPaths;			
+			
+		} else if (elementsFoundBeforeNeighborXPaths.size() == 0){
+			logger.logInfo(StringConstants.KW_LOG_INFO_NOT_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS);
+		}
+		
+    	logger.logInfo("");
+    	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_ON_SMART_XPATHS);
     	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
 
     	return Collections.emptyList();    	

@@ -538,6 +538,10 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String SET_ENCRYPTED_TEXT_KEYWORD = "setEncryptedText";
     
     public static final String KW_LOG_INFO_SMART_XPATHS_SUPPORT_START = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_START;
+    public static final String KW_LOG_INFO_SMART_XPATHS_TRIGGER = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_TRIGGER;
+    public static final String KW_LOG_INFO_SMART_XPATHS_LEARN_ABOUT = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_LEARN_ABOUT;
+    public static final String KW_LOG_INFO_SMART_XPATHS_USING = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_USING;
+    public static final String KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION;
     public static final String KW_LOG_INFO_SMART_XPATHS_SUPPORT_END = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END;
     public static final String KW_LOG_INFO_USING_HEURISTIC_METHOD = CoreWebuiMessageConstants.KW_LOG_INFO_USING_HEURISTIC_METHOD;
 }
