@@ -221,7 +221,7 @@ public class TestSuiteXMLLogParser {
             return "";
         }
 
-        String startKeywordString = StringConstants.LOG_START_KEYWORD + " : ";
+        String startKeywordString = StringConstants.LOG_START_ACTION_PREFIX;
         if (testLogName.startsWith(startKeywordString)) {
             return testLogName.substring(startKeywordString.length(), testLogName.length());
         } else {

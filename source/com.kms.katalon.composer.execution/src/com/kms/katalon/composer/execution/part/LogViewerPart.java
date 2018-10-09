@@ -32,7 +32,6 @@ import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -44,13 +43,11 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.MouseAdapter;
@@ -564,26 +561,23 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void showFailureTreeLogMessage(ILogParentTreeNode logParentTreeNode) throws Exception {
-        String prologue = logParentTreeNode.getRecordStart().getLogTimeString()
-                + " " 
-                + logParentTreeNode.getMessage() 
-                + MESSAGE_PART_DELIMITER 
-                + "Elapsed time: " 
-                + logParentTreeNode.getFullElapsedTime()
-                + MESSAGE_PART_DELIMITER;
+        StringBuilder messageBuilder = new StringBuilder()
+                .append(logParentTreeNode.getRecordStart().getLogTimeString())
+                .append(" ")
+                .append(logParentTreeNode.getMessage())
+                .append(MESSAGE_PART_DELIMITER)
+                .append("Elapsed time: ")
+                .append(logParentTreeNode.getFullElapsedTime())
+                .append(MESSAGE_PART_DELIMITER);
         
         if (logParentTreeNode.getResult() != null) {
             XmlLogRecord result = logParentTreeNode.getResult();
             LogLevel resultLevel = LogLevel.valueOf(logParentTreeNode.getResult().getLevel());
             if (resultLevel == LogLevel.FAILED || resultLevel == LogLevel.ERROR) {
-                StringBuilder messageBuilder = new StringBuilder(prologue)
-                        .append(result.getMessage());
                 List<StyleRange> styleRanges = new ArrayList<StyleRange>();
                 if (result.getExceptions() != null) {
-                    messageBuilder.append("\n");
                     for (XmlLogRecordException exceptionLogEntry : result.getExceptions()) {
                         if (LogExceptionFilter.isTraceableException(exceptionLogEntry)) {
-                            messageBuilder.append("\n");
 
                             StyleRange range = new StyleRange();
                             range.start = messageBuilder.length();
@@ -599,7 +593,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                                 }
                             }
 
-                            messageBuilder.append(exceptionLogString);
+                            messageBuilder.append(exceptionLogString).append(MESSAGE_PART_DELIMITER);
 
                             range.length = exceptionLogString.length();
                             range.underline = true;
@@ -610,6 +604,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                         }
                     }
                 }
+                
+                messageBuilder.append(result.getMessage());
 
                 writeMessage(true, messageBuilder.toString());
                 
@@ -617,10 +613,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     txtMessage.setStyleRanges(styleRanges.toArray(new StyleRange[0]));
                 }
             } else {
-                writeMessage(false, prologue + result.getMessage());
+                messageBuilder.append(result.getMessage());
+                writeMessage(false, messageBuilder.toString());
             }
         } else {
-            writeMessage(false, prologue);
+            writeMessage(false, messageBuilder.toString());
         }
     }
     

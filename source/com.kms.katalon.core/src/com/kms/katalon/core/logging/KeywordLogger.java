@@ -218,7 +218,7 @@ public class KeywordLogger {
             attributes.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, pendingDescription);
             pendingDescription = null;
         }
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_KEYWORD + " : " + name,
+        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_ACTION_PREFIX + name,
                 nestedLevel, attributes));
         if (currentKeywordStack != null) {
             keywordStacksContainer.push(currentKeywordStack);
@@ -235,7 +235,7 @@ public class KeywordLogger {
             pendingDescription = null;
         }
         popKeywordFromStack(nestedLevel);
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_KEYWORD + " : " + name,
+        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_ACTION_PREFIX + name,
                 nestedLevel, attributes));
         pushKeywordToStack(name, nestedLevel);
     }

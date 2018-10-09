@@ -1,18 +1,26 @@
 package com.kms.katalon.core.logging;
 
-import java.io.PrintStream;
+import static org.fusesource.jansi.Ansi.ansi;
+import static org.fusesource.jansi.Ansi.Color.BLUE;
+import static org.fusesource.jansi.Ansi.Color.CYAN;
+import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.Color.RED;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.ErrorManager;
-import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
-import static org.fusesource.jansi.Ansi.*;
-import static org.fusesource.jansi.Ansi.Color.*;
+
+import org.fusesource.jansi.Ansi.Color;
+
+import com.kms.katalon.core.constants.StringConstants;
 
 public class SystemConsoleHandler extends ConsoleHandler {
     
+    private static final int LOG_START_ACTION_PREFIX_LENGTH = StringConstants.LOG_START_ACTION_PREFIX.length();
+
     private static final Map<String, String> recordLevelWithPaddingLookup = new ConcurrentHashMap<>();
     
     private static final Map<Integer, Color> foregroundColorLookup = new ConcurrentHashMap<>();
@@ -34,7 +42,11 @@ public class SystemConsoleHandler extends ConsoleHandler {
                 if (foregroundColor != null) {
                     prologue = ansi().fg(foregroundColor).a(prologue).reset().toString(); 
                 }
-                return prologue + record.getMessage() + "\r\n";
+                String message = record.getMessage();
+                if (message.startsWith(StringConstants.LOG_START_ACTION_PREFIX)) {
+                    message = message.substring(LOG_START_ACTION_PREFIX_LENGTH);
+                }
+                return prologue + message + "\n";
             }
 
             private Color getForegroundColor(LogRecord record) {
