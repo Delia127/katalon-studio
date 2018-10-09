@@ -10,6 +10,7 @@
   + EGit 4.4 at http://download.eclipse.org/egit/updates-4.4.1/
   + Cucumber-Eclipse at `/source/third-party/cucumber-eclipse/cucumber.eclipse.p2updatesite/target/repository/`
   + Grep Console at http://eclipse.schedenig.name
+  + ANSI Escape in Console at https://www.mihai-nita.net/eclipse
 
 - Installed Maven found at https://maven.apache.org/download.cgi, update PATH environment variable to include <Maven Home>\bin folder. Make sure you can execute "mvn" command from a console (terminal/cmd) window
 

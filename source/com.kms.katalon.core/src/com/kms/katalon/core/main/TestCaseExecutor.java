@@ -118,8 +118,19 @@ public class TestCaseExecutor {
             endAllUnfinishedKeywords(keywordStack);
         }
         testCaseResult.getTestStatus().setStatusValue(getResultByError(t));
-        String message = MessageFormat.format(StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, testCase.getTestCaseId(),
-                ExceptionsUtil.getStackTraceForThrowable(t));
+        String stackTraceForThrowable;
+        try {
+            stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(
+                    t,
+                    testCase.getTestCaseId(),
+                    testCase.getGroovyScriptClassName());
+        } catch (Exception e) {
+            stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(t);
+        }
+        String message = MessageFormat.format(
+                StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, 
+                testCase.getTestCaseId(),
+                stackTraceForThrowable);
         testCaseResult.setMessage(message);
         logError(t, message);
 

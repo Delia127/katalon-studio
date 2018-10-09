@@ -46,6 +46,7 @@ public class SystemConsoleHandler extends ConsoleHandler {
                 if (message.startsWith(StringConstants.LOG_START_ACTION_PREFIX)) {
                     message = message.substring(LOG_START_ACTION_PREFIX_LENGTH);
                 }
+                
                 return prologue + message + "\n";
             }
 
