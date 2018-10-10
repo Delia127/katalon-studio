@@ -122,7 +122,7 @@ public class TestCaseExecutor {
         try {
             stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(
                     t,
-                    testCase.getTestCaseId(),
+                    testCase.getName(),
                     testCase.getGroovyScriptClassName());
         } catch (Exception e) {
             stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(t);

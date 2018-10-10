@@ -3,6 +3,7 @@ package com.kms.katalon.core.util.internal;
 import org.codehaus.groovy.runtime.StackTraceUtils;
 
 import com.google.common.base.Throwables;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
 
 import groovy.lang.MissingPropertyException;
@@ -34,11 +35,13 @@ public class ExceptionsUtil {
         return stackTrace;
     }
 
-    public static String getStackTraceForThrowable(Throwable t, String testCaseId, String scriptName) {
+    public static String getStackTraceForThrowable(Throwable t, String testCaseName, String scriptName) {
         String stackTrace = getStackTraceForThrowable(t);
         stackTrace = stackTrace
-                .replace(scriptName + "." + StringConstants.SCRIPT_FILE_EXT, testCaseId)
-                .replace(scriptName, testCaseId);
+                .replace(
+                        scriptName + "." + StringConstants.SCRIPT_FILE_EXT, 
+                        testCaseName + "." + GlobalStringConstants.ENTITY_KW_TEST_CASE)
+                .replace(scriptName, testCaseName);
         return stackTrace;
     }
 }
