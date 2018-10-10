@@ -8,3 +8,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: com.kms.katalon.execution,
  com.kms.katalon.entity
 Export-Package: com.kms.katalon.execution.webservice.contribution
+Bundle-ActivationPolicy: lazy

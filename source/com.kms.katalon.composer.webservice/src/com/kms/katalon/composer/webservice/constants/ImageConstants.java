@@ -58,6 +58,8 @@ public class ImageConstants {
 
     public static final Image IMG_WS_PUT_METHOD_16 = ImageManager.getImage(IImageKeys.WS_PUT_METHOD_16);
 
+    public static final Image IMG_WS_PATCH_METHOD_16 = ImageManager.getImage(IImageKeys.WS_PATCH_METHOD_16);
+
     public static final Image IMG_WS_SOAP_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP_METHOD_16);
 
     public static final Image IMG_WS_SOAP12_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP12_METHOD_16);

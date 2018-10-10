@@ -66,9 +66,10 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.composer.execution,
  com.kms.katalon.preferences,
  com.kms.katalon.entity;bundle-version="1.0.0",
- io.swagger.annotations;bundle-version="2.0.0",
  io.swagger.core;bundle-version="2.0.0",
  io.swagger.models;bundle-version="2.0.0",
- io.swagger.parser-v2;bundle-version="2.0.0"
+ io.swagger.parser-v2;bundle-version="2.0.0",
+ org.greenrobot.eventbus,
+ io.swagger.annotations;bundle-version="2.0.0"
 Export-Package: com.kms.katalon.composer.webservice.parser,
  com.kms.katalon.composer.webservice.util
