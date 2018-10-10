@@ -262,6 +262,9 @@
 									<id>io.swagger:swagger-parser:2.0.0-rc1</id>
 								</artifact>
 								<artifact>
+									<id>io.swagger:swagger-annotations:2.0.0-rc2</id>
+								</artifact>
+								<artifact>
                                     <id>com.auth0:java-jwt:3.4.0</id>
                                 </artifact>
 							</artifacts>
