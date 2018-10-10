@@ -42,7 +42,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                 return false;
             }
         } else {
-            if (!checkSignupDialog()) {
+            if (!isActivated && !checkSignupDialog()) {
                 return false;
             }
         }
