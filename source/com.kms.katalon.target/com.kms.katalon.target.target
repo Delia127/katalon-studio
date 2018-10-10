@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="417">
+<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="418">
 <locations>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.codehaus.groovy23.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
@@ -30,7 +30,7 @@
 <unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.6"/>
 <unit id="jackson-core-asl" version="1.9.13"/>
 <unit id="wsdl4j" version="1.6.2"/>
-<unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml" version="2.9.1"/>
+<unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml" version="2.9.6"/>
 <unit id="javax.enterprise.cdi-api" version="1.2.0"/>
 <unit id="io.cucumber.datatable" version="1.0.3"/>
 <unit id="javax.xml.jaxp-api" version="1.4.2"/>
