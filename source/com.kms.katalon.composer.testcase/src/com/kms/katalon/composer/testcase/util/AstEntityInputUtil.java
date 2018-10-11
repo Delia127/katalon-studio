@@ -246,7 +246,7 @@ public class AstEntityInputUtil {
                 .newLocalMethod(MethodCallExpressionWrapper.FIND_TEST_OBJECT_METHOD_NAME, parentNode);
         ArgumentListExpressionWrapper argument = new ArgumentListExpressionWrapper(objectMethodCall);
         argument.addExpression(
-                new ConstantExpressionWrapper(ObjectRepository.getTestObjectRelativeId(testObjectId), argument));
+                new ConstantExpressionWrapper(testObjectId, argument));
         objectMethodCall.setArguments(argument);
         return objectMethodCall;
     }
