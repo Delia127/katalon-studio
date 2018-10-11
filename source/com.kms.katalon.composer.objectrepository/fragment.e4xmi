@@ -35,4 +35,7 @@
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_HAJIwBDNEeW0R_pMAWEPbg" elementId="com.kms.katalon.composer.objectrepository.dynamicmenucontribution.addToObjectSpy" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.menu.AddToObjectSpyMenuContribution"/>
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_MP2e0BKaEeati-jeKlb2vw" elementId="com.kms.katalon.composer.objectrepository.dynamicmenucontribution.properties" label="Properties" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.menu.TestObjectPropertiesDynamicMenuContribution"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_sMfnkMxJEeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.spy">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_lJfpcMxKEeis-d8dVdcONw" elementId="com.kms.katalon.composer.objectrepository.handledmenuitem.spyweb" label="Spy Web" iconURI="" command="_qx_Y8DcrEeSiAqu25cXbFw"/>
+  </fragments>
 </fragment:ModelFragments>
