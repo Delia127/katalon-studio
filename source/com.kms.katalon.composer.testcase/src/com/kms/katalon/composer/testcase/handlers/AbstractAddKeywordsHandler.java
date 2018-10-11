@@ -11,7 +11,7 @@ public abstract class AbstractAddKeywordsHandler extends AbstractHandler {
 
     @Override
     public boolean canExecute() {
-        testCaseCompositePartId = getPartService().getActivePart().getElementId();
+        testCaseCompositePartId = partService.getActivePart().getElementId();
         return EntityPartUtil.getEntityByPartId(testCaseCompositePartId) instanceof TestCaseEntity;
     }
 
