@@ -124,7 +124,7 @@ public class ObjectRepository {
      * @see {@link #findTestObject(String, Map) findTestObject} for parameterizing test object
      */
     public static TestObject findTestObject(String testObjectRelativeId) {
-        return findTestObject(testObjectRelativeId, Collections.emptyMap());
+        return findTestObject(testObjectRelativeId, new HashMap<String, Object>());
     }
 
     /**
@@ -329,7 +329,24 @@ public class ObjectRepository {
 
         String serviceType = reqElement.elementText("serviceType");
         requestObject.setServiceType(serviceType);
-
+        
+        // Use default value of variables if available in case user passes nothing or null
+        if(variables == null || variables.equals(Collections.emptyMap())){
+        	if(variables == null){
+        		variables = new HashMap<String, Object>();
+        	}
+        	
+        	Element variableElement = reqElement.element("variables");
+        	if(variableElement != null){
+        		Element defaultValue = variableElement.element("defaultValue");
+        		Element name = variableElement.element("name");
+        		
+        		if(!defaultValue.equals(StringUtils.EMPTY)){
+        			variables.put(name.getData().toString(), defaultValue.getData());
+        		}
+        	}
+        }
+        
         StrSubstitutor substitutor = new StrSubstitutor(variables);
         if ("SOAP".equals(serviceType)) {
             requestObject.setWsdlAddress(substitutor.replace(reqElement.elementText("wsdlAddress")));
@@ -358,7 +375,7 @@ public class ObjectRepository {
                 HttpBodyContent bodyContent = HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent,
                         projectDir, substitutor);
                 requestObject.setBodyContent(bodyContent);
-
+                
                 //Backward compatible with 5.3.1
 //                ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 //                try {
