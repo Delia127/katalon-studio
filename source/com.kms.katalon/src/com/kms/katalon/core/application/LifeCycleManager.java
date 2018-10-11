@@ -132,7 +132,7 @@ public class LifeCycleManager {
         new DefaultTextFontInitializer().setup();
         new DisplayInitializer().setup();
         
-        EventBus.builder().installDefaultEventBus();
+//        EventBus.builder().installDefaultEventBus();
     }
 
     private void setupPreferences() {

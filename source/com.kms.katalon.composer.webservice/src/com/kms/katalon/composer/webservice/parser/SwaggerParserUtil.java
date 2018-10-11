@@ -175,7 +175,7 @@ public class SwaggerParserUtil {
 				}
 			}
 			
-		} catch (Exception ex) {
+		} catch (Throwable  ex) {
 			throw ex;
         } finally {
 	    	if(newWSTestObjects.size() > 0 ) { 
@@ -192,7 +192,6 @@ public class SwaggerParserUtil {
             return null;
         }
         List<WebServiceRequestEntity> newWSTestObjects = SwaggerParserUtil.parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
-        
         for(WebServiceRequestEntity entity : newWSTestObjects){
         	entity.setElementGuidId(Util.generateGuid());
             entity.setParentFolder(parentFolder);
