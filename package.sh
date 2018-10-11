@@ -40,14 +40,14 @@ echo "Process Linux package ... Done"
 
 # Process MacOS package
 echo "Process MacOS package ..."
-tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
+sudo tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
 
 sudo chmod +x "${KATALON_MAC}"
 sudo chmod +x "${CHROME_DRIVER_MAC}"
 sudo chmod +x "${FF_DRIVER_MAC}"
 echo "Grant executed permission for Katalon and browser drivers ... Done"
 
-codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
+sudo codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
 
 sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
