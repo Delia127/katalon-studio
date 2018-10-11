@@ -67,6 +67,8 @@ public class ImageConstants {
     public static final Image IMG_WS_SOAP_POST_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP_POST_METHOD_16);
 
     public static final Image IMG_16_SAVE = ImageManager.getImage(IImageKeys.SAVE_16);
+    
+    public static final Image IMG_24_SAVE = ImageManager.getImage(IImageKeys.SAVE_24);
 
     public static final Image IMG_16_DELETE = ImageManager.getImage(IImageKeys.DELETE_16);
 
