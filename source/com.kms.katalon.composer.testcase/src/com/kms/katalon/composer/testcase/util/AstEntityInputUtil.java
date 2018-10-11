@@ -44,7 +44,7 @@ public class AstEntityInputUtil {
         MethodCallExpressionWrapper objectMethodCall = MethodCallExpressionWrapper
                 .newLocalMethod(MethodCallExpressionWrapper.FIND_TEST_CASE_METHOD_NAME, parentNode);
         objectMethodCall.getArguments().addExpression(new ConstantExpressionWrapper(
-                testCase != null ? TestCaseFactory.getTestCaseRelativeId(testCase.getIdForDisplay()) : null));
+                testCase != null ? testCase.getIdForDisplay() : null));
         return objectMethodCall;
     }
 
