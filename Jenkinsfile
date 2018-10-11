@@ -15,12 +15,12 @@ node {
     	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
     		sh '''
 		    cd source
-		    /usr/local/bin/mvn clean verify -Pprod
+		    sudo /usr/local/bin/mvn clean verify -Pprod
 	        '''
     	} else {
     		sh '''
 		    cd source
-		    /usr/local/bin/mvn clean verify -Pstag
+		    sudo /usr/local/bin/mvn clean verify -Pstag
 	        '''
     	}       
     }
