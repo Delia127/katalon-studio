@@ -42,21 +42,21 @@ echo "Process Linux package ... Done"
 echo "Process MacOS package ..."
 tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
 
-chmod +x "${KATALON_MAC}"
-chmod +x "${CHROME_DRIVER_MAC}"
-chmod +x "${FF_DRIVER_MAC}"
+sudo chmod +x "${KATALON_MAC}"
+sudo chmod +x "${CHROME_DRIVER_MAC}"
+sudo chmod +x "${FF_DRIVER_MAC}"
 echo "Grant executed permission for Katalon and browser drivers ... Done"
 
 codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
 
-/usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
+sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
 echo "DMG packaging ... Done"
-rm -r "${MAC_APP}"
+sudo rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
 
 # Distribute packages to shared folder
-mkdir -p ${HOME}/Public/KatalonStudio/
+sudo mkdir -p ${HOME}/Public/KatalonStudio/
 DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
 BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${JOB_BASE_NAME}/${BUILD_ID}" # JOB_BASE_NAME
 
