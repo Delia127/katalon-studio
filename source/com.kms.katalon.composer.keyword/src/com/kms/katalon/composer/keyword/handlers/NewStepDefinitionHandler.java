@@ -82,13 +82,12 @@ public class NewStepDefinitionHandler {
                 return null;
             }
 
-            if (entityObject instanceof FolderEntity
-                    && FolderController.getInstance().isSourceFolder(
-                            ProjectController.getInstance().getCurrentProject(), (FolderEntity) entityObject)) {
-                
+            if (entityObject instanceof FolderEntity && FolderController.getInstance()
+                    .isSourceFolder(ProjectController.getInstance().getCurrentProject(), (FolderEntity) entityObject)) {
+
                 return (ITreeEntity) entity;
             }
-            
+
             if (entity instanceof KeywordTreeEntity) {
                 PackageTreeEntity parentPackage = (PackageTreeEntity) ((KeywordTreeEntity) entity).getParent();
                 FolderEntity parentFolder = (FolderEntity) parentPackage.getParent().getObject();
@@ -99,7 +98,7 @@ public class NewStepDefinitionHandler {
         }
         return null;
     }
-    
+
     public static boolean isUnderSourceFolder(Object[] selectedObjects) throws Exception {
         if (selectedObjects == null) {
             return false;
@@ -122,7 +121,7 @@ public class NewStepDefinitionHandler {
                     && ((FolderEntity) entityObject).getFolderType() == FolderType.INCLUDE) {
                 return true;
             }
-            
+
             if (entity instanceof KeywordTreeEntity) {
                 PackageTreeEntity treeEntity = (PackageTreeEntity) ((KeywordTreeEntity) entity).getParent();
                 FolderEntity parent = (FolderEntity) treeEntity.getParent().getObject();
@@ -147,9 +146,7 @@ public class NewStepDefinitionHandler {
                 FolderEntity folder = (FolderEntity) parentTreeEntity.getObject();
                 rootPackage = JavaCore.create(groovyProject)
                         .getPackageFragmentRoot(groovyProject.getFolder(folder.getRelativePath()));
-                String packagePath = groovyProject.getFolder(folder.getRelativePath())
-                        .getFullPath()
-                        .toString()
+                String packagePath = groovyProject.getFolder(folder.getRelativePath()).getFullPath().toString()
                         .replaceFirst(rootPackage.getPath().toString(), "");
                 packageFragment = rootPackage.getPackageFragment(packagePath);
                 rootParentFolder = (FolderTreeEntity) parentTreeEntity;
@@ -181,7 +178,8 @@ public class NewStepDefinitionHandler {
                         packageFragment = rootPackage.createPackageFragment(packageFragment.getElementName(), true,
                                 monitor);
 
-                        // remove any working copy of child complicationUnit that exists in the current package
+                        // remove any working copy of child complicationUnit
+                        // that exists in the current package
                         for (ICompilationUnit compicationUnit : packageFragment.getCompilationUnits()) {
                             compicationUnit.discardWorkingCopy();
                         }
@@ -204,8 +202,7 @@ public class NewStepDefinitionHandler {
 
                     if (createdCompilationUnit instanceof GroovyCompilationUnit
                             && createdCompilationUnit.getParent() instanceof IPackageFragment) {
-                        ITreeEntity newPackageTreeEntity = new PackageTreeEntity(packageFragment,
-                                rootParentFolder);
+                        ITreeEntity newPackageTreeEntity = new PackageTreeEntity(packageFragment, rootParentFolder);
                         KeywordTreeEntity keywordTreeEntity = new KeywordTreeEntity(createdCompilationUnit,
                                 newPackageTreeEntity);
                         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, rootParentFolder);
@@ -224,20 +221,20 @@ public class NewStepDefinitionHandler {
             LoggerSingleton.logError(e);
         }
     }
-    
+
     private ITreeEntity getParentTreeEntity() throws Exception {
-    	  Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-          ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
-          
-          if (parentTreeEntity == null) {
-          	ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-          	FolderEntity includeRootFolder = FolderController.getInstance().getIncludeRoot(project);
-          	FolderEntity groovyScriptFolder = FolderController.getInstance().getGroovyScriptRoot(project);
-          	FolderTreeEntity treeEntity = new FolderTreeEntity(groovyScriptFolder,
-          			TreeEntityUtil.createSelectedTreeEntityHierachy(groovyScriptFolder.getParentFolder(), includeRootFolder));
-          	parentTreeEntity = treeEntity;
-          }
-          return parentTreeEntity;
+        Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+        ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
+
+        if (parentTreeEntity == null) {
+            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+            FolderEntity includeRootFolder = FolderController.getInstance().getIncludeRoot(project);
+            FolderEntity groovyScriptFolder = FolderController.getInstance().getGroovyScriptRoot(project);
+            FolderTreeEntity treeEntity = new FolderTreeEntity(groovyScriptFolder, TreeEntityUtil
+                    .createSelectedTreeEntityHierachy(groovyScriptFolder.getParentFolder(), includeRootFolder));
+            parentTreeEntity = treeEntity;
+        }
+        return parentTreeEntity;
     }
 
     private class SampleCustomKeywordScriptBuilder {
@@ -260,9 +257,7 @@ public class NewStepDefinitionHandler {
             if (StringUtils.isNotEmpty(dialog.getParentPackage().getElementName())) {
                 scriptBuilder.append(String.format("package %s\n", dialog.getParentPackage().getElementName()));
             }
-            scriptBuilder
-                    .append(imports)
-                    .append("\n\n")
+            scriptBuilder.append(imports).append("\n\n")
                     .append(String.format("class %s {\n %s \n}", dialog.getName(), keywords));
 
             return scriptBuilder.toString();
