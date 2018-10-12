@@ -51,6 +51,8 @@ sudo codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E
 echo "Codesigning ... Done"
 
 sudo chmod 777 $MAC_APP
+
+ls -la $MAC_APP
 sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
 echo "DMG packaging ... Done"
 sudo rm -r "${MAC_APP}"
