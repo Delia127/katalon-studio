@@ -50,12 +50,14 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
     
     @Override
     protected void okPressed() {
+    	Button ok = getButton(IDialogConstants.OK_ID);
     	boolean closeTheDialog = true;
     	try{
         	createWebServiceRequestEntities();
     	} catch(Exception e){
     		closeTheDialog = false;
     		setMessage(StringConstants.EXC_INVALID_SWAGGER_FILE, IMessageProvider.ERROR);
+    		ok.setEnabled(false);
     	} finally {
     		if(closeTheDialog == true){
     	        super.okPressed();
@@ -116,6 +118,10 @@ public class ImportWebServiceObjectsFromSwaggerDialog  extends CustomTitleAreaDi
         
         ModifyListener listener = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
+            	Button ok = getButton(IDialogConstants.OK_ID);
+            	if(ok.isEnabled() == false){
+            		ok.setEnabled(true);
+            	}
               directory = ((Text) e.widget).getText();
             }
           };

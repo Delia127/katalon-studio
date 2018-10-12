@@ -28,6 +28,8 @@ public class GeneralPreferenceDefaultValueInitializer extends AbstractPreference
         prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB, 1);
+        prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_USER_FEEDBACK_DIALOG_ON_APP_CLOSE, true);
+        prefStore.setDefault(PreferenceConstants.GENERAL_NUMBER_OF_APP_CLOSES, 0);
         save();
     }
 
