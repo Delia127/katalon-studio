@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.editors.extensions;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,40 +23,45 @@ public class TestObjectsHyperlinkDetector extends AbstractHyperlinkDetector impl
 		  String candidate;
 		  try {			  
 			  lineRegion = document.getLineInformationOfOffset(offset);
-			  candidate = document.get(lineRegion.getOffset(), lineRegion.getLength());			  
+			  candidate = document.get(lineRegion.getOffset(), lineRegion.getLength());
 		  } catch (BadLocationException ex) {
 			  return null;
 		  }
 		  // WebUI.click(findTestObject('Object Repository/objects/Page_Demo AUT/label_Gender'))
 		  // -> findTestObject('Object Repository/objects/Page_Demo AUT/label_Gender'
-		  Pattern findFunctionPattern = Pattern.compile("find([^\']+)\\('([^\']+)'");
+		  Pattern findFunctionPattern = Pattern.compile("find([^\']+)\\('([^\']+)'", Pattern.MULTILINE);
 		  // look for keyword
 		  Matcher findFunctionPatternMatcher = findFunctionPattern.matcher(candidate);
+		  ArrayList<IHyperlink> result = new ArrayList<>();
+
 		  
-		  if (findFunctionPatternMatcher.find()) {
-			  
+		  while (findFunctionPatternMatcher.find()) {
 			  String findFunctiontMatch = findFunctionPatternMatcher.group();
 			  Pattern argumentPattern = Pattern.compile("'([^\']+)'");
 			  Matcher argumentPatternMatcher = argumentPattern.matcher(findFunctiontMatch);
-			  //System.out.println(findObjectMatch);
+			  // System.out.println(findFunctiontMatch);
 			  int findFunctionIndex = candidate.indexOf(findFunctiontMatch);
 			  
 			  if(argumentPatternMatcher.find()){
 				  String argumentMatch = argumentPatternMatcher.group();
-				  //System.out.println(argumentMatch);
 				  int argumentIndex = findFunctiontMatch.indexOf(argumentMatch);
-				  IRegion targetRegion = new Region(lineRegion.getOffset() + findFunctionIndex + argumentIndex, argumentMatch.length());
-				  
+				  // System.out.println(argumentMatch);
+				  int regionOffset =  lineRegion.getOffset() + findFunctionIndex + argumentIndex;
+				  IRegion targetRegion = new Region(regionOffset, argumentMatch.length());
 				  Pattern functionNamePattern = Pattern.compile("find([^\\(]+)");
 				  Matcher functionNamePatternMatcher = functionNamePattern.matcher(findFunctiontMatch);
 				  if(functionNamePatternMatcher.find()){
 					  String functionNameMatch = functionNamePatternMatcher.group();
-					  //System.out.println(functionNameMatch);
-					  return new IHyperlink[] { new TestObjectsHyperlink(targetRegion, functionNameMatch, argumentMatch) };
+					  // System.out.println(functionNameMatch);
+					  if ((targetRegion.getOffset() <= offset) && ((targetRegion.getOffset() + targetRegion.getLength()) > offset))
+						  result.add(new TestObjectsHyperlink(targetRegion, functionNameMatch, argumentMatch));
 				  }
-
 			  }
 		  }
+		  
+		  if(result != null && result.size() > 0 ){
+			  return result.toArray(new IHyperlink[]{});
+		  }  
 		  
 		return null;
 	}
