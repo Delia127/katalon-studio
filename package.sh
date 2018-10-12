@@ -72,8 +72,8 @@ sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
 sudo mv "$(pwd -P)/$MAC_PACKAGE" "${BRANCH_FOLDER}/"
 sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
 sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
-sudo mkdir -p $KATABUILD
-sudo mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
+mkdir -p $KATABUILD
+mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
 sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
 sudo umount -f /private/tmp/katabuild
 sudo umount -f $KATABUILD
