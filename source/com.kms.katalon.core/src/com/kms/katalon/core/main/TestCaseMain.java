@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.fusesource.jansi.AnsiConsole;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
@@ -40,8 +39,6 @@ public class TestCaseMain {
      * @throws IOException
      */
     public static void beforeStart() throws IOException {
-        
-        AnsiConsole.systemInstall();
         
         GroovyClassLoader classLoader = new GroovyClassLoader(TestCaseMain.class.getClassLoader());
         engine = ScriptEngine.getDefault(classLoader);
