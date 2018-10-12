@@ -1,7 +1,7 @@
 #!/bin/bash
 ulimit 99999999999
 KATABUILD=/tmp/katabuild
-PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
+PACKAGE_FOLDER="$pwd/source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
 MAC_PRODUCT_NAME="Katalon Studio"
 
@@ -49,8 +49,6 @@ echo "Grant executed permission for Katalon and browser drivers ... Done"
 
 sudo codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
-
-sudo chmod 777 $MAC_APP
 
 ls -la $MAC_APP
 cd ..
