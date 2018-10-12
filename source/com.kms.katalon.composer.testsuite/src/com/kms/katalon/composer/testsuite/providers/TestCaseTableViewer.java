@@ -83,14 +83,9 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
     }
 
     public void addTestCase(TestCaseEntity testCase) throws Exception {
-        // check testCase is in list or not
-        if (testCasesPKs.contains(testCase.getId())) {
-            return;
-        }
-
         TestSuiteTestCaseLink link = createNewTestSuiteTestCaseLink(testCase);
 
-        testCasesPKs.add(testCase.getId());
+        testCasesPKs.add(testCase.getTestCaseGuid());
         data.add(link);
 
         this.refresh();
@@ -103,14 +98,10 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
             addTestCase(testCase);
             return null;
         }
-        // check testCase is in list or not
-        if (testCasesPKs.contains(testCase.getId())) {
-            return null;
-        }
 
         TestSuiteTestCaseLink link = createNewTestSuiteTestCaseLink(testCase);
 
-        testCasesPKs.add(testCase.getId());
+        testCasesPKs.add(testCase.getTestCaseGuid());
         data.add(index, link);
 
         this.refresh();
