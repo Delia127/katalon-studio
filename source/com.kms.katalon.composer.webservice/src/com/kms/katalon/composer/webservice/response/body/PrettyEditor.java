@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Event;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
@@ -45,7 +45,15 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
         TEXT_MODE_NAMES = TextContentType.getTextValues();
     }
 
+    /**
+     * Key: mode name: {@link TextContentType#JSON} or {@link TextContentType#XPATH}
+     * Value: a HashMap<Integer, String> that indices JSON PATH, XPATH of a line number on editor.
+     */
+    private Map<TextContentType, Object> lineIndexing = new HashMap<>();
+
     private Button chckWrapLine;
+
+    private TextContentType preferedContentType;
 
     public PrettyEditor(Composite parent, int style) {
         super(parent, style);
@@ -100,11 +108,10 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
                                     indexedNode.key = "";
                                     indexedNode.index = 0;
                                     indexedNode.jsonPath = "$";
-                                    indexedNode.previousLine = indexedNode.line = 0;
+                                    indexedNode.endLine = indexedNode.startLine = 0;
                                     IndexedJsonNode indexed = walk(null, indexedNode, node);
-                                    System.out.println(indexed.toString());
                                 } catch (IOException ex) {
-
+                                    LoggerSingleton.logError(ex);
                                 }
 
                             }
@@ -113,9 +120,9 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
 
                     private IndexedJsonNode walk(IndexedJsonNode parentIndexedNode, IndexedJsonNode indexedNode, JsonNode node) {
                         if (parentIndexedNode == null) {
-                            indexedNode.previousLine = indexedNode.line = 0;
+                            indexedNode.endLine = indexedNode.startLine = 0;
                         } else {
-                            indexedNode.previousLine = indexedNode.line = parentIndexedNode.previousLine + 1;
+                            indexedNode.endLine = indexedNode.startLine = parentIndexedNode.endLine + 1;
                         }
 
                         switch (node.getNodeType()) {
@@ -129,7 +136,7 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
                                     indexedChild.jsonPath = indexedNode.jsonPath + "[" + index + "]";
                                     indexedChild.key = "";
                                     walk(indexedNode, indexedChild, childNode);
-                                    indexedNode.previousLine = indexedChild.previousLine;
+                                    indexedNode.endLine = indexedChild.endLine;
 
                                     indexedNode.children.add(indexedChild);
                                     index++;
@@ -149,12 +156,12 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
                                     indexedChild.key = childEntry.getKey();
                                     walk(indexedNode, indexedChild, childNode);
 
-                                    indexedNode.previousLine = indexedChild.previousLine;
+                                    indexedNode.endLine = indexedChild.endLine;
 
                                     indexedNode.children.add(indexedChild);
                                     index++;
                                 }
-                                indexedNode.previousLine++;
+                                indexedNode.endLine++;
                                 break;
                             }
                             default: {
@@ -198,6 +205,15 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
         mirrorEditor.setText(textBodyContent.getText());
         updateRadioStatus();
         mirrorEditor.beautify();
+        
+        switch (preferedContentType) {
+            case JSON:
+                break;
+            case XML:
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -213,7 +229,7 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
     }
 
     private void updateRadioStatus() {
-        TextContentType preferedContentType = TextContentType.evaluateContentType(textBodyContent.getContentType());
+        preferedContentType = TextContentType.evaluateContentType(textBodyContent.getContentType());
         Button selectionButton = TEXT_MODE_SELECTION_BUTTONS.get(preferedContentType.getText());
         TEXT_MODE_SELECTION_BUTTONS.entrySet().forEach(e -> e.getValue().setSelection(false));
         if (selectionButton != null) {
@@ -224,10 +240,11 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
     }
 
     private class IndexedJsonNode {
+
         @Override
         public String toString() {
-            return "\nIndexedJsonNode [jsonPath=" + jsonPath + ", line=" + line + ", previousLine=" + previousLine
-                    + ", children=" + children + "]";
+            return "IndexedJsonNode [key=" + key + ", index=" + index + ", jsonPath=" + jsonPath + ", startLine="
+                    + startLine + ", endLine=" + endLine + ", children=" + children + "]\n";
         }
 
         private String key;
@@ -236,11 +253,10 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
 
         private String jsonPath;
 
-        private int line;
+        private int startLine;
 
-        private int previousLine;
+        private int endLine;
 
         private List<IndexedJsonNode> children = new ArrayList<>();
-        
     }
 }

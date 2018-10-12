@@ -263,10 +263,7 @@
 								</artifact>
 								<artifact>
 									<id>javax.websocket:javax.websocket-api:1.1</id>
-								</artifact>
-								<artifact>
-									<id>com.jayway.jsonpath:json-path:2.4.0</id>
-								</artifact> 	
+								</artifact>	
 							</artifacts>
 						</configuration>
 					</execution>
