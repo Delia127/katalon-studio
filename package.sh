@@ -74,7 +74,7 @@ sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
 sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
 mkdir -p $KATABUILD
 
-if [ ! -d "${$KATABUILD}" ]; then
+if [ ! -d "${KATABUILD}" ]; then
   mkdir -p $KATABUILD
   mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
   sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
