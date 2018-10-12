@@ -53,6 +53,7 @@ echo "Codesigning ... Done"
 sudo chmod 777 $MAC_APP
 
 ls -la $MAC_APP
+cd ..
 sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
 echo "DMG packaging ... Done"
 sudo rm -r "${MAC_APP}"
