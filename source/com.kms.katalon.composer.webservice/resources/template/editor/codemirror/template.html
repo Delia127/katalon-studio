@@ -69,6 +69,16 @@ body {
 	    var totalLines = editor.lineCount();  
 	    editor.autoFormatRange({line:0, ch:0}, {line:totalLines});
 	}
+	
+	CodeMirror.on(editor.getWrapperElement(), "mouseover", function(e, cm) {
+		var pos = editor.coordsChar({left: e.clientX, top: e.clientY});
+		var token = editor.getTokenAt(pos);
+		var lineToken = editor.getLineTokens(pos.line);
+		if (lineToken.length > 3) {
+			console.log(lineToken);
+		}
+		console.log("hover at", pos.line, ",", pos.ch, ",token=", token.string);
+		});
 </script>
 </body>
 </html>

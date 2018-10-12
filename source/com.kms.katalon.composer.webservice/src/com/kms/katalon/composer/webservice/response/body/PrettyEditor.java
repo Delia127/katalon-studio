@@ -1,9 +1,13 @@
 package com.kms.katalon.composer.webservice.response.body;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -14,6 +18,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
@@ -76,12 +83,87 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
                     public void widgetSelected(SelectionEvent e) {
                         Button source = (Button) e.getSource();
                         if (source.getSelection()) {
-                            mirrorEditor.changeMode(textContentType.getText());
+                            String mode = textContentType.getText();
+                            mirrorEditor.changeMode(mode);
                             if (textBodyContent != null) {
                                 textBodyContent.setContentType(textContentType.getContentType());
                             }
                             PrettyEditor.this.notifyListeners(SWT.Modify, new Event());
+                            if (TextContentType.valueOf(mode) == TextContentType.JSON) {
+                                String editorValue = mirrorEditor.getText();
+
+                                ObjectMapper mapper = new ObjectMapper();
+
+                                try {
+                                    JsonNode node = mapper.readTree(editorValue);
+                                    IndexedJsonNode indexedNode = new IndexedJsonNode();
+                                    indexedNode.key = "";
+                                    indexedNode.index = 0;
+                                    indexedNode.jsonPath = "$";
+                                    indexedNode.previousLine = indexedNode.line = 0;
+                                    IndexedJsonNode indexed = walk(null, indexedNode, node);
+                                    System.out.println(indexed.toString());
+                                } catch (IOException ex) {
+
+                                }
+
+                            }
                         }
+                    }
+
+                    private IndexedJsonNode walk(IndexedJsonNode parentIndexedNode, IndexedJsonNode indexedNode, JsonNode node) {
+                        if (parentIndexedNode == null) {
+                            indexedNode.previousLine = indexedNode.line = 0;
+                        } else {
+                            indexedNode.previousLine = indexedNode.line = parentIndexedNode.previousLine + 1;
+                        }
+
+                        switch (node.getNodeType()) {
+                            case ARRAY: {
+                                Iterator<JsonNode> childrenIterator = node.iterator();
+                                int index = 0;
+                                while (childrenIterator.hasNext()) {
+                                    JsonNode childNode = childrenIterator.next();
+                                    IndexedJsonNode indexedChild = new IndexedJsonNode();
+                                    indexedChild.index = index;
+                                    indexedChild.jsonPath = indexedNode.jsonPath + "[" + index + "]";
+                                    indexedChild.key = "";
+                                    walk(indexedNode, indexedChild, childNode);
+                                    indexedNode.previousLine = indexedChild.previousLine;
+
+                                    indexedNode.children.add(indexedChild);
+                                    index++;
+                                }
+                                //indexedNode.previousLine++;
+                                break;
+                            }
+                            case OBJECT: {
+                                Iterator<Entry<String, JsonNode>> childrenIterator = node.fields();
+                                int index = 0;
+                                while (childrenIterator.hasNext()) {
+                                    Entry<String, JsonNode> childEntry = childrenIterator.next();
+                                    JsonNode childNode = childEntry.getValue();
+                                    IndexedJsonNode indexedChild = new IndexedJsonNode();
+                                    indexedChild.index = index;
+                                    indexedChild.jsonPath = indexedNode.jsonPath + "." + childEntry.getKey();
+                                    indexedChild.key = childEntry.getKey();
+                                    walk(indexedNode, indexedChild, childNode);
+
+                                    indexedNode.previousLine = indexedChild.previousLine;
+
+                                    indexedNode.children.add(indexedChild);
+                                    index++;
+                                }
+                                indexedNode.previousLine++;
+                                break;
+                            }
+                            default: {
+                                break;
+                            }
+
+                        }
+
+                        return indexedNode;
                     }
                 });
             }
@@ -141,4 +223,24 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
         }
     }
 
+    private class IndexedJsonNode {
+        @Override
+        public String toString() {
+            return "\nIndexedJsonNode [jsonPath=" + jsonPath + ", line=" + line + ", previousLine=" + previousLine
+                    + ", children=" + children + "]";
+        }
+
+        private String key;
+        
+        private int index;
+
+        private String jsonPath;
+
+        private int line;
+
+        private int previousLine;
+
+        private List<IndexedJsonNode> children = new ArrayList<>();
+        
+    }
 }

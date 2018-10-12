@@ -2464,7 +2464,7 @@
          version="1.0.0.qualifier"
          unpack="false"/>
 
-  <plugin       
+   <plugin
          id="io.swagger.annotations"
          download-size="0"
          install-size="0"
@@ -2522,6 +2522,27 @@
 
    <plugin
          id="io.swagger.parser-v2-converter"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.jayway.jsonpath.json-path"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.minidev.json-smart"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.minidev.accessors-smart"
          download-size="0"
          install-size="0"
          version="0.0.0"
