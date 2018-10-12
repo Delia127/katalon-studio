@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -32,6 +33,12 @@ public class BrowserMobProxyManager {
     
     private static void logError(String message, Exception e) {
         logger.logError(message + ": " + e.getClass().getName() + " - " + e.getMessage());
+    }
+    
+    private static AtomicInteger requestNumber;
+    
+    public static void init() {
+    	requestNumber = new AtomicInteger();
     }
     
     public static final Proxy getWebServiceProxy(Proxy systemProxy) {
@@ -80,10 +87,10 @@ public class BrowserMobProxyManager {
             BrowserMobProxy browserMobProxy = browserMobProxyLookup.get();
             if (browserMobProxy != null) {
                 
-                requestInformation.setId(UUID.randomUUID().toString());
-                
+                requestInformation.setId(String.valueOf(requestNumber.incrementAndGet()));
+                String threadName = Thread.currentThread().getName();
                 String directoryPath = RunConfiguration.getReportFolder();
-                File directory = new File(directoryPath, "requests");
+                File directory = new File(directoryPath, "requests" + File.separator + threadName);
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
