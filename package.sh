@@ -53,7 +53,7 @@ echo "Codesigning ... Done"
 TEMP_PATH="$(pwd -P)/$MAC_APP"
 echo $TEMP_PATH
 
-/usr/local/bin/dropdmg --config-name "Katalon Studio" "{$pwd}\{$MAC_APP}"
+/usr/local/bin/dropdmg --config-name "Katalon Studio" "$TEMP_PATH"
 echo "DMG packaging ... Done"
 sudo rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
