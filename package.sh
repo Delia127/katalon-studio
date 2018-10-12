@@ -50,7 +50,9 @@ echo "Grant executed permission for Katalon and browser drivers ... Done"
 sudo codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
 
-echo $MAC_APP
+TEMP_PATH="$(pwd -P)/$MAC_APP"
+echo $TEMP_PATH
+
 /usr/local/bin/dropdmg --config-name "Katalon Studio" "{$pwd}\{$MAC_APP}"
 echo "DMG packaging ... Done"
 sudo rm -r "${MAC_APP}"
