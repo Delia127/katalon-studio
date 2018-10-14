@@ -233,6 +233,8 @@ public class GlobalMessageConstants extends NLS {
     
     public static String DIA_NAME_EXISTED;
 
+    public static String DIA_TITLE_QUICKSTART;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, GlobalMessageConstants.class);

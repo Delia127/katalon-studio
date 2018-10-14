@@ -321,5 +321,7 @@ public class GlobalStringConstants {
     public static final String APPIUM_INSTALLATION_GUIDE_MSG = GlobalMessageConstants.APPIUM_INSTALLATION_GUIDE_MSG;
     
     public static final String URL_TROUBLESHOOTING_MOBILE_TESTING = GlobalMessageConstants.URL_TROUBLESHOOTING_MOBILE_TESTING;
+    
+    public static final String DIA_TITLE_QUICKSTART = GlobalMessageConstants.DIA_TITLE_QUICKSTART;
 
 }

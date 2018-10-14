@@ -13,6 +13,7 @@ import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
+import com.kms.katalon.composer.intro.QuickStartDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
@@ -91,10 +92,16 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     private static void showFunctionsIntroductionForTheFirstTime() {
 //        FunctionsIntroductionDialog dialog = new FunctionsIntroductionDialog(null);
 //        dialog.open();
-        FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
-        finishDialog.open();
+//        FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
+//        finishDialog.open();
+        QuickStartDialog dialog = new QuickStartDialog(null);
+        int result = dialog.open();
         try {
-            new CommandCaller().call(CommandId.PROJECT_ADD);
+            if (result == QuickStartDialog.OPEN_PROJECT) {
+                new CommandCaller().call(CommandId.PROJECT_OPEN);
+            } else {
+                new CommandCaller().call(CommandId.PROJECT_ADD);
+            }
         } catch (CommandException e) {
             LogUtil.logError(e);
         }

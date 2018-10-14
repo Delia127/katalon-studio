@@ -397,4 +397,11 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_WELCOME);
     }
 
+    private void registerQuickStartImages() {
+        ImageManager.registerImage(IImageKeys.QUICKSTART_BACKGROUND);
+        ImageManager.registerImage(IImageKeys.QUICKSTART_BTN_CREATE_NEW_PROJECT);
+        ImageManager.registerImage(IImageKeys.QUICKSTART_BTN_CREATE_NEW_PROJECT_HOVER);
+        ImageManager.registerImage(IImageKeys.QUICKSTART_BTN_OPEN_PROJECT);
+        ImageManager.registerImage(IImageKeys.QUICKSTART_BTN_OPEN_PROJECT_HOVER);
+    }
 }

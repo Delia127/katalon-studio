@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        overflow: hidden;
+    }
+
+    #main {
+        position: relative;
+        width: 960px;
+        height: 539px;
+        background-image: url('images/welcome_screen_BG.png');
+        background-size: 100% 100%;
+    }
+
+    #button-bar {
+        position: absolute;
+        left: 240px;
+        bottom: 60px;
+    }
+
+    .button {        
+        cursor: pointer;
+        outline: none;
+        float: left;
+        border: none;        
+    }
+
+    #btn-new-project {
+        background-image: url('images/button_create_new_project.png');
+        width: 219px;
+        height: 39px;
+        background-size: 100% 100%;
+        background-color: transparent;
+        background-repeat: no-repeat;
+    }
+
+    #btn-new-project:hover {
+        background-image: url('images/button_create_new_project_hover.png');
+    }
+
+    #btn-open-project {
+        background-image: url('images/button_open_project.png');
+        width: 247px;
+        height: 39px;
+        background-size: 100% 100%;
+        background-color: transparent;
+        background-repeat: no-repeat;
+        margin-left: 10px;
+    }
+
+    #btn-open-project:hover {
+        background-image: url('images/button_open_project_hover.png');
+    }
+</style>
+</head>
+<body>
+    <div id="main">
+        <!-- <button id="btn-close"></button> -->
+        <div id="button-bar">
+            <button id="btn-new-project" class="button"></button>
+            <button id="btn-open-project" class="button"></button>
+        </div>
+    </div>
+
+    </div>
+    <script type="text/javascript">
+        var btnNewProject = document.getElementById("btn-new-project");
+        btnNewProject.onclick = function() {
+            if (typeof handleCreatingProject != "undefined") {
+                handleCreatingProject();
+            }
+        };
+
+        var btnOpenProject = document.getElementById("btn-open-project");
+        btnOpenProject.onclick = function() {
+            if (typeof handleOpeningProject != "undefined") {
+                handleOpeningProject();
+            }
+        };
+    </script>
+</body>
+</html>
