@@ -88,6 +88,8 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     
     private InputValueType[] inputValueTypes = defaultInputValueTypes;
     
+    private ITestCasePart testCasePart;
+
     private Map<TestCaseVariableViewEvent, Set<EventListener<TestCaseVariableViewEvent>>> eventListeners = new HashMap<>();
     
     public TestCaseVariableView(IVariablePart variablePart) {
@@ -100,6 +102,14 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     
     public InputValueType[] getInputValueTypes() {
         return inputValueTypes;
+    }
+
+    public void setTestCasePart(ITestCasePart testCasePart) {
+        this.testCasePart = testCasePart;
+    }
+
+    public ITestCasePart getTestCasePart() {
+        return testCasePart;
     }
 
     public Composite createComponents(Composite parent) {
@@ -166,7 +176,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
                 downVariable();
             }
         });
-        
+
         Composite compositeTable = new Composite(container, SWT.NONE);
         compositeTable.setLayout(new FillLayout(SWT.HORIZONTAL));
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -228,8 +238,8 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
         tblclmnName.setText(StringConstants.PA_COL_NAME);
 
         TableViewerColumn tableViewerColumnDefaultValueType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnDefaultValueType.setEditingSupport(
-                new VariableDefaultValueTypeEditingSupport(tableViewer, this, inputValueTypes));
+        tableViewerColumnDefaultValueType
+                .setEditingSupport(new VariableDefaultValueTypeEditingSupport(tableViewer, this, inputValueTypes));
         TableColumn tblclmnDefaultValueType = tableViewerColumnDefaultValueType.getColumn();
         tblclmnDefaultValueType.setWidth(100);
         tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);
@@ -243,7 +253,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
                     ExpressionWrapper expression = GroovyWrapperParser
                             .parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
                     if (expression == null) {
-                    	return TreeEntityUtil.getReadableKeywordName(InputValueType.String.getName());
+                        return TreeEntityUtil.getReadableKeywordName(InputValueType.String.getName());
                     }
                     InputValueType valueType = AstValueUtil.getTypeValue(expression);
                     if (valueType != null) {
@@ -257,7 +267,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
         });
 
         TableViewerColumn tableViewerColumnDefaultValue = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnDefaultValue.setEditingSupport(new VariableDefaultValueEditingSupport(tableViewer, this));
+        tableViewerColumnDefaultValue.setEditingSupport(new VariableDefaultValueEditingSupport(tableViewer, this, getTestCasePart()));
         TableColumn tblclmnDefaultValue = tableViewerColumnDefaultValue.getColumn();
         tblclmnDefaultValue.setWidth(150);
         tblclmnDefaultValue.setText(StringConstants.PA_COL_DEFAULT_VALUE);
@@ -350,7 +360,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         loadVariables(Collections.emptyList());
-        
+
         return container;
     }
 
@@ -524,6 +534,6 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
             listenerOnEvent.add(listener);
             eventListeners.put(e, listenerOnEvent);
         });
-        
+
     }
 }
