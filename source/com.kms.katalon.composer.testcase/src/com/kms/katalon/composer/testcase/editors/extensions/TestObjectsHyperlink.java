@@ -60,20 +60,15 @@ public class TestObjectsHyperlink implements IHyperlink {
 		 try{
 			 if(fName.contains("TestObject")){
 				 
-				 // This is a quick hack - getWebElement() won't accept trimmed object's path ( one without 'Object Repository/' at the beginning )
-				 if(!location.contains("Object Repository")){
-					 location = "Object Repository" + File.separator + location;
-				 }
-				 
-				 objectID = ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator + location + WEBELEMENT_FILE_EXTENSION;				 
+				 location = ObjectRepository.getTestObjectId(location);
+				 objectID = ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator + location + WEBELEMENT_FILE_EXTENSION;
 				 
 				 WebElementEntity webElementEntity = ObjectRepositoryController.getInstance().getWebElement(objectID);
 				 String event = (webElementEntity instanceof WebServiceRequestEntity)
 			                ? EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN : EventConstants.TEST_OBJECT_OPEN;
 			        
 				 EventBrokerSingleton.getInstance().getEventBroker().post(event, webElementEntity);
-			 }else if(fName.contains("TestCase")){			 
-				 
+			 }else if(fName.contains("TestCase")){
 				 objectID = ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator + location + TESTCASE_FILE_EXTENSION;
 				 TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCase(objectID);
 				 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.TESTCASE_OPEN, testCaseEntity);
