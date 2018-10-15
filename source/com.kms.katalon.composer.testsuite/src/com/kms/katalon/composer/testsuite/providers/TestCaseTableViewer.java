@@ -85,7 +85,7 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
     public void addTestCase(TestCaseEntity testCase) throws Exception {
         TestSuiteTestCaseLink link = createNewTestSuiteTestCaseLink(testCase);
 
-        testCasesPKs.add(testCase.getTestCaseGuid());
+        testCasesPKs.add(testCase.getId());
         data.add(link);
 
         this.refresh();
@@ -101,7 +101,7 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
 
         TestSuiteTestCaseLink link = createNewTestSuiteTestCaseLink(testCase);
 
-        testCasesPKs.add(testCase.getTestCaseGuid());
+        testCasesPKs.add(testCase.getId());
         data.add(index, link);
 
         this.refresh();
