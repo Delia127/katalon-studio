@@ -23,10 +23,14 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MElementContainer;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -671,6 +675,8 @@ public class ExplorerPart {
         // set new selection
         getViewer().setSelection(new StructuredSelection(object));
         getViewer().setExpandedState(object, true);
+
+        setSelectedPart();
     }
     
     @Inject
@@ -691,6 +697,17 @@ public class ExplorerPart {
 
         // set new selection
         getViewer().setSelection(new StructuredSelection(objects));
+
+        setSelectedPart();
+    }
+
+    private void setSelectedPart() {
+        // set part is active part in partStack
+        MElementContainer<MUIElement> parentStack = part.getParent();
+        if (parentStack != null && parentStack.getSelectedElement() != null 
+                && !parentStack.getSelectedElement().getElementId().equals(part.getElementId())) {
+            parentStack.setSelectedElement(part);
+        }
     }
 
     @Inject

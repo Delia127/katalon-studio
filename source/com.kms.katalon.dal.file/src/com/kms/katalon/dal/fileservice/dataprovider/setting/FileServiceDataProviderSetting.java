@@ -139,5 +139,4 @@ public class FileServiceDataProviderSetting implements IDataProviderSetting {
     public ISystemFileDataProvider getSystemFileDataProvider() {
         return new SystemFileServiceDataProvider();
     }
-
 }

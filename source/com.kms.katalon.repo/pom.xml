@@ -138,6 +138,9 @@
 									<id>com.fasterxml.jackson.core:jackson-databind:2.4.1</id>
 								</artifact>
 								<artifact>
+									<id>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.6</id>
+								</artifact>
+								<artifact>
 									<id>org.jsoup:jsoup:1.7.2</id>
 								</artifact>
 								<artifact>
@@ -254,6 +257,18 @@
 								<artifact>
 									<id>io.cucumber:cucumber-junit:3.0.2</id>
 									<transitive>false</transitive>
+								</artifact>
+								<artifact>
+									<id>io.swagger:swagger-parser:2.0.0-rc1</id>
+								</artifact>
+								<artifact>
+										<id>net.lightbody.bmp:browsermob-core:2.1.5</id>
+										<excludes>
+												<exclude>com.fasterxml.jackson.core:*:*:*</exclude>
+												<exclude>com.google.guava:*:*:*</exclude>
+												<exclude>org.seleniumhq.selenium:*:*:*</exclude>
+												<exclude>org.slf4j:*:*:*</exclude>
+										</excludes>
 								</artifact>
 							</artifacts>
 						</configuration>

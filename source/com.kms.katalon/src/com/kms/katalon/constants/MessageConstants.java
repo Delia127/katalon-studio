@@ -366,6 +366,9 @@ public class MessageConstants extends NLS {
     public static String SignupSurveyDialog_LBL_QUESTION_FOR_DOWNLOAD_PURPOSE;
 
     public static String SignupSurveyDialog_CBX_DEFAULT_OPTION;
+    
+    //UserFeedbackDialog
+    public static String UserFeedbackDialog_MSG_USER_TWEET;
 
     static {
         // initialize resource bundle

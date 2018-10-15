@@ -33,6 +33,8 @@ public class EntityMessageConstants extends NLS {
 
     public static String EXC_WRONG_ENTITY_VER;
 
+    public static String DEFAULT_WEB_SERVICE_NAME;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, EntityMessageConstants.class);

@@ -10,7 +10,14 @@ public class StringConstants extends GlobalStringConstants {
 
 	// NewWebServiceRequestObjectPopupMenuContribution
     public static final String MENU_CONTEXT_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ;
-
+    // ImportWebServicesPopupMenuContribution
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_SWAGGER;
+    public static final String MENU_CONTEXT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.MENU_CONTEXT_WEBSERVICE_REQ_WSDL;
+	
+	// SparserInvalidException
+	public static final String EXC_INVALID_SWAGGER_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_SWAGGER_FILE;	
+	public static final String EXC_INVALID_WSDL_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_WSDL_FILE;
+    
 	// RequestObjectPart
     public static final String PA_TITLE_HTTP = ComposerWebserviceMessageConstants.PA_TITLE_HTTP;
     public static final String PA_LBL_HTTP_HEADER = ComposerWebserviceMessageConstants.PA_LBL_HTTP_HEADER;
@@ -43,7 +50,13 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_LBL_REQ_TYPE = ComposerWebserviceMessageConstants.VIEW_LBL_REQ_TYPE;
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ;
     public static final String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ;
-
+    
+    // ImportWebService
+    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;   
+    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
+    public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
+    public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
+ 
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;
 	public static final String VIEW_COL_VALUE = VALUE;
@@ -72,4 +85,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LBL_FILE_SIZE = ComposerWebserviceMessageConstants.LBL_FILE_SIZE;
     
     public static final String DIA_TITLE_TEST_CASE_BROWSER = ComposerWebserviceMessageConstants.DIA_TITLE_TEST_CASE_BROWSER;
+
+    // Quick Start Dialog
+    public static final String TITLE_QUICKSTART = ComposerWebserviceMessageConstants.TITLE_QUICKSTART;
+    public static final String QUICKSTART_NEW_DRAFT_REST_REQUEST = ComposerWebserviceMessageConstants.QUICKSTART_NEW_DRAFT_REST_REQUEST;
+    public static final String QUICKSTART_NEW_DRAFT_SOAP_REQUEST = ComposerWebserviceMessageConstants.QUICKSTART_NEW_DRAFT_SOAP_REQUEST;
+    public static final String QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL;
+    public static final String QUICKSTART_IMPORT_WSDL_FROM_FILE_OR_URL = ComposerWebserviceMessageConstants.QUICKSTART_IMPORT_WSDL_FROM_FILE_OR_URL;
+	public static final String MSG_IMPORT = ComposerWebserviceMessageConstants.MSG_IMPORT;
 }

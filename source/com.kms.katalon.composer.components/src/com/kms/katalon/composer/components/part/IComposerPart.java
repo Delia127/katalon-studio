@@ -14,4 +14,12 @@ public interface IComposerPart {
      * @return Opened Entity ID
      */
     public String getEntityId();
+
+    default boolean isDraft() {
+        return false;
+    }
+
+    default String getPartId() {
+        return null;
+    }
 }

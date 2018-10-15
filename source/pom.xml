@@ -67,6 +67,7 @@
 		<module>com.kms.katalon.entity</module>
 		<module>com.kms.katalon.execution.mobile</module>
 		<module>com.kms.katalon.execution.webui</module>
+		<module>com.kms.katalon.execution.webservice</module>
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
 		<module>com.kms.katalon.groovy</module>

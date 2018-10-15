@@ -36,7 +36,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         // UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.GUI)));
         Trackings.trackOpenFirstTime();
 
-        if (!checkSignupDialog()) {
+        if (!checkActivationDialog()) {
             return false;
         }
         showFunctionsIntroductionForTheFirstTime();

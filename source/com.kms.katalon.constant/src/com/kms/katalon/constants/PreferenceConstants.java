@@ -14,6 +14,10 @@ public interface PreferenceConstants {
     public static final String GENERAL_ONLINE_HELP_CONTENT = "general.onlineHelpContent";
 
     public static final String GENERAL_LAST_HELP_SELECTED_TAB = "general.lastHelpSelectedTab";
+    
+    public static final String GENERAL_SHOW_USER_FEEDBACK_DIALOG_ON_APP_CLOSE = "general.showUserFeedbackDialogOnAppClose";
+    
+    public static final String GENERAL_NUMBER_OF_APP_CLOSES = "general.numberOfAppCloses";
 
     // Composer WebUi
     public static final String WEBUI_QUALIFIER = "com.kms.katalon.composer.webui";
