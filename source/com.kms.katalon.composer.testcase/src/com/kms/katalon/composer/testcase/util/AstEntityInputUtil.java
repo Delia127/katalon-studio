@@ -45,6 +45,8 @@ public class AstEntityInputUtil {
                 .newLocalMethod(MethodCallExpressionWrapper.FIND_TEST_CASE_METHOD_NAME, parentNode);
         objectMethodCall.getArguments().addExpression(new ConstantExpressionWrapper(
                 testCase != null ? testCase.getIdForDisplay() : null));
+        //     objectMethodCall.getArguments().addExpression(new ConstantExpressionWrapper(
+        //     testCase != null ? TestCaseFactory.getTestCaseRelativeId(testCase.getIdForDisplay()) : null));
         return objectMethodCall;
     }
 
@@ -247,6 +249,8 @@ public class AstEntityInputUtil {
         ArgumentListExpressionWrapper argument = new ArgumentListExpressionWrapper(objectMethodCall);
         argument.addExpression(
                 new ConstantExpressionWrapper(testObjectId, argument));
+        //        argument.addExpression(
+        //        new ConstantExpressionWrapper(ObjectRepository.getTestObjectRelativeId(testObjectId), argument));
         objectMethodCall.setArguments(argument);
         return objectMethodCall;
     }
