@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="433">
+<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="434">
 <locations>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.codehaus.groovy23.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
@@ -18,11 +18,13 @@
 <unit id="org.objectweb.asm.all.debug" version="5.0.3"/>
 <unit id="org.assertj.core" version="3.10.0"/>
 <unit id="io.swagger.annotations" version="2.0.0.rc2"/>
+<unit id="net.lightbody.bmp.mitm" version="2.1.5"/>
 <unit id="org.zeroturnaround.zt-process" version="1.3.0"/>
 <unit id="jaxen" version="1.1.6"/>
 <unit id="org.junit" version="4.12.0"/>
 <unit id="io.swagger.models" version="2.0.0.rc2"/>
 <unit id="atu.testrecorder.screen-recorder" version="2.1.0"/>
+<unit id="net.lightbody.bmp.littleproxy" version="1.1.0.beta-bmp-17"/>
 <unit id="org.apache.commons.cli" version="1.0.0.v201105210649"/>
 <unit id="org.apache.httpcomponents.httpclient" version="4.5.1"/>
 <unit id="commons-logging" version="1.1.1"/>
@@ -48,6 +50,7 @@
 <unit id="org.objectweb.asm.commons" version="5.0.1"/>
 <unit id="org.codehaus.mojo.animal-sniffer-annotations" version="1.14.0"/>
 <unit id="net.lingala.zip4j" version="1.2.5"/>
+<unit id="com.jcraft.jzlib" version="1.1.3"/>
 <unit id="io.cucumber.datatable-dependencies" version="1.0.3"/>
 <unit id="org.eclipse.jetty.plus" version="9.3.9.v20160517"/>
 <unit id="com.fasterxml.jackson.core.jackson-annotations" version="2.9.1"/>
@@ -76,6 +79,7 @@
 <unit id="org.apache.httpcomponents.httpmime" version="4.5.1"/>
 <unit id="org.postgresql.jdbc41" version="9.4.1208.jre7"/>
 <unit id="net.sf.supercsv.super-csv" version="2.1.0"/>
+<unit id="bcpkix" version="1.58.0"/>
 <unit id="javassist" version="3.18.1.GA"/>
 <unit id="antlr" version="2.7.7"/>
 <unit id="org.apache.commons.collections" version="3.2.2"/>
@@ -88,6 +92,7 @@
 <unit id="org.apache.commons.dbutils" version="1.6.0"/>
 <unit id="io.cucumber.core" version="3.0.2"/>
 <unit id="org.jsoup" version="1.7.2"/>
+<unit id="dnsjava" version="2.1.8"/>
 <unit id="org.objectweb.asm" version="5.0.1"/>
 <unit id="org.eclipse.jetty.servlet" version="9.3.9.v20160517"/>
 <unit id="com.mysql.jdbc" version="5.1.38"/>
@@ -95,6 +100,7 @@
 <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
 <unit id="org.apache.commons.io" version="2.4.0"/>
 <unit id="com.oracle.jdbc.ojdbc7" version="12.1.0.2"/>
+<unit id="bcprov" version="1.58.0"/>
 <unit id="com.google.errorprone.error_prone_annotations" version="2.0.18"/>
 <unit id="javax.annotation-api" version="1.2.0"/>
 <unit id="org.yaml.snakeyaml" version="1.18.0"/>
@@ -112,6 +118,7 @@
 <unit id="org.eclipse.jetty.util" version="9.3.9.v20160517"/>
 <unit id="javax.servlet-api" version="3.1.0"/>
 <unit id="org.eclipse.jetty.server" version="9.3.9.v20160517"/>
+<unit id="net.lightbody.bmp.browsermob-core" version="2.1.5"/>
 <unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
 <unit id="org.eclipse.jetty.xml" version="9.3.9.v20160517"/>
 <unit id="commonj.sdo" version="2.1.1.v201112051852"/>
@@ -128,10 +135,10 @@
 <unit id="org.apache.xerces.impl" version="2.11.0"/>
 <unit id="org.greenrobot.eventbus" version="3.1.1"/>
 <unit id="org.apache.commons.beanutils" version="1.9.2"/>
-<unit id="org.apache.commons.codec" version="1.7.0"/>
 <unit id="dom4j" version="1.6.1"/>
 <unit id="org.apache.xmlbeans" version="2.6.0"/>
 <unit id="org.apache.commons.digester" version="1.8.1"/>
+<unit id="org.apache.commons.codec" version="1.9.0"/>
 <unit id="org.apache.commons.email" version="1.4.0"/>
 <unit id="stax.api" version="1.0.1"/>
 <unit id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
@@ -150,6 +157,7 @@
 <unit id="org.eclipse.jetty.http" version="9.3.9.v20160517"/>
 <unit id="javax.websocket-api" version="1.0.0"/>
 <unit id="org.eclipse.jetty.jndi" version="9.3.9.v20160517"/>
+<unit id="io.netty.all" version="4.0.51.Final"/>
 <unit id="org.apache.lucene.core" version="6.3.0"/>
 <unit id="io.swagger.parser-v2-converter" version="2.0.0.rc1"/>
 <unit id="org.hibernate.javax.persistence.hibernate-jpa-2.1-api" version="1.0.0.Final"/>
@@ -161,6 +169,8 @@
 <includeBundles>
 <plugin id="antlr"/>
 <plugin id="atu.testrecorder.screen-recorder"/>
+<plugin id="bcpkix"/>
+<plugin id="bcprov"/>
 <plugin id="ch.qos.logback.classic"/>
 <plugin id="ch.qos.logback.core"/>
 <plugin id="ch.qos.logback.slf4j"/>
@@ -188,8 +198,8 @@
 <plugin id="com.gradleware.tooling.utils"/>
 <plugin id="com.ibm.icu"/>
 <plugin id="com.ibm.icu.source"/>
-<plugin id="com.jcraft.jsch" version="0.1.54.v20170116-1932"/>
 <plugin id="com.jcraft.jsch" version="0.1.53.v201508180515"/>
+<plugin id="com.jcraft.jsch" version="0.1.54.v20170116-1932"/>
 <plugin id="com.jcraft.jsch.source"/>
 <plugin id="com.microsoft.sqlserver.sqljdbc4"/>
 <plugin id="com.mysql.jdbc"/>
@@ -209,6 +219,7 @@
 <plugin id="io.cucumber.java"/>
 <plugin id="io.cucumber.junit"/>
 <plugin id="io.cucumber.tag-expressions"/>
+<plugin id="io.netty.all"/>
 <plugin id="io.swagger.annotations"/>
 <plugin id="io.swagger.core"/>
 <plugin id="io.swagger.models"/>
@@ -238,19 +249,22 @@
 <plugin id="javax.naming.jndi"/>
 <plugin id="javax.persistence"/>
 <plugin id="javax.persistence.api"/>
-<plugin id="javax.servlet" version="3.1.0.v201410161800"/>
 <plugin id="javax.servlet" version="3.0.0.v201112011016"/>
+<plugin id="javax.servlet" version="3.1.0.v201410161800"/>
 <plugin id="javax.servlet-api"/>
 <plugin id="javax.servlet.jsp"/>
 <plugin id="javax.servlet.jsp.source"/>
 <plugin id="javax.servlet.source"/>
 <plugin id="javax.validation.api"/>
-<plugin id="javax.websocket-api" version="1.1.0.201606171313"/>
+<plugin id="javax.websocket-api"/>
 <plugin id="javax.ws.rs"/>
 <plugin id="javax.xml"/>
 <plugin id="javax.xml.jaxp-api"/>
 <plugin id="jaxb-api"/>
 <plugin id="jaxen"/>
+<plugin id="net.lightbody.bmp.browsermob-core"/>
+<plugin id="net.lightbody.bmp.littleproxy"/>
+<plugin id="net.lightbody.bmp.mitm"/>
 <plugin id="net.lingala.zip4j"/>
 <plugin id="net.sf.jopt-simple.jopt-simple"/>
 <plugin id="net.sf.supercsv.super-csv"/>
@@ -270,19 +284,20 @@
 <plugin id="org.apache.commons.beanutils"/>
 <plugin id="org.apache.commons.cli"/>
 <plugin id="org.apache.commons.codec" version="1.7.0"/>
-<plugin id="org.apache.commons.collections" version="3.2.2.v201511171945"/>
+<plugin id="org.apache.commons.codec" version="1.9.0"/>
+<plugin id="org.apache.commons.collections"/>
 <plugin id="org.apache.commons.compress"/>
 <plugin id="org.apache.commons.dbutils"/>
 <plugin id="org.apache.commons.digester"/>
 <plugin id="org.apache.commons.email"/>
-<plugin id="org.apache.commons.io" version="2.4.0"/>
 <plugin id="org.apache.commons.io" version="2.2.0.v201405211200"/>
+<plugin id="org.apache.commons.io" version="2.4.0"/>
 <plugin id="org.apache.commons.jxpath"/>
 <plugin id="org.apache.commons.jxpath.source"/>
 <plugin id="org.apache.commons.lang" version="2.6"/>
 <plugin id="org.apache.commons.lang3" version="3.6.0"/>
-<plugin id="org.apache.commons.logging" version="1.2.0"/>
 <plugin id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
+<plugin id="org.apache.commons.logging" version="1.2.0"/>
 <plugin id="org.apache.commons.logging.source"/>
 <plugin id="org.apache.commons.math"/>
 <plugin id="org.apache.commons.pool"/>
@@ -300,7 +315,7 @@
 <plugin id="org.apache.jasper.glassfish"/>
 <plugin id="org.apache.jasper.glassfish.source"/>
 <plugin id="org.apache.log4j"/>
-<plugin id="org.apache.lucene.analysis" version="3.5.0.v20120725-1805"/>
+<plugin id="org.apache.lucene.analysis"/>
 <plugin id="org.apache.lucene.analysis.source"/>
 <plugin id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
 <plugin id="org.apache.lucene.core" version="6.3.0"/>
@@ -319,8 +334,8 @@
 <plugin id="org.apache.xmlrpc"/>
 <plugin id="org.assertj.core"/>
 <plugin id="org.beanshell.bsh"/>
-<plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.4.3.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.3.10.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
@@ -336,14 +351,14 @@
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.m2eclipse" version="2.9.2.xx-201706151221-e46"/>
 <plugin id="org.dom4j"/>
 <plugin id="org.eclipse.aether.api"/>
@@ -612,8 +627,8 @@
 <plugin id="org.eclipse.help.webapp"/>
 <plugin id="org.eclipse.help.webapp.source"/>
 <plugin id="org.eclipse.jdt"/>
-<plugin id="org.eclipse.jdt.annotation" version="2.1.0.v20160418-1457"/>
 <plugin id="org.eclipse.jdt.annotation" version="1.1.100.v20160418-1457"/>
+<plugin id="org.eclipse.jdt.annotation" version="2.1.0.v20160418-1457"/>
 <plugin id="org.eclipse.jdt.apt.core"/>
 <plugin id="org.eclipse.jdt.apt.pluggable.core"/>
 <plugin id="org.eclipse.jdt.apt.ui"/>
@@ -1089,8 +1104,8 @@
 <plugin id="org.jboss.logging.jboss-logging-annotations"/>
 <plugin id="org.jboss.spec.javax.transaction.jboss-transaction-api_1.2_spec"/>
 <plugin id="org.json"/>
-<plugin id="org.jsoup" version="1.7.2"/>
 <plugin id="org.jsoup" version="1.7.2.v201411291515"/>
+<plugin id="org.jsoup" version="1.7.2"/>
 <plugin id="org.junit" version="4.12.0"/>
 <plugin id="org.kohsuke.args4j"/>
 <plugin id="org.mozilla.javascript"/>
@@ -1098,8 +1113,8 @@
 <plugin id="org.objectweb.asm" version="5.0.1.v201404251740"/>
 <plugin id="org.objectweb.asm.all.debug"/>
 <plugin id="org.objectweb.asm.commons"/>
-<plugin id="org.objectweb.asm.tree" version="5.0.1"/>
 <plugin id="org.objectweb.asm.tree" version="5.0.1.v201404251740"/>
+<plugin id="org.objectweb.asm.tree" version="5.0.1"/>
 <plugin id="org.postgresql.jdbc41"/>
 <plugin id="org.qas.qtest.sdk-java"/>
 <plugin id="org.sat4j.core"/>
