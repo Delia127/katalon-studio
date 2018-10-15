@@ -10,6 +10,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +22,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
@@ -35,6 +37,9 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 public class ScriptEngine extends GroovyScriptEngine {
+    
+    private static final Map<String, String> testCaseNameLookup = new ConcurrentHashMap<>();
+    
     // Used to generate new temp script name
     private int counter;
 
@@ -102,8 +107,14 @@ public class ScriptEngine extends GroovyScriptEngine {
     }
 
     // Parse this class as script text
-    public Object runScriptAsRawText(final String scriptText, String className, Binding binding)
+    public Object runScriptAsRawText(
+            final String scriptText, String className, Binding binding, String testCaseName)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
+        
+        if (testCaseName != null) {
+            String scriptId = new File(className).getName();
+            testCaseNameLookup.put(scriptId, testCaseName);
+        }
         String processedScriptText = preProcessScriptBeforeBuild(scriptText);
         return run(getGroovyCodeSource(processedScriptText, className), binding, true);
     }
@@ -246,4 +257,7 @@ public class ScriptEngine extends GroovyScriptEngine {
         }
     }
 
+    public static String getTestCaseName(String script) {
+        return testCaseNameLookup.get(script);
+    }
 }

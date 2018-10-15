@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -120,10 +121,7 @@ public class TestCaseExecutor {
         testCaseResult.getTestStatus().setStatusValue(getResultByError(t));
         String stackTraceForThrowable;
         try {
-            stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(
-                    t,
-                    testCase.getName(),
-                    testCase.getGroovyScriptClassName());
+            stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(t);
         } catch (Exception e) {
             stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(t);
         }
@@ -306,8 +304,11 @@ public class TestCaseExecutor {
 
     private Object runScript(File scriptFile)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile, DF_CHARSET),
-                scriptFile.toURI().toURL().toExternalForm(), variableBinding);
+        return engine.runScriptAsRawText(
+                FileUtils.readFileToString(scriptFile, DF_CHARSET),
+                scriptFile.toURI().toURL().toExternalForm(), 
+                variableBinding,
+                getTestCase().getName());
     }
 
     protected void runMethod(File scriptFile, String methodName)
@@ -458,5 +459,9 @@ public class TestCaseExecutor {
     @SuppressWarnings("unchecked")
     public void setupContextClassLoader() {
         AccessController.doPrivileged(new DoSetContextAction(Thread.currentThread(), engine.getGroovyClassLoader()));
+    }
+    
+    public TestCase getTestCase() {
+        return testCase;
     }
 }

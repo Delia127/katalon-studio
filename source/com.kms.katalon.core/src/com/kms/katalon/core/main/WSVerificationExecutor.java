@@ -142,8 +142,11 @@ public class WSVerificationExecutor {
 
     private Object runScript(String script)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        return engine.runScriptAsRawText(script, "WSVerification" + System.currentTimeMillis(),
-                testCaseBinding != null ? new Binding(testCaseBinding.getBindedValues()) : new Binding());
+        return engine.runScriptAsRawText(
+                script, 
+                "WSVerification" + System.currentTimeMillis(),
+                testCaseBinding != null ? new Binding(testCaseBinding.getBindedValues()) : new Binding(),
+                testCaseBinding != null ? testCaseBinding.getTestCaseName() : null);
     }
 
     private void logError(Throwable t, String message) {
