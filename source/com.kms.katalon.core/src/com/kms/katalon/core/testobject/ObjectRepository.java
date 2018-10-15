@@ -330,21 +330,34 @@ public class ObjectRepository {
         String serviceType = reqElement.elementText("serviceType");
         requestObject.setServiceType(serviceType);
         
+        Map<String, String> rawVariables = new HashMap<>();
         // Use default value of variables if available in case user passes nothing or null
-        if(variables == null || variables.equals(Collections.emptyMap())){
-        	if(variables == null){
-        		variables = new HashMap<String, Object>();
-        	}
+        if(variables == null || variables.size() == 0){ 
         	
-        	Element variableElement = reqElement.element("variables");
-        	if(variableElement != null){
-        		Element defaultValue = variableElement.element("defaultValue");
-        		Element name = variableElement.element("name");
-        		
-        		if(!defaultValue.equals(StringUtils.EMPTY)){
-        			variables.put(name.getData().toString(), defaultValue.getData());
+        	List<Element> variableElements = reqElement.elements("variables");
+        	if(variableElements != null && variableElements.size() > 0 ){
+        		for(Element variableElement : variableElements){
+                	if(variableElement != null){
+                		Element defaultValue = variableElement.element("defaultValue");
+                		Element name = variableElement.element("name");
+                		
+                		if(!defaultValue.equals(StringUtils.EMPTY)){                			
+                			rawVariables.put(name.getData().toString(), defaultValue.getData().toString());
+                		}
+                	}
         		}
         	}
+        	boolean exception = false;
+        	try {
+				variables = evaluateVariables(rawVariables);
+			} catch (Exception e){
+				exception = true;
+			}
+        	finally{
+				if(exception == true){
+					variables = new HashMap<>();	
+				}				
+			}
         }
         
         StrSubstitutor substitutor = new StrSubstitutor(variables);
