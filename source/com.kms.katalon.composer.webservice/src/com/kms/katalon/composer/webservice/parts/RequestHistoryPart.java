@@ -47,6 +47,7 @@ import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.handlers.IRequestHistoryListener;
 import com.kms.katalon.composer.webservice.handlers.OpenWebServiceRequestObjectHandler;
 import com.kms.katalon.composer.webservice.handlers.RequestHistoryHandler;
+import com.kms.katalon.composer.webservice.handlers.SaveDraftRequestHandler;
 import com.kms.katalon.composer.webservice.parts.tree.IRequestHistoryItem;
 import com.kms.katalon.composer.webservice.parts.tree.RequestDateTreeItem;
 import com.kms.katalon.composer.webservice.parts.tree.RequestHistoryStyleCellProvider;
@@ -209,7 +210,6 @@ public class RequestHistoryPart implements IRequestHistoryListener {
         imgBtnSave.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Trackings.trackClickSavingDraftRequest();
                 ITreeSelection structuredSelection = treeViewer.getStructuredSelection();
                 if (structuredSelection == null || structuredSelection.isEmpty() || structuredSelection.size() != 1
                         || !(structuredSelection.getFirstElement() instanceof RequestHistoryTreeItem)) {
@@ -217,37 +217,8 @@ public class RequestHistoryPart implements IRequestHistoryListener {
                 }
                 RequestHistoryTreeItem selectedTreeItem = (RequestHistoryTreeItem) structuredSelection
                         .getFirstElement();
-                NewHistoryRequestDialog dialog = new NewHistoryRequestDialog(imgBtnSave.getDisplay().getActiveShell(),
-                        selectedTreeItem.getRequestHistoryEntity());
-                if (dialog.open() != NewHistoryRequestDialog.OK) {
-                    return;
-                }
-
-                try {
-                    NewHistoryRequestResult result = dialog.getResult();
-
-                    WebServiceRequestEntity entity = JsonUtil.fromJson(JsonUtil.toJson(selectedTreeItem
-                            .getRequestHistoryEntity().getRequest().clone()), WebServiceRequestEntity.class);
-                    entity.setName(result.getName());
-                    entity.setParentFolder(result.getParentFolder());
-                    entity.setDescription(result.getDescription());
-                    ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                    entity.setProject(currentProject);
-
-                    entity = (WebServiceRequestEntity) ObjectRepositoryController.getInstance()
-                            .saveNewTestObject(entity);
-                    
-                    Trackings.trackSaveDraftRequest();
-                    
-                    WebElementTreeEntity treeEntity = new WebElementTreeEntity(entity,
-                            TreeEntityUtil.createSelectedTreeEntityHierachy(entity.getParentFolder(),
-                                    FolderController.getInstance().getObjectRepositoryRoot(currentProject)));
-                    eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, treeEntity);
-                    eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, entity);
-                } catch (Exception ex) {
-                    MultiStatusErrorDialog.showErrorDialog("Unable to save this request", ex.getMessage(),
-                            ExceptionsUtil.getStackTraceForThrowable(ex));
-                }
+                SaveDraftRequestHandler.saveDraftRequest(imgBtnSave.getDisplay().getActiveShell(),
+                        selectedTreeItem.getRequestHistoryEntity().getRequest());
             }
         });
 

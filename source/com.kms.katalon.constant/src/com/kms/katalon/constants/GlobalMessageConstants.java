@@ -90,6 +90,8 @@ public class GlobalMessageConstants extends NLS {
     public static String TEST_CASE;
 
     public static String TEST_SUITE;
+    
+    public static String TEST_SUITE_COLLECTION;
 
     public static String TEST_OBJECT;
 
