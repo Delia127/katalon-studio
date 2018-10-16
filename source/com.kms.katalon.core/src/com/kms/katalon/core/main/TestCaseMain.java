@@ -48,7 +48,6 @@ public class TestCaseMain {
         loadGlobalVariableClass(classLoader);
         loadInternalGlobalVariableClass(classLoader);
         loadCustomKeywordsClass(classLoader);
-        BrowserMobProxyManager.init();
         eventManager = ExecutionEventManager.getInstance();
     }
 
