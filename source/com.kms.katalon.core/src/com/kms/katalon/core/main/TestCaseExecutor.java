@@ -33,7 +33,7 @@ import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
+import com.kms.katalon.core.logging.IKeywordLogger.KeywordStackElement;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;

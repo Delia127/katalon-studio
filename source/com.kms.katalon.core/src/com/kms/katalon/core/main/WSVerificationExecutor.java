@@ -11,7 +11,7 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.context.internal.ExecutionEventManager;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
+import com.kms.katalon.core.logging.IKeywordLogger.KeywordStackElement;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseBinding;

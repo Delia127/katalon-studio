@@ -76,6 +76,9 @@ Require-Bundle: net.sf.supercsv.super-csv,
  io.netty.all,
  com.fasterxml.jackson.core.jackson-databind,
  com.fasterxml.jackson.core.jackson-core,
- com.fasterxml.jackson.core.jackson-annotations
+ com.fasterxml.jackson.core.jackson-annotations,
+ org.slf4j.api,
+ ch.qos.logback.classic,
+ ch.qos.logback.core
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

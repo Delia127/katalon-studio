@@ -28,7 +28,7 @@ import com.kms.katalon.core.annotation.BeforeTestSuite;
 import com.kms.katalon.core.constants.CoreMessageConstants;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
+import com.kms.katalon.core.logging.IKeywordLogger.KeywordStackElement;
 import com.kms.katalon.core.main.TestCaseMain;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.PrimitiesUtil;

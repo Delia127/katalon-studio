@@ -13,7 +13,7 @@ import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.logging.ErrorCollector
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.logging.LogLevel
-import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement
+import com.kms.katalon.core.logging.IKeywordLogger.KeywordStackElement
 import com.kms.katalon.core.logging.model.TestStatus
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue
 import com.kms.katalon.core.main.TestResult
