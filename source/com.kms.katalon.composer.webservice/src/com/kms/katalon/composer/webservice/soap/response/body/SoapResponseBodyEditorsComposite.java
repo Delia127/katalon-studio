@@ -75,6 +75,7 @@ public class SoapResponseBodyEditorsComposite extends Composite {
 
         SoapPrettyEditor mirrorEditor = new SoapPrettyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put(SoapEditorMode.PRETTY, mirrorEditor);
+        mirrorEditor.addHandler(eventHandler);
 
         // Raw Mode
         rawRadio = new Button(tbBodyType, SWT.RADIO);
@@ -95,7 +96,8 @@ public class SoapResponseBodyEditorsComposite extends Composite {
         try {
             this.responseObject = new ResponseObject();
             this.responseObject.setResponseText(responseOb.getResponseText());
-
+            this.responseObject.setBodyContent(responseObject.getBodyContent());
+            this.responseObject.setContentType(responseOb.getContentType());
             this.selectedEditorMode = SoapEditorMode.PRETTY;
 
             // Mark radio is selected.

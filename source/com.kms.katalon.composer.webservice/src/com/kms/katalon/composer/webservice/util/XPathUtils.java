@@ -14,6 +14,7 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,8 +27,9 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 public class XPathUtils {
     public static Map<Integer, String> evaluateXmlProperty(String jsonString) throws IOException {
         // Work around for https://github.com/FasterXML/jackson-dataformat-xml/issues/205
-        ObjectMapper mapper = new XmlMapper()
-                .registerModule(new SimpleModule().addDeserializer(Object.class, new FixedUntypedObjectDeserializer(null, null)));
+        ObjectMapper mapper = new XmlMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
+                .registerModule(new SimpleModule().addDeserializer(Object.class,
+                        new FixedUntypedObjectDeserializer(null, null)));
         Object o = mapper.readValue(jsonString, Object.class);
 
         ObjectWriter w = new ObjectMapper().writerWithDefaultPrettyPrinter();
@@ -37,12 +39,13 @@ public class XPathUtils {
         indexedNode.index = 0;
         indexedNode.xmlProperty = "";
         if (jsonString.startsWith("<?xml")) {
-            indexedNode.endLine = indexedNode.startLine = 1;    
+            indexedNode.endLine = indexedNode.startLine = 1;
         } else {
             indexedNode.endLine = indexedNode.startLine = 0;
         }
-        
+
         IndexedJsonNode evaluatedRootNode = walk(null, null, indexedNode, rootNode);
+
         return collectXmlProperty(evaluatedRootNode);
     }
 
@@ -57,9 +60,7 @@ public class XPathUtils {
 
     private static IndexedJsonNode walk(IndexedJsonNode parentIndexedNode, JsonNode parentNode,
             IndexedJsonNode indexedNode, JsonNode node) {
-        if (parentIndexedNode == null) {
-            indexedNode.endLine = indexedNode.startLine = 0;
-        } else {
+        if (parentIndexedNode != null) {
             if (parentNode.getNodeType() != JsonNodeType.ARRAY) {
                 indexedNode.endLine = indexedNode.startLine = parentIndexedNode.endLine + 1;
             } else {
@@ -86,22 +87,24 @@ public class XPathUtils {
                 break;
             }
             case OBJECT: {
-                Iterator<Entry<String, JsonNode>> childrenIterator = node.fields();
-                int index = 0;
-                while (childrenIterator.hasNext()) {
-                    Entry<String, JsonNode> childEntry = childrenIterator.next();
-                    JsonNode childNode = childEntry.getValue();
-                    IndexedJsonNode indexedChild = new IndexedJsonNode();
-                    indexedChild.index = index;
-                    indexedChild.xmlProperty = (indexedNode.xmlProperty.isEmpty() ? "" : indexedNode.xmlProperty + ".")
-                            + childEntry.getKey();
-                    indexedChild.key = childEntry.getKey();
-                    walk(indexedNode, node, indexedChild, childNode);
+                if (!hasAttribute(indexedNode, node)) {
+                    Iterator<Entry<String, JsonNode>> childrenIterator = node.fields();
+                    int index = 0;
+                    while (childrenIterator.hasNext()) {
+                        Entry<String, JsonNode> childEntry = childrenIterator.next();
+                        JsonNode childNode = childEntry.getValue();
+                        IndexedJsonNode indexedChild = new IndexedJsonNode();
+                        indexedChild.index = index;
+                        indexedChild.xmlProperty = (indexedNode.xmlProperty.isEmpty() ? ""
+                                : indexedNode.xmlProperty + ".") + childEntry.getKey();
+                        indexedChild.key = childEntry.getKey();
+                        walk(indexedNode, node, indexedChild, childNode);
 
-                    indexedNode.endLine = indexedChild.endLine;
+                        indexedNode.endLine = indexedChild.endLine;
 
-                    indexedNode.children.add(indexedChild);
-                    index++;
+                        indexedNode.children.add(indexedChild);
+                        index++;
+                    }
                 }
                 indexedNode.endLine++;
                 break;
@@ -114,6 +117,16 @@ public class XPathUtils {
         }
 
         return indexedNode;
+    }
+
+    private static boolean hasAttribute(IndexedJsonNode indexedNode, JsonNode node) {
+        Iterator<String> fieldNamesIterator = node.fieldNames();
+        while (fieldNamesIterator.hasNext()) {
+            if (fieldNamesIterator.next().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static class IndexedJsonNode {
@@ -137,7 +150,7 @@ public class XPathUtils {
         private List<IndexedJsonNode> children = new ArrayList<>();
     }
 
-    //https://gist.github.com/joaovarandas/1543e792ed6204f0cf5fe860cb7d58ed
+    // https://gist.github.com/joaovarandas/1543e792ed6204f0cf5fe860cb7d58ed
     public static class FixedUntypedObjectDeserializer extends UntypedObjectDeserializer {
         private static final long serialVersionUID = -5994468781168540578L;
 
