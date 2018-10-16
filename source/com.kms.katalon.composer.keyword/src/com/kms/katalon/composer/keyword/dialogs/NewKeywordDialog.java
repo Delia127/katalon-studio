@@ -1,9 +1,5 @@
 package com.kms.katalon.composer.keyword.dialogs;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -417,17 +413,6 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
                 }
             }
             return highest;
-        }
-    }
-    
-    private void openBrowserToLink(String url) {
-        if (!Desktop.isDesktopSupported()) {
-            return;
-        }
-        try {
-            Desktop.getDesktop().browse(new URI(url));
-        } catch (IOException | URISyntaxException exception) {
-            LoggerSingleton.logError(exception);
         }
     }
 }

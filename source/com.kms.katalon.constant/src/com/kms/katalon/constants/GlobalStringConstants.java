@@ -162,6 +162,8 @@ public class GlobalStringConstants {
     public static final String TEST_CASE = GlobalMessageConstants.TEST_CASE;
 
     public static final String TEST_SUITE = GlobalMessageConstants.TEST_SUITE;
+    
+    public static final String TEST_SUITE_COLLECTION = GlobalMessageConstants.TEST_SUITE_COLLECTION;
 
     public static final String TEST_OBJECT = GlobalMessageConstants.TEST_OBJECT;
 
