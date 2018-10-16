@@ -19,6 +19,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
+import com.kms.katalon.composer.webservice.parts.VerificationScriptEventHandler;
 import com.kms.katalon.composer.webservice.response.body.RawEditor;
 import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditor;
 import com.kms.katalon.core.testobject.ResponseObject;
@@ -49,7 +50,7 @@ public class SoapResponseBodyEditorsComposite extends Composite {
         PRETTY, RAW
     };
 
-    public SoapResponseBodyEditorsComposite(Composite parent, int style) {
+    public SoapResponseBodyEditorsComposite(Composite parent, int style, VerificationScriptEventHandler eventHandler) {
 
         super(parent, style);
         setLayout(new GridLayout());

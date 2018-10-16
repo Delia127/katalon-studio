@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.webservice.components;
+package com.kms.katalon.composer.webservice.editor;
 
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;

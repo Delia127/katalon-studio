@@ -1,14 +1,14 @@
 package com.kms.katalon.composer.webservice.response.body;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -18,17 +18,21 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.webservice.components.MirrorEditor;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.composer.webservice.editor.DocumentReadyHandler;
+import com.kms.katalon.composer.webservice.editor.MirrorEditor;
+import com.kms.katalon.composer.webservice.editor.MirrorEditor.EditorChangeListener;
+import com.kms.katalon.composer.webservice.parts.VerificationScriptEventHandler;
+import com.kms.katalon.composer.webservice.util.JsonPathUtils;
+import com.kms.katalon.composer.webservice.util.XPathUtils;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.entity.webservice.TextBodyContent;
 
-public class PrettyEditor extends Composite implements ResponseBodyEditor {
+public class PrettyEditor extends Composite implements ResponseBodyEditor, EditorChangeListener {
 
     private TextBodyContent textBodyContent;
 
@@ -37,6 +41,16 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
     Composite tbBodyType;
 
     private Map<String, Button> TEXT_MODE_SELECTION_BUTTONS = new HashMap<>();
+
+    private static final int JSON_TOKEN_SIZE = 4;
+    
+    private static final int XML_TOKEN_SIZE = 5;
+
+    private static final int JSON_PROP_VALUE_TOKEN_IDX = 3;
+
+    private static final int XML_PROP_VALUE_TOKEN_IDX = 4;
+
+    private Button chckWrapLine;
 
     // List of TextContentType by name
     private static final String[] TEXT_MODE_NAMES;
@@ -49,11 +63,10 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
      * Key: mode name: {@link TextContentType#JSON} or {@link TextContentType#XPATH}
      * Value: a HashMap<Integer, String> that indices JSON PATH, XPATH of a line number on editor.
      */
-    private Map<TextContentType, Object> lineIndexing = new HashMap<>();
-
-    private Button chckWrapLine;
+    private Map<TextContentType, Map<Integer, String>> lineIndexing = new HashMap<>();
 
     private TextContentType preferedContentType;
+
 
     public PrettyEditor(Composite parent, int style) {
         super(parent, style);
@@ -71,6 +84,7 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
                 handleControlModifyListener();
             }
         });
+        mirrorEditor.addEventListener(this);
         Composite bottomComposite = new Composite(this, SWT.NONE);
         GridLayout bottomLayout = new GridLayout(2, false);
         bottomLayout.marginWidth = bottomLayout.marginHeight = 0;
@@ -95,82 +109,10 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
                             mirrorEditor.changeMode(mode);
                             if (textBodyContent != null) {
                                 textBodyContent.setContentType(textContentType.getContentType());
+                                mirrorEditor.setHintText("");
                             }
                             PrettyEditor.this.notifyListeners(SWT.Modify, new Event());
-                            if (TextContentType.valueOf(mode) == TextContentType.JSON) {
-                                String editorValue = mirrorEditor.getText();
-
-                                ObjectMapper mapper = new ObjectMapper();
-
-                                try {
-                                    JsonNode node = mapper.readTree(editorValue);
-                                    IndexedJsonNode indexedNode = new IndexedJsonNode();
-                                    indexedNode.key = "";
-                                    indexedNode.index = 0;
-                                    indexedNode.jsonPath = "$";
-                                    indexedNode.endLine = indexedNode.startLine = 0;
-                                    IndexedJsonNode indexed = walk(null, indexedNode, node);
-                                } catch (IOException ex) {
-                                    LoggerSingleton.logError(ex);
-                                }
-
-                            }
                         }
-                    }
-
-                    private IndexedJsonNode walk(IndexedJsonNode parentIndexedNode, IndexedJsonNode indexedNode, JsonNode node) {
-                        if (parentIndexedNode == null) {
-                            indexedNode.endLine = indexedNode.startLine = 0;
-                        } else {
-                            indexedNode.endLine = indexedNode.startLine = parentIndexedNode.endLine + 1;
-                        }
-
-                        switch (node.getNodeType()) {
-                            case ARRAY: {
-                                Iterator<JsonNode> childrenIterator = node.iterator();
-                                int index = 0;
-                                while (childrenIterator.hasNext()) {
-                                    JsonNode childNode = childrenIterator.next();
-                                    IndexedJsonNode indexedChild = new IndexedJsonNode();
-                                    indexedChild.index = index;
-                                    indexedChild.jsonPath = indexedNode.jsonPath + "[" + index + "]";
-                                    indexedChild.key = "";
-                                    walk(indexedNode, indexedChild, childNode);
-                                    indexedNode.endLine = indexedChild.endLine;
-
-                                    indexedNode.children.add(indexedChild);
-                                    index++;
-                                }
-                                //indexedNode.previousLine++;
-                                break;
-                            }
-                            case OBJECT: {
-                                Iterator<Entry<String, JsonNode>> childrenIterator = node.fields();
-                                int index = 0;
-                                while (childrenIterator.hasNext()) {
-                                    Entry<String, JsonNode> childEntry = childrenIterator.next();
-                                    JsonNode childNode = childEntry.getValue();
-                                    IndexedJsonNode indexedChild = new IndexedJsonNode();
-                                    indexedChild.index = index;
-                                    indexedChild.jsonPath = indexedNode.jsonPath + "." + childEntry.getKey();
-                                    indexedChild.key = childEntry.getKey();
-                                    walk(indexedNode, indexedChild, childNode);
-
-                                    indexedNode.endLine = indexedChild.endLine;
-
-                                    indexedNode.children.add(indexedChild);
-                                    index++;
-                                }
-                                indexedNode.endLine++;
-                                break;
-                            }
-                            default: {
-                                break;
-                            }
-
-                        }
-
-                        return indexedNode;
                     }
                 });
             }
@@ -205,11 +147,13 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
         mirrorEditor.setText(textBodyContent.getText());
         updateRadioStatus();
         mirrorEditor.beautify();
-        
+
         switch (preferedContentType) {
             case JSON:
+                lineIndexing.put(preferedContentType, JsonPathUtils.evaluateJsonProperty(textBodyContent.getText()));
                 break;
             case XML:
+                lineIndexing.put(preferedContentType, XPathUtils.evaluateXmlProperty(textBodyContent.getText()));
                 break;
             default:
                 break;
@@ -239,24 +183,77 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
         }
     }
 
-    private class IndexedJsonNode {
-
-        @Override
-        public String toString() {
-            return "IndexedJsonNode [key=" + key + ", index=" + index + ", jsonPath=" + jsonPath + ", startLine="
-                    + startLine + ", endLine=" + endLine + ", children=" + children + "]\n";
+    @Override
+    public void handleEditorEvent(String event, Object[] objects) {
+        switch (event) {
+            case "handleMouseOverChanged": {
+                if (objects == null || objects.length != 1 || !(objects[0] instanceof String)) {
+                    return;
+                }
+                if (!preferedContentType.getContentType().equals(textBodyContent.getContentType())) {
+                    return;
+                }
+                JsonObject positionJsonObject = new Gson().fromJson((String) objects[0], JsonObject.class);
+                int line = positionJsonObject.get("line").getAsInt();
+                Map<Integer, String> jsonPathCollection = lineIndexing.get(preferedContentType);
+                if (jsonPathCollection.containsKey(line)) {
+                    mirrorEditor.setHintText(jsonPathCollection.get(line));
+                } else {
+                    mirrorEditor.setHintText("");
+                }
+                break;
+            }
+            case "handleGenerateVerificationEvent": {
+                if (objects == null || objects.length != 2) {
+                    return;
+                }
+                if (!preferedContentType.getContentType().equals(textBodyContent.getContentType())) {
+                    return;
+                }
+                int line = ((Number) objects[0]).intValue();
+                Map<Integer, String> propertyCollection = lineIndexing.get(preferedContentType);
+                if (!propertyCollection.containsKey(line)) {
+                    return;
+                }
+                String propertyName = propertyCollection.get(line);
+                String propertyValue = "";
+                JsonArray lineTokensJson = new Gson().fromJson((String) objects[1], JsonArray.class);
+                switch (preferedContentType) {
+                    case JSON:
+                        if (lineTokensJson.size() >= JSON_TOKEN_SIZE) {
+                            JsonObject jsObject = lineTokensJson.get(JSON_PROP_VALUE_TOKEN_IDX)
+                                    .getAsJsonObject();
+                            if (!jsObject.get("type").isJsonNull()) {
+                                propertyValue = jsObject.get("string").getAsString();
+                            }
+                        }
+                        break;
+                    case XML:
+                        if (lineTokensJson.size() == XML_TOKEN_SIZE) {
+                            propertyValue = "'" + lineTokensJson.get(XML_PROP_VALUE_TOKEN_IDX)
+                                    .getAsJsonObject()
+                                    .get("string")
+                                    .getAsString().replace("'", "\\'") + "'";
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                
+                String script = String.format("WS.verifyElementPropertyValue(response, '%s', %s)", 
+                        propertyName.replace("'", "\\'"), StringUtils.defaultIfEmpty(propertyValue, "''"));
+                Iterator<VerificationScriptEventHandler> iterator = eventHanders.iterator();
+                while (iterator.hasNext()) {
+                    iterator.next().insertScript(script);
+                }
+                break;
+            }
         }
+    }
 
-        private String key;
-        
-        private int index;
+    private Collection<VerificationScriptEventHandler> eventHanders = new LinkedList<>();
 
-        private String jsonPath;
-
-        private int startLine;
-
-        private int endLine;
-
-        private List<IndexedJsonNode> children = new ArrayList<>();
+    public void addHandler(VerificationScriptEventHandler handler) {
+        eventHanders.add(handler);
     }
 }

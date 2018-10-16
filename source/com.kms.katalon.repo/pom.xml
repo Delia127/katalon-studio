@@ -263,7 +263,13 @@
 								</artifact>
 								<artifact>
 									<id>javax.websocket:javax.websocket-api:1.1</id>
-								</artifact>	
+								</artifact>
+								<artifact>
+									<id>com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.1</id>
+									<excludes>
+        								<exclude>com.fasterxml.jackson.core.*</exclude>
+    								</excludes>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>
