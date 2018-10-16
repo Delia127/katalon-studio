@@ -284,6 +284,14 @@ public class Trackings {
         trackUserAction("addRequestToTestCase", "addType", addToNewTestCase ? "new" : "existing");
     }
     
+    public static void trackOpenTwitterDialog() {
+        trackUserAction("openTwitterDialog");
+    }
+    
+    public static void trackUserResponseForTwitterDialog(String option) {
+        trackUserAction("responseTwitterDialog", "type", option);
+    }
+    
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
     }
