@@ -2464,7 +2464,7 @@
          version="1.0.0.qualifier"
          unpack="false"/>
 
-  <plugin
+   <plugin
          id="io.swagger.annotations"
          download-size="0"
          install-size="0"
@@ -2620,6 +2620,27 @@
 
    <plugin
          id="com.google.j2objc.annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.qos.logback.classic"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.qos.logback.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="slf4j.api"
          download-size="0"
          install-size="0"
          version="0.0.0"

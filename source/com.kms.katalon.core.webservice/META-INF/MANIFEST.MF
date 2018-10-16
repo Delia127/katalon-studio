@@ -19,7 +19,8 @@ Require-Bundle: org.codehaus.groovy,
  com.google.gson,
  org.apache.commons.lang3,
  org.apache.httpcomponents.httpclient,
- org.slf4j.api
+ org.slf4j.api,
+ slf4j.api
 Export-Package: com.kms.katalon.core.webservice.common,
  com.kms.katalon.core.webservice.constants,
  com.kms.katalon.core.webservice.contribution,
