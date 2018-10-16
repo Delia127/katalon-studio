@@ -27,21 +27,7 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
         predefinedOrder.add(StringConstants.TEMPLATE_SETTING_PAGE_ID);
         
         predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID);
-        predefinedOrder.add(StringConstants.CUSTOM_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-        predefinedOrder.add(StringConstants.WEB_UI_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.CHROME_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.FIREFOX_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.IE_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.SAFARI_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.EDGE_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.REMOTE_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.CHROME_HEADLESS_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.FIREFOX_HEADLESS_SETTING_PAGE_ID);
-            
-        predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
-        predefinedOrder.add(StringConstants.ANDROID_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
             
         predefinedOrder.add(StringConstants.INTEGRATION_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.KATALON_ANALYTICS_SETTING_PAGE_ID);
@@ -53,6 +39,22 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
         predefinedOrder.add(StringConstants.REPORT_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.DATABASE_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.NETWORK_SETTING_PAGE_ID);
+        
+        predefinedOrder.add(StringConstants.DESIRED_CAPABILITIES_SETTING_PAGE_ID); 
+        predefinedOrder.add(StringConstants.CUSTOM_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.WEB_UI_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.CHROME_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.FIREFOX_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.IE_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.SAFARI_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.EDGE_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.REMOTE_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.CHROME_HEADLESS_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.FIREFOX_HEADLESS_SETTING_PAGE_ID);
+        
+        predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
+        predefinedOrder.add(StringConstants.ANDROID_SETTING_PAGE_ID);
+        predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
     }
     
     @Override
