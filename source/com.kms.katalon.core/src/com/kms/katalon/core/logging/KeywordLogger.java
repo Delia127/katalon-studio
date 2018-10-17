@@ -13,13 +13,13 @@ public class KeywordLogger implements IKeywordLogger {
     
     private static final Logger selfLogger = LoggerFactory.getLogger(KeywordLogger.class);
     
-    private static final Map<Class, KeywordLogger> keywordLoggerLookup = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, KeywordLogger> keywordLoggerLookup = new ConcurrentHashMap<>();
     
     private final Logger logger;
     
     private final XmlKeywordLogger xmlKeywordLogger;
     
-    public static KeywordLogger getInstance(Class clazz) {
+    public static KeywordLogger getInstance(Class<?> clazz) {
         if (clazz == null) { // just in case
             selfLogger.error("Logger name is null. This should be a bug of Katalon Studio.");
             clazz = KeywordLogger.class;
