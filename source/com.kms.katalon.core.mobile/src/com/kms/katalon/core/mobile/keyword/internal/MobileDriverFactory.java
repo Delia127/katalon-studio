@@ -26,6 +26,7 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.driver.ExistingDriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.main.TestCaseExecutor;
 import com.kms.katalon.core.mobile.constants.CoreMobileMessageConstants;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
@@ -34,6 +35,9 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 
 public class MobileDriverFactory {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(MobileDriverFactory.class);
+    
     private static final String WAIT_FOR_APP_SCRIPT_TRUE = "true;";
 
     private static final String WAIT_FOR_APP_SCRIPT = "waitForAppScript";
@@ -180,7 +184,7 @@ public class MobileDriverFactory {
             MobileDriverType mobileDriverType) {
         DesiredCapabilities desireCapabilities = new DesiredCapabilities();
         for (Entry<String, Object> property : propertyMap.entrySet()) {
-            KeywordLogger.getInstance().logInfo(MessageFormat.format(StringConstants.KW_LOG_MOBILE_PROPERTY_SETTING,
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_MOBILE_PROPERTY_SETTING,
                     property.getKey(), property.getValue()));
             desireCapabilities.setCapability(property.getKey(), property.getValue());
         }

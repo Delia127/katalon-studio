@@ -50,7 +50,7 @@ import groovy.util.ScriptException;
 
 public class TestCaseExecutor {
 
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    private final KeywordLogger logger = KeywordLogger.getInstance(this.getClass());
 
     private static ErrorCollector errorCollector = ErrorCollector.getCollector();
 

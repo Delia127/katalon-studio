@@ -16,7 +16,7 @@ public abstract class ScreenCaptor {
     protected static final String SCREENSHOT_EXT = "png";
 
     private final KeywordLogger getKeywordLogger() {
-        return KeywordLogger.getInstance();
+        return KeywordLogger.getInstance(this.getClass());
     }
 
     /**

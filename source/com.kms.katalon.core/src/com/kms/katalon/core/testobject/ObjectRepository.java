@@ -38,7 +38,7 @@ import groovy.util.ScriptException;
 
 public class ObjectRepository {
 
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    private static final KeywordLogger logger = KeywordLogger.getInstance(ObjectRepository.class);
 
     private static final String TEST_OBJECT_ROOT_FOLDER_NAME = "Object Repository";
 

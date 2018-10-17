@@ -20,6 +20,7 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.main.TestCaseExecutor;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.ExcelFactory;
 import com.kms.katalon.core.util.internal.Base64;
@@ -28,7 +29,7 @@ import com.kms.katalon.core.util.internal.PathUtil;
 
 public class TestDataFactory {
 
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    private static final KeywordLogger logger = KeywordLogger.getInstance(TestDataFactory.class);
 
     private static final String TEST_DATA_ROOT_FOLDER_NAME = "Data Files";
 

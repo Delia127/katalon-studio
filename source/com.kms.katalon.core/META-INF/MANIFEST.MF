@@ -80,6 +80,7 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.slf4j.api,
  ch.qos.logback.classic,
  ch.qos.logback.core,
- slf4j.api
+ slf4j.api,
+ org.fusesource.jansi
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

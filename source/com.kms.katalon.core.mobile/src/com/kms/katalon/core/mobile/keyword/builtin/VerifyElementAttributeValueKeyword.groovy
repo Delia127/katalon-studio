@@ -84,7 +84,7 @@ public class VerifyElementAttributeValueKeyword extends MobileAbstractKeyword {
             String actualAttributeValue = MobileCommonHelper.getAttributeValue(foundElement, attributeName)
             if (actualAttributeValue != null) {
                 if (actualAttributeValue.equals(attributeValue)) {
-                    KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue))
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue))
                     return true
                 } else {
                     MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_ATTRIBUTE_Y_ACTUAL_VALUE_Z_EXPECTED_VALUE_W, to.getObjectId(), attributeName, actualAttributeValue, attributeValue), flowControl, null, true)

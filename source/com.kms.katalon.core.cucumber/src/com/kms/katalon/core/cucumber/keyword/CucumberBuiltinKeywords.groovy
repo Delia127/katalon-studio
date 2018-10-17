@@ -22,7 +22,7 @@ import groovy.transform.CompileStatic
 
 public class CucumberBuiltinKeywords extends BuiltinKeywords {
 
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    private static final KeywordLogger logger = KeywordLogger.getInstance(CucumberBuiltinKeywords.class);
 
     /**
      * Runs the given Feature file with <code>featureId</code> by invoking

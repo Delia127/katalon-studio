@@ -2,26 +2,38 @@ package com.kms.katalon.core.logging;
 
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.kms.katalon.core.main.ScriptEngine;
+
 public class KeywordLogger implements IKeywordLogger {
+    
+    private static final Logger selfLogger = LoggerFactory.getLogger(KeywordLogger.class);
+    
+    private static final Map<Class, KeywordLogger> keywordLoggerLookup = new ConcurrentHashMap<>();
     
     private final Logger logger;
     
     private final XmlKeywordLogger xmlKeywordLogger;
     
-    public static KeywordLogger getInstance() {
-        final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        /*
-         * stackTrace[0] is for Thread.currentThread().getStackTrace() stackTrace[1] is for this method log()
-         */
-        String className = stackTrace[2].getClassName();
-        return new KeywordLogger(className);
+    public static KeywordLogger getInstance(Class clazz) {
+        if (clazz == null) { // just in case
+            selfLogger.error("Logger name is null. This should be a bug of Katalon Studio.");
+            clazz = KeywordLogger.class;
+        }
+        KeywordLogger keywordLogger = keywordLoggerLookup.get(clazz);
+        if (keywordLogger == null) {
+            keywordLogger = new KeywordLogger(clazz.getName());
+            keywordLoggerLookup.put(clazz, keywordLogger);
+        }
+        return keywordLogger;
     }
 
     private KeywordLogger(String className) {
+        className = ScriptEngine.getTestCaseName(className);
         logger = LoggerFactory.getLogger(className);
         xmlKeywordLogger = XmlKeywordLogger.getInstance();
     }
@@ -120,7 +132,7 @@ public class KeywordLogger implements IKeywordLogger {
 
     @Override
     public void logFailed(String message, Map<String, String> attributes) {
-        logger.error(message);
+        logFailed(message);
         xmlKeywordLogger.logFailed(message, attributes);
     }
 
@@ -132,7 +144,7 @@ public class KeywordLogger implements IKeywordLogger {
 
     @Override
     public void logWarning(String message, Map<String, String> attributes) {
-        logger.warn(message);
+        logWarning(message);
         xmlKeywordLogger.logWarning(message, attributes);
     }
 
@@ -144,7 +156,7 @@ public class KeywordLogger implements IKeywordLogger {
 
     @Override
     public void logPassed(String message, Map<String, String> attributes) {
-        logger.info(message);
+        logPassed(message);
         xmlKeywordLogger.logPassed(message, attributes);
     }
 
@@ -156,7 +168,7 @@ public class KeywordLogger implements IKeywordLogger {
 
     @Override
     public void logInfo(String message, Map<String, String> attributes) {
-        logger.info(message);
+        logInfo(message);
         xmlKeywordLogger.logInfo(message, attributes);
     }
 
@@ -174,25 +186,38 @@ public class KeywordLogger implements IKeywordLogger {
 
     @Override
     public void logError(String message, Map<String, String> attributes) {
-        logger.error(message);
+        logError(message);
         xmlKeywordLogger.logError(message, attributes);
     }
 
     @Override
     public void logMessage(LogLevel level, String message) {
-        logger.info(message);
+        switch (level) {
+            case WARNING:
+            case NOT_RUN:
+                logger.warn(message);
+                break;
+            case FAILED:
+            case ERROR:
+            case ABORTED:
+            case INCOMPLETE:
+                logger.error(message);
+                break;
+            default:
+                logger.info(message);
+        }
         xmlKeywordLogger.logMessage(level, message);
     }
 
     @Override
     public void logMessage(LogLevel level, String message, Map<String, String> attributes) {
-        logger.info(message);
+        logMessage(level, message);
         xmlKeywordLogger.logMessage(level, message, attributes);
     }
 
     @Override
     public void logMessage(LogLevel level, String message, Throwable thrown) {
-        logger.error(message, thrown);
+        logMessage(level, message);
         xmlKeywordLogger.logMessage(level, message, thrown);
     }
 
@@ -203,13 +228,13 @@ public class KeywordLogger implements IKeywordLogger {
 
     @Override
     public void logNotRun(String message) {
-        logger.info(message);
+        logWarning(message);
         xmlKeywordLogger.logNotRun(message);
     }
 
     @Override
     public void logNotRun(String message, Map<String, String> attributes) {
-        logger.info(message);
+        logWarning(message, attributes);
         xmlKeywordLogger.logNotRun(message, attributes);
     }
 

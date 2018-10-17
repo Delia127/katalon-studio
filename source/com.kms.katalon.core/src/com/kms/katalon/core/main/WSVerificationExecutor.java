@@ -22,7 +22,8 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 public class WSVerificationExecutor {
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    
+    private final KeywordLogger logger = KeywordLogger.getInstance(this.getClass());
 
     private static ErrorCollector errorCollector = ErrorCollector.getCollector();
     

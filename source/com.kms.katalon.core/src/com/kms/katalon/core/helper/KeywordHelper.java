@@ -14,6 +14,9 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.TestObject;
 
 public class KeywordHelper {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(KeywordHelper.class);
+    
 	public static boolean match(String value1, String value2, boolean isRegex) {
 		if (isRegex) {
 			Pattern p = Pattern.compile(value2, Pattern.DOTALL);
@@ -25,17 +28,17 @@ public class KeywordHelper {
 	
 
 	public static void checkTestObjectParameter(TestObject testObject) throws IllegalArgumentException {
-		KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_OBJ);
+		logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_OBJ);
 		if (testObject == null) {
 			throw new IllegalArgumentException(StringConstants.COMM_EXC_OBJ_IS_NULL);
 		}
 	}
 
 	public static int checkTimeout(int timeout) throws IllegalArgumentException {
-		KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TIMEOUT);
+		logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TIMEOUT);
 		if (timeout <= 0) {
 			int defaultPageLoadTimeout = RunConfiguration.getTimeOut();
-			KeywordLogger.getInstance().logWarning(
+			logger.logWarning(
 					MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_TIMEOUT, timeout, defaultPageLoadTimeout));
 			return defaultPageLoadTimeout;
 		}
@@ -78,7 +81,6 @@ public class KeywordHelper {
 	}
 
 	public static Integer[] indexRangeToArray(String range) {
-		KeywordLogger logger = KeywordLogger.getInstance();
 		logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY, range));
 		List<Integer> ints = new ArrayList<Integer>();
 		try {

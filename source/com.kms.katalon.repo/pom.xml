@@ -279,6 +279,9 @@
                                 <artifact>
                                     <id>org.slf4j:slf4j-api:1.7.25</id>
                                 </artifact>
+                                <artifact>
+                                    <id>org.fusesource.jansi:jansi:1.17.1</id>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>

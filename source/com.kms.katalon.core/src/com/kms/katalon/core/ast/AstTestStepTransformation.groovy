@@ -14,6 +14,7 @@ import org.codehaus.groovy.ast.expr.MapEntryExpression
 import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.PropertyExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.CaseStatement
 import org.codehaus.groovy.ast.stmt.CatchStatement
@@ -341,11 +342,8 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     @CompileStatic
     private MethodCallExpression createNewAddDescriptionMethodCall(String comment) {
+        MethodCallExpression loggerGetInstanceMethodCall = getLoggerGetInstanceMethodCall();
         List<Expression> expressionArguments = new ArrayList<Expression>();
-        MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
-                new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
-                new ArgumentListExpression(expressionArguments));
-        expressionArguments = new ArrayList<Expression>();
         expressionArguments.add(new ConstantExpression(comment));
         MethodCallExpression methodCall = new MethodCallExpression(loggerGetInstanceMethodCall,
                 KEYWORD_LOGGER_SET_PENDING_DESCRIPTION_METHOD_NAME, new ArgumentListExpression(expressionArguments))
@@ -354,17 +352,26 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     @CompileStatic
     private MethodCallExpression createNewStartKeywordMethodCall(String keywordName, Statement statement, Map<Statement, Integer> indexMap, int nestedLevel) {
-        List<Expression> expressionArguments = new ArrayList<Expression>();
-        MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
-                new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
-                new ArgumentListExpression(expressionArguments));
-        expressionArguments = new ArrayList<Expression>();
+        MethodCallExpression loggerGetInstanceMethodCall = getLoggerGetInstanceMethodCall();
+        List<Expression>expressionArguments = new ArrayList<Expression>();
         expressionArguments.add(new ConstantExpression(keywordName));
         expressionArguments.add(createPropertiesMapExpressionForKeyword(statement, indexMap));
         expressionArguments.add(new ConstantExpression(nestedLevel));
         MethodCallExpression methodCall = new MethodCallExpression(loggerGetInstanceMethodCall,
                 StringConstants.LOG_START_KEYWORD_METHOD, new ArgumentListExpression(expressionArguments))
         return methodCall
+    }
+
+    private MethodCallExpression getLoggerGetInstanceMethodCall() {
+        VariableExpression thisExpression = new VariableExpression("this");
+        MethodCallExpression getClassMethodCall = new MethodCallExpression(
+                thisExpression, "getClass", new ArgumentListExpression(new ArrayList<Expression>()));
+        List<Expression> loggerExpressionArguments = new ArrayList<Expression>();
+        loggerExpressionArguments.add(getClassMethodCall);
+        MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
+                new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
+                new ArgumentListExpression(loggerExpressionArguments));
+        return loggerGetInstanceMethodCall;
     }
     
     private ExpressionStatement createBeforeTestStepMethodCall(def keywordInfo) {
@@ -414,9 +421,7 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     @CompileStatic
     private ExpressionStatement createNewNotRunLogMethodCallStatement(String keywordName) {
-        MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
-                new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
-                new ArgumentListExpression());
+        MethodCallExpression loggerGetInstanceMethodCall = getLoggerGetInstanceMethodCall();
         List<Expression> expressionArguments = new ArrayList<Expression>();
         expressionArguments.add(new ConstantExpression("NOT_RUN: " + keywordName));
         return new ExpressionStatement(new MethodCallExpression(loggerGetInstanceMethodCall,

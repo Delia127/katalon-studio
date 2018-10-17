@@ -28,7 +28,7 @@ import net.lightbody.bmp.proxy.CaptureType;
 
 public class BrowserMobProxyManager {
     
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    private static final KeywordLogger logger = KeywordLogger.getInstance(BrowserMobProxyManager.class);
 
     private static final ThreadLocal<BrowserMobProxy> browserMobProxyLookup = new ThreadLocal<BrowserMobProxy>();
     

@@ -34,6 +34,7 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.main.TestCaseExecutor;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
@@ -47,6 +48,8 @@ import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
 
 public class WebUiCommonHelper extends KeywordHelper {
     
+    private static final KeywordLogger logger = KeywordLogger.getInstance(WebUiCommonHelper.class);
+    
     public static final String CSS_LOCATOR_PROPERTY_NAME = "css";
     
     public static final String XPATH_LOCATOR_PROPERTY_NAME = "xpath";
@@ -58,10 +61,6 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static final String WEB_ELEMENT_ATTRIBUTE_TEXT = "text";
 
     public static final String WEB_ELEMENT_XPATH = "xpath";
-
-    private static KeywordLogger logger = KeywordLogger.getInstance();
-    
-
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
             throws WebDriverException, IllegalArgumentException {

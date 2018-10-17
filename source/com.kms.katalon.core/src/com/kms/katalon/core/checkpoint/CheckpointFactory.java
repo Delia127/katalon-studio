@@ -74,7 +74,7 @@ public class CheckpointFactory {
 
     private static final String TEST_DATA = "Test Data";
 
-    private static final KeywordLogger logger = KeywordLogger.getInstance();
+    private static final KeywordLogger logger = KeywordLogger.getInstance(CheckpointFactory.class);
 
     private static final String[] SUPPORTED_TEST_DATA_TYPES = new String[] { TestDataType.EXCEL_FILE.toString(),
             TestDataType.CSV_FILE.toString(), TestDataType.DB_DATA.toString() };

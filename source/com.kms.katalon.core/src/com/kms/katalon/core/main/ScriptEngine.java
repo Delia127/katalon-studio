@@ -114,6 +114,7 @@ public class ScriptEngine extends GroovyScriptEngine {
         if (testCaseName != null) {
             String scriptId = new File(className).getName();
             testCaseNameLookup.put(scriptId, testCaseName);
+            testCaseNameLookup.put(scriptId.replace(".groovy", ""), testCaseName);
         }
         String processedScriptText = preProcessScriptBeforeBuild(scriptText);
         return run(getGroovyCodeSource(processedScriptText, className), binding, true);
@@ -258,6 +259,10 @@ public class ScriptEngine extends GroovyScriptEngine {
     }
 
     public static String getTestCaseName(String script) {
-        return testCaseNameLookup.get(script);
+        String testCaseName = testCaseNameLookup.get(script);
+        if (testCaseName == null) {
+            testCaseName = script;
+        }
+        return testCaseName;
     }
 }

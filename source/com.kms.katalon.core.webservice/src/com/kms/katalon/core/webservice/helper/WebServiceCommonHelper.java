@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.main.TestCaseExecutor;
 import com.kms.katalon.core.testobject.HttpBodyContent;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
@@ -19,7 +20,8 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
 public class WebServiceCommonHelper {
-	public static final KeywordLogger logger = KeywordLogger.getInstance();
+	
+    private static final KeywordLogger logger = KeywordLogger.getInstance(WebServiceCommonHelper.class);
 
 	public static void checkRequestObject(RequestObject requestObject) throws IllegalArgumentException {
 		logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_REQUEST_OBJECT);

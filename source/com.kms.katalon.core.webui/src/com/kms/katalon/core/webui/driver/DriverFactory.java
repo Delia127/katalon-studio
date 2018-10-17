@@ -74,6 +74,8 @@ import com.kms.katalon.selenium.driver.CSafariDriver;
 import io.appium.java_client.ios.IOSDriver;
 
 public class DriverFactory {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(DriverFactory.class);
 
     private static final int USING_MARIONETTEE_VERSION = 47;
 
@@ -180,7 +182,7 @@ public class DriverFactory {
             changeWebDriver(webDriver);
             return webDriver;
         } catch (Error e) {
-            KeywordLogger.getInstance().logMessage(LogLevel.WARNING, e.getMessage());
+            logger.logMessage(LogLevel.WARNING, e.getMessage());
             throw new StepFailedException(e);
         }
     }
@@ -205,11 +207,11 @@ public class DriverFactory {
 
         if (null != localWebServerStorage.get()
                 && null != ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
-            KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
+            logger.logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
             closeWebDriver();
         }
 
-        KeywordLogger.getInstance()
+        logger
                 .logInfo(MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
 
         Map<String, Object> driverPreferenceProps = RunConfiguration
@@ -303,7 +305,7 @@ public class DriverFactory {
         if (remoteWebServerType == null) {
             remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
         }
-        KeywordLogger.getInstance()
+        logger
                 .logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
                         remoteWebServerUrl, remoteWebServerType));
         if (!remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
@@ -473,7 +475,6 @@ public class DriverFactory {
             return;
         }
 
-        KeywordLogger logger = KeywordLogger.getInstance();
         logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
         logger.logRunData("browser", getBrowserVersion(webDriver));
         logger.logRunData("platform",
@@ -540,7 +541,7 @@ public class DriverFactory {
             setTimeout();
             return webDriver;
         } catch (Error e) {
-            KeywordLogger.getInstance().logMessage(LogLevel.WARNING, e.getMessage());
+            logger.logMessage(LogLevel.WARNING, e.getMessage());
             throw new StepFailedException(e);
         }
     }
@@ -823,7 +824,7 @@ public class DriverFactory {
             if (executionGeneralProperties.containsKey(ACTION_DELAY)) {
                 actionDelay = RunConfiguration.getIntProperty(ACTION_DELAY, executionGeneralProperties);
             }
-            KeywordLogger.getInstance()
+            logger
                     .logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
         }
         return actionDelay;
@@ -921,7 +922,7 @@ public class DriverFactory {
                     }
                 }
             } catch (UnreachableBrowserException e) {
-                KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE);
+                logger.logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE);
             }
         }
         localWebServerStorage.set(null);

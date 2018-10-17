@@ -32,6 +32,9 @@ import com.kms.katalon.core.testdata.TestDataColumn
 import com.kms.katalon.core.util.internal.ExceptionsUtil
 
 public class ExportTestCaseHelper {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(ExportTestCaseHelper.class);
+    
     private static String LOG_FILE_NAME = "execution0.log";
 
     @CompileStatic
@@ -53,7 +56,6 @@ public class ExportTestCaseHelper {
 
     @CompileStatic
     private static void stepFailed(String message, FailureHandling flHandling, String reason) throws StepFailedException {
-        KeywordLogger logger = KeywordLogger.getInstance();
         StringBuilder failMessage = new StringBuilder(message);
         if (reason != null) {
             failMessage.append(" (Root cause: ");
@@ -69,7 +71,6 @@ public class ExportTestCaseHelper {
     }
 
     public static void callTestCase(TestCase calledTestCase, Map<String, Object> bindings, FailureHandling flowControl) throws Exception {
-        KeywordLogger logger = KeywordLogger.getInstance();
         String keywordName = "callTestCase";
         List<Throwable> parentErrors = ErrorCollector.getCollector().getCoppiedErrors();
         try {
@@ -138,7 +139,6 @@ public class ExportTestCaseHelper {
 
     @CompileStatic
     private static TestStatusValue getResultByError(Throwable t, String testCaseId) {
-        KeywordLogger logger = KeywordLogger.getInstance();
         if (t.getClass().getName().equals(StepFailedException.class.getName()) || t instanceof AssertionError) {
             logger.logMessage(LogLevel.FAILED,
                     testCaseId + " FAILED because (of) " + ExceptionsUtil.getMessageForThrowable(t), t);
