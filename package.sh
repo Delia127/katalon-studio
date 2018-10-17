@@ -62,7 +62,7 @@ echo "Grant executed permission for Katalon and browser drivers ... Done"
 # Distribute packages to shared folder
 sudo mkdir -p ${HOME}/Public/KatalonStudio/
 DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
-BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${JOB_BASE_NAME}/${BUILD_ID}" # JOB_BASE_NAME
+BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${JOB_BASE_NAME}/" # JOB_BASE_NAME
 
 if [ ! -d "${BRANCH_FOLDER}" ]; then
   sudo mkdir -p $BRANCH_FOLDER
@@ -76,8 +76,9 @@ sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
 mkdir -p $KATABUILD
 
 if [ ! -d "${KATABUILD}" ]; then
-  mkdir -p $KATABUILD
+  sudo mkdir -p $KATABUILD
 fi  
+
 mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
 sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
 sudo umount -f /private/tmp/katabuild
