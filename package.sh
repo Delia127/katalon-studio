@@ -47,6 +47,7 @@ sudo chmod +x "${CHROME_DRIVER_MAC}"
 sudo chmod +x "${FF_DRIVER_MAC}"
 echo "Grant executed permission for Katalon and browser drivers ... Done"
 
+# Temp fix to not create .dmg file
 #sudo codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
 #echo "Codesigning ... Done"
 
