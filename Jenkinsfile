@@ -10,7 +10,7 @@ node {
 	    }
     }
     stage('Build') {
-	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
+/*	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
 	
     	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
     		sh '''
@@ -23,7 +23,7 @@ node {
 		    sudo /usr/local/bin/mvn clean verify -Pstag
 	        '''
     	}       
-    }
+*/    }
     stage('Package') {
         sh '''
             sudo ./package.sh ${JOB_BASE_NAME}
