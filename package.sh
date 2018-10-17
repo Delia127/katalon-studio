@@ -70,7 +70,7 @@ fi
 
 sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
 sudo cp "${MAC_FILE}" "${BRANCH_FOLDER}/"
-sudo mv "$(pwd -P)/$MAC_PACKAGE" "${BRANCH_FOLDER}/"
+#sudo mv "$(pwd -P)/$MAC_PACKAGE" "${BRANCH_FOLDER}/"
 sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
 sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
 mkdir -p $KATABUILD
