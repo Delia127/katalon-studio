@@ -5,25 +5,19 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 
-import groovy.json.JsonOutput;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.core.har.Har;
 import net.lightbody.bmp.core.har.HarEntry;
 import net.lightbody.bmp.core.har.HarLog;
-import net.lightbody.bmp.core.har.HarRequest;
 import net.lightbody.bmp.proxy.CaptureType;
 
 public class BrowserMobProxyManager {
@@ -102,7 +96,6 @@ public class BrowserMobProxyManager {
                 logger.logInfo(file.getAbsolutePath());
                 
                 Har har = browserMobProxy.endHar();
-                String comment = JsonOutput.toJson(requestInformation);
                 HarLog harLog = har.getLog();
                 List<HarEntry> originalEntries = harLog.getEntries();
                 List<KatalonHarEntry> newEntries = originalEntries.stream()

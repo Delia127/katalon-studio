@@ -260,9 +260,6 @@ public class ScriptEngine extends GroovyScriptEngine {
 
     public static String getTestCaseName(String script) {
         String testCaseName = testCaseNameLookup.get(script);
-        if (testCaseName == null) {
-            testCaseName = script;
-        }
         return testCaseName;
     }
 }

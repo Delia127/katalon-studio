@@ -33,7 +33,10 @@ public class KeywordLogger implements IKeywordLogger {
     }
 
     private KeywordLogger(String className) {
-        className = ScriptEngine.getTestCaseName(className);
+        String testCaseName = ScriptEngine.getTestCaseName(className);
+        if (testCaseName != null) {
+            className = "testcase." + testCaseName;
+        }
         logger = LoggerFactory.getLogger(className);
         xmlKeywordLogger = XmlKeywordLogger.getInstance();
     }

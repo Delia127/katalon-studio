@@ -47,14 +47,15 @@ public class ExceptionsUtil {
                     String declaringClass = stackTraceElement.getClassName();
                     if (CLASS_PATTERN.matcher(declaringClass).matches()) {
                         declaringClass = ScriptEngine.getTestCaseName(declaringClass);
-                        return new StackTraceElement(
-                                declaringClass, 
-                                stackTraceElement.getMethodName(), 
-                                declaringClass, 
-                                stackTraceElement.getLineNumber());
-                    } else {
-                        return stackTraceElement;
+                        if (declaringClass != null) {
+                            return new StackTraceElement(
+                                    declaringClass, 
+                                    stackTraceElement.getMethodName(), 
+                                    declaringClass, 
+                                    stackTraceElement.getLineNumber());
+                        }
                     }
+                    return stackTraceElement;
                 })
                 .collect(Collectors.toList())
                 .toArray(new StackTraceElement[] {});
