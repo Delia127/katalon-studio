@@ -63,7 +63,7 @@ echo "Grant executed permission for Katalon and browser drivers ... Done"
 # Distribute packages to shared folder
 sudo mkdir -p ${HOME}/Public/KatalonStudio/
 DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
-BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${JOB_NAME}/" # JOB_BASE_NAME
+BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${JOB_BASE_NAME}/" # JOB_BASE_NAME
 echo "Folder ${BRANCH_FOLDER}"
 
 if [ ! -d "${BRANCH_FOLDER}" ]; then
