@@ -14,7 +14,7 @@ node {
 	sub = { it.split("1=")[1] }
 	def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
 	def version = sub(versionContent)
-	    
+	println version 
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
     	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
     		sh '''
