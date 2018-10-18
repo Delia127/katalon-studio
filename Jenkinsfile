@@ -10,14 +10,12 @@ node {
 	    }
     }/Users/nguyenvinh/katalon/source/com.kms.katalon
     stage('Build') {
+	    env.WORKSPACE = pwd()
+	    sub = { it.split("1=")[1] }
+	    def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
+	    def version = sub(versionContent)		    
+	    
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
-	script 
-	    {
-		    env.WORKSPACE = pwd()
-		    sub = { it.split("1=")[1] }
-		    def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
-		    def version = sub(versionContent)		    
-	    }
     	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
     		sh '''
 		    cd source
