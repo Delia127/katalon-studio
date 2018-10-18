@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
-import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -190,7 +190,7 @@ public class WSRequestPartUI {
         String scriptEditorPartId = getScriptEditorPartId(requestObject);
         IFile tempScriptFile = createTempScriptFile(requestObject);
         tempScriptFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
-        scriptEditorPart = GroovyEditorUtil.createEditorPart(tempScriptFile, partService);
+        scriptEditorPart = editor.createEditorPart(tempScriptFile, partService);
         scriptEditorPart.setElementId(scriptEditorPartId);
         verificationPartSashContainer.getChildren().add(scriptEditorPart);
 

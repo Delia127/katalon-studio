@@ -22,6 +22,7 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -476,5 +477,13 @@ public class EntityFileServiceManager {
 
         return EntityService.getInstance().saveEntity(entity);
     }
+
+	public static String toXmlString(FileEntity entity) throws Exception {
+		return EntityService.getInstance().toXmlString(entity);
+	}
+
+	public static ExecutionProfileEntity toExecutionProfileEntity(String xmlString)  throws Exception {
+		return EntityService.getInstance().toExecutionProfileEntity(xmlString);
+	}
 
 }

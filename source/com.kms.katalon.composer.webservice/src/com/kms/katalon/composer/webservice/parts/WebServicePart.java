@@ -152,7 +152,7 @@ import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableViewEvent;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
-import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -406,7 +406,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         new ToolBarForVerificationPart(ui.getVerificationPart());
 
         scriptEditorPart = ui.getScriptEditorPart();
-        verificationScriptEditor = (GroovyEditor) GroovyEditorUtil.getEditor(scriptEditorPart);
+        verificationScriptEditor = (GroovyEditor) editor.getEditor(scriptEditorPart);
         if (StringUtils.isBlank(originalWsObject.getVerificationScript())) {
             insertImportsForVerificationScript();
         }
@@ -451,7 +451,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     private void insertVerificationScript(int offset, String script) {
         try {
-            GroovyEditorUtil.insertScript(verificationScriptEditor, offset, script);
+            editor.insertScript(verificationScriptEditor, offset, script);
         } catch (MalformedTreeException e) {
             LoggerSingleton.logError(e);
         } catch (BadLocationException e) {
@@ -1616,7 +1616,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 .addDocumentListener(new IDocumentListener() {
                     @Override
                     public void documentChanged(DocumentEvent event) {
-                        GroovyEditorUtil.showProblems(verificationScriptEditor);
+                        editor.showProblems(verificationScriptEditor);
                         WebServicePart.this.dirtyable.setDirty(true);
                     }
 
@@ -1789,7 +1789,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             String script = document.get();
             originalWsObject.setVerificationScript(script);
         }
-        GroovyEditorUtil.saveEditor(scriptEditorPart);
+        editor.saveEditor(scriptEditorPart);
     }
 
     public WebServiceRequestEntity getWSRequestObject() {
@@ -1845,7 +1845,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     public void onClose() {
         deleteTempScriptFile();
         try {
-            GroovyEditorUtil.clearEditorProblems(verificationScriptEditor);
+            editor.clearEditorProblems(verificationScriptEditor);
         } catch (CoreException e) {
             LoggerSingleton.logError(e);
         }

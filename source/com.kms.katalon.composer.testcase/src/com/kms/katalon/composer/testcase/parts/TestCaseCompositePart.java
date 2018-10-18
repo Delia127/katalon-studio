@@ -81,7 +81,7 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.providers.TestObjectScriptDropListener;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
-import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -370,7 +370,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                             childTestCaseEditorPart.getModel().setDirty(true);
                         }
 
-                        GroovyEditorUtil.showProblems(groovyEditor);
+                        editor.showProblems(groovyEditor);
                     }
                     updateDirty();
                 } catch (Exception e) {
@@ -437,7 +437,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         StringConstants.PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT);
                 subPartStack.setSelectedElement(childTestCaseEditorPart.getModel());
                 isScriptChanged = true;
-                GroovyEditorUtil.showProblems(groovyEditor);
+                editor.showProblems(groovyEditor);
                 return false;
             }
 
@@ -706,7 +706,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             try {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object instanceof GroovyEditor && object.equals(groovyEditor)) {
-                    GroovyEditorUtil.clearEditorProblems(groovyEditor);
+                    editor.clearEditorProblems(groovyEditor);
                     if (!editorLastDirty) {
                         if (partService.savePart(compositePart, false)) {
                             partService.hidePart(compositePart);
@@ -795,7 +795,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     public void preDestroy() {
         try {
             if (groovyEditor != null && getChildCompatibilityPart() != null) {
-                GroovyEditorUtil.clearEditorProblems(groovyEditor);
+                editor.clearEditorProblems(groovyEditor);
             }
 
             dispose();
@@ -824,7 +824,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
                 partService.hidePart(getChildCompatibilityPart(), true);
                 String testCaseEditorId = newCompositePartId + IdConstants.TEST_CASE_EDITOR_PART_ID_SUFFIX;
-                MPart editorPart = GroovyEditorUtil.createTestCaseEditorPart(
+                MPart editorPart = editor.createTestCaseEditorPart(
                         ResourcesPlugin.getWorkspace()
                                 .getRoot()
                                 .getFile(GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(testCase).getPath()),
@@ -897,7 +897,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         try {
             GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer().getDocument().get());
         } catch (Exception e) {
-            GroovyEditorUtil.showProblems(groovyEditor);
+            editor.showProblems(groovyEditor);
             throw e;
         }
     }

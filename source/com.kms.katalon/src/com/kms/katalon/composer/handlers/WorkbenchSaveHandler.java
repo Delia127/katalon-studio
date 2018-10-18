@@ -20,7 +20,7 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.YesNoCancel;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -43,7 +43,7 @@ public class WorkbenchSaveHandler extends PartServiceSaveHandler {
                 }
             }
 
-            GroovyEditorUtil.saveEditor(dirtyPart);
+            editor.saveEditor(dirtyPart);
 
             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.ECLIPSE_EDITOR_SAVED, dirtyPart);
             return true;
