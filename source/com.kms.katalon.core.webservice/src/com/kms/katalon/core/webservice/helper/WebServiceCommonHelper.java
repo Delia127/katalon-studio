@@ -17,21 +17,21 @@ public class WebServiceCommonHelper {
     private static final KeywordLogger logger = KeywordLogger.getInstance(WebServiceCommonHelper.class);
 
 	public static void checkRequestObject(RequestObject requestObject) throws IllegalArgumentException {
-		logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_REQUEST_OBJECT);
+		logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_REQUEST_OBJECT);
 		if (requestObject == null) {
 			throw new IllegalArgumentException(StringConstants.KW_LOG_FAILED_REQUEST_OBJECT_IS_NULL);
 		}
 	}
 	
 	public static void checkResponseObject(ResponseObject responseObject) throws IllegalArgumentException {
-		logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_RESPONSE_OBJECT);
+		logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_RESPONSE_OBJECT);
 		if (responseObject == null) {
 			throw new IllegalArgumentException(StringConstants.KW_LOG_FAILED_RESPONSE_OBJECT_IS_NULL);
 		}
 	}
 	
 	public static void checkResponseObjectContent(ResponseObject responseObject) throws Exception {
-		logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_RESPONSE_OBJECT_CONTENT);
+		logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_RESPONSE_OBJECT_CONTENT);
 		if (responseObject.getResponseBodyContent() == null) {
 			throw new IllegalArgumentException(StringConstants.KW_LOG_FAILED_RESPONSE_OBJECT_CONTENT_IS_NULL);
 		}

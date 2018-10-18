@@ -83,7 +83,7 @@ public class MobileGestureCommonHelper {
     }
 
     private static void checkOffset(Number offset) {
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_OFFSET);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_OFFSET);
         if (offset == null) {
             throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
                     "offset"));

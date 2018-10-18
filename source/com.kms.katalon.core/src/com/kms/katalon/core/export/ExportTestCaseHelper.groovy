@@ -74,7 +74,7 @@ public class ExportTestCaseHelper {
         String keywordName = "callTestCase";
         List<Throwable> parentErrors = ErrorCollector.getCollector().getCoppiedErrors();
         try {
-            logger.logInfo("Checking called test case");
+            logger.logDebug("Checking called test case");
             if (calledTestCase == null) {
                 throw new IllegalArgumentException("Called test case is null");
             }

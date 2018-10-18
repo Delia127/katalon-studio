@@ -75,11 +75,11 @@ public class ModifyObjectPropertyKeyword extends WebUIAbstractKeyword {
     public TestObject modifyObjectProperty(TestObject testObject, String propertyName, String matchCondition,
             String modifyValue, boolean isActive, FailureHandling flowControl) {
         Object result = WebUIKeywordMain.runKeyword({
-            logger.logInfo(StringConstants.KW_LOF_INFO_CHK_TO)
+            logger.logDebug(StringConstants.KW_LOF_INFO_CHK_TO)
             if (testObject == null) {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_TO_IS_NULL)
             }
-            logger.logInfo(StringConstants.KW_LOG_INFO_CHK_PROP_NAME)
+            logger.logDebug(StringConstants.KW_LOG_INFO_CHK_PROP_NAME)
             if (propertyName == null) {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_PROP_NAME_IS_NULL)
             }
@@ -89,16 +89,16 @@ public class ModifyObjectPropertyKeyword extends WebUIAbstractKeyword {
                 property = new TestObjectProperty(propertyName, ConditionType.EQUALS, null, false)
                 testObject.addProperty(property)
             }
-            logger.logInfo(StringConstants.KW_LOG_INFO_CHK_MODIFY_VAL)
+            logger.logDebug(StringConstants.KW_LOG_INFO_CHK_MODIFY_VAL)
             if (modifyValue == null) {
-                logger.logInfo(StringConstants.KW_LOG_INFO_MODIFY_VAL_NULL_SO_NOT_MODIFYING_VAL)
+                logger.logDebug(StringConstants.KW_LOG_INFO_MODIFY_VAL_NULL_SO_NOT_MODIFYING_VAL)
             } else {
                 property.setValue(modifyValue)
             }
 
-            logger.logInfo(StringConstants.KW_LOG_INFO_CHK_MATCH_COND)
+            logger.logDebug(StringConstants.KW_LOG_INFO_CHK_MATCH_COND)
             if (matchCondition == null) {
-                logger.logInfo(StringConstants.KW_LOG_INFO_MATCH_COND_NULL_SO_NOT_MODIFYING_MATCH_COND)
+                logger.logDebug(StringConstants.KW_LOG_INFO_MATCH_COND_NULL_SO_NOT_MODIFYING_MATCH_COND)
             } else {
                 ConditionType conditionType = ConditionType.fromValue(matchCondition)
                 if (conditionType == null) {

@@ -1,19 +1,23 @@
 package com.kms.katalon.core.logging;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.main.ScriptEngine;
 
-public class KeywordLogger implements IKeywordLogger {
+public class KeywordLogger {
     
     private static final Logger selfLogger = LoggerFactory.getLogger(KeywordLogger.class);
     
-    private static final Map<Class<?>, KeywordLogger> keywordLoggerLookup = new ConcurrentHashMap<>();
+    private static final Map<String, KeywordLogger> keywordLoggerLookup = new ConcurrentHashMap<>();
     
     private final Logger logger;
     
@@ -24,177 +28,230 @@ public class KeywordLogger implements IKeywordLogger {
             selfLogger.error("Logger name is null. This should be a bug of Katalon Studio.");
             clazz = KeywordLogger.class;
         }
-        KeywordLogger keywordLogger = keywordLoggerLookup.get(clazz);
+        return getInstance(clazz.getName());
+    }
+
+    public static KeywordLogger getInstance(String name) {
+        String testCaseName = ScriptEngine.getTestCaseName(name);
+        if (testCaseName == null) {
+            return getOrCreateInstance(name);
+        } else {
+            return getInstanceByTestCaseName(testCaseName);
+        }
+    }
+
+    private static KeywordLogger getOrCreateInstance(String name) {
+        KeywordLogger keywordLogger = keywordLoggerLookup.get(name);
         if (keywordLogger == null) {
-            keywordLogger = new KeywordLogger(clazz.getName());
-            keywordLoggerLookup.put(clazz, keywordLogger);
+            keywordLogger = new KeywordLogger(name);
+            keywordLoggerLookup.put(name, keywordLogger);
         }
         return keywordLogger;
     }
+    
+    public static KeywordLogger getInstanceByTestCaseName(String name) {
+        name = "testcase." + name;
+        return getOrCreateInstance(name);
+    }
 
     private KeywordLogger(String className) {
-        String testCaseName = ScriptEngine.getTestCaseName(className);
-        if (testCaseName != null) {
-            className = "testcase." + testCaseName;
-        }
         logger = LoggerFactory.getLogger(className);
         xmlKeywordLogger = XmlKeywordLogger.getInstance();
     }
 
-    @Override
+
     public void close() {
         xmlKeywordLogger.close();
     }
 
-    @Override
+
     public String getLogFolderPath() {
         return xmlKeywordLogger.getLogFolderPath();
     }
 
-    @Override
+
     public void startSuite(String name, Map<String, String> attributes) {
-        logger.info(name);
+        
+        logger.info("START {}", name);
+        
         xmlKeywordLogger.startSuite(name, attributes);
+        
+        logRunData(RunConfiguration.HOST_NAME, RunConfiguration.getHostName());
+        logRunData(RunConfiguration.HOST_OS, RunConfiguration.getOS());
+        logRunData(RunConfiguration.HOST_ADDRESS, RunConfiguration.getHostAddress());
+        logRunData(RunConfiguration.APP_VERSION, RunConfiguration.getAppVersion());
+
+        RunConfiguration.getCollectedTestDataProperties().entrySet().stream().forEach(collectedDataInfo -> {
+            logRunData(collectedDataInfo.getKey(), collectedDataInfo.getValue());
+        });
     }
 
-    @Override
+
     public void endSuite(String name, Map<String, String> attributes) {
-        logger.info(name);
+        logger.info("END {}", name);
         xmlKeywordLogger.endSuite(name, attributes);
     }
 
-    @Override
+
     public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        logger.info(name);
+        logger.info("START {}", name);
         xmlKeywordLogger.startTest(name, attributes, keywordStack);
     }
 
-    @Override
+
     public void endTest(String name, Map<String, String> attributes) {
-        logger.info(name);
+        logger.info("END {}", name);
         xmlKeywordLogger.endTest(name, attributes);
     }
 
-    @Override
-    public void startListenerKeyword(String name, Map<String, String> attributes,
+
+    public void startListenerKeyword(
+            String name, 
+            Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        logger.info(name);
+        
+        logger.debug("{} {}", StringConstants.LOG_LISTENER_ACTION, name);
         xmlKeywordLogger.startListenerKeyword(name, attributes, keywordStack);
     }
 
-    @Override
-    public void startKeyword(String name, String actionType, Map<String, String> attributes,
+
+    public void startKeyword(
+            String name, 
+            String actionType, 
+            Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        logger.info(name);
+        logStartKeyword(name, attributes);
         xmlKeywordLogger.startKeyword(name, actionType, attributes, keywordStack);
     }
 
-    @Override
+    private void logStartKeyword(String name, Map<String, String> attributes) {
+        String stepIndex = null;
+        if (attributes != null) {
+            stepIndex = attributes.get("stepIndex");
+        }
+        if (stepIndex == null) {
+            logger.debug("{}", name);
+        } else {
+            logger.debug("{} - {}", stepIndex, name);
+        }
+    }
+
+
     public void startKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        logger.info(name);
+        logStartKeyword(name, attributes);
         xmlKeywordLogger.startKeyword(name, attributes, keywordStack);
     }
 
-    @Override
+
     public void startKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-        logger.info(name);
+        logStartKeyword(name, attributes);
         xmlKeywordLogger.startKeyword(name, attributes, nestedLevel);
     }
 
-    @Override
+
     public void endKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-        logger.info(name);
+        logger.trace("END {}", name);
         xmlKeywordLogger.endKeyword(name, attributes, nestedLevel);
     }
 
-    @Override
-    public void endListenerKeyword(String name, Map<String, String> attributes,
+
+    public void endListenerKeyword(
+            String name, 
+            Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        logger.info(name);
+        logger.trace("END {}", name);
         xmlKeywordLogger.endListenerKeyword(name, attributes, keywordStack);
     }
 
-    @Override
-    public void endKeyword(String name, String keywordType, Map<String, String> attributes,
+
+    public void endKeyword(
+            String name, 
+            String keywordType, 
+            Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        logger.info(name);
+        logger.trace("END {}", name);
         xmlKeywordLogger.endKeyword(name, keywordType, attributes, keywordStack);
     }
 
-    @Override
+
     public void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        logger.info(name);
+        logger.trace("END {}", name);
         xmlKeywordLogger.endKeyword(name, attributes, keywordStack);
     }
 
-    @Override
+
     public void logFailed(String message) {
-        logger.error(message);
-        xmlKeywordLogger.logFailed(message);
+        logFailed(message, null);
     }
 
-    @Override
+
     public void logFailed(String message, Map<String, String> attributes) {
-        logFailed(message);
+        logger.error("FAILED {}", message);
         xmlKeywordLogger.logFailed(message, attributes);
     }
 
-    @Override
+
     public void logWarning(String message) {
-        logger.warn(message);
-        xmlKeywordLogger.logWarning(message);
+        logWarning(message, null);
     }
 
-    @Override
+
     public void logWarning(String message, Map<String, String> attributes) {
-        logWarning(message);
+        logger.warn(message);
         xmlKeywordLogger.logWarning(message, attributes);
     }
 
-    @Override
+
     public void logPassed(String message) {
-        logger.info(message);
-        xmlKeywordLogger.logPassed(message);
+        logPassed(message, null);
     }
 
-    @Override
+
     public void logPassed(String message, Map<String, String> attributes) {
-        logPassed(message);
+        logger.info("PASSED {}", message);
         xmlKeywordLogger.logPassed(message, attributes);
     }
 
-    @Override
+
     public void logInfo(String message) {
-        logger.info(message);
-        xmlKeywordLogger.logInfo(message);
+        logInfo(message, null);
     }
 
-    @Override
+
     public void logInfo(String message, Map<String, String> attributes) {
-        logInfo(message);
+        logger.info(message);
         xmlKeywordLogger.logInfo(message, attributes);
     }
 
-    @Override
+
     public void logRunData(String dataKey, String dataValue) {
         logger.info("{} = {}", dataKey, dataValue);
         xmlKeywordLogger.logRunData(dataKey, dataValue);
     }
 
-    @Override
+
     public void logError(String message) {
-        logger.error(message);
-        xmlKeywordLogger.logError(message);
+        logError(message, null);
     }
 
-    @Override
+
     public void logError(String message, Map<String, String> attributes) {
-        logError(message);
+        logger.error(message);
         xmlKeywordLogger.logError(message, attributes);
     }
 
-    @Override
+
     public void logMessage(LogLevel level, String message) {
+        logMessage(level, message, new HashMap<>());
+    }
+
+
+    public void logMessage(LogLevel level, String message, Map<String, String> attributes) {
+        log(level, message);
+        xmlKeywordLogger.logMessage(level, message, attributes);
+    }
+
+    private void log(LogLevel level, String message) {
         switch (level) {
             case WARNING:
             case NOT_RUN:
@@ -209,36 +266,59 @@ public class KeywordLogger implements IKeywordLogger {
             default:
                 logger.info(message);
         }
-        xmlKeywordLogger.logMessage(level, message);
     }
 
-    @Override
-    public void logMessage(LogLevel level, String message, Map<String, String> attributes) {
-        logMessage(level, message);
-        xmlKeywordLogger.logMessage(level, message, attributes);
-    }
 
-    @Override
     public void logMessage(LogLevel level, String message, Throwable thrown) {
-        logMessage(level, message);
+        log(level, message);
         xmlKeywordLogger.logMessage(level, message, thrown);
     }
 
-    @Override
+
     public void setPendingDescription(String stepDescription) {
         xmlKeywordLogger.setPendingDescription(stepDescription);
     }
 
-    @Override
+
     public void logNotRun(String message) {
-        logWarning(message);
-        xmlKeywordLogger.logNotRun(message);
+        logNotRun(message, null);
     }
 
-    @Override
+
     public void logNotRun(String message, Map<String, String> attributes) {
-        logWarning(message, attributes);
+        logger.warn("SKIPPED {}", message);
         xmlKeywordLogger.logNotRun(message, attributes);
     }
 
+    public void logDebug(String message) {
+        logger.debug(message);
+        xmlKeywordLogger.logInfo(message, null);
+    }
+
+    public static class KeywordStackElement {
+        private String keywordName;
+
+        private int nestedLevel;
+
+        public KeywordStackElement(String keywordName, int nestedLevel) {
+            this.setKeywordName(keywordName);
+            this.setNestedLevel(nestedLevel);
+        }
+
+        public String getKeywordName() {
+            return keywordName;
+        }
+
+        public void setKeywordName(String keywordName) {
+            this.keywordName = keywordName;
+        }
+
+        public int getNestedLevel() {
+            return nestedLevel;
+        }
+
+        public void setNestedLevel(int nestedLevel) {
+            this.nestedLevel = nestedLevel;
+        }
+    }
 }

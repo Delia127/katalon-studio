@@ -112,7 +112,7 @@ public class TestDataFactory {
      * @throws IllegalArgumentException <code>testCaseRelativeId</code> is null or test data doesn't exist
      */
     public static TestData findTestData(String testDataRelativeId) {
-        logger.logInfo(StringConstants.XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID);
+        logger.logDebug(StringConstants.XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID);
         if (testDataRelativeId == null) {
             throw new IllegalArgumentException(StringConstants.XML_LOG_ERROR_TEST_DATA_NULL_TEST_DATA_ID);
         }
@@ -137,16 +137,16 @@ public class TestDataFactory {
             String driverName = testDataElement.elementText(DRIVER_NODE);
             switch (TestDataType.fromValue(driverName)) {
                 case EXCEL_FILE:
-                    logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA);
+                    logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA);
                     return readExcelData(testDataElement, projectDir);
                 case INTERNAL_DATA:
-                    logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_INTERNAL_DATA);
+                    logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_INTERNAL_DATA);
                     return readInternalData(testDataElement, projectDir, dataFile);
                 case CSV_FILE:
-                    logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_CSV_DATA);
+                    logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_CSV_DATA);
                     return readCSVData(testDataElement, projectDir);
                 case DB_DATA:
-                    logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA);
+                    logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA);
                     return readDBData(testDataElement, projectDir);
                 default:
                     return null;

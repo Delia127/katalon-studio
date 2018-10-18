@@ -50,7 +50,7 @@ public class CallTestCaseKeyword extends AbstractKeyword {
         KeywordMain.runKeyword({
             List<Throwable> parentErrors = ErrorCollector.getCollector().getCoppiedErrors()
             try {
-                logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_CALLED_TC)
+                logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_CALLED_TC)
                 if (calledTestCase == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_CALLED_TC_IS_NULL)
                 }

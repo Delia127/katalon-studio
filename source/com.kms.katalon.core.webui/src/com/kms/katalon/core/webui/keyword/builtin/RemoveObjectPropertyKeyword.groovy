@@ -71,11 +71,11 @@ public class RemoveObjectPropertyKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public TestObject removeObjectProperty(TestObject testObject, String propertyName, FailureHandling flowControl) {
         Object result = WebUIKeywordMain.runKeyword({
-            logger.logInfo(StringConstants.KW_LOF_INFO_CHK_TO)
+            logger.logDebug(StringConstants.KW_LOF_INFO_CHK_TO)
             if (testObject == null) {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_TO_IS_NULL)
             }
-            logger.logInfo(StringConstants.KW_LOG_INFO_CHK_PROP_NAME)
+            logger.logDebug(StringConstants.KW_LOG_INFO_CHK_PROP_NAME)
             if (propertyName == null) {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_PROP_NAME_IS_NULL)
             }

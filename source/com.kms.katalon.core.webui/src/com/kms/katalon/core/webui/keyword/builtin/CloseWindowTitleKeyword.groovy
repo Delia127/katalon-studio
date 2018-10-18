@@ -70,7 +70,7 @@ public class CloseWindowTitleKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public void closeWindowTitle(String title, FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({
-            logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_TITLE)
+            logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_TITLE)
             if (title == null) {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_TITLE_IS_NULL)
             }

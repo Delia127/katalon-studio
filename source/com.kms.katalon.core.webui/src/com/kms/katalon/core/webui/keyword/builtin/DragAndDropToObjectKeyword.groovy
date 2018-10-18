@@ -74,11 +74,11 @@ public class DragAndDropToObjectKeyword extends WebUIAbstractKeyword {
         WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
             try {
-                logger.logInfo(StringConstants.KW_LOG_INFO_CHK_SRC_OBJ)
+                logger.logDebug(StringConstants.KW_LOG_INFO_CHK_SRC_OBJ)
                 if (sourceObject == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_SRC_OBJ_IS_NULL)
                 }
-                logger.logInfo(StringConstants.KW_LOG_INFO_CHK_DEST_OBJ)
+                logger.logDebug(StringConstants.KW_LOG_INFO_CHK_DEST_OBJ)
                 if (destinationObject == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_DEST_OBJ_IS_NULL)
                 }

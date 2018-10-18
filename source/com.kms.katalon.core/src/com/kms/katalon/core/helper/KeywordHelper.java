@@ -28,14 +28,14 @@ public class KeywordHelper {
 	
 
 	public static void checkTestObjectParameter(TestObject testObject) throws IllegalArgumentException {
-		logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_OBJ);
+		logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_OBJ);
 		if (testObject == null) {
 			throw new IllegalArgumentException(StringConstants.COMM_EXC_OBJ_IS_NULL);
 		}
 	}
 
 	public static int checkTimeout(int timeout) throws IllegalArgumentException {
-		logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TIMEOUT);
+		logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_TIMEOUT);
 		if (timeout <= 0) {
 			int defaultPageLoadTimeout = RunConfiguration.getTimeOut();
 			logger.logWarning(
@@ -81,7 +81,7 @@ public class KeywordHelper {
 	}
 
 	public static Integer[] indexRangeToArray(String range) {
-		logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY, range));
+		logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY, range));
 		List<Integer> ints = new ArrayList<Integer>();
 		try {
 			if (range.indexOf("-") != -1) {
@@ -101,7 +101,7 @@ public class KeywordHelper {
 			throw new IllegalArgumentException(MessageFormat.format(StringConstants.COMM_EXC_INVALID_RANGE, range, e.getMessage()));
 		}
 		Integer[] integerArray = ints.toArray(new Integer[] {});
-		logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_RANGE_PARAM_IS_CONVERTED_TO_INDEX_ARRAY, range, integerArrayToString(integerArray)));
+		logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_RANGE_PARAM_IS_CONVERTED_TO_INDEX_ARRAY, range, integerArrayToString(integerArray)));
 		return ints.toArray(new Integer[] {});
 	}
 }

@@ -75,7 +75,7 @@ public class GetAttributeKeyword extends WebUIAbstractKeyword {
             boolean isSwitchIntoFrame = false
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to)
-                logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_ATTR)
+                logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_ATTR)
                 if (attribute == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_ATTR_IS_NULL)
                 }

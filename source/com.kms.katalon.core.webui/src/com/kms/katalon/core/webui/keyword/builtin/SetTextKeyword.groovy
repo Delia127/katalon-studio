@@ -43,7 +43,7 @@ public class SetTextKeyword extends WebUIAbstractKeyword {
             boolean isSwitchIntoFrame = false
             try {
                 WebUiCommonHelper.checkTestObjectParameter(to)
-                logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_TXT)
+                logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_TXT)
                 if (text == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_TXT_IS_NULL)
                 }

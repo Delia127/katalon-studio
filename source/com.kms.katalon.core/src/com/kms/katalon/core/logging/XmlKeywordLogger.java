@@ -20,8 +20,9 @@ import org.apache.commons.lang.StringUtils;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.CoreMessageConstants;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
 
-public class XmlKeywordLogger implements IKeywordLogger {
+class XmlKeywordLogger {
     
     private static final int MAXIMUM_LOG_FILES = 100;
 
@@ -38,13 +39,13 @@ public class XmlKeywordLogger implements IKeywordLogger {
     private int nestedLevel;
 
     private static final ThreadLocal<XmlKeywordLogger> localXmlKeywordLoggerStorage = new ThreadLocal<XmlKeywordLogger>() {
-        @Override
+    
         protected XmlKeywordLogger initialValue() {
             return new XmlKeywordLogger();
         }
     };
 
-    public static XmlKeywordLogger getInstance() {
+    static XmlKeywordLogger getInstance() {
         return localXmlKeywordLoggerStorage.get();
     }
 
@@ -92,22 +93,22 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#close()
      */
-    @Override
-    public void close() {
+
+    void close() {
         for (Handler handler : logger.getHandlers()) {
             handler.close();
         }
     }
 
-    public static void cleanUp() {
+    static void cleanUp() {
 
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#getLogFolderPath()
      */
-    @Override
-    public String getLogFolderPath() {
+
+    String getLogFolderPath() {
         String logFilePath = RunConfiguration.getSettingFilePath();
         return (logFilePath != null) ? new File(logFilePath).getParentFile().getAbsolutePath() : null;
     }
@@ -119,37 +120,38 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#startSuite(java.lang.String, java.util.Map)
      */
-    @Override
-    public void startSuite(String name, Map<String, String> attributes) {
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_SUITE + " : " + name,
-                nestedLevel, attributes));
-        logRunData(RunConfiguration.HOST_NAME, RunConfiguration.getHostName());
-        logRunData(RunConfiguration.HOST_OS, RunConfiguration.getOS());
-        logRunData(RunConfiguration.HOST_ADDRESS, RunConfiguration.getHostAddress());
-        logRunData(RunConfiguration.APP_VERSION, RunConfiguration.getAppVersion());
 
-        for (Entry<String, String> collectedDataInfo : RunConfiguration.getCollectedTestDataProperties().entrySet()) {
-            logRunData(collectedDataInfo.getKey(), collectedDataInfo.getValue());
-        }
+    void startSuite(String name, Map<String, String> attributes) {
+        getLogger().log(new XmlLogRecord(
+                LogLevel.START.getLevel(), 
+                StringConstants.LOG_START_SUITE + " : " + name,
+                nestedLevel, 
+                attributes));
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#endSuite(java.lang.String, java.util.Map)
      */
-    @Override
-    public void endSuite(String name, Map<String, String> attributes) {
-        getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), StringConstants.LOG_END_SUITE + " : " + name,
-                nestedLevel, attributes));
+
+    void endSuite(String name, Map<String, String> attributes) {
+        getLogger().log(new XmlLogRecord(
+                LogLevel.END.getLevel(), 
+                StringConstants.LOG_END_SUITE + " : " + name,
+                nestedLevel, 
+                attributes));
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#startTest(java.lang.String, java.util.Map, java.util.Stack)
      */
-    @Override
-    public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
+
+    void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
         nestedLevel++;
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_TEST + " : " + name,
-                nestedLevel, attributes));
+        getLogger().log(new XmlLogRecord(
+                LogLevel.START.getLevel(), 
+                StringConstants.LOG_START_TEST + " : " + name,
+                nestedLevel, 
+                attributes));
         setCurrentKeywordStack(keywordStack);
     }
     
@@ -163,11 +165,14 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#endTest(java.lang.String, java.util.Map)
      */
-    @Override
-    public void endTest(String name, Map<String, String> attributes) {
+
+    void endTest(String name, Map<String, String> attributes) {
         nestedLevel--;
-        getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), StringConstants.LOG_END_TEST + " : " + name,
-                nestedLevel, attributes));
+        getLogger().log(new XmlLogRecord(
+                LogLevel.END.getLevel(), 
+                StringConstants.LOG_END_TEST + " : " + name,
+                nestedLevel, 
+                attributes));
         restorePreviousKeywordStack();
     }
     
@@ -182,8 +187,8 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#startListenerKeyword(java.lang.String, java.util.Map, java.util.Stack)
      */
-    @Override
-    public void startListenerKeyword(String name, Map<String, String> attributes,
+
+    void startListenerKeyword(String name, Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
         Map<String, String> modifiedAttr = new HashMap<>(attributes != null ? attributes : Collections.emptyMap());
         modifiedAttr.put(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED, Boolean.toString(true));
@@ -193,8 +198,8 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#startKeyword(java.lang.String, java.lang.String, java.util.Map, java.util.Stack)
      */
-    @Override
-    public void startKeyword(String name, String actionType, Map<String, String> attributes,
+
+    void startKeyword(String name, String actionType, Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
         if (attributes == null) {
             attributes = new HashMap<String, String>();
@@ -203,9 +208,11 @@ public class XmlKeywordLogger implements IKeywordLogger {
             attributes.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, pendingDescription);
             pendingDescription = null;
         }
-        getLogger()
-                .log(new XmlLogRecord(LogLevel.START.getLevel(), 
-                        "Start " + actionType + " : " + name, nestedLevel, attributes));
+        getLogger().log(new XmlLogRecord(
+                LogLevel.START.getLevel(), 
+                "Start " + actionType + " : " + name, 
+                nestedLevel, 
+                attributes));
         if (currentKeywordStack != null) {
             keywordStacksContainer.push(currentKeywordStack);
         }
@@ -215,8 +222,8 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#startKeyword(java.lang.String, java.util.Map, java.util.Stack)
      */
-    @Override
-    public void startKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
+
+    void startKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
         if (attributes == null) {
             attributes = new HashMap<String, String>();
         }
@@ -224,8 +231,11 @@ public class XmlKeywordLogger implements IKeywordLogger {
             attributes.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, pendingDescription);
             pendingDescription = null;
         }
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_ACTION_PREFIX + name,
-                nestedLevel, attributes));
+        getLogger().log(new XmlLogRecord(
+                LogLevel.START.getLevel(), 
+                StringConstants.LOG_START_ACTION_PREFIX + name,
+                nestedLevel, 
+                attributes));
         if (currentKeywordStack != null) {
             keywordStacksContainer.push(currentKeywordStack);
         }
@@ -235,8 +245,8 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#startKeyword(java.lang.String, java.util.Map, int)
      */
-    @Override
-    public void startKeyword(String name, Map<String, String> attributes, int nestedLevel) {
+
+    void startKeyword(String name, Map<String, String> attributes, int nestedLevel) {
         if (attributes == null) {
             attributes = new HashMap<String, String>();
         }
@@ -245,8 +255,11 @@ public class XmlKeywordLogger implements IKeywordLogger {
             pendingDescription = null;
         }
         popKeywordFromStack(nestedLevel);
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_ACTION_PREFIX + name,
-                nestedLevel, attributes));
+        getLogger().log(new XmlLogRecord(
+                LogLevel.START.getLevel(), 
+                StringConstants.LOG_START_ACTION_PREFIX + name,
+                nestedLevel, 
+                attributes));
         pushKeywordToStack(name, nestedLevel);
     }
 
@@ -267,17 +280,20 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#endKeyword(java.lang.String, java.util.Map, int)
      */
-    @Override
-    public void endKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-        getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), StringConstants.LOG_END_KEYWORD + " : " + name,
-                nestedLevel, attributes));
+
+    void endKeyword(String name, Map<String, String> attributes, int nestedLevel) {
+        getLogger().log(new XmlLogRecord(
+                LogLevel.END.getLevel(), 
+                StringConstants.LOG_END_KEYWORD + " : " + name,
+                nestedLevel, 
+                attributes));
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#endListenerKeyword(java.lang.String, java.util.Map, java.util.Stack)
      */
-    @Override
-    public void endListenerKeyword(String name, Map<String, String> attributes,
+
+    void endListenerKeyword(String name, Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
         endKeyword(name, StringConstants.LOG_LISTENER_ACTION, attributes, keywordStack);
     }
@@ -285,8 +301,8 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#endKeyword(java.lang.String, java.lang.String, java.util.Map, java.util.Stack)
      */
-    @Override
-    public void endKeyword(String name, String keywordType, Map<String, String> attributes,
+
+    void endKeyword(String name, String keywordType, Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
         getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), 
                 "End " + keywordType + " : " + name, nestedLevel, attributes));
@@ -300,121 +316,66 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#endKeyword(java.lang.String, java.util.Map, java.util.Stack)
      */
-    @Override
-    public void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        endKeyword(name, StringConstants.LOG_END_KEYWORD, attributes, keywordStack);
-    }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logFailed(java.lang.String)
-     */
-    @Override
-    public void logFailed(String message) {
-        logMessage(LogLevel.FAILED, message);
+    void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
+        endKeyword(name, StringConstants.LOG_END_KEYWORD, attributes, keywordStack);
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logFailed(java.lang.String, java.util.Map)
      */
-    @Override
-    public void logFailed(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.FAILED, message, attributes);
-    }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logWarning(java.lang.String)
-     */
-    @Override
-    public void logWarning(String message) {
-        logMessage(LogLevel.WARNING, message);
+    void logFailed(String message, Map<String, String> attributes) {
+        logMessage(LogLevel.FAILED, message, attributes);
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logWarning(java.lang.String, java.util.Map)
      */
-    @Override
-    public void logWarning(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.WARNING, message, attributes);
-    }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logPassed(java.lang.String)
-     */
-    @Override
-    public void logPassed(String message) {
-        logMessage(LogLevel.PASSED, message);
+    void logWarning(String message, Map<String, String> attributes) {
+        logMessage(LogLevel.WARNING, message, attributes);
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logPassed(java.lang.String, java.util.Map)
      */
-    @Override
-    public void logPassed(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.PASSED, message, attributes);
-    }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logInfo(java.lang.String)
-     */
-    @Override
-    public void logInfo(String message) {
-        logMessage(LogLevel.INFO, message);
+    void logPassed(String message, Map<String, String> attributes) {
+        logMessage(LogLevel.PASSED, message, attributes);
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logInfo(java.lang.String, java.util.Map)
      */
-    @Override
-    public void logInfo(String message, Map<String, String> attributes) {
+
+    void logInfo(String message, Map<String, String> attributes) {
         logMessage(LogLevel.INFO, message, attributes);
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logRunData(java.lang.String, java.lang.String)
      */
-    @Override
-    public void logRunData(String dataKey, String dataValue) {
+
+    void logRunData(String dataKey, String dataValue) {
         Map<String, String> attributeMap = new HashMap<String, String>();
         attributeMap.put(dataKey, dataValue);
-        logMessage(LogLevel.RUN_DATA, dataKey + " = " + dataValue,
-                attributeMap);
-    }
-
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logError(java.lang.String)
-     */
-    @Override
-    public void logError(String message) {
-        logMessage(LogLevel.ERROR, message);
+        logMessage(LogLevel.RUN_DATA, dataKey + " = " + dataValue, attributeMap);
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logError(java.lang.String, java.util.Map)
      */
-    @Override
-    public void logError(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.ERROR, message, attributes);
-    }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logMessage(com.kms.katalon.core.logging.LogLevel, java.lang.String)
-     */
-    @Override
-    public void logMessage(LogLevel level, String message) {
-        if (message == null) {
-            message = "";
-        }
-        Logger logger = getLogger();
-        if (logger != null) {
-            logger.log(new XmlLogRecord(level.getLevel(), message, nestedLevel));
-        }
+    void logError(String message, Map<String, String> attributes) {
+        logMessage(LogLevel.ERROR, message, attributes);
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logMessage(com.kms.katalon.core.logging.LogLevel, java.lang.String, java.util.Map)
      */
-    @Override
-    public void logMessage(LogLevel level, String message, Map<String, String> attributes) {
+
+    void logMessage(LogLevel level, String message, Map<String, String> attributes) {
         if (message == null) {
             message = "";
         }
@@ -428,8 +389,8 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logMessage(com.kms.katalon.core.logging.LogLevel, java.lang.String, java.lang.Throwable)
      */
-    @Override
-    public void logMessage(LogLevel level, String message, Throwable thrown) {
+
+    void logMessage(LogLevel level, String message, Throwable thrown) {
         if (message == null) {
             message = "";
         }
@@ -442,24 +403,16 @@ public class XmlKeywordLogger implements IKeywordLogger {
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#setPendingDescription(java.lang.String)
      */
-    @Override
-    public void setPendingDescription(String stepDescription) {
-        pendingDescription = stepDescription;
-    }
 
-    /* (non-Javadoc)
-     * @see com.kms.katalon.core.logging.IKeywordLogger#logNotRun(java.lang.String)
-     */
-    @Override
-    public void logNotRun(String message) {
-        logMessage(LogLevel.NOT_RUN, message);
+    void setPendingDescription(String stepDescription) {
+        pendingDescription = stepDescription;
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logNotRun(java.lang.String, java.util.Map)
      */
-    @Override
-    public void logNotRun(String message, Map<String, String> attributes) {
+
+    void logNotRun(String message, Map<String, String> attributes) {
         logMessage(LogLevel.NOT_RUN, message, attributes);
     }
 }

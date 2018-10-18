@@ -75,7 +75,7 @@ public class DragAndDropByOffsetKeyword extends WebUIAbstractKeyword {
         WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
             try {
-                logger.logInfo(StringConstants.KW_LOG_INFO_CHK_SRC_OBJ)
+                logger.logDebug(StringConstants.KW_LOG_INFO_CHK_SRC_OBJ)
                 if (sourceObject == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_SRC_OBJ_IS_NULL)
                 }

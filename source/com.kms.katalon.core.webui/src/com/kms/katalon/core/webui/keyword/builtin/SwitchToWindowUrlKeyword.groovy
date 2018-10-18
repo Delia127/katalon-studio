@@ -70,7 +70,7 @@ public class SwitchToWindowUrlKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public void switchToWindowUrl(String url, FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({
-            logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_URL)
+            logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_URL)
             if (url == null) {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_URL_IS_NULL)
             }

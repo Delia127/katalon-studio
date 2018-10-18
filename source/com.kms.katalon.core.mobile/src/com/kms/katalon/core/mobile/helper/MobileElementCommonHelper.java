@@ -103,9 +103,9 @@ public class MobileElementCommonHelper {
 
     public static boolean checkDuration(Number duration) {
         boolean useCustomDuration = true;
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_DURATION);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_DURATION);
         if (isDurationInvalid(duration)) {
-            logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_DURATION, duration));
+            logger.logWarning(MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_DURATION, duration));
             useCustomDuration = false;
         }
         return useCustomDuration;
@@ -275,7 +275,7 @@ public class MobileElementCommonHelper {
     }
 
     public static void moveSlider(TestObject to, Number percent, int timeout) throws StepFailedException, Exception {
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_PERCENTAGE);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_PERCENTAGE);
         if (percent == null || percent.floatValue() < 0 || percent.floatValue() > 100) {
             throw new StepFailedException(
                     MessageFormat.format(StringConstants.KW_MSG_FAILED_SET_SLIDER_INVALID_PERCENTAGE_X, percent));

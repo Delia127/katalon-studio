@@ -93,7 +93,7 @@ public class BrowserMobProxyManager {
                 File file = new File(directory, requestInformation.getId() + ".har");
                 file.createNewFile();
                 
-                logger.logInfo(file.getAbsolutePath());
+                logger.logInfo("Detailed response: " + file.getAbsolutePath());
                 
                 Har har = browserMobProxy.endHar();
                 HarLog harLog = har.getLog();

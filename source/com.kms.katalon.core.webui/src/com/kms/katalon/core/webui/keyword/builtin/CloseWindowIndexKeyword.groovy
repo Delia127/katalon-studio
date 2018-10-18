@@ -70,7 +70,7 @@ public class CloseWindowIndexKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public void closeWindowIndex(Object index, FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({
-            logger.logInfo(StringConstants.KW_LOG_INFO_CHECKING_INDEX)
+            logger.logDebug(StringConstants.KW_LOG_INFO_CHECKING_INDEX)
             if (index == null) {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_INDEX_IS_NULL)
             }

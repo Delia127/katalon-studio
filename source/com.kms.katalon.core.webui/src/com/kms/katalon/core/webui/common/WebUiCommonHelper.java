@@ -186,7 +186,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     public static void checkSelectIndex(Integer[] indexes, Select select) throws IllegalArgumentException {
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_INDEX_PARAMS);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_INDEX_PARAMS);
         List<WebElement> allSelectOptions = select.getOptions();
         if (allSelectOptions.size() > 0) {
             for (int index : indexes) {
@@ -786,7 +786,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     	if(objectInsideShadowDom){
     		 return Collections.emptyList();
     	}
-    	logger.logInfo(StringConstants.KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD);
+    	logger.logDebug(StringConstants.KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD);
     	List<WebElement> webElements = new ArrayList<>();
     	
     	testObject.getXpaths().forEach(xpath ->{
@@ -797,7 +797,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             	webElements.addAll(webElementsByThisXpath);
             }            
     	});
-        logger.logInfo(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_TRIAL_AND_ERROR_METHOD);
+        logger.logDebug(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_TRIAL_AND_ERROR_METHOD);
     	
     	return webElements;
     }
@@ -963,7 +963,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 logger.logWarning(StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_ALERT_ON_PAGE);
                 return;
             }
-            logger.logInfo(StringConstants.KW_LOG_INFO_SWITCHING_TO_DEFAULT_CONTENT);
+            logger.logDebug(StringConstants.KW_LOG_INFO_SWITCHING_TO_DEFAULT_CONTENT);
             DriverFactory.getWebDriver().switchTo().defaultContent();
         } catch (NoSuchWindowException e) {
             // Switching to default content in IE without in frame will raise

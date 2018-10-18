@@ -71,7 +71,7 @@ public class VerifyElementAttributeValueKeyword extends MobileAbstractKeyword {
     public boolean verifyElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
         MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
-            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME)
+            logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME)
             if (attributeName == null) {
                 throw new IllegalArgumentException(StringConstants.COMM_EXC_ATTRIBUTE_NAME_IS_NULL)
             }

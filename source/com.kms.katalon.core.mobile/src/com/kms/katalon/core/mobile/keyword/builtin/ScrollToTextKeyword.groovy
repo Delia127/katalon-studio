@@ -71,7 +71,7 @@ public class ScrollToTextKeyword extends MobileAbstractKeyword {
 
     public void scrollToText(String text, FailureHandling flowControl) throws StepFailedException {
         MobileKeywordMain.runKeyword({
-            logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TEXT)
+            logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_TEXT)
             if (text == null) {
                 throw new IllegalArgumentException(StringConstants.COMM_EXC_TEXT_IS_NULL)
             }

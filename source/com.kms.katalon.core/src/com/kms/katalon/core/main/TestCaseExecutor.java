@@ -33,7 +33,7 @@ import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.logging.IKeywordLogger.KeywordStackElement;
+import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
@@ -49,7 +49,7 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 public class TestCaseExecutor {
-
+    
     private final KeywordLogger logger = KeywordLogger.getInstance(this.getClass());
 
     private static ErrorCollector errorCollector = ErrorCollector.getCollector();
@@ -342,7 +342,7 @@ public class TestCaseExecutor {
         Binding variableBinding = new Binding(testCaseBinding != null ? testCaseBinding.getBindedValues() : Collections.emptyMap());
         engine.changeConfigForCollectingVariable();
 
-        logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
+        logger.logDebug(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
         testCase.getVariables().stream().forEach(testCaseVariable -> {
             String variableName = testCaseVariable.getName();
             if (getBindedValues().containsKey(variableName)) {
