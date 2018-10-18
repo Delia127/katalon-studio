@@ -2,7 +2,7 @@ node {
     stage('Prepare'){
 	// Start neccessary services to prepare required libraries if needed
 	// deleteDir()
-        build job: 'StartServices'
+ //       build job: 'StartServices'
     }
     stage('Check out') {
 	    retry(3){
@@ -10,6 +10,11 @@ node {
 	    }
     }
     stage('Build') {
+	env.WORKSPACE = pwd()
+	sub = { it.split("1=")[1] }
+	def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
+	def version = sub(versionContent)
+	    
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
     	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
     		sh '''
