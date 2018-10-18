@@ -26,12 +26,12 @@ node {
    }
     stage('Package') {
         sh '''
-            sudo ./package.sh ${JOB_BASE_NAME}
+            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID}
         '''
 
         if (env.BRANCH_NAME == 'release') {
                 sh '''
-                    sudo ./verify.sh ${JOB_BASE_NAME}
+                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID}
                 '''
         }
     }
