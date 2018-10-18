@@ -326,7 +326,7 @@ class XmlKeywordLogger {
      */
 
     void logFailed(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.FAILED, message, attributes);
+        logMessage(null, LogLevel.FAILED, message, attributes);
     }
 
     /* (non-Javadoc)
@@ -334,7 +334,7 @@ class XmlKeywordLogger {
      */
 
     void logWarning(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.WARNING, message, attributes);
+        logMessage(null, LogLevel.WARNING, message, attributes);
     }
 
     /* (non-Javadoc)
@@ -342,15 +342,19 @@ class XmlKeywordLogger {
      */
 
     void logPassed(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.PASSED, message, attributes);
+        logMessage(null, LogLevel.PASSED, message, attributes);
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logInfo(java.lang.String, java.util.Map)
      */
 
-    void logInfo(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.INFO, message, attributes);
+    void logInfo(KeywordLogger keywordLogger, String message, Map<String, String> attributes) {
+        logMessage(keywordLogger, LogLevel.INFO, message, attributes);
+    }
+    
+    void logDebug(KeywordLogger keywordLogger, String message, Map<String, String> attributes) {
+        logMessage(keywordLogger, LogLevel.DEBUG, message, attributes);
     }
 
     /* (non-Javadoc)
@@ -360,7 +364,7 @@ class XmlKeywordLogger {
     void logRunData(String dataKey, String dataValue) {
         Map<String, String> attributeMap = new HashMap<String, String>();
         attributeMap.put(dataKey, dataValue);
-        logMessage(LogLevel.RUN_DATA, dataKey + " = " + dataValue, attributeMap);
+        logMessage(null, LogLevel.RUN_DATA, dataKey + " = " + dataValue, attributeMap);
     }
 
     /* (non-Javadoc)
@@ -368,20 +372,34 @@ class XmlKeywordLogger {
      */
 
     void logError(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.ERROR, message, attributes);
+        logMessage(null, LogLevel.ERROR, message, attributes);
     }
 
     /* (non-Javadoc)
      * @see com.kms.katalon.core.logging.IKeywordLogger#logMessage(com.kms.katalon.core.logging.LogLevel, java.lang.String, java.util.Map)
      */
 
-    void logMessage(LogLevel level, String message, Map<String, String> attributes) {
+    void logMessage(KeywordLogger keywordLogger, LogLevel originalLevel, String message, Map<String, String> attributes) {
         if (message == null) {
             message = "";
         }
         Logger logger = getLogger();
+        LogLevel level;
+        if (LogLevel.DEBUG.equals(originalLevel)) {
+            level = LogLevel.INFO;
+        } else {
+            level = originalLevel;
+        }
         if (logger != null) {
-            logger.log(new XmlLogRecord(level.getLevel(), message, nestedLevel, attributes));
+            XmlLogRecord xmlLogRecord = new XmlLogRecord(level.getLevel(), message, nestedLevel, attributes);
+            if (keywordLogger != null) {
+                if (LogLevel.INFO.equals(originalLevel) && !keywordLogger.isInfoEnabled()) {
+                    xmlLogRecord.setIgnoreSocketHandler(true);
+                } else if (LogLevel.DEBUG.equals(originalLevel) && !keywordLogger.isDebugEnabled()) {
+                    xmlLogRecord.setIgnoreSocketHandler(true);
+                }
+            }
+            logger.log(xmlLogRecord);
         }
 
     }
@@ -413,6 +431,6 @@ class XmlKeywordLogger {
      */
 
     void logNotRun(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.NOT_RUN, message, attributes);
+        logMessage(null, LogLevel.NOT_RUN, message, attributes);
     }
 }

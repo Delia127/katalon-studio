@@ -55,7 +55,7 @@ public class CallTestCaseKeyword extends AbstractKeyword {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_CALLED_TC_IS_NULL)
                 }
 
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_STARTING_TO_CALL_TC, calledTestCase.getTestCaseId()))
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_STARTING_TO_CALL_TC, calledTestCase.getTestCaseId()))
                 TestResult result = TestCaseMain.runTestCase(calledTestCase.getTestCaseId(), new TestCaseBinding(
                         calledTestCase.getTestCaseId(), binding), flowControl, false, false)
                 switch (result.getTestStatus().getStatusValue()) {

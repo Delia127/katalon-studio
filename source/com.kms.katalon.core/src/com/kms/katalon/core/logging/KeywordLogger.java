@@ -1,5 +1,6 @@
 package com.kms.katalon.core.logging;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -14,6 +15,16 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.main.ScriptEngine;
 
 public class KeywordLogger {
+    
+    private static final int HR_LENGTH = 20;
+    
+    private static final String TEST_CASE_HR = String.join("", Collections.nCopies(HR_LENGTH, "-"));
+    
+    private static final String TEST_SUITE_HR = String.join("", Collections.nCopies(HR_LENGTH, "="));
+
+    private static final String PASSED = "\u2713";
+    
+    private static final String FAILED = "\u274C";
     
     private static final Logger selfLogger = LoggerFactory.getLogger(KeywordLogger.class);
     
@@ -88,12 +99,15 @@ public class KeywordLogger {
 
 
     public void endSuite(String name, Map<String, String> attributes) {
+        logger.info(TEST_CASE_HR);
         logger.info("END {}", name);
+        logger.info(TEST_SUITE_HR);
         xmlKeywordLogger.endSuite(name, attributes);
     }
 
 
     public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
+        logger.info(TEST_CASE_HR);
         logger.info("START {}", name);
         xmlKeywordLogger.startTest(name, attributes, keywordStack);
     }
@@ -101,6 +115,19 @@ public class KeywordLogger {
 
     public void endTest(String name, Map<String, String> attributes) {
         logger.info("END {}", name);
+        xmlKeywordLogger.endTest(name, attributes);
+    }
+    
+    public void startCalledTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
+        logger.info(TEST_CASE_HR);
+        logger.info("CALL {}", name);
+        xmlKeywordLogger.startTest(name, attributes, keywordStack);
+    }
+
+
+    public void endCalledTest(String name, Map<String, String> attributes) {
+        logger.info("END CALL {}", name);
+        logger.info(TEST_CASE_HR);
         xmlKeywordLogger.endTest(name, attributes);
     }
 
@@ -186,7 +213,7 @@ public class KeywordLogger {
 
 
     public void logFailed(String message, Map<String, String> attributes) {
-        logger.error("FAILED {}", message);
+        logger.error("{} {}", FAILED, message);
         xmlKeywordLogger.logFailed(message, attributes);
     }
 
@@ -208,7 +235,7 @@ public class KeywordLogger {
 
 
     public void logPassed(String message, Map<String, String> attributes) {
-        logger.info("PASSED {}", message);
+        logger.debug("{} {}", PASSED, message);
         xmlKeywordLogger.logPassed(message, attributes);
     }
 
@@ -220,7 +247,7 @@ public class KeywordLogger {
 
     public void logInfo(String message, Map<String, String> attributes) {
         logger.info(message);
-        xmlKeywordLogger.logInfo(message, attributes);
+        xmlKeywordLogger.logInfo(this, message, attributes);
     }
 
 
@@ -248,7 +275,7 @@ public class KeywordLogger {
 
     public void logMessage(LogLevel level, String message, Map<String, String> attributes) {
         log(level, message);
-        xmlKeywordLogger.logMessage(level, message, attributes);
+        xmlKeywordLogger.logMessage(this, level, message, attributes);
     }
 
     private void log(LogLevel level, String message) {
@@ -292,7 +319,15 @@ public class KeywordLogger {
 
     public void logDebug(String message) {
         logger.debug(message);
-        xmlKeywordLogger.logInfo(message, null);
+        xmlKeywordLogger.logDebug(this, message, null);
+    }
+    
+    public boolean isInfoEnabled() {
+        return logger.isInfoEnabled();
+    }
+    
+    public boolean isDebugEnabled() {
+        return logger.isDebugEnabled();
     }
 
     public static class KeywordStackElement {

@@ -188,8 +188,13 @@ public class TestCaseExecutor {
         try {
             preExecution();
 
-            logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
-                    keywordStack);
+            if (testCaseContext.isMainTestCase()) {
+                logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
+                        keywordStack);
+            } else {
+                logger.startCalledTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
+                        keywordStack);
+            }
 
             if (!processScriptPreparationPhase()) {
                 return testCaseResult;
@@ -223,7 +228,11 @@ public class TestCaseExecutor {
                 eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_CASE, new Object[] { testCaseContext });
             }
 
-            logger.endTest(testCase.getTestCaseId(), null);
+            if (testCaseContext.isMainTestCase()) {
+                logger.endTest(testCase.getTestCaseId(), null);
+            } else {
+                logger.endCalledTest(testCase.getTestCaseId(), null);
+            }
 
             postExecution();
         }

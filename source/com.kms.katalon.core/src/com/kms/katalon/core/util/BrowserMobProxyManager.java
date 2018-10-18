@@ -26,12 +26,7 @@ public class BrowserMobProxyManager {
 
     private static final ThreadLocal<BrowserMobProxy> browserMobProxyLookup = new ThreadLocal<BrowserMobProxy>();
     
-    private static final ThreadLocal<AtomicLong> requestNumberLookup = new ThreadLocal<AtomicLong>() {
-        
-        protected AtomicLong initialValue() {
-            return new AtomicLong();
-        }
-    };
+    private static final AtomicLong requestNumber = new AtomicLong(0);
     
     private static void logError(String message, Exception e) {
         logger.logError(message + ": " + e.getClass().getName() + " - " + e.getMessage());
@@ -83,7 +78,7 @@ public class BrowserMobProxyManager {
             BrowserMobProxy browserMobProxy = browserMobProxyLookup.get();
             if (browserMobProxy != null) {
                 
-                requestInformation.setId(String.valueOf(requestNumberLookup.get().incrementAndGet()));
+                requestInformation.setId(String.valueOf(requestNumber.getAndIncrement()));
                 String threadName = Thread.currentThread().getName();
                 String directoryPath = RunConfiguration.getReportFolder();
                 File directory = new File(directoryPath, "requests" + File.separator + threadName);
@@ -132,7 +127,7 @@ public class BrowserMobProxyManager {
         browserMobProxy.newHar();
         browserMobProxy.setHarCaptureTypes(CaptureType.values());
         browserMobProxyLookup.set(browserMobProxy);
-        logger.logInfo("Requests will be captured by BrowserMob proxy at port " + browserMobProxy.getPort());
+        logger.logDebug("Requests will be captured by BrowserMob proxy at port " + browserMobProxy.getPort());
         return browserMobProxy;
     }
 }

@@ -39,7 +39,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
         Level level = event.getLevel();
         switch (level.toInt()) {
         case Level.ERROR_INT:
-            return BOLD + RED_FG;
+            return RED_FG;
         case Level.WARN_INT:
             return RED_FG;
         default:
