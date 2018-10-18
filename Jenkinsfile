@@ -8,10 +8,16 @@ node {
 	    retry(3){
         	checkout scm
 	    }
-    }
+    }/Users/nguyenvinh/katalon/source/com.kms.katalon
     stage('Build') {
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
-	
+	script 
+	    {
+		    env.WORKSPACE = pwd()
+		    sub = { it.split("1=")[1] }
+		    def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
+		    def version = sub(versionContent)		    
+	    }
     	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
     		sh '''
 		    cd source
@@ -26,12 +32,12 @@ node {
    }
     stage('Package') {
         sh '''
-            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID} ${GIT_COMMIT}
+            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID} 
         '''
 
         if (env.BRANCH_NAME == 'release') {
                 sh '''
-                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID} ${GIT_COMMIT}
+                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID} 
                 '''
         }
     }
