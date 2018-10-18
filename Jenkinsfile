@@ -8,7 +8,7 @@ node {
 	    retry(3){
         	checkout scm
 	    }
-    }/Users/nguyenvinh/katalon/source/com.kms.katalon
+    }
     stage('Build') {
 	    env.WORKSPACE = pwd()
 	    sub = { it.split("1=")[1] }
