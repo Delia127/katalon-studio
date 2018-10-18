@@ -47,7 +47,7 @@ sudo chmod +x "${CHROME_DRIVER_MAC}"
 sudo chmod +x "${FF_DRIVER_MAC}"
 echo "Grant executed permission for Katalon and browser drivers ... Done"
 
-# Temp fix to not create .dmg file
+# Create .dmg file
 #sudo codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
 #echo "Codesigning ... Done"
 
@@ -63,17 +63,28 @@ echo "Grant executed permission for Katalon and browser drivers ... Done"
 # Distribute packages to shared folder
 sudo mkdir -p ${HOME}/Public/KatalonStudio/
 DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
-BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${2}/${3}" # JOB_BASE_NAME
-echo ${1}
+BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${2}/" # JOB_BASE_NAME
 
 # BRANCH_FOLDER is unique
 sudo mkdir -p $BRANCH_FOLDER
 
 sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
+sudo cd "${BRANCH_FOLDER}/${LINUX_64_FILE}"
+sudo mv "${PRODUCT_NAME}_Linux_64.tar.gz" "${PRODUCT_NAME}_Linux_64-${3}.tar.gz"
+
 sudo cp "${MAC_FILE}" "${BRANCH_FOLDER}/"
+sudo cd "${BRANCH_FOLDER}/${MAC_FILE}"
+sudo mv "${MAC_NAME}_MacOS.tar.gz" "${MAC_NAME}_MacOS-${3}.tar.gz"
+
 #sudo mv "$(pwd -P)/$MAC_PACKAGE" "${BRANCH_FOLDER}/"
 sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
+sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
+sudo mv "${PRODUCT_NAME}_Windows_32.zip" "${PRODUCT_NAME}_Windows_32-${3}.zip"
+
 sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
+sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
+sudo mv "${PRODUCT_NAME}_Windows_64.zip" "${PRODUCT_NAME}_Windows_64-${3}.zip"
+
 mkdir -p $KATABUILD
 
 if [ ! -d "${KATABUILD}" ]; then
