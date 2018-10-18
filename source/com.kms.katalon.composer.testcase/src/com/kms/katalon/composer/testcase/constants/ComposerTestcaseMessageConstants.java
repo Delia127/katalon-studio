@@ -406,7 +406,10 @@ public class ComposerTestcaseMessageConstants extends NLS {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);
     }
-
+    
+    // Test object hyperlink detector
+    public static String WARN_TEST_OBEJCT_NOT_FOUND;
+    
     private ComposerTestcaseMessageConstants() {
     }
 }
