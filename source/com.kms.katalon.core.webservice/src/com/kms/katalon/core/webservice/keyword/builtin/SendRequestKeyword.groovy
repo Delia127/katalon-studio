@@ -13,7 +13,9 @@ import com.kms.katalon.core.keyword.internal.KeywordExecutor
 import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.logging.KeywordLogger
+import com.kms.katalon.core.main.TestCaseExecutor
 import com.kms.katalon.core.model.FailureHandling
+import com.kms.katalon.core.testcase.TestCase
 import com.kms.katalon.core.testobject.RequestObject
 import com.kms.katalon.core.testobject.ResponseObject
 import com.kms.katalon.core.util.BrowserMobProxyManager
@@ -43,11 +45,21 @@ public class SendRequestKeyword extends WebserviceAbstractKeyword {
 
     @CompileStatic
     public ResponseObject sendRequest(RequestObject request, FailureHandling flowControl) throws Exception {
-        try {
-            BrowserMobProxyManager.newHar()
             Object object = KeywordMain.runKeyword({
                 WebServiceCommonHelper.checkRequestObject(request)
-                ResponseObject responseObject = ServiceRequestFactory.getInstance(request).send(request)
+                ResponseObject responseObject = null;
+                try {
+                    BrowserMobProxyManager.newHar()
+                    responseObject = ServiceRequestFactory.getInstance(request).send(request)
+                } finally {
+                    RequestInformation requestInformation = new RequestInformation();
+                    requestInformation.setTestObjectId(request.getObjectId());
+                    TestCase currentTestCase = TestCaseExecutor.getCurrentTestCase()
+                    if (currentTestCase != null) {
+                        requestInformation.setTestCaseId(currentTestCase.getTestCaseId());
+                    }
+                    BrowserMobProxyManager.endHar(requestInformation);
+                }
                 logger.logPassed(StringConstants.KW_LOG_PASSED_SEND_REQUEST_SUCCESS)
                 return responseObject
             }, flowControl, StringConstants.KW_LOG_FAILED_CANNOT_SEND_REQUEST)
@@ -55,10 +67,5 @@ public class SendRequestKeyword extends WebserviceAbstractKeyword {
                 return (ResponseObject) object
             }
             return null
-        } finally {
-            RequestInformation requestInformation = new RequestInformation();
-            requestInformation.setTestObjectId(request.getObjectId());
-            BrowserMobProxyManager.endHar(requestInformation);
-        }
     }
 }

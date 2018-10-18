@@ -5,12 +5,15 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.util.internal.PathUtil;
 
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
@@ -88,7 +91,10 @@ public class BrowserMobProxyManager {
                 File file = new File(directory, requestInformation.getId() + ".har");
                 file.createNewFile();
                 
-                logger.logInfo("Detailed response: " + file.getAbsolutePath());
+                String path = file.getAbsolutePath();
+                Map<String, String> attributes = new HashMap<>();
+                attributes.put("har", PathUtil.absoluteToRelativePath(path, RunConfiguration.getReportFolder()));
+                logger.logInfo("HAR: " + path, attributes);
                 
                 Har har = browserMobProxy.endHar();
                 HarLog harLog = har.getLog();

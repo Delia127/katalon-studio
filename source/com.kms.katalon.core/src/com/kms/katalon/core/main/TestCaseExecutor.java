@@ -77,6 +77,8 @@ public class TestCaseExecutor {
     private InternalTestCaseContext testCaseContext;
 
     private TestSuiteExecutor testSuiteExecutor;
+    
+    private static TestCase currentTestCase;
 
     public void setTestSuiteExecutor(TestSuiteExecutor testSuiteExecutor) {
         this.testSuiteExecutor = testSuiteExecutor;
@@ -87,6 +89,7 @@ public class TestCaseExecutor {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
         this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
+        this.currentTestCase = this.testCase;
         this.doCleanUp = doCleanUp;
         this.eventManager = eventManager;
 
@@ -472,5 +475,9 @@ public class TestCaseExecutor {
     
     public TestCase getTestCase() {
         return testCase;
+    }
+    
+    public static TestCase getCurrentTestCase() {
+        return currentTestCase;
     }
 }
