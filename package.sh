@@ -66,9 +66,8 @@ DISTRIBUTION_FOLDER="${HOME}/Public/KatalonStudio/"
 BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${2}/${3}" # JOB_BASE_NAME
 echo ${1}
 
-if [ ! -d "${BRANCH_FOLDER}" ]; then
-  sudo mkdir -p $BRANCH_FOLDER
-fi
+# BRANCH_FOLDER is unique
+sudo mkdir -p $BRANCH_FOLDER
 
 sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
 sudo cp "${MAC_FILE}" "${BRANCH_FOLDER}/"
