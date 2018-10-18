@@ -1,7 +1,6 @@
 node {
     stage('Prepare'){
-	// Start neccessary services to prepare required libraries if needed
-	// deleteDir()
+	// Start neccessary services to download required dependencies
  //       build job: 'StartServices'
     }
     stage('Check out') {
@@ -10,11 +9,8 @@ node {
 	    }
     }
     stage('Build') {
-	env.WORKSPACE = pwd()
-	sub = { it.split("1=")[1] }
-	def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
-	def version = sub(versionContent)
-	println version 
+
+	
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
     	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
     		sh '''
@@ -29,13 +25,19 @@ node {
     	}       
    }
     stage('Package') {
+	//Retrieves version number from source    
+	env.WORKSPACE = pwd()
+	def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
+	def versionNumber = (versionContent =~ /([0-9]+)[\.,]?([0-9]+)[\.,]?([0-9])/)
+	env.version = versionNumber[0][0]
+	    
         sh '''
-            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID} 
+            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID} ${env.version}
         '''
 
         if (env.BRANCH_NAME == 'release') {
                 sh '''
-                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID} 
+                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID} ${env.version}
                 '''
         }
     }
