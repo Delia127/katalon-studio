@@ -91,6 +91,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String BTN_SEND_TEST_REQUEST;
 
+    public static String BTN_SAVE_DRAFT_REQUEST;
+    
     public static String BTN_LOAD_FROM_OPERATION;
 
     public static String PART_MSG_CANNOT_FORMAT_THE_XML_CONTENT;

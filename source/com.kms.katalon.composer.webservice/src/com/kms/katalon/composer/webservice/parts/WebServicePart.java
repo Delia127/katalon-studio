@@ -156,6 +156,7 @@ import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.handlers.SaveDraftRequestHandler;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
@@ -585,6 +586,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                         MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                                 StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
                     }
+                }
+            });
+        }
+        
+        if (isDraft()) {
+            wsApiControl.addSaveDraftSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    SaveDraftRequestHandler.saveDraftRequest(Display.getCurrent().getActiveShell(), getOriginalWsObject());
                 }
             });
         }
