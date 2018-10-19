@@ -7,12 +7,10 @@ import org.eclipse.core.commands.common.CommandException;
 import com.kms.katalon.activation.dialog.ActivationDialogV2;
 import com.kms.katalon.activation.dialog.ActivationOfflineDialogV2;
 import com.kms.katalon.activation.dialog.SignupDialog;
-import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
-import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
 import com.kms.katalon.composer.intro.QuickStartDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.logging.LogUtil;
@@ -95,13 +93,9 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
 //        FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
 //        finishDialog.open();
         QuickStartDialog dialog = new QuickStartDialog(null);
-        int result = dialog.open();
+        dialog.open();
         try {
-            if (result == QuickStartDialog.OPEN_PROJECT) {
-                new CommandCaller().call(CommandId.PROJECT_OPEN);
-            } else {
-                new CommandCaller().call(CommandId.PROJECT_ADD);
-            }
+            new CommandCaller().call(CommandId.PROJECT_ADD);
         } catch (CommandException e) {
             LogUtil.logError(e);
         }

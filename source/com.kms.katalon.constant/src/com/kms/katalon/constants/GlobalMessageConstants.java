@@ -231,6 +231,8 @@ public class GlobalMessageConstants extends NLS {
     
     public static String DIA_LET_START;
     
+    public static String DIA_NEW_PROJECT;
+    
     public static String DIA_NAME_EXISTED;
 
     public static String DIA_TITLE_QUICKSTART;

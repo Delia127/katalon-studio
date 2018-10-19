@@ -313,6 +313,8 @@ public class GlobalStringConstants {
     public static final String DIA_NO = GlobalMessageConstants.DIA_NO;
     
     public static final String DIA_LET_START = GlobalMessageConstants.DIA_LET_START;
+    
+    public static final String DIA_NEW_PROJECT = GlobalMessageConstants.DIA_NEW_PROJECT;
 
     public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
 
