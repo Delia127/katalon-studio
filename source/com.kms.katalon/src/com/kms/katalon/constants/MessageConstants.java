@@ -293,13 +293,13 @@ public class MessageConstants extends NLS {
     
     public static String URL_MOBILE_CONFIG_AND_RECORD_STEP_MAC;
     
-    public static String URL_CREATE_WEB_SERVICE_REQUEST;
+    public static String URL_USE_DRAFT_REQUEST;
     
-    public static String URL_TEST_WEB_SERVICE_REQUEST;
+    public static String URL_SAVE_DRAFT_REQUEST;
     
     public static String URL_API_EXECUTE_TEST_CASE;
     
-    public static String URL_ADD_WEB_SERVICE_KEYWORD;
+    public static String URL_USE_WEB_SERVICE_IN_TEST_CASE;
     
     public static String URL_SCRIPT_NEW_TEST_CASE;
     
