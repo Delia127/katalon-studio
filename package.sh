@@ -92,7 +92,8 @@ if [ ! -d "${KATABUILD}" ]; then
 fi  
 
 mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
-sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
+sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
+# sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
 sudo umount -f /private/tmp/katabuild
 sudo umount -f $KATABUILD
 echo "Distribute packages ... Done"
