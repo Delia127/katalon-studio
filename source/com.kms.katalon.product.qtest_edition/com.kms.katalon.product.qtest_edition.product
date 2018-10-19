@@ -1,38 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="com.kms.katalon.console" uid="com.kms.katalon.console.product.product" id="com.kms.katalon.console.product" application="com.kms.katalon.console.application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Katalon Studio" uid="com.kms.katalon.product.qtest_edition.product" id="com.kms.katalon.product" application="com.kms.katalon.application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+
+   <aboutInfo>
+      <image path="/../com.kms.katalon/icons/branding_128.png"/>
+      <text>
+         %productBlurb
+      </text>
+   </aboutInfo>
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-consoleLog
--clearPersistedState
--data config
+      <programArgs>-data config
       </programArgs>
+      <programArgsLin>-noSplash
+      </programArgsLin>
       <programArgsMac>-vm ../../Contents/Eclipse/jre/Contents/Home/jre/lib/jli/libjli.dylib
       </programArgsMac>
       <vmArgs>-Xms256m
--Xmx512m
+         <argsX86>-Xmx1280m</argsX86>
+         <argsX86_64>-Xmx2048m</argsX86_64>
+         <argsPPC>-Xmx2048m</argsPPC>
+         <argsIA_64>-Xmx2048m</argsIA_64>
+         <argsIA_64_32>-Xmx1280m</argsIA_64_32>
+         <argsPA_RISC>-Xmx2048m</argsPA_RISC>
+         <argsSPARC>-Xmx2048m</argsSPARC>
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages/>
+   <windowImages i16="/../com.kms.katalon/icons/branding_16.png" i32="/../com.kms.katalon/icons/branding_32.png" i48="/../com.kms.katalon/icons/branding_48.png" i64="/../com.kms.katalon/icons/branding_64.png" i128="/../com.kms.katalon/icons/branding_128.png" i256="/../com.kms.katalon/icons/branding_256.png"/>
 
+   <splash
+      location="com.kms.katalon"
+      startupProgressRect="0,290,450,10"
+      startupMessageRect="5,270,445,20"
+      startupForegroundColor="404040" />
    <launcher name="katalon">
-      <linux icon="../com.kms.katalon/icons/icon.xpm"/>
-      <macosx icon="../com.kms.katalon/icons/icon.icns"/>
+      <linux icon="/../com.kms.katalon/icons/icon.xpm"/>
+      <macosx icon="/../com.kms.katalon/icons/icon.icns"/>
       <solaris/>
       <win useIco="true">
-         <ico path="../com.kms.katalon/icons/icon.ico"/>
+         <ico path="/../com.kms.katalon/icons/icon.ico"/>
          <bmp/>
       </win>
    </launcher>
 
+
    <vm>
+      <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
+      <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</macos>
+      <solaris include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</solaris>
+      <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
 
    <plugins>
@@ -103,7 +126,8 @@
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
-      <feature id="com.kms.katalon.console.feature" version="1.0.0.qualifier"/>
+      <feature id="com.kms.katalon.feature" version="1.0.0.qualifier"/>
+      <feature id="com.kms.katalon.feature.qtest_edition" version="1.0.0.qualifier"/>
    </features>
 
    <configurations>
@@ -112,6 +136,7 @@
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <property name="osgi.splashPath" value="platform:/base/configuration/resources" />
    </configurations>
 
    <preferencesInfo>
@@ -119,6 +144,7 @@
    </preferencesInfo>
 
    <cssInfo>
+      <file path="/../com.kms.katalon/css/default.css"/>
    </cssInfo>
 
 </product>

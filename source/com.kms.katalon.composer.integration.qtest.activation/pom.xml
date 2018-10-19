@@ -8,7 +8,6 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>com.kms.katalon.console.feature</artifactId>
-	<packaging>eclipse-feature</packaging>
-
+	<artifactId>com.kms.katalon.composer.integration.qtest.activation</artifactId>
+	<packaging>eclipse-plugin</packaging>
 </project> 
