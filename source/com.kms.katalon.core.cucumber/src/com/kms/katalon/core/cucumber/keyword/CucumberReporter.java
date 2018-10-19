@@ -14,6 +14,7 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import cucumber.api.PickleStepTestStep;
 import cucumber.api.Result;
 import cucumber.api.Result.Type;
+import cucumber.api.TestCase;
 import cucumber.api.event.EventHandler;
 import cucumber.api.event.EventPublisher;
 import cucumber.api.event.TestCaseFinished;
@@ -38,14 +39,17 @@ public class CucumberReporter implements Formatter {
 
             @Override
             public void receive(TestCaseStarted event) {
-                logger.startTest(event.testCase.getName(), new HashMap<String, String>(), new Stack<KeywordLogger.KeywordStackElement>());
+                TestCase testCase = event.testCase;
+                String name = getTestCaseName(testCase);
+                logger.startTest(name, new HashMap<String, String>(), new Stack<KeywordLogger.KeywordStackElement>());
             }
         });
         eventPublisher.registerHandlerFor(TestCaseFinished.class, new EventHandler<TestCaseFinished>() {
 
             @Override
             public void receive(TestCaseFinished event) {
-                String name = event.testCase.getName();
+                TestCase testCase = event.testCase;
+                String name = getTestCaseName(testCase);
                 Result result = event.result;
                 logResult(name, result);
                 logger.endTest(name, new HashMap<String, String>());
@@ -129,5 +133,10 @@ public class CucumberReporter implements Formatter {
     
     private void logError(Throwable t, String message) {
         logger.logMessage(ErrorCollector.fromError(t), message, t);
+    }
+
+    private String getTestCaseName(TestCase testCase) {
+        String name = "SCENARIO " + testCase.getName();
+        return name;
     }
 }
