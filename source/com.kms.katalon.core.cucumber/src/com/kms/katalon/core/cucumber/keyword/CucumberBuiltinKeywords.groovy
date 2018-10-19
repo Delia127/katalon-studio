@@ -57,16 +57,17 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 "",
                 projectDir + "/" + relativeFilePath,
                 "--strict",
-                "--plugin",
-                "pretty",
+//                "--plugin",
+//                "pretty",
                 "--plugin",
                 "html:" + reportDir + "/html",
                 "--plugin",
                 "json:" + reportDir + "/cucumber.json",
                 "--plugin",
-                "junit:"+ reportDir + "/cucumber.xml"
+                "junit:"+ reportDir + "/cucumber.xml",
+                "--plugin",
+                CucumberReporter.class.getName()
             ]
-
             boolean runSuccess = Main.run(argv, CucumberBuiltinKeywords.class.getClassLoader()) == 0;
             CucumberRunnerResultImpl cucumberResult = new CucumberRunnerResultImpl(
                 runSuccess ? 'passed' : 'failed', reportDir)

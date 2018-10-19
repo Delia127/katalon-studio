@@ -41,7 +41,7 @@ public class KeywordLogger {
         return getInstance(clazz.getName());
     }
 
-    public static KeywordLogger getInstance(String name) {
+    private static KeywordLogger getInstance(String name) {
         KeywordLogger keywordLogger = keywordLoggerLookup.get(name);
         if (keywordLogger == null) {
             String testCaseName = ScriptEngine.getTestCaseName(name);
@@ -145,10 +145,10 @@ public class KeywordLogger {
     private void logStartKeyword(String name, Map<String, String> attributes) {
         String stepIndex = null;
         if (attributes != null) {
-            stepIndex = attributes.get("stepIndex");
+            stepIndex = attributes.get(StringConstants.XML_LOG_STEP_INDEX);
         }
         if (stepIndex == null) {
-            logger.debug("{}", name);
+            logger.debug("STEP {}", name);
         } else {
             logger.debug("{}: {}", stepIndex, name);
         }
@@ -272,8 +272,10 @@ public class KeywordLogger {
     private void log(LogLevel level, String message) {
         switch (level) {
             case WARNING:
-            case NOT_RUN:
                 logger.warn(message);
+                break;
+            case NOT_RUN:
+                logger.warn("SKIP {}", message);
                 break;
             case FAILED:
             case ERROR:

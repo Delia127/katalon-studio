@@ -11,6 +11,7 @@
   <logger name="com.kms.katalon.core.util.KeywordUtil" level="trace" />
   <logger name="testcase" level="debug" />
   <logger name="CustomKeywords" level="debug" />
+  <logger name="com.kms.katalon.core.cucumber.keyword.CucumberReporter" level="debug" />
   <root level="error">
     <appender-ref ref="STDOUT" />
   </root>
