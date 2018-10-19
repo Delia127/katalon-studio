@@ -24,21 +24,20 @@ node {
    }
 */    stage('Package') {
 	script {
-	//Retrieves version number from source    
-	env.WORKSPACE = pwd()
-	def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
-	def versionNumber = (versionContent =~ /([0-9]+)[\.,]?([0-9]+)[\.,]?([0-9])/)
-	env.version = versionNumber[0][0]
-	println env.version
+		//Retrieves version number from source    
+		env.WORKSPACE = pwd()
+		def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
+		def versionNumber = (versionContent =~ /([0-9]+)[\.,]?([0-9]+)[\.,]?([0-9])/)
+		String version = versionNumber[0][0]
 	}
-	    
+	   
         sh '''
-            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID} ${env.version}
+            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID} ${version}
         '''
 
         if (env.BRANCH_NAME == 'release') {
                 sh '''
-                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID} ${env.version}
+                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID} ${version}
                 '''
         }
     }
