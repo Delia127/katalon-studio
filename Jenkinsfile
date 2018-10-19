@@ -3,7 +3,7 @@ node {
 	// Start neccessary services to download required dependencies
  //       build job: 'StartServices'
     }
-/*    stage('Check out') {
+    stage('Check out') {
 	    retry(3){
         	checkout scm
 	    }
@@ -22,7 +22,7 @@ node {
 	        '''
     	}       
    }
-*/    stage('Package') {
+    stage('Package') {
 	script {
 		//Retrieves version number from source    
 		env.WORKSPACE = pwd()
