@@ -114,6 +114,12 @@ public class TestCaseExecutor {
 
     private void onExecutionError(Throwable t) {
         if (!keywordStack.isEmpty()) {
+            String stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(t);
+            String message = MessageFormat.format(
+                    StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, 
+                    keywordStack.firstElement().getKeywordName(),
+                    stackTraceForThrowable);
+            logError(t, message);
             endAllUnfinishedKeywords(keywordStack);
         }
         testCaseResult.getTestStatus().setStatusValue(getResultByError(t));

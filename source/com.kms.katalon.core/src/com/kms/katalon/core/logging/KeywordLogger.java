@@ -21,9 +21,9 @@ public class KeywordLogger {
     
     private static final String TEST_SUITE_HR = String.join("", Collections.nCopies(HR_LENGTH, "="));
 
-    private static final String PASSED = "\u2713";
+    private static final String PASSED = "\u2713"; // check
     
-    private static final String FAILED = "\u274C";
+    private static final String FAILED = "\u274C"; // X
     
     private static final Logger selfLogger = LoggerFactory.getLogger(KeywordLogger.class);
     
@@ -254,7 +254,7 @@ public class KeywordLogger {
 
 
     public void logError(String message, Map<String, String> attributes) {
-        logger.error(message);
+        logger.error("{} {}", FAILED, message);
         xmlKeywordLogger.logError(message, attributes);
     }
 
@@ -279,7 +279,7 @@ public class KeywordLogger {
             case ERROR:
             case ABORTED:
             case INCOMPLETE:
-                logger.error(message);
+                logger.error("{} {}", FAILED, message);
                 break;
             default:
                 logger.info(message);

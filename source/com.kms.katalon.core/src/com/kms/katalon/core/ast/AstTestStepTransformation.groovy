@@ -79,7 +79,7 @@ public class AstTestStepTransformation implements ASTTransformation {
             }
         }
     }
-    
+
     @CompileStatic
     private static boolean isRealMethod(MethodNode method) {
         return (method.getLineNumber() >= 0 || RUN_METHOD_NAME.equals(method.getName())) && method.getCode() instanceof BlockStatement;
@@ -168,7 +168,7 @@ public class AstTestStepTransformation implements ASTTransformation {
             deferedStatements.push(
                     new ExpressionStatement(
                         createNewStartKeywordMethodCall(
-                            "else", 
+                            "else",
                             ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
             if (!(ifStatement.getElseBlock() instanceof BlockStatement)) {
                 BlockStatement elseBlock = new BlockStatement();
@@ -262,7 +262,7 @@ public class AstTestStepTransformation implements ASTTransformation {
                     blockStatement.getStatements().add(index, new ExpressionStatement(createNewAddDescriptionMethodCall(commentContent)));
                     index += (popCommentStatements(commentStatementsStack, blockStatement, index, indexMap, nestedLevel) + 1);
                 }
-                
+
                 def keywordInfo = [index, description, keywordName]
                 List<Statement> tempStatementList = new ArrayList<>();
                 tempStatementList.add(createBeforeTestStepMethodCall(keywordInfo))
@@ -280,7 +280,7 @@ public class AstTestStepTransformation implements ASTTransformation {
             index++;
         }
     }
-    
+
     @CompileStatic
     private static boolean isStatementDisabled(Statement statement) {
         return StringUtils.startsWith(statement.getStatementLabel(), StringConstants.NOT_RUN_LABEL);
@@ -292,7 +292,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         while (commentStatementsStack != null && !commentStatementsStack.isEmpty()) {
             Statement commentStatement = commentStatementsStack.pop();
             blockStatement.getStatements().add(
-                index, 
+                index,
                 new ExpressionStatement(
                 createNewStartKeywordMethodCall(
                     AstTextValueUtil.getInstance().getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
@@ -373,7 +373,7 @@ public class AstTestStepTransformation implements ASTTransformation {
                 new ArgumentListExpression(loggerExpressionArguments));
         return loggerGetInstanceMethodCall;
     }
-    
+
     private ExpressionStatement createBeforeTestStepMethodCall(def keywordInfo) {
         List<Expression> expressionArguments = new ArrayList<Expression>();
         MethodCallExpression executionManagerMethodCall = new MethodCallExpression(
@@ -408,7 +408,7 @@ public class AstTestStepTransformation implements ASTTransformation {
                 new ClassExpression(new ClassNode(ExecutionListenerEvent.class)),
                 new ConstantExpression("AFTER_TEST_STEP")))
         List<Expression> injectedArguments = new ArrayList()
-        
+
         for (info in keywordInfo) {
             injectedArguments.add(new ConstantExpression(info))
         }
