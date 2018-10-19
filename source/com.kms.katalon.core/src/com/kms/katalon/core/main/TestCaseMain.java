@@ -17,8 +17,6 @@ import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.context.internal.InternalTestSuiteContext;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseBinding;
-import com.kms.katalon.core.util.BrowserMobProxyManager;
-
 import groovy.lang.GroovyClassLoader;
 
 public class TestCaseMain {

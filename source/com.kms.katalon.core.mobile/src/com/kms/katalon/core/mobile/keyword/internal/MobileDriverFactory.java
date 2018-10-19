@@ -26,7 +26,6 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.driver.ExistingDriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.main.TestCaseExecutor;
 import com.kms.katalon.core.mobile.constants.CoreMobileMessageConstants;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;

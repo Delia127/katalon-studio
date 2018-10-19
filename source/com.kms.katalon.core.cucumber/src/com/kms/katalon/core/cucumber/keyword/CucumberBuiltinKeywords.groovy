@@ -49,7 +49,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             String reportDir = RunConfiguration.getReportFolder() + "/cucumber_report/" + System.currentTimeMillis()
             String projectDir = RunConfiguration.getProjectDir()
 
-            CucumberBuiltinKeywords.logger.logInfo(
+            logger.logInfo(
                 MessageFormat.format("Starting run keyword runFeatureFile: ''{0}'' and extract report to folder: ''{1}''...",
                     relativeFilePath, reportDir))
             String[] argv = [
@@ -71,7 +71,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             CucumberRunnerResultImpl cucumberResult = new CucumberRunnerResultImpl(
                 runSuccess ? 'passed' : 'failed', reportDir)
             if (runSuccess) {
-                CucumberBuiltinKeywords.logger.logPassed(MessageFormat.format("Feature file: ''{0}'' was passed", relativeFilePath));
+                logger.logPassed(MessageFormat.format("Feature file: ''{0}'' was passed", relativeFilePath));
             } else {
                 KeywordMain.stepFailed(MessageFormat.format("Feature file ''{0}'' was failed", relativeFilePath), flowControl)
             }
@@ -117,7 +117,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             }
             String reportDir = RunConfiguration.getReportFolder() + "/cucumber_report/" + System.currentTimeMillis()
             String projectDir = RunConfiguration.getProjectDir();
-            CucumberBuiltinKeywords.logger.logInfo(
+            logger.logInfo(
                 MessageFormat.format("Starting run keyword runFeatureFolder: ''{0}'' and extract report to folder: ''{1}''...",
                     folderRelativePath, reportDir))
             String[] argv = [
@@ -139,7 +139,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             CucumberRunnerResultImpl cucumberResult = new CucumberRunnerResultImpl(
                 runSuccess ? 'passed' : 'failed', reportDir)
             if (runSuccess) {
-                CucumberBuiltinKeywords.logger.logPassed(MessageFormat.format("All feature files in ''{0}'' were passed", folderRelativePath));
+                logger.logPassed(MessageFormat.format("All feature files in ''{0}'' were passed", folderRelativePath));
             } else {
                 KeywordMain.stepFailed(MessageFormat.format("Run feature folder ''{0}'' failed", folderRelativePath));
             }
@@ -252,7 +252,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             CucumberRunnerResultImpl cucumberResult = new CucumberRunnerResultImpl(
                 runSuccess ? 'passed' : 'failed', '', result)
             if (runSuccess) {
-                CucumberBuiltinKeywords.logger.logPassed(MessageFormat.format("Run with ''{0}'' was passed", cucumberRunnerClass.getName()));
+                logger.logPassed(MessageFormat.format("Run with ''{0}'' was passed", cucumberRunnerClass.getName()));
             } else {
                 List failuresDescriptions = []
                 for (Failure failure : result.getFailures()) {

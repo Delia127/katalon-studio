@@ -81,9 +81,9 @@ public class RemoveObjectPropertyKeyword extends WebUIAbstractKeyword {
             }
             TestObjectProperty property = testObject.findProperty(propertyName)
             if (property == null) {
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NOT_FOUND_PROP_DO_NOTHING, propertyName, testObject.getObjectId(), propertyName))
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_NOT_FOUND_PROP_DO_NOTHING, propertyName, testObject.getObjectId(), propertyName))
             } else {
-                logger.logInfo(MessageFormat.format(StringConstants.KW_MSG_REMOVE_OBJ_PROP_X_OF_OBJ_Y, [testObject.getObjectId(), propertyName] as Object[]))
+                logger.logDebug(MessageFormat.format(StringConstants.KW_MSG_REMOVE_OBJ_PROP_X_OF_OBJ_Y, [testObject.getObjectId(), propertyName] as Object[]))
                 testObject.getProperties().remove(property)
             }
             logger.logPassed(StringConstants.KW_MSG_REMOVE_OBJ_PROP_SUCESSFULLY)

@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.wsdl.Binding;
@@ -38,7 +36,6 @@ import org.apache.http.HttpHeaders;
 import org.javalite.http.Http;
 import org.javalite.http.Post;
 import org.javalite.http.Request;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;

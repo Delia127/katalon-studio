@@ -79,7 +79,7 @@ public class DragAndDropByOffsetKeyword extends WebUIAbstractKeyword {
                 if (sourceObject == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_SRC_OBJ_IS_NULL)
                 }
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_START_DRAGGING_OBJ_BY_OFFSET_DISTANCE_X_Y, sourceObject.getObjectId(), xOffset, yOffset))
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_START_DRAGGING_OBJ_BY_OFFSET_DISTANCE_X_Y, sourceObject.getObjectId(), xOffset, yOffset))
                 isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(sourceObject)
                 (new Actions(DriverFactory.getWebDriver())).dragAndDropBy(WebUIAbstractKeyword.findWebElement(sourceObject), xOffset, yOffset)
                         .perform()

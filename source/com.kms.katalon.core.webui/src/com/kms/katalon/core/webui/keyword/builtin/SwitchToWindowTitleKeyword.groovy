@@ -74,7 +74,7 @@ public class SwitchToWindowTitleKeyword extends WebUIAbstractKeyword {
             if (title == null) {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_TITLE_IS_NULL)
             }
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_WINDOW_W_TITLE_X, title))
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_WINDOW_W_TITLE_X, title))
             boolean switched = WebUiCommonHelper.switchToWindowUsingTitle(DriverFactory.getWebDriver(), title, RunConfiguration.getTimeOut())
             if (switched) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SWITCHED_TO_WINDOW_W_TITLE_X, title))

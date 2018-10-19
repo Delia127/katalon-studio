@@ -54,10 +54,6 @@ public class SendRequestKeyword extends WebserviceAbstractKeyword {
                 } finally {
                     RequestInformation requestInformation = new RequestInformation();
                     requestInformation.setTestObjectId(request.getObjectId());
-                    TestCase currentTestCase = TestCaseExecutor.getCurrentTestCase()
-                    if (currentTestCase != null) {
-                        requestInformation.setTestCaseId(currentTestCase.getTestCaseId());
-                    }
                     BrowserMobProxyManager.endHar(requestInformation);
                 }
                 logger.logPassed(StringConstants.KW_LOG_PASSED_SEND_REQUEST_SUCCESS)

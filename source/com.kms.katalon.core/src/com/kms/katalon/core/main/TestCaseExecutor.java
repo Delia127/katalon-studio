@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
@@ -77,8 +75,6 @@ public class TestCaseExecutor {
     private InternalTestCaseContext testCaseContext;
 
     private TestSuiteExecutor testSuiteExecutor;
-    
-    private static TestCase currentTestCase;
 
     public void setTestSuiteExecutor(TestSuiteExecutor testSuiteExecutor) {
         this.testSuiteExecutor = testSuiteExecutor;
@@ -89,7 +85,6 @@ public class TestCaseExecutor {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
         this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
-        this.currentTestCase = this.testCase;
         this.doCleanUp = doCleanUp;
         this.eventManager = eventManager;
 
@@ -421,7 +416,7 @@ public class TestCaseExecutor {
             return;
         }
 
-        logger.logInfo(methodNodeWrapper.getStartMessage());
+        logger.logDebug(methodNodeWrapper.getStartMessage());
         int count = 1;
         for (MethodNode method : methodList) {
             runMethod(method.getName(), methodNodeWrapper.getActionType(), count++,
@@ -475,9 +470,5 @@ public class TestCaseExecutor {
     
     public TestCase getTestCase() {
         return testCase;
-    }
-    
-    public static TestCase getCurrentTestCase() {
-        return currentTestCase;
     }
 }

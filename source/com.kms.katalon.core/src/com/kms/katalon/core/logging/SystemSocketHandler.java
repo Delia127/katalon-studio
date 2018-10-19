@@ -13,15 +13,4 @@ public class SystemSocketHandler extends SocketHandler {
     protected void reportError(String arg0, Exception arg1, int arg2) {
         // Ignore for socket error
     }
-
-    @Override
-    public boolean isLoggable(LogRecord record) {
-        if (record instanceof XmlLogRecord) {
-            XmlLogRecord xmlLogRecord = (XmlLogRecord) record;
-            if (xmlLogRecord.isIgnoreSocketHandler()) {
-                return false;
-            }
-        }
-        return super.isLoggable(record);
-    }
 }

@@ -78,7 +78,7 @@ public class SetAlertTextKeyword extends WebUIAbstractKeyword {
             Alert alert = DriverFactory.getAlert()
             if (alert != null) {
                 String readableText = SeleniumKeysUtil.getReadableText(text)
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_ALERT_TXT, readableText))
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_ALERT_TXT, readableText))
                 alert.sendKeys(text)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_ALERT_TXT_SUCCESSFULLY, readableText))
             } else {

@@ -8,7 +8,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -392,16 +391,24 @@ class XmlKeywordLogger {
         }
         if (logger != null) {
             XmlLogRecord xmlLogRecord = new XmlLogRecord(level.getLevel(), message, nestedLevel, attributes);
-            if (keywordLogger != null) {
-                if (LogLevel.INFO.equals(originalLevel) && !keywordLogger.isInfoEnabled()) {
-                    xmlLogRecord.setIgnoreSocketHandler(true);
-                } else if (LogLevel.DEBUG.equals(originalLevel) && !keywordLogger.isDebugEnabled()) {
-                    xmlLogRecord.setIgnoreSocketHandler(true);
-                }
+            if (shouldLog(keywordLogger, originalLevel)) {
+                logger.log(xmlLogRecord);
             }
-            logger.log(xmlLogRecord);
         }
 
+    }
+    
+    private boolean shouldLog(KeywordLogger keywordLogger, LogLevel originalLevel) {
+        if (keywordLogger == null) {
+            return true;
+        }
+        if (LogLevel.INFO.equals(originalLevel) && !keywordLogger.isInfoEnabled()) {
+            return false;
+        }
+        if (LogLevel.DEBUG.equals(originalLevel) && !keywordLogger.isDebugEnabled()) {
+            return false;
+        }
+        return true;
     }
 
     /* (non-Javadoc)

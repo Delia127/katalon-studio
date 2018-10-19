@@ -30,8 +30,6 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCase
 import com.kms.katalon.core.testcase.TestCaseBinding
 
-import java.text.MessageFormat
-
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.testdata.TestData
 
@@ -60,7 +58,7 @@ public class VerifyCheckpointKeyword extends AbstractKeyword {
             if (checkpoint == null) {
                 throw new IllegalArgumentException(StringConstants.KW_MSG_CHECKPOINT_IS_NULL)
             }
-            logger.logInfo(MessageFormat.format(StringConstants.KW_MSG_CHECKPOINT_ID_X, checkpoint.getId()))
+            logger.logDebug(MessageFormat.format(StringConstants.KW_MSG_CHECKPOINT_ID_X, checkpoint.getId()))
             if (checkpoint.getTakenDate() == null) {
                 throw new StepFailedException(StringConstants.KW_MSG_NO_SNAPSHOT)
             }

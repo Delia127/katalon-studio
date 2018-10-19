@@ -21,7 +21,6 @@ public class XmlLogRecord extends LogRecord implements Serializable {
     private String endTime;
     private List<XmlLogRecordException> exceptions;
     private Map<String, String> properties;
-    private boolean ignoreSocketHandler;
 
     public XmlLogRecord(Level level, String message) {
         super(level, message);
@@ -114,13 +113,5 @@ public class XmlLogRecord extends LogRecord implements Serializable {
         } catch (NumberFormatException e) {
             return -1;
         }
-    }
-    
-    public boolean isIgnoreSocketHandler() {
-        return ignoreSocketHandler;
-    }
-    
-    public void setIgnoreSocketHandler(boolean ignoreSocketHandler) {
-        this.ignoreSocketHandler = ignoreSocketHandler;
     }
 }

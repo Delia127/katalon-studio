@@ -24,13 +24,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.dialogs.IDEResourceInfoUtils;
-import org.greenrobot.eventbus.EventBus;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.handlers.CloseHandler;

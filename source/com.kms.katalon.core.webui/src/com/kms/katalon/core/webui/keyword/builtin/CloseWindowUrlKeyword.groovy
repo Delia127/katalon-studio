@@ -74,7 +74,7 @@ public class CloseWindowUrlKeyword extends WebUIAbstractKeyword {
             if (url == null) {
                 throw new IllegalArgumentException(StringConstants.KW_EXC_URL_IS_NULL)
             }
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CLOSING_WINDOW_W_URL_X, url))
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLOSING_WINDOW_W_URL_X, url))
             boolean switched = WebUiCommonHelper.closeWindowUsingUrl(DriverFactory.getWebDriver(), url)
             if (switched) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CLOSED_WINDOW_W_URL_X, url))

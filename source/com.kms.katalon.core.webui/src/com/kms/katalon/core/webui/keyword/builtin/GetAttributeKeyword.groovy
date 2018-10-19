@@ -81,7 +81,7 @@ public class GetAttributeKeyword extends WebUIAbstractKeyword {
                 }
                 isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to)
                 WebElement element = WebUIAbstractKeyword.findWebElement(to)
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_GETTING_OBJ_ATTR, [attribute, to.getObjectId()] as Object[]))
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_GETTING_OBJ_ATTR, [attribute, to.getObjectId()] as Object[]))
                 attrValue = element.getAttribute(attribute)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_ATTR_IS, [attribute, to.getObjectId(), attrValue] as Object[]))
                 return attrValue

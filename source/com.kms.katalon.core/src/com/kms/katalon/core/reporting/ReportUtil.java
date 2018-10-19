@@ -28,9 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.GsonBuilder;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.TestSuiteXMLLogParser;
 import com.kms.katalon.core.logging.XMLLoggerParser;

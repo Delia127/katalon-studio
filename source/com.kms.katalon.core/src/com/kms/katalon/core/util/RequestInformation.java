@@ -6,8 +6,6 @@ public class RequestInformation {
     
     private String testObjectId;
     
-    private String testCaseId;
-    
     public String getId() {
         return id;
     }
@@ -22,13 +20,5 @@ public class RequestInformation {
     
     public void setTestObjectId(String testObjectId) {
         this.testObjectId = testObjectId;
-    }
-    
-    public String getTestCaseId() {
-        return testCaseId;
-    }
-    
-    public void setTestCaseId(String testCaseId) {
-        this.testCaseId = testCaseId;
     }
 }

@@ -85,7 +85,7 @@ public class ModifyObjectPropertyKeyword extends WebUIAbstractKeyword {
             }
             TestObjectProperty property = testObject.findProperty(propertyName)
             if (property == null) {
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_NOT_FOUND_PROP_CREATING_NEW_PROP, propertyName, testObject.getObjectId(), propertyName))
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_NOT_FOUND_PROP_CREATING_NEW_PROP, propertyName, testObject.getObjectId(), propertyName))
                 property = new TestObjectProperty(propertyName, ConditionType.EQUALS, null, false)
                 testObject.addProperty(property)
             }
@@ -113,7 +113,7 @@ public class ModifyObjectPropertyKeyword extends WebUIAbstractKeyword {
                         conditionList.append("'")
                         isFirst = false
                     }
-                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_INVALID_MATCH_COND, conditionList.toString()))
+                    logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_INVALID_MATCH_COND, conditionList.toString()))
                 } else {
                     property.setCondition(conditionType)
                 }

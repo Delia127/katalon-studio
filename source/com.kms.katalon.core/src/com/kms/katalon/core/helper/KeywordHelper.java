@@ -28,14 +28,14 @@ public class KeywordHelper {
 	
 
 	public static void checkTestObjectParameter(TestObject testObject) throws IllegalArgumentException {
-		logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_OBJ);
+	    logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_OBJ);
 		if (testObject == null) {
 			throw new IllegalArgumentException(StringConstants.COMM_EXC_OBJ_IS_NULL);
 		}
 	}
 
 	public static int checkTimeout(int timeout) throws IllegalArgumentException {
-		logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_TIMEOUT);
+	    logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_TIMEOUT);
 		if (timeout <= 0) {
 			int defaultPageLoadTimeout = RunConfiguration.getTimeOut();
 			logger.logWarning(
@@ -81,7 +81,7 @@ public class KeywordHelper {
 	}
 
 	public static Integer[] indexRangeToArray(String range) {
-		logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY, range));
+	    logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY, range));
 		List<Integer> ints = new ArrayList<Integer>();
 		try {
 			if (range.indexOf("-") != -1) {

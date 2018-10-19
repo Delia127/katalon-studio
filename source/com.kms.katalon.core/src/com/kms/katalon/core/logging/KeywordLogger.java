@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -43,26 +42,18 @@ public class KeywordLogger {
     }
 
     public static KeywordLogger getInstance(String name) {
-        String testCaseName = ScriptEngine.getTestCaseName(name);
-        if (testCaseName == null) {
-            return getOrCreateInstance(name);
-        } else {
-            return getInstanceByTestCaseName(testCaseName);
-        }
-    }
-
-    private static KeywordLogger getOrCreateInstance(String name) {
         KeywordLogger keywordLogger = keywordLoggerLookup.get(name);
         if (keywordLogger == null) {
-            keywordLogger = new KeywordLogger(name);
+            String testCaseName = ScriptEngine.getTestCaseName(name);
+            if (testCaseName == null) {
+                keywordLogger = new KeywordLogger(name);
+            } else {
+                String fullTestCaseName = "testcase." + testCaseName;
+                keywordLogger = new KeywordLogger(fullTestCaseName);
+            }
             keywordLoggerLookup.put(name, keywordLogger);
         }
         return keywordLogger;
-    }
-    
-    public static KeywordLogger getInstanceByTestCaseName(String name) {
-        name = "testcase." + name;
-        return getOrCreateInstance(name);
     }
 
     private KeywordLogger(String className) {
@@ -159,7 +150,7 @@ public class KeywordLogger {
         if (stepIndex == null) {
             logger.debug("{}", name);
         } else {
-            logger.debug("{} - {}", stepIndex, name);
+            logger.debug("{}: {}", stepIndex, name);
         }
     }
 

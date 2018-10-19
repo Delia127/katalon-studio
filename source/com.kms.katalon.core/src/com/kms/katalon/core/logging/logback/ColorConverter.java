@@ -4,8 +4,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import static ch.qos.logback.core.pattern.color.ANSIConstants.*;
 
-import java.util.Arrays;
-
 import ch.qos.logback.core.pattern.CompositeConverter;
 
 /**

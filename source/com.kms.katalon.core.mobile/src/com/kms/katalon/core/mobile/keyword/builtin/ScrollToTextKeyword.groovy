@@ -92,7 +92,7 @@ public class ScrollToTextKeyword extends MobileAbstractKeyword {
                     List<MobileElement> elements = ((IOSDriver) driver).findElements(MobileBy
                         .xpath("//*[contains(@label, '" + text + "') or contains(@text, '" + text + "')]"));
                     if (elements != null && !elements.isEmpty()) {
-                        logger.logInfo(MessageFormat.format(CoreMobileMessageConstants.KW_LOG_TEXT_FOUND_IN_ELEMENTS, text, elements.size()))
+                        logger.logDebug(MessageFormat.format(CoreMobileMessageConstants.KW_LOG_TEXT_FOUND_IN_ELEMENTS, text, elements.size()))
                         element = elements.get(0)
                         TouchAction action = new TouchAction(driver).press(0, 0).moveTo(element).release()
                         action.perform()

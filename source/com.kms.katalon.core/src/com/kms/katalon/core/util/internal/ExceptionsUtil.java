@@ -1,19 +1,14 @@
 package com.kms.katalon.core.util.internal;
 
 import java.util.Arrays;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.codehaus.groovy.runtime.StackTraceUtils;
 
 import com.google.common.base.Throwables;
-import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.main.ScriptEngine;
 
-import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import groovy.lang.MissingPropertyException;
 
 public class ExceptionsUtil {

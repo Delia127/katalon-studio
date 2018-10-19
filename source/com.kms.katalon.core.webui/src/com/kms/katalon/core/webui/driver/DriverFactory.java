@@ -211,8 +211,7 @@ public class DriverFactory {
             closeWebDriver();
         }
 
-        logger
-                .logInfo(MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
+        logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
 
         Map<String, Object> driverPreferenceProps = RunConfiguration
                 .getDriverPreferencesProperties(WEB_UI_DRIVER_PROPERTY);
@@ -305,8 +304,7 @@ public class DriverFactory {
         if (remoteWebServerType == null) {
             remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
         }
-        logger
-                .logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
+        logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
                         remoteWebServerUrl, remoteWebServerType));
         if (!remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
             return new CRemoteWebDriver(new URL(remoteWebServerUrl), desireCapibilities, getActionDelay());
@@ -824,8 +822,7 @@ public class DriverFactory {
             if (executionGeneralProperties.containsKey(ACTION_DELAY)) {
                 actionDelay = RunConfiguration.getIntProperty(ACTION_DELAY, executionGeneralProperties);
             }
-            logger
-                    .logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
+            logger.logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
         }
         return actionDelay;
     }

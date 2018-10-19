@@ -22,7 +22,6 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
-import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;

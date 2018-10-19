@@ -29,7 +29,6 @@ import com.kms.katalon.core.constants.CoreMessageConstants;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
-import com.kms.katalon.core.main.TestCaseExecutor;
 import com.kms.katalon.core.main.TestCaseMain;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.PrimitiesUtil;
@@ -128,10 +127,10 @@ public class TestHooker {
 
             String methodDisplayName = scriptClazz.getName() + "." + methodName + "(...)";
             logger.startListenerKeyword(methodName, null, keywordStack);
-            logger.logInfo(MessageFormat.format(CoreMessageConstants.EXEC_LOG_STARTING_INVOKE_LISTENER_METHOD,
+            logger.logDebug(MessageFormat.format(CoreMessageConstants.EXEC_LOG_STARTING_INVOKE_LISTENER_METHOD,
                     listenerAnnotationName, methodDisplayName));
             testContextClassInstance.invokeMethod(methodName, getValueForParemeters(method, injectedObjects));
-            logger.logInfo(MessageFormat.format(CoreMessageConstants.EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED,
+            logger.logDebug(MessageFormat.format(CoreMessageConstants.EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED,
                     listenerAnnotationName, methodDisplayName));
         } catch (Throwable e) {
             logger.logError(ExceptionsUtil.getMessageForThrowable(e));

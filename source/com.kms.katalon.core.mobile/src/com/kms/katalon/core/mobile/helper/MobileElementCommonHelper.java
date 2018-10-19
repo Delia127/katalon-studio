@@ -96,8 +96,7 @@ public class MobileElementCommonHelper {
                 ? longPressAction.longPress(element, Duration.ofSeconds(gitIntValueForDuration(duration)))
                 : longPressAction.longPress(element);
         longPressAction.release().perform();
-        logger
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y,
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y,
                         to.getObjectId(), getStringForDuration(duration)));
     }
 
@@ -124,8 +123,7 @@ public class MobileElementCommonHelper {
                         Duration.ofSeconds(gitIntValueForDuration(duration)))
                 : longPressAction.longPress(x.intValue(), y.intValue());
         longPressAction.release().perform();
-        logger
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z, x, y,
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z, x, y,
                         getStringForDuration(duration)));
     }
 
@@ -153,8 +151,7 @@ public class MobileElementCommonHelper {
             TouchAction tap = new TouchAction(MobileDriverFactory.getDriver()).tap(element, 1, 1);
             tap.perform();
         }
-        logger
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CHECK_ELEMENT, to.getObjectId()));
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CHECK_ELEMENT, to.getObjectId()));
     }
 
     public static boolean isElementChecked(WebElement element) {
@@ -175,8 +172,7 @@ public class MobileElementCommonHelper {
             TouchAction tap = new TouchAction(MobileDriverFactory.getDriver()).tap(element, 1, 1);
             tap.perform();
         }
-        logger
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
     }
 
     public static void selectItemByIndex(TestObject to, int index, int timeout, FailureHandling flowControl)
@@ -337,8 +333,7 @@ public class MobileElementCommonHelper {
     public static int getElementWidth(TestObject to, int timeout) throws Exception {
         WebElement element = findElementWithCheck(to, timeout);
         int width = element.getSize().getWidth();
-        logger
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_WIDTH, to.getObjectId(), width));
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_WIDTH, to.getObjectId(), width));
         return width;
     }
 

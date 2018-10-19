@@ -82,7 +82,7 @@ public class DragAndDropToObjectKeyword extends WebUIAbstractKeyword {
                 if (destinationObject == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_DEST_OBJ_IS_NULL)
                 }
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_START_DRAGGING_OBJ_W_ID_X_TO_OBJ_W_ID_Y, sourceObject.getObjectId(), destinationObject))
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_START_DRAGGING_OBJ_W_ID_X_TO_OBJ_W_ID_Y, sourceObject.getObjectId(), destinationObject))
 
                 Actions builder = new Actions(DriverFactory.getWebDriver())
                 isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(sourceObject)

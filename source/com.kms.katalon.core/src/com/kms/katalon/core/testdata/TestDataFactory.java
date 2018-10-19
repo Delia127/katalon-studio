@@ -20,7 +20,6 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.main.TestCaseExecutor;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.ExcelFactory;
 import com.kms.katalon.core.util.internal.Base64;
@@ -127,7 +126,7 @@ public class TestDataFactory {
     }
 
     private static TestData internallyfindTestData(String projectDir, String testDataId) throws Exception {
-        logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_FINDING_TEST_DATA_WITH_ID_X, testDataId));
+        logger.logDebug(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_FINDING_TEST_DATA_WITH_ID_X, testDataId));
         File dataFile = new File(projectDir, testDataId + TEST_DATA_FILE_EXTENSION);
         if (dataFile.exists()) {
             SAXReader reader = new SAXReader();
@@ -186,7 +185,7 @@ public class TestDataFactory {
         if (isRelativePath) {
             sourceUrl = PathUtil.relativeToAbsolutePath(sourceUrl, projectDir);
         }
-        logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y,
+        logger.logDebug(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y,
                 sourceUrl, sheetName));
         return ExcelFactory.getExcelDataWithDefaultSheet(sourceUrl, sheetName, hasHeaders);
     }
@@ -243,7 +242,7 @@ public class TestDataFactory {
             sourceUrl = PathUtil.relativeToAbsolutePath(sourceUrl, projectDir);
         }
 
-        logger.logInfo(MessageFormat.format(
+        logger.logDebug(MessageFormat.format(
                 StringConstants.XML_LOG_TEST_DATA_READING_CSV_DATA_WITH_SOURCE_X_SEPERATOR_Y_AND_Z,
                 seperator.toString(), containsHeader ? "containing header" : "not containing header"));
         return new CSVData(sourceUrl, containsHeader, seperator);
@@ -292,7 +291,7 @@ public class TestDataFactory {
     }
 
     private static TestData readDBData(DatabaseConnection dbConnection, String query) throws SQLException {
-        logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA_WITH_QUERY_X, query));
+        logger.logDebug(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA_WITH_QUERY_X, query));
         return new DBData(dbConnection, query);
     }
 
