@@ -128,7 +128,7 @@ public class KeywordLogger {
             Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
         
-        logger.debug("{} {}", StringConstants.LOG_LISTENER_ACTION, name);
+        logStartKeyword(name, attributes);
         xmlKeywordLogger.startListenerKeyword(name, attributes, keywordStack);
     }
 
@@ -143,15 +143,20 @@ public class KeywordLogger {
     }
 
     private void logStartKeyword(String name, Map<String, String> attributes) {
-        String stepIndex = null;
-        if (attributes != null) {
-            stepIndex = attributes.get(StringConstants.XML_LOG_STEP_INDEX);
-        }
+        String stepIndex = getStepIndex(attributes);
         if (stepIndex == null) {
             logger.debug("STEP {}", name);
         } else {
             logger.debug("{}: {}", stepIndex, name);
         }
+    }
+
+    private String getStepIndex(Map<String, String> attributes) {
+        String stepIndex = null;
+        if (attributes != null) {
+            stepIndex = attributes.get(StringConstants.XML_LOG_STEP_INDEX);
+        }
+        return stepIndex;
     }
 
 
@@ -168,8 +173,17 @@ public class KeywordLogger {
 
 
     public void endKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-        logger.trace("END {}", name);
+        logEndKeyword(name, attributes);
         xmlKeywordLogger.endKeyword(name, attributes, nestedLevel);
+    }
+
+    private void logEndKeyword(String name, Map<String, String> attributes) {
+        String stepIndex = getStepIndex(attributes);
+        if (stepIndex == null) {
+            logger.trace("END {}: {}", stepIndex, name);
+        } else {
+            logger.trace("END STEP {}", name);
+        }
     }
 
 
@@ -177,7 +191,7 @@ public class KeywordLogger {
             String name, 
             Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        logger.trace("END {}", name);
+        logEndKeyword(name, attributes);
         xmlKeywordLogger.endListenerKeyword(name, attributes, keywordStack);
     }
 
@@ -187,13 +201,13 @@ public class KeywordLogger {
             String keywordType, 
             Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        logger.trace("END {}", name);
+        logEndKeyword(name, attributes);
         xmlKeywordLogger.endKeyword(name, keywordType, attributes, keywordStack);
     }
 
 
     public void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        logger.trace("END {}", name);
+        logEndKeyword(name, attributes);
         xmlKeywordLogger.endKeyword(name, attributes, keywordStack);
     }
 
