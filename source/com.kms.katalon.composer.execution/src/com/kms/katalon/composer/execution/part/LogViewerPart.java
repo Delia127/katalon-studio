@@ -32,6 +32,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -700,6 +701,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
         txtMessage.addListener(SWT.MouseDown, mouseDownListener);
+        txtMessage.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
         setWrapTxtMessage();
     }
 
