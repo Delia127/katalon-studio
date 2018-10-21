@@ -46,6 +46,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
@@ -61,6 +63,7 @@ import com.kms.katalon.composer.project.sample.SampleProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
@@ -69,7 +72,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 
-public class WelcomeRightPart extends Composite {
+public class WelcomeRightPart extends Composite implements EventHandler {
 
 //    private static final Color BACKGROUND_COLOR = ColorUtil.getCompositeBackgroundColor();
     private static final Color BACKGROUND_COLOR = ColorUtil.getColor("#FAFAFA");
@@ -182,6 +185,8 @@ public class WelcomeRightPart extends Composite {
         stackLayout = new StackLayout();
         createControls();
         postConstruct();
+        
+        eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
     }
 
     public void reloadRecentProjects() {
@@ -340,6 +345,10 @@ public class WelcomeRightPart extends Composite {
         
         registerListenersForTestingTypeTabs();
         
+        setDefaultTestingTypeTabByProjectType();
+    }
+    
+    private void setDefaultTestingTypeTabByProjectType() {
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         if (project != null && project.getType() == ProjectType.WEBSERVICE) {
             handleSelectingTestingTypeTab(tabApi);
@@ -904,4 +913,14 @@ public class WelcomeRightPart extends Composite {
         // Disable the check that prevents subclassing of SWT components
     }
 
+    @Override
+    public void handleEvent(Event event) {
+        switch (event.getTopic()) {
+            case EventConstants.PROJECT_OPENED:
+                setDefaultTestingTypeTabByProjectType();
+                break;
+            default:
+                break;
+        }
+    }
 }
