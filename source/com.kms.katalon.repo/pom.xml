@@ -270,6 +270,9 @@
         								<exclude>com.fasterxml.jackson.core.*</exclude>
     								</excludes>
 								</artifact>
+								<artifact>
+                                    <id>com.auth0:java-jwt:3.4.0</id>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>

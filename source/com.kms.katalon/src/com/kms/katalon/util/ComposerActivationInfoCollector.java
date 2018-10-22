@@ -3,11 +3,13 @@ package com.kms.katalon.util;
 import java.util.Random;
 
 import org.eclipse.core.commands.common.CommandException;
+import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.activation.ActivationService;
+import com.kms.katalon.activation.ActivationServiceConsumer;
 import com.kms.katalon.activation.dialog.ActivationDialogV2;
 import com.kms.katalon.activation.dialog.ActivationOfflineDialogV2;
 import com.kms.katalon.activation.dialog.SignupDialog;
-import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
@@ -28,19 +30,25 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     public static boolean checkActivation() {
-        if (isActivated()) {
-            return true;
+        boolean isActivated = isActivated();
+        if (!isActivated) {
+            // Send anonymous info for the first time using
+            Trackings.trackOpenFirstTime();
         }
-        // Send anonymous info for the first time using
-        // Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
-        // UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.GUI)));
-        Trackings.trackOpenFirstTime();
-
-        if (!checkActivationDialog()) {
-            return false;
+        ActivationService activationService = ActivationServiceConsumer.getServiceInstance();
+        if (activationService != null) {
+            boolean activated = activationService.checkActivation(Display.getCurrent().getActiveShell());
+            if (!activated) {
+                return false;
+            }
+        } else {
+            if (!isActivated && !checkSignupDialog()) {
+                return false;
+            }
         }
-        showFunctionsIntroductionForTheFirstTime();
-
+        if (!isActivated) {
+            showFunctionsIntroductionForTheFirstTime();
+        }
         return true;
     }
 

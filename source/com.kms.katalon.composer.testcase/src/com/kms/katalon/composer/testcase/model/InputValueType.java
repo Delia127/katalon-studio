@@ -29,6 +29,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
@@ -68,8 +69,12 @@ public enum InputValueType implements InputValueEditorProvider {
     public boolean isEditable(Object astObject) {
         return true;
     }
-
+    
     public CellEditor getCellEditorForValue(Composite parent, Object astObject) {
+        return getCellEditorForValue(parent, astObject, null);
+    }    
+
+    public CellEditor getCellEditorForValue(Composite parent, Object astObject, ITestCasePart testCasePart) {
         switch (this) {
             case Binary:
                 return AstValueUtil.getCellEditorForBinaryExpression(parent, (BinaryExpressionWrapper) astObject);
@@ -113,7 +118,7 @@ public enum InputValueType implements InputValueEditorProvider {
             case Throwable:
                 return AstValueUtil.getCellEditorForThrowable(parent, (ConstructorCallExpressionWrapper) astObject);
             case Variable:
-                return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject, testCasePart);
             case Key:
                 return AstValueUtil.getCellEditorForKeyExpression(parent);
             case Keys:

@@ -11,6 +11,10 @@ public class EventConstants {
     public static final String WORKSPACE_CLOSED = "WORKSPACE/CLOSE";
     
     public static final String ACTIVATION_CHECKED = "ACTIVATION/CHECKED";
+    
+    public static final String ACTIVATION_QTEST_INTEGRATION_CHECK = "ACTIVATION/QTEST_INTEGRATION_CHECK"; 
+    
+    public static final String ACTIVATION_QTEST_INTEGRATION_CHECK_COMPLETED = "ACTIVATION/ACTIVATION_QTEST_INTEGRATION_CHECK_COMPLETED"; 
 
     public static final String WORKSPACE_DRAFT_PART_CLOSED = "WORKSPACE/DRAFT_PART_CLOSED";
 

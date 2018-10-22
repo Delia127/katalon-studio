@@ -26,6 +26,7 @@
 		<module>com.kms.katalon.composer.import</module>
 		<module>com.kms.katalon.composer.integration.analytics</module>
 		<module>com.kms.katalon.composer.integration.qtest</module>
+		<module>com.kms.katalon.composer.integration.qtest.activation</module>
 		<module>com.kms.katalon.composer.integration.jira</module>
 		<module>com.kms.katalon.composer.integration.slack</module>
 		<module>com.kms.katalon.composer.integration.git</module>
@@ -70,6 +71,7 @@
 		<module>com.kms.katalon.execution.webservice</module>
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
+		<module>com.kms.katalon.feature.qtest_edition</module>
 		<module>com.kms.katalon.groovy</module>
 		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
@@ -80,6 +82,7 @@
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.util</module>
 		<module>com.kms.katalon.product</module>
+		<module>com.kms.katalon.product.qtest_edition</module>
 		<module>com.kms.katalon.selenium-standalone</module>
 		<module>com.kms.katalon.target</module>
 		<module>com.kms.katalon.application</module>
