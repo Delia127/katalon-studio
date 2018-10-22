@@ -393,16 +393,14 @@ public final class EntityService {
         return StringUtils.EMPTY;
 	}
 
-	public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) {
+	public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws JAXBException {
         try {
-        	
         	ExecutionProfileEntity executionProfileEntity = 
         			(ExecutionProfileEntity) unmarshaller.unmarshal(new InputSource(new StringReader(xmlString)));
 	        if(executionProfileEntity != null)
 	        	return executionProfileEntity;
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw e;
 		}
         return null;
 	}

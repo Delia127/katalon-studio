@@ -32,6 +32,10 @@ public class ExecutionProfilePartUI {
     
     private MCompositePart executionProfileCompositePart;
     
+    private MPart globalVariablePart;
+    
+    private MPart globalVariableEditorPart;
+    
     private CTabFolder tabFolder;
     
     public static ExecutionProfilePartUI create(ExecutionProfileEntity executionProfileEntity, MPartStack stack)
@@ -41,22 +45,25 @@ public class ExecutionProfilePartUI {
     
     private ExecutionProfilePartUI(MPartStack stack, ExecutionProfileEntity executionProfileEntity) 
     		throws IOException, CoreException{
+    	
     	// Somehow use the injected modelService fails, use singleton instead
         EPartService partService = PartServiceSingleton.getInstance().getPartService();
         EModelService modelService = ModelServiceSingleton.getInstance().getModelService();
 
     	String executionProfileCompositePartId = getCompositePartId(executionProfileEntity);
     	
-    	executionProfileCompositePart = modelService.createModelElement(MCompositePart.class);
-        executionProfileCompositePart.setElementId(executionProfileCompositePartId);
-        executionProfileCompositePart.setLabel(executionProfileEntity.getName());
-        executionProfileCompositePart.setCloseable(true);
-        executionProfileCompositePart.setContributionURI(EXECUTION_PROFILE_COMPOSITE_PART);
-        executionProfileCompositePart.setTooltip(executionProfileEntity.getIdForDisplay());
-        executionProfileCompositePart.setObject(executionProfileEntity);
-        executionProfileCompositePart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
-        stack.getChildren().add(executionProfileCompositePart);
-        
+    	executionProfileCompositePart = (MCompositePart) modelService.find(executionProfileCompositePartId, stack);
+    	if(executionProfileCompositePart == null){
+	    	executionProfileCompositePart = modelService.createModelElement(MCompositePart.class);
+	        executionProfileCompositePart.setElementId(executionProfileCompositePartId);
+	        executionProfileCompositePart.setLabel(executionProfileEntity.getName());
+	        executionProfileCompositePart.setCloseable(true);
+	        executionProfileCompositePart.setContributionURI(EXECUTION_PROFILE_COMPOSITE_PART);
+	        executionProfileCompositePart.setTooltip(executionProfileEntity.getIdForDisplay());
+	        executionProfileCompositePart.setObject(executionProfileEntity);
+	        executionProfileCompositePart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
+	        stack.getChildren().add(executionProfileCompositePart);
+    	}
 
         String subPartStackId = executionProfileCompositePartId + IdConstants.TEST_CASE_SUB_PART_STACK_ID_SUFFIX;
 
@@ -69,7 +76,7 @@ public class ExecutionProfilePartUI {
         
 
         String globalVariablePartId = executionProfileCompositePartId + IdConstants.TEST_CASE_GENERAL_PART_ID_SUFFIX;
-        MPart globalVariablePart = (MPart) modelService.find(globalVariablePartId, subPartStack);
+        globalVariablePart = (MPart) modelService.find(globalVariablePartId, subPartStack);
         if (globalVariablePart == null) {
             globalVariablePart = modelService.createModelElement(MPart.class);
             globalVariablePart.setElementId(globalVariablePartId);
@@ -82,7 +89,7 @@ public class ExecutionProfilePartUI {
         }
 
         String editorPartId = executionProfileCompositePartId + IdConstants.TEST_CASE_EDITOR_PART_ID_SUFFIX;
-        MPart globalVariableEditorPart = (MPart) modelService.find(editorPartId, subPartStack);
+        globalVariableEditorPart = (MPart) modelService.find(editorPartId, subPartStack);
         if (globalVariableEditorPart == null) {
         	globalVariableEditorPart = modelService.createModelElement(MPart.class);
         	globalVariableEditorPart.setElementId(editorPartId);
@@ -126,5 +133,13 @@ public class ExecutionProfilePartUI {
 
     public CTabItem getGlobalVariableEditorTab() {
         return tabFolder.getItem(1);
+    }
+    
+    public MPart getGlobalVariablePart(){
+    	return globalVariablePart;
+    }
+    
+    public MPart getGlobalVariableEditorPart(){
+    	return globalVariableEditorPart;
     }
 }

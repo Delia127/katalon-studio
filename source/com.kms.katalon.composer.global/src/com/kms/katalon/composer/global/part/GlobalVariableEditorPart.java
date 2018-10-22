@@ -2,11 +2,13 @@ package com.kms.katalon.composer.global.part;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import org.eclipse.e4.core.services.events.IEventBroker;
+
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
@@ -16,38 +18,43 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
-
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.global.constants.StringConstants;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
-import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.composer.webservice.constants.TextContentType;
+import com.kms.katalon.composer.webservice.editor.DocumentReadyHandler;
 import com.kms.katalon.controller.GlobalVariableController;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
+import com.kms.katalon.entity.global.GlobalVariableEntity;
+import com.kms.katalon.groovy.constant.GroovyConstants;
 
-public class GlobalVariableEditorPart extends CPart implements EventHandler, SavableCompositePart {
+public class GlobalVariableEditorPart extends CPart implements SavableCompositePart {
 	
 	MirrorEditor mirrorEditor;
 	
 	Composite composite;
 	
+	ExecutionProfileEntity executionProfileEntity;
+	
 	ExecutionProfileCompositePart parentExecutionProfileCompositePart;
+	
+	String contentScript = StringUtils.EMPTY;
+	
+	boolean contentChanged = false;
 
     @Inject
     private EPartService partService;
 
-    @Inject
-    private IEventBroker eventBroker;
-
-	MPart mpart;
+    MPart mpart;
 	
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
         this.mpart = mpart;
+        this.executionProfileEntity = (ExecutionProfileEntity) mpart.getObject();
         if (mpart.getParent().getParent() instanceof MGenericTile
                 && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
             MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
@@ -56,9 +63,9 @@ public class GlobalVariableEditorPart extends CPart implements EventHandler, Sav
             	
             }
         }
-        initialize(mpart, partService);
+        initialize(mpart, partService);        
         createComposite(parent);
-        registerEventListeners();
+        updateProfileEntityFrom(executionProfileEntity);
     }
 
 	private void createComposite(Composite parent) {
@@ -68,30 +75,45 @@ public class GlobalVariableEditorPart extends CPart implements EventHandler, Sav
 		
         mirrorEditor = new MirrorEditor(composite, SWT.NONE);
         mirrorEditor.setEditable(true);
+        mirrorEditor.registerDocumentHandler(new DocumentReadyHandler() {
+            
+            @Override
+            public void onDocumentReady() {
+                mirrorEditor.changeMode(TextContentType.XML.getText());
+            }
+        });
+        
+        mirrorEditor.addListener(SWT.Modify, event ->{
+        	if(contentChanged == false){
+        		contentChanged = true;
+        	}else{
+        		setDirty(true);
+        	}        		
+        });       
 	}
 	
-    private void setDirty(boolean isDirty) {
-        mpart.setDirty(isDirty);
+    public void setDirty(boolean isDirty) {
+    	parentExecutionProfileCompositePart.setDirty(isDirty);
     }
-    
-    public boolean isDirty(){
-    	return mpart.isDirty();
-    }
-	
 
-	@SuppressWarnings("static-access")
-	public void updateScriptFrom(ExecutionProfileEntity entity) {
+	public void updateProfileEntityFrom(ExecutionProfileEntity entity) {
 		if(entity != null){
-	        try
-	        {
-	        	String content = GlobalVariableController.getInstance().toXmlString(entity);
-	        	if (content != null && !content.equals(mirrorEditor.getText())){
-	        		mirrorEditor.setText(content);
-	        	}
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            LoggerSingleton.getInstance().logError("Invalid execution profile!");
-	        }
+			executionProfileEntity = entity;
+		}
+		updateScriptContent();
+	}
+
+	private void updateScriptContent() {
+		try {
+			String incomingContentScript = GlobalVariableController.getInstance().toXmlString(executionProfileEntity);
+			if(!contentScript.equals(incomingContentScript)){
+				mirrorEditor.setText(incomingContentScript);	
+				if(!contentScript.equals(StringUtils.EMPTY))
+					contentChanged = true;
+				contentScript = incomingContentScript;
+			}
+		} catch (Exception e) {
+			LoggerSingleton.logError(e);
 		}
 	}
 
@@ -101,42 +123,10 @@ public class GlobalVariableEditorPart extends CPart implements EventHandler, Sav
 	
     @Persist
     @Override
-    @SuppressWarnings("restriction")
 	public void save() {
-        try {
-        	if(isDirty()){
-                eventBroker.post(EventConstants.EXECUTION_PROFILE_UPDATED, mirrorEditor.getText());
-        	}        
-        	setDirty(false);
-        } catch (Exception e) {
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_ALL_VAR);
-            LoggerSingleton.getInstance().getLogger().error(e);
-        }
+    	
 	}
     
-
-    private void registerEventListeners() {
-        eventBroker.subscribe(EventConstants.EXECUTION_PROFILE_UPDATED, this);
-        mirrorEditor.addListener(SWT.Modify, event -> {
-        	setDirty(true);
-        });        
-    }
-    
-	@Override
-	public void handleEvent(Event event) {
-        switch (event.getTopic()) {
-            case EventConstants.EXECUTION_PROFILE_UPDATED: {
-            	Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            	if(!(object instanceof ExecutionProfileEntity)){
-            		return;
-            	}
-            	updateScriptFrom((ExecutionProfileEntity) object);
-            	break;
-            }
-        }		
-	}
-
     @PreDestroy
     @Override
     public void dispose() {
@@ -155,4 +145,58 @@ public class GlobalVariableEditorPart extends CPart implements EventHandler, Sav
 		return res;
 	}
 	
+
+    private boolean isExecutionProfileEntityValid() {
+    	List<String> globalVariableNames = executionProfileEntity.getGlobalVariableEntities()
+    			.stream()
+    			.map(var -> var.getName())
+    			.collect(Collectors.toList());
+    	
+    	for(GlobalVariableEntity var: executionProfileEntity.getGlobalVariableEntities()){
+    		if(validate(var, globalVariableNames) == false){
+    			return false;
+    		}
+    	}
+    	return true;
+	}
+    
+    
+    private boolean validate(GlobalVariableEntity fVariableEntity, List<String> globalVariableNames) {
+        String newVariableName = fVariableEntity.getName();
+        
+        if (!GroovyConstants.VARIABLE_NAME_REGEX.matcher(newVariableName).find()) {
+        	MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.DIA_ERROR_MSG_INVALID_VAR_NAME);
+        	return false;
+        }
+        
+        if (globalVariableNames.indexOf(newVariableName) != globalVariableNames.lastIndexOf(newVariableName)) {
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_WARN_MSG_DUPLICATE_VAR_NAME);
+            return false;
+        }
+        return true;
+    }
+
+	public ExecutionProfileEntity getEntityFromScript(){
+		boolean failedToParseScriptToProfilEntity = false;
+		try {
+			ExecutionProfileEntity retEntity = 
+					GlobalVariableController.getInstance().toExecutionProfileEntity(mirrorEditor.getText());
+			ExecutionProfileEntity oldExecutionProfileEntity = executionProfileEntity;
+			if(retEntity != null){
+				executionProfileEntity = retEntity;
+				executionProfileEntity.setName(oldExecutionProfileEntity.getName());
+				executionProfileEntity.setProject(oldExecutionProfileEntity.getProject());
+				executionProfileEntity.setParentFolder(oldExecutionProfileEntity.getParentFolder());
+				failedToParseScriptToProfilEntity = !isExecutionProfileEntityValid();
+			}
+		} catch (DALException e) {
+			LoggerSingleton.logError(e);
+			failedToParseScriptToProfilEntity = true;
+		} finally {
+			if(failedToParseScriptToProfilEntity){
+				return null;
+			}		
+		}	
+		return executionProfileEntity;
+	}	
 }

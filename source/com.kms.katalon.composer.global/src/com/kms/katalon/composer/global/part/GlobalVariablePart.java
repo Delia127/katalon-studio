@@ -67,10 +67,8 @@ import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
-import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -100,11 +98,21 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     private List<GlobalVariableEntity> globalVariables = new ArrayList<GlobalVariableEntity>();
 
     private ExecutionProfileEntity executionProfileEntity;
-
+    
+    private ExecutionProfileCompositePart parentExecutionProfileCompositePart; 
+    
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
         this.mpart = mpart;
         this.executionProfileEntity = (ExecutionProfileEntity) mpart.getObject();
+
+        if (mpart.getParent().getParent() instanceof MGenericTile
+                && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
+            MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
+            if (compositePart.getObject() instanceof ExecutionProfileCompositePart) {
+            	parentExecutionProfileCompositePart = ((ExecutionProfileCompositePart) compositePart.getObject());
+            }
+        }
         initialize(mpart, partService);
         new HelpToolBarForMPart(mpart, DocumentationMessageConstants.GLOBAL_VARIABLES);
         createComposite(parent);
@@ -283,12 +291,11 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         });
     }
 
-    @SuppressWarnings("restriction")
     private void setInput() {
         try {
             setInput(executionProfileEntity.getGlobalVariableEntities());
         } catch (Exception e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+            LoggerSingleton.logError(e);
         }
     }
 
@@ -307,10 +314,9 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         eventBroker.subscribe(EventConstants.GLOBAL_VARIABLE_REFRESH, this);
         eventBroker.subscribe(EventConstants.EXECUTION_PROFILE_RENAMED, this);
         eventBroker.subscribe(EventConstants.EXECUTION_PROFILE_DELETED, this);
-        eventBroker.subscribe(EventConstants.EXECUTION_PROFILE_UPDATED, this);
     }
 
-    @Override
+	@Override
     public void handleEvent(Event event) {
         switch (event.getTopic()) {
             case EventConstants.GLOBAL_VARIABLE_REFRESH: {
@@ -342,14 +348,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 }
                 break;
             }
-            case EventConstants.EXECUTION_PROFILE_UPDATED: {
-            	Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            	if(!(object instanceof String)){
-            		return;
-            	}
-            	updateProfileEntityFrom((String) object);
-            	break;
-            }
         }
     }
 
@@ -358,72 +356,54 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         operationExecutor = new OperationExecutor(this);
     }
 
-    private void setDirty(boolean isDirty) {
-        mpart.setDirty(isDirty);
+    public void setDirty(boolean isDirty) {
+    	parentExecutionProfileCompositePart.setDirty(isDirty);
     }
     
-    public boolean isDirty(){
-    	return mpart.isDirty();
-    }
-
     private void updateMPart() {
         mpart.setLabel(executionProfileEntity.getName());
         mpart.setElementId(EntityPartUtil.getExecutionProfilePartId(executionProfileEntity.getIdForDisplay()));
     }
-
 	
-    @SuppressWarnings("static-access")
-	public void updateProfileEntityFrom(String scriptContent){
-    	if(scriptContent != null){
-    		try
-        	{
-    			ExecutionProfileEntity entity = GlobalVariableController.getInstance().toExecutionProfileEntity(scriptContent);
-            	if (entity != null){
-            		executionProfileEntity = entity;
-            		setInput();
-            	}
-            } catch (DALException e) {
-                e.printStackTrace();
-                LoggerSingleton.getInstance().logError("Invalid execution profile!");
-            } 
+
+	public void updateProfileEntityFrom(ExecutionProfileEntity entity) throws Exception{
+		ExecutionProfileEntity oldExecutionProfileEntity = executionProfileEntity;
+    	if(entity != null){
+    		executionProfileEntity = entity;
+			executionProfileEntity.setName(oldExecutionProfileEntity.getName());
+    		executionProfileEntity.setProject(oldExecutionProfileEntity.getProject());
+    		executionProfileEntity.setParentFolder(oldExecutionProfileEntity.getParentFolder());	
+    		setInput();
     	}
     }
 
 
     @Persist
-	@Override
-    @SuppressWarnings("restriction")
+    @Override
     public void save() {
-        try {
-            if (needToUpdateVariableReferences()) {
-                updateVariableReferences();
-            }
-            executionProfileEntity.setGlobalVariableEntities(globalVariables);
-            GlobalVariableController.getInstance().updateExecutionProfile(executionProfileEntity);
-            eventBroker.post(EventConstants.EXECUTION_PROFILE_UPDATED, executionProfileEntity);
-            setDirty(false);
-        } catch (Exception e) {
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_ALL_VAR);
-            LoggerSingleton.getInstance().getLogger().error(e);
-        }
+    	
     }
 
-
-    private void updateVariableReferences() {
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        try {
-            for (Entry<GlobalVariableEntity, String> needToUpdateVariable : needToUpdateVariables.entrySet()) {
-                String globalVariablePrefix = GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME + ".";
-                String oldValue = globalVariablePrefix + needToUpdateVariable.getValue();
-                String newValue = globalVariablePrefix + needToUpdateVariable.getKey().getName();
-                GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldValue, newValue, currentProject);
-            }
-            needToUpdateVariables.clear();
-        } catch (CoreException | IOException e) {
-            MessageDialog.openWarning(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_UNABLE_TO_UPDATE_VAR_REFERENCES);
-        }
+	public void updateProfilEntityWithCurrentVariables() {
+		executionProfileEntity.setGlobalVariableEntities(globalVariables);	
+	}
+	
+    public void updateVariableReferences() {
+    	if(needToUpdateVariableReferences()){
+	        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+	        try {
+	            for (Entry<GlobalVariableEntity, String> needToUpdateVariable : needToUpdateVariables.entrySet()) {
+	                String globalVariablePrefix = GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME + ".";
+	                String oldValue = globalVariablePrefix + needToUpdateVariable.getValue();
+	                String newValue = globalVariablePrefix + needToUpdateVariable.getKey().getName();
+	                GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldValue, newValue, currentProject);
+	            }
+	            needToUpdateVariables.clear();
+	        } catch (CoreException | IOException e) {
+	            MessageDialog.openWarning(null, StringConstants.ERROR_TITLE,
+	                    StringConstants.PA_ERROR_MSG_UNABLE_TO_UPDATE_VAR_REFERENCES);
+	        }
+    	}
     }
 
     /**
@@ -451,9 +431,10 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     public void dispose() {
         super.dispose();
         partService.hidePart(mpart);
+        eventBroker.unsubscribe(this);
     }
 
-    private boolean needToUpdateVariableReferences() {
+    public boolean needToUpdateVariableReferences() {
         return !needToUpdateVariables.isEmpty();
     }
     
@@ -491,6 +472,10 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
 	public MPart getMPart() {
 		return mpart;
+	}
+	
+	public List<GlobalVariableEntity> getGlobalVariables(){
+		return globalVariables;
 	}
 	
     private class AddNewVariableOperation extends AbstractOperation {

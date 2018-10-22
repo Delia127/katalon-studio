@@ -44,6 +44,7 @@ public class SoapRequestMessageEditor extends Composite {
                 handleControlModifyListeners();
             }
         });
+        
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginTop = 5;
         bodyContentComposite.setLayout(gridLayout);

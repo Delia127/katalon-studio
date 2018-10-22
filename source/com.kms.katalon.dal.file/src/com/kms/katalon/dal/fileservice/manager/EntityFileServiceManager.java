@@ -12,6 +12,7 @@ import java.util.List;
 import javax.xml.bind.UnmarshalException;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.persistence.exceptions.JAXBException;
 
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
@@ -482,7 +483,7 @@ public class EntityFileServiceManager {
 		return EntityService.getInstance().toXmlString(entity);
 	}
 
-	public static ExecutionProfileEntity toExecutionProfileEntity(String xmlString)  throws Exception {
+	public static ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws javax.xml.bind.JAXBException, Exception {
 		return EntityService.getInstance().toExecutionProfileEntity(xmlString);
 	}
 
