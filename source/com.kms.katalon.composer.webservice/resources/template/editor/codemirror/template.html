@@ -101,7 +101,7 @@ body {
 			var line = editor.getCursor().line;
 			var lineTokens = editor.getLineTokens(editor.getCursor().line);
 			
-			if ((event.metaKey || event.ctrlKey) && event.key === 'p'
+			if ((event.metaKey || event.ctrlKey) && event.key === 'k'
 				&& typeof handleGenerateVerificationEvent != "undefined") {
 
 				handleGenerateVerificationEvent(line, JSON.stringify(lineTokens));
