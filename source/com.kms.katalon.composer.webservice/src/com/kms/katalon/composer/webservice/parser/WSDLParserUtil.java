@@ -1,13 +1,11 @@
 package com.kms.katalon.composer.webservice.parser;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.wsdl.WSDLException;
-import javax.xml.soap.SOAPException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -40,6 +38,9 @@ public class WSDLParserUtil {
 										"Background operations are running...", IProgressMonitor.UNKNOWN);
 
 								monitor.worked(1);
+								
+								WSDLHelper helper = WSDLHelper.newInstance(url, null);
+
 								for(Object objOperationName: SafeUtils.safeList(operationNames)){
 									if(objOperationName != null){
 										String operationName = (String) objOperationName;
@@ -52,7 +53,7 @@ public class WSDLParserUtil {
 				                        if (monitor.isCanceled()) {
 				                            return;
 				                        }
-										String SOAPBodyMessage = wsdlHelperInstance.generateInputSOAPMessageText(url, null, requestMethod, operationName, paramMap);
+										String SOAPBodyMessage = wsdlHelperInstance.generateInputSOAPMessageText(helper, requestMethod, operationName, paramMap);
 										if(SOAPBodyMessage != null){
 											newWSREntity.setSoapBody(XmlUtils.prettyFormat(SOAPBodyMessage));
 										}
