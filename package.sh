@@ -55,7 +55,7 @@ echo "Codesigning ... Done"
 TEMP_APP="$(pwd -P)/$MAC_APP"
 echo $TEMP_APP
 TEMP_PATH="$(pwd -P)/$PACKAGE_FOLDER"
-chmod 777 $TEMP_PATH
+sudo chmod 777 $TEMP_PATH
 /usr/local/bin/dropdmg --config-name "Katalon Studio" "${TEMP_PATH}"
 echo "DMG packaging ... Done"
 sudo rm -r "${MAC_APP}"
