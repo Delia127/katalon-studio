@@ -125,19 +125,8 @@ public class LifeCycleManager {
             public void partActivated(IWorkbenchPartReference partRef) {
             }
         });
-        
-        // Only initialize command bindings on the first launch
-        try{
-	        ScopedPreferenceStore firstInitStore = getPreferenceStore("firstInitStore");
-	        if(!firstInitStore.getBoolean("init")){
-	        	firstInitStore.setValue("init", true);
-	            new CommandBindingInitializer().setup();
-	        }
-            firstInitStore.save();        
-        }catch(Exception e){
-        	LoggerSingleton.logError(e);
-        }
-        
+
+        new CommandBindingInitializer().setup();
         new CommandBindingRemover().setup();
         new ContentAssistProposalInitializer().setup();
         new ProblemViewImageInitializer().setup();
