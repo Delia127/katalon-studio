@@ -52,11 +52,11 @@ echo "Grant executed permission for Katalon and browser drivers ... Done"
 sudo codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
 
-TEMP_APP="$(pwd -P)/$MAC_APP"
-echo $TEMP_APP
-TEMP_PATH="$(pwd -P)/$PACKAGE_FOLDER"
-chmod 777 $TEMP_PATH
-/usr/local/bin/dropdmg --config-name "Katalon Studio" "$TEMP_APP"
+#TEMP_APP="$(pwd -P)/$MAC_APP"
+#echo $TEMP_APP
+#TEMP_PATH="$(pwd -P)/$PACKAGE_FOLDER"
+#chmod 777 $TEMP_PATH
+/usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
 echo "DMG packaging ... Done"
 sudo rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
@@ -103,12 +103,10 @@ mount_smbfs //katabuild:[katalon2018]@192.168.35.52/share/build $KATABUILD2
 #sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
 sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
 sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
-sudo umount -f /private/tmp/katabuild
 sudo umount -f $KATABUILD
 echo "Distribute packages on macOS ... Done"
 #sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
 # sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
-sudo umount -f /private/tmp/katabuild2
 sudo umount -f $KATABUILD2
 echo "Distribute packages ... Done"
 
