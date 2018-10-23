@@ -52,11 +52,11 @@ echo "Grant executed permission for Katalon and browser drivers ... Done"
 sudo codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
 
-#TEMP_APP="$(pwd -P)/$MAC_APP"
-#echo $TEMP_APP
-#TEMP_PATH="$(pwd -P)/$PACKAGE_FOLDER"
-#chmod 777 $TEMP_PATH
-/usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
+TEMP_APP="$(pwd -P)/$MAC_APP"
+echo $TEMP_APP
+TEMP_PATH="$(pwd -P)/$PACKAGE_FOLDER"
+chmod 777 $TEMP_PATH
+/usr/local/bin/dropdmg --config-name "Katalon Studio" "${TEMP_PATH}"
 echo "DMG packaging ... Done"
 sudo rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
@@ -88,8 +88,6 @@ sudo mkdir -p $BRANCH_FOLDER
 #cp -Rf $CURRENT
 
 echo $WORKSPACE
-
-
 mkdir -p $KATABUILD
 
 if [ ! -d "${KATABUILD}" ]; then
