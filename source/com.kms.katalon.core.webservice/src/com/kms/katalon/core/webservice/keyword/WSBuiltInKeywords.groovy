@@ -105,7 +105,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static boolean verifyElementPropertyValue(ResponseObject response, String locator, String value, FailureHandling flowControl) throws StepErrorException {
+    public static boolean verifyElementPropertyValue(ResponseObject response, String locator, Object value, FailureHandling flowControl) throws StepErrorException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "verifyElementPropertyValue", response, locator, value, flowControl)
     }
 
@@ -119,7 +119,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static boolean verifyElementPropertyValue(ResponseObject response, String locator, String value) throws StepErrorException {
+    public static boolean verifyElementPropertyValue(ResponseObject response, String locator, Object value) throws StepErrorException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "verifyElementPropertyValue", response, locator, value)
     }
 

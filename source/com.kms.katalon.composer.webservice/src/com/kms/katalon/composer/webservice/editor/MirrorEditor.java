@@ -1,9 +1,12 @@
-package com.kms.katalon.composer.webservice.components;
+package com.kms.katalon.composer.webservice.editor;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -21,11 +24,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
-import com.kms.katalon.composer.webservice.editor.DocumentReadyHandler;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 
@@ -40,6 +44,8 @@ public class MirrorEditor extends Composite {
     private DocumentReadyHandler documentReadyHandler;
 
     private File templateFile;
+    
+    private Collection<EditorChangeListener> listeners = new LinkedList<>();
 
     // A collection of mirror modes for some text types
     private static final Map<String, String> TEXT_MODE_COLLECTION;
@@ -80,7 +86,7 @@ public class MirrorEditor extends Composite {
             public void completed(ProgressEvent event) {
                 documentReady = true;
                 onDocumentReady();
-                
+
                 browser.evaluate("document.addEventListener('contextmenu', function(e) { e.preventDefault();});");
             }
 
@@ -139,6 +145,15 @@ public class MirrorEditor extends Composite {
             (new SettingOptionsThread(browser, setTextCommand)).start();
         }
     }
+    
+    public void setHintText(String text) {
+        String setTextCommand = String.format("document.getElementById(\"lineHint\").innerHTML=\"%s\";", StringEscapeUtils.escapeEcmaScript(text));
+        if (documentReady) {
+            browser.evaluate(setTextCommand);
+        } else {
+            (new SettingOptionsThread(browser, setTextCommand)).start();
+        }
+    }
 
     public void wrapLine(boolean wrapped) {
         browser.evaluate(MessageFormat.format("editor.setOption(\"{0}\", {1});", "lineWrapping", wrapped));
@@ -170,16 +185,14 @@ public class MirrorEditor extends Composite {
     }
 
     public void beautify() {
-        String command = String.format("format(editor); "
-        								+ "editor.focus(); "
-        								+ "editor.setCursor({line: 0, ch: 0});");
+        String command = String.format("format(editor); " + "editor.focus(); " + "editor.setCursor({line: 0, ch: 0});");
         if (documentReady) {
             browser.evaluate(command);
         } else {
             (new SettingOptionsThread(browser, command)).start();
         }
     }
-    
+
     public String getText() {
         String command = "return editor.getValue();";
         return browser.evaluate(command).toString();
@@ -198,11 +211,40 @@ public class MirrorEditor extends Composite {
             }
         };
 
+        new BrowserFunction(browser, "handleMouseOverChanged") {
+            @Override
+            public Object function(Object[] objects) {
+                Iterator<EditorChangeListener> iterator = listeners.iterator();
+                while (iterator.hasNext()) {
+                    iterator.next().handleEditorEvent("handleMouseOverChanged", objects); 
+                }
+                return null;
+            }
+        };
+
+        new BrowserFunction(browser, "handleGenerateVerificationEvent") {
+            @Override
+            public Object function(Object[] objects) {
+                Iterator<EditorChangeListener> iterator = listeners.iterator();
+                while (iterator.hasNext()) {
+                    iterator.next().handleEditorEvent("handleGenerateVerificationEvent", objects); 
+                }
+                return null;
+            }
+        };
+
         addDisposeListener(e -> {
             if (templateFile != null && templateFile.exists()) {
                 templateFile.delete();
             }
         });
     }
+    
+    public void addEventListener(EditorChangeListener l) {
+        listeners.add(l);
+    }
 
+    public interface EditorChangeListener {
+        void handleEditorEvent(String event, Object[] objects);
+    }
 }

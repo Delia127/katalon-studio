@@ -153,9 +153,9 @@ import com.kms.katalon.composer.testcase.parts.TestCaseVariableViewEvent;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
-import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.editor.MirrorEditor;
 import com.kms.katalon.composer.webservice.handlers.SaveDraftRequestHandler;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
@@ -188,7 +188,7 @@ import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 
-public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent {
+public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent, VerificationScriptEventHandler {
 
     protected static final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(WebServicePart.class).getSymbolicName();
 
@@ -882,12 +882,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             lblSnippet.setBottomMargin(5);
             lblSnippet.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
             lblSnippet.addListener(SWT.MouseDown, e -> {
-                IEditorInput editorInput = verificationScriptEditor.getEditorInput();
-                IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
-
-                StringBuilder scriptBuilder = new StringBuilder("\n").append(snippet.getScript()).append("\n");
-
-                insertVerificationScript(document.getLength(), scriptBuilder.toString());
+                insertScript("\n");
+                insertScript(snippet.getScript());
             });
         }
         snippetLblColor.dispose();
@@ -1724,6 +1720,18 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 setVerificationResultStatus(testStatusValue);
             }
         }
+    }
+    
+    @Override
+    public void insertScript(String script) {
+        IEditorInput editorInput = verificationScriptEditor.getEditorInput();
+        IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
+        
+        insertVerificationScript(document.getLength(), "\n");
+
+        insertVerificationScript(document.getLength(), script);
+
+        ui.setSelectedTab(ui.getVerificationTab());
     }
 
     private void setVerificationResultStatus(TestStatusValue value) {
