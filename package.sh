@@ -1,6 +1,7 @@
 #!/bin/bash
 ulimit 99999999999
 KATABUILD=/tmp/katabuild
+KATABUILD2=/tmp/katabuild2
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
 MAC_PRODUCT_NAME="Katalon Studio"
@@ -94,17 +95,16 @@ fi
 # Distribute builds to shared folders on macOS
 mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
 # Distribute builds to shared folders on macOS
-mount_smbfs //katabuild:[katalon2018]@192.168.35.52/share/build $KATABUILD
-sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
-# sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
+mount_smbfs //katabuild:[katalon2018]@192.168.35.52/share/build $KATABUILD2
+#sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
+sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
+sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
 sudo umount -f /private/tmp/katabuild
 sudo umount -f $KATABUILD
 echo "Distribute packages on macOS ... Done"
-
-
-sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
+#sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
 # sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
-sudo umount -f /private/tmp/katabuild
-sudo umount -f $KATABUILD
+sudo umount -f /private/tmp/katabuild2
+sudo umount -f $KATABUILD2
 echo "Distribute packages ... Done"
 
