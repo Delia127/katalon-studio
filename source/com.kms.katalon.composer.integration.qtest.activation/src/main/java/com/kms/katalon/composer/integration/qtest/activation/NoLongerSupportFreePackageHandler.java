@@ -10,6 +10,7 @@ import org.osgi.service.event.Event;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class NoLongerSupportFreePackageHandler {
@@ -24,7 +25,8 @@ public class NoLongerSupportFreePackageHandler {
             @Override
             public void handleEvent(Event event) {
                 ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                if (currentProject.getIntegratedEntity("qTest") == null) {
+                IntegratedEntity integratedEntity = currentProject.getIntegratedEntity("qTest");
+                if (integratedEntity == null || integratedEntity.getProperties().isEmpty()) {
                     return;
                 }
 
@@ -32,7 +34,8 @@ public class NoLongerSupportFreePackageHandler {
                         Display.getCurrent().getActiveShell());
                 dialog.open();
 
-                eventBroker.post(EventConstants.PROJECT_CLOSE, null);
+                // KAT-3795 Allow user to continue using KS free package
+                // eventBroker.post(EventConstants.PROJECT_CLOSE, null);
             }
         });
     }
