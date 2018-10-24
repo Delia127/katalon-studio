@@ -68,7 +68,7 @@ public class NoLongerSupportFreePackageDialog extends AbstractDialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, "Close Project", true);
+        createButton(parent, IDialogConstants.OK_ID, GlobalStringConstants.OK, true);
     }
 
     @Override
