@@ -26,7 +26,7 @@ KATALON_MAC="${MAC_APP}/Contents/MacOS/katalon"
 CHROME_DRIVER_MAC="${MAC_APP}/Contents/Eclipse/configuration/resources/drivers/chromedriver_mac/chromedriver"
 FF_DRIVER_MAC="${MAC_APP}/Contents/Eclipse/configuration/resources/drivers/firefox_mac/geckodriver"
 
-Process Linux packages
+#Process Linux packages
 echo "Process Linux package ..."
 mkdir "${LINUX_64_DIR}"
 tar -zxf "${LINUX_64_FILE}" -C "${LINUX_64_DIR}"
@@ -39,7 +39,7 @@ tar -czf "${LINUX_64_FILE}" -C "${LINUX_64_DIR}" .
 rm -r "${LINUX_64_DIR}"
 echo "Process Linux package ... Done"
 
-Process MacOS package
+#Process MacOS package
 echo "Process MacOS package ..."
 sudo tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
 
@@ -48,7 +48,7 @@ sudo chmod +x "${CHROME_DRIVER_MAC}"
 sudo chmod +x "${FF_DRIVER_MAC}"
 echo "Grant executed permission for Katalon and browser drivers ... Done"
 
-Create .dmg file
+#Create .dmg file
 sudo codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
 
@@ -69,22 +69,22 @@ BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${2}/" # JOB_BASE_NAME
 #BRANCH_FOLDER is unique
 sudo mkdir -p $BRANCH_FOLDER
 
-sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
-sudo cd "${BRANCH_FOLDER}/${LINUX_64_FILE}"
-sudo mv "${PRODUCT_NAME}_Linux_64.tar.gz" "${PRODUCT_NAME}_Linux_64-${3}.tar.gz"
+#sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
+#sudo cd "${BRANCH_FOLDER}/${LINUX_64_FILE}"
+#sudo mv "${PRODUCT_NAME}_Linux_64.tar.gz" "${PRODUCT_NAME}_Linux_64-${3}.tar.gz"
 
-sudo cp "${MAC_FILE}" "${BRANCH_FOLDER}/"
-sudo cd "${BRANCH_FOLDER}/${MAC_DIR}"
-sudo mv "${MAC_NAME}_MacOS.tar.gz" "${MAC_NAME}_MacOS-${3}.tar.gz"
+#sudo cp "${MAC_FILE}" "${BRANCH_FOLDER}/"
+#sudo cd "${BRANCH_FOLDER}/${MAC_DIR}"
+#sudo mv "${MAC_NAME}_MacOS.tar.gz" "${MAC_NAME}_MacOS-${3}.tar.gz"
 
-sudo mv "$(pwd -P)/$MAC_PACKAGE" "${BRANCH_FOLDER}/"
-sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
-sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
-sudo mv "${PRODUCT_NAME}_Windows_32.zip" "${PRODUCT_NAME}_Windows_32-${3}.zip"
+#sudo mv "$(pwd -P)/$MAC_PACKAGE" "${BRANCH_FOLDER}/"
+#sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
+#sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
+#sudo mv "${PRODUCT_NAME}_Windows_32.zip" "${PRODUCT_NAME}_Windows_32-${3}.zip"
 
-sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
-sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
-sudo mv "${PRODUCT_NAME}_Windows_64.zip" "${PRODUCT_NAME}_Windows_64-${3}.zip"
+#sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
+#sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
+#sudo mv "${PRODUCT_NAME}_Windows_64.zip" "${PRODUCT_NAME}_Windows_64-${3}.zip"
 #cp -Rf $CURRENT
 
 # echo $WORKSPACE
