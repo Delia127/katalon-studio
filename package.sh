@@ -1,5 +1,5 @@
 #!/bin/bash
-ulimit 99999999999
+ulimit -c unlimited
 KATABUILD=/tmp/katabuild
 KATABUILD2=/tmp/katabuild2
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
