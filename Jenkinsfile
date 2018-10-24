@@ -1,7 +1,8 @@
 node {
     stage('Prepare'){
 	// Start neccessary services to download required dependencies
- //       build job: 'StartServices'
+   //       build job: 'StartServices'
+	  build job: 'Sync-Repo'
     }
     stage('Check out') {
 	    retry(3){
