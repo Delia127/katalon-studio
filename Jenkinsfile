@@ -26,7 +26,7 @@ node {
 	script {
 		//Retrieves version number from source    
 		//env.WORKSPACE = pwd()
-		def versionContent = readFile "$(pwd -P)/source/com.kms.katalon/about.mappings"
+		def versionContent = readFile "$(pwd)/source/com.kms.katalon/about.mappings"
 		def versionNumber = (versionContent =~ /([0-9]+)[\.,]?([0-9]+)[\.,]?([0-9])/)
 		String version = versionNumber[0][0]
 	}
