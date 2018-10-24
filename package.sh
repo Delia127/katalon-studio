@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 ulimit 99999999999
 KATABUILD=/tmp/katabuild
 KATABUILD2=/tmp/katabuild2
