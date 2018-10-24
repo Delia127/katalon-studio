@@ -57,7 +57,7 @@ echo $TEMP_APP
 TEMP_PATH="$(pwd -P)/$PACKAGE_FOLDER"
 sudo chmod 777 $TEMP_PATH
 #sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "${TEMP_APP}"
-create-dmg "${TEMP_APP}"
+sudo /usr/bin/create-dmg "${TEMP_APP}"
 echo "DMG packaging ... Done"
 sudo rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
