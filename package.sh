@@ -56,10 +56,12 @@ TEMP_APP="$(pwd -P)/$MAC_APP"
 echo $TEMP_APP
 TEMP_PATH="$(pwd -P)/$PACKAGE_FOLDER"
 sudo chmod 777 $TEMP_PATH
+
 #sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "${TEMP_APP}"
-sudo /usr/local/bin/create-dmg "${TEMP_APP}"
+#sudo /usr/local/bin/create-dmg "${TEMP_APP}"
+cp -Rf "${MAC_APP}" /tmp/
 echo "DMG packaging ... Done"
-sudo rm -r "${MAC_APP}"
+#sudo rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
 
 #Distribute packages to shared folder
