@@ -2,6 +2,7 @@ package com.kms.katalon.composer.webservice.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -9,6 +10,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -26,6 +30,9 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class XPathUtils {
     public static Map<Integer, String> evaluateXmlProperty(String jsonString) throws IOException {
+        if (StringUtils.isEmpty(jsonString)) {
+            return Collections.emptyMap();
+        }
         // Work around for https://github.com/FasterXML/jackson-dataformat-xml/issues/205
         ObjectMapper mapper = new XmlMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
                 .registerModule(new SimpleModule().addDeserializer(Object.class,

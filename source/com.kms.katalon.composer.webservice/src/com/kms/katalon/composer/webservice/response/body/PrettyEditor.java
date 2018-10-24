@@ -144,16 +144,17 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor, Edito
         textBodyContent.setText(responseObject.getResponseText());
         textBodyContent.setContentType(responseObject.getContentType());
 
-        mirrorEditor.setText(textBodyContent.getText());
+        String text = textBodyContent.getText();
+        mirrorEditor.setText(text);
         updateRadioStatus();
         mirrorEditor.beautify();
 
         switch (preferedContentType) {
             case JSON:
-                lineIndexing.put(preferedContentType, JsonPathUtils.evaluateJsonProperty(textBodyContent.getText()));
+                lineIndexing.put(preferedContentType, JsonPathUtils.evaluateJsonProperty(text));
                 break;
             case XML:
-                lineIndexing.put(preferedContentType, XPathUtils.evaluateXmlProperty(textBodyContent.getText()));
+                lineIndexing.put(preferedContentType, XPathUtils.evaluateXmlProperty(text));
                 break;
             default:
                 break;

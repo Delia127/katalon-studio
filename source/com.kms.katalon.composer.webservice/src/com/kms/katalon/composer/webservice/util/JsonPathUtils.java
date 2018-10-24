@@ -2,11 +2,14 @@ package com.kms.katalon.composer.webservice.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonPathUtils {
 
     public static Map<Integer, String> evaluateJsonPath(String jsonString) throws IOException {
+        if (StringUtils.isEmpty(jsonString)) {
+            return Collections.emptyMap();
+        }
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode rootNode = mapper.readTree(jsonString);
@@ -28,6 +34,9 @@ public class JsonPathUtils {
     }
     
     public static Map<Integer, String> evaluateJsonProperty(String jsonString) throws IOException {
+        if (StringUtils.isEmpty(jsonString)) {
+            return Collections.emptyMap();
+        }
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode rootNode = mapper.readTree(jsonString);
