@@ -8,6 +8,7 @@ import java.net.Proxy.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -81,19 +82,20 @@ public class BrowserMobProxyManager {
             BrowserMobProxy browserMobProxy = browserMobProxyLookup.get();
             if (browserMobProxy != null) {
                 
-                requestInformation.setId(String.valueOf(requestNumber.getAndIncrement()));
+                requestInformation.setName(String.valueOf(requestNumber.getAndIncrement()));
                 String threadName = Thread.currentThread().getName();
                 String directoryPath = RunConfiguration.getReportFolder();
                 File directory = new File(directoryPath, "requests" + File.separator + threadName);
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
-                File file = new File(directory, requestInformation.getId() + ".har");
+                File file = new File(directory, requestInformation.getName() + ".har");
                 file.createNewFile();
                 
                 String path = file.getAbsolutePath();
                 Map<String, String> attributes = new HashMap<>();
-                attributes.put("har", PathUtil.absoluteToRelativePath(path, RunConfiguration.getReportFolder()));
+                String harId = UUID.randomUUID().toString();
+                attributes.put("harId", harId);
                 logger.logInfo("HAR: " + path, attributes);
                 
                 Har har = browserMobProxy.endHar();

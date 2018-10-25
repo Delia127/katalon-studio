@@ -180,8 +180,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_CSV);
             ReportUtil.writeCSVReport(suiteLog, reportFolder);
 
-            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_SIMPLE_HTML);
-            ReportUtil.writeSimpleHTMLReport(suiteLog, reportFolder);
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_UUID);
+            ReportUtil.writeExecutionUUIDToFile(this.getExecutionUUID(), reportFolder);
 
 //            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
 //            ReportUtil.writeJsonReport(suiteLog, reportFolder);

@@ -2,6 +2,7 @@ package com.kms.katalon.execution.launcher;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -18,9 +19,12 @@ import com.kms.katalon.execution.launcher.result.LauncherStatus;
 
     private String message;
 
+    private String executionUUID;
+    
     protected BasicLauncher() {
         status = LauncherStatus.WAITING;
 
+        executionUUID = UUID.randomUUID().toString();
         listeners = new LinkedList<LauncherListener>();
         setMessage(StringUtils.EMPTY);
     }
@@ -65,5 +69,13 @@ import com.kms.katalon.execution.launcher.result.LauncherStatus;
 
     private void setMessage(String message) {
         this.message = message;
+    }
+    
+    public String getExecutionUUID() {
+    	return this.executionUUID;
+    }
+    
+    public void setExecutionUUID(String executionUUID) {
+    	this.executionUUID = executionUUID;
     }
 }
