@@ -1,18 +1,12 @@
 package com.kms.katalon.core.webservice.helper;
 
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.testobject.HttpBodyContent;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
-import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.webservice.constants.StringConstants;
 
 import groovy.lang.Binding;
@@ -74,15 +68,15 @@ public class WebServiceCommonHelper {
 		String rootName = "";
 		String locatorExp = "";
 		for(int i=0; i<tokens.length; i++){
-			String token = tokens[i];
-			//locatorExp += token;
-			locatorExp += ((i == tokens.length -1) && !token.startsWith("@")? "@" : "") + token;
-			if(i < tokens.length -1){
-				locatorExp += ".";
-			}
-			if(i==0){
-				rootName = token;
-			}
+		    String token = tokens[i];
+            locatorExp += token;
+            if(i < tokens.length -1){
+                locatorExp += ".";
+            }
+           
+            if(i==0){
+                rootName = token;
+            }
 		}
 		StringBuilder groovyScript = new StringBuilder();
 		groovyScript.append("def "+ rootName +" = new XmlSlurper().parseText(xmlText);");
