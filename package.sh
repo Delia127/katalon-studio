@@ -90,11 +90,11 @@ BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${2}/" # JOB_BASE_NAME
 #sudo mv "${PRODUCT_NAME}_Windows_64.zip" "${PRODUCT_NAME}_Windows_64-${3}.zip"
 #cp -Rf $CURRENT
 cd $TEMP_PATH
-sudo mv "${PRODUCT_NAME}_Linux_64.tar.gz" "${PRODUCT_NAME}_Linux_64-${env.BRANCH_NAME}.tar.gz"
-sudo mv "${MAC_NAME}_MacOS.tar.gz" "${MAC_NAME}_MacOS-${env.BRANCH_NAME}.tar.gz"
-sudo mv "${PRODUCT_NAME}_Windows_32.zip" "${PRODUCT_NAME}_Windows_32-${env.BRANCH_NAME}.zip"
-sudo mv "${PRODUCT_NAME}_Windows_64.zip" "${PRODUCT_NAME}_Windows_64-${env.BRANCH_NAME}.zip"
-
+sudo mv "Katalon-Studio_Linux_64.tar.gz" "Katalon-Studio_Linux_64-$BRANCH_NAME.tar.gz"
+sudo mv "Katalon-Studio_MacOS.tar.gz" "Katalon-Studio_MacOS-$BRANCH_NAME.tar.gz"
+sudo mv "Katalon-Studio_Windows_32.zip" "Katalon-Studio_Windows_32-$BRANCH_NAME.zip"
+sudo mv "Katalon-Studio_Windows_64.zip" "Katalon-Studio_Windows_64-$BRANCH_NAME.zip"
+sudo mv "Katalon-Studio.dmg" "Katalon-Studio-MacOS-$BRANCH_NAME.dmg"
 # echo $WORKSPACE
 mkdir -p $KATABUILD
 if [ ! -d "${KATABUILD}" ]; then
@@ -107,11 +107,14 @@ sudo mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUIL
 sudo mount_smbfs //katabuild:[katalon2018]@192.168.35.52/share/build $KATABUILD2
 #sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
-sudo rsync -vaE --progress $TEMP_PATH $KATABUILD
+cp -Rf "Katalon-Studio_Linux_64-$BRANCH_NAME.tar.gz" $KATABUILD/
+cp -Rf "Katalon-Studio_Windows_32-$BRANCH_NAME.zip" $KATABUILD/
+cp -Rf "Katalon-Studio_Windows_64-$BRANCH_NAME.zip" $KATABUILD/
+cp -Rf "Katalon-Studio-MacOS-$BRANCH_NAME.dmg" $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
 sudo umount -f $KATABUILD
 echo "Distribute packages on macOS ... Done"
-sudo rsync -vaE --progress $TEMP_PATH $KATABUILD2
+sudo rsync -vaE --progress $TEMP_PATH $KATABUILD2/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
 # sudo umount -f $KATABUILD2
 echo "Distribute packages ... Done"
