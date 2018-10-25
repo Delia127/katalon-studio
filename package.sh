@@ -114,7 +114,7 @@ cp -Rf "Katalon-Studio-MacOS-$1.dmg" $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
 sudo umount -f $KATABUILD
 echo "Distribute packages on macOS ... Done"
-sudo rsync -vaE --progress $TEMP_PATH $KATABUILD2/
+#sudo rsync -vaE --progress $TEMP_PATH $KATABUILD2/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
 # sudo umount -f $KATABUILD2
 echo "Distribute packages ... Done"
