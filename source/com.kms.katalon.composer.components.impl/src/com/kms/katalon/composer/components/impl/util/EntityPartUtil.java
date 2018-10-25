@@ -5,12 +5,13 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.eclipse.ui.part.FileEditorInput;
 
@@ -49,6 +50,10 @@ public class EntityPartUtil {
         return IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX + "(" + testObjectPk + ")";
     }
 
+    public static String getDraftRequestPartId(String testObjectPk) {
+        return IdConstants.DRAFT_REQUEST_CONTENT_PART_ID_PREFIX + "(" + testObjectPk + ")";
+    }
+
     public static String getTestSuiteCompositePartId(String testSuitePk) {
         return IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX + "(" + testSuitePk + ")";
     }
@@ -75,6 +80,10 @@ public class EntityPartUtil {
 
     public static String getExecutionProfilePartId(String executionProfileId) {
         return IdConstants.EXECUTION_PROFILE_CONTENT_PART_ID_PREFIX + "(" + executionProfileId + ")";
+    }
+
+    public static String getFeaturePartId(String featureId) {
+        return IdConstants.FEATURE_CONTENT_PART_ID_PREFIX + "(" + featureId + ")";
     }
 
     public static void closePart(IEntity entity) {
@@ -175,11 +184,36 @@ public class EntityPartUtil {
         }
     }
 
-    private static String getEntityIdFromPartId(String partElementId, String entityPrefixId) {
+    public static String getEntityIdFromPartId(String partElementId, String entityPrefixId) {
         if (!StringUtils.startsWith(partElementId, entityPrefixId)) {
             return null;
         }
         return StringUtils.substringBetween(partElementId, "(", ")");
+    }
+
+    /**
+     * Get opened draft entities IDs from available parts
+     * 
+     * @param parts list of available parts
+     * @return opened entity IDs
+     */
+    public static String[] getDraftEntities(Collection<MPart> parts) {
+        List<String> ids = new ArrayList<String>();
+        if (parts == null || parts.isEmpty()) {
+            return new String[0];
+        }
+
+        for (MPart part : parts) {
+            Object o = part.getObject();
+            if (o instanceof IComposerPart) {
+                IComposerPart composerPart = (IComposerPart) o;
+                if (composerPart.isDraft()) {
+                    ids.add(composerPart.getPartId());
+                }
+                continue;
+            }
+        }
+        return ids.toArray(new String[0]);
     }
 
     /**
@@ -197,7 +231,10 @@ public class EntityPartUtil {
         for (MPart part : parts) {
             Object o = part.getObject();
             if (o instanceof IComposerPart) {
-                ids.add(((IComposerPart) o).getEntityId());
+                IComposerPart composerPart = (IComposerPart) o;
+                if (!composerPart.isDraft()) {
+                    ids.add(composerPart.getEntityId());
+                }
                 continue;
             }
 
@@ -205,17 +242,37 @@ public class EntityPartUtil {
             if (o instanceof CompatibilityEditor
                     && !StringUtils.startsWith(((CompatibilityEditor) o).getModel().getElementId(),
                             IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
-                GroovyEditor editor = (GroovyEditor) ((CompatibilityEditor) o).getEditor();
-                String filePath = ((FileEditorInput) editor.getEditorInput()).getPath().toOSString();
-                String relativePath = PathUtil.absoluteToRelativePath(filePath,
-                        ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                if (relativePath.startsWith(GlobalStringConstants.ROOT_FOLDER_NAME_TEST_LISTENER)) {
-                    ids.add(relativePath.replace(TestListenerEntity.FILE_EXTENSION, ""));
-                } else {
-                    ids.add(relativePath);
+                CompatibilityEditor editor = (CompatibilityEditor) o;
+                IEditorInput editorInput = editor.getEditor().getEditorInput();
+                if (editorInput instanceof FileEditorInput) {
+                    String filePath = ((FileEditorInput) editorInput).getPath().toOSString();
+                    String relativePath = PathUtil.absoluteToRelativePath(filePath,
+                            ProjectController.getInstance().getCurrentProject().getFolderLocation());
+                    if (relativePath.startsWith(GlobalStringConstants.ROOT_FOLDER_NAME_TEST_LISTENER)) {
+                        ids.add(relativePath.replace(TestListenerEntity.FILE_EXTENSION, ""));
+                    } else {
+                        ids.add(relativePath);
+                    }
                 }
             }
         }
         return ids;
+    }
+    
+    public static MCompositePart findTestCaseCompositePart(TestCaseEntity testCaseEntity) {
+        EModelService modelService = ModelServiceSingleton.getInstance().getModelService();
+        MApplication application = ApplicationSingleton.getInstance().getApplication();        
+        String testCasePartId = getTestCaseCompositePartId(testCaseEntity.getId());
+        
+        MCompositePart testCasePart = null;
+        
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
+                application);
+        if (stack != null) {
+            testCasePart = (MCompositePart) modelService.find(testCasePartId, stack);
+    
+        }
+        
+        return testCasePart;
     }
 }

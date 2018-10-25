@@ -30,7 +30,6 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.handlers.CloseHandler;
@@ -132,7 +131,7 @@ public class LifeCycleManager {
         new DefaultTextFontInitializer().setup();
         new DisplayInitializer().setup();
         
-        EventBus.builder().installDefaultEventBus();
+//        EventBus.builder().installDefaultEventBus();
     }
 
     private void setupPreferences() {
@@ -194,9 +193,9 @@ public class LifeCycleManager {
             }
 
             private boolean checkActivation(final IEventBroker eventBroker) {
-                if (VersionUtil.isDevelopmentBuild()) {
-                    return true;
-                }
+//                if (VersionUtil.isInternalBuild()) {
+//                    return true;
+//                }
                 if (!(ComposerActivationInfoCollector.checkActivation())) {
                     eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                     PlatformUI.getWorkbench().close();
@@ -207,6 +206,7 @@ public class LifeCycleManager {
 //                        .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
 //                                RunningMode.GUI)));
 //                sendEventForTracking();
+                Trackings.trackOpenApplication(false, "gui");
                 
                 return true;
             }

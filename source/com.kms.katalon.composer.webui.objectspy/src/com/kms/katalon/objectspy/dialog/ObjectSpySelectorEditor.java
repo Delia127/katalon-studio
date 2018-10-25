@@ -55,8 +55,7 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         lblSelectorEditor.setText(ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR);
         ControlUtils.setFontToBeBold(lblSelectorEditor);
 
-        txtSelector = new StyledText(composite, SWT.BORDER | SWT.WRAP | SWT.VERTICAL);
-        txtSelector.setEditable(false);
+        txtSelector = new StyledText(composite, SWT.BORDER | SWT.WRAP | SWT.VERTICAL);        
 
         GridData gdTxtSelector = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         GC graphicContext = new GC(txtSelector);
@@ -112,6 +111,12 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
                 TestObject testObject = WebElementUtils.buildTestObject(webElement);
                 changeEditorStatus(WebUiCommonHelper.getSelectorValue(testObject), false);
                 return;
+            case XPATH:			
+            	TestObject testObject2 = WebElementUtils.buildTestObject(webElement);
+				String textToSet = WebUiCommonHelper.getSelectorValue(testObject2);
+				textToSet = (textToSet == null ) ? StringUtils.EMPTY : textToSet;
+            	changeEditorStatus(textToSet, true);
+				break;
             default:
                 changeEditorStatus(webElement.getSelectorCollection().get(selectorMethod), true);
         }

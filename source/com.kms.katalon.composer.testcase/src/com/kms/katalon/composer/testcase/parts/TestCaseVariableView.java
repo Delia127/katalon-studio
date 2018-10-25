@@ -3,8 +3,13 @@ package com.kms.katalon.composer.testcase.parts;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IStatus;
@@ -64,12 +69,14 @@ import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.util.listener.EventListener;
+import com.kms.katalon.util.listener.EventManager;
 
-public class TestCaseVariableView implements TableActionOperator {
+public class TestCaseVariableView implements TableActionOperator, EventManager<TestCaseVariableViewEvent> {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.TestObject, InputValueType.TestData, InputValueType.Property, InputValueType.List,
             InputValueType.Map };
 
@@ -77,14 +84,37 @@ public class TestCaseVariableView implements TableActionOperator {
 
     private List<VariableEntity> variables = new ArrayList<>();
 
-    private ITestCasePart testCasePart;
+    private IVariablePart variablePart;
     
-    public TestCaseVariableView(ITestCasePart testCasePart) {
+    private InputValueType[] inputValueTypes = defaultInputValueTypes;
+    
+    private ITestCasePart testCasePart;
+
+    private Map<TestCaseVariableViewEvent, Set<EventListener<TestCaseVariableViewEvent>>> eventListeners = new HashMap<>();
+    
+    public TestCaseVariableView(IVariablePart variablePart) {
+        this.variablePart = variablePart;
+    }
+    
+    public void setInputValueTypes(InputValueType[] inputValueTypes) {
+        this.inputValueTypes = inputValueTypes;
+    }
+    
+    public InputValueType[] getInputValueTypes() {
+        return inputValueTypes;
+    }
+
+    public void setTestCasePart(ITestCasePart testCasePart) {
         this.testCasePart = testCasePart;
+    }
+
+    public ITestCasePart getTestCasePart() {
+        return testCasePart;
     }
 
     public Composite createComponents(Composite parent) {
         final Composite container = new Composite(parent, SWT.NONE);
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         container.setLayout(new GridLayout(1, false));
 
         Composite compositeToolbar = new Composite(container, SWT.NONE);
@@ -208,8 +238,8 @@ public class TestCaseVariableView implements TableActionOperator {
         tblclmnName.setText(StringConstants.PA_COL_NAME);
 
         TableViewerColumn tableViewerColumnDefaultValueType = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnDefaultValueType.setEditingSupport(
-                new VariableDefaultValueTypeEditingSupport(tableViewer, this, defaultInputValueTypes));
+        tableViewerColumnDefaultValueType
+                .setEditingSupport(new VariableDefaultValueTypeEditingSupport(tableViewer, this, inputValueTypes));
         TableColumn tblclmnDefaultValueType = tableViewerColumnDefaultValueType.getColumn();
         tblclmnDefaultValueType.setWidth(100);
         tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);
@@ -223,7 +253,7 @@ public class TestCaseVariableView implements TableActionOperator {
                     ExpressionWrapper expression = GroovyWrapperParser
                             .parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
                     if (expression == null) {
-                        return null;
+                        return TreeEntityUtil.getReadableKeywordName(InputValueType.String.getName());
                     }
                     InputValueType valueType = AstValueUtil.getTypeValue(expression);
                     if (valueType != null) {
@@ -237,7 +267,7 @@ public class TestCaseVariableView implements TableActionOperator {
         });
 
         TableViewerColumn tableViewerColumnDefaultValue = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnDefaultValue.setEditingSupport(new VariableDefaultValueEditingSupport(tableViewer, this));
+        tableViewerColumnDefaultValue.setEditingSupport(new VariableDefaultValueEditingSupport(tableViewer, this, getTestCasePart()));
         TableColumn tblclmnDefaultValue = tableViewerColumnDefaultValue.getColumn();
         tblclmnDefaultValue.setWidth(150);
         tblclmnDefaultValue.setText(StringConstants.PA_COL_DEFAULT_VALUE);
@@ -245,12 +275,12 @@ public class TestCaseVariableView implements TableActionOperator {
             @Override
             public String getText(Object element) {
                 if (!(element instanceof VariableEntity) || ((VariableEntity) element).getDefaultValue() == null) {
-                    return "";
+                    return StringUtils.EMPTY;
                 }
                 ExpressionWrapper expression = GroovyWrapperParser
                         .parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
                 if (expression == null) {
-                    return "";
+                    return StringUtils.EMPTY;
                 }
                 return expression.getText();
             }
@@ -330,7 +360,7 @@ public class TestCaseVariableView implements TableActionOperator {
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         loadVariables(Collections.emptyList());
-        
+
         return container;
     }
 
@@ -340,6 +370,7 @@ public class TestCaseVariableView implements TableActionOperator {
         newVariable.setDefaultValue("''");
 
         executeOperation(new NewVariableOperation(this, newVariable));
+        invoke(TestCaseVariableViewEvent.ADD_VARIABLE, null);
     }
 
     private String generateNewPropertyName() {
@@ -484,6 +515,25 @@ public class TestCaseVariableView implements TableActionOperator {
 
     @Override
     public void setDirty(boolean dirty) {
-        testCasePart.setDirty(dirty);
+        variablePart.setDirty(dirty);
+    }
+
+    @Override
+    public Iterable<EventListener<TestCaseVariableViewEvent>> getListeners(TestCaseVariableViewEvent event) {
+        return eventListeners.get(event);
+    }
+
+    @Override
+    public void addListener(EventListener<TestCaseVariableViewEvent> listener,
+            Iterable<TestCaseVariableViewEvent> events) {
+        events.forEach(e -> {
+            Set<EventListener<TestCaseVariableViewEvent>> listenerOnEvent = eventListeners.get(e);
+            if (listenerOnEvent == null) {
+                listenerOnEvent = new HashSet<>();
+            }
+            listenerOnEvent.add(listener);
+            eventListeners.put(e, listenerOnEvent);
+        });
+
     }
 }

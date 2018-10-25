@@ -10,11 +10,15 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 
 public class NewCheckpointWizardDialog extends WizardDialog {
 
@@ -112,5 +116,20 @@ public class NewCheckpointWizardDialog extends WizardDialog {
             textLocation = messageLabel.getLocation();
         }
         messageLabel.setLocation(messageImageLabel.getLocation().x + DIFF_SIZE + messageImageLabel.getBounds().width + H_GAP_IMAGE, textLocation.y + DIFF_SIZE);
+    }
+    
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        ((GridLayout) parent.getLayout()).numColumns++;
+        new HelpCompositeForDialog(parent, DocumentationMessageConstants.NEW_CHECKPOINT) {
+            @Override
+            protected GridLayout createLayout() {
+                GridLayout layout = new GridLayout();
+                layout.marginHeight = 0;
+                layout.marginBottom = 0;
+                return layout;
+            }
+        };
+        super.createButtonsForButtonBar(parent);
     }
 }

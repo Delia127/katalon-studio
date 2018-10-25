@@ -68,9 +68,11 @@ public class Application implements IApplication {
         System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
         try {
             init();
-            if (!VersionUtil.isDevelopmentBuild() && !checkConsoleActivation(arguments)) {
+            if (!VersionUtil.isStagingBuild() && !checkConsoleActivation(arguments)) {
                 return LauncherResult.RETURN_CODE_PASSED;
             }
+            Trackings.trackOpenApplication(!ActivationInfoCollector.isActivated(), "console");
+            
             return ConsoleMain.launch(arguments);
         } catch (Exception e) {
             LogUtil.printAndLogError(e, ConsoleMessageConstants.ERR_CONSOLE_MODE);

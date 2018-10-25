@@ -88,8 +88,8 @@ public class ConsoleMain {
             }
 
             ProjectEntity project = findProject(options);
-            Trackings.trackOpenApplication(project,
-                    !ActivationInfoCollector.isActivated(), "console");
+//            Trackings.trackOpenApplication(project,
+//                    !ActivationInfoCollector.isActivated(), "console");
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
             consoleExecutor.execute(project, options);
 

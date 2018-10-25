@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
@@ -18,6 +20,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -52,6 +55,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
@@ -66,7 +70,11 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapEntryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
+import com.kms.katalon.composer.testcase.parts.IVariablePart;
+import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.preferences.RecentObjectStorage;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
@@ -82,6 +90,8 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implements IAstDialogBuilder {
     private static final int TOOL_ITEM_SIZE = 50;
@@ -91,6 +101,10 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
     private static final InputValueType[] defaultVariableInputValueTypes = AstInputValueTypeOptionsProvider
             .getInputValueTypeOptions(InputValueType.Map);
+
+    private static final InputValueType[] webServiceRequestVariableInputValueTypes = { InputValueType.String,
+            InputValueType.Number, InputValueType.Boolean, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.TestDataValue, InputValueType.Property, InputValueType.List, InputValueType.Map };
 
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
@@ -121,19 +135,37 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
     private Composite comboComposite;
 
+    private Composite webServiceVariablesComposite;
+
+    private Composite testObjectVariablesComposite;
+
     private Combo combo;
 
     private Label lblVariables;
 
     private Composite compositeVariables, compositeVariablesDetails;
 
+    private StackLayout compositeVariablesDetailsLayout;
+
     private ImageButton btnExpandVariablesComposite;
 
     private TableViewer variableTableViewer;
 
+    private IVariablePart webServiceRequestVariablesPart;
+
+    private TestCaseVariableView webServiceRequestVariablesView;
+
     private MapExpressionWrapper variableMaps = null;
 
-    private boolean isVariablesCompositeExpanded = false;
+    private WebElementEntity initialSelectedTestObject = null;
+
+    private WebElementEntity selectedWebElement = null;
+
+    private List<VariableEntity> initialRequestVariables = null;
+
+    private List<MapEntryExpressionWrapper> initialVariableMapEntries = null;
+
+    private boolean isVariablesCompositeExpanded = true;
 
     private Listener layoutExecutionCompositeListener = new Listener() {
 
@@ -143,6 +175,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
             layoutExecutionInfo();
         }
     };
+
+    private ITestCasePart testCasePart;
 
     private ToolItem recentTestObjectItem;
 
@@ -163,6 +197,29 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
             LoggerSingleton.logError(e);
         }
         refreshSelectionTree();
+
+        if (initialSelectedTestObject instanceof WebServiceRequestEntity) {
+            List<MapEntryExpressionWrapper> variables = variableMaps.getMapEntryExpressions();
+            initialRequestVariables = variables.stream().map(variable -> {
+                VariableEntity variableEntity = new VariableEntity();
+                String variableName = variable.getKeyExpression().getText();
+                variableName = variableName.replaceAll("^\"|\"$", ""); // remove redundant double quotes in variable name
+                variableEntity.setName(variableName);
+                String variableValue = variable.getValueExpression().getText();
+                variableEntity.setDefaultValue(variableValue);
+                return variableEntity;
+            }).collect(Collectors.toList());
+        } else {
+            initialVariableMapEntries = new ArrayList<>(variableMaps.getMapEntryExpressions());
+        }
+    }
+
+    public void setTestCasePart(ITestCasePart testCasePart) {
+        this.testCasePart = testCasePart;
+    }
+
+    public ITestCasePart getTestCasePart() {
+        return testCasePart;
     }
 
     private void initVariableMap() {
@@ -205,6 +262,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         }
         setInitialSelection(new WebElementTreeEntity(selectedWebElement,
                 createSelectedTreeEntityHierachy(selectedWebElement.getParentFolder(), objectRepositoryRoot)));
+
+        initialSelectedTestObject = selectedWebElement;
     }
 
     private void createTopCompiste(Composite parent) {
@@ -384,6 +443,42 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
             }
         }
 
+        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                if (!(event.getSelection() instanceof TreeSelection)) {
+                    return;
+                }
+
+                TreeSelection treeSelection = (TreeSelection) event.getSelection();
+                Object selection = treeSelection.getFirstElement();
+                if (!(selection instanceof ITreeEntity)) {
+                    return;
+                }
+
+                if (!(selection instanceof WebElementTreeEntity)) {
+                    selectedWebElement = null;
+                    compositeVariablesDetailsLayout.topControl = null;
+                } else {
+                    WebElementEntity webElement;
+                    try {
+                        webElement = (WebElementEntity) ((WebElementTreeEntity) selection).getObject();
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                        return;
+                    }
+
+                    WebElementEntity previousSelectedElement = selectedWebElement;
+                    selectedWebElement = webElement;
+                    if (previousSelectedElement == selectedWebElement) {
+                        return;
+                    }
+                    changeVariablesCompositeForSelectedEntity((WebElementTreeEntity) selection);
+                }
+            }
+        });
+
         refresh();
         return container;
     }
@@ -424,9 +519,111 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
         compositeVariablesDetails = new Composite(compositeVariables, SWT.NONE);
         compositeVariablesDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        compositeVariablesDetails.setLayout(new GridLayout(1, true));
+        compositeVariablesDetailsLayout = new StackLayout();
+        compositeVariablesDetails.setLayout(compositeVariablesDetailsLayout);
 
-        ToolBar toolBar = new ToolBar(compositeVariablesDetails, SWT.FLAT | SWT.RIGHT);
+        testObjectVariablesComposite = createTestObjectVariablesComposite(compositeVariablesDetails);
+
+        webServiceVariablesComposite = createWebServiceObjectVariablesComposite(compositeVariablesDetails);
+    }
+
+    private void changeVariablesCompositeForSelectedEntity(WebElementTreeEntity treeEntity) {
+        WebElementEntity entity;
+        try {
+            entity = (WebElementEntity) treeEntity.getObject();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return;
+        }
+
+        if (entity instanceof WebServiceRequestEntity) {
+            changeVariablesCompositeForWebServiceObject((WebServiceRequestEntity) entity);
+        } else {
+            changeVariablesCompositeForTestObject(entity);
+        }
+        compositeVariablesDetails.getParent().layout(true, true);
+    }
+
+    private void changeVariablesCompositeForWebServiceObject(WebServiceRequestEntity requestEntity) {
+        List<VariableEntity> variables = new ArrayList<>();
+        if (initialSelectedTestObject == requestEntity && !initialRequestVariables.isEmpty()) {
+            variables = initialRequestVariables.stream().map(VariableEntity::clone).collect(Collectors.toList());
+        } else {
+            variables = requestEntity.getVariables().stream().map(VariableEntity::clone).collect(Collectors.toList());
+        }
+
+        webServiceRequestVariablesPart.deleteVariables(Arrays.asList(webServiceRequestVariablesPart.getVariables()));
+        webServiceRequestVariablesPart.addVariables(variables.toArray(new VariableEntity[variables.size()]));
+
+        compositeVariablesDetailsLayout.topControl = webServiceVariablesComposite;
+    }
+
+    private void changeVariablesCompositeForTestObject(WebElementEntity entity) {
+        variableMaps.clearExpressions();
+        if (initialSelectedTestObject == entity) {
+            List<MapEntryExpressionWrapper> variableMapEntries = initialVariableMapEntries.stream()
+                    .map(MapEntryExpressionWrapper::clone)
+                    .collect(Collectors.toList());
+            variableMaps.addExpressions(variableMapEntries);
+        }
+        compositeVariablesDetailsLayout.topControl = testObjectVariablesComposite;
+        variableTableViewer.refresh();
+    }
+
+    private Composite createWebServiceObjectVariablesComposite(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginWidth = 0;
+        gridLayout.marginHeight = 0;
+        composite.setLayout(gridLayout);
+
+        webServiceRequestVariablesPart = new IVariablePart() {
+
+            @Override
+            public void setDirty(boolean isDirty) {
+            }
+
+            @Override
+            public void addVariables(VariableEntity[] variables) {
+                webServiceRequestVariablesView.addVariable(variables);
+            }
+
+            @Override
+            public VariableEntity[] getVariables() {
+                return webServiceRequestVariablesView.getVariables();
+            }
+
+            @Override
+            public void deleteVariables(List<VariableEntity> variableList) {
+                webServiceRequestVariablesView.deleteVariables(variableList);
+            }
+
+        };
+
+        webServiceRequestVariablesView = new TestCaseVariableView(webServiceRequestVariablesPart);
+        webServiceRequestVariablesView.setInputValueTypes(webServiceRequestVariableInputValueTypes);
+        webServiceRequestVariablesView.setTestCasePart(getTestCasePart());
+        webServiceRequestVariablesView.createComponents(composite);
+
+        // hide "Masked" column
+        TableColumn[] tableColumns = webServiceRequestVariablesView.getTableViewer().getTable().getColumns();
+        for (TableColumn tableColumn : tableColumns) {
+            if (ComposerTestcaseMessageConstants.PA_COL_MASKED.equals(tableColumn.getText())) {
+                tableColumn.setWidth(0);
+                tableColumn.setResizable(false);
+            }
+        }
+
+        return composite;
+    }
+
+    private Composite createTestObjectVariablesComposite(Composite parent) {
+        Composite composite = new Composite(compositeVariablesDetails, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        composite.setLayout(new GridLayout(1, false));
+
+        ToolBar toolBar = new ToolBar(composite, SWT.FLAT | SWT.RIGHT);
 
         ToolItem tltmAddVariable = new ToolItem(toolBar, SWT.NONE);
         tltmAddVariable.addSelectionListener(new SelectionAdapter() {
@@ -460,7 +657,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
             }
         });
 
-        variableTableViewer = new TableViewer(compositeVariablesDetails, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        variableTableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerUtil.setTableActivation(variableTableViewer);
 
         variableTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -635,7 +832,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         variableTableViewer.setContentProvider(new ArrayContentProvider());
         variableTableViewer
                 .setInput(variableMaps != null ? variableMaps.getMapEntryExpressions() : Collections.emptyMap());
-        layoutExecutionInfo();
+
+        return composite;
     }
 
     private void layoutExecutionInfo() {
@@ -859,13 +1057,67 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         if (objectPk == null) {
             return;
         }
-        MethodCallExpressionWrapper newMethodCall = AstEntityInputUtil.createNewFindTestObjectMethodCall(objectPk,
-                objectExpressionWrapper.getParent());
-        newMethodCall.copyProperties(objectExpressionWrapper);
-        if (variableMaps != null && variableMaps.getMapEntryExpressions().size() > 0) {
-            newMethodCall.getArguments().addExpression(variableMaps);
+
+        MethodCallExpressionWrapper newMethodCall;
+        try {
+
+            if ((WebElementEntity) webElementTreeEntity.getObject() instanceof WebServiceRequestEntity) {
+                newMethodCall = convertRequestObjectSelectionToObjectMethodCall(
+                        (WebServiceRequestEntity) webElementTreeEntity.getObject());
+            } else {
+                newMethodCall = AstEntityInputUtil.createNewFindTestObjectMethodCall(objectPk,
+                        objectExpressionWrapper.getParent());
+                newMethodCall.copyProperties(objectExpressionWrapper);
+                if (variableMaps != null && variableMaps.getMapEntryExpressions().size() > 0) {
+                    newMethodCall.getArguments().addExpression(variableMaps);
+                }
+            }
+
+            objectExpressionWrapper = newMethodCall;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
-        objectExpressionWrapper = newMethodCall;
+    }
+
+    private MethodCallExpressionWrapper convertRequestObjectSelectionToObjectMethodCall(
+            WebServiceRequestEntity requestEntity) {
+
+        MapExpressionWrapper variableMapExpression;
+
+        MethodCallExpressionWrapper methodCallExpression = (MethodCallExpressionWrapper) objectExpressionWrapper;
+        if (methodCallExpression.getArguments().getExpressions().size() <= 1) {
+            variableMapExpression = new MapExpressionWrapper(methodCallExpression.getArguments());
+        } else {
+            ExpressionWrapper secondParam = methodCallExpression.getArguments().getExpressions().get(1);
+            if (!(secondParam instanceof MapExpressionWrapper)) {
+                variableMapExpression = new MapExpressionWrapper(methodCallExpression.getArguments());
+            } else {
+                variableMapExpression = (MapExpressionWrapper) secondParam;
+            }
+        }
+
+        MethodCallExpressionWrapper newMethodCallExpression = AstEntityInputUtil.createNewFindTestObjectMethodCall(
+                requestEntity.getIdForDisplay(), objectExpressionWrapper.getParent());
+        newMethodCallExpression.copyProperties(objectExpressionWrapper);
+
+        variableMapExpression.clearExpressions();
+
+        VariableEntity[] requestVariables = webServiceRequestVariablesPart.getVariables();
+        for (VariableEntity variable : requestVariables) {
+            MapEntryExpressionWrapper newMapEntry = new MapEntryExpressionWrapper(variableMapExpression);
+            newMapEntry.setKeyExpression(new ConstantExpressionWrapper(variable.getName(), newMapEntry));
+
+            ExpressionWrapper valueExpression = GroovyWrapperParser
+                    .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue());
+            newMapEntry.setValueExpression(valueExpression);
+            variableMapExpression.addExpression(newMapEntry);
+        }
+
+        if (variableMapExpression.getMapEntryExpressions().size() > 0) {
+            newMethodCallExpression.getArguments().addExpression(variableMapExpression);
+        }
+
+        return newMethodCallExpression;
     }
 
     @Override

@@ -11,13 +11,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.wsdl.Binding;
 import javax.wsdl.Definition;
 import javax.wsdl.Input;
 import javax.wsdl.Operation;
+import javax.wsdl.Types;
 import javax.wsdl.WSDLException;
 import javax.wsdl.extensions.http.HTTPOperation;
+import javax.wsdl.extensions.schema.Schema;
 import javax.wsdl.extensions.soap.SOAPOperation;
 import javax.wsdl.extensions.soap12.SOAP12Operation;
 import javax.xml.namespace.QName;
@@ -29,10 +33,13 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.javalite.http.Http;
 import org.javalite.http.Post;
 import org.javalite.http.Request;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.ibm.wsdl.BindingImpl;
@@ -80,6 +87,7 @@ public class WSDLHelper {
     private Definition definition;
 
     private Map<String, PortImpl> portMap;
+
 
     private WSDLHelper(String url, String authorizationValue) {
         this.url = url;
@@ -285,7 +293,7 @@ public class WSDLHelper {
     }
 
     public SOAPMessage generateInputSOAPMessage(String requestMethod, String namespaceURI, String actionUri,
-            String operationName) throws SOAPException, WSDLException {
+            String operationName, Map<String, List<String>> paramMap) throws SOAPException, WSDLException {
         SOAPMessage soapMessage = MessageFactory.newInstance().createMessage();
         SOAPPart soapPart = soapMessage.getSOAPPart();
 
@@ -295,13 +303,21 @@ public class WSDLHelper {
 
         // SOAP Body
         SOAPElement soapBodyElemment = envelope.getBody().addChildElement(operationName, THIS_NAMESPACE);
-
-        // Input Parameters
-        Input input = getOperationByRequestMethodNName(requestMethod, operationName).getInput();
-
-        Collection<PartImpl> parts = input.getMessage().getParts().values();
-        for (PartImpl part : parts) {
-            soapBodyElemment.addChildElement(part.getName(), THIS_NAMESPACE).addTextNode("?");
+        if(paramMap.get(operationName) != null){
+            
+        	List<String> params = paramMap.get(operationName);
+            for(String param: params){
+            	soapBodyElemment.addChildElement(param, THIS_NAMESPACE).addTextNode("?");
+            }
+            
+        } else {
+            // Input Parameters
+            Input input = getOperationByRequestMethodNName(requestMethod, operationName).getInput();
+            Collection<PartImpl> parts = input.getMessage().getParts().values();
+            
+            for (PartImpl part : parts) {
+                soapBodyElemment.addChildElement(part.getName(), THIS_NAMESPACE).addTextNode("?");
+            }   
         }
 
         MimeHeaders headers = soapMessage.getMimeHeaders();
@@ -311,18 +327,81 @@ public class WSDLHelper {
         return soapMessage;
     }
 
+	public  Map<String, List<String>> getParamMap(){
+    	Map<String, List<String>> paramMap = new HashMap<>();
+    	try{
+	    	List<String> operationNames = getOperationNamesByRequestMethod(SOAP);
+            Types types = getDefinition().getTypes();
+        	for(Object obj : SafeUtils.safeList(types.getExtensibilityElements())){
+        		if(obj != null && obj instanceof Schema){
+        			Schema schema = (Schema) obj;
+        			NodeList nodeList = schema.getElement().getChildNodes();
+        			if(nodeList != null){
+            			for(String name: operationNames){
+            			    if (StringUtils.isEmpty(name)) {
+            			        continue;
+            			    }
+            				List<String> params =
+                			XmlUtils.wrapNodeList(nodeList).stream()
+                			.filter(a -> a.getNodeType() == Node.ELEMENT_NODE)
+                			.filter(a -> {
+                			    Node node = a.getAttributes().getNamedItem("name");
+                			    return node != null && node.getNodeValue().equals(name);
+                			})
+                			.flatMap(WSDLHelper::flatten)
+                			.filter(a -> a.getNodeType() == Node.ELEMENT_NODE)
+                			.filter(a -> a.getAttributes().getNamedItem("name") != null)
+                			.filter(a -> !a.getAttributes().getNamedItem("name").getNodeValue().equals(name))
+                			.map(a -> a.getAttributes().getNamedItem("name").getNodeValue())
+                			.filter(a -> a != null)
+                			.collect(Collectors.toList());
+                			paramMap.put(name, params);
+            			}
+        			}
+        		}
+        	}
+        	return paramMap;
+    	} catch (Exception ex){
+    		// Do nothing
+    	    return Collections.emptyMap();
+    	}
+    }
+    
+    public static Stream<Node> flatten(Node node){
+    	return Stream.concat(Stream.of(node),
+    			XmlUtils.wrapNodeList(node.getChildNodes()).stream().flatMap(WSDLHelper::flatten));
+    }
+
     public static String generateInputSOAPMessageText(String url, String authorizationValue, String requestMethod,
-            String operationName) throws WSDLException, SOAPException, IOException {
+            String operationName, Map<String, List<String>> paramMap) throws WSDLException, SOAPException, IOException {
         WSDLHelper helper = WSDLHelper.newInstance(url, authorizationValue);
-        String namespaceURI = helper.getService().getQName().getNamespaceURI();
         BindingOperationImpl bindingOperation = helper.getBindingOperationsByRequestMethod(requestMethod)
                 .stream()
                 .filter(bo -> bo.getName().equals(operationName))
                 .findFirst()
                 .get();
         String operationURI = helper.getOperationURI(bindingOperation, requestMethod);
+
+        String namespaceURI = helper.getService().getQName().getNamespaceURI();
         SOAPMessage soapMessage = helper.generateInputSOAPMessage(requestMethod, namespaceURI, operationURI,
-                operationName);
+                operationName, paramMap);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        soapMessage.writeTo(out);
+        return new String(out.toByteArray(), StandardCharsets.UTF_8);
+    }
+    
+    public static String generateInputSOAPMessageText(WSDLHelper helper, String requestMethod,
+            String operationName, Map<String, List<String>> paramMap) throws WSDLException, SOAPException, IOException {
+        BindingOperationImpl bindingOperation = helper.getBindingOperationsByRequestMethod(requestMethod)
+                .stream()
+                .filter(bo -> bo.getName().equals(operationName))
+                .findFirst()
+                .get();
+        String operationURI = helper.getOperationURI(bindingOperation, requestMethod);
+
+        String namespaceURI = helper.getService().getQName().getNamespaceURI();
+        SOAPMessage soapMessage = helper.generateInputSOAPMessage(requestMethod, namespaceURI, operationURI,
+                operationName, paramMap);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         soapMessage.writeTo(out);
         return new String(out.toByteArray(), StandardCharsets.UTF_8);

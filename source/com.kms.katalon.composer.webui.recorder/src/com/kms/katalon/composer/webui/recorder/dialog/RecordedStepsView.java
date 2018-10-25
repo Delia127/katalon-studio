@@ -268,15 +268,17 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     }
 
     private void secureSetTextAction(HTMLActionMapping newAction) {
-        newAction.setAction(HTMLAction.SetEncryptedText);
-        HTMLActionParamValueType passwordParam = newAction.getData()[0];
-        ConstantExpressionWrapper stringWrapper = (ConstantExpressionWrapper) passwordParam.getValue();
-        String password = stringWrapper.getValueAsString();
-        try {
-            stringWrapper.setValue(CryptoUtil.encode(CryptoUtil.getDefault(password)));
-        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            LoggerSingleton.logError(e);
-        }
+    	if(newAction.getAction() != HTMLAction.SendKeys){
+    		 newAction.setAction(HTMLAction.SetEncryptedText);
+    	        HTMLActionParamValueType passwordParam = newAction.getData()[0];
+    	        ConstantExpressionWrapper stringWrapper = (ConstantExpressionWrapper) passwordParam.getValue();
+    	        String password = stringWrapper.getValueAsString();
+    	        try {
+    	            stringWrapper.setValue(CryptoUtil.encode(CryptoUtil.getDefault(password)));
+    	        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
+    	            LoggerSingleton.logError(e);
+    	        }
+    	}       
     }
 
     private boolean preventDuplicatedActions(HTMLActionMapping newAction, AstBuiltInKeywordTreeTableNode latestNode,

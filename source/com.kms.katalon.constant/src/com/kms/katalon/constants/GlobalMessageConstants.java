@@ -90,6 +90,8 @@ public class GlobalMessageConstants extends NLS {
     public static String TEST_CASE;
 
     public static String TEST_SUITE;
+    
+    public static String TEST_SUITE_COLLECTION;
 
     public static String TEST_OBJECT;
 
@@ -177,7 +179,13 @@ public class GlobalMessageConstants extends NLS {
 
     public static String ROOT_FOLDER_NAME_TEST_LISTENER;
 
+    public static String ROOT_FOLDER_NAME_FEATURES;
+    
+    public static String ROOT_FOLDER_NAME_INCLUDE;
+
     public static String FILE_NAME_GLOBAL_VARIABLE;
+
+    public static String INCLUDE_SCRIPTS_FOLDER;
 
     public static String NULL;
 
@@ -220,7 +228,15 @@ public class GlobalMessageConstants extends NLS {
     public static String APPIUM_INSTALLATION_GUIDE_MSG;
 
     public static String URL_TROUBLESHOOTING_MOBILE_TESTING;
+    
+    public static String DIA_LET_START;
+    
+    public static String DIA_NEW_PROJECT;
+    
+    public static String DIA_NAME_EXISTED;
 
+    public static String DIA_TITLE_QUICKSTART;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, GlobalMessageConstants.class);

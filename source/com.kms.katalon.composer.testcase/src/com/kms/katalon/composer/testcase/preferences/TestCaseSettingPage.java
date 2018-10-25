@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.testcase.preferences;
 
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -11,14 +10,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
 
-public class TestCaseSettingPage extends PreferencePage {
+public class TestCaseSettingPage extends PreferencePageWithHelp {
 
     private Composite container;
 
@@ -88,5 +89,15 @@ public class TestCaseSettingPage extends PreferencePage {
                     .post(EventConstants.TESTCASE_SETTINGS_FAILURE_HANDLING_UPDATED, null);
         }
         return super.performOk();
+    }
+    
+    @Override
+    public boolean hasDocumentation() {
+        return true;
+    }
+    
+    @Override
+    public String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTING_TEST_CASE;
     }
 }

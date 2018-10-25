@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.execution.handlers;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -35,12 +36,15 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
+import org.eclipse.ui.part.FileEditorInput;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
 import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
@@ -51,11 +55,15 @@ import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.SystemFileController;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.entity.FeatureFileExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
@@ -120,6 +128,12 @@ public abstract class AbstractExecutionHandler {
                             || partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)) {
                         return true;
                     }
+                    if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
+                        CompatibilityEditor editor = (CompatibilityEditor) part.getObject();
+                        if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
+                            return true;
+                        }
+                    }
                 }
                 return false;
             }
@@ -138,7 +152,6 @@ public abstract class AbstractExecutionHandler {
     @Execute
     public void execute(ParameterizedCommand command) {
         try {
-            LaunchMode launchMode = getLaunchMode(command);
             execute(getLaunchMode(command));
         } catch (ExecutionException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
@@ -151,7 +164,7 @@ public abstract class AbstractExecutionHandler {
         }
     }
 
-    public static Entity getExecutionTarget() {
+    public static Entity getExecutionTarget() throws DALException {
         MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                 application);
         MPart selectedPart = (MPart) composerStack.getSelectedElement();
@@ -187,6 +200,15 @@ public abstract class AbstractExecutionHandler {
                     return null;
                 }
                 return testSuiteComposite.getOriginalTestSuite();
+            } else if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
+                CompatibilityEditor editor = (CompatibilityEditor) selectedPart.getObject();
+                if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
+                    FileEditorInput editorInput = (FileEditorInput) editor.getEditor().getEditorInput();
+                    String featureFilePath = new File(editorInput.getFile().getRawLocationURI()).getAbsolutePath();
+
+                    return SystemFileController.getInstance().getSystemFile(featureFilePath,
+                            ProjectController.getInstance().getCurrentProject());
+                }
             }
         }
         return null;
@@ -231,7 +253,59 @@ public abstract class AbstractExecutionHandler {
         } else if (targetEntity instanceof TestSuiteEntity) {
             TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
             executeTestSuite(testSuite, launchMode, runConfiguration);
+        } else if (targetEntity instanceof SystemFileEntity) {
+            SystemFileEntity feature = (SystemFileEntity) targetEntity;
+            executeFeatureFile(feature, launchMode, runConfiguration);
         }
+    }
+
+    public void executeFeatureFile(final SystemFileEntity feature, final LaunchMode launchMode,
+            final IRunConfiguration runConfig) throws Exception {
+        Job job = new Job(ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE) {
+            @Override
+            protected IStatus run(final IProgressMonitor monitor) {
+                try {
+                    monitor.beginTask(
+                            ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE,
+                            3);
+
+                    final FeatureFileExecutedEntity testSuiteExecutedEntity = new FeatureFileExecutedEntity(feature);
+                    monitor.subTask(StringConstants.HAND_JOB_ACTIVATING_VIEWERS);
+                    openConsoleLog();
+                    validateJobProgressMonitor(monitor);
+                    monitor.worked(1);
+
+                    monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
+                    runConfig.build(feature, testSuiteExecutedEntity);
+                    validateJobProgressMonitor(monitor);
+                    monitor.worked(1);
+
+                    monitor.subTask(
+                            ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE);
+                    LauncherManager launcherManager = LauncherManager.getInstance();
+                    ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
+                    launcherManager.addLauncher(launcher);
+
+                    monitor.worked(1);
+
+                    monitor.done();
+                    return Status.OK_STATUS;
+
+                } catch (JobCancelException e) {
+                    return Status.CANCEL_STATUS;
+                } catch (final Exception e) {
+                    sync.syncExec(() -> {
+                        MultiStatusErrorDialog.showErrorDialog(e,
+                                ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_MSG_UNABLE_TO_EXECUTE_FEATURE_FILE,
+                                e.getMessage());
+                    });
+
+                    return Status.CANCEL_STATUS;
+                }
+            }
+        };
+        job.setUser(true);
+        job.schedule();
     }
 
     public void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
@@ -280,7 +354,7 @@ public abstract class AbstractExecutionHandler {
                         LauncherManager launcherManager = LauncherManager.getInstance();
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
-                        
+
                         trackTestSuiteExecution(launchMode, runConfig);
 
                         monitor.worked(1);
@@ -314,17 +388,17 @@ public abstract class AbstractExecutionHandler {
 
                     return Status.CANCEL_STATUS;
                 } finally {
-//                    UsageInfoCollector.collect(
-//                            UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
+                    // UsageInfoCollector.collect(
+                    // UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
                 }
             }
         };
         job.setUser(true);
         job.schedule();
     }
-    
+
     private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig) {
-        Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString());
+        Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString(), runConfig.getName());
     }
 
     /**

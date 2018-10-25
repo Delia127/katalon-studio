@@ -62,13 +62,13 @@ public class MobileSettingPreferencePage extends FieldEditorPreferencePageWithHe
     }
 
     @Override
-    protected boolean hasDocumentation() {
+    public boolean hasDocumentation() {
         String os = Platform.getOS();
         return StringUtils.equals(os, Platform.OS_MACOSX) || StringUtils.equals(os, Platform.OS_WIN32);
     }
 
     @Override
-    protected String getDocumentationUrl() {
+    public String getDocumentationUrl() {
         String os = Platform.getOS();
         if (StringUtils.equals(os, Platform.OS_MACOSX)) {
             return DocumentationMessageConstants.PREFERENCE_MOBILE_MACOS;

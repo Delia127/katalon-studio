@@ -16,7 +16,8 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.ImageConstants;
-import com.kms.katalon.composer.project.handlers.NewSampleLocalProjectHandler;
+import com.kms.katalon.composer.project.sample.SampleLocalProject;
+import com.kms.katalon.composer.project.sample.SampleProjectType;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
@@ -44,21 +45,22 @@ public class SampleProjectMenuContribution implements EventHandler {
             menuItems.add(newMenuSeparator());
 
             List<SampleRemoteProject> remoteProjects = SampleRemoteProjectProvider.getCachedProjects();
-
+           
             ProjectParameterizedCommandBuilder commandBuilder = new ProjectParameterizedCommandBuilder();
             if (remoteProjects.size() <= 0) {
-                for (String projectType : SAMPLE_LOCAL_PROJECTS) {
+                List<SampleLocalProject> localProjects = SampleProjectProvider.getInstance().getSampleProjects();
+                for (SampleLocalProject project : localProjects) {
                     // Create menu item
                     MHandledMenuItem newLocalProjectMenuItem = MMenuFactory.INSTANCE.createHandledMenuItem();
-                    newLocalProjectMenuItem.setLabel(NewSampleLocalProjectHandler.DIALOG_TITLES.get(projectType));
+                    newLocalProjectMenuItem.setLabel(project.getName());
                     newLocalProjectMenuItem.setContributorURI(ConstantsHelper.getApplicationURI());
                     newLocalProjectMenuItem.setCommand(newTempCommand());
                     newLocalProjectMenuItem.setTooltip(StringUtils.EMPTY);
-                    newLocalProjectMenuItem.setIconURI(getIconURIForLocalProject(projectType));
+                    newLocalProjectMenuItem.setIconURI(getIconURIForProject(project.getType()));
 
                     // Create parameterized command
                     newLocalProjectMenuItem
-                            .setWbCommand(commandBuilder.createSampleLocalProjectParameterizedCommand(projectType));
+                            .setWbCommand(commandBuilder.createSampleLocalProjectParameterizedCommand(project));
 
                     menuItems.add(newLocalProjectMenuItem);
                 }
@@ -70,7 +72,7 @@ public class SampleProjectMenuContribution implements EventHandler {
                     remoteProjectMenuItem.setContributorURI(ConstantsHelper.getApplicationURI());
                     remoteProjectMenuItem.setCommand(newTempCommand());
                     remoteProjectMenuItem.setTooltip(StringUtils.EMPTY);
-                    remoteProjectMenuItem.setIconURI(getIconURIForRemoteProject(project.getType()));
+                    remoteProjectMenuItem.setIconURI(getIconURIForProject(project.getType()));
 
                     // Create parameterized command
                     remoteProjectMenuItem.setWbCommand(commandBuilder.createRemoteProjectParameterizedCommand(project));
@@ -94,23 +96,12 @@ public class SampleProjectMenuContribution implements EventHandler {
         command.setCommandName("Temp");
         return command;
     }
-
-    public String getIconURIForRemoteProject(SampleRemoteProject.ProjectType projectType) {
+    
+    public String getIconURIForProject(SampleProjectType projectType) {
         switch (projectType) {
             case MOBILE:
                 return ImageConstants.URL_SAMPLE_MOBILE_16.toString();
             case WS:
-                return ImageConstants.URL_SAMPLE_WS_16.toString();
-            default:
-                return ImageConstants.URL_SAMPLE_WEB_16.toString();
-        }
-    }
-    
-    public String getIconURIForLocalProject(String projectType) {
-        switch (projectType) {
-            case SampleProjectProvider.SAMPLE_MOBILE:
-                return ImageConstants.URL_SAMPLE_MOBILE_16.toString();
-            case SampleProjectProvider.SAMPLE_WEB_SERVICE:
                 return ImageConstants.URL_SAMPLE_WS_16.toString();
             default:
                 return ImageConstants.URL_SAMPLE_WEB_16.toString();
