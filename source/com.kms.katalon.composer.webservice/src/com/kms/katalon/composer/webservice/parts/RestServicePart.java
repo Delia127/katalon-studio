@@ -378,7 +378,7 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void createResponseComposite(Composite parent) {
         super.createResponseComposite(parent);
-        responseBodyEditor = new ResponseBodyEditorsComposite(responseBodyComposite, SWT.NONE);
+        responseBodyEditor = new ResponseBodyEditorsComposite(responseBodyComposite, SWT.NONE, this);
         responseBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
 
@@ -400,6 +400,7 @@ public class RestServicePart extends WebServicePart {
 
         if (isBodySupported(requestMethod) && requestBodyEditor.getHttpBodyType() != null) {
             originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
+            originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
         }
 
         updatePartImage();

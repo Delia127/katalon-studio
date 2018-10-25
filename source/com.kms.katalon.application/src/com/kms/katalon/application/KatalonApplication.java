@@ -28,7 +28,7 @@ public class KatalonApplication {
         SESSION_ID = UUID.randomUUID().toString();
 
         MAC_ADDRESS = getMacAddress();
-        
+
         USER_KEY = hashMacAndHostName();
     }
     

@@ -118,7 +118,7 @@ public class ImportWebServiceRequestObjectsFromWSDLHandler {
 
                 trackImportWSDL(dialog.getWSDLSpecLocation());
 
-                eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
             }
 
