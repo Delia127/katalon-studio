@@ -32,6 +32,7 @@ import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
 import com.kms.katalon.composer.handlers.QuitHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
