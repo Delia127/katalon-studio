@@ -97,14 +97,14 @@ if [ ! -d "${KATABUILD}" ]; then
 fi  
 
 #Distribute builds to shared folders on macOS
-mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
+sudo mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
 #Distribute builds to shared folders on macOS
-mount_smbfs //katabuild:[katalon2018]@192.168.35.52/share/build $KATABUILD2
-sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
-# sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
-# sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
-# sudo umount -f $KATABUILD
-# echo "Distribute packages on macOS ... Done"
+sudo mount_smbfs //katabuild:[katalon2018]@192.168.35.52/share/build $KATABUILD2
+#sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
+sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
+sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
+sudo umount -f $KATABUILD
+echo "Distribute packages on macOS ... Done"
 sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD2/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
 # sudo umount -f $KATABUILD2
