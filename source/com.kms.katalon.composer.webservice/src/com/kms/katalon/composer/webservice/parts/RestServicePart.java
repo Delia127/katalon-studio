@@ -400,6 +400,7 @@ public class RestServicePart extends WebServicePart {
 
         if (isBodySupported(requestMethod) && requestBodyEditor.getHttpBodyType() != null) {
             originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
+            originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
         }
 
         updatePartImage();
