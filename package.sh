@@ -59,9 +59,9 @@ sudo chmod 777 $TEMP_PATH
 
 sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "${TEMP_APP}"
 #sudo /usr/local/bin/create-dmg "${TEMP_APP}"
-cp -Rf "${MAC_APP}" /tmp/
+#cp -Rf "${MAC_APP}" /tmp/
 echo "DMG packaging ... Done"
-#sudo rm -r "${MAC_APP}"
+sudo rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
 
 #Distribute packages to shared folder
@@ -72,22 +72,22 @@ BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${2}/" # JOB_BASE_NAME
 #BRANCH_FOLDER is unique
 sudo mkdir -p $BRANCH_FOLDER
 
-#sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
-#sudo cd "${BRANCH_FOLDER}/${LINUX_64_FILE}"
-#sudo mv "${PRODUCT_NAME}_Linux_64.tar.gz" "${PRODUCT_NAME}_Linux_64-${3}.tar.gz"
+sudo cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
+sudo cd "${BRANCH_FOLDER}/${LINUX_64_FILE}"
+sudo mv "${PRODUCT_NAME}_Linux_64.tar.gz" "${PRODUCT_NAME}_Linux_64-${3}.tar.gz"
 
-#sudo cp "${MAC_FILE}" "${BRANCH_FOLDER}/"
-#sudo cd "${BRANCH_FOLDER}/${MAC_DIR}"
-#sudo mv "${MAC_NAME}_MacOS.tar.gz" "${MAC_NAME}_MacOS-${3}.tar.gz"
+sudo cp "${MAC_FILE}" "${BRANCH_FOLDER}/"
+sudo cd "${BRANCH_FOLDER}/${MAC_DIR}"
+sudo mv "${MAC_NAME}_MacOS.tar.gz" "${MAC_NAME}_MacOS-${3}.tar.gz"
 
-#sudo mv "$(pwd -P)/$MAC_PACKAGE" "${BRANCH_FOLDER}/"
-#sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
-#sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
-#sudo mv "${PRODUCT_NAME}_Windows_32.zip" "${PRODUCT_NAME}_Windows_32-${3}.zip"
+sudo mv "$(pwd -P)/$MAC_PACKAGE" "${BRANCH_FOLDER}/"
+sudo cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
+sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
+sudo mv "${PRODUCT_NAME}_Windows_32.zip" "${PRODUCT_NAME}_Windows_32-${3}.zip"
 
-#sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
-#sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
-#sudo mv "${PRODUCT_NAME}_Windows_64.zip" "${PRODUCT_NAME}_Windows_64-${3}.zip"
+sudo cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
+sudo cd "${BRANCH_FOLDER}/${WINDOWS_32_FILE}"
+sudo mv "${PRODUCT_NAME}_Windows_64.zip" "${PRODUCT_NAME}_Windows_64-${3}.zip"
 #cp -Rf $CURRENT
 
 # echo $WORKSPACE
