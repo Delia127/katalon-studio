@@ -136,7 +136,9 @@ public class BundleBuildPath implements IBuildPath {
                 if (isValidEntry(requiredBundle)) {
                     File bundleFile = new File(ClassPathResolver.getBundleLocation(requiredBundle));
                     if (bundleFile.isDirectory()) {
-                        requiredBuildPaths.addAll(new BundleBuildPath(requiredBundle).getChildBuildPaths());
+                        BundleBuildPath bundleBuildPath = new BundleBuildPath(requiredBundle);
+                        requiredBuildPaths.add(bundleBuildPath);
+                        requiredBuildPaths.addAll(bundleBuildPath.getChildBuildPaths());
                     } else {
                         requiredBuildPaths.add(new BuildPathEntry(ClassPathResolver.getBundleLocation(requiredBundle)));
                     }
