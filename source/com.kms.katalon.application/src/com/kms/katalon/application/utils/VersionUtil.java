@@ -57,7 +57,8 @@ public class VersionUtil {
     }
     
     public static boolean isDevelopmentBuild() {
-        return ApplicationInfo.DEV_PROFILE.equals(ApplicationInfo.profile());
+        return ApplicationInfo.DEV_PROFILE.equals(ApplicationInfo.profile())
+                || "${build.profile}".equals(ApplicationInfo.profile());
     }
 
     public static boolean isStagingBuild() {
