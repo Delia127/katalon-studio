@@ -150,7 +150,7 @@ public class ServerAPICommunicationUtil {
     
     public static String getAPIUrl() {
 
-        if (VersionUtil.isInternalBuild()) {
+        if (VersionUtil.isStagingBuild()) {
             return DEVELOPMENT_URL_API;
         } else {
             return PRODUCTION_URL_API;
@@ -158,7 +158,7 @@ public class ServerAPICommunicationUtil {
     }
 
     public static String getWebUrl() {
-        if (VersionUtil.isInternalBuild()) {
+        if (VersionUtil.isStagingBuild()) {
             return DEVELOPMENT_WEB_URL;
         }
         return PRODUCTION_WEB_URL;

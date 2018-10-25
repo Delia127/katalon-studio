@@ -56,9 +56,13 @@ public class VersionUtil {
         }
     }
     
-    public static boolean isInternalBuild() {
-        VersionInfo version = VersionUtil.getCurrentVersion();
-        return VersionInfo.MINIMUM_VERSION.equals(version.getVersion()) || version.getBuildNumber() == 0;
+    public static boolean isDevelopmentBuild() {
+        return ApplicationInfo.DEV_PROFILE.equals(ApplicationInfo.profile());
+    }
+
+    public static boolean isStagingBuild() {
+        return ApplicationInfo.STAG_PROFILE.equals(ApplicationInfo.profile()) 
+                || ApplicationInfo.DEV_PROFILE.equals(ApplicationInfo.profile());
     }
 
     public static boolean isNewer(String version, String comparedVersion) {
