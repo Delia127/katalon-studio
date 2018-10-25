@@ -56,7 +56,7 @@ public class RecentProjectHandler {
      */
     @Inject
     @Optional
-    private void openLastRecentProject(@UIEventTopic(EventConstants.WORKSPACE_CREATED) Object object) {
+    private void openLastRecentProject(@UIEventTopic(EventConstants.ACTIVATION_CHECKED) Object object) {
         if (ProjectController.getInstance().getCurrentProject() != null)
             return;
 

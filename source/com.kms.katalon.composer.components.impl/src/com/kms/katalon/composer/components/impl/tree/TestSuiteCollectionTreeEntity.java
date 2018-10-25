@@ -17,7 +17,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 public class TestSuiteCollectionTreeEntity extends AbstractTreeEntity {
     private static final long serialVersionUID = -1729536951389032359L;
 
-    private static final String TEST_SUITE_COLLECTION_TYPE_NAME = GlobalStringConstants.TEST_SUITE;
+    private static final String TEST_SUITE_COLLECTION_TYPE_NAME = GlobalStringConstants.TEST_SUITE_COLLECTION;
 
     public static final String KEY_WORD = GlobalStringConstants.ENTITY_KW_TEST_SUITE;
 

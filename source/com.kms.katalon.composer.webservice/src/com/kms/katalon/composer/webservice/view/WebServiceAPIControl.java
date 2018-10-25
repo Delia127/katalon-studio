@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -47,6 +48,8 @@ public class WebServiceAPIControl extends Composite {
     private MenuItem mniAddRequestToNewTestCase;
     
     private MenuItem mniAddRequestToExistingTestCase;
+    
+    private ToolItem btnSaveDraft;
 
     public WebServiceAPIControl(Composite parent, boolean isSOAP, boolean isDraft, String url) {
         super(parent, SWT.NONE);
@@ -104,6 +107,12 @@ public class WebServiceAPIControl extends Composite {
             mniAddRequestToExistingTestCase.setID(1);
             
             btnAddRequestToTestCase.setData(menuAddRequestToTestCase);
+        }
+        
+        if (isDraft) {
+            btnSaveDraft = new ToolItem(toolbar, SWT.PUSH);
+            btnSaveDraft.setImage(ImageConstants.IMG_24_SAVE);
+            btnSaveDraft.setToolTipText(ComposerWebserviceMessageConstants.BTN_SAVE_DRAFT_REQUEST);
         }
         
         toolbar.setLayoutData(new GridData(SWT.CENTER, SWT.RIGHT, false, true));
@@ -165,6 +174,13 @@ public class WebServiceAPIControl extends Composite {
             return;
         }
         mniAddRequestToExistingTestCase.addSelectionListener(selectionListener);
+    }
+    
+    public void addSaveDraftSelectionListener(SelectionListener selectionListener) {
+        if (selectionListener == null) {
+            return;
+        }
+        btnSaveDraft.addSelectionListener(selectionListener);
     }
 
     private void setInput(boolean isSOAP) {

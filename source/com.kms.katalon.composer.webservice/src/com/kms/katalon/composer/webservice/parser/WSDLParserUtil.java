@@ -5,22 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.wsdl.WSDLException;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.util.SafeUtils;
 import com.kms.katalon.composer.webservice.util.WSDLHelper;
 import com.kms.katalon.composer.webservice.util.XmlUtils;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class WSDLParserUtil {
-	@SuppressWarnings({ "static-access", "finally" })
-	public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(String requestMethod, String url) throws Exception{
+	@SuppressWarnings({ "static-access" })
+	public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(String requestMethod, String url) 
+			throws InterruptedException, InvocationTargetException, WSDLException{
 		List<WebServiceRequestEntity> newWSTestObjects = new ArrayList<WebServiceRequestEntity>();
-		
-		try{
+
 			WSDLHelper wsdlHelperInstance = WSDLHelper.newInstance(url, null);
 			List<String> operationNames = wsdlHelperInstance.getOperationNamesByRequestMethod(requestMethod);
 			Map<String, List<String>> paramMap = wsdlHelperInstance.getParamMap();
@@ -35,6 +38,9 @@ public class WSDLParserUtil {
 										"Background operations are running...", IProgressMonitor.UNKNOWN);
 
 								monitor.worked(1);
+								
+								WSDLHelper helper = WSDLHelper.newInstance(url, null);
+
 								for(Object objOperationName: SafeUtils.safeList(operationNames)){
 									if(objOperationName != null){
 										String operationName = (String) objOperationName;
@@ -47,7 +53,7 @@ public class WSDLParserUtil {
 				                        if (monitor.isCanceled()) {
 				                            return;
 				                        }
-										String SOAPBodyMessage = wsdlHelperInstance.generateInputSOAPMessageText(url, null, requestMethod, operationName, paramMap);
+										String SOAPBodyMessage = wsdlHelperInstance.generateInputSOAPMessageText(helper, requestMethod, operationName, paramMap);
 										if(SOAPBodyMessage != null){
 											newWSREntity.setSoapBody(XmlUtils.prettyFormat(SOAPBodyMessage));
 										}
@@ -56,26 +62,25 @@ public class WSDLParserUtil {
 									}
 								}
 								monitor.worked(1);
-							} catch (Exception ex1) {
-								throw new InterruptedException();
-							} finally {
+							} catch (Exception ex){
+									LoggerSingleton.getInstance().logError(ex.getMessage());
+									if(ex instanceof InterruptedException){
+										throw new InterruptedException();
+									}else {									
+										throw new InvocationTargetException(ex);		
+									}							
+							}
+							finally {
 								monitor.done();
 							}
 						}
 			});
+			return newWSTestObjects;
 
-			
-		} catch (Exception ex) {
-			throw ex;
-	    } finally {
-	    	if(newWSTestObjects.size() > 0 ) { 	    		
-	    		return newWSTestObjects;
-	    	} else 
-	    		return null;
-	    }
 	}
 
-	public static List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(String requestMethod, String directory) throws Exception {
+	public static List<WebServiceRequestEntity> newWSTestObjectsFromWSDL(String requestMethod, String directory) 
+			throws InvocationTargetException, InterruptedException, WSDLException {
         List<WebServiceRequestEntity> newWSTestObjects = WSDLParserUtil.parseFromFileLocationToWSTestObject(requestMethod, directory);
         return newWSTestObjects;
     }

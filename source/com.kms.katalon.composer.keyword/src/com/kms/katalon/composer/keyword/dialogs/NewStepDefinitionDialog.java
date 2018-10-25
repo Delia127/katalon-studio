@@ -15,15 +15,12 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -32,15 +29,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
+import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 
 public class NewStepDefinitionDialog extends CommonAbstractKeywordDialog {
 
@@ -65,6 +61,8 @@ public class NewStepDefinitionDialog extends CommonAbstractKeywordDialog {
     private Validator packageValidator;
 
     private Validator nameValidator;
+    
+    private Composite helpComposite;
 
     public NewStepDefinitionDialog(Shell parentShell, IPackageFragmentRoot rootPackage,
             IPackageFragment parentPackage) {
@@ -74,7 +72,6 @@ public class NewStepDefinitionDialog extends CommonAbstractKeywordDialog {
         setShellStyle(SWT.RESIZE);
         this.rootPackage = rootPackage;
         this.parentPackage = parentPackage;
-        setHelpAvailable(true);
     }
 
     @Override
@@ -100,41 +97,19 @@ public class NewStepDefinitionDialog extends CommonAbstractKeywordDialog {
         return super.createDialogBodyArea(parent);
 
     }
-
+    
     @Override
-    protected Control createHelpControl(Composite parent) {
-        Image helpImage = JFaceResources.getImage(DLG_IMG_HELP);
-        if (helpImage != null) {
-            return createHelpImageButton(parent, helpImage);
-        }
-        return createHelpLink(parent);
-    }
-
-    private Link createHelpLink(Composite parent) {
-        Link link = new Link(parent, SWT.WRAP | SWT.NO_FOCUS);
+    protected void createButtonsForButtonBar(Composite parent) {
         ((GridLayout) parent.getLayout()).numColumns++;
-        link.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-        link.setText("<a>" + URL_KEYWORD_HELP_LINK + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
-        link.setToolTipText(IDialogConstants.HELP_LABEL);
-        return link;
-    }
-
-    private ToolBar createHelpImageButton(Composite parent, Image image) {
-        ToolBar toolBar = new ToolBar(parent, SWT.FLAT | SWT.NO_FOCUS);
-        ((GridLayout) parent.getLayout()).numColumns++;
-        toolBar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-        final Cursor cursor = new Cursor(parent.getDisplay(), SWT.CURSOR_HAND);
-        toolBar.setCursor(cursor);
-        toolBar.addDisposeListener(e -> cursor.dispose());
-        ToolItem fHelpButton = new ToolItem(toolBar, SWT.CHECK);
-        fHelpButton.setImage(image);
-        fHelpButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                openBrowserToLink(URL_KEYWORD_HELP_LINK);
-            }
-        });
-        return toolBar;
+        helpComposite = new Composite(parent, SWT.NONE);
+        helpComposite.setLayout(new GridLayout(1, false));
+        helpComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
+        new HelpComposite(helpComposite, DocumentationMessageConstants.CUSTOM_KEYWORD);
+        
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
+                true);
+        createButton(parent, IDialogConstants.CANCEL_ID,
+                IDialogConstants.CANCEL_LABEL, false);
     }
 
     @Override

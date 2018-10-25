@@ -522,7 +522,7 @@ public class NewProjectDialog extends TitleAreaDialog {
             }
             updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
-            Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID());
+            Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID(), projectType);
 
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
             
@@ -550,7 +550,7 @@ public class NewProjectDialog extends TitleAreaDialog {
             updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
 
-            Trackings.trackCreatingProject();
+            Trackings.trackCreatingProject(newProject.getUUID(), projectType);
 
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
             
