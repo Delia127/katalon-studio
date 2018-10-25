@@ -160,6 +160,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String PA_TAB_SCRIPT;
 
     public static String PA_TAB_VARIABLE;
+    
+    public static String PA_TAB_VARIABLE_EDITOR;
 
     public static String PA_TAB_INTEGRATION;
 

@@ -18,14 +18,16 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+
+import com.kms.katalon.composer.components.impl.constants.TextContentType;
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
+import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.global.constants.StringConstants;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.parts.SavableCompositePart;
-import com.kms.katalon.composer.webservice.components.MirrorEditor;
-import com.kms.katalon.composer.webservice.constants.TextContentType;
-import com.kms.katalon.composer.webservice.editor.DocumentReadyHandler;
+
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;

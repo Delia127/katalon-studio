@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
+import javax.inject.Inject; 
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
@@ -116,6 +116,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     public static final String MANUAL_TAB_TITLE = StringConstants.PA_TAB_MANUAL;
 
     public static final String VARIABLE_TAB_TITLE = StringConstants.PA_TAB_VARIABLE;
+    
+    public static final String VARIABLE_EDITOR_TAB_TITLE = StringConstants.PA_TAB_VARIABLE_EDITOR;
 
     public static final String INTEGRATION_TAB_TITLE = StringConstants.PA_TAB_INTEGRATION;
 
@@ -206,9 +208,14 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 if (partObject instanceof TestCaseVariablePart) {
                     return DocumentationMessageConstants.TEST_CASE_VARIABLE;
                 }
+                
+                if (partObject instanceof TestCaseVariableEditorPart) {
+                	return DocumentationMessageConstants.TEST_CASE_VARIABLE_EDITOR;
+                }
                 if (partObject instanceof CompatibilityEditor) {
                     return DocumentationMessageConstants.TEST_CASE_SCRIPT;
                 }
+                
                 if (partObject instanceof TestCaseIntegrationPart) {
                     return ((TestCaseIntegrationPart) partObject).getDocumentationUrl();
                 }
@@ -289,7 +296,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 tabFolder.setMaximizeVisible(false);
                 tabFolder.setMinimizeVisible(false);
 
-                if (tabFolder.getItemCount() == 5) {
+                if (tabFolder.getItemCount() == 6) {
                     CTabItem testCasePartTab = tabFolder.getItem(CHILD_TEST_CASE_MANUAL_PART_INDEX);
                     testCasePartTab.setText(MANUAL_TAB_TITLE);
                     testCasePartTab.setImage(ImageConstants.IMG_16_MANUAL);
@@ -304,6 +311,11 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                     variablePartTab.setText(VARIABLE_TAB_TITLE);
                     variablePartTab.setImage(ImageConstants.IMG_16_VARIABLE);
                     variablePartTab.setShowClose(false);
+                    
+                    CTabItem variableEditorPartTab = tabFolder.getItem(CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX);
+                    variableEditorPartTab.setText(VARIABLE_EDITOR_TAB_TITLE);
+                    variableEditorPartTab.setImage(ImageConstants.IMG_16_SCRIPT);
+                    variableEditorPartTab.setShowClose(false);
 
                     CTabItem integrationPartTab = tabFolder.getItem(CHILD_TEST_CASE_INTEGRATION_PART_INDEX);
                     integrationPartTab.setText(INTEGRATION_TAB_TITLE);
@@ -413,7 +425,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     }
 
     public void changeOriginalTestCase(TestCaseEntity testCase) {
-        originalTestCase = testCase;
+        originalTestCase = testCase; 
         cloneTestCase();
     }
 
@@ -840,7 +852,10 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 childTestCaseVariablesPart.getMPart()
                         .setElementId(newCompositePartId + IdConstants.TEST_CASE_VARIABLES_PART_ID_SUFFIX);
                 getPropertiesPart().setElementId(newCompositePartId + IdConstants.TEST_CASE_PROPERTIES_PART_ID_SUFFIX);
-
+                
+                childTestCaseVariableEditorPart.getMPart()
+                .setElementId(newCompositePartId + IdConstants.TEST_CASE_VARIABLE_EDITOR_PART_ID_SUFFIX);
+                
                 partService.hidePart(getChildCompatibilityPart(), true);
                 String testCaseEditorId = newCompositePartId + IdConstants.TEST_CASE_EDITOR_PART_ID_SUFFIX;
                 MPart editorPart = editor.createTestCaseEditorPart(
@@ -903,6 +918,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         childrenParts.add(getChildManualPart());
         childrenParts.add(getChildCompatibilityPart());
         childrenParts.add(getChildVariablesPart());
+        childrenParts.add(getChildVariableEditorPart());
         childrenParts.add(getChildIntegrationPart());
         childrenParts.add(getPropertiesPart());
         return childrenParts;

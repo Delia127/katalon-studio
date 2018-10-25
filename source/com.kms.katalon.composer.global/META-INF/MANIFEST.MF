@@ -33,7 +33,7 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.commands,
  com.kms.katalon.tracking
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: com.kms.katalon.composer.webservice.components,
+Import-Package: com.kms.katalon.composer.components.impl.components,
  com.kms.katalon.composer.webservice.constants,
  com.kms.katalon.composer.webservice.editor,
  javax.annotation;version="1.2.0",
