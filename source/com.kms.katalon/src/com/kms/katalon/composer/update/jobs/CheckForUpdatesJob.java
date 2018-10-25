@@ -42,7 +42,7 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         monitor.beginTask("Checking for Updates...", 100);
-        if (VersionUtil.isInternalBuild()) {
+        if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
             updateResult = new CheckForUpdateResult();
             updateResult.setUpdateResult(UpdateResultValue.UP_TO_DATE);
             return Status.OK_STATUS;
