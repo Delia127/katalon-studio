@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.parts;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -548,4 +549,9 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
 
     }
 
+
+	public void setVariables(VariableEntity[] incomingVariables) {
+		if(variables != null && variables.size() != 0)
+			variables = Arrays.asList(incomingVariables);
+	}
 }

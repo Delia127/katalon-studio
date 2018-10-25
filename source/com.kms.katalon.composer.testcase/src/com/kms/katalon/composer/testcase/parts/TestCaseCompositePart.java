@@ -104,10 +104,12 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     private static final int CHILD_TEST_CASE_MANUAL_PART_INDEX = 0;
 
     private static final int CHILD_TEST_CASE_VARIABLE_PART_INDEX = 2;
+    
+    private static final int CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX = 3;
 
-    private static final int CHILD_TEST_CASE_INTEGRATION_PART_INDEX = 3;
+    private static final int CHILD_TEST_CASE_INTEGRATION_PART_INDEX = 4;
 
-    private static final int CHILD_TEST_CASE_PROPERTIES_PART_INDEX = 4;
+    private static final int CHILD_TEST_CASE_PROPERTIES_PART_INDEX = 5;
 
     public static final String SCRIPT_TAB_TITLE = StringConstants.PA_TAB_SCRIPT;
 
@@ -148,6 +150,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     private TestCasePart childTestCasePart;
 
     private TestCaseVariablePart childTestCaseVariablesPart;
+    
+    private TestCaseVariableEditorPart childTestCaseVariableEditorPart;
 
     private CompatibilityEditor childTestCaseEditorPart;
 
@@ -238,7 +242,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         List<MPartSashContainerElement> compositePartChildren = compositePart.getChildren();
         if (compositePartChildren.size() == 1 && compositePartChildren.get(0) instanceof MPartStack) {
             subPartStack = (MPartStack) compositePartChildren.get(0);
-            if (subPartStack.getChildren().size() == 5) {
+            if (subPartStack.getChildren().size() == 6) {
                 for (MStackElement stackElement : subPartStack.getChildren()) {
                     if (!(stackElement instanceof MPart)) {
                         continue;
@@ -258,6 +262,11 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
                     if (partObject instanceof TestCaseVariablePart) {
                         childTestCaseVariablesPart = (TestCaseVariablePart) partObject;
+                        continue;
+                    }
+                    
+                    if (partObject instanceof TestCaseVariableEditorPart) {
+                    	childTestCaseVariableEditorPart = (TestCaseVariableEditorPart) partObject;
                         continue;
                     }
 
@@ -328,9 +337,14 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
+                        	childTestCaseVariablesPart.setVariables(childTestCaseVariableEditorPart.getVariables());
                             Trackings.trackOpenObject("testCaseVariable");
                         }
-
+                        
+                        if(tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX){
+                        	childTestCaseVariableEditorPart.setScriptContentFrom(childTestCaseVariablesPart.getVariables());
+                        }
+                        
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_PROPERTIES_PART_INDEX) {
                             if (isScriptChanged || scriptNode == null) {
                                 setScriptContentToManual();
@@ -342,6 +356,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 tabFolder.layout();
             }
             childTestCaseVariablesPart.loadVariables();
+            childTestCaseVariableEditorPart.setScriptContentFrom(childTestCaseVariablesPart.getVariables());
             childTestCaseIntegrationPart.loadInput();
             initDefaultSelectedPart();
             if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX) {
@@ -529,7 +544,10 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     public MPart getChildVariablesPart() {
         return childTestCaseVariablesPart.getMPart();
     }
-
+    
+    public MPart getChildVariableEditorPart(){
+    	return childTestCaseVariableEditorPart.getMPart();
+    }
     public MPart getChildIntegrationPart() {
         return childTestCaseIntegrationPart.getMPart();
     }
@@ -660,6 +678,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         dirty.setDirty(isDirty);
         childTestCasePart.getMPart().setDirty(false);
         childTestCaseVariablesPart.getMPart().setDirty(false);
+        childTestCaseVariableEditorPart.getMPart().setDirty(false);
         childTestCaseEditorPart.getModel().setDirty(false);
         childTestCaseIntegrationPart.getMPart().setDirty(false);
         getPropertiesPart().setDirty(false);
@@ -667,7 +686,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     private boolean isAnyChildDirty() {
         return childTestCasePart.getMPart().isDirty() || childTestCaseEditorPart.getModel().isDirty()
-                || childTestCaseVariablesPart.getMPart().isDirty() || childTestCaseIntegrationPart.getMPart().isDirty()
+                || childTestCaseVariablesPart.getMPart().isDirty() || childTestCaseVariableEditorPart.getMPart().isDirty()
+                || childTestCaseIntegrationPart.getMPart().isDirty()
                 || propertiesPart.isDirty();
     }
 
@@ -750,7 +770,6 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             return;
         }
         changeOriginalTestCase(testCase);
-        childTestCaseVariablesPart.loadVariables();
         TestCaseTreeTableInput treeTableInput = childTestCasePart.getTreeTableInput();
         if (treeTableInput != null) {
             treeTableInput.reloadTestCaseVariables(childTestCasePart.getVariables());
@@ -841,6 +860,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
         // refresh child parts
         childTestCaseVariablesPart.loadVariables();
+        childTestCaseVariableEditorPart.setScriptContentFrom(childTestCaseVariablesPart.getVariables());
         if (childTestCasePart.getTreeTableInput() == null) {
             setScriptContentToManual();
         }

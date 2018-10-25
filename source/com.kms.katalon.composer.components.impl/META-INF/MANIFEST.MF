@@ -38,6 +38,7 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  org.apache.commons.lang3,
  com.kms.katalon.util
 Export-Package: com.kms.katalon.composer.components.impl.command,
+ com.kms.katalon.composer.components.impl.components,
  com.kms.katalon.composer.components.impl.constants,
  com.kms.katalon.composer.components.impl.control,
  com.kms.katalon.composer.components.impl.dialogs,

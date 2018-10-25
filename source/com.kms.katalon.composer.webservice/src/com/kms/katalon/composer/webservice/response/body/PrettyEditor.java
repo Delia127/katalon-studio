@@ -14,10 +14,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 
-import com.kms.katalon.composer.webservice.components.MirrorEditor;
+import com.kms.katalon.composer.components.impl.constants.TextContentType;
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
+import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
-import com.kms.katalon.composer.webservice.constants.TextContentType;
-import com.kms.katalon.composer.webservice.editor.DocumentReadyHandler;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.entity.webservice.TextBodyContent;
 

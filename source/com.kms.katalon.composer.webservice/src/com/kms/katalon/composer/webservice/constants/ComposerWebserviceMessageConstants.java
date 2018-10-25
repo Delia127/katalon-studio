@@ -178,7 +178,6 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MSG_SPECIFIED_FILE_NOT_EXIST_WARN;
 
     // TextBodyEditor
-    public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
     
     public static String PARAM_TABLE_MENU_ITEM_ADD;
     
