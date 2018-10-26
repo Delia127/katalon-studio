@@ -88,6 +88,9 @@ public class CheckForUpdatesHandler implements UpdateComponent {
                 }
                 switch (newUpdateResult.getUpdateResult()) {
                     case NEW_UPDATE_FOUND:
+                        if (silenceMode && newUpdateResult.getLatestVersionInfo().isQuickRelease()) {
+                            return;
+                        }
                         Executors.newSingleThreadExecutor().submit(() -> {
                             try {
                                 // Wait for Checking for Update dialog closes
