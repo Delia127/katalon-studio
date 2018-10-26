@@ -1,16 +1,17 @@
 package com.kms.katalon.composer.components.impl.editors;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -30,7 +31,7 @@ import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
-@SuppressWarnings("deprecation")
+
 public class MirrorEditor extends Composite {
 
     private static final String RESOURCES_TEMPLATE_EDITOR = "resources/template/editor";
@@ -42,6 +43,8 @@ public class MirrorEditor extends Composite {
     private DocumentReadyHandler documentReadyHandler;
 
     private File templateFile;
+    
+    private Collection<EditorChangeListener> listeners = new LinkedList<>();
 
     // A collection of mirror modes for some text types
     private static final Map<String, String> TEXT_MODE_COLLECTION;
@@ -82,7 +85,7 @@ public class MirrorEditor extends Composite {
             public void completed(ProgressEvent event) {
                 documentReady = true;
                 onDocumentReady();
-                
+
                 browser.evaluate("document.addEventListener('contextmenu', function(e) { e.preventDefault();});");
             }
 
@@ -123,7 +126,12 @@ public class MirrorEditor extends Composite {
         return templateFile;
     }
 
-    public void setEditable(boolean editable) {
+    private String getConfigurationFolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setEditable(boolean editable) {
         String command = MessageFormat.format("editor.setOption(\"{0}\", {1});", "readOnly", !editable);
         if (documentReady) {
             browser.evaluate(command);
@@ -135,6 +143,15 @@ public class MirrorEditor extends Composite {
     public void setText(String text) {
 
         String setTextCommand = String.format("editor.setValue(\"%s\");", StringEscapeUtils.escapeEcmaScript(text));
+        if (documentReady) {
+            browser.evaluate(setTextCommand);
+        } else {
+            (new SettingOptionsThread(browser, setTextCommand)).start();
+        }
+    }
+    
+    public void setHintText(String text) {
+        String setTextCommand = String.format("document.getElementById(\"lineHint\").innerHTML=\"%s\";", StringEscapeUtils.escapeEcmaScript(text));
         if (documentReady) {
             browser.evaluate(setTextCommand);
         } else {
@@ -172,16 +189,14 @@ public class MirrorEditor extends Composite {
     }
 
     public void beautify() {
-        String command = String.format("format(editor); "
-        								+ "editor.focus(); "
-        								+ "editor.setCursor({line: 0, ch: 0});");
+        String command = String.format("format(editor); " + "editor.focus(); " + "editor.setCursor({line: 0, ch: 0});");
         if (documentReady) {
             browser.evaluate(command);
         } else {
             (new SettingOptionsThread(browser, command)).start();
         }
     }
-    
+
     public String getText() {
         String command = "return editor.getValue();";
         return browser.evaluate(command).toString();
@@ -200,6 +215,28 @@ public class MirrorEditor extends Composite {
             }
         };
 
+        new BrowserFunction(browser, "handleMouseOverChanged") {
+            @Override
+            public Object function(Object[] objects) {
+                Iterator<EditorChangeListener> iterator = listeners.iterator();
+                while (iterator.hasNext()) {
+                    iterator.next().handleEditorEvent("handleMouseOverChanged", objects); 
+                }
+                return null;
+            }
+        };
+
+        new BrowserFunction(browser, "handleGenerateVerificationEvent") {
+            @Override
+            public Object function(Object[] objects) {
+                Iterator<EditorChangeListener> iterator = listeners.iterator();
+                while (iterator.hasNext()) {
+                    iterator.next().handleEditorEvent("handleGenerateVerificationEvent", objects); 
+                }
+                return null;
+            }
+        };
+
         addDisposeListener(e -> {
             if (templateFile != null && templateFile.exists()) {
                 templateFile.delete();
@@ -207,8 +244,11 @@ public class MirrorEditor extends Composite {
         });
     }
     
-    private static File getConfigurationFolder() throws IOException {
-        return new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
+    public void addEventListener(EditorChangeListener l) {
+        listeners.add(l);
     }
 
+    public interface EditorChangeListener {
+        void handleEditorEvent(String event, Object[] objects);
+    }
 }

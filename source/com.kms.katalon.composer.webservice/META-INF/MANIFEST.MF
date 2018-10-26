@@ -71,13 +71,13 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.fasterxml.jackson.core.jackson-core,
  com.fasterxml.jackson.core.jackson-databind,
  org.greenrobot.eventbus,
- io.swagger.annotations;bundle-version="2.0.0"
-Export-Package: com.kms.katalon.composer.webservice.constants,
- com.kms.katalon.composer.webservice.editor,
- com.kms.katalon.composer.webservice.parser,
  io.swagger.annotations,
  com.fasterxml.jackson.dataformat.jackson-dataformat-xml,
  com.fasterxml.jackson.module.jackson-module-jaxb-annotations,
  com.fasterxml.woodstox.woodstox-core,
  stax2-api,
- org.eclipse.osgi.services
+ org.eclipse.osgi.services,
+ io.swagger.annotations;bundle-version="2.0.0"
+Export-Package: com.kms.katalon.composer.webservice.constants,
+ com.kms.katalon.composer.webservice.editor,
+ com.kms.katalon.composer.webservice.parser
