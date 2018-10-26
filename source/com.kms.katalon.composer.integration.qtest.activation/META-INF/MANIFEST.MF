@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: qTest Activation
+Bundle-SymbolicName: com.kms.katalon.composer.integration.qtest.activation;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Require-Bundle: org.eclipse.e4.core.services,
+ com.kms.katalon.constant,
+ com.kms.katalon.composer.components.impl,
+ org.eclipse.osgi.services,
+ com.kms.katalon.entity,
+ com.kms.katalon.controller,
+ org.eclipse.swt,
+ org.eclipse.jface,
+ com.kms.katalon.composer.components,
+ javax.annotation,
+ javax.inject,
+ org.eclipse.e4.ui.model.workbench,
+ org.eclipse.e4.core.contexts,
+ com.kms.katalon.application,
+ org.eclipse.osgi
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

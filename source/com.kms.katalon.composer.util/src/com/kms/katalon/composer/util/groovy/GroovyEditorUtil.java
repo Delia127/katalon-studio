@@ -201,6 +201,7 @@ public class GroovyEditorUtil {
         
         InsertEdit insertEdit = new InsertEdit(offset, script);
         insertEdit.apply(document);
+        editor.selectAndReveal(offset, script.length());
     }
 
 }

@@ -507,4 +507,8 @@ public class WSRequestPartUI {
     public CTabItem getVerificationTab() {
         return tabFolder.getItem(3);
     }
+    
+    public void setSelectedTab(CTabItem tabItem) {
+        tabFolder.setSelection(tabItem);
+    }
 }
