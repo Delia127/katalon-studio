@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry exported="true" kind="lib" path="resources/lib/guava-10.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="resources/lib/joda-time-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/joda-time-1.6.jar" sourcepath="/var/folders/rf/jskg2k1n61xdrfptl_x3hpxr0000gp/T/.org.sf.feeling.decompiler1531710916495/source/joda-time-1.6-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="resources/lib/jira-rest-java-client-api-4.0.0.jar" sourcepath="C:/Users/duyluong/AppData/Local/Temp/decompiler/source/jira-rest-java-client-api-4.0.0-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>

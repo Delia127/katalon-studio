@@ -15,7 +15,7 @@ public interface IImageKeys {
 
     public static final String INTRO_SCREEN_6 = "intro/screen6.png"; //$NON-NLS-1$
     
-    public static final String INTRO_SCREEN_WELCOME = "intro/welcome_screen.png"; //$NON-NLS-1$
+    public static final String INTRO_SCREEN_WELCOME = "intro/welcome_screen_BG.png"; //$NON-NLS-1$
     // End Intro
 
     // Welcome
@@ -51,11 +51,11 @@ public interface IImageKeys {
     
     public static final String SCREEN_SHOT_MOBILE_LOG_VIEWER = "welcome/Mobile-View-execution-log.png"; //$NON-NLS-1$
     
-    public static final String SCREEN_SHOT_CREATE_WEB_SERVICE_REQUEST = "welcome/API-Create-a-web-service-request.png"; //$NON-NLS-1$
+    public static final String SCREEN_SHOT_USE_DRAFT_REQUEST = "welcome/API-use-draft-request.png"; //$NON-NLS-1$
     
-    public static final String SCREEN_SHOT_TEST_WEB_SERVICE_REQUEST = "welcome/API-Test-the-Web-Service-Request.png"; //$NON-NLS-1$
+    public static final String SCREEN_SHOT_SAVE_DRAFT_REQUEST = "welcome/API-save-draft-request.png"; //$NON-NLS-1$
     
-    public static final String SCREEN_SHOT_ADD_WEB_SERVICE_KEYWORD = "welcome/API-Add-a-web-service-keyword.png"; //$NON-NLS-1$
+    public static final String SCREEN_SHOT_ADD_REQUEST_TO_TEST_CASE = "welcome/API-add-request-to-test-case.png"; //$NON-NLS-1$
     
     public static final String SCREEN_SHOT_API_LOG_VIEWER = "welcome/API-view-the-execution-log.png"; //$NON-NLS-1$
     

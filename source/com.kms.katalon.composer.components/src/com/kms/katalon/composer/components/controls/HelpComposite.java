@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.components.controls;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -21,6 +22,9 @@ public class HelpComposite extends Composite {
         setLayout(createLayout());
         setLayoutData(createGridData());
         ToolBar toolBar = new ToolBar(this, SWT.FLAT);
+        Cursor cursor = new Cursor(parent.getDisplay(), SWT.CURSOR_HAND);
+        toolBar.setCursor(cursor);
+        toolBar.addDisposeListener(e -> cursor.dispose());
         new HelpToolItem(toolBar, documentationUrl);
     }
 

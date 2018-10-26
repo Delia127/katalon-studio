@@ -62,6 +62,8 @@ public class WebServiceUtil {
                     return ImageConstants.IMG_WS_PUT_METHOD_16;
                 case DELETE_METHOD:
                     return ImageConstants.IMG_WS_DELETE_METHOD_16;
+                case PATCH_METHOD:
+                    return ImageConstants.IMG_WS_PATCH_METHOD_16;
                 // New rest web service request.
                 default:
                     return ImageConstants.IMG_WS_GET_METHOD_16;
