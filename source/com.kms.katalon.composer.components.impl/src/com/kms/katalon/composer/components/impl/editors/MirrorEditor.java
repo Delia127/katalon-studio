@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -126,8 +127,13 @@ public class MirrorEditor extends Composite {
         return templateFile;
     }
 
-    private String getConfigurationFolder() {
-		// TODO Auto-generated method stub
+    private File getConfigurationFolder() {
+    	try {
+			return new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 
