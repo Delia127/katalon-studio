@@ -8,8 +8,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
+<<<<<<< HEAD
+=======
+import com.kms.katalon.composer.components.impl.constants.TextContentType;
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
+import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
+>>>>>>> origin/KAT-3778
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
-import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.composer.webservice.parts.SoapServicePart;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 

@@ -5,7 +5,11 @@ import java.io.IOException;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
+<<<<<<< HEAD
 import com.kms.katalon.composer.webservice.editor.MirrorEditor;
+=======
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
+>>>>>>> origin/KAT-3778
 import com.kms.katalon.core.testobject.ResponseObject;
 
 public class RawEditor extends Composite implements ResponseBodyEditor {

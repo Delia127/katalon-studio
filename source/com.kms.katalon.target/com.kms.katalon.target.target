@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="431">
+<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="433">
 <locations>
-<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.codehaus.groovy23.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
-<unit id="org.codehaus.groovy18.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
-<unit id="org.codehaus.groovy.m2eclipse.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
-<unit id="org.codehaus.groovy.jdt.patch.feature.group" version="2.9.2.xx-201611170128-e46"/>
-<unit id="org.codehaus.groovy20.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
-<unit id="org.codehaus.groovy24.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
-<unit id="org.codehaus.groovy22.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
-<unit id="org.codehaus.groovy.eclipse.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
-<unit id="org.codehaus.groovy21.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
-<repository location="http://localhost:33333/site/"/>
-</location>
 <location path="${eclipse_home}" type="Directory"/>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.objectweb.asm.all.debug" version="5.0.3"/>
@@ -30,7 +18,7 @@
 <unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.1"/>
 <unit id="jackson-core-asl" version="1.9.13"/>
 <unit id="wsdl4j" version="1.6.2"/>
-<unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml" version="2.9.1"/>
+<unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml" version="2.9.6"/>
 <unit id="javax.enterprise.cdi-api" version="1.2.0"/>
 <unit id="io.cucumber.datatable" version="1.0.3"/>
 <unit id="javax.xml.jaxp-api" version="1.4.2"/>
@@ -162,6 +150,20 @@
 <unit id="org.eclipse.jetty.websocket.api" version="9.3.9.v20160517"/>
 <repository location="http://localhost:9999/site"/>
 </location>
+<location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.codehaus.groovy.compilerless.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy23.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy18.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy.m2eclipse.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy.headless.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy.jdt.patch.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy20.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy24.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy22.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy.eclipse.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy21.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<repository location="http://localhost:33333/site/"/>
+</location>
 </locations>
 <includeBundles>
 <plugin id="antlr"/>
@@ -276,21 +278,21 @@
 <plugin id="org.apache.batik.util.source"/>
 <plugin id="org.apache.commons.beanutils"/>
 <plugin id="org.apache.commons.cli"/>
-<plugin id="org.apache.commons.cli"/>
 <plugin id="org.apache.commons.codec" version="1.7.0"/>
+<plugin id="org.apache.commons.collections"/>
 <plugin id="org.apache.commons.collections"/>
 <plugin id="org.apache.commons.compress"/>
 <plugin id="org.apache.commons.dbutils"/>
 <plugin id="org.apache.commons.digester"/>
 <plugin id="org.apache.commons.email"/>
-<plugin id="org.apache.commons.io" version="2.4.0"/>
 <plugin id="org.apache.commons.io" version="2.2.0.v201405211200"/>
+<plugin id="org.apache.commons.io" version="2.4.0"/>
 <plugin id="org.apache.commons.jxpath"/>
 <plugin id="org.apache.commons.jxpath.source"/>
 <plugin id="org.apache.commons.lang" version="2.6"/>
 <plugin id="org.apache.commons.lang3" version="3.6.0"/>
-<plugin id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <plugin id="org.apache.commons.logging" version="1.2.0"/>
+<plugin id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <plugin id="org.apache.commons.logging.source"/>
 <plugin id="org.apache.commons.math"/>
 <plugin id="org.apache.commons.pool"/>
@@ -302,16 +304,16 @@
 <plugin id="org.apache.felix.gogo.shell"/>
 <plugin id="org.apache.felix.gogo.shell.source"/>
 <plugin id="org.apache.httpcomponents.httpclient" version="4.5.1"/>
-<plugin id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
 <plugin id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
+<plugin id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
 <plugin id="org.apache.httpcomponents.httpmime"/>
 <plugin id="org.apache.jasper.glassfish"/>
 <plugin id="org.apache.jasper.glassfish.source"/>
 <plugin id="org.apache.log4j"/>
 <plugin id="org.apache.lucene.analysis"/>
 <plugin id="org.apache.lucene.analysis.source"/>
-<plugin id="org.apache.lucene.core" version="6.3.0"/>
 <plugin id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
+<plugin id="org.apache.lucene.core" version="6.3.0"/>
 <plugin id="org.apache.lucene.core.source"/>
 <plugin id="org.apache.poi"/>
 <plugin id="org.apache.poi.ooxml"/>
@@ -330,11 +332,12 @@
 <plugin id="org.codehaus.groovy" version="2.4.3.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.3.10.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2.xx-201611170128-e46"/>

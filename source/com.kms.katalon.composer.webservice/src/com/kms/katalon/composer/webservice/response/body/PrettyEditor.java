@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 
+<<<<<<< HEAD
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -29,6 +30,12 @@ import com.kms.katalon.composer.webservice.editor.MirrorEditor.EditorChangeListe
 import com.kms.katalon.composer.webservice.parts.VerificationScriptEventHandler;
 import com.kms.katalon.composer.webservice.util.JsonPathUtils;
 import com.kms.katalon.composer.webservice.util.XPathUtils;
+=======
+import com.kms.katalon.composer.components.impl.constants.TextContentType;
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
+import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
+import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
+>>>>>>> origin/KAT-3778
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.entity.webservice.TextBodyContent;
 

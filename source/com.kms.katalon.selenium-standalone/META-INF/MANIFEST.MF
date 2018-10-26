@@ -155,6 +155,7 @@ Export-Package:
  org.apache.commons.exec.environment,
  org.apache.commons.exec.launcher,
  org.apache.commons.exec.util,
+ org.apache.commons.lang3,
  org.openqa.grid.common,
  org.openqa.grid.common.exception,
  org.openqa.grid.internal,
