@@ -16,9 +16,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.impl.constants.TextContentType;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.composer.webservice.parts.VerificationScriptEventHandler;
 import com.kms.katalon.composer.webservice.response.body.RawEditor;
 import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditor;

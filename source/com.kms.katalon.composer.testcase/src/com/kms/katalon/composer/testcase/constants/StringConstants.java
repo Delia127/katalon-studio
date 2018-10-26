@@ -218,6 +218,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TAB_SCRIPT = ComposerTestcaseMessageConstants.PA_TAB_SCRIPT;
 
     public static final String PA_TAB_VARIABLE = ComposerTestcaseMessageConstants.PA_TAB_VARIABLE;
+    
+    public static final String PA_TAB_VARIABLE_EDITOR = ComposerTestcaseMessageConstants.PA_TAB_VARIABLE_EDITOR;
 
     public static final String PA_TAB_INTEGRATION = ComposerTestcaseMessageConstants.PA_TAB_INTEGRATION;
 
