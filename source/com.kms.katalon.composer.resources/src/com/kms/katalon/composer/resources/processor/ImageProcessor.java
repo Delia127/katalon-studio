@@ -220,6 +220,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_SOURCE_16);
+        ImageManager.registerImage(IImageKeys.GROOVY_16);
     }
 
     private void registerTestCaseStepImages() {

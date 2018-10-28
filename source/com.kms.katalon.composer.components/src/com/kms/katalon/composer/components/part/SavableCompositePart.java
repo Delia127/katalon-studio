@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.parts;
+package com.kms.katalon.composer.components.part;
 
 import java.util.List;
 

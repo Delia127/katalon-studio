@@ -48,6 +48,10 @@ public class GroovyEditorUtil {
 
     private static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
 
+    private static final String CUCUMBER_EDITOR_URI = "cucumber.eclipse.editor.editors.Editor";
+    
+    private static final String DEFAULT_TEXT_EDITOR_URI = "org.eclipse.ui.DefaultTextEditor";
+    
     public static MPart createTestCaseEditorPart(IFile scriptFile, MPartStack parentPartStack, String testCaseEditorId,
             EPartService partService, int index) {
         MPart editor = createEditorPart(scriptFile, partService);
@@ -66,11 +70,23 @@ public class GroovyEditorUtil {
     }
 
     public static MPart createEditorPart(IFile scriptFile, EPartService partService) {
+        return createEditorPart(scriptFile, partService, GROOVY_EDITOR_URI);
+    }
+    
+    public static MPart createCucumberEditorPart(IFile scriptFile, EPartService partService) {
+        return createEditorPart(scriptFile, partService, CUCUMBER_EDITOR_URI);
+    }
+    
+    public static MPart createDefaultEditorPart(IFile file, EPartService partService) {
+        return createEditorPart(file, partService, DEFAULT_TEXT_EDITOR_URI);
+    }
+    
+    private static MPart createEditorPart(IFile scriptFile, EPartService partService, String editorUri) {
         MPart editor = partService.createPart(CompatibilityEditor.MODEL_ELEMENT_ID);
 
         IEditorInput input = new FileEditorInput(scriptFile);
-        editor.getTags().add(GROOVY_EDITOR_URI);
-        createEditorReferenceForPart(editor, input, GROOVY_EDITOR_URI, null);
+        editor.getTags().add(editorUri);
+        createEditorReferenceForPart(editor, input, editorUri, null);
         updateActiveEditorSources(editor);
         EditorDescriptor descriptor = (EditorDescriptor) PlatformUI.getWorkbench()
                 .getActiveWorkbenchWindow()
@@ -78,13 +94,13 @@ public class GroovyEditorUtil {
                 .getWorkbenchWindow()
                 .getWorkbench()
                 .getEditorRegistry()
-                .findEditor(GROOVY_EDITOR_URI);
+                .findEditor(editorUri);
         recordEditor(input, descriptor);
 
         editor.getTags().add(IPresentationEngine.NO_MOVE);
         return editor;
     }
-
+    
     private static void recordEditor(IEditorInput input, IEditorDescriptor descriptor) {
         WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         EditorHistory history = ((Workbench) page.getWorkbenchWindow().getWorkbench()).getEditorHistory();
@@ -148,6 +164,7 @@ public class GroovyEditorUtil {
             IMemento memento) {
         IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
         EditorDescriptor descriptor = (EditorDescriptor) registry.findEditor(editorId);
+        
         WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         final EditorReference ref = new EditorReference(page.getWindowModel().getContext(), page, part, input,
                 descriptor, memento);

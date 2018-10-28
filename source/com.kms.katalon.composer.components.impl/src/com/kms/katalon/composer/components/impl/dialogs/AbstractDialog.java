@@ -136,7 +136,11 @@ public abstract class AbstractDialog extends Dialog {
         bottomComposite.setLayout(layout);
         bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         
-        new HelpCompositeForDialog(bottomComposite, getDocumentationUrl());
+        Composite helpComposite = new Composite(bottomComposite, SWT.NONE);
+        helpComposite.setLayout(new GridLayout(1, false));
+        helpComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+        new HelpCompositeForDialog(helpComposite, getDocumentationUrl());
+        
         super.createButtonBar(bottomComposite);
 
         return bottomComposite;
