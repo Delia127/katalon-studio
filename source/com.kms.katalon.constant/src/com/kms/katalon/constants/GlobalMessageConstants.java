@@ -185,8 +185,6 @@ public class GlobalMessageConstants extends NLS {
 
     public static String FILE_NAME_GLOBAL_VARIABLE;
 
-    public static String INCLUDE_SCRIPTS_FOLDER;
-
     public static String NULL;
 
     public static String UNKNOWN;
