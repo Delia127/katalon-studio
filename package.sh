@@ -90,10 +90,10 @@ BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${2}/" # JOB_BASE_NAME
 #sudo mv "${PRODUCT_NAME}_Windows_64.zip" "${PRODUCT_NAME}_Windows_64-${3}.zip"
 #cp -Rf $CURRENT
 cd $TEMP_PATH
-sudo mv "Katalon_Studio_Linux_64.tar.gz" "Katalon_Studio_Linux_64-$1-${4}.tar.gz"
-sudo mv "Katalon_Studio_MacOS.tar.gz" "Katalon_Studio_MacOS-$1-${4}.tar.gz"
-sudo mv "Katalon_Studio_Windows_32.zip" "Katalon_Studio_Windows_32-$1-${4}.zip"
-sudo mv "Katalon_Studio_Windows_64.zip" "Katalon_Studio_Windows_64-$1-${4}.zip"
+sudo mv "Katalon_Studio_Linux_64.tar.gz" "Katalon_Studio_Linux_64-$1-$4.tar.gz"
+sudo mv "Katalon_Studio_MacOS.tar.gz" "Katalon_Studio_MacOS-$1-$4.tar.gz"
+sudo mv "Katalon_Studio_Windows_32.zip" "Katalon_Studio_Windows_32-$1-$4.zip"
+sudo mv "Katalon_Studio_Windows_64.zip" "Katalon_Studio_Windows_64-$1-$4.zip"
 sudo mv "Katalon_Studio.dmg" "Katalon_Studio-MacOS-$1.dmg"
 # echo $WORKSPACE
 mkdir -p $KATABUILD
