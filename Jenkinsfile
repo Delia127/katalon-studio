@@ -47,6 +47,6 @@ node {
             from: 'build-ci@katalon.com',
             replyTo: 'build-ci@katalon.com',
             subject: "${JOB_NAME}' (${BUILD_NUMBER} info",
-            to: 'datquach@kms-technology.com'
+            to: 'qa@katalon.com'
     }
 }
