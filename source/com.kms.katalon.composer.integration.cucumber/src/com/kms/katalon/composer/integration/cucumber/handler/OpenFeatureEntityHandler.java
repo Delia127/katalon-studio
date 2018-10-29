@@ -18,9 +18,12 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.EditorPartWithHelp;
+import com.kms.katalon.composer.components.services.ModelServiceSingleton;
+import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
@@ -39,15 +42,6 @@ public class OpenFeatureEntityHandler {
     
     @Inject
     private IEventBroker eventBroker;
-    
-    @Inject
-    private EModelService modelService;
-    
-    @Inject
-    private EPartService partService;
-    
-    @Inject
-    private MApplication application;
 
     @PostConstruct
     public void registerEventHandler() {
@@ -64,6 +58,10 @@ public class OpenFeatureEntityHandler {
     }
 
     MPart openEditor(SystemFileEntity object) {
+        EModelService modelService = ModelServiceSingleton.getInstance().getModelService();
+        MApplication application = ApplicationSingleton.getInstance().getApplication();
+        EPartService partService = PartServiceSingleton.getInstance().getPartService();
+        
         MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         if (stack == null) {
             return null;
