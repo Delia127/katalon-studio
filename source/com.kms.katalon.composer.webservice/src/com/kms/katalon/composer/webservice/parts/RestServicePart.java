@@ -391,6 +391,9 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void preSaving() {
+        tblParams.removeEmptyProperty();
+        updateRequestUrlWithNewParams(tblParams.getInput());
+        
         originalWsObject.setRestUrl(wsApiControl.getRequestURL());
         String requestMethod = wsApiControl.getRequestMethod();
         originalWsObject.setRestRequestMethod(requestMethod);
