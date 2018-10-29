@@ -96,6 +96,7 @@ public class BrowserMobProxyManager {
                 Map<String, String> attributes = new HashMap<>();
                 String harId = UUID.randomUUID().toString();
                 attributes.put("harId", harId);
+                requestInformation.setHarId(harId);
                 logger.logInfo("HAR: " + path, attributes);
                 
                 Har har = browserMobProxy.endHar();
