@@ -42,4 +42,10 @@ node {
                 '''
         }
     }
+    stage('Notify') {
+	emailext body: "Pipeline error: ${err}\nPlease go to ${BUILD_URL} and verify the build",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                subject: "'${JOB_NAME}' (${BUILD_NUMBER}) failed",
+                to: 'datquach@kms-technology.com'    	
+    }
 }
