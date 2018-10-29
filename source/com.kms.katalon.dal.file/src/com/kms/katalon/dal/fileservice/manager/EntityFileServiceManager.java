@@ -479,12 +479,12 @@ public class EntityFileServiceManager {
         return EntityService.getInstance().saveEntity(entity);
     }
 
-	public static String toXmlString(FileEntity entity) throws Exception {
+	public static String toXmlString(Object entity) throws Exception {
 		return EntityService.getInstance().toXmlString(entity);
 	}
 
-	public static ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws javax.xml.bind.JAXBException, Exception {
-		return EntityService.getInstance().toExecutionProfileEntity(xmlString);
+	public static Object toObject(String xmlString) throws javax.xml.bind.JAXBException, Exception {
+		return EntityService.getInstance().toObject(xmlString);
 	}
 
 }

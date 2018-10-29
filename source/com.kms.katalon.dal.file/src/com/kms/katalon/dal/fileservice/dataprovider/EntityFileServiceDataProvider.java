@@ -18,7 +18,7 @@ public class EntityFileServiceDataProvider implements IEntityDataProvider {
     }
 
 	@Override
-	public String toXmlString(FileEntity entity) throws DALException {
+	public String toXmlString(Object entity) throws DALException {
 		 try {
 	            return EntityFileServiceManager.toXmlString(entity);
 	        } catch (Exception e) {
@@ -27,9 +27,9 @@ public class EntityFileServiceDataProvider implements IEntityDataProvider {
 	}
 
 	@Override
-	public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws DALException {
+	public Object toObject(String xmlString) throws DALException {
 		 try {
-	            return EntityFileServiceManager.toExecutionProfileEntity(xmlString);
+	            return EntityFileServiceManager.toObject(xmlString);
 	        } catch (Exception e) {
 	            throw new DALException(e);
 	        }

@@ -140,12 +140,12 @@ public class GlobalVariableController extends EntityController {
         return profiles;
     }
     
-    public String toXmlString(ExecutionProfileEntity profileEntity) throws Exception {
+    public String toXmlString(Object profileEntity) throws Exception {
     	return getDataProviderSetting().getEntityDataProvider().toXmlString(profileEntity);
     }
     
     public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws DALException{
-    	return getDataProviderSetting().getEntityDataProvider().toExecutionProfileEntity(xmlString);
+    	return (ExecutionProfileEntity) getDataProviderSetting().getEntityDataProvider().toObject(xmlString);
     }
 
     public ExecutionProfileEntity copyProfile(ExecutionProfileEntity profileEntity) throws Exception {

@@ -8,8 +8,8 @@ public interface IEntityDataProvider {
 
     public boolean update(FileEntity entity) throws DALException;
     
-    public String toXmlString(FileEntity entity) throws DALException;
+    public String toXmlString(Object entity) throws DALException;
 
-	public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws DALException;
+	public Object toObject(String xmlString) throws DALException;
 
 }

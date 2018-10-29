@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
@@ -67,8 +68,11 @@ import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditing
 import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
+import com.kms.katalon.controller.LocalVariableController;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.entity.variable.VariableEntityWrapper;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.tracking.service.Trackings;
@@ -372,9 +376,9 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
         VariableEntity newVariable = new VariableEntity();
         newVariable.setName(generateNewPropertyName());
         newVariable.setDefaultValue("''");
-
-        executeOperation(new NewVariableOperation(this, newVariable));
         
+    	executeOperation(new NewVariableOperation(this, newVariable));
+       
         Trackings.trackCreatingObject("testCaseVariable");
     }
 
@@ -549,9 +553,19 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
 
     }
 
-
-	public void setVariables(VariableEntity[] incomingVariables) {
-		if(variables != null && variables.size() != 0)
-			variables = Arrays.asList(incomingVariables);
+	public void setVariablesFromScriptContent(String scriptContent) {
+		try {
+			if(scriptContent != null && scriptContent != StringUtils.EMPTY){
+				VariableEntityWrapper newVariables = LocalVariableController.getInstance().toVariables(scriptContent);
+				if(newVariables != null && !variables.equals(newVariables.getVariables())){
+					variables = newVariables.getVariables();
+		            tableViewer.setInput(variables);
+		            tableViewer.refresh();
+				}
+			}
+		} catch (DALException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

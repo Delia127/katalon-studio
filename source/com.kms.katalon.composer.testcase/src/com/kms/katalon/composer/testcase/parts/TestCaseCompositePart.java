@@ -349,12 +349,14 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
-                        	childTestCaseVariablesPart.setVariables(childTestCaseVariableEditorPart.getVariables());
+                        	childTestCaseVariablesPart.setVariablesFromScriptContent(childTestCaseVariableEditorPart.getScriptContent());
                             Trackings.trackOpenObject("testCaseVariable");
+                            return;
                         }
                         
                         if(tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX){
                         	childTestCaseVariableEditorPart.setScriptContentFrom(childTestCaseVariablesPart.getVariables());
+                        	return;
                         }
                         
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_PROPERTIES_PART_INDEX) {
@@ -362,6 +364,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                                 setScriptContentToManual();
                             }
                             propertiesPart.loadInput();
+                            return;
                         }
                     }
                 });
