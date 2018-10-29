@@ -265,7 +265,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
 
     private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.List, InputValueType.Map };
 
     @Inject
