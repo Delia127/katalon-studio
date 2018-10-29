@@ -43,9 +43,10 @@ node {
         }
     }
     stage('Notify') {
-	emailext body: "Pipeline error: ${err}\nPlease go to ${BUILD_URL} and verify the build",
-                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-                subject: "'${JOB_NAME}' (${BUILD_NUMBER}) failed",
-                to: 'datquach@kms-technology.com'    	
+	mail body: "Katalon Studio build is here: ${env.BUILD_URL}" ,
+            from: 'build-ci@katalon.com',
+            replyTo: 'build-ci@katalon.com',
+            subject: "${JOB_NAME}' (${BUILD_NUMBER} info",
+            to: 'datquach@kms-technology.com'
     }
 }
