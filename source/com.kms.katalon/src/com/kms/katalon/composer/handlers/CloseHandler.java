@@ -43,8 +43,8 @@ public class CloseHandler extends AbstractHandler {
 
         MPart parentCompositePart = getCompositeParentPart(part, getPartService());
         if (parentCompositePart != null) {
-            if (partService.savePart(parentCompositePart, true)) {
-                partService.hidePart(parentCompositePart);
+            if (getPartService().savePart(parentCompositePart, true)) {
+            	getPartService().hidePart(parentCompositePart);
 
                 if (parentCompositePart instanceof IComposerPart) {
                     eventBroker.post(EventConstants.WORKSPACE_DRAFT_PART_CLOSED,

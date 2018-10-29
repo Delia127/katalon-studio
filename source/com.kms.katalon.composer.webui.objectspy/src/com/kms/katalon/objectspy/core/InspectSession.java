@@ -217,7 +217,7 @@ public class InspectSession implements Runnable {
                 HttpPost httpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/" + 
                         ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
                 httpPost.setEntity(new StringEntity(String.format("{\"path\": \"%s\"}",
-                    getFirefoxAddonFileForLinux().getAbsolutePath())));
+                    getFirefoxAddonFile().getAbsolutePath())));
                 CloseableHttpResponse response = client.execute(httpPost);
 
                 handleForFirefoxAddon();

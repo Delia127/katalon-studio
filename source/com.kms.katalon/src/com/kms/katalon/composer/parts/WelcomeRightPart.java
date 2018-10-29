@@ -874,10 +874,12 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         glTextComposite.marginBottom = 5;
         textComposite.setLayout(glTextComposite);
 
-        Text lblText = new Text(textComposite, SWT.WRAP | SWT.CENTER);
+        Text lblText = new Text(textComposite, SWT.WRAP | SWT.CENTER | SWT.READ_ONLY);
         lblText.setText(label);
         lblText.setToolTipText(tooltip);
         lblText.setForeground(TEXT_COLOR);
+        lblText.setBackground(textComposite.getBackground());
+        lblText.setCursor(CURSOR_HAND);
         ControlUtils.setFontStyle(lblText, SWT.NORMAL, FONT_SIZE_MEDIUM);
         GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gridData.heightHint = 2 * lblText.getLineHeight();
