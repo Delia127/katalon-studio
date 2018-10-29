@@ -100,27 +100,41 @@ public class TestCaseVariableEditorPart extends CPart implements SavableComposit
         return variables.toArray(new VariableEntity[variables.size()]);
     }
 
-	public void setScriptContentFrom(VariableEntity[] incomingVariables) {
+	public void setScriptContentFrom(VariableEntityWrapper entityWrapper) {
+		String incomingContentScript = getScriptContentFromVariableEntityWrapper(entityWrapper);
+		if(!contentScript.equals(incomingContentScript)){
+			mirrorEditor.setText(incomingContentScript);	
+			if(!contentScript.equals(StringUtils.EMPTY))
+				contentChanged = true;
+			contentScript = incomingContentScript;
+		}
+	}
+	
+	public String getScriptContentFromVariableEntityWrapper(VariableEntityWrapper entityWrapper){
+		boolean failedToParse = false;
+		String content = null;
 		try {			
-			if(incomingVariables != null && incomingVariables.length != 0){
+			if(entityWrapper != null && entityWrapper.getVariables() != null 
+					&& entityWrapper.getVariables().size() != 0){
 				// Arrays.asList returns unmodifiable list and therefore
 				// operations (add, delete, modify, etc) are not supported
-				List<VariableEntity> incomingVariablesList = new ArrayList<>(Arrays.asList(incomingVariables));	
+				List<VariableEntity> incomingVariablesList = entityWrapper.getVariables();
 				VariableEntityWrapper variableEntityWrapper = new VariableEntityWrapper();
 				variableEntityWrapper.setVariables(incomingVariablesList);
-				String incomingScript = GlobalVariableController.getInstance().toXmlString(variableEntityWrapper);
-				if(!contentScript.equals(incomingScript)){
-					mirrorEditor.setText(incomingScript);
-					if(!contentScript.equals(StringUtils.EMPTY))
-						contentChanged = true;
-					contentScript = incomingScript;
-
+				content = GlobalVariableController.getInstance().toXmlString(variableEntityWrapper);
+				if(content != null){
+					return content;
+				}else{
+					failedToParse = true;
 				}
 			}			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			failedToParse = true;
+		} finally {
+			if(failedToParse)
+				return null;
 		}
+		return content;
 	}
 	
 	public String getScriptContent(){

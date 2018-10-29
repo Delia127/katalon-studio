@@ -92,8 +92,8 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
     private CTableViewer tableViewer;
 
     private TestCaseCompositePart parentTestCaseCompositePart;
-
-    private List<VariableEntity> variables;
+    
+    private VariableEntityWrapper variableEntityWrapper;
 
     @Inject
     private EPartService partService;
@@ -102,7 +102,8 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
     public void init(Composite parent, MPart mpart) {
         this.parent = parent;
         this.mpart = mpart;
-        this.variables = new ArrayList<VariableEntity>();
+        this.variableEntityWrapper = new VariableEntityWrapper();
+        this.variableEntityWrapper.setVariables(new ArrayList<VariableEntity>());
         if (mpart.getParent().getParent() instanceof MGenericTile
                 && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
             MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
@@ -210,7 +211,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
                     public void dragSetData(DragSourceEvent event) {
                         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
                         VariableEntity variable = (VariableEntity) selection.getFirstElement();
-                        event.data = String.valueOf(variables.indexOf(variable));
+                        event.data = String.valueOf(variableEntityWrapper.getVariables().indexOf(variable));
                     }
                 });
         tableViewer.addDropSupport(DND.DROP_MOVE, new Transfer[] { TextTransfer.getInstance() },
@@ -227,7 +228,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
             @Override
             public String getText(Object element) {
                 if (element != null && element instanceof VariableEntity) {
-                    return Integer.toString(variables.indexOf(element) + 1);
+                    return Integer.toString(variableEntityWrapper.getVariables().indexOf(element) + 1);
                 }
                 return "";
             }
@@ -389,7 +390,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
         String newName = name;
         while (!isUnique) {
             isUnique = true;
-            for (VariableEntity variable : variables) {
+            for (VariableEntity variable : variableEntityWrapper.getVariables()) {
                 if (variable.getName().equals(newName)) {
                     isUnique = false;
                     break;
@@ -408,14 +409,14 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
         boolean isAdded = false;
         for (VariableEntity addedVariable : variablesArray) {
             boolean exists = false;
-            for (VariableEntity currentVariable : variables) {
+            for (VariableEntity currentVariable : variableEntityWrapper.getVariables()) {
                 if (currentVariable.getName().equals(addedVariable.getName())) {
                     exists = true;
                     break;
                 }
             }
             if (!exists) {
-                variables.add(addedVariable);
+            	variableEntityWrapper.getVariables().add(addedVariable);
                 isAdded = true;
             }
         }
@@ -426,7 +427,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
     }
 
     public void deleteVariables(List<VariableEntity> variableList) {
-        if (variables.removeAll(variableList)) {
+        if (variableEntityWrapper.getVariables().removeAll(variableList)) {
             tableViewer.refresh();
             setDirty(true);
         }
@@ -457,9 +458,9 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
     public void loadVariables() {
         TestCaseEntity testCase = parentTestCaseCompositePart.getTestCase();
         if (testCase != null && testCase.getVariables() != null) {
-            variables.clear();
-            variables.addAll(testCase.getVariables());
-            tableViewer.setInput(variables);
+        	variableEntityWrapper.getVariables().clear();
+        	variableEntityWrapper.getVariables().addAll(testCase.getVariables());
+            tableViewer.setInput(variableEntityWrapper.getVariables());
             tableViewer.refresh();
         }
     }
@@ -469,14 +470,18 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
     }
 
     public VariableEntity[] getVariables() {
-        if (variables == null) {
+        if (variableEntityWrapper.getVariables() == null) {
             return new VariableEntity[0];
         }
-        return variables.toArray(new VariableEntity[variables.size()]);
+        return variableEntityWrapper.getVariables().toArray(new VariableEntity[variableEntityWrapper.getVariables().size()]);
     }
 
     public List<VariableEntity> getVariablesList() {
-        return variables;
+        return variableEntityWrapper.getVariables();
+    }
+    
+    public VariableEntityWrapper getVariableEntityWrapper(){
+    	return variableEntityWrapper;
     }
 
     public TableViewer getTableViewer() {
@@ -486,8 +491,8 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
     public boolean validateVariables() {
         StringBuilder errorCollector = new StringBuilder();
         List<String> names = new ArrayList<String>();
-        for (VariableEntity variable : variables) {
-            int index = variables.indexOf(variable) + 1;
+        for (VariableEntity variable : variableEntityWrapper.getVariables()) {
+            int index = variableEntityWrapper.getVariables().indexOf(variable) + 1;
             String variableName = variable.getName();
             String variableDefaultValue = variable.getDefaultValue();
             if (variableDefaultValue == null || variableDefaultValue.isEmpty())
@@ -554,18 +559,32 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
     }
 
 	public void setVariablesFromScriptContent(String scriptContent) {
+		VariableEntityWrapper newVariableEntityWrapper = getVariableEntityWrapperFromScriptContent(scriptContent);
+		if(newVariableEntityWrapper != null && !variableEntityWrapper.getVariables().equals(newVariableEntityWrapper.getVariables())){
+			variableEntityWrapper.setVariables(newVariableEntityWrapper.getVariables());
+            tableViewer.setInput(variableEntityWrapper.getVariables());
+            tableViewer.refresh();
+		}
+	}
+	
+	public VariableEntityWrapper getVariableEntityWrapperFromScriptContent(String scriptContent){
+		boolean failedToParse = false;
+		VariableEntityWrapper newVariableEntityWrapper = null;
 		try {
 			if(scriptContent != null && scriptContent != StringUtils.EMPTY){
-				VariableEntityWrapper newVariables = LocalVariableController.getInstance().toVariables(scriptContent);
-				if(newVariables != null && !variables.equals(newVariables.getVariables())){
-					variables = newVariables.getVariables();
-		            tableViewer.setInput(variables);
-		            tableViewer.refresh();
+				newVariableEntityWrapper = LocalVariableController.getInstance().toVariables(scriptContent);
+				if(newVariableEntityWrapper != null){
+					return newVariableEntityWrapper;
+				} else{
+					failedToParse = true;
 				}
 			}
 		} catch (DALException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			failedToParse = true;
+		} finally {
+			if(failedToParse)
+				return null;
 		}
+		return newVariableEntityWrapper;
 	}
 }
