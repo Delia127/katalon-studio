@@ -33,12 +33,12 @@ node {
 	}
 	   
         sh '''
-            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID} ${version}
+            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID} ${version} ${BUILD_TIMESTAMP}
         '''
 
         if (env.BRANCH_NAME == 'release') {
                 sh '''
-                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID} ${version}
+                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID} ${version} ${BUILD_TIMESTAMP}
                 '''
         }
     }
