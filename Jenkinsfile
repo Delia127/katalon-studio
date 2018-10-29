@@ -26,8 +26,8 @@ node {
     stage('Package') {
 	script {
 		//Retrieves version number from source    
-		String workspace = pwd()
-		def versionContent = readFile "${workspace}/source/com.kms.katalon/about.mappings"
+		//String workspace = pwd()
+		def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
 		def versionNumber = (versionContent =~ /([0-9]+)[\.,]?([0-9]+)[\.,]?([0-9])/)
 		String buildVersion = versionNumber[0][0]
 	}
@@ -38,7 +38,7 @@ node {
 
         if (env.BRANCH_NAME == 'release') {
                 sh '''
-                    sudo ./verify.sh ${JOB_BASE_NAME} ${buildVversion} ${BUILD_TIMESTAMP}
+                    sudo ./verify.sh ${JOB_BASE_NAME} ${buildVersion} ${BUILD_TIMESTAMP}
                 '''
         }
     }
