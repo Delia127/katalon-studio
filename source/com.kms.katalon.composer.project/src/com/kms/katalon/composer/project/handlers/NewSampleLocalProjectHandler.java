@@ -14,8 +14,10 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.project.constants.ComposerProjectMessageConstants;
 import com.kms.katalon.composer.project.dialog.NewProjectDialog;
+import com.kms.katalon.composer.project.sample.SampleLocalProject;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.util.internal.JsonUtil;
 
 public class NewSampleLocalProjectHandler {
 
@@ -36,13 +38,18 @@ public class NewSampleLocalProjectHandler {
 
     @Execute
     public void execute(ParameterizedCommand command, @Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
-        String sampleProjectType = (String) command.getParameterMap()
-                .get(IdConstants.NEW_LOCAL_PROJECT_COMMAND_PARAMETER_TYPE_ID);
-        doCreateNewSampleProject(activeShell, sampleProjectType, eventBroker);
+//        String sampleProjectType = (String) command.getParameterMap()
+//                .get(IdConstants.NEW_LOCAL_PROJECT_COMMAND_PARAMETER_TYPE_ID);
+        String sampleLocalProjectJson = (String) command.getParameterMap()
+              .get(IdConstants.NEW_LOCAL_PROJECT_COMMAND_PARAMETER_TYPE_ID);
+        doCreateNewSampleProject(
+                activeShell,
+                JsonUtil.fromJson(sampleLocalProjectJson, SampleLocalProject.class),
+                eventBroker);
     }
 
-    public static void doCreateNewSampleProject(Shell activeShell, String sampleProjectType, IEventBroker eventBroker) {
-        NewProjectDialog dialog = new NewProjectDialog(activeShell, sampleProjectType);
+    public static void doCreateNewSampleProject(Shell activeShell, SampleLocalProject sampleProject, IEventBroker eventBroker) {
+        NewProjectDialog dialog = new NewProjectDialog(activeShell, sampleProject);
         dialog.open();
     }
 }

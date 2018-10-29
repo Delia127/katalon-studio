@@ -1,21 +1,21 @@
 package com.kms.katalon.composer.components.impl.providers;
 
-public class DefaultCellLayoutInfo implements CellLayoutInfo {
+import org.eclipse.core.runtime.Platform;
 
-    private static final int DF_CELL_MARGIN = 0;
+public class DefaultCellLayoutInfo implements CellLayoutInfo {
 
     @Override
     public int getLeftMargin() {
-        return DF_CELL_MARGIN;
+        return Platform.OS_WIN32.equals(Platform.getOS()) ? 0 : 2;
     }
 
     @Override
     public int getRightMargin() {
-        return DF_CELL_MARGIN;
+        return 0;
     }
 
     @Override
     public int getSpace() {
-        return DF_CELL_MARGIN;
+        return 5;
     }
 }

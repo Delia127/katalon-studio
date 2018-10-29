@@ -9,6 +9,7 @@
 				<xml-element java-attribute="pageLoadTimeout"/>
 				<xml-transient java-attribute="folderLocation"/>
 				<xml-element java-attribute="sourceContent"/>
+				<xml-element java-attribute="type"/>
 			</java-attributes>
 		</java-type>
 		<java-type name="SourceContent">

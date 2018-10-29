@@ -73,7 +73,9 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransfer;
 import com.kms.katalon.composer.testcase.model.ExecuteFromTestStepEntity;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
@@ -94,12 +96,15 @@ import com.kms.katalon.composer.testcase.support.OutputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.TestObjectEditingSupport;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestcase;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -117,10 +122,10 @@ public class TestStepManualComposite {
 
     private Tree childTableTree;
 
-    private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
-    
+    private ToolItem tltmAddWSKeywordStep, tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
+
     private Label spacer;
-    
+
     private Button btnViewHistory;
 
     private TestCaseSelectionListener selectionListener;
@@ -130,10 +135,11 @@ public class TestStepManualComposite {
     private List<AstTreeTableNode> dragNodes;
 
     private CustomTreeViewerFocusCellManager focusCellManager;
-    
+
     private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
-    
-    private AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
+
+    private AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+            ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
     private Menu recentMenu;
 
@@ -221,23 +227,33 @@ public class TestStepManualComposite {
             btnViewHistory.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                	try {
-                    	if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null){
-                    		 Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(), 
-                    				 parentPart.getTestCase().getIdForDisplay(), analyticsSettingStore.getToken(true)));
-                    	} else {
-                    		Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
-                    	}
-                    	Trackings.trackOpenKAIntegration("testCase");
+                    try {
+                        if (analyticsReportService.isIntegrationEnabled()
+                                && analyticsSettingStore.getProject() != null) {
+                            Program.launch(createPath(analyticsSettingStore.getTeam(),
+                                    analyticsSettingStore.getProject(), parentPart.getTestCase().getIdForDisplay(),
+                                    analyticsSettingStore.getToken(true)));
+                        } else {
+                            Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
+                        }
+                        Trackings.trackOpenKAIntegration("testCase");
                     } catch (IOException | GeneralSecurityException e1) {
                         LoggerSingleton.logError(e1);
                     }
                 }
             });
-            
+
         } else { // for ClosureDialog
             ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
             toolbar = toolBarManager.createControl(parent);
+        }
+
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject.getType() == ProjectType.WEBSERVICE) {
+            tltmAddWSKeywordStep = new ToolItem(toolbar, SWT.NONE);
+            tltmAddWSKeywordStep.setText(StringConstants.PA_BTN_ADD_WEB_SERVICE_KEYWORD);
+            tltmAddWSKeywordStep.setImage(ImageConstants.IMG_16_ADD);
+            tltmAddWSKeywordStep.addSelectionListener(selectionListener);
         }
 
         tltmAddStep = new ToolItem(toolbar, SWT.DROP_DOWN);
@@ -269,7 +285,7 @@ public class TestStepManualComposite {
         tltmDown.setText(StringConstants.PA_BTN_TIP_MOVE_DOWN);
         tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addSelectionListener(selectionListener);
-        
+
         Composite compositeTable = new Composite(compositeSteps == null ? parent : compositeSteps, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -320,14 +336,13 @@ public class TestStepManualComposite {
             hookDropEvent();
         }
     }
-    
-    private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo){
+
+    private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
         String result = "";
-        result = ComposerTestcaseMessageConstants.KA_HOMEPAGE+ "teamId=" + team.getId() +
-                "&projectId=" + project.getId() + "&type=TEST_CASE" + "&path=" + UrlEncoder.encode(path) +
-                "&token=" + tokenInfo;
+        result = ComposerTestcaseMessageConstants.KA_HOMEPAGE + "teamId=" + team.getId() + "&projectId="
+                + project.getId() + "&type=TEST_CASE" + "&path=" + UrlEncoder.encode(path) + "&token=" + tokenInfo;
         return result;
-        
+
     }
 
     private void addTreeTableColumn(TreeViewer parent, TreeColumnLayout treeColumnLayout, String headerText, int width,
@@ -410,7 +425,7 @@ public class TestStepManualComposite {
                         KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" }))); //$NON-NLS-1$
                 pasteMenuItem.addSelectionListener(selectionListener);
                 pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
-                
+
                 new MenuItem(menu, SWT.SEPARATOR);
 
                 addFailureHandlingSubMenu(menu);
@@ -662,6 +677,10 @@ public class TestStepManualComposite {
 
     public void performToolItemSelected(ToolItem toolItem, SelectionEvent selectionEvent) {
         getTreeTable().applyEditorValue();
+        if (toolItem.equals(tltmAddWSKeywordStep)) {
+            addDefaultWebServiceKeyword();
+            return;
+        }
         if (toolItem.equals(tltmAddStep)) {
             openToolItemMenu(toolItem, selectionEvent);
             return;
@@ -680,6 +699,13 @@ public class TestStepManualComposite {
         if (toolItem.equals(tltmRecent)) {
             openRecentKeywordItems();
         }
+    }
+
+    private void addDefaultWebServiceKeyword() {
+        MethodCallExpressionWrapper sendRequestMethodCall = AstKeywordsInputUtil.generateBuiltInKeywordExpression("WS",
+                "sendRequest", treeTableInput.getMainClassNode());
+        treeTableInput.addNewAstObject(new ExpressionStatementWrapper(sendRequestMethodCall),
+                treeTableInput.getSelectedNode(), NodeAddType.Add);
     }
 
     private void openRecentKeywordItems() {

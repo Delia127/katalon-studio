@@ -150,7 +150,7 @@ public class SoapClient extends BasicRequestor {
 
         URL oURL = new URL(endPoint);
         HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
-        if (isHttps) {
+        if (con instanceof HttpsURLConnection) {
             ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
         }
         con.setRequestMethod(POST);

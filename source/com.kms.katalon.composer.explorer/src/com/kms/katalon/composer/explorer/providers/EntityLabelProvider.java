@@ -44,12 +44,12 @@ public class EntityLabelProvider extends TypeCheckedStyleTreeCellLabelProvider<I
         cellLayoutInfo = new DefaultCellLayoutInfo() {
             @Override
             public int getSpace() {
-                return 3;
+                return 5;
             }
 
             @Override
             public int getLeftMargin() {
-                return Platform.OS_WIN32.equals(Platform.getOS()) ? 0 : 3;
+                return Platform.OS_WIN32.equals(Platform.getOS()) ? 0 : 2;
             }
         };
     }

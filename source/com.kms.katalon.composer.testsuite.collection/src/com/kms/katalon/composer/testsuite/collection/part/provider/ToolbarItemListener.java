@@ -102,7 +102,8 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
                 }
 
                 TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration.newInstance(
-                        selectedTestSuite, TestExecutionGroupCollector.getInstance().getDefaultConfiguration());
+                        selectedTestSuite, TestExecutionGroupCollector.getInstance().getDefaultConfiguration(
+                                ProjectController.getInstance().getCurrentProject()));
                 getTableItems().add(newTestSuiteRunConfig);
                 newItems.add(newTestSuiteRunConfig);
             }

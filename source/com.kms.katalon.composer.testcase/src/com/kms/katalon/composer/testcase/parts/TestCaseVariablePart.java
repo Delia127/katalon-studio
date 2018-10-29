@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.parts;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -76,7 +77,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.TestObject, InputValueType.TestData, InputValueType.Property, InputValueType.List,
             InputValueType.Map };
 
@@ -548,4 +549,9 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
 
     }
 
+
+	public void setVariables(VariableEntity[] incomingVariables) {
+		if(variables != null && variables.size() != 0)
+			variables = Arrays.asList(incomingVariables);
+	}
 }

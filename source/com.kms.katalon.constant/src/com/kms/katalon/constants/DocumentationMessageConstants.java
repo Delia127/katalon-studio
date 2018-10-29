@@ -74,6 +74,8 @@ public class DocumentationMessageConstants extends NLS {
     public static String TEST_CASE_MANUAL;
 
     public static String TEST_CASE_VARIABLE;
+    
+    public static String TEST_CASE_VARIABLE_EDITOR;
 
     public static String TEST_CASE_SCRIPT;
     
@@ -111,7 +113,13 @@ public class DocumentationMessageConstants extends NLS {
 	
 	public static String NEW_CHECKPOINT;
 	
+	public static String NEW_KEYWORD;
+	
 	public static String RECORDER_RUN_STEPS;
+	
+	public static String MANAGE_TEST_PROJECT;
+	
+	public static String CUSTOM_KEYWORD;
 
     static {
         // initialize resource bundle

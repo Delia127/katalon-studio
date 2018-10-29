@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.execution.collection.dialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -19,9 +22,10 @@ import org.eclipse.swt.widgets.TreeColumn;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.execution.collection.provider.TestExecutionEntryItem;
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 
 public class RunConfigurationSelectionDialog extends AbstractDialog {
@@ -46,13 +50,13 @@ public class RunConfigurationSelectionDialog extends AbstractDialog {
                 }
 
                 StructuredSelection selection = (StructuredSelection) event.getSelection();
-                if (!(selection.getFirstElement() instanceof TestExecutionEntryItem)) {
+                if (!(selection.getFirstElement() instanceof TestExecutionConfigurationProvider)) {
                     getButton(OK).setEnabled(false);
                     testRunConfigurationEntry = null;
                     return;
                 }
                 getButton(OK).setEnabled(true);
-                testRunConfigurationEntry = ((TestExecutionEntryItem) selection.getFirstElement())
+                testRunConfigurationEntry = ((TestExecutionConfigurationProvider) selection.getFirstElement())
                         .toConfigurationEntity(testRunConfigurationEntry);
             }
         });
@@ -62,7 +66,7 @@ public class RunConfigurationSelectionDialog extends AbstractDialog {
             @Override
             public void doubleClick(DoubleClickEvent event) {
                 StructuredSelection selection = (StructuredSelection) event.getSelection();
-                if (selection.getFirstElement() instanceof TestExecutionEntryItem) {
+                if (selection.getFirstElement() instanceof TestExecutionConfigurationProvider) {
                     okPressed();
                 }
             }
@@ -71,7 +75,14 @@ public class RunConfigurationSelectionDialog extends AbstractDialog {
 
     @Override
     protected void setInput() {
-        treeViewer.setInput(TestExecutionGroupCollector.getInstance().getGroupAsArray());
+        List<TestExecutionGroup> groups = new ArrayList<>();
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        for (TestExecutionGroup grp : TestExecutionGroupCollector.getInstance().getGroupAsArray()) {
+            if (grp.shouldBeDisplayed(project)) {
+                groups.add(grp);
+            }
+        }
+        treeViewer.setInput(groups.toArray(new TestExecutionGroup[groups.size()]));
         treeViewer.expandAll();
         initializeBounds();
         if (testRunConfigurationEntry == null) {

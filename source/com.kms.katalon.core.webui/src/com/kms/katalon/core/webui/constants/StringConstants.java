@@ -116,6 +116,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_PASSED_MAX_CURR_WINDOW = CoreWebuiMessageConstants.KW_LOG_PASSED_MAX_CURR_WINDOW;
     public static final String KW_MSG_CANNOT_MAX_CURR_WINDOW = CoreWebuiMessageConstants.KW_MSG_CANNOT_MAX_CURR_WINDOW;
     public static final String KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID = CoreWebuiMessageConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID;
+    public static final String KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR = CoreWebuiMessageConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR;
     public static final String KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS = CoreWebuiMessageConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS;
     public static final String KW_LOG_INFO_RETRIEVING_WEB_ELEMENT_FROM_CACHE = CoreWebuiMessageConstants.KW_LOG_INFO_RETRIEVING_WEB_ELEMENT_FROM_CACHE;
     public static final String KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD = CoreWebuiMessageConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD;
@@ -533,4 +534,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS = CoreWebuiMessageConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS;
 
     public static final String SET_ENCRYPTED_TEXT_KEYWORD = "setEncryptedText";
+    
+    public static final String KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD = CoreWebuiMessageConstants.KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD;
+    public static final String KW_LOG_INFO_USING_HEURISTIC_METHOD = CoreWebuiMessageConstants.KW_LOG_INFO_USING_HEURISTIC_METHOD;
 }

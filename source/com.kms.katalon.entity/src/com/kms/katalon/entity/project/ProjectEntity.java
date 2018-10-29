@@ -22,6 +22,8 @@ public class ProjectEntity extends IntegratedFileEntity {
     private String migratedVersion;
     
     private SourceContent sourceContent = new SourceContent();
+    
+    private ProjectType type = ProjectType.GENERIC;
 
     public String getUUID() {
         return UUID;
@@ -97,5 +99,13 @@ public class ProjectEntity extends IntegratedFileEntity {
 
     public void setSourceContent(SourceContent sourceContent) {
         this.sourceContent = sourceContent;
+    }
+
+    public ProjectType getType() {
+        return type;
+    }
+
+    public void setType(ProjectType type) {
+        this.type = type;
     }
 }

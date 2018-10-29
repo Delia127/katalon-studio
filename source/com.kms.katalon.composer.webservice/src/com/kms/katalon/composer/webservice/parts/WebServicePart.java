@@ -7,6 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -34,6 +40,7 @@ import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -54,6 +61,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
@@ -104,28 +112,52 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.controls.ToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
+import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
+import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapEntryExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.IVariablePart;
+import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableViewEvent;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
-import com.kms.katalon.composer.webservice.components.MirrorEditor;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.handlers.SaveDraftRequestHandler;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
@@ -146,22 +178,25 @@ import com.kms.katalon.core.webservice.common.ScriptSnippet;
 import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 
-public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent {
-    
+public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent, VerificationScriptEventHandler {
+
     protected static final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(WebServicePart.class).getSymbolicName();
 
     private static final Font FONT_COURIER_NEW_12 = new Font(Display.getCurrent(), "Courier New", 12, SWT.NORMAL);
 
     private static final Font FONT_CONSOLAS_10 = new Font(Display.getCurrent(), "Consolas", 10, SWT.NORMAL);
-    
+
     protected static final String TAB_SPACE = "    ";
 
     private static final char RAW_PASSWORD_CHAR_MASK = '\0';
@@ -223,19 +258,20 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private static final String RSA_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_RSA_SHA1;
 
     private static final String HMAC_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1;
-    
+
     private static final String SHOW_SNIPPETS = ComposerWebserviceMessageConstants.SHOW_SNIPPETS;
-    
+
     private static final String HIDE_SNIPPETS = ComposerWebserviceMessageConstants.HIDE_SNIPPETS;
 
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
-    
-    private static final int MIN_PART_WIDTH = 400;
-    
+
     private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.List, InputValueType.Map };
-    
+
+    @Inject
+    private ESelectionService selectionService;
+
     @Inject
     protected MApplication application;
 
@@ -247,12 +283,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     @Inject
     protected IStylingEngine styleEngine;
-    
+
     @Inject
     protected EPartService partService;
 
     protected MCompositePart mPart;
-    
+
     protected WebServiceRequestEntity originalWsObject;
 
     protected ScrolledComposite sComposite;
@@ -286,7 +322,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected CTabItem tabHeaders;
 
     protected CTabItem tabBody;
-    
+
     protected CTabItem tabVerification;
 
     protected Composite responseComposite;
@@ -312,30 +348,30 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected CCombo ccbOAuth1SignatureMethod;
 
     protected List<WebElementPropertyEntity> oauth1Headers = new ArrayList<WebElementPropertyEntity>();
-    
+
     protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
-    
+
     protected ScriptSnippet verificationScriptImport;
-    
+
     @Inject
     protected MDirtyable dirtyable;
 
     private Label lblStatusCodeDetails, lblReponseTimeDetails, lblReponseLengthDetails;
 
     protected Composite responseBodyComposite;
-    
+
     protected GroovyEditor verificationScriptEditor;
-    
+
     protected Composite parent;
-    
+
     protected Text txtVerificationLog;
 
     private MPart scriptEditorPart;
-    
+
     private WSRequestPartUI ui;
-    
+
     protected TestCaseVariableView variableView;
-    
+
     public WebServiceRequestEntity getOriginalWsObject() {
         return originalWsObject;
     }
@@ -343,7 +379,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     public void setOriginalWsObject(WebServiceRequestEntity originalWsObject) {
         this.originalWsObject = originalWsObject;
     }
-    
+
     private Composite responseMessageComposite;
 
     protected Label lblVerificationResultStatus;
@@ -356,75 +392,74 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         new HelpToolBarForMPart(part, DocumentationMessageConstants.TEST_OBJECT_WEB_SERVICES);
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
         this.parent = parent;
-        
+
         verificationScriptSnippets = VerificationScriptSnippetFactory.getSnippets();
         verificationScriptImport = VerificationScriptSnippetFactory.getCommonScriptSnippet();
     }
-    
+
     public Composite getComposite() {
         return parent;
     }
-    
+
     public void initComponents(WSRequestPartUI wsRequestPartUI) {
         this.ui = wsRequestPartUI;
-        
+
         new ToolBarForVerificationPart(ui.getVerificationPart());
-        
+
         scriptEditorPart = ui.getScriptEditorPart();
-        verificationScriptEditor = (GroovyEditor)GroovyEditorUtil.getEditor(scriptEditorPart);
+        verificationScriptEditor = (GroovyEditor) editor.getEditor(scriptEditorPart);
         if (StringUtils.isBlank(originalWsObject.getVerificationScript())) {
             insertImportsForVerificationScript();
         }
-       
+
         Composite apiControlsPartComposite = ui.getApiControlsPartComposite();
         Composite apiControlsPartInnerComposite = new Composite(apiControlsPartComposite, SWT.NONE);
         apiControlsPartInnerComposite.setLayout(new GridLayout());
-        
+
         createAPIControls(apiControlsPartInnerComposite);
-        
+
         createParamsComposite(apiControlsPartInnerComposite);
-        
+
         createTabsComposite();
-        
+
         createSnippetComposite();
-        
+
         createVariableComposite();
-        
+
         Composite responsePartComposite = ui.getResponsePartComposite();
         Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
 
         GridLayout glResponse = new GridLayout(2, false);
         glResponse.marginWidth = glResponse.marginHeight = 0;
         responsePartInnerComposite.setLayout(glResponse);
-        
+
         Label separator = new Label(responsePartInnerComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
         separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-        
+
         createResponseComposite(responsePartInnerComposite);
-        
+
         responseComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         populateDataToUI();
+        updatePartImage();
         registerListeners();
     }
 
     private void insertImportsForVerificationScript() {
-        StringBuilder importBuilder = new StringBuilder()
-                .append(verificationScriptImport.getScript())
-                .append("\n");
+        StringBuilder importBuilder = new StringBuilder().append(verificationScriptImport.getScript()).append("\n");
 
         insertVerificationScript(0, importBuilder.toString());
     }
-    
+
     private void insertVerificationScript(int offset, String script) {
         try {
-            GroovyEditorUtil.insertScript(verificationScriptEditor, offset, script);
+            editor.insertScript(verificationScriptEditor, offset, script);
         } catch (MalformedTreeException e) {
             LoggerSingleton.logError(e);
         } catch (BadLocationException e) {
             LoggerSingleton.logError(e);
         }
     }
-    
+
     protected String getVerificationScript() {
         IEditorInput input = verificationScriptEditor.getEditorInput();
         IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(input);
@@ -435,17 +470,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             return StringUtils.EMPTY;
         }
     }
-    
+
     protected void executeVerificationScript(ResponseObject responseObject) throws Exception {
         String verificationScript = getVerificationScript();
         VerificationScriptExecutor executor = new VerificationScriptExecutor();
         executor.execute(originalWsObject.getIdForDisplay(), verificationScript, responseObject);
     }
 
-
     protected void createAPIControls(Composite parent) {
         String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
-        wsApiControl = new WebServiceAPIControl(parent, isSOAP(), endPoint);
+        wsApiControl = new WebServiceAPIControl(parent, isSOAP(), isDraft(), endPoint);
         wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -474,9 +508,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 setDirty();
             }
         });
-        
+
         wsApiControl.addSendSelectionListener(new DropdownToolItemSelectionListener() {
-            
+
             @Override
             public void widgetSelected(SelectionEvent event) {
                 if (event.detail == SWT.ARROW) {
@@ -490,20 +524,205 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             protected Menu getMenu() {
                 return wsApiControl.getSendMenu();
             }
-            
+
         });
-        
+
         wsApiControl.addSendAndVerifySelectionListener(new SelectionAdapter() {
-            
+
             @Override
             public void widgetSelected(SelectionEvent event) {
                 sendRequest(true);
             }
         });
+
+        if (!isDraft()) {
+            wsApiControl.addAddRequestToTestCaseSelectionListener(new DropdownToolItemSelectionListener() {
+    
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    if (event.detail == SWT.ARROW) {
+                        showDropdown(event);
+                    } else {
+                        Trackings.trackClickAddingRequestToTestCase(true);
+                        try {
+                            addSendRequestStatementToNewTestCase();
+                        } catch (Exception e) {
+                            LoggerSingleton.logError(e);
+                            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                                    StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+                        }
+                    }
+                }
+    
+                @Override
+                protected Menu getMenu() {
+                    return wsApiControl.getAddRequestToTestCaseMenu();
+                }
+            });
+    
+            wsApiControl.addAddRequestToNewTestCaseSelectionListener(new SelectionAdapter() {
+    
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    Trackings.trackClickAddingRequestToTestCase(true);
+                    try {
+                        addSendRequestStatementToNewTestCase();
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                                StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+                    }
+                }
+            });
+    
+            wsApiControl.addAddRequestToExistingTestCaseSelectionListener(new SelectionAdapter() {
+    
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    Trackings.trackClickAddingRequestToTestCase(false);
+                    try {
+                        addSendRequestStatementToExistingTestCase();
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                                StringConstants.MSG_CANNOT_ADD_REQUEST_TO_TEST_CASE);
+                    }
+                }
+            });
+        }
+        
+        if (isDraft()) {
+            wsApiControl.addSaveDraftSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    SaveDraftRequestHandler.saveDraftRequest(Display.getCurrent().getActiveShell(), getOriginalWsObject());
+                }
+            });
+        }
+    }
+
+    private void addSendRequestStatementToNewTestCase() throws Exception {
+        Object[] selectedTreeEntities = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+        ITreeEntity parentTreeEntity = NewTestCaseHandler.findParentTreeEntity(selectedTreeEntities);
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        if (parentTreeEntity == null) {
+            FolderTreeEntity testCaseTreeRoot = TreeEntityUtil.getTestCaseFolderTreeEntity(project);
+            parentTreeEntity = testCaseTreeRoot;
+        }
+
+        TestCaseEntity testCaseEntity = NewTestCaseHandler.doCreateNewTestCase(parentTreeEntity, eventBroker);
+
+        if (testCaseEntity != null) {
+            addSendRequestStatementToTestCase(testCaseEntity);
+        }
+        
+        Trackings.trackAddRequestToTestCase(true);
+    }
+
+    private void addSendRequestStatementToExistingTestCase() throws Exception {
+        TestCaseEntity selectedTestCaseEntity = selectTestCase();
+        if (selectedTestCaseEntity != null) {
+            eventBroker.send(EventConstants.TESTCASE_OPEN, selectedTestCaseEntity);
+            addSendRequestStatementToTestCase(selectedTestCaseEntity);
+        }
+        
+        Trackings.trackAddRequestToTestCase(false);
+    }
+
+    private TestCaseEntity selectTestCase() throws Exception {
+        TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
+                new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
+        dialog.setAllowMultiple(false);
+        dialog.setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
+
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject != null) {
+            FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
+            dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
+        }
+
+        if (dialog.open() == Window.OK) {
+            TestCaseTreeEntity testCaseTreeEntity = (TestCaseTreeEntity) dialog.getFirstResult();
+            TestCaseEntity testCaseEntity = testCaseTreeEntity.getObject();
+            return testCaseEntity;
+        } else {
+            return null;
+        }
+    }
+
+    private void addSendRequestStatementToTestCase(TestCaseEntity testCaseEntity)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        MCompositePart testCaseCompositePart = waitForTestCasePartVisible(testCaseEntity);
+
+        TestCaseCompositePart partObject = (TestCaseCompositePart) testCaseCompositePart.getObject();
+        partObject.loadTreeTableInput();
+        if (partObject != null) {
+            TestCaseTreeTableInput tcTreeTableInput = partObject.getChildTestCasePart().getTreeTableInput();
+            ScriptNodeWrapper mainClassNode = tcTreeTableInput.getMainClassNode();
+
+            ExpressionStatementWrapper sendRequestMethodCallStatement = buildSendRequestStatement(mainClassNode);
+
+            tcTreeTableInput.addNewAstObject(sendRequestMethodCallStatement, tcTreeTableInput.getSelectedNode(),
+                    NodeAddType.Add);
+
+            partObject.refreshScript();
+            tcTreeTableInput.refresh();
+        }
+    }
+
+    private MCompositePart waitForTestCasePartVisible(TestCaseEntity testCaseEntity)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<MCompositePart> future = executor.submit(() -> {
+            MCompositePart testCaseCompositePart = null;
+            while (testCaseCompositePart == null) {
+                Thread.sleep(300);
+                testCaseCompositePart = (MCompositePart) EntityPartUtil.findTestCaseCompositePart(testCaseEntity);
+            }
+            return testCaseCompositePart;
+        });
+
+        return future.get(30, TimeUnit.SECONDS);
+    }
+
+    private ExpressionStatementWrapper buildSendRequestStatement(ASTNodeWrapper parentNode) {
+        MethodCallExpressionWrapper sendRequestMethodCall = AstKeywordsInputUtil.generateBuiltInKeywordExpression("WS",
+                "sendRequest", parentNode);
+        ArgumentListExpressionWrapper sendRequestMethodCallArgumentList = sendRequestMethodCall.getArguments();
+
+        MethodCallExpressionWrapper findTestObjectMethodCall = AstEntityInputUtil.createNewFindTestObjectMethodCall(
+                getWSRequestObject().getIdForDisplay(), sendRequestMethodCallArgumentList);
+        ArgumentListExpressionWrapper findTestObjectMethodCallArgumentList = findTestObjectMethodCall.getArguments();
+
+        VariableEntity[] requestVariables = variableView.getVariables();
+        if (requestVariables.length > 0) {
+            MapExpressionWrapper variableMapExpression = new MapExpressionWrapper(findTestObjectMethodCallArgumentList);
+            
+            for (VariableEntity variable : requestVariables) {
+                MapEntryExpressionWrapper newMapEntry = new MapEntryExpressionWrapper(variableMapExpression);
+
+                newMapEntry.setKeyExpression(new ConstantExpressionWrapper(variable.getName(), newMapEntry));
+
+                ExpressionWrapper valueExpression = GroovyWrapperParser
+                        .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue());
+                newMapEntry.setValueExpression(valueExpression);
+
+                variableMapExpression.addExpression(newMapEntry);
+            }
+
+            findTestObjectMethodCallArgumentList.addExpression(variableMapExpression);
+        }     
+
+        // replace the default created argument of sendRequest method with
+        // findTestObject method call
+        sendRequestMethodCallArgumentList.removeExpression(0);
+        sendRequestMethodCallArgumentList.addExpression(findTestObjectMethodCall);
+
+        return new ExpressionStatementWrapper(sendRequestMethodCall);
     }
 
     protected abstract void sendRequest(boolean runVerificationScript);
-    
+
     protected Map<String, String> evaluateRequestVariables() throws Exception {
 
         WebServiceRequestEntity requestEntity = getWSRequestObject();
@@ -516,7 +735,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         return evaluatedVariables;
     }
-
 
     protected abstract void createParamsComposite(Composite parent);
 
@@ -543,19 +761,19 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         CTabFolder tabFolder = ui.getTabFolder();
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         styleEngine.setId(tabFolder.getParent(), "DefaultCTabFolder");
-//        styleEngine.setId(parent, "DefaultCTabFolder");
+        // styleEngine.setId(parent, "DefaultCTabFolder");
 
         addTabAuthorization(tabFolder);
         addTabHeaders(tabFolder);
         addTabBody(tabFolder);
-//        addTabVerification(tabFolder);
+        // addTabVerification(tabFolder);
 
         tabFolder.setSelection(0);
     }
-    
+
     private void createVariableComposite() {
         Composite variablePartComposite = ui.getVariablePartComposite();
-        
+
         variableView = new TestCaseVariableView(this);
         variableView.setInputValueTypes(variableInputValueTypes);
         variableView.createComponents(variablePartComposite);
@@ -565,9 +783,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             public void handleEvent(TestCaseVariableViewEvent event, Object object) {
                 Trackings.trackAddApiVariable();
             }
-            
+
         }, Arrays.asList(TestCaseVariableViewEvent.ADD_VARIABLE));
-        
+
         // hide "Masked" column
         TableColumn[] tableColumns = variableView.getTableViewer().getTable().getColumns();
         for (TableColumn tableColumn : tableColumns) {
@@ -576,67 +794,66 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 tableColumn.setResizable(false);
             }
         }
-        
+
         List<VariableEntity> variables = originalWsObject.getVariables();
         variableView.addVariable(variables.toArray(new VariableEntity[variables.size()]));
     }
-    
+
     @Override
     public void setDirty(boolean isDirty) {
         this.setDirty();
     }
-    
+
     @Override
     public void addVariables(VariableEntity[] variables) {
         variableView.addVariable(variables);
     }
-    
+
     @Override
     public VariableEntity[] getVariables() {
         return variableView.getVariables();
     }
-    
+
     @Override
     public void deleteVariables(List<VariableEntity> variableList) {
-        
+
     }
 
     private void createSnippetComposite() {
-  
-//        FontData[] fontData = parent.getFont().getFontData();
-//        fontData[0].setHeight(8);
-//        parent.setFont(new Font(Display.getCurrent(), fontData));
-//        parent.setLayout(new GridLayout(2, false));
+
+        // FontData[] fontData = parent.getFont().getFontData();
+        // fontData[0].setHeight(8);
+        // parent.setFont(new Font(Display.getCurrent(), fontData));
+        // parent.setLayout(new GridLayout(2, false));
         Composite snippetPartComposite = ui.getSnippetPartComposite();
-        
+
         Composite snippetPartInnerComposite = new Composite(snippetPartComposite, SWT.NONE);
         snippetPartInnerComposite.setLayout(new GridLayout(2, false));
-        
+
         int fontSize = Platform.getOS().equals(Platform.OS_MACOSX) ? 11 : 9;
-        
+
         Label separator = new Label(snippetPartInnerComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
         separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-        
+
         Composite snippetComposite = new Composite(snippetPartInnerComposite, SWT.NONE);
         snippetComposite.setLayout(new GridLayout());
         snippetComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
+
         Label lblInstruction = new Label(snippetComposite, SWT.WRAP);
         lblInstruction.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         ControlUtils.setFontSize(lblInstruction, fontSize);
         lblInstruction.setText(ComposerWebserviceMessageConstants.LBL_VERIFICATION_INSTRUCTION);
-        
+
         Composite headingComposite = new Composite(snippetComposite, SWT.NONE);
         headingComposite.setLayout(new GridLayout(2, false));
-        
-       
+
         CLabel lblSnippetHeading = new CLabel(headingComposite, SWT.NONE);
         lblSnippetHeading.setTopMargin(10);
         lblSnippetHeading.setRightMargin(0);
         ControlUtils.setFontSize(lblSnippetHeading, fontSize);
         ControlUtils.setFontToBeBold(lblSnippetHeading);
         lblSnippetHeading.setText(ComposerWebserviceMessageConstants.LBL_SNIPPET_HEADING);
-        
+
         CLabel lblHelp = new CLabel(headingComposite, SWT.NONE);
         lblHelp.setImage(ImageManager.getImage(IImageKeys.HELP_16));
         lblHelp.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
@@ -645,16 +862,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         lblHelp.addListener(SWT.MouseDown, e -> {
             Program.launch("https://docs.katalon.com/x/EwjR");
         });
-        
+
         ScrolledComposite scrolledComposite = new ScrolledComposite(snippetComposite, SWT.H_SCROLL | SWT.V_SCROLL);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         scrolledComposite.setBackground(parent.getBackground());
-        
+
         Composite composite = new Composite(scrolledComposite, SWT.NONE);
         composite.setLayout(new GridLayout());
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         composite.setBackground(parent.getBackground());
-        
+
         Color snippetLblColor = new Color(composite.getDisplay(), 0, 0, 255);
         for (ScriptSnippet snippet : verificationScriptSnippets) {
             CLabel lblSnippet = new CLabel(composite, SWT.WRAP);
@@ -666,16 +883,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             lblSnippet.setBottomMargin(5);
             lblSnippet.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
             lblSnippet.addListener(SWT.MouseDown, e -> {
-                IEditorInput editorInput = verificationScriptEditor.getEditorInput();
-                IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
-                
-                StringBuilder scriptBuilder = new StringBuilder("\n").append(snippet.getScript()).append("\n");
-                
-                insertVerificationScript(document.getLength(), scriptBuilder.toString());
+                insertScript("\n");
+                insertScript(snippet.getScript());
             });
         }
         snippetLblColor.dispose();
-        
+
         composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
         scrolledComposite.setContent(composite);
     }
@@ -731,13 +944,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 renderAuthenticationUI(ccbAuthType.getText());
             }
         });
-        
+
         ccbAuthType.select(0);
         renderAuthenticationUI(ccbAuthType.getText());
     }
 
     /**
-     * @param composite Composite with GridData layout
+     * @param composite
+     * Composite with GridData layout
      * @param isVisible
      */
     protected void setCompositeVisible(Composite composite, boolean isVisible) {
@@ -788,7 +1002,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             public void widgetSelected(SelectionEvent e) {
                 txtPassword.setEchoChar(PASSWORD_CHAR_MASK); // show as dot
                 if (chkShowPassword.getSelection()) {
-                    txtPassword.setEchoChar(RAW_PASSWORD_CHAR_MASK); // show the text
+                    txtPassword.setEchoChar(RAW_PASSWORD_CHAR_MASK); // show the
+                                                                     // text
                 }
             }
         });
@@ -964,13 +1179,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected void addTabBody(CTabFolder parent) {
         tabBody = ui.getBodyTab();
     }
-    
+
     protected void addTabVerification(CTabFolder parent) {
         tabVerification = ui.getVerificationTab();
     }
 
     protected void createResponseComposite(Composite parent) {
-        
+
         responseComposite = new Composite(parent, SWT.NONE);
         responseComposite.setLayout(new GridLayout());
         responseComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -982,17 +1197,17 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         createResponseStatusComposite();
 
         createResponseDetailsTabs();
-        
+
         responseMessageComposite = new Composite(parent, SWT.NONE);
         GridLayout glMessageComposite = new GridLayout();
         glMessageComposite.marginTop = 20;
         responseMessageComposite.setLayout(glMessageComposite);
         responseMessageComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
+
         Label lblSendingRequest = new Label(responseMessageComposite, SWT.NONE);
         lblSendingRequest.setText(ComposerWebserviceMessageConstants.LBL_SENDING_REQUEST);
         ControlUtils.setFontToBeBold(lblSendingRequest);
-        
+
         displayResponseContentBasedOnSendingState(false);
     }
 
@@ -1004,12 +1219,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         createResponseBody(reponseDetailsTabFolder);
 
         createResponseHeader(reponseDetailsTabFolder);
-        
+
         createResponseVerificationResult(reponseDetailsTabFolder);
 
-//        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
-//        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
-//
+        // CTabItem responseVerificationLogTab = new
+        // CTabItem(reponseDetailsTabFolder, SWT.NONE);
+        // responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
         reponseDetailsTabFolder.setSelection(0);
     }
 
@@ -1036,28 +1251,28 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         glBody.marginWidth = glBody.marginHeight = 0;
         responseBodyComposite.setLayout(glBody);
     }
-    
+
     private void createResponseVerificationResult(CTabFolder responseDetailsTabFolder) {
         CTabItem verificationResultTab = new CTabItem(responseDetailsTabFolder, SWT.NONE);
         verificationResultTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_VERIFICATION_LOG);
-        
+
         verificationResultComposite = new Composite(responseDetailsTabFolder, SWT.NONE);
         verificationResultTab.setControl(verificationResultComposite);
-        
+
         GridLayout glVerificationResult = new GridLayout();
         glVerificationResult.marginWidth = glVerificationResult.marginHeight = 0;
         verificationResultComposite.setLayout(glVerificationResult);
-        
+
         Composite resultStatusComposite = new Composite(verificationResultComposite, SWT.NONE);
         GridLayout glResultStatus = new GridLayout(2, false);
         resultStatusComposite.setLayout(glResultStatus);
-        
+
         Label lblVerificationResult = new Label(resultStatusComposite, SWT.NONE);
         lblVerificationResult.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_VERIFICATION_RESULT);
-        
+
         lblVerificationResultStatus = new Label(resultStatusComposite, SWT.NONE);
         lblVerificationResultStatus.setForeground(ColorUtil.getTextWhiteColor());
-        
+
         txtVerificationLog = new Text(verificationResultComposite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
         txtVerificationLog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         txtVerificationLog.setEditable(false);
@@ -1126,7 +1341,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected void displayResponseContentBasedOnSendingState(boolean isSendingRequest) {
         GridData gdResponseMessageComposite = (GridData) responseMessageComposite.getLayoutData();
         GridData gdResponseComposite = (GridData) responseComposite.getLayoutData();
-        
+
         if (isSendingRequest) {
             gdResponseMessageComposite.exclude = false;
             responseMessageComposite.setVisible(true);
@@ -1138,10 +1353,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             gdResponseComposite.exclude = false;
             responseComposite.setVisible(true);
         }
-        
+
         responseComposite.getParent().requestLayout();
     }
-    
+
     protected void setResponseStatus(ResponseObject responseObject) {
         int statusCode = responseObject.getStatusCode();
         lblStatusCodeDetails.setBackground(getBackgroundColorForStatusCode(statusCode));
@@ -1161,12 +1376,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
         return ColorUtil.getErrorLogBackgroundColor();
     }
-    
+
     protected void clearPreviousResponse() {
         mirrorEditor.setText("");
-        
+
         txtVerificationLog.setText("");
-        
+
         lblVerificationResultStatus.setText("");
     }
 
@@ -1390,34 +1605,22 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
         eventBroker.subscribe(EventConstants.WS_VERIFICATION_LOG_UPDATED, this);
         eventBroker.subscribe(EventConstants.WS_VERIFICATION_EXECUTION_FINISHED, this);
-        
+        eventBroker.subscribe(EventConstants.WEBSERVICE_REQUEST_DRAFT_UPDATED, this);
+
         IFileEditorInput editorInput = (IFileEditorInput) verificationScriptEditor.getEditorInput();
         verificationScriptEditor.getDocumentProvider()
-            .getDocument(editorInput)
-            .addDocumentListener(new IDocumentListener() {
-                @Override
-                public void documentChanged(DocumentEvent event) {
-                   GroovyEditorUtil.showProblems(verificationScriptEditor);
-                   WebServicePart.this.dirtyable.setDirty(true);
-                }
-    
-                @Override
-                public void documentAboutToBeChanged(DocumentEvent event) {
-                    // TODO Auto-generated method stub
-                }
-            });
-        
-//        verificationScriptEditor.addPropertyListener(new IPropertyListener() {
-//            @Override
-//            public void propertyChanged(Object source, int propId) {
-//                if (source instanceof GroovyEditor && propId == ISaveablePart.PROP_DIRTY) {
-//                    if (verificationScriptEditor.isDirty()) {
-//                        WebServicePart.this.dirtyable.setDirty(true);
-//                        tabVerification.setText(StringConstants.PA_LBL_VERIFICATION);
-//                    } 
-//                }
-//            }
-//        });
+                .getDocument(editorInput)
+                .addDocumentListener(new IDocumentListener() {
+                    @Override
+                    public void documentChanged(DocumentEvent event) {
+                        editor.showProblems(verificationScriptEditor);
+                        WebServicePart.this.dirtyable.setDirty(true);
+                    }
+
+                    @Override
+                    public void documentAboutToBeChanged(DocumentEvent event) {
+                    }
+                });
     }
 
     @Override
@@ -1438,6 +1641,21 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             mPart.setLabel(webElement.getName());
             mPart.setElementId(EntityPartUtil.getTestObjectPartId(webElement.getId()));
             populateDataToUI();
+            return;
+        }
+
+        if (EventConstants.WEBSERVICE_REQUEST_DRAFT_UPDATED.equals(event.getTopic())) {
+            if (!(originalWsObject instanceof DraftWebServiceRequestEntity)
+                    || !(eventData instanceof DraftWebServiceRequestEntity)) {
+                return;
+            }
+
+            DraftWebServiceRequestEntity data = (DraftWebServiceRequestEntity) eventData;
+            if (data.getDraftUid().equals(((DraftWebServiceRequestEntity) originalWsObject).getDraftUid())) {
+                originalWsObject = data;
+                mPart.setLabel("(Draft) " + WSRequestPartUI.getShortenLabel(originalWsObject));
+                populateDataToUI();
+            }
             return;
         }
 
@@ -1485,7 +1703,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 LoggerSingleton.logError(e);
             }
         }
-        
+
         if (EventConstants.WS_VERIFICATION_LOG_UPDATED.equals(event.getTopic())) {
             Object[] data = (Object[]) eventData;
             String testObjectId = (String) data[0];
@@ -1494,7 +1712,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 txtVerificationLog.append(logLine + "\n");
             }
         }
-        
+
         if (EventConstants.WS_VERIFICATION_EXECUTION_FINISHED.equals(event.getTopic())) {
             Object[] data = (Object[]) eventData;
             String testObjectId = (String) data[0];
@@ -1505,6 +1723,18 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
     }
     
+    @Override
+    public void insertScript(String script) {
+        IEditorInput editorInput = verificationScriptEditor.getEditorInput();
+        IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
+        
+        insertVerificationScript(document.getLength(), "\n");
+
+        insertVerificationScript(document.getLength(), script);
+
+        ui.setSelectedTab(ui.getVerificationTab());
+    }
+
     private void setVerificationResultStatus(TestStatusValue value) {
         lblVerificationResultStatus.setText(value.toString());
         lblVerificationResultStatus.setBackground(getBackgroundColorForVerificationResultStatus(value));
@@ -1541,30 +1771,34 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             saveVerificationScript();
             preSaving();
 
-            ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
-            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
-                    new Object[] { originalWsObject.getId(), originalWsObject });
-            eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
+            if (originalWsObject instanceof DraftWebServiceRequestEntity) {
+                eventBroker.post(EventConstants.WEBSERVICE_REQUEST_DRAFT_UPDATED, originalWsObject);
+            } else {
+                ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
+                eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
+                        new Object[] { originalWsObject.getId(), originalWsObject });
+                eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
+            }
             dirtyable.setDirty(false);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
     }
-    
+
     private void saveVariables() {
         VariableEntity[] variables = variableView.getVariables();
         originalWsObject.setVariables(Arrays.asList(variables));
     }
-    
-    private void saveVerificationScript() {        
+
+    private void saveVerificationScript() {
         IEditorInput input = verificationScriptEditor.getEditorInput();
         IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(input);
         if (document != null) {
             String script = document.get();
             originalWsObject.setVerificationScript(script);
         }
-        GroovyEditorUtil.saveEditor(scriptEditorPart);
+        editor.saveEditor(scriptEditorPart);
     }
 
     public WebServiceRequestEntity getWSRequestObject() {
@@ -1574,6 +1808,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Override
     public String getEntityId() {
         return getWSRequestObject().getIdForDisplay();
+    }
+
+    @Override
+    public boolean isDraft() {
+        return getWSRequestObject() instanceof DraftWebServiceRequestEntity;
+    }
+
+    @Override
+    public String getPartId() {
+        return mPart.getElementId();
     }
 
     @Override
@@ -1610,18 +1854,18 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     public void onClose() {
         deleteTempScriptFile();
         try {
-            GroovyEditorUtil.clearEditorProblems(verificationScriptEditor);
+            editor.clearEditorProblems(verificationScriptEditor);
         } catch (CoreException e) {
             LoggerSingleton.logError(e);
         }
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
     }
-    
+
     private void deleteTempScriptFile() {
         IFileEditorInput input = (IFileEditorInput) verificationScriptEditor.getEditorInput();
         IFile tempScriptFile = input.getFile();
         tempScriptFile.getRawLocation().toFile().delete();
-        
+
         try {
             tempScriptFile.delete(true, null);
         } catch (CoreException e) {
@@ -1733,8 +1977,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected boolean isBodySupported() {
         String requestMethod = wsApiControl.getRequestMethod();
-        return !(WebServiceRequestEntity.GET_METHOD.equalsIgnoreCase(requestMethod)
-                || WebServiceRequestEntity.DELETE_METHOD.equalsIgnoreCase(requestMethod));
+        return !(WebServiceRequestEntity.GET_METHOD.equalsIgnoreCase(requestMethod));
     }
 
     protected boolean isSOAP() {
@@ -1763,9 +2006,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         if (StringUtils.isBlank(authType)) {
             ccbAuthType.select(0);
         }
-        
+
         ui.getAuthorizationPartComposite().layout(true, true);
-//        sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
+        // sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
     }
 
     public void updateIconURL(String imageURL) {
@@ -1777,25 +2020,19 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
         mPart.setIconURI(imageURL);
     }
-    
+
+    protected abstract void updatePartImage();
+
     public void updateDirty(boolean dirty) {
         dirtyable.setDirty(dirty);
     }
 
     @Override
     public List<MPart> getChildParts() {
-        return Arrays.asList(
-                    ui.getApiControlsPart(), 
-                    ui.getHeadersPart(), 
-                    ui.getAuthorizationPart(), 
-                    ui.getBodyPart(), 
-                    ui.getScriptEditorPart(),
-                    ui.getSnippetPart(),
-                    ui.getResponsePart(),
-                    ui.getVariablePart()
-                );
+        return Arrays.asList(ui.getApiControlsPart(), ui.getHeadersPart(), ui.getAuthorizationPart(), ui.getBodyPart(),
+                ui.getScriptEditorPart(), ui.getSnippetPart(), ui.getResponsePart(), ui.getVariablePart());
     }
-    
+
     private class ToolBarForVerificationPart extends ToolBarForMPart {
 
         public ToolBarForVerificationPart(MPart part) {
@@ -1822,6 +2059,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 }
             });
         }
-
     }
+
+    @PreDestroy
+    public void preDestroy() {
+        if (originalWsObject instanceof DraftWebServiceRequestEntity) {
+            ((DraftWebServiceRequestEntity) originalWsObject).getDraftUid();
+        }
+    }
+
 }

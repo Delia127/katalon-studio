@@ -231,6 +231,14 @@ public class FolderController extends EntityController implements Serializable {
         return getDataProviderSetting().getFolderDataProvider().getIncludeRoot(project);
     }
     
+    public FolderEntity getFeatureRoot(ProjectEntity project) throws DALException {
+    	return getDataProviderSetting().getFolderDataProvider().getFeatureRoot(project);
+    }
+    
+    public FolderEntity getGroovyScriptRoot(ProjectEntity project) throws DALException {
+    	return getDataProviderSetting().getFolderDataProvider().getGroovyScriptRoot(project);
+    }
+     
     public boolean isSourceFolder(ProjectEntity project, FolderEntity folderEntity) {
         List<String> sourceFolders = project.getSourceContent().getSourceFolderList()
                 .stream().map(source -> source.getUrl()).collect(Collectors.toList());

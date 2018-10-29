@@ -365,7 +365,7 @@ public class DownloadTestCaseJob extends QTestJob {
      */
     private void addDescriptionForTestCase(QTestProject qTestProject, QTestTestCase qTestCase,
             TestCaseEntity testCaseEntity) throws Exception {
-        GroovyCompilationUnit unit = (GroovyCompilationUnit) GroovyGuiUtil.getGroovyScriptForTestCase(testCaseEntity);
+        GroovyCompilationUnit unit = (GroovyCompilationUnit) GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(testCaseEntity);
 
         ClassNode clazzNode = unit.getModuleNode().getClasses().get(0);
         Statement statement = clazzNode.getMethods("run").get(0).getCode();
