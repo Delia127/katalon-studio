@@ -154,8 +154,4 @@ public class DriverPropertyMapComposite extends Composite {
         }
         return name + "_" + index;
     }
-
-    public Map<String, Object> getDriverProperties() {
-        return driverPropertyList;
-    }
 }
