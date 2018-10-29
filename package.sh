@@ -107,10 +107,10 @@ sudo mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUIL
 sudo mount_smbfs //katabuild:[katalon2018]@192.168.35.52/share/build $KATABUILD2
 #sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
-cp -Rf "Katalon_Studio_Linux_64-$1.tar.gz" $KATABUILD/
-cp -Rf "Katalon_Studio_Windows_32-$1.zip" $KATABUILD/
-cp -Rf "Katalon_Studio_Windows_64-$1.zip" $KATABUILD/
-cp -Rf "Katalon_Studio-MacOS-$1.dmg" $KATABUILD/
+cp -Rf "Katalon_Studio_Linux_64-$1-$4.tar.gz" $KATABUILD/
+cp -Rf "Katalon_Studio_Windows_32-$1-$4.zip" $KATABUILD/
+cp -Rf "Katalon_Studio_Windows_64-$1-$4.zip" $KATABUILD/
+cp -Rf "Katalon_Studio-MacOS-$1-$4.dmg" $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
 sudo umount -f $KATABUILD
 echo "Distribute packages on macOS ... Done"
