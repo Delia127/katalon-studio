@@ -19,26 +19,26 @@ node {
     	} else {
     		sh '''
 		    cd source
-		    sudo /usr/local/bin/mvn clean verify -Pstag
+		    sudo /usr/local/bin/mvn clean verify -Pdev
 	        '''
     	}       
    }
     stage('Package') {
 	script {
 		//Retrieves version number from source    
-		//env.WORKSPACE = pwd()
-		def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
+		String workspace = pwd()
+		def versionContent = readFile "${workspace}/source/com.kms.katalon/about.mappings"
 		def versionNumber = (versionContent =~ /([0-9]+)[\.,]?([0-9]+)[\.,]?([0-9])/)
-		String version = versionNumber[0][0]
+		String buildVersion = versionNumber[0][0]
 	}
 	   
         sh '''
-            sudo ./package.sh ${JOB_BASE_NAME} ${BUILD_ID} ${version} ${BUILD_TIMESTAMP}
+            sudo ./package.sh ${JOB_BASE_NAME} ${buildVersion} ${BUILD_TIMESTAMP}
         '''
 
         if (env.BRANCH_NAME == 'release') {
                 sh '''
-                    sudo ./verify.sh ${JOB_BASE_NAME} ${BUILD_ID} ${version} ${BUILD_TIMESTAMP}
+                    sudo ./verify.sh ${JOB_BASE_NAME} ${buildVversion} ${BUILD_TIMESTAMP}
                 '''
         }
     }
