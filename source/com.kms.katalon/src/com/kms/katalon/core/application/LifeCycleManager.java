@@ -142,20 +142,22 @@ public class LifeCycleManager {
     }
 
     private void setupGroovyTemplatePlugin() {
-    	 try {
-             ScopedPreferenceStore prefStore = getPreferenceStore(GroovyTemplatePreferenceConstants.ORG_CODEHAUS_GROOVY_ECLIPSE_QUICKFIX_PLUGIN_ID);
-             
-             if(!prefStore.getBoolean(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP)){
-                 // prevent user clear all or remove the predefined templates
-                 prefStore.setDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY, GroovyTemplatePreferenceConstants.GROOVY_TEMPLATES);
-                 prefStore.setToDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY);
-                 prefStore.setValue(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP, true);
-             }
-             prefStore.save();
-         } catch (IOException e) {
-             logError(e);
-         }
-		
+		try {
+			ScopedPreferenceStore prefStore = getPreferenceStore(
+					GroovyTemplatePreferenceConstants.ORG_CODEHAUS_GROOVY_ECLIPSE_QUICKFIX_PLUGIN_ID);
+
+			if (!prefStore.getBoolean(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP)) {
+				// prevent user clear all or remove the predefined templates
+				prefStore.setDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY,
+						GroovyTemplatePreferenceConstants.GROOVY_TEMPLATES);
+				prefStore.setToDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY);
+				prefStore.setValue(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP, true);
+			}
+			prefStore.save();
+		} catch (IOException e) {
+			logError(e);
+		}
+
 	}
 
 	private void setupResourcePlugin() {
