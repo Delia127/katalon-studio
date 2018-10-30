@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_hQQH0BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.application">
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_hQQH0BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.application">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_hQQH0RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.window.main" selectedElement="_hQQH8BYMEeSUMbyEN2kbFQ" label="Katalon Studio" iconURI="" bindingContexts="_mWGB8AQqEeWyKYoESvUc1g" x="0" y="0" width="800" height="600">
     <tags>shellMaximized</tags>
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_hQQH8BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspectiveStack" selectedElement="_hQQH8RYMEeSUMbyEN2kbFQ">
       <children xsi:type="advanced:Perspective" xmi:id="_hQQH8RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspective.keyword" selectedElement="_hQQH8hYMEeSUMbyEN2kbFQ" label="Keyword" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keyword_perspective_16.png" tooltip="Keyword Perspective">
         <children xsi:type="basic:PartSashContainer" xmi:id="_hQQH8hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.partsashcontainer.main" horizontal="true">
-          <children xsi:type="basic:PartSashContainer" xmi:id="_QR8UECXxEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.partsashcontainer.left" containerData="20" selectedElement="_Uxwj0BYtEeSNBMuqFX2a9Q">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_QR8UECXxEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.partsashcontainer.left" containerData="25" selectedElement="_Uxwj0BYtEeSNBMuqFX2a9Q">
             <children xsi:type="basic:PartStack" xmi:id="_Uxwj0BYtEeSNBMuqFX2a9Q" elementId="com.kms.katalon.composer.partstack.explorer" containerData="60">
               <tags>NoMove</tags>
             </children>
@@ -15,7 +15,7 @@
               <tags>NoMove</tags>
             </children>
           </children>
-          <children xsi:type="basic:PartSashContainer" xmi:id="_GOwXsBbNEeS-5cX7m-w1IA" elementId="com.kms.katalon.composer.partsashcontainer.right" containerData="80">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_GOwXsBbNEeS-5cX7m-w1IA" elementId="com.kms.katalon.composer.partsashcontainer.right" containerData="75">
             <children xsi:type="basic:PartSashContainer" xmi:id="_XxfwgNLcEeSctqH8QULjSg" elementId="com.kms.katalon.partsashcontainer.main" containerData="70" selectedElement="_hkPqAD8NEeSqW-o8jtXO1g" horizontal="true">
               <children xsi:type="advanced:Placeholder" xmi:id="_hkPqAD8NEeSqW-o8jtXO1g" elementId="org.eclipse.ui.editorss" containerData="80" ref="_2Ev6oD8CEeSqW-o8jtXO1g"/>
               <children xsi:type="basic:PartStack" xmi:id="_uOwOINa1EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline" visible="false" containerData="20">
@@ -105,8 +105,11 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_bv02QDdbEeiyIrMgpAUQAg" elementId="com.kms.katalon.handledmenuitem.checkForUpdates" label="Check for Updates..." command="_VC7xYDdkEeiyIrMgpAUQAg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_QCrHEDdlEeiyIrMgpAUQAg" elementId="com.kms.katalon.menuseparator.1"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" tooltip="" command="_jm89wGgxEeatJ4Re1SnNtw"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Quick Guide" tooltip="" command="_agaP0Gp9EeakEakFblwi9Q"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" toBeRendered="false" visible="false" label="Quick Guide" tooltip="" command="_agaP0Gp9EeakEakFblwi9Q">
+          <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_1xBsAKaxEeiIHNG-Fo2vNA"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_YU7NEOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handledmenuitem.reportIssue" label="Report Issue" tooltip="" command="_blPuUOxNEeal34fhcBE7BQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GLb_kMeZEeiT4f3fp0QbHA" elementId="com.kms.katalon.handledmenuitem.errorLog" label="Error Log" command="_xthpkMebEeiT4f3fp0QbHA"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_4l8VEFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handledmenuitem.service" label="Business Support" command="_CeYPQFdcEeiRfOF4k51oXA"/>
       </children>
     </mainMenu>
@@ -154,6 +157,13 @@
           <menu xmi:id="_x0pbMNujEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.new.menu" label=""/>
         </children>
       </children>
+      <children xsi:type="menu:ToolControl" xmi:id="_OxkeMMe1Eei46rf775bdjg" elementId="com.kms.katalon.toolcontrol.separator" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.SeparatorToolControl"/>
+      <children xsi:type="menu:ToolBar" xmi:id="_echTUMCSEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.toolbar.generic" toBeRendered="false" visible="false">
+        <tags>NoMove</tags>
+      </children>
+      <children xsi:type="menu:ToolBar" xmi:id="_nf1kYMCGEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.toolbar.webservice" toBeRendered="false" visible="false">
+        <tags>NoMove</tags>
+      </children>
       <children xsi:type="menu:ToolControl" xmi:id="_1-cu4OJUEeSyVPtKyNklew" elementId="PerspectiveSpacer" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.LayoutModifierToolControl">
         <tags>stretch</tags>
       </children>
@@ -161,6 +171,13 @@
         <tags>NoMove</tags>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_-DNO4CSUEeWwuK4yOgypdw" elementId="com.kms.katalon.composer.toolbar.switcher" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.PerspectiveSwitcher"/>
+      <children xsi:type="menu:ToolControl" xmi:id="_Ec3EoI_EEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.forumsearch" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl"/>
+      <children xsi:type="menu:ToolBar" xmi:id="_vDJ6II_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support">
+        <tags>NoMove</tags>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_v1hLMI_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support.chatsupport" label="Community Chat" iconURI="platform:/plugin/com.kms.katalon/icons/chat_support_24.png" command="_Wci7UI_aEeifVM5dtK86vQ">
+          <tags>FORCE_TEXT</tags>
+        </children>
+      </children>
     </trimBars>
     <trimBars xmi:id="_D8Z7cNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.trimbar.right" side="Right">
       <children xsi:type="menu:ToolControl" xmi:id="_Fy2fsNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
@@ -196,6 +213,8 @@
   <handlers xmi:id="_yY33IOBxEeejXLn7_j51hg" elementId="com.kms.katalon.handler.importSeleniumIde" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ImportSeleniumIdeHandler" command="_2sDjkOBxEeejXLn7_j51hg"/>
   <handlers xmi:id="_dA0N8DdkEeiyIrMgpAUQAg" elementId="com.kms.katalon.handler.checkForUpdates" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.CheckForUpdatesHandler" command="_VC7xYDdkEeiyIrMgpAUQAg"/>
   <handlers xmi:id="_jkq6sFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handler.service" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenSupportServicePageHandler" command="_CeYPQFdcEeiRfOF4k51oXA"/>
+  <handlers xmi:id="_jNSC4I_aEeifVM5dtK86vQ" elementId="com.kms.katalon.handler.chatSupport" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ChatSupportHandler" command="_Wci7UI_aEeifVM5dtK86vQ"/>
+  <handlers xmi:id="_JTi4oMecEeiT4f3fp0QbHA" elementId="com.kms.katalon.handler.openErrorLog" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenErrorLogHandler" command="_xthpkMebEeiT4f3fp0QbHA"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -220,10 +239,13 @@
   <commands xmi:id="_blPuUOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.command.reportIssue" commandName="reportIssueCommand"/>
   <commands xmi:id="_nGeSINxwEeaEL7_gfQD4GQ" elementId="com.kms.katalon.command.commandpalette" commandName="Command Palette"/>
   <commands xmi:id="_H0WtsPKjEeaEMap8QCd-4Q" elementId="com.kms.katalon.command.katalonpreferences" commandName="Katalon Preferences"/>
-  <commands xmi:id="_AKimEKP_EeenLui14LsBfQ" elementId="com.kms.katalon.command.importSettings" commandName="Import Settings"/>
+  <commands xmi:id="_bn1BsF84Eeik14jXU-tU4w" elementId="com.kms.katalon.command.importSettings" commandName="Import Settings"/>
+  <commands xmi:id="_AKimEKP_EeenLui14LsBfQ" elementId="com.kms.katalon.command.importKeywords" commandName="Import Keywords"/>
   <commands xmi:id="_2sDjkOBxEeejXLn7_j51hg" elementId="com.kms.katalon.command.importSeleniumIde" commandName="Import Selenium IDE"/>
   <commands xmi:id="_VC7xYDdkEeiyIrMgpAUQAg" elementId="com.kms.katalon.command.checkForUpdates" commandName="Check for Updates"/>
   <commands xmi:id="_CeYPQFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.command.service" commandName="openSupportServicePageCommand"/>
+  <commands xmi:id="_Wci7UI_aEeifVM5dtK86vQ" elementId="com.kms.katalon.command.chatSupport" commandName="Chat Support"/>
+  <commands xmi:id="_xthpkMebEeiT4f3fp0QbHA" elementId="com.kms.katalon.command.openErrorLog" commandName="openErrorLog"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

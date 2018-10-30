@@ -108,4 +108,8 @@ public class ImageConstants {
     public static final Image IMG_16_INFO = ImageManager.getImage(IImageKeys.INFO_16);
 
     public static final URL URL_16_LOADING = ImageManager.getImageURL(IImageKeys.LOADING_16);
+    
+    public static final Image IMG_16_CONFLICT_ELEMENT_STATUS = ImageManager.getImage(IImageKeys.CONFLICT_ELEMENT_STATUS_16);
+
+    public static final Image IMG_16_NEW_ELEMENT_STATUS = ImageManager.getImage(IImageKeys.NEW_ELEMENT_STATUS_16);
 }

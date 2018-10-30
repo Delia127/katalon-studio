@@ -14,6 +14,8 @@ public interface IImageKeys {
     public static final String INTRO_SCREEN_5 = "intro/screen5.png"; //$NON-NLS-1$
 
     public static final String INTRO_SCREEN_6 = "intro/screen6.png"; //$NON-NLS-1$
+    
+    public static final String INTRO_SCREEN_WELCOME = "intro/welcome_screen_BG.png"; //$NON-NLS-1$
     // End Intro
 
     // Welcome
@@ -42,7 +44,31 @@ public interface IImageKeys {
     public static final String SCREEN_SHOT_RECORD = "welcome/record.png"; //$NON-NLS-1$
 
     public static final String SCREEN_SHOT_RUN = "welcome/run.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_MOBILE_RECORD = "welcome/Mobile-Record_test_case.png"; //$NON-NLS-1$
 
+    public static final String SCREEN_SHOT_MOBILE_CONFIG_AND_RECORD_STEP = "welcome/Mobile-Configure-and-record-new-test-steps.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_MOBILE_LOG_VIEWER = "welcome/Mobile-View-execution-log.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_USE_DRAFT_REQUEST = "welcome/API-use-draft-request.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_SAVE_DRAFT_REQUEST = "welcome/API-save-draft-request.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_ADD_REQUEST_TO_TEST_CASE = "welcome/API-add-request-to-test-case.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_API_LOG_VIEWER = "welcome/API-view-the-execution-log.png"; //$NON-NLS-1$
+    
+    public static final String SCRIPT_BULLET = "welcome/scripting-bullet.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_SCRIPT_NEW_TEST_CASE = "welcome/Script-script-a-new-test-case.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_ADD_OR_IMPORT_KEYWORDS = "welcome/Script-add-or-import-new-keywords.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_CREATE_TEST_LISTENER = "welcome/Script-create-a-new-test-listener.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_BUILD_CMD = "welcome/Script-build-cmd.png"; //$NON-NLS-1$
+    
     public static final String GRADIENT_LINE_SEPARATOR = "welcome/gradient_line_separator.png"; //$NON-NLS-1$
 
     public static final String STEP_1_36 = "welcome/step_1_36.png"; //$NON-NLS-1$
@@ -50,6 +76,16 @@ public interface IImageKeys {
     public static final String STEP_2_36 = "welcome/step_2_36.png"; //$NON-NLS-1$
 
     public static final String STEP_3_36 = "welcome/step_3_36.png"; //$NON-NLS-1$
+    
+    public static final String STEP_1_26 = "welcome/1.png"; //$NON-NLS-1$
+
+    public static final String STEP_2_26 = "welcome/2.png"; //$NON-NLS-1$
+
+    public static final String STEP_3_26 = "welcome/3.png"; //$NON-NLS-1$
+    
+    public static final String STEP_4_26 = "welcome/4.png"; //$NON-NLS-1$
+    
+    public static final String STEP_5_26 = "welcome/5.png"; //$NON-NLS-1$
 
     public static final String TAB_FIRST_INACTIVE = "welcome/tab_first_inactive.png"; //$NON-NLS-1$
 
@@ -62,6 +98,10 @@ public interface IImageKeys {
     public static final String TAB_LAST_INACTIVE = "welcome/tab_last_inactive.png"; //$NON-NLS-1$
 
     public static final String TAB_LAST_ACTIVE = "welcome/tab_last_active.png"; //$NON-NLS-1$
+    
+    public static final String SAMPLE_REMOTE_PROJECT_72 = "welcome/sample_remote_project.png"; //$NON-NLS-1$
+
+    public static final String GITHUB_LOGO_55 = "welcome/github_logo_55.png"; //$NON-NLS-1$
     // End Welcome
 
     // For Dialog
@@ -321,6 +361,8 @@ public interface IImageKeys {
     public static final String WS_POST_METHOD_16 = "entity/ws_post_16.png"; //$NON-NLS-1$
 
     public static final String WS_PUT_METHOD_16 = "entity/ws_put_16.png"; //$NON-NLS-1$
+    
+    public static final String WS_PATCH_METHOD_16 = "entity/ws_patch_16.png"; //$NON-NLS-1$
 
     public static final String WS_DELETE_METHOD_16 = "entity/ws_delete_16.png"; //$NON-NLS-1$
 
@@ -331,6 +373,14 @@ public interface IImageKeys {
     public static final String WS_SOAP_GET_METHOD_16 = "entity/ws_soap_get_16.png"; //$NON-NLS-1$
 
     public static final String WS_SOAP_POST_METHOD_16 = "entity/ws_soap_post_16.png"; //$NON-NLS-1$
+    
+    public static final String WS_NEW_REST_REQUEST_64 = "entity/new_request_rest_64.png"; //$NON-NLS-1$
+    
+    public static final String WS_NEW_SOAP_REQUEST_64 = "entity/new_request_soap_64.png"; //$NON-NLS-1$
+    
+    public static final String WS_IMPORT_REST_REQUEST_64 = "entity/import_rest_64.png"; //$NON-NLS-1$
+    
+    public static final String WS_IMPORT_SOAP_REQUEST_64 = "entity/import_soap_64.png"; //$NON-NLS-1$
 
     public static final String RBT_TEST_OBJECT_16 = "entity/rbt_test_object_16.png"; //$NON-NLS-1$
 
@@ -357,6 +407,12 @@ public interface IImageKeys {
     public static final String PROFILE_FOLDER_ENTITY_16 = "entity/profile_16.png"; //$NON-NLS-1$
     
     public static final String PROFILE_ENTITY_16 = "entity/entity_global_variable_16.png"; //$NON-NLS-1$
+
+    public static final String FEATURE_16 = "entity/feature_16.png"; //$NON-NLS-1$
+
+    public static final String FOLDER_FEATURE_16 = "entity/folder_feature_16.png"; //$NON-NLS-1$
+    
+    public static final String FOLDER_SOURCE_16 = "entity/folder_source_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar
@@ -610,5 +666,26 @@ public interface IImageKeys {
     public static final String FULL_SIZE_16 = "full_size_16.png"; //$NON-NLS-1$
     
     // End Common
+    
+    // Conflict status
+    public static final String CONFLICT_ELEMENT_STATUS_16 = "element_conflict_16.png"; //$NON-NLS-1$
+
+    public static final String NEW_ELEMENT_STATUS_16 = "element_new_16.png";
+    
+    // Recorder
+    public static final String START_RECORDING_24 = "recorder/start_recording_24.png"; //$NON-NLS-1$
+
+    public static final String PAUSE_RECORDING_24 = "recorder/pause_recording_24.png"; //$NON-NLS-1$
+
+    public static final String RESUME_RECORDING_24 = "recorder/resume_recording_24.png"; //$NON-NLS-1$
+
+    public static final String STOP_RECORDING_24 = "recorder/stop_recording_24.png"; //$NON-NLS-1$
+    
+    public static final String FORUM_SEARCH_BOX = "search-box.png"; //$NON-NLS-1$
+    
+    public static final String FORUM_SEARCH_ICON = "search_13.png"; //$NON-NLS-1$
+
+    // History Request
+    public static final String HISTORY_REQUEST_16 = "history_request_16.png";
 
 }

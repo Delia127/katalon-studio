@@ -52,6 +52,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class NewKeywordHandler {
@@ -129,6 +130,8 @@ public class NewKeywordHandler {
                         createdCompilationUnit = GroovyGuiUtil.createGroovyScriptForCustomKeyword(packageFragment, dialog.getName());
                     }
                     
+                    Trackings.trackCreatingObject("keyword");
+                    
                     if (createdCompilationUnit instanceof GroovyCompilationUnit
                             && createdCompilationUnit.getParent() instanceof IPackageFragment) {
                         ITreeEntity keywordRootFolder = new FolderTreeEntity(FolderController.getInstance()
@@ -144,7 +147,7 @@ public class NewKeywordHandler {
                     if (monitor.isCanceled()) {
                         throw new InterruptedException();
                     }
-
+                    
                 }
             }
 
@@ -167,13 +170,23 @@ public class NewKeywordHandler {
 
             Object entityObject = ((ITreeEntity) entity).getObject();
             if (entityObject instanceof IPackageFragment) {
-                return (ITreeEntity) entity;
+                PackageTreeEntity treeEntity = (PackageTreeEntity) entity;
+                FolderEntity parent = (FolderEntity) treeEntity.getParent().getObject();
+                if (parent.getFolderType() == FolderType.KEYWORD) {
+                    return (ITreeEntity) entity;
+                }
+                return null;
             }
 
             if (entityObject instanceof ICompilationUnit
                     && ((ICompilationUnit) entityObject).getElementName().endsWith(
                             GroovyConstants.GROOVY_FILE_EXTENSION)) {
-                return ((ITreeEntity) entity).getParent();
+                PackageTreeEntity packageTreeEntity = (PackageTreeEntity) ((ITreeEntity) entity).getParent();
+                FolderEntity parentFolder = (FolderEntity) packageTreeEntity.getParent().getObject();
+                if (parentFolder.getFolderType() == FolderType.KEYWORD) {
+                    return packageTreeEntity;
+                }
+                return null;
             }
 
             if (entityObject instanceof FolderEntity

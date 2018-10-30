@@ -12,6 +12,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ERROR_TITLE = ERROR;
 
     public static final String HAND_SAVE_DIA_MSG = MessageConstants.HAND_SAVE_DIA_MSG;
+    
+    public static final String HAND_SAVE_ALL_DIA_MSG = MessageConstants.HAND_SAVE_ALL_DIA_MSG;
 
     // GeneralPreferencePage
     public static final String PAGE_GRP_ON_NEXT_STARTING_APP = MessageConstants.PAGE_GRP_ON_NEXT_STARTING_APP;
@@ -87,11 +89,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String SEPARATE_LINK = MessageConstants.SEPARATE_LINK;
 
-    public static final String DIALOG_TITLE = MessageConstants.DIALOG_TITLE;
-
     public static final String BTN_CLEAR_TILE = MessageConstants.BTN_CLEAR_TILE;
 
-    public static final String BTN_ACTIVATE_TILE = MessageConstants.BTN_ACTIVATE_TILE;
+    public static final String BTN_ACTIVATE_TITLE = MessageConstants.BTN_ACTIVATE_TITLE;
 
     public static final String WAITTING_MESSAGE = MessageConstants.WAITTING_MESSAGE;
 
@@ -116,4 +116,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String SEND_ACTIVATION_INFO_FAILED = MessageConstants.SEND_ACTIVATION_INFO_FAILED;
 
     public static final String NETWORK_ERROR = MessageConstants.NETWORK_ERROR;
+    
+    public static final String MSG_FORUM_SEARCH = MessageConstants.MSG_FORUM_SEARCH;
 }

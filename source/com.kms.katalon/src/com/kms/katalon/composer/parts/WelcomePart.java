@@ -14,7 +14,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.EventHandler;
 
@@ -83,8 +85,20 @@ public class WelcomePart {
         mainGridLayout.marginHeight = 0;
         mainComposite.setLayout(mainGridLayout);
 
+
+        mainComposite.addListener(SWT.Paint, new Listener() {
+            
+            @Override
+            public void handleEvent(Event event) {
+               Point size = mainComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+               if (container.getMinHeight() < size.y) {
+                   container.setMinHeight(size.y);
+               }
+            }
+        });
+
         container.setContent(mainComposite);
-        container.setMinSize(new Point(900, 750));
+        container.setMinSize(new Point(900, 1300));
         container.setExpandHorizontal(true);
         container.setExpandVertical(true);
 
@@ -107,7 +121,7 @@ public class WelcomePart {
         GridData gdStartPageContent = new GridData(SWT.FILL, SWT.FILL, true, true);
         gdStartPageContent.minimumWidth = 600;
         startPageContent.setLayoutData(gdStartPageContent);
-
+        
         addSpacer(rightComposite);
     }
 

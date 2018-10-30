@@ -48,4 +48,16 @@ public class GlobalVariableEntity implements Serializable {
         newGlobalVariableEntity.setDescription(getDescription());
         return newGlobalVariableEntity;
     }
+    
+    public boolean equals(GlobalVariableEntity entity){
+    	return getName().equals(entity.getName()) 
+    			&& getInitValue().equals(entity.getInitValue())
+    			&& getDescription().equals(entity.getDescription());
+    			
+    }
+    
+    public boolean equalsWithoutName(GlobalVariableEntity entity){
+    	return  getInitValue().equals(entity.getInitValue())
+    			&& getDescription().equals(entity.getDescription());
+    }
 }

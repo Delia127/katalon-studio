@@ -30,7 +30,7 @@ public class UsageInfoCollector {
     private static final String EMAIL_KEY = "email";
 
     public static void collect(UsageInformation usageInfo) {
-        if (VersionUtil.isInternalBuild()) {
+        if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
            return;
         }
         JsonObject jsObject = new JsonObject();

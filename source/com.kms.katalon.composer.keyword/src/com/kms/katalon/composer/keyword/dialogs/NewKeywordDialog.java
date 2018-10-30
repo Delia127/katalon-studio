@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -27,9 +28,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
+import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.keyword.constants.ComposerKeywordMessageConstants;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 
 public class NewKeywordDialog extends CommonAbstractKeywordDialog {
     
@@ -53,6 +56,8 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
     
     private Button btnGenerateSampleAPIKeyword;
     
+    private Composite helpComposite;
+    
     private int sampleKeywordType = 0;
 
     private ValidatorManager validatorManager;
@@ -67,13 +72,19 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         setDialogMsg(StringConstants.DIA_MSG_CREATE_KEYWORD);
         this.rootPackage = rootPackage;
         this.parentPackage = parentPackage;
+//        setHelpAvailable(true);
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         Control area = super.createDialogArea(parent);
+        setInput();
         addControlModifyListeners();
         return area;
+    }
+
+    private void setInput() {
+        txtName.forceFocus();
     }
 
     @Override
@@ -83,9 +94,24 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         }
         
         createPackageNameControl(container, 3);
+        super.setLblName(StringConstants.MSG_CLASS_NAME_TITLE);
         return super.createDialogBodyArea(parent);
     }
 
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        ((GridLayout) parent.getLayout()).numColumns++;
+        helpComposite = new Composite(parent, SWT.NONE);
+        helpComposite.setLayout(new GridLayout(1, false));
+        helpComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
+        new HelpComposite(helpComposite, DocumentationMessageConstants.CUSTOM_KEYWORD);
+        
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
+                true);
+        createButton(parent, IDialogConstants.CANCEL_ID,
+                IDialogConstants.CANCEL_LABEL, false);
+    }
+    
     @Override
     protected Control createEntityCustomControl(Composite parent, int column, int span) {
         return createSampleKeywordControl(parent, column);

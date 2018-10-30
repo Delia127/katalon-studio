@@ -2,6 +2,8 @@ package com.kms.katalon.dal.fileservice;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +25,7 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
@@ -30,6 +33,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.xml.sax.InputSource;
 
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.exception.InvalidNameException;
@@ -39,6 +43,7 @@ import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 @SuppressWarnings({ "rawtypes" })
@@ -132,7 +137,9 @@ public final class EntityService {
                 com.kms.katalon.entity.checkpoint.CsvCheckpointSourceInfo.class,
                 com.kms.katalon.entity.checkpoint.DatabaseCheckpointSourceInfo.class,
                 com.kms.katalon.entity.checkpoint.CheckpointSourceInfo.class,
-                com.kms.katalon.dal.fileservice.adapter.CheckpointDataXmlAdapter.class };
+                com.kms.katalon.dal.fileservice.adapter.CheckpointDataXmlAdapter.class,
+                com.kms.katalon.entity.project.SourceContent.class,
+                com.kms.katalon.entity.project.SourceFolderConfiguration.class};
     }
 
     public Marshaller getMarshaller() {
@@ -372,4 +379,30 @@ public final class EntityService {
     public Unmarshaller changeUnmarshaller(Unmarshaller unmashaller) {
         return this.unmarshaller = unmashaller;
     }
+
+	public String toXmlString(FileEntity entity) {
+        try {
+    		StringWriter sw = new StringWriter();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	        marshaller.marshal(entity, sw);
+	        return sw.toString();
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return StringUtils.EMPTY;
+	}
+
+	public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws JAXBException {
+        try {
+        	ExecutionProfileEntity executionProfileEntity = 
+        			(ExecutionProfileEntity) unmarshaller.unmarshal(new InputSource(new StringReader(xmlString)));
+	        if(executionProfileEntity != null)
+	        	return executionProfileEntity;
+		} catch (JAXBException e) {
+			throw e;
+		}
+        return null;
+	}
+
 }

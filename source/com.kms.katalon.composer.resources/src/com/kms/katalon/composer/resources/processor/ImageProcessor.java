@@ -19,6 +19,19 @@ public class ImageProcessor {
         registerEntityImages();
         registerSubToolbarImages();
         registerCommonImages();
+        registerRecorderImages();
+        registerHistoryRequestImages();
+    }
+
+    private void registerHistoryRequestImages() {
+        ImageManager.registerImage(IImageKeys.HISTORY_REQUEST_16);
+    }
+
+    private void registerRecorderImages() {
+        ImageManager.registerImage(IImageKeys.START_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.PAUSE_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.RESUME_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.STOP_RECORDING_24);
     }
 
     private void registerCommonImages() {
@@ -92,6 +105,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.CHECK_16);
         ImageManager.registerImage(IImageKeys.FIT_SCREEN_16);
         ImageManager.registerImage(IImageKeys.FULL_SIZE_16);
+        ImageManager.registerImage(IImageKeys.CONFLICT_ELEMENT_STATUS_16);
+        ImageManager.registerImage(IImageKeys.NEW_ELEMENT_STATUS_16);
+        ImageManager.registerImage(IImageKeys.FORUM_SEARCH_BOX);
+        ImageManager.registerImage(IImageKeys.FORUM_SEARCH_ICON);
     }
 
     private void registerSubToolbarImages() {
@@ -181,6 +198,11 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.WS_SOAP_METHOD_16);
         ImageManager.registerImage(IImageKeys.WS_SOAP_GET_METHOD_16);
         ImageManager.registerImage(IImageKeys.WS_SOAP_POST_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_NEW_REST_REQUEST_64);
+        ImageManager.registerImage(IImageKeys.WS_NEW_SOAP_REQUEST_64);
+        ImageManager.registerImage(IImageKeys.WS_IMPORT_REST_REQUEST_64);
+        ImageManager.registerImage(IImageKeys.WS_IMPORT_SOAP_REQUEST_64);
+        ImageManager.registerImage(IImageKeys.WS_PATCH_METHOD_16);
         ImageManager.registerImage(IImageKeys.RBT_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.TXT_TEST_OBJECT_16);
 
@@ -195,6 +217,9 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.KEYWORD_16);
         ImageManager.registerImage(IImageKeys.PROFILE_FOLDER_ENTITY_16);
         ImageManager.registerImage(IImageKeys.PROFILE_ENTITY_16);
+        ImageManager.registerImage(IImageKeys.FEATURE_16);
+        ImageManager.registerImage(IImageKeys.FOLDER_FEATURE_16);
+        ImageManager.registerImage(IImageKeys.FOLDER_SOURCE_16);
     }
 
     private void registerTestCaseStepImages() {
@@ -341,6 +366,25 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.TAB_MIDDLE_ACTIVE);
         ImageManager.registerImage(IImageKeys.TAB_LAST_INACTIVE);
         ImageManager.registerImage(IImageKeys.TAB_LAST_ACTIVE);
+        ImageManager.registerImage(IImageKeys.SAMPLE_REMOTE_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.GITHUB_LOGO_55);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_MOBILE_RECORD);
+        ImageManager.registerImage(IImageKeys.STEP_1_26);
+        ImageManager.registerImage(IImageKeys.STEP_2_26);
+        ImageManager.registerImage(IImageKeys.STEP_3_26);
+        ImageManager.registerImage(IImageKeys.STEP_4_26);
+        ImageManager.registerImage(IImageKeys.STEP_5_26);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_MOBILE_CONFIG_AND_RECORD_STEP);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_MOBILE_LOG_VIEWER);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_USE_DRAFT_REQUEST);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_SAVE_DRAFT_REQUEST);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_ADD_REQUEST_TO_TEST_CASE);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_API_LOG_VIEWER);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_SCRIPT_NEW_TEST_CASE);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_ADD_OR_IMPORT_KEYWORDS);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_CREATE_TEST_LISTENER);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_BUILD_CMD);
+        ImageManager.registerImage(IImageKeys.SCRIPT_BULLET);
     }
 
     private void registerIntroImages() {
@@ -350,6 +394,6 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_4);
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_5);
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_6);
+        ImageManager.registerImage(IImageKeys.INTRO_SCREEN_WELCOME);
     }
-
 }

@@ -46,7 +46,13 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  org.eclipse.jetty.http,
  com.kms.katalon.selenium-standalone,
  org.eclipse.egit.ui,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ org.greenrobot.eventbus,
+ com.kms.katalon.application,
+ com.kms.katalon.tracking,
+ org.apache.httpcomponents.httpclient,
+ org.apache.httpcomponents.httpcore,
+ org.apache.commons.lang3
 Export-Package: com.kms.katalon.objectspy.components,
  com.kms.katalon.objectspy.constants,
  com.kms.katalon.objectspy.core,
@@ -59,3 +65,4 @@ Export-Package: com.kms.katalon.objectspy.components,
  com.kms.katalon.objectspy.websocket,
  com.kms.katalon.objectspy.websocket.messages
 Bundle-ClassPath: .
+Import-Package: org.json

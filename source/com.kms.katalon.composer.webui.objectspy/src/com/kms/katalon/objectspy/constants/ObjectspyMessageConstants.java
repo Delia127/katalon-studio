@@ -131,6 +131,20 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_TOOLITEM_TIP_HIGHLIGHT;
 
+    public static String DIA_MSG_RESOLVE_CONFLICT_DES;
+
+    public static String DIA_MSG_RESOLVE_CONFLICT_TITLE;
+
+    public static String DIA_MSG_RADIO_DUPLICATE;
+
+    public static String DIA_MSG_RADIO_MERGE;
+
+    public static String DIA_MSG_RADIO_REPLACE;
+
+    public static String DIA_MSG_SELECT_ALL_BTN;
+
+    public static String DIA_MSG_DE_SELECT_ALL_BTN;
+
     public static String LBL_DLG_CONTINUE_WITH_OBJECT_SPY;
 
     public static String LBL_DLG_GO_TO_STORE;
@@ -155,7 +169,7 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_RADIO_LABEL_XPATH;
 
-    public static String DIA_RADIO_LABEL_BASIC;
+    public static String DIA_RADIO_LABEL_ATTRIBUTES;
 
     public static String DIA_COL_LABEL_CONDITION;
 

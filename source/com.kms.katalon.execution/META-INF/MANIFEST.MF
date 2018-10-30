@@ -14,6 +14,7 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.console.entity,
  com.kms.katalon.execution.constants,
  com.kms.katalon.execution.entity,
+ com.kms.katalon.execution.event,
  com.kms.katalon.execution.exception,
  com.kms.katalon.execution.generator,
  com.kms.katalon.execution.integration,
@@ -27,7 +28,8 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.preferences,
  com.kms.katalon.execution.session,
  com.kms.katalon.execution.setting,
- com.kms.katalon.execution.util
+ com.kms.katalon.execution.util,
+ com.kms.katalon.execution.webservice
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.google.common.base,
  javax.annotation;version="1.2.0",
@@ -71,5 +73,10 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.apache.commons.lang3,
  org.eclipse.jdt.launching,
  com.kms.katalon.util,
- com.kms.katalon.application
+ com.kms.katalon.application,
+ com.kms.katalon.composer.components,
+ org.greenrobot.eventbus,
+ com.kms.katalon.composer.components.impl,
+ com.kms.katalon.tracking,
+ com.kms.katalon.core.webservice
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator

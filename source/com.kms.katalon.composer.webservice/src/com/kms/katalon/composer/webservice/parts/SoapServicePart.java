@@ -6,6 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,14 +61,18 @@ import com.kms.katalon.composer.webservice.util.WebServiceUtil;
 import com.kms.katalon.composer.webservice.view.xml.ColorManager;
 import com.kms.katalon.composer.webservice.view.xml.XMLConfiguration;
 import com.kms.katalon.composer.webservice.view.xml.XMLPartitionScanner;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class SoapServicePart extends WebServicePart {
 
@@ -75,11 +81,11 @@ public class SoapServicePart extends WebServicePart {
     private static final String[] FILTER_NAMES = new String[] { "XML content files (*.xml, *.wsdl, *.txt)" };
 
     protected SoapResponseBodyEditorsComposite soapResponseBodyEditor;
-    
+
     private ProgressMonitorDialogWithThread progress;
 
     private CCombo ccbOperation;
-    
+
     protected SoapRequestMessageEditor requestBodyEditor;
 
     @Override
@@ -94,97 +100,6 @@ public class SoapServicePart extends WebServicePart {
             }
         });
 
-        wsApiControl.addSendSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (dirtyable.isDirty()) {
-                    boolean isOK = MessageDialog.openConfirm(null, StringConstants.WARN,
-                            ComposerWebserviceMessageConstants.PART_MSG_DO_YOU_WANT_TO_SAVE_THE_CHANGES);
-                    if (!isOK) {
-                        return;
-                    }
-                    save();
-                }
-
-                // clear previous response
-                mirrorEditor.setText("");
-
-                String requestURL = wsApiControl.getRequestURL().trim();
-                if (isInvalidURL(requestURL)) {
-                    LoggerSingleton.logError("URL is invalid");
-                    MessageDialog.openError(null, StringConstants.ERROR, "URL is invalid");
-                    return;
-                }
-                
-                if (ccbOperation.getText().isEmpty()) {
-                    LoggerSingleton.logError("Service Function is empty");
-                    MessageDialog.openError(null, StringConstants.ERROR, "Service Function is empty");
-                    return;
-                }
-
-                if (wsApiControl.getSendingState()) {
-                    progress.getProgressMonitor().setCanceled(true);
-                    wsApiControl.setSendButtonState(false);
-                    return;
-                }
-
-                try {
-                    wsApiControl.setSendButtonState(true);
-                    progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
-                    progress.setOpenOnRun(false);
-                    displayResponseContentBasedOnSendingState(true);
-                    progress.run(true, true, new IRunnableWithProgress() {
-
-                        @Override
-                        public void run(IProgressMonitor monitor)
-                                throws InvocationTargetException, InterruptedException {
-                            try {
-                                monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
-                                        IProgressMonitor.UNKNOWN);
-
-                                String projectDir = ProjectController.getInstance()
-                                        .getCurrentProject()
-                                        .getFolderLocation();
-
-                                final ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
-                                        getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
-
-                                if (monitor.isCanceled()) {
-                                    return;
-                                }
-
-                                String bodyContent = responseObject.getResponseText();
-                                Display.getDefault().asyncExec(() -> {
-                                    setResponseStatus(responseObject);
-                                    mirrorEditor.setText(getPrettyHeaders(responseObject));
-                                    if (bodyContent == null) {
-                                        return;
-                                    }
-                                    soapResponseBodyEditor.setInput(responseObject);
-
-                                });
-                            } catch (Exception e) {
-                                throw new InvocationTargetException(e);
-                            } finally {
-                                UISynchronizeService.syncExec(() -> wsApiControl.setSendButtonState(false));
-                                monitor.done();
-                            }
-                        }
-                    });
-                } catch (InvocationTargetException ex) {
-                    Throwable target = ex.getTargetException();
-                    if (target == null) {
-                        return;
-                    }
-                    LoggerSingleton.logError(target);
-                    MultiStatusErrorDialog.showErrorDialog(
-                            ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST,
-                            target.getMessage(), ExceptionsUtil.getStackTraceForThrowable(target));
-                } catch (InterruptedException ignored) {}
-                displayResponseContentBasedOnSendingState(false);
-            }
-        });
         Composite operationComposite = new Composite(parent, SWT.NONE);
         GridLayout glOperation = new GridLayout(3, false);
         glOperation.marginWidth = 0;
@@ -195,7 +110,6 @@ public class SoapServicePart extends WebServicePart {
         Label lblOperation = new Label(operationComposite, SWT.NONE);
         lblOperation.setText(StringConstants.PA_LBL_SERVICE_FUNCTION);
         GridData gdLblOperation = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-        gdLblOperation.widthHint = 102;
         lblOperation.setLayoutData(gdLblOperation);
 
         ccbOperation = new CCombo(operationComposite, SWT.BORDER | SWT.FLAT | SWT.READ_ONLY);
@@ -210,8 +124,7 @@ public class SoapServicePart extends WebServicePart {
 
         Button btnLoadFromWSDL = new Button(operationComposite, SWT.FLAT);
         btnLoadFromWSDL.setText(StringConstants.LBL_LOAD_FROM_WSDL);
-        GridData gdBtnLoadFromWSDL = new GridData(SWT.CENTER, SWT.FILL, false, false);
-        gdBtnLoadFromWSDL.widthHint = 100; // same width with send button
+        GridData gdBtnLoadFromWSDL = new GridData(SWT.LEFT, SWT.FILL, false, false);
         btnLoadFromWSDL.setLayoutData(gdBtnLoadFromWSDL);
         btnLoadFromWSDL.addSelectionListener(new SelectionAdapter() {
 
@@ -219,9 +132,11 @@ public class SoapServicePart extends WebServicePart {
             public void widgetSelected(SelectionEvent e) {
                 // Load operations from WS
                 String requestURL = wsApiControl.getRequestURL().trim();
-                if (isInvalidURL(requestURL)) {
-                    return;
-                }
+                String method = wsApiControl.getRequestMethod();
+
+                // if (isInvalidURL(requestURL)) {
+                // return;
+                // }
 
                 try {
                     Shell activeShell = Display.getCurrent().getActiveShell();
@@ -231,35 +146,135 @@ public class SoapServicePart extends WebServicePart {
                         public void run(IProgressMonitor monitor)
                                 throws InvocationTargetException, InterruptedException {
                             monitor.beginTask(StringConstants.MSG_FETCHING_FROM_WSDL, IProgressMonitor.UNKNOWN);
-                            Display.getDefault().asyncExec(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    try {
-                                        List<String> servFuncs = WSDLHelper
-                                                .newInstance(requestURL, getAuthorizationHeaderValue())
-                                                .getOperationNamesByRequestMethod(wsApiControl.getRequestMethod());
-                                        ccbOperation.setItems(servFuncs.toArray(new String[0]));
-                                        if (servFuncs.size() > 0) {
-                                            ccbOperation.select(0);
-                                        }
-                                        setDirty();
-                                    } catch (WSDLException e) {
-                                        LoggerSingleton.logError(e);
-                                        MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
-                                                StringConstants.MSG_CANNOT_LOAD_WS);
-                                    } finally {
-                                        monitor.done();
+                            try {
+                                List<String> servFuncs = WSDLHelper
+                                        .newInstance(requestURL, getAuthorizationHeaderValue())
+                                        .getOperationNamesByRequestMethod(method);
+                                UISynchronizeService.asyncExec(() -> {
+                                    ccbOperation.setItems(servFuncs.toArray(new String[0]));
+                                    if (servFuncs.size() > 0) {
+                                        ccbOperation.select(0);
                                     }
-                                }
-                            });
+                                    setDirty();
+                                });
+                            } catch (WSDLException e) {
+                                throw new InvocationTargetException(e);
+                            } finally {
+                                monitor.done();
+                            }
                         }
                     });
-                } catch (InvocationTargetException | InterruptedException ex) {
+                } catch (InvocationTargetException ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog("Unable to load service function from url: " + requestURL,
+                            ex.getTargetException().getMessage(),
+                            ExceptionsUtil.getStackTraceForThrowable(ex.getTargetException()));
+                } catch (InterruptedException ex) {
                     LoggerSingleton.logError(ex);
                 }
             }
         });
+    }
+
+    @Override
+    protected void sendRequest(boolean runVerificationScript) {
+        if (dirtyable.isDirty()) {
+            boolean isOK = MessageDialog.openConfirm(null, StringConstants.WARN,
+                    ComposerWebserviceMessageConstants.PART_MSG_DO_YOU_WANT_TO_SAVE_THE_CHANGES);
+            if (!isOK) {
+                return;
+            }
+            save();
+        }
+
+        clearPreviousResponse();
+
+        String requestURL = wsApiControl.getRequestURL().trim();
+        // if (isInvalidURL(requestURL)) {
+        // LoggerSingleton.logError("URL is invalid");
+        // MessageDialog.openError(null, StringConstants.ERROR, "URL is invalid");
+        // return;
+        // }
+
+        if (ccbOperation.getText().isEmpty()) {
+            LoggerSingleton.logError("Service Function is empty");
+            MessageDialog.openError(null, StringConstants.ERROR, "Service Function is empty");
+            return;
+        }
+
+        if (wsApiControl.getSendingState()) {
+            progress.getProgressMonitor().setCanceled(true);
+            wsApiControl.setSendButtonState(false);
+            return;
+        }
+
+        try {
+            Trackings.trackTestWebServiceObject(runVerificationScript,
+                    getOriginalWsObject() instanceof DraftWebServiceRequestEntity);
+            wsApiControl.setSendButtonState(true);
+            progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
+            progress.setOpenOnRun(false);
+            displayResponseContentBasedOnSendingState(true);
+            progress.run(true, true, new IRunnableWithProgress() {
+
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
+                                IProgressMonitor.UNKNOWN);
+
+                        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+
+                        WebServiceRequestEntity requestEntity = getWSRequestObject();
+
+                        Map<String, String> evaluatedVariables = evaluateRequestVariables();
+
+                        ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
+                                projectDir, ProxyPreferences.getProxyInformation(),
+                                Collections.<String, Object> unmodifiableMap(evaluatedVariables));
+
+                        if (monitor.isCanceled()) {
+                            return;
+                        }
+
+                        String bodyContent = responseObject.getResponseText();
+                        Display.getDefault().asyncExec(() -> {
+                            setResponseStatus(responseObject);
+                            mirrorEditor.setText(getPrettyHeaders(responseObject));
+                            if (bodyContent == null) {
+                                return;
+                            }
+                            soapResponseBodyEditor.setInput(responseObject);
+
+                        });
+
+                        if (runVerificationScript) {
+                            executeVerificationScript(responseObject);
+                        }
+
+                        RequestHistoryEntity requestHistoryEntity = new RequestHistoryEntity(new Date(),
+                                (WebServiceRequestEntity) getWSRequestObject().clone());
+                        eventBroker.post(EventConstants.WS_VERIFICATION_FINISHED,
+                                new Object[] { requestHistoryEntity });
+                    } catch (Exception e) {
+                        throw new InvocationTargetException(e);
+                    } finally {
+                        UISynchronizeService.syncExec(() -> wsApiControl.setSendButtonState(false));
+                        monitor.done();
+                    }
+                }
+            });
+        } catch (InvocationTargetException ex) {
+            Throwable target = ex.getTargetException();
+            if (target == null) {
+                return;
+            }
+            LoggerSingleton.logError(target);
+            MultiStatusErrorDialog.showErrorDialog(
+                    ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST, target.getMessage(),
+                    ExceptionsUtil.getStackTraceForThrowable(target));
+        } catch (InterruptedException ignored) {}
+        displayResponseContentBasedOnSendingState(false);
     }
 
     @Override
@@ -279,7 +294,7 @@ public class SoapServicePart extends WebServicePart {
     @Override
     protected void createResponseComposite(Composite parent) {
         super.createResponseComposite(parent);
-        soapResponseBodyEditor = new SoapResponseBodyEditorsComposite(responseBodyComposite, SWT.NONE);
+        soapResponseBodyEditor = new SoapResponseBodyEditorsComposite(responseBodyComposite, SWT.NONE, this);
         soapResponseBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
 
@@ -293,7 +308,9 @@ public class SoapServicePart extends WebServicePart {
         originalWsObject.setHttpHeaderProperties(httpHeaders);
 
         originalWsObject.setSoapBody(requestBodyEditor.getHttpBodyContent());
-        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(), originalWsObject.getSoapRequestMethod()));
+
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
+                originalWsObject.getSoapRequestMethod()));
     }
 
     @Override
@@ -313,8 +330,8 @@ public class SoapServicePart extends WebServicePart {
         populateOAuth1FromHeader();
         renderAuthenticationUI(ccbAuthType.getText());
 
-//        requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
-        requestBodyEditor.setInput((WebServiceRequestEntity)originalWsObject.clone());
+        // requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
+        requestBodyEditor.setInput((WebServiceRequestEntity) originalWsObject.clone());
         dirtyable.setDirty(false);
     }
 
@@ -399,6 +416,12 @@ public class SoapServicePart extends WebServicePart {
         }
 
         return null;
+    }
+
+    @Override
+    protected void updatePartImage() {
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
+                originalWsObject.getSoapRequestMethod()));
     }
 
 }

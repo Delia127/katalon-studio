@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
@@ -20,8 +22,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -100,11 +100,14 @@ import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestCaseTreeTableInput {
     private static final String OPERATION_LABEL_DRAG_AND_DROP_AST_NODES = "dragAndDropAstNodes";
 
     private static final String GROOVY_NEW_LINE_CHARACTER = "\n";
+    
+    private static final String WEB_SERVICE_KEYWORDS_CLASS_ALIAS_NAME = "WS"; 
 
     /**
      * Enum for adding items into tree table
@@ -196,6 +199,33 @@ public class TestCaseTreeTableInput {
             }
         }
         return selectedNodes;
+    }
+
+    public List<ASTNodeWrapper> getSelectedNodeWrappers() {
+        List<ASTNodeWrapper> selectedNodeWrappers = new ArrayList<>();
+        for (AstTreeTableNode node : getSelectedNodes()) {
+            selectedNodeWrappers.add(node.getASTObject());
+        }
+        return selectedNodeWrappers;
+    }
+
+    private int[] getIndex(AstTreeTableNode node) {
+        AstTreeTableNode parent = node.getParent();
+        int index = parent.getChildren().indexOf(node);
+        if (parent.getParent() == null) {
+            return new int[] { index };
+        }
+        return ArrayUtils.add(getIndex(node.getParent()), index);
+    }
+
+    public List<ASTNodeWrapper> getNodeWrappersFromFirstSelected() {
+        int[] selectedIndices = getIndex(getSelectedNode());
+        int fisrtSelected = selectedIndices[0];
+        return mainClassNodeWrapper.getBlock()
+                .getAstChildren()
+                .stream()
+                .skip(fisrtSelected)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -454,16 +484,9 @@ public class TestCaseTreeTableInput {
     // refresh treetable root
     public void reloadTreeTableNodes() throws InvocationTargetException, InterruptedException {
         final List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
-        new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, false, new IRunnableWithProgress() {
-            @Override
-            public void run(IProgressMonitor monitor) {
-                monitor.beginTask(StringConstants.LOADING_TABLE_PROGRESS_NAME, IProgressMonitor.UNKNOWN);
-                mainClassTreeNode = new AstScriptTreeTableNode(mainClassNodeWrapper, null);
-                astTreeTableNodes.add(mainClassTreeNode);
-                reloadTestCaseVariables();
-                monitor.done();
-            }
-        });
+        mainClassTreeNode = new AstScriptTreeTableNode(mainClassNodeWrapper, null);
+        astTreeTableNodes.add(mainClassTreeNode);
+        reloadTestCaseVariables(parentPart.getVariables());
         treeTableViewer.setInput(astTreeTableNodes);
     }
 
@@ -480,17 +503,12 @@ public class TestCaseTreeTableInput {
         return expandedElements;
     }
 
-    public void reloadTestCaseVariables() {
+    public void reloadTestCaseVariables(VariableEntity[] variables) {
         mainClassNodeWrapper.clearFields();
-        TestCaseEntity testCase = parentPart.getTestCase();
-        if (testCase == null) {
-            return;
-        }
-        String testCaseId = testCase.getIdForDisplay();
-        for (VariableEntity variable : parentPart.getVariables()) {
+        for (VariableEntity variable : variables) {
             FieldNodeWrapper field = new FieldNodeWrapper(variable.getName(), Object.class, mainClassNodeWrapper);
             ExpressionWrapper expression = GroovyWrapperParser
-                    .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue(), testCaseId);
+                    .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue());
             if (expression != null) {
                 expression.setParent(field);
                 field.setInitialValueExpression(expression);
@@ -501,6 +519,10 @@ public class TestCaseTreeTableInput {
 
     public void removeSelectedRows() {
         removeRows(getSelectedNodes());
+    }
+
+    public void clearRows() {
+        mainClassTreeNode.getChildren().clear();
     }
 
     public void removeRows(List<AstTreeTableNode> treeTableNodes) {
@@ -674,6 +696,26 @@ public class TestCaseTreeTableInput {
     public static boolean isNodeMoveable(AstTreeTableNode astTreeTableNode) {
         return (!(astTreeTableNode.getASTObject() instanceof ComplexLastStatementWrapper)
                 && !(astTreeTableNode.getASTObject() instanceof ComplexChildStatementWrapper));
+    }
+    
+    public boolean canPaste() {
+        Clipboard clipboard = new Clipboard(Display.getCurrent());
+        Object data = clipboard.getContents(new ScriptTransfer());
+        if (data == null) {
+            return false;
+        }
+        String snippet = null;
+        if (data instanceof String) {
+            snippet = (String) data;
+        } else if (data instanceof ScriptTransferData[]) {
+             snippet = ((ScriptTransferData[]) data)[0].getScriptSnippet();
+        }
+        try {
+            ScriptNodeWrapper scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(snippet);
+            return scriptNode != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void paste(AstTreeTableNode destinationNode, NodeAddType addType) {
@@ -853,6 +895,7 @@ public class TestCaseTreeTableInput {
         }
 
         executeOperation(new AddCallTestCaseStepsOperation(statementsToAdd, destinationNode, addType, variablesToAdd));
+        Trackings.trackAddNewTestStep("callTestCase");
     }
 
     private TestCaseEntity[] collectCalledTestCases() throws Exception {
@@ -903,10 +946,15 @@ public class TestCaseTreeTableInput {
                         TestCasePreferenceDefaultValueInitializer.getDefaultKeywordType().getAliasName()),
                 getSelectedNode(), addType);
     }
+    
+    public void addNewDefaultWebServiceKeyword(NodeAddType addType) {
+        addNewAstObject(TreeTableMenuItemConstants.getMenuItemID(WEB_SERVICE_KEYWORDS_CLASS_ALIAS_NAME), getSelectedNode(), addType);
+    }
 
     private void addNewBuiltInKeyword(AstTreeTableNode destinationNode, NodeAddType addType, String className) {
         addNewBuiltInKeyword(destinationNode, addType,
                 KeywordController.getInstance().getBuiltInKeywordClassByName(className));
+        Trackings.trackAddNewTestStep(className);
     }
 
     private void addNewBuiltInKeyword(AstTreeTableNode destinationNode, NodeAddType addType,
@@ -957,6 +1005,7 @@ public class TestCaseTreeTableInput {
             return;
         }
         addNewAstObject(customKeywordStatement, destinationNode, addType);
+        Trackings.trackAddNewTestStep("custom");
     }
 
     public ASTNodeWrapper getParentNodeForNewMethodCall(AstTreeTableNode destinationNode) {

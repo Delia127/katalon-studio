@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<snippets>
+<snippet>
+<name>common</name>
+<script>
+<![CDATA[
+import static org.assertj.core.api.Assertions.*
+
+import com.kms.katalon.core.testobject.RequestObject
+import com.kms.katalon.core.testobject.ResponseObject
+import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
+import com.kms.katalon.core.webservice.verification.WSResponseManager
+
+import groovy.json.JsonSlurper
+import internal.GlobalVariable as GlobalVariable
+
+RequestObject request = WSResponseManager.getInstance().getCurrentRequest()
+
+ResponseObject response = WSResponseManager.getInstance().getCurrentResponse()
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Get current response </name>
+<script>
+<![CDATA[
+ResponseObject response = WSResponseManager.getInstance().getCurrentResponse()
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Get current request </name>
+<script>
+<![CDATA[
+RequestObject request = WSResponseManager.getInstance().getCurrentRequest()
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Get a global variable</name>
+<script>
+<![CDATA[
+GlobalVariable.variable
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Get a variable</name>
+<script>
+<![CDATA[
+def variables = request.getVariables()
+def variable = variables.get('yourVariableName')
+]]>
+</script>
+</snippet>
+	
+<snippet>
+<name>Response body: Contains string</name>
+<script>
+<![CDATA[
+assertThat(response.getResponseText()).contains('Katalon Test Project')
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Response body: Convert to JSON Object </name>
+<script>
+<![CDATA[
+def jsonSlurper = new JsonSlurper()
+
+def jsonResponse = jsonSlurper.parseText(response.getResponseText())
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Response body: Is equal to a String </name>
+<script>
+<![CDATA[
+assertThat(response.getResponseText()).isEqualTo("Katalon Test Project")
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Response body: JSON value check</name>
+<script>
+<![CDATA[
+WS.verifyElementPropertyValue(response, 'issues[0].fields.project.key', 'KTP')
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Response headers: Content-Type header checkpoint</name>
+<script>
+<![CDATA[
+assertThat(response.getHeaderFields().get('Content-Type').toString()).isEqualTo('[application/json;charset=UTF-8]')
+
+assertThat(response.getHeaderFields().containsKey('Content-Type')).isTrue()
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Status code: Code is 200</name>
+<script>
+<![CDATA[
+WS.verifyResponseStatusCode(response, 200)
+
+assertThat(response.getStatusCode()).isEqualTo(200)
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Status code: Successfully request</name>
+<script>
+<![CDATA[
+assertThat(response.getStatusCode()).isIn(Arrays.asList(200, 201, 202))
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Response body: Array contains</name>
+<script>
+<![CDATA[
+String[] arrayResponse = ["why", "hello", "there"]
+String[] arrayExpect = ["there", "why", "hello"]
+assertThat(arrayResponse).containsOnly("there", "hello", "why")
+assertThat(arrayResponse).containsOnlyElementsOf(Arrays.asList("why", "there", "hello"))
+
+assertThat(arrayResponse).containsExactly("why", "hello", "there")
+assertThat(arrayResponse).containsExactlyElementsOf(Arrays.asList("why", "hello", "there"))
+
+assertThat(arrayResponse).containsSequence("why", "hello")
+assertThat(arrayResponse).containsSubsequence("why", "there")
+assertThat(arrayResponse).containsAnyOf("why", "nothing", "new")
+
+assertThat(arrayResponse).contains("hello", atIndex(1))
+]]>
+</script>
+</snippet>
+
+</snippets>

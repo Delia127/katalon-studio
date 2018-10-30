@@ -26,10 +26,12 @@
 		<module>com.kms.katalon.composer.import</module>
 		<module>com.kms.katalon.composer.integration.analytics</module>
 		<module>com.kms.katalon.composer.integration.qtest</module>
+		<module>com.kms.katalon.composer.integration.qtest.activation</module>
 		<module>com.kms.katalon.composer.integration.jira</module>
 		<module>com.kms.katalon.composer.integration.slack</module>
 		<module>com.kms.katalon.composer.integration.git</module>
 		<module>com.kms.katalon.composer.integration.kobiton</module>
+		<module>com.kms.katalon.composer.integration.cucumber</module>
 		<module>com.kms.katalon.composer.keyword</module>
 		<module>com.kms.katalon.composer.mobile.objectspy</module>
 		<module>com.kms.katalon.composer.mobile.recorder</module>
@@ -58,6 +60,7 @@
 		<module>com.kms.katalon.core.mobile</module>
 		<module>com.kms.katalon.core.webservice</module>
 		<module>com.kms.katalon.core.webui</module>
+		<module>com.kms.katalon.core.cucumber</module>
 		<module>com.kms.katalon.core</module>
 		<module>com.kms.katalon.custom</module>
 		<module>com.kms.katalon.dal.file</module>
@@ -65,8 +68,10 @@
 		<module>com.kms.katalon.entity</module>
 		<module>com.kms.katalon.execution.mobile</module>
 		<module>com.kms.katalon.execution.webui</module>
+		<module>com.kms.katalon.execution.webservice</module>
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
+		<module>com.kms.katalon.feature.qtest_edition</module>
 		<module>com.kms.katalon.groovy</module>
 		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
@@ -77,12 +82,15 @@
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.util</module>
 		<module>com.kms.katalon.product</module>
+		<module>com.kms.katalon.product.qtest_edition</module>
 		<module>com.kms.katalon.selenium-standalone</module>
 		<module>com.kms.katalon.target</module>
 		<module>com.kms.katalon.application</module>
 		<module>com.kms.katalon</module>
 		<module>com.kms.katalon.support.testing.katserver</module>
 		<module>com.kms.katalon.selenium.ide</module>
+		<module>com.kms.katalon.tracking</module>
+		<module>com.kms.katalon.tracking.service</module>
 	</modules>
 
 	<properties>
@@ -109,6 +117,7 @@
 		<linux32ResourcesDirectory>linux32Resources</linux32ResourcesDirectory>
 		<linux64ResourcesDirectory>linux64Resources</linux64ResourcesDirectory>
 		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
+		<cucumberRepo>file:///${basedir}/../third-party/cucumber-eclipse/cucumber.eclipse.p2updatesite/target/repository</cucumberRepo>
 	</properties>
 
 	<repositories>
@@ -123,6 +132,13 @@
 			<url>${egit_repo_url}</url>
 			<layout>p2</layout>
 		</repository>
+
+		<repository>
+			<id>cucumber_repo</id>
+			<url>${cucumberRepo}</url>
+			<layout>p2</layout>
+		</repository>
+
 	</repositories>
 
 	<build>
@@ -254,4 +270,23 @@
 			<version>1.11</version>
 		</dependency>
 	</dependencies>
+	
+	<!-- Used to distinguish between staging and production build -->
+   	<profiles>
+        	<profile>
+            		<id>dev</id>
+            		<activation>
+                		<activeByDefault>true</activeByDefault>
+            		</activation>
+            		<properties>
+                		<build.profile>dev</build.profile>
+           		</properties>
+        	</profile>
+       		<profile>
+           		<id>prod</id>
+            		<properties>
+                		<build.profile>prod</build.profile>
+           		</properties>
+        	</profile>
+   	</profiles>
 </project> 

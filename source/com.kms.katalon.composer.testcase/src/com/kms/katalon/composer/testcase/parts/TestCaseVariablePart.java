@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.parts;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -70,12 +71,13 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.tracking.service.Trackings;
 
-public class TestCaseVariablePart extends CPart {
+public class TestCaseVariablePart extends CPart implements TableActionOperator {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.TestObject, InputValueType.TestData, InputValueType.Property, InputValueType.List,
             InputValueType.Map };
 
@@ -105,8 +107,10 @@ public class TestCaseVariablePart extends CPart {
             }
         }
         initialize(mpart, partService);
+        
         createComponents();
     }
+    
 
     @PreDestroy
     @Override
@@ -370,6 +374,8 @@ public class TestCaseVariablePart extends CPart {
         newVariable.setDefaultValue("''");
 
         executeOperation(new NewVariableOperation(this, newVariable));
+        
+        Trackings.trackCreatingObject("testCaseVariable");
     }
 
     private String generateNewPropertyName() {
@@ -440,7 +446,7 @@ public class TestCaseVariablePart extends CPart {
 
     public void setDirty(boolean isDirty) {
         mpart.setDirty(isDirty);
-        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables();
+        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables(getVariables());
         parentTestCaseCompositePart.updateDirty();
     }
 
@@ -543,4 +549,9 @@ public class TestCaseVariablePart extends CPart {
 
     }
 
+
+	public void setVariables(VariableEntity[] incomingVariables) {
+		if(variables != null && variables.size() != 0)
+			variables = Arrays.asList(incomingVariables);
+	}
 }

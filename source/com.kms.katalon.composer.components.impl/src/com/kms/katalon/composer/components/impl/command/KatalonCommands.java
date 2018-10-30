@@ -51,6 +51,10 @@ public class KatalonCommands {
     private static final String COMMAND_NAME_NEW = ComposerComponentsImplMessageConstants.COMMAND_NAME_NEW;
 
     private static final String COMMAND_NAME_OPEN = ComposerComponentsImplMessageConstants.COMMAND_NAME_OPEN;
+    
+    private static final String COMMAND_NAME_IMPORT = ComposerComponentsImplMessageConstants.COMMAND_NAME_IMPORT;
+    
+    private static final String COMMAND_NAME_EXPORT = ComposerComponentsImplMessageConstants.COMMAND_NAME_EXPORT;
 
     private static final String COMMAND_NAME_SPY_WEB_OBJECT = ComposerComponentsImplMessageConstants.COMMAND_NAME_SPY_WEB_OBJECT;
 
@@ -67,7 +71,11 @@ public class KatalonCommands {
     private static final String TEST_OBJECT = GlobalStringConstants.TEST_OBJECT;
 
     private static final String WEBSERVICE_OBJECT = ComposerComponentsImplMessageConstants.COMMAND_NAME_WEBSERVICE_OBJECT;
-
+    
+    private static final String WEBSERVICE_OBJECTS_FROM_SWAGGER = ComposerComponentsImplMessageConstants.COMMAND_NAME_WEBSERVICE_OBJECTS_FROM_SWAGGER;
+    
+    private static final String WEBSERVICE_OBJECTS_FROM_WSDL = ComposerComponentsImplMessageConstants.COMMAND_NAME_WEBSERVICE_OBJECTS_FROM_WSDL;
+    
     private static final String TEST_CASE = GlobalStringConstants.TEST_CASE;
 
     private static final String TEST_SUITE = GlobalStringConstants.TEST_SUITE;
@@ -77,6 +85,12 @@ public class KatalonCommands {
     private static final String KEYWORD = GlobalStringConstants.KEYWORD;
 
     private static final String PACKAGE = GlobalStringConstants.PACKAGE;
+    
+    private static final String FOLDER = GlobalStringConstants.FOLDER;
+
+    private static final String GIT = GlobalStringConstants.GIT;
+
+    private static final String JAR = GlobalStringConstants.JAR;
 
     private static final String KATALON_QA_URL = ComposerComponentsImplMessageConstants.KATALON_QA_URL;
 
@@ -193,11 +207,21 @@ public class KatalonCommands {
                 .addChild(KCommand.create(COMMAND_NAME_NEW + TEST_OBJECT).setEventName(EventConstants.TEST_OBJECT_NEW));
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + WEBSERVICE_OBJECT)
                 .setEventName(EventConstants.WEBSERVICE_REQUEST_OBJECT_NEW));
+        
+        rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + WEBSERVICE_OBJECTS_FROM_SWAGGER)
+                .setEventName(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER));
+        
+        rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + WEBSERVICE_OBJECTS_FROM_WSDL)
+                .setEventName(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL));
+        
+        
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + TEST_DATA).setEventName(EventConstants.TEST_DATA_NEW));
         rootCommand
                 .addChild(KCommand.create(COMMAND_NAME_NEW + CHECKPOINT).setEventName(EventConstants.CHECKPOINT_NEW));
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + KEYWORD).setEventName(EventConstants.KEYWORD_NEW));
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + PACKAGE).setEventName(EventConstants.PACKAGE_NEW));
+        rootCommand.addChild(KCommand.create(COMMAND_NAME_EXPORT + FOLDER)).setEventName(EventConstants.FOLDER_EXPORT);
+        rootCommand.addChild(KCommand.create(COMMAND_NAME_IMPORT + FOLDER)).setEventName(EventConstants.FOLDER_IMPORT);
 
         // Project Settings
         rootCommand.addChild(KCommand.create(PROJECT_SETTINGS).setEventName(EventConstants.PROJECT_SETTINGS));

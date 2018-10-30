@@ -30,6 +30,8 @@ import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.objectspy.websocket.messages.BrowserInfoMessageData;
+import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
+import com.kms.katalon.objectspy.websocket.messages.KatalonVersionAddOnMessage;
 
 @ClientEndpoint
 @ServerEndpoint(value = "/")
@@ -47,6 +49,10 @@ public class AddonSocket {
     protected static final String ELEMENT_KEY = "element";
 
     private static final String ELEMENT_MAP_KEY = "elementsMap";
+    
+    protected static final String ELEMENT_ACTION_KEY = "elementAction";
+    
+    private static final String SELENIUM_SOCKET_KEY = "SELENIUM_SOCKET";
 
     private Session session;
 
@@ -67,9 +73,15 @@ public class AddonSocket {
         setupSession();
         socketServer = AddonSocketServer.getInstance();
         socketServer.addActiveSocket(this);
-        sendMessage(new AddonMessage(AddonCommand.REQUEST_BROWSER_INFO));
+        // Request browser info AND send Katalon version to addon
+        sendMessage(new KatalonVersionAddOnMessage());               
     }
-
+    
+    protected void seleniumSocketResponder(){    	
+    	sendMessage(new StartInspectAddonMessage());
+        System.out.println("WS: Start inspecting");        
+    }
+    
     private void setupSession() {
         session.setMaxTextMessageBufferSize(DEFAULT_MAX_TEXT_MESSAGE_SIZE);
     }
@@ -98,8 +110,7 @@ public class AddonSocket {
 
     protected void handleOldElementMessage(String message) {
         try {
-            String key = HTMLElementUtil.decodeURIComponent(message.substring(0, message.indexOf(EQUALS)));
-
+            String key = HTMLElementUtil.decodeURIComponent(message.substring(0, message.indexOf(EQUALS)));           
             switch (key) {
                 case ELEMENT_KEY:
                     addNewElement(message.substring(message.indexOf(EQUALS) + 1, message.length()));
@@ -107,6 +118,10 @@ public class AddonSocket {
                 case ELEMENT_MAP_KEY:
                     updateHTMLDOM(message);
                     break;
+                case SELENIUM_SOCKET_KEY:             
+                	System.out.println("Client is a Selenium Socket");
+                	seleniumSocketResponder();
+                	break;
             }
         } catch (UnsupportedEncodingException e) {
             LoggerSingleton.logError(e);

@@ -30,6 +30,7 @@ import org.openqa.selenium.firefox.ExtensionConnection;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.GeckoDriverService;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
@@ -443,7 +444,7 @@ public class DriverFactory {
         }
     }
 
-    private static String getWebDriverServerUrl(RemoteWebDriver remoteWebDriver) {
+    public static String getWebDriverServerUrl(RemoteWebDriver remoteWebDriver) {
         CommandExecutor commandExecutor = remoteWebDriver.getCommandExecutor();
         if (commandExecutor instanceof HttpCommandExecutor) {
             return ((HttpCommandExecutor) commandExecutor).getAddressOfRemoteServer().toString();
@@ -506,6 +507,9 @@ public class DriverFactory {
                         DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
                         desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
                         webDriver = createNewFirefoxDriver(desiredCapabilities);
+                    } else if (options instanceof GeckoDriverService) {
+                        System.setProperty("webdriver.gecko.driver", DriverFactory.getGeckoDriverPath());
+                        webDriver = new CFirefoxDriver((GeckoDriverService) options);
                     } else {
                         webDriver = new CFirefoxDriver(DesiredCapabilities.firefox(), getActionDelay());
                     }

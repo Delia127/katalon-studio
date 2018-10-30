@@ -1,6 +1,7 @@
 package com.kms.katalon.constants;
 
 public class EventConstants {
+	
     // Property's name of event that is broadcast by IEventBroker
     public static final String EVENT_DATA_PROPERTY_NAME = "org.eclipse.e4.data";
 
@@ -10,6 +11,12 @@ public class EventConstants {
     public static final String WORKSPACE_CLOSED = "WORKSPACE/CLOSE";
     
     public static final String ACTIVATION_CHECKED = "ACTIVATION/CHECKED";
+    
+    public static final String ACTIVATION_QTEST_INTEGRATION_CHECK = "ACTIVATION/QTEST_INTEGRATION_CHECK"; 
+    
+    public static final String ACTIVATION_QTEST_INTEGRATION_CHECK_COMPLETED = "ACTIVATION/ACTIVATION_QTEST_INTEGRATION_CHECK_COMPLETED"; 
+
+    public static final String WORKSPACE_DRAFT_PART_CLOSED = "WORKSPACE/DRAFT_PART_CLOSED";
 
     // Project Events
     public static final String PROJECT_ALL = "PROJECT/*";
@@ -17,6 +24,8 @@ public class EventConstants {
     public static final String PROJECT_CREATED = "PROJECT/CREATED";
 
     public static final String PROJECT_OPEN = "PROJECT/OPEN";
+    
+    public static final String NEW_WS_PROJECT_OPEN = "PROJECT/OPEN_NEW_WS_PROJECT";
 
     public static final String PROJECT_OPENED = "PROJECT/OPENED";
 
@@ -61,6 +70,8 @@ public class EventConstants {
     public static final String EXPLORER_EXPAND_TREE_ENTITY = "EXPLORER/EXPAND_TREE_ENTITY";
 
     public static final String EXPLORER_OPEN_SELECTED_ITEM = "EXPLORER/OPEN_SELECTED_ITEM";
+    
+    public static final String EXPLORER_OPEN_SELECTED_GROOVY_SCRIPT = "EXPLORER/OPEN_SELECTED_GROOVY_SCRIPT";
 
     public static final String EXPLORER_DELETE_SELECTED_ITEM = "EXPLORER/DELETE_SELECTED_ITEM";
 
@@ -91,6 +102,10 @@ public class EventConstants {
     public static final String EXPLORER_LINK_ITEM_WITH_SELECTED_PART = "EXPLORER/LINK_ITEM_WITH_SELECTED_PART";
 
     public static final String EXPLORER_DELETE_TEST_CASE_FOLDER = "EXPLORER/DELETE_TEST_CASE_FOLDER";
+
+    public static final String EXPLORER_OPEN_ITEM_BY_PART_ID = "EXPLORER/OPEN_ITEM_BY_PART_ID";
+
+    public static final String EXPLORER_OPEN_DRAFT_WEBSERVICE = "EXPLORER/OPEN_DRAFT_WEBSERVICE";
 
     // Folder Events
     public static final String FOLDER_REFRESH_CHILDREN = "EXPLORER/REFRESH_CHILDREN";
@@ -160,6 +175,12 @@ public class EventConstants {
     public static final String WEBSERVICE_REQUEST_OBJECT_NEW = "WSOBJECT/NEW";
 
     public static final String WEBSERVICE_REQUEST_OBJECT_OPEN = "WSOBJECT/OPEN";
+    
+    public static final String WEBSERVICE_REQUEST_DRAFT_UPDATED = "WSOBJECT/DRAFT_UPDATED";
+
+	public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER = "WSOBJECT/SWAGGER";
+	
+	public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL = "WSOBJECT/WSDL";
 
     // Report Event
     public static final String REPORT_OPEN = "REPORT/OPEN";
@@ -178,6 +199,16 @@ public class EventConstants {
     public static final String KEYWORD_NEW = "KEYWORD/NEW";
 
     public static final String PACKAGE_NEW = "PACKAGE/NEW";
+    
+    public static final String FOLDER_IMPORT = "FOLDER/IMPORT";
+
+    public static final String FOLDER_EXPORT = "FOLDER/EXPORT";
+
+    public static final String JAR_IMPORT = "JAR/IMPORT";
+
+    public static final String JAR_EXPORT = "JAR/EXPORT";
+
+    public static final String GIT_IMPORT = "GIT/IMPORT";
 
     // Import Events
     public static final String IMPORT_DUPLICATE_ENTITY_RESULT = "IMPORT/DUPLICATE_ENTITY_RESULT";
@@ -280,4 +311,40 @@ public class EventConstants {
     
     // Execution Profile Event
     public static final String PROFILE_SELECTED_PROIFE_CHANGED = "PROFILE/SELECTED_PROFILE_CHANGE";
-}
+    
+    // Analytics Preference Event
+    public static final String IS_INTEGRATED = "SETTINGS/INTERGRATION/KATALON_ANALYTICS";
+
+    // WS Verification Events
+    public static final String WS_VERIFICATION_LOG_UPDATED = "WS_VERIFICATION/LOG_UPDATED";
+
+    public static final String WS_VERIFICATION_EXECUTION_FINISHED = "WS_VERIFICATION/EXECUTION_FINISHED";
+
+    public static final String WS_VERIFICATION_FINISHED = "WS_VERIFICATION/FINISHED";
+    
+    // WebUI Recording Events
+    public static final String WEBUI_VERIFICATION_LOG_UPDATED = "WEBUI_VERIFICATION/LOG_UPDATED";
+
+    public static final String WEBUI_VERIFICATION_START_EXECUTION = "WEBUI_VERIFICATION/START_EXECUTION";
+
+    public static final String WEBUI_VERIFICATION_STOP_EXECUTION = "WEBUI_VERIFICATION/STOP_EXECUTION";
+    
+    public static final String WEBUI_VERIFICATION_EXECUTION_FINISHED = "WEBUI_VERIFICATION/EXECUTION_FINISHED";
+    
+    public static final String WEBUI_VERIFICATION_RUN_ALL_STEPS_CMD = "WEBUI_VERIFICATION/RUN_ALL_STEPS_CMD";
+
+    public static final String WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD = "WEBUI_VERIFICATION/RUN_SELECTED_STEPS_CMD";
+
+    public static final String WEBUI_VERIFICATION_RUN_FROM_STEP_CMD = "WEBUI_VERIFICATION/RUN_FROM_STEP_CMD";
+
+    // Git Events
+    public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";
+
+    public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
+    
+    // Api Quick Start Dialog
+    public static final String API_QUICK_START_DIALOG_OPEN = "API/OPEN_QUICK_START_DIALOG";
+    
+    // Web Service Execution Events
+    public static final String WEBSERVICE_EXECUTE = "WEBSERVICE/EXECUTE";
+};

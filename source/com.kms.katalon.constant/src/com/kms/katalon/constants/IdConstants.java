@@ -83,6 +83,9 @@ public interface IdConstants {
     public static final String TEST_CASE_EDITOR_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".editor";
 
     public static final String TEST_CASE_VARIABLES_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variables";
+    
+
+	public static final String TEST_CASE_VARIABLE_EDITOR_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variableEditor";
 
     public static final String TEST_CASE_INTEGRATION_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX
             + ".integration";
@@ -93,6 +96,8 @@ public interface IdConstants {
 
     // Test Object Part content
     public static final String TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testobject";
+    
+    public static final String DRAFT_REQUEST_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".draftRequest";
 
     // Test Suite Part content
     public static final String TESTSUITE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testsuite";
@@ -112,6 +117,9 @@ public interface IdConstants {
     // Test Data Part content
     public static final String TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
             + ".testSuiteCollection";
+
+    public static final String FEATURE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
+            + ".feature";
 
     // Report Part content
     public static final String REPORT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".report";
@@ -156,8 +164,20 @@ public interface IdConstants {
     public static final String OPEN_RECENT_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.openrecentproject";
 
     public static final String OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID = "com.kms.katalon.composer.project.command.openrecentproject.parameters.project";
+    
+    // New Sample Local Project Command id
+    public static final String NEW_LOCAL_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.newLocalProject";
+
+    public static final String NEW_LOCAL_PROJECT_COMMAND_PARAMETER_TYPE_ID = "com.kms.katalon.composer.project.command.newLocalProject.parameters.project";
+
+    // New Sample Remote Project Command id
+    public static final String NEW_REMOTE_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.newRemoteProject";
+
+    public static final String NEW_REMOTE_PROJECT_COMMAND_PARAMETER_ID = "com.kms.katalon.composer.project.command.newRemoteProject.parameters.project";
 
     // Bundle
+    public static final String KATALON_GENERAL_BUNDLE_ID = "com.kms.katalon";
+
     public static final String KATALON_LOGGING_BUNDLE_ID = "com.kms.katalon.logging";
 
     public static final String KATALON_CUSTOM_BUNDLE_ID = "com.kms.katalon.custom";
@@ -184,8 +204,14 @@ public interface IdConstants {
 
     public static final String WORKBENCH_WINDOW_ID = "org.eclipse.ui.workbench";
 
+    public static final String QTEST_INTEGRATION_BUNDLE_ID = "com.kms.katalon.composer.integration.qtest";
+
     // Groovy
     public static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
+    
+    public static final String CUCUMBER_EDITOR_ID = "cucumber.eclipse.editor.editors.Editor";
+
+    public static final String COMPABILITY_EDITOR_ID = "org.eclipse.e4.ui.compatibility.editor";
 
     // Log viewer part
     public static final String LOG_VIEWER_TOOL_ITEM_ALL_ID = "com.kms.katalon.composer.execution.logviewer.all";
@@ -267,4 +293,6 @@ public interface IdConstants {
     public static final String COMPOSER_PARTSTACK_EXPLORER_ID = "com.kms.katalon.composer.partstack.explorer";
 
     public static final String COMPOSER_PARTSTACK_LEFT_OUTLINE_ID = "com.kms.katalon.partstack.left.outline";
+
+    public static final String COMPOSER_REQUEST_HISTORY_PART_ID = "com.kms.katalon.composer.webservice.part.requestHistory";
 }

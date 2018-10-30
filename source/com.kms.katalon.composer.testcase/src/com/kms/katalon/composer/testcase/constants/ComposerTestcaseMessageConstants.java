@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerTestcaseMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.testcase.constants.composerTestcaseMessages";
 
+    public static String BTN_TESTCASEHISTORY;
+
     public static String KEYWORD_TOOLITEM_TIP_TEXT;
 
     public static String ADAP_MENU_CONTEXT_INSERT_BEFORE;
@@ -158,6 +160,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String PA_TAB_SCRIPT;
 
     public static String PA_TAB_VARIABLE;
+    
+    public static String PA_TAB_VARIABLE_EDITOR;
 
     public static String PA_TAB_INTEGRATION;
 
@@ -176,6 +180,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String PA_TOOLBAR_RECORD;
 
     public static String PA_TOOLBAR_TIP_RECORD_TEST;
+    
+    public static String PA_BTN_ADD_WEB_SERVICE_KEYWORD;
 
     public static String PA_MENU_SUB_BEFORE;
 
@@ -349,6 +355,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String OBJECT_VARIABLE_TABLE_COL_VALUE_TYPE;
     
+    public static String KA_WELCOME_PAGE;
+    
     //TestCaseVariablePart
     public static String PA_COL_MASKED;
     
@@ -366,12 +374,44 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String BTN_COPY_AND_CLOSE;
     
     public static String BTN_CANCEL;
+        
+    //Authentication Dialog    
+    public static String LBL_EMAIL;
+    
+    public static String LBL_SERVER_URL;
+    
+    public static String LBL_PASSWORD;
+    
+    public static String LBL_INFORMATION;
+    
+    public static String LBL_POLICY;
+    
+    public static String INTEGRATION_DIALOG_TITLE;
+    
+    public static String BTN_CONNECT;
+   
+    //UploadSelection Dialog
+    public static String BTN_UPLOAD;
+    
+    public static String ANALYTICS_DOCUMENTATION_LINK;
+    
+    public static String SELECTION_DIALOG_TITLE;
+    
+    public static String LBL_SELECTION_INFORMATION;
+    
+    //Test Step Manual 
+    public static String KA_HOMEPAGE;
+    
+    public static String KA_HOMEPAGE_NOTOKEN;
     
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);
     }
-
+    
+    // Test object hyperlink detector
+    public static String WARN_TEST_OBEJCT_NOT_FOUND;
+    
     private ComposerTestcaseMessageConstants() {
     }
 }

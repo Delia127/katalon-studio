@@ -3,16 +3,16 @@ package com.kms.katalon.dal;
 import java.util.List;
 
 import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public interface IReportDataProvider {
-    public String getLogDirectory(TestCaseEntity testCase) throws Exception;
+    public String getTemporaryLogDirectory(FileEntity testCase) throws DALException;
 
     public String getLogDirectory(TestSuiteEntity testSuite) throws Exception;
 

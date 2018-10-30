@@ -118,7 +118,7 @@ public class TestCaseExecutor {
         }
         testCaseResult.getTestStatus().setStatusValue(getResultByError(t));
         String message = MessageFormat.format(StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, testCase.getTestCaseId(),
-                ExceptionsUtil.getMessageForThrowable(t));
+                ExceptionsUtil.getStackTraceForThrowable(t));
         testCaseResult.setMessage(message);
         logError(t, message);
 
@@ -133,7 +133,6 @@ public class TestCaseExecutor {
             onSetupError(e);
             return false;
         }
-
         try {
             variableBinding = collectTestCaseVariables();
         } catch (CompilationFailedException e) {
@@ -324,7 +323,7 @@ public class TestCaseExecutor {
     }
 
     private Binding collectTestCaseVariables() {
-        Binding variableBinding = new Binding();
+        Binding variableBinding = new Binding(testCaseBinding != null ? testCaseBinding.getBindedValues() : Collections.emptyMap());
         engine.changeConfigForCollectingVariable();
 
         logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);

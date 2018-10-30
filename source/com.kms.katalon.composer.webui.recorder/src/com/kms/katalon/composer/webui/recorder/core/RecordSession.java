@@ -2,8 +2,11 @@ package com.kms.katalon.composer.webui.recorder.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.eclipse.e4.core.services.log.Logger;
+import org.openqa.selenium.WebDriverException;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -21,7 +24,7 @@ public class RecordSession extends InspectSession {
     public static final String RECORDER_ADDON_NAME = "Recorder";
 
     private static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
-            + RECORDER_ADDON_NAME;
+            + RECORDER_ADDON_NAME + File.separator + "KR";
 
     private static final String RECORDER_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator
             + "AppData" + File.separator + "Local" + File.separator + "KMS" + File.separator + "qAutomate"
@@ -38,8 +41,10 @@ public class RecordSession extends InspectSession {
     }
 
     protected String getChromeExtensionPath() {
-        return CHROME_EXTENSION_RELATIVE_PATH;
-    }
+        //return CHROME_EXTENSION_RELATIVE_PATH;
+    	return CHROME_EXTENSION_RELATIVE_PATH;
+    }   
+    
     
     @Override
     protected File getChromeExtensionFile() throws IOException {
@@ -70,6 +75,36 @@ public class RecordSession extends InspectSession {
         }
         final AddonSocket firefoxAddonSocket = socketServer
                 .getAddonSocketByBrowserName(webUiDriverType.toString());
-        firefoxAddonSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
+        if (firefoxAddonSocket != null) {
+            firefoxAddonSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
+        }
+    }
+
+    public interface BrowserStoppedListener {
+        void onBrowserStopped();
+    }
+    
+    @Override
+    public void run() {
+        super.run();
+        handleBrowserStopped();
+    }
+
+    private Set<BrowserStoppedListener> browserStoppedListeners = new LinkedHashSet<>();
+    private void handleBrowserStopped() {
+        browserStoppedListeners.parallelStream().forEach(l -> l.onBrowserStopped());
+    }
+    
+    public void addBrowserStoppedListener(BrowserStoppedListener listener) {
+        browserStoppedListeners.add(listener);
+    }
+
+    public boolean isDriverRunning() {
+        try {
+            getWebDriver().getWindowHandle();
+            return true;
+        } catch (WebDriverException e) {
+            return false;
+        }
     }
 }

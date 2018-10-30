@@ -169,7 +169,7 @@ public class EmailSettingStore extends BundleSettingStore {
     }
 
     public void setEmailBcc(String bcc) throws IOException {
-        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_CC, StringUtils.defaultString(bcc));
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_BCC, StringUtils.defaultString(bcc));
     }
 
     public List<ReportFormatType> getReportFormatOptions() throws IOException {
@@ -184,5 +184,13 @@ public class EmailSettingStore extends BundleSettingStore {
     public void setReportFormatOptions(List<ReportFormatType> reportFormatOptions) throws IOException {
         String reportFormatOptAsJson = JsonUtil.toJson(reportFormatOptions.toArray(new ReportFormatType[0]));
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_FORMAT, reportFormatOptAsJson);
+    }
+
+    public boolean isSendEmailTestFailedOnly() throws IOException {
+        return getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_SEND_REPORT_TEST_FAILED_ONLY, false);
+    }
+
+    public void setSendEmailTestFailedOnly(boolean enabled) throws IOException {
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SEND_REPORT_TEST_FAILED_ONLY, enabled);
     }
 }

@@ -20,6 +20,10 @@ import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.text.edits.InsertEdit;
+import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -187,6 +191,17 @@ public class GroovyEditorUtil {
         if (resource != null && resource.exists()) {
             resource.deleteMarkers(IMarker.PROBLEM, true, IMarker.SEVERITY_ERROR);
         }
+    }
+    
+    public static void insertScript(GroovyEditor editor, int offset, String script) 
+            throws MalformedTreeException, BadLocationException {
+        
+        IEditorInput editorInput = editor.getEditorInput();
+        IDocument document = editor.getDocumentProvider().getDocument(editorInput);
+        
+        InsertEdit insertEdit = new InsertEdit(offset, script);
+        insertEdit.apply(document);
+        editor.selectAndReveal(offset, script.length());
     }
 
 }

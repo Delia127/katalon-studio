@@ -24,6 +24,7 @@ import com.kms.katalon.composer.mobile.util.MobileUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileSpyMobileHandler {
     private MobileObjectSpyDialog objectSpyDialog;
@@ -75,14 +76,20 @@ public class MobileSpyMobileHandler {
             if (this.activeShell == null) {
                 this.activeShell = activeShell;
             }
-
+            
+            boolean newDialog = false;
+            
             if (!isObjectSpyDialogRunning()) {
                 objectSpyDialog = new MobileObjectSpyDialog(activeShell);
                 objectSpyDialog.open();
+                newDialog = true;
             }
 
             if (!objectSpyDialog.isCanceledBeforeOpening()) {
                 objectSpyDialog.getShell().forceActive();
+                if (newDialog) {
+                    Trackings.trackOpenSpy("mobile");
+                }
                 return true;
             }
             return false;

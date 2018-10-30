@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.components;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -75,8 +76,7 @@ public class CToolBarManagerRenderer extends ToolBarManagerRenderer {
         int orientation = getOrientation(element);
         int style = orientation | SWT.WRAP | SWT.FLAT;
         String elementId = element.getElementId();
-        if (!ToolbarProcessor.KATALON_MAIN_TOOLBAR_ID.equals(elementId)
-                && !ToolbarProcessor.KATALON_EXECUTION_TOOLBAR_ID.equals(elementId)) {
+        if (!Arrays.asList(ToolbarProcessor.TOOLBAR_IDS).contains(elementId)) {
             style = style | SWT.RIGHT;
         }
         ToolBarManager manager = getManager((MToolBar) element);
@@ -129,8 +129,7 @@ public class CToolBarManagerRenderer extends ToolBarManagerRenderer {
 
         // For other toolbars, use as default
         String elementId = container.getElementId();
-        if (!ToolbarProcessor.KATALON_MAIN_TOOLBAR_ID.equals(elementId)
-                && !ToolbarProcessor.KATALON_EXECUTION_TOOLBAR_ID.equals(elementId)) {
+        if (!Arrays.asList(ToolbarProcessor.TOOLBAR_IDS).contains(elementId)) {
             super.processContents(container);
             return;
         }

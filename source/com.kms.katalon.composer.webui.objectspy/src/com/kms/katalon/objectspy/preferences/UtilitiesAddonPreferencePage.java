@@ -56,12 +56,12 @@ public class UtilitiesAddonPreferencePage extends FieldEditorPreferencePageWithH
     }
 
     @Override
-    protected boolean hasDocumentation() {
+    public boolean hasDocumentation() {
         return true;
     }
 
     @Override
-    protected String getDocumentationUrl() {
+    public String getDocumentationUrl() {
         return DocumentationMessageConstants.PREFERENCE_UTILITY_ADDON;
     }
 }

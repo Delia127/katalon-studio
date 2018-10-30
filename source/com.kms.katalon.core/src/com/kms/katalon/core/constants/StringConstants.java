@@ -296,8 +296,12 @@ public class StringConstants {
     public static final String CUSTOM_KEYWORD_CLASS_NAME = "CustomKeywords"; 
  
     public static final String GLOBAL_VARIABLE_CLASS_NAME = "GlobalVariable"; 
+    
+    public static final String INTERNAL_GLOBAL_VARIABLE_CLASS_NAME = "internal.GlobalVariable";
  
-    public static final String GLOBAL_VARIABLE_FILE_NAME = GENERATED_SCRIPT_FOLDER + File.separator + "GlobalVariable." + SCRIPT_FILE_EXT; 
+    public static final String GLOBAL_VARIABLE_FILE_NAME = GENERATED_SCRIPT_FOLDER + File.separator + "GlobalVariable." + SCRIPT_FILE_EXT;
+    
+    public static final String INTERNAL_GLOBAL_VARIABLE_FILE_NAME = GENERATED_SCRIPT_FOLDER + File.separator + "internal" + File.separator + "GlobalVariable." + SCRIPT_FILE_EXT;
 
     // TestDataFactory
     public static final String XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID = CoreMessageConstants.XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID;
@@ -481,4 +485,13 @@ public class StringConstants {
 
     // KeywordLoader
     public static final String KW_MSG_LIST_KEYWORD_CLASS_FAILED_X = CoreMessageConstants.KW_MSG_LIST_KEYWORD_CLASS_FAILED_X;
+
+    // Web Service Verification
+    public static final String WS_VERIFICATION_RESPONSE_OBJECT = "responseObject";
+    
+    public static final String WS_VERIFICATION_REQUEST_OBJECT_ID = "requestObjectId";
+    
+    public static final String WS_VERIFICATION_REQUEST_VARIABLES = "requestObjectVariables";
+    
+    public static final String WS_VERIFICATION_SUCCESS = CoreMessageConstants.WS_VERIFICATION_SUCCESS;
 }

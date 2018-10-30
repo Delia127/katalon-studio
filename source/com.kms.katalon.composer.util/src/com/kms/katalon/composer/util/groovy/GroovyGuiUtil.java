@@ -43,7 +43,7 @@ public class GroovyGuiUtil {
         return GroovyCompilationHelper.createGroovyTypeFromString(parentPackage, typeName, template);
     }
     
-    public static ICompilationUnit getGroovyScriptForTestCase(TestCaseEntity testCase) throws CoreException,
+    public static ICompilationUnit getOrCreateGroovyScriptForTestCase(TestCaseEntity testCase) throws CoreException,
             IOException {
         getTestCaseScriptFolder(testCase);
         IProject groovyProject = getGroovyProject(testCase.getProject());
@@ -78,7 +78,7 @@ public class GroovyGuiUtil {
     }
     
     public static void addContentToTestCase(TestCaseEntity testCase, String content) throws Exception {
-        ICompilationUnit unit = getGroovyScriptForTestCase(testCase);
+        ICompilationUnit unit = getOrCreateGroovyScriptForTestCase(testCase);
         if (unit == null) {
             return;
         }

@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -23,7 +24,7 @@ import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
@@ -47,11 +48,11 @@ public class EditorSavedHandler implements EventHandler {
                     return;
                 }
                 MPart part = (MPart) object;
-                if (!GroovyEditorUtil.isGroovyEditorPart(part)) {
+                if (!editor.isGroovyEditorPart(part)) {
                     return;
                 }
 
-                final IFile file = ((FileEditorInput) (GroovyEditorUtil.getEditor(part).getEditorInput())).getFile();
+                final IFile file = ((FileEditorInput) (editor.getEditor(part).getEditorInput())).getFile();
                 Executors.newSingleThreadExecutor().submit(() -> {
                     if (!isScriptRightFormat(file)) {
                         return;
@@ -104,6 +105,7 @@ public class EditorSavedHandler implements EventHandler {
     }
 
     private void refreshKeywordTreeEntity(final IFile file) throws Exception {
+        file.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
         KeywordTreeEntity keywordTreeEntity = TreeEntityUtil.getKeywordTreeEntity(
                 file.getProjectRelativePath().toString(), ProjectController.getInstance().getCurrentProject());
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordTreeEntity);

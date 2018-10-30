@@ -2,6 +2,8 @@ package com.kms.katalon.composer.project.handlers;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -35,6 +37,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenProjectHandler {
     @Inject
@@ -90,6 +93,19 @@ public class OpenProjectHandler {
         return null;
     }
 
+    public static List<File> getProjectFiles(File projectDirectory) {
+        List<File> childProjectFiles = new ArrayList<>();
+        for (File file : projectDirectory.listFiles()) {
+            if (file.isDirectory()) {
+                File projectFile = getProjectFile(file);
+                if (projectFile != null) {
+                    childProjectFiles.add(projectFile);
+                }
+            }
+        }
+        return childProjectFiles;
+    }
+
     @Inject
     @Optional
     private void openProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
@@ -104,6 +120,7 @@ public class OpenProjectHandler {
             @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk) throws InvocationTargetException,
             InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
+
         eventBroker.post(EventConstants.PROJECT_RESTORE_SESSION, null);
     }
 
@@ -131,6 +148,7 @@ public class OpenProjectHandler {
                                 if (project != null) {
                                     // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, application);
+                                    Trackings.trackOpenProject(project);
                                 }
                                 eventBrokerService.post(EventConstants.EXPLORER_RELOAD_INPUT,
                                         TreeEntityUtil.getAllTreeEntity(project));
@@ -148,6 +166,7 @@ public class OpenProjectHandler {
 
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
+
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {

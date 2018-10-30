@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
@@ -148,19 +150,20 @@ public class SoapClient extends BasicRequestor {
 
         URL oURL = new URL(endPoint);
         HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
-        if (isHttps) {
-            //((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
+        if (con instanceof HttpsURLConnection) {
+            ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
         }
         con.setRequestMethod(POST);
         con.setDoOutput(true);
 
         con.setRequestProperty(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
         con.setRequestProperty(SOAP_ACTION, actionUri);
+        
         setHttpConnectionHeaders(con, request);
 
         OutputStream reqStream = con.getOutputStream();
-        reqStream.write(request.getSoapBody().getBytes());
-
+        reqStream.write(request.getSoapBody().getBytes(StandardCharsets.UTF_8));
+        
         long startTime = System.currentTimeMillis();
         int statusCode = con.getResponseCode();
         long waitingTime = System.currentTimeMillis() - startTime;
@@ -173,7 +176,7 @@ public class SoapClient extends BasicRequestor {
         long bodyLength = 0L;
         try (InputStream inputStream = (statusCode >= 400) ? con.getErrorStream() : con.getInputStream()) {
             if (inputStream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                 int len = 0;
                 startTime = System.currentTimeMillis();
                 while ((len = reader.read(buffer)) != -1) {
@@ -199,6 +202,7 @@ public class SoapClient extends BasicRequestor {
             bodyLength =  Long.parseLong(bodyLengthHeader, 10); 
         }
         // SOAP is HTTP-XML protocol
+
         responseObject.setContentType(APPLICATION_XML);
         responseObject.setStatusCode(statusCode);
         responseObject.setResponseBodySize(bodyLength);

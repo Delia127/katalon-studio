@@ -2,6 +2,7 @@ package com.kms.katalon.core.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ public class TestCaseMain {
 
         // Load GlobalVariable class
         loadGlobalVariableClass(classLoader);
+        loadInternalGlobalVariableClass(classLoader);
         loadCustomKeywordsClass(classLoader);
 
         eventManager = ExecutionEventManager.getInstance();
@@ -66,7 +68,18 @@ public class TestCaseMain {
             }
         }
     }
+    
+    private static void loadInternalGlobalVariableClass(GroovyClassLoader cl) {
+        try {
+            cl.loadClass(StringConstants.INTERNAL_GLOBAL_VARIABLE_CLASS_NAME);
+        } catch (ClassNotFoundException ex) {
+            try {
+                cl.parseClass(new File(RunConfiguration.getProjectDir(), StringConstants.INTERNAL_GLOBAL_VARIABLE_FILE_NAME));
+            } catch (CompilationFailedException | IOException ignored) {
 
+            }
+        }
+    }
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
         return runTestCase(testCaseId, testCaseBinding, flowControl, true, true);
@@ -85,12 +98,35 @@ public class TestCaseMain {
         return new TestCaseExecutor(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp)
                 .execute(flowControl);
     }
+    
+    public static TestResult runWSVerificationScript(String verificationScript, FailureHandling flowControl,
+            boolean doCleanUp) throws InterruptedException {
+        Thread.sleep(DELAY_TIME);
+        return new WSVerificationExecutor(verificationScript, engine, eventManager, doCleanUp).execute(flowControl);
+    }
+
+    public static TestResult runWSVerificationScript(TestCaseBinding testCaseBinding, String verificationScript,
+            FailureHandling flowControl, boolean doCleanUp) throws InterruptedException {
+        Thread.sleep(DELAY_TIME);
+        return new WSVerificationExecutor(testCaseBinding, verificationScript, engine, eventManager, doCleanUp)
+                .execute(flowControl);
+    }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
         return new RawTestScriptExecutor(testScript, testCaseBinding, engine, eventManager,
                 new InternalTestCaseContext(testCaseId)).execute(flowControl);
+    }
+
+    public static TestResult runFeatureFile(String featureFile) throws InterruptedException {
+        Thread.sleep(DELAY_TIME);
+        String verificationScript = MessageFormat
+                .format("import com.kms.katalon.core.cucumber.keyword.CucumberBuiltinKeywords as CucumberKW\n" +
+
+                        "CucumberKW.runFeatureFile(''{0}'')", featureFile);
+        return new WSVerificationExecutor(verificationScript, engine, eventManager, true)
+                .execute(FailureHandling.STOP_ON_FAILURE);
     }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,

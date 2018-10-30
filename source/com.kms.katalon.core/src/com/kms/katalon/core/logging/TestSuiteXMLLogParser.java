@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -24,9 +25,9 @@ import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestStepLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
-import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 public class TestSuiteXMLLogParser {
     private static final String XML_DESCRIPTOR_SUFFIX = "?>";
@@ -264,7 +265,7 @@ public class TestSuiteXMLLogParser {
                 ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_SOURCE_PROPERTY) : "");
         testCaseLogRecord
                 .setDescription(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_DESCRIPTION_PROPERTY)
-                        ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_DESCRIPTION_PROPERTY) : "");
+                        ? StringEscapeUtils.unescapeJava(xmlLogRecord.getProperties().get(StringConstants.XML_LOG_DESCRIPTION_PROPERTY)) : "");
         testCaseLogRecord.setOptional(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_IS_OPTIONAL)
                 ? Boolean.valueOf(xmlLogRecord.getProperties().get(StringConstants.XML_LOG_IS_OPTIONAL)) : false);
         Object object = stack.peekLast();

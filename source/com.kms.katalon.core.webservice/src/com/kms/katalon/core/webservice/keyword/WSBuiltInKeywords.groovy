@@ -41,6 +41,31 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Send a HTTP Request to web server and verify the response
+     * @param request the object represents for a HTTP Request, user need to define it from Object Repository->New->Web Service Request, and get it by ObjectRepository.findRequestObject("requestObjectId")
+     * @param flowControl
+     * @return
+     * @throws Exception
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_REQUEST)
+    public static ResponseObject sendRequestAndVerify(RequestObject request, FailureHandling flowControl) throws Exception {
+        return (ResponseObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "sendRequestAndVerify", request, flowControl)
+    }
+    
+    /**
+     * Send a HTTP Request to web server and verify the response
+     * @param request the object represents for a HTTP Request, user need to define it from Object Repository->New->Web Service Request, and get it by ObjectRepository.findRequestObject("requestObjectId")
+     * @return
+     * @throws Exception
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_REQUEST)
+    public static ResponseObject sendRequestAndVerify(RequestObject request) throws Exception {
+        return (ResponseObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "sendRequestAndVerify", request)
+    }
+    
+    /**
      * Verify number of expected elements (JSON/XML) in the response (output) of a web service call 
      * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
      * @param locator an expression Katalon will use to go through and look for expected element(s), please refer to our user guide for how to write it   
@@ -80,7 +105,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static boolean verifyElementPropertyValue(ResponseObject response, String locator, String value, FailureHandling flowControl) throws StepErrorException {
+    public static boolean verifyElementPropertyValue(ResponseObject response, String locator, Object value, FailureHandling flowControl) throws StepErrorException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "verifyElementPropertyValue", response, locator, value, flowControl)
     }
 
@@ -94,7 +119,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static boolean verifyElementPropertyValue(ResponseObject response, String locator, String value) throws StepErrorException {
+    public static boolean verifyElementPropertyValue(ResponseObject response, String locator, Object value) throws StepErrorException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "verifyElementPropertyValue", response, locator, value)
     }
 

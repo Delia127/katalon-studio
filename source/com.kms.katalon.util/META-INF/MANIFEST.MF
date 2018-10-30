@@ -10,4 +10,5 @@ Export-Package: com.kms.katalon.util,
  com.kms.katalon.util.listener
 Require-Bundle: org.apache.commons.lang3,
  org.apache.httpcomponents.httpclient,
- org.apache.httpcomponents.httpcore
+ org.apache.httpcomponents.httpcore,
+ com.google.gson

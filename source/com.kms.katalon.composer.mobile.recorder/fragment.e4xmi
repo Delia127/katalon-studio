@@ -6,7 +6,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_TCiV0DRsEeem58Ih33kujQ" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_UzO3YDRsEeem58Ih33kujQ" elementId="com.kms.katalon.composer.mobile.recorder.handler.open" contributionURI="bundleclass://com.kms.katalon.composer.mobile.recorder/com.kms.katalon.composer.mobile.recorder.handlers.OpenMobileRecorderHandler" command="_Ouqs4DRsEeem58Ih33kujQ"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ZRMQcDRsEeem58Ih33kujQ" featurename="children" parentElementId="com.kms.katalon.composer.toolbar">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ZRMQcDRsEeem58Ih33kujQ" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.generic">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_fo3kMDRsEeem58Ih33kujQ" elementId="com.kms.katalon.composer.mobile.recorder.handledtoolitem.record.mobile" label="Record Mobile" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/mobile_record_24.png" tooltip="" command="_Ouqs4DRsEeem58Ih33kujQ">
       <persistedState key="index" value="9"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/mobile_record_disabled_24.png"/>

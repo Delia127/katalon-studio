@@ -214,10 +214,18 @@ public class ProjectController extends EntityController {
     public String getTempDir() {
         return getDataProviderSetting().getProjectDataProvider().getSystemTempFolder();
     }
+    
+    public String getWebServiceTempDir() {
+        return getTempDir() + File.separator + "Web Services";
+    }
 
     public String getNonremovableTempDir() {
         return new File(getDataProviderSetting().getProjectDataProvider().getSystemTempFolder(), "non-removable")
                 .getAbsolutePath();
+    }
+
+    public String getInternalSettingDir() {
+        return getDataProviderSetting().getProjectDataProvider().getInternalSettingFolder();
     }
 
     public void clearWorkingStateOfRecentProjects() {
@@ -265,5 +273,13 @@ public class ProjectController extends EntityController {
     
     public ProjectEntity newProjectEntity(String name, String description, String location, boolean legacy) throws DALException {
         return getDataProviderSetting().getProjectDataProvider().newProjectEntity(name, description, location, legacy);
+    }
+
+    public ProjectEntity updateProjectInfo(File projectFile, ProjectEntity newInfo) throws DALException {
+        return getDataProviderSetting().getProjectDataProvider().updateProjectEntity(projectFile, newInfo);
+    }
+    
+    public ProjectEntity getProject(String projectFileLocation) throws Exception  {
+        return getDataProviderSetting().getProjectDataProvider().getProject(projectFileLocation);
     }
 }

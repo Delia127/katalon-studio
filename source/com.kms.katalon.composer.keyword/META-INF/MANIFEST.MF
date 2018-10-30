@@ -37,9 +37,16 @@ Require-Bundle: org.eclipse.e4.core.services,
  org.eclipse.text,
  org.apache.commons.lang,
  com.kms.katalon.composer.util,
- com.kms.katalon.groovy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: com.kms.katalon.dal.exception,
+ com.kms.katalon.groovy,
+ com.kms.katalon.tracking,
+ org.eclipse.jgit,
+ org.eclipse.egit,
+ com.kms.katalon.composer.integration.git,
+ com.kms.katalon.util,
+ com.kms.katalon.dal,
  org.apache.commons.io,
- org.apache.commons.lang3;version="3.1.0",
- org.eclipse.ui.texteditor
+ org.eclipse.egit.core,
+ org.eclipse.egit.ui,
+ org.apache.commons.lang3,
+ org.eclipse.ui.workbench.texteditor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

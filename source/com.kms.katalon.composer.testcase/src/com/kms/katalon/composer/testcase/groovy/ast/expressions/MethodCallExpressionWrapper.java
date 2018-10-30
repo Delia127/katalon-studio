@@ -332,7 +332,9 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
     private boolean isFindTestArtifactMethodCall(Class<?> clazzToFind, String methodName) {
         String fullMethodName = clazzToFind.getName() + "." + methodName;
         return (isObjectExpressionOfClass(clazzToFind) && getMethodAsString().equals(methodName))
-                || (isMethodNameImportedAsStatic(fullMethodName)) && getArguments().getExpressions().size() >= 1;
+                || (isMethodNameImportedAsStatic(fullMethodName)) 
+                    && getArguments() != null 
+                    && getArguments().getExpressions().size() >= 1;
     }
 
     public boolean isGetTestDataValueMethodCall() {

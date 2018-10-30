@@ -43,6 +43,12 @@ public interface IFolderDataProvider {
     
     public FolderEntity getProfileRoot(ProjectEntity project) throws DALException;
 
+    public FolderEntity getIncludeRoot(ProjectEntity project) throws DALException;
+
+    public FolderEntity getFeatureRoot(ProjectEntity project) throws DALException;
+    
+    public FolderEntity getGroovyScriptRoot(ProjectEntity project) throws DALException;
+    
     public void refreshFolder(FolderEntity folder) throws Exception;
 
     /*
@@ -51,5 +57,4 @@ public interface IFolderDataProvider {
     public FolderEntity saveFolder(FolderEntity folder) throws Exception;
 
     public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception;
-
 }
