@@ -27,9 +27,9 @@ public class EntityFileServiceDataProvider implements IEntityDataProvider {
 	}
 
 	@Override
-	public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws DALException {
+	public <T> T toEntity(String xmlString, Class<T> clazz) throws DALException {
 		 try {
-	            return EntityFileServiceManager.toExecutionProfileEntity(xmlString);
+	            return EntityFileServiceManager.toEntity(xmlString, clazz);
 	        } catch (Exception e) {
 	            throw new DALException(e);
 	        }

@@ -10,6 +10,6 @@ public interface IEntityDataProvider {
     
     public String toXmlString(FileEntity entity) throws DALException;
 
-	public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws DALException;
+	public <T> T toEntity(String xmlString, Class<T> clazz) throws DALException;
 
 }

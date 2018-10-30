@@ -133,6 +133,7 @@ import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
@@ -149,6 +150,7 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.IVariablePart;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
+import com.kms.katalon.composer.testcase.parts.TestCaseVariableEditorView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableViewEvent;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
@@ -324,6 +326,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected CTabItem tabBody;
 
     protected CTabItem tabVerification;
+    
+    protected CTabItem tabVariable;
+    
+    protected CTabItem tabVariableEditor;
 
     protected Composite responseComposite;
 
@@ -371,6 +377,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private WSRequestPartUI ui;
 
     protected TestCaseVariableView variableView;
+    
+    protected TestCaseVariableEditorView variableEditorView;
 
     public WebServiceRequestEntity getOriginalWsObject() {
         return originalWsObject;
@@ -425,6 +433,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         createSnippetComposite();
 
         createVariableComposite();
+        
+        createVariableEditorComposite();
 
         Composite responsePartComposite = ui.getResponsePartComposite();
         Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
@@ -634,7 +644,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
         dialog.setAllowMultiple(false);
         dialog.setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
-
+        
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject != null) {
             FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
@@ -758,7 +768,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     protected void createTabsComposite() {
-        CTabFolder tabFolder = ui.getTabFolder();
+        final CTabFolder tabFolder = ui.getTabFolder();
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         styleEngine.setId(tabFolder.getParent(), "DefaultCTabFolder");
         // styleEngine.setId(parent, "DefaultCTabFolder");
@@ -766,7 +776,29 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         addTabAuthorization(tabFolder);
         addTabHeaders(tabFolder);
         addTabBody(tabFolder);
-        // addTabVerification(tabFolder);
+        addTabVariable(tabFolder);
+        addTabVariableEditor(tabFolder);
+        
+        
+        tabFolder.addSelectionListener(new SelectionAdapter() {
+            @SuppressWarnings("unused")
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                if (tabFolder == null) {                            
+                    return;
+                }
+                
+                if (tabFolder.getSelectionIndex() == 4) {
+                    return; 
+                }
+
+                if (tabFolder.getSelectionIndex() == 5) {
+                    return;
+                }
+            }
+        });
+        tabFolder.layout();
+
 
         tabFolder.setSelection(0);
     }
@@ -797,6 +829,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         List<VariableEntity> variables = originalWsObject.getVariables();
         variableView.addVariable(variables.toArray(new VariableEntity[variables.size()]));
+    }
+    
+    private void createVariableEditorComposite() {
+        Composite variableEditorPartComposite = ui.getVariableEditorPartComposite();
+        
+        variableEditorView = new TestCaseVariableEditorView(this);
+        variableEditorView.createComponents(variableEditorPartComposite);
     }
 
     @Override
@@ -1183,7 +1222,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected void addTabVerification(CTabFolder parent) {
         tabVerification = ui.getVerificationTab();
     }
-
+    
+    protected void addTabVariable(CTabFolder parent){
+        tabVariable = ui.getVariableTab();
+    }
+    
+    protected void addTabVariableEditor(CTabFolder parent){
+        tabVariableEditor = ui.getVariableEditorTab();
+    }
+    
     protected void createResponseComposite(Composite parent) {
 
         responseComposite = new Composite(parent, SWT.NONE);

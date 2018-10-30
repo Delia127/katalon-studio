@@ -483,8 +483,8 @@ public class EntityFileServiceManager {
 		return EntityService.getInstance().toXmlString(entity);
 	}
 
-	public static ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws javax.xml.bind.JAXBException, Exception {
-		return EntityService.getInstance().toExecutionProfileEntity(xmlString);
+	public static <T> T toEntity(String xmlString, Class<T> clazz) throws Exception{
+		return EntityService.getInstance().toEntity(xmlString, clazz);
 	}
 
 }

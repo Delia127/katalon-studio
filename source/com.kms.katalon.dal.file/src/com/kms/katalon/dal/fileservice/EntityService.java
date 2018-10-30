@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
@@ -393,16 +392,11 @@ public final class EntityService {
         return StringUtils.EMPTY;
 	}
 
-	public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws JAXBException {
-        try {
-        	ExecutionProfileEntity executionProfileEntity = 
-        			(ExecutionProfileEntity) unmarshaller.unmarshal(new InputSource(new StringReader(xmlString)));
-	        if(executionProfileEntity != null)
-	        	return executionProfileEntity;
-		} catch (JAXBException e) {
-			throw e;
-		}
-        return null;
+    public <T> T toEntity(String xmlString, Class<T> clazz) throws JAXBException {
+	    JAXBContext jc = JAXBContext.newInstance(clazz);
+	    Unmarshaller unmarshaller = jc.createUnmarshaller();
+	    T obj = clazz.cast(unmarshaller.unmarshal(new StringReader(xmlString)));
+	    return obj;
 	}
 
 }
