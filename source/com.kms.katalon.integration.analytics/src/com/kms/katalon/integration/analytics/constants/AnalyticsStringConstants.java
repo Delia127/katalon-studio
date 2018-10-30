@@ -39,4 +39,6 @@ public class AnalyticsStringConstants {
     public static final String ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(avi|mov))$)";
     
     public static final String ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(png|jpg))$)";
+    
+    public static final String ANALYTICS_UUID_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(uuid))$)";
 }
