@@ -18,7 +18,7 @@ MAC_NAME="${PRODUCT_NAME}_MacOS"
 MAC_DIR="${PACKAGE_FOLDER}"
 MAC_FILE="${MAC_DIR}/${MAC_NAME}.tar.gz"
 MAC_APP="${MAC_DIR}/${MAC_PRODUCT_NAME}.app"
-MAC_PACKAGE="${MAC_DIR}/${PRODUCT_NAME}.dmg"
+MAC_PACKAGE="${MAC_DIR}/${MAC_PRODUCT_NAME}.dmg"
 
 CHROME_DRIVER="${LINUX_64_DIR}/configuration/resources/drivers/chromedriver_linux64/chromedriver"
 FF_DRIVER="${LINUX_64_DIR}/configuration/resources/drivers/firefox_linux64/geckodriver"
