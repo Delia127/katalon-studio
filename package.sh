@@ -95,7 +95,7 @@ sudo mv "Katalon_Studio_Linux_64.tar.gz" "Katalon_Studio_Linux_64-$1-$TIMESTAMP.
 sudo mv "Katalon_Studio_MacOS.tar.gz" "Katalon_Studio_MacOS-$1-$TIMESTAMP.tar.gz"
 sudo mv "Katalon_Studio_Windows_32.zip" "Katalon_Studio_Windows_32-$1-$TIMESTAMP.zip"
 sudo mv "Katalon_Studio_Windows_64.zip" "Katalon_Studio_Windows_64-$1-$TIMESTAMP.zip"
-sudo mv "Katalon_Studio.dmg" "Katalon_Studio-MacOS-$1-$TIMESTAMP.dmg"
+sudo mv "Katalon Studio.dmg" "Katalon_Studio-MacOS-$1-$TIMESTAMP.dmg"
 # echo $WORKSPACE
 mkdir -p $KATABUILD
 if [ ! -d "${KATABUILD}" ]; then
