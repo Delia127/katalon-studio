@@ -179,7 +179,7 @@ public class GlobalVariableEditorPart extends CPart implements SavableCompositeP
     }
 
 	public ExecutionProfileEntity getEntityFromScript(){
-		boolean failedToParseScriptToProfilEntity = false;
+		boolean failedToParseScriptToEntity = false;
 		try {
 			ExecutionProfileEntity retEntity = 
 					GlobalVariableController.getInstance().toExecutionProfileEntity(mirrorEditor.getText());
@@ -189,16 +189,16 @@ public class GlobalVariableEditorPart extends CPart implements SavableCompositeP
 				executionProfileEntity.setName(oldExecutionProfileEntity.getName());
 				executionProfileEntity.setProject(oldExecutionProfileEntity.getProject());
 				executionProfileEntity.setParentFolder(oldExecutionProfileEntity.getParentFolder());
-				failedToParseScriptToProfilEntity = !isExecutionProfileEntityValid();
+				failedToParseScriptToEntity = !isExecutionProfileEntityValid();
 			}
 		} catch (DALException e) {
 			LoggerSingleton.logError(e);
-			failedToParseScriptToProfilEntity = true;
+			failedToParseScriptToEntity = true;
 		} finally {
-			if(failedToParseScriptToProfilEntity){
+			if(failedToParseScriptToEntity){
 				return null;
 			}		
-		}	
+		}
 		return executionProfileEntity;
 	}	
 }

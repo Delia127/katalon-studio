@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
@@ -22,20 +23,20 @@ import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.entity.variable.VariableEntityWrapper;
 
 public class TestCaseVariableEditorPart extends CPart implements SavableCompositePart {
 	
 	MirrorEditor mirrorEditor;
 	
-	Composite parent;
-	
 	Composite composite;
 	
 	private TestCaseCompositePart parentTestCaseCompositePart;
     
-	String contentScript = "";
+	String contentScript = StringUtils.EMPTY;
 	
 	boolean contentChanged = false;
 	
@@ -48,7 +49,6 @@ public class TestCaseVariableEditorPart extends CPart implements SavableComposit
 	
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
-        this.parent = parent;
         this.mpart = mpart;
         this.variables = new ArrayList<VariableEntity>();
         if (mpart.getParent().getParent() instanceof MGenericTile
@@ -83,12 +83,12 @@ public class TestCaseVariableEditorPart extends CPart implements SavableComposit
         		contentChanged = true;
         	}else{
         		setDirty(true);
-        	}        		
+        	}
         });
 	}
 	
     public void setDirty(boolean isDirty) {
-        mpart.setDirty(isDirty);
+    	mpart.setDirty(true);
         parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables(getVariables());
         parentTestCaseCompositePart.updateDirty();
     }
@@ -100,10 +100,45 @@ public class TestCaseVariableEditorPart extends CPart implements SavableComposit
         return variables.toArray(new VariableEntity[variables.size()]);
     }
 
-	public void setScriptContentFrom(VariableEntity[] incomingVariables) {
-		if(variables != null && variables.size() != 0){
-			variables = Arrays.asList(incomingVariables);
+	public void setScriptContentFrom(VariableEntityWrapper entityWrapper) {
+		String incomingContentScript = getScriptContentFromVariableEntityWrapper(entityWrapper);
+		if(!contentScript.equals(incomingContentScript)){
+			mirrorEditor.setText(incomingContentScript);	
+			if(!contentScript.equals(StringUtils.EMPTY))
+				contentChanged = true;
+			contentScript = incomingContentScript;
 		}
+	}
+	
+	public String getScriptContentFromVariableEntityWrapper(VariableEntityWrapper entityWrapper){
+		boolean failedToParse = false;
+		String content = null;
+		try {			
+			if(entityWrapper != null && entityWrapper.getVariables() != null 
+					&& entityWrapper.getVariables().size() != 0){
+				// Arrays.asList returns unmodifiable list and therefore
+				// operations (add, delete, modify, etc) are not supported
+				List<VariableEntity> incomingVariablesList = entityWrapper.getVariables();
+				VariableEntityWrapper variableEntityWrapper = new VariableEntityWrapper();
+				variableEntityWrapper.setVariables(incomingVariablesList);
+				content = GlobalVariableController.getInstance().toXmlString(variableEntityWrapper);
+				if(content != null){
+					return content;
+				}else{
+					failedToParse = true;
+				}
+			}			
+		} catch (Exception e) {
+			failedToParse = true;
+		} finally {
+			if(failedToParse)
+				return null;
+		}
+		return content;
+	}
+	
+	public String getScriptContent(){
+		return mirrorEditor.getText();
 	}
 
 	public MPart getMPart() {
@@ -113,7 +148,7 @@ public class TestCaseVariableEditorPart extends CPart implements SavableComposit
     @Persist
     @Override
 	public void save() {
-    	
+
 	}
     
     @PreDestroy

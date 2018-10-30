@@ -479,12 +479,17 @@ public class EntityFileServiceManager {
         return EntityService.getInstance().saveEntity(entity);
     }
 
-	public static String toXmlString(FileEntity entity) throws Exception {
+	public static String toXmlString(Object entity) throws Exception {
 		return EntityService.getInstance().toXmlString(entity);
 	}
 
+<<<<<<< HEAD
 	public static <T> T toEntity(String xmlString, Class<T> clazz) throws Exception{
 		return EntityService.getInstance().toEntity(xmlString, clazz);
+=======
+	public static Object toObject(String xmlString) throws javax.xml.bind.JAXBException, Exception {
+		return EntityService.getInstance().toObject(xmlString);
+>>>>>>> origin/KAT-3778
 	}
 
 }

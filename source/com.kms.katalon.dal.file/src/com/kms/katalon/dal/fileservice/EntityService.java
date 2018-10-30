@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
@@ -42,7 +43,6 @@ import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 @SuppressWarnings({ "rawtypes" })
@@ -138,6 +138,7 @@ public final class EntityService {
                 com.kms.katalon.entity.checkpoint.CheckpointSourceInfo.class,
                 com.kms.katalon.dal.fileservice.adapter.CheckpointDataXmlAdapter.class,
                 com.kms.katalon.entity.project.SourceContent.class,
+                com.kms.katalon.entity.variable.VariableEntityWrapper.class,
                 com.kms.katalon.entity.project.SourceFolderConfiguration.class};
     }
 
@@ -379,12 +380,13 @@ public final class EntityService {
         return this.unmarshaller = unmashaller;
     }
 
-	public String toXmlString(FileEntity entity) {
+	public String toXmlString(Object entity) {
         try {
     		StringWriter sw = new StringWriter();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 	        marshaller.marshal(entity, sw);
 	        return sw.toString();
+	        
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -392,11 +394,28 @@ public final class EntityService {
         return StringUtils.EMPTY;
 	}
 
+<<<<<<< HEAD
     public <T> T toEntity(String xmlString, Class<T> clazz) throws JAXBException {
 	    JAXBContext jc = JAXBContext.newInstance(clazz);
 	    Unmarshaller unmarshaller = jc.createUnmarshaller();
 	    T obj = clazz.cast(unmarshaller.unmarshal(new StringReader(xmlString)));
 	    return obj;
+=======
+	public Object toObject(String xmlString) throws JAXBException {
+        try {
+        	Object obj = 
+        			JAXBIntrospector.getValue(unmarshaller.unmarshal(new InputSource(new StringReader(xmlString))));
+	        if(obj != null)
+	        	return obj;
+		} catch (JAXBException e) {
+			throw e;
+		} finally {
+			
+		}
+        return null;
+>>>>>>> origin/KAT-3778
 	}
+	
+	
 
 }
