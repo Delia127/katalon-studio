@@ -28,62 +28,62 @@ public class AstInputValueTypeOptionsProvider {
     public static final String THROW_OPTIONS = "throw";
 
     private static final InputValueType[] closureListOptions = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
 
     private static final InputValueType[] argumentOptions = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.Binary, InputValueType.Condition, InputValueType.TestCase,
             InputValueType.TestData, InputValueType.TestObject, InputValueType.MethodCall, InputValueType.Property,
             InputValueType.List, InputValueType.Map, InputValueType.Keys };
 
     private static final InputValueType[] globalVariableOptions = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.TestDataValue, InputValueType.TestObject,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.TestDataValue, InputValueType.TestObject,
             InputValueType.TestData, InputValueType.Range, InputValueType.List, InputValueType.Map };
 
     private static final InputValueType[] caseOptions = { InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Condition, InputValueType.Binary,
             InputValueType.Property, InputValueType.List, InputValueType.Map, InputValueType.Range,
-            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean };
+            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };
 
     private static final InputValueType[] forOptions = { InputValueType.Range, InputValueType.ClosureList,
             InputValueType.List, InputValueType.Map, InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.Property };
 
     private static final InputValueType[] keysOptions = { InputValueType.String, InputValueType.Key };
 
     private static final InputValueType[] listOptions = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Property };
 
     private static final InputValueType[] mapOptions = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Property };
 
     private static final InputValueType[] rangeOptions = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
 
     private static final InputValueType[] switchOptions = { InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Condition, InputValueType.Binary,
             InputValueType.Property, InputValueType.List, InputValueType.Map, InputValueType.Range,
-            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean };
+            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };
 
     private static final InputValueType[] testDataValueOptions = { InputValueType.Variable, InputValueType.TestData,
-            InputValueType.String, InputValueType.Number, InputValueType.Boolean };
+            InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };
 
     private static final InputValueType[] variableOptions = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.TestObject, InputValueType.TestData, InputValueType.Range, InputValueType.Property,
             InputValueType.List, InputValueType.Map };
 
     private static final InputValueType[] methodCallOptions = { InputValueType.Class, InputValueType.This,
-            InputValueType.String, InputValueType.Number, InputValueType.Boolean,
+            InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null,
             InputValueType.Variable, InputValueType.MethodCall, InputValueType.Property };
 
     private static final InputValueType[] binaryOptions = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.Variable, InputValueType.MethodCall,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.MethodCall,
             InputValueType.Binary, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.Property, InputValueType.Closure };
 
@@ -93,11 +93,11 @@ public class AstInputValueTypeOptionsProvider {
 
     private static final InputValueType[] throwOptions = { InputValueType.Throwable, InputValueType.Variable };
 
-    private static final InputValueType[] stringOptions = { InputValueType.String,
+    private static final InputValueType[] stringOptions = { InputValueType.String, InputValueType.Null,
             InputValueType.Variable, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
 
-    private static final InputValueType[] numberOptions = { InputValueType.Number,
+    private static final InputValueType[] numberOptions = { InputValueType.Number, InputValueType.Null,
             InputValueType.Variable, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.MethodCall, InputValueType.Binary, InputValueType.Property };
 

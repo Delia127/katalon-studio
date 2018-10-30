@@ -118,6 +118,10 @@ public class DocumentationMessageConstants extends NLS {
 	public static String MANAGE_TEST_PROJECT;
 	
 	public static String CUSTOM_KEYWORD;
+	
+	public static String CUCUMBER_FEATURE_FILE;
+	
+	public static String CUCUMBER_STEP_DEFINITIONS;
 
     static {
         // initialize resource bundle
