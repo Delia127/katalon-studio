@@ -43,7 +43,7 @@ node {
         }
     }
     stage('Notify') {
-	mail body: "Katalon Studio build is here: ${env.BUILD_URL} , ${env.CHANGES}" ,
+	mail body: "Katalon Studio build is here: ${env.BUILD_URL} , ${env.CHANGES}\n . Please find build on \\192.168.34.7\Public\Share" ,
             from: 'build-ci@katalon.com',
             replyTo: 'build-ci@katalon.com',
             subject: "${JOB_NAME}' (${BUILD_NUMBER} info",
