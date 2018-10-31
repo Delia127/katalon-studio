@@ -1,7 +1,6 @@
 package com.kms.katalon.execution.setting;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.osgi.framework.FrameworkUtil;
 
@@ -9,8 +8,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.constants.ExecutionDefaultSettingConstants;
-import com.kms.katalon.execution.util.StringUtil;
-import com.kms.katalon.util.collections.Pair;
 
 public class ExecutionDefaultSettingStore extends BundleSettingStore {
 

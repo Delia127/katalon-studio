@@ -26,6 +26,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
@@ -95,6 +96,8 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         statistics.setSlackIntegrated(isSlackIntegrated());
         
         statistics.setRemoteWebDriverConfigured(isRemoteWebDriverConfigured());
+        
+        statistics.setContinueOnFailure(isAutoApplyNeighborXpathsEnabled());
         
         statistics.setWebLocatorConfig(getWebLocatorConfig());
         
@@ -350,5 +353,10 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
             LogUtil.logError(e);
             return new File[0];
         }
+    }
+    
+    private boolean isAutoApplyNeighborXpathsEnabled() {
+        ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
+        return store.getAutoApplyNeighborXpathsEnabled();
     }
 }
