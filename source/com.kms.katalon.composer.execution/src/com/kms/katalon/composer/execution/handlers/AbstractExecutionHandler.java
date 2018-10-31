@@ -43,7 +43,6 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.part.EditorPartWithHelp;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
@@ -126,9 +125,14 @@ public abstract class AbstractExecutionHandler {
                     MPart part = (MPart) composerStack.getSelectedElement();
                     String partElementId = part.getElementId();
                     if (partElementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)
-                            || partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
-                            || partElementId.startsWith(IdConstants.FEATURE_CONTENT_PART_ID_PREFIX)) {
+                            || partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)) {
                         return true;
+                    }
+                    if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
+                        CompatibilityEditor editor = (CompatibilityEditor) part.getObject();
+                        if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
+                            return true;
+                        }
                     }
                 }
                 return false;
@@ -196,14 +200,15 @@ public abstract class AbstractExecutionHandler {
                     return null;
                 }
                 return testSuiteComposite.getOriginalTestSuite();
-            } else if (partElementId.startsWith(IdConstants.FEATURE_CONTENT_PART_ID_PREFIX)
-                    && selectedPart.getObject() instanceof EditorPartWithHelp) {
-                EditorPartWithHelp editorCompositePart = (EditorPartWithHelp) selectedPart.getObject();
-                FileEditorInput editorInput = (FileEditorInput) editorCompositePart.getEditor().getEditorInput();
-                String featureFilePath = new File(editorInput.getFile().getRawLocationURI()).getAbsolutePath();
+            } else if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
+                CompatibilityEditor editor = (CompatibilityEditor) selectedPart.getObject();
+                if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
+                    FileEditorInput editorInput = (FileEditorInput) editor.getEditor().getEditorInput();
+                    String featureFilePath = new File(editorInput.getFile().getRawLocationURI()).getAbsolutePath();
 
-                return SystemFileController.getInstance().getSystemFile(featureFilePath,
-                        ProjectController.getInstance().getCurrentProject());
+                    return SystemFileController.getInstance().getSystemFile(featureFilePath,
+                            ProjectController.getInstance().getCurrentProject());
+                }
             }
         }
         return null;
