@@ -5,6 +5,7 @@ KATABUILD2=/tmp/katabuild2
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
 MAC_PRODUCT_NAME="Katalon Studio"
+TIMESTAMP=`date +%Y-%m-%d`
 
 WINDOWS_32_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_32.zip"
 WINDOWS_64_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_64.zip"
@@ -16,8 +17,8 @@ LINUX_64_FILE="${LINUX_64_DIR}.tar.gz"
 MAC_NAME="${PRODUCT_NAME}_MacOS"
 MAC_DIR="${PACKAGE_FOLDER}"
 MAC_FILE="${MAC_DIR}/${MAC_NAME}.tar.gz"
-MAC_APP="${MAC_DIR}/${PRODUCT_NAME}.app"
-MAC_PACKAGE="${MAC_DIR}/${PRODUCT_NAME}.dmg"
+MAC_APP="${MAC_DIR}/${MAC_PRODUCT_NAME}.app"
+MAC_PACKAGE="${MAC_DIR}/${MAC_PRODUCT_NAME}.dmg"
 
 CHROME_DRIVER="${LINUX_64_DIR}/configuration/resources/drivers/chromedriver_linux64/chromedriver"
 FF_DRIVER="${LINUX_64_DIR}/configuration/resources/drivers/firefox_linux64/geckodriver"
@@ -90,11 +91,11 @@ BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}/${2}/" # JOB_BASE_NAME
 #sudo mv "${PRODUCT_NAME}_Windows_64.zip" "${PRODUCT_NAME}_Windows_64-${3}.zip"
 #cp -Rf $CURRENT
 cd $TEMP_PATH
-sudo mv "Katalon-Studio_Linux_64.tar.gz" "Katalon-Studio_Linux_64-$1.tar.gz"
-sudo mv "Katalon-Studio_MacOS.tar.gz" "Katalon-Studio_MacOS-$1.tar.gz"
-sudo mv "Katalon-Studio_Windows_32.zip" "Katalon-Studio_Windows_32-$1.zip"
-sudo mv "Katalon-Studio_Windows_64.zip" "Katalon-Studio_Windows_64-$1.zip"
-sudo mv "Katalon-Studio.dmg" "Katalon-Studio-MacOS-$JOB_BASE_NAME.dmg"
+sudo mv "Katalon_Studio_Linux_64.tar.gz" "Katalon_Studio_Linux_64-$1-$TIMESTAMP.tar.gz"
+sudo mv "Katalon_Studio_MacOS.tar.gz" "Katalon_Studio_MacOS-$1-$TIMESTAMP.tar.gz"
+sudo mv "Katalon_Studio_Windows_32.zip" "Katalon_Studio_Windows_32-$1-$TIMESTAMP.zip"
+sudo mv "Katalon_Studio_Windows_64.zip" "Katalon_Studio_Windows_64-$1-$TIMESTAMP.zip"
+sudo mv "Katalon Studio.dmg" "Katalon_Studio-MacOS-$1-$TIMESTAMP.dmg"
 # echo $WORKSPACE
 mkdir -p $KATABUILD
 if [ ! -d "${KATABUILD}" ]; then
@@ -107,14 +108,14 @@ sudo mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUIL
 sudo mount_smbfs //katabuild:[katalon2018]@192.168.35.52/share/build $KATABUILD2
 #sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
-cp -Rf "Katalon-Studio_Linux_64-$1.tar.gz" $KATABUILD/
-cp -Rf "Katalon-Studio_Windows_32-$1.zip" $KATABUILD/
-cp -Rf "Katalon-Studio_Windows_64-$1.zip" $KATABUILD/
-cp -Rf "Katalon-Studio-MacOS-$1.dmg" $KATABUILD/
+cp -Rf "Katalon_Studio_Linux_64-$1-$TIMESTAMP.tar.gz" $KATABUILD/
+cp -Rf "Katalon_Studio_Windows_32-$1-$TIMESTAMP.zip" $KATABUILD/
+cp -Rf "Katalon_Studio_Windows_64-$1-$TIMESTAMP.zip" $KATABUILD/
+cp -Rf "Katalon_Studio-MacOS-$1-$TIMESTAMP.dmg" $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
 sudo umount -f $KATABUILD
 echo "Distribute packages on macOS ... Done"
-sudo rsync -vaE --progress $TEMP_PATH $KATABUILD2/
+#sudo rsync -vaE --progress $TEMP_PATH $KATABUILD2/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
 # sudo umount -f $KATABUILD2
 echo "Distribute packages ... Done"
