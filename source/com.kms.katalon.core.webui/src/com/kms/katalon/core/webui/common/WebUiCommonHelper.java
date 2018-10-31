@@ -680,9 +680,10 @@ public class WebUiCommonHelper extends KeywordHelper {
                 documentRect.getHeight()));
         return documentRect.intersects(elementRect);
     }
-
-    public static List<WebElement> findWebElements(TestObject testObject, int timeOut)
-            throws WebElementNotFoundException {
+    
+    // Return an empty list if no elements found,
+    // Let the caller decides what to do (throw exception, not throw, etc)
+    public static List<WebElement> findWebElements(TestObject testObject, int timeOut) {
         timeOut = WebUiCommonHelper.checkTimeout(timeOut);
         boolean isSwitchToParentFrame = false;
         try {
@@ -753,15 +754,16 @@ public class WebUiCommonHelper extends KeywordHelper {
                 miliseconds = System.currentTimeMillis();
             }
             
-            // If this code is reached, then it's definitely a WebElementNotFoundException
+            // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
-            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));      
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
             // interrupted, do nothing
+        } catch(WebElementNotFoundException e){
+        	// element not found, do nothing
         } finally {
             if (isSwitchToParentFrame) {
                 switchToDefaultContent();
@@ -774,9 +776,8 @@ public class WebUiCommonHelper extends KeywordHelper {
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
     		TestObject testObject){
-
-        List<WebElement> webElementsFoundByHeuristicMethod = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
-        List<WebElement> webElementsFoundByTrialAndErrorMethod = findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);       
+        findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
+        findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);       
     }
     
     private static List<WebElement> findWebElementsUsingTrialAndErrorMethod(
