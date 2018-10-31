@@ -4,6 +4,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 
 public class SettingOptionsThread extends Thread {
@@ -36,8 +37,11 @@ public class SettingOptionsThread extends Thread {
                 Thread.sleep(50L);
             } catch (InterruptedException ignored) {}
         }
-        UISynchronizeService.syncExec(() -> executeCommand());
-            
+        try{
+            UISynchronizeService.syncExec(() -> executeCommand());                
+        } catch( Exception e){
+            // Do nothing for now
+        }
     }
 
     private void executeCommand() {

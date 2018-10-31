@@ -45,6 +45,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ExecutionProfileCompositePart implements IComposerPartEvent, SavableCompositePart {
 	    @Inject
@@ -152,30 +153,52 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                        }
 	                        
 	                        if (tabFolder.getSelectionIndex() == 0) {
-	                        	updateGlobalVariablePart();
-	                        	return;	
+	                            updateManualView();
+	                            return;
 	                        }
 
 	                        if (tabFolder.getSelectionIndex() == 1) {
-	                        	// Commit changed variables before switching to script mode
-	            	    		globalVariablePart.updateProfilEntityWithCurrentVariables();
-	                        	updateGlobalVariableEditorPart();
-	                        	return;
+	                            updateScriptView();
+	                            return;
                         	}
 	                    }
+
 	                });
 	                tabFolder.layout();
 	            }
+	            // Initialize editor's view
+	            updateScriptView();	
 	        }	
+		}
+
+        private void updateScriptView() {
+            try {
+                globalVariableEditorPart.setScriptContentFrom(globalVariablePart.getExecutionProfileEntity());
+                setInvalidScheme(false);
+            } catch (Exception e) {
+                setInvalidScheme(true);
+            }
+        }
+        
+
+        private void updateManualView() {
+            try {
+                globalVariablePart.setVariablesFromScriptContent(globalVariableEditorPart.getScriptContent());
+                setInvalidScheme(false);
+            } catch (Exception e) {    
+                setInvalidScheme(true);
+            }
+        }
+		
+		private void setInvalidScheme(boolean value){
+		    invalidSchema = value;
 		}
 		
 	    @Persist
 	    @Override
 		public void save(){
-	        try {	        	
-	        	invalidSchema = globalVariablePart.getEntity() == null 
-	        			|| globalVariableEditorPart.getEntityFromScript() == null;
-	        	
+	        try {
+	            updateManualView();
 	        	if(invalidSchema == true){
 	    			MessageDialog.openError(null, StringConstants.ERROR_TITLE,
 	                        StringConstants.PA_ERROR_MSG_UNABLE_TO_UPDATE_PROFILE);
@@ -191,36 +214,6 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	        }
 		}		
 
-		public void updateGlobalVariableEditorPart() {
-	    	try {
-	    		ExecutionProfileEntity incomingEntity = globalVariablePart.getEntity();
-	    		if(incomingEntity != null){
-	    			executionProfileEntity = incomingEntity;
-	    			if(!executionProfileEntity.compareByVariables(incomingEntity)){
-		    			setDirty(true);
-	    			}
-		    		globalVariableEditorPart.updateProfileEntityFrom(executionProfileEntity);
-	    		}
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-	    
-	    
-	    public void updateGlobalVariablePart() {
-			try {
-	    		ExecutionProfileEntity incomingEntity = globalVariableEditorPart.getEntityFromScript();
-	    		if(incomingEntity != null){
-	    			executionProfileEntity = incomingEntity;
-	    			if(!executionProfileEntity.compareByVariables(incomingEntity)){
-		    			setDirty(true);
-	    			}
-					globalVariablePart.updateProfileEntityFrom(executionProfileEntity);
-	    		}
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
 
 		public void dispose() {
 	        MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);

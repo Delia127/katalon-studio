@@ -4,6 +4,8 @@ import org.eclipse.osgi.util.NLS;
 
 public class ComposerWebserviceMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
+
+    public static String PA_ERROR_MSG_UNABLE_TO_SAVE_PART;
     
     public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
     
@@ -32,6 +34,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PA_LBL_VERIFICATION;
     
     public static String PA_LBL_VARIABLE;
+    
+    public static String PA_LBL_VARIABLE_EDITOR;
 
     public static String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
 

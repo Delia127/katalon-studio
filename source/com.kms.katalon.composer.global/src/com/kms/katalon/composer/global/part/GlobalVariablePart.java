@@ -67,6 +67,7 @@ import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -366,7 +367,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     }
 	
 
-	public void updateProfileEntityFrom(ExecutionProfileEntity entity) throws Exception{
+	public void updateProfileEntityFrom(ExecutionProfileEntity entity){
 		ExecutionProfileEntity oldExecutionProfileEntity = executionProfileEntity;
     	if(entity != null){
     		executionProfileEntity = entity;
@@ -667,4 +668,31 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         }
 
     }
+
+    public void setVariablesFromScriptContent(String scriptContent) throws Exception {
+        ExecutionProfileEntity newVariableEntityWrapper = getVariableEntityWrapperFromScriptContent(scriptContent);
+        if (newVariableEntityWrapper != null) {
+            globalVariables.clear();
+            globalVariables.addAll(newVariableEntityWrapper.getGlobalVariableEntities());
+        }else{
+            globalVariables.clear();
+            globalVariables.addAll(new ArrayList<GlobalVariableEntity>());
+        }
+        tableViewer.setInput(globalVariables);
+        refresh();
+    }
+    
+    public ExecutionProfileEntity getVariableEntityWrapperFromScriptContent(String scriptContent) throws Exception{
+        ExecutionProfileEntity newVariableEntityWrapper = null;
+        if(scriptContent != null&& scriptContent != ""){
+            newVariableEntityWrapper = GlobalVariableController.getInstance().toExecutionProfileEntity(scriptContent);
+        }
+        return newVariableEntityWrapper;
+    }
+
+
+    public ExecutionProfileEntity getExecutionProfileEntity() {
+        return executionProfileEntity;
+    }
+
 }

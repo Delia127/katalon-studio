@@ -32,6 +32,8 @@ import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
+import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.entity.variable.VariableEntityWrapper;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
 public class GlobalVariableEditorPart extends CPart implements SavableCompositePart {
@@ -67,7 +69,6 @@ public class GlobalVariableEditorPart extends CPart implements SavableCompositeP
         }
         initialize(mpart, partService);        
         createComposite(parent);
-        updateProfileEntityFrom(executionProfileEntity);
     }
 
 	private void createComposite(Composite parent) {
@@ -98,25 +99,22 @@ public class GlobalVariableEditorPart extends CPart implements SavableCompositeP
     	parentExecutionProfileCompositePart.setDirty(isDirty);
     }
 
-	public void updateProfileEntityFrom(ExecutionProfileEntity entity) {
+	public void updateProfileEntityFrom(ExecutionProfileEntity entity) throws Exception {
 		if(entity != null){
 			executionProfileEntity = entity;
 		}
 		updateScriptContent();
 	}
 
-	private void updateScriptContent() {
-		try {
-			String incomingContentScript = GlobalVariableController.getInstance().toXmlString(executionProfileEntity);
-			if(!contentScript.equals(incomingContentScript)){
-				mirrorEditor.setText(incomingContentScript);	
-				if(!contentScript.equals(StringUtils.EMPTY))
-					contentChanged = true;
-				contentScript = incomingContentScript;
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
+	private void updateScriptContent() throws Exception {
+        String incomingContentScript = GlobalVariableController.toXmlString(executionProfileEntity);
+        if (contentScript != null) {
+            contentChanged = true;
+            if (!contentScript.equals(incomingContentScript)) {
+                contentScript = incomingContentScript;
+            }
+        } 
+        mirrorEditor.setText(incomingContentScript);
 	}
 
 	public MPart getMPart() {
@@ -148,6 +146,7 @@ public class GlobalVariableEditorPart extends CPart implements SavableCompositeP
 	}
 	
 
+    @SuppressWarnings("unused")
     private boolean isExecutionProfileEntityValid() {
     	List<String> globalVariableNames = executionProfileEntity.getGlobalVariableEntities()
     			.stream()
@@ -178,27 +177,25 @@ public class GlobalVariableEditorPart extends CPart implements SavableCompositeP
         return true;
     }
 
-	public ExecutionProfileEntity getEntityFromScript(){
-		boolean failedToParseScriptToProfilEntity = false;
-		try {
-			ExecutionProfileEntity retEntity = 
-					GlobalVariableController.getInstance().toExecutionProfileEntity(mirrorEditor.getText());
-			ExecutionProfileEntity oldExecutionProfileEntity = executionProfileEntity;
-			if(retEntity != null){
-				executionProfileEntity = retEntity;
-				executionProfileEntity.setName(oldExecutionProfileEntity.getName());
-				executionProfileEntity.setProject(oldExecutionProfileEntity.getProject());
-				executionProfileEntity.setParentFolder(oldExecutionProfileEntity.getParentFolder());
-				failedToParseScriptToProfilEntity = !isExecutionProfileEntityValid();
-			}
-		} catch (DALException e) {
-			LoggerSingleton.logError(e);
-			failedToParseScriptToProfilEntity = true;
-		} finally {
-			if(failedToParseScriptToProfilEntity){
-				return null;
-			}		
-		}	
-		return executionProfileEntity;
-	}	
+	
+    public void setScriptContentFrom(ExecutionProfileEntity execProfEntity) throws Exception {
+        String incomingContentScript = getScriptContentFromExecutionProfileEntity(execProfEntity);
+        if (!contentScript.equals(incomingContentScript)) {
+            mirrorEditor.setText(incomingContentScript);
+            if (!contentScript.equals(StringUtils.EMPTY))
+                contentChanged = true;
+            contentScript = incomingContentScript;
+        }
+    }
+    
+    public String getScriptContentFromExecutionProfileEntity(ExecutionProfileEntity execProfEntity) throws Exception{
+        String content = StringUtils.EMPTY;
+        ExecutionProfileEntity incomingEntity = execProfEntity;
+        content = GlobalVariableController.toXmlString(incomingEntity);
+        return content;
+    }
+
+    public String getScriptContent() {
+        return mirrorEditor.getText();
+    }
 }

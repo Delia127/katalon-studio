@@ -1,14 +1,14 @@
 package com.kms.katalon.composer.testcase.parts;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -25,82 +25,67 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.controller.GlobalVariableController;
-import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.entity.variable.VariableEntityWrapper;
 
-public class TestCaseVariableEditorPart extends CPart implements SavableCompositePart {
-	
-	MirrorEditor mirrorEditor;
-	
-	Composite composite;
-	
-	private TestCaseCompositePart parentTestCaseCompositePart;
+public class TestCaseVariableEditorView extends CPart implements SavableCompositePart{
+
+    Composite composite;
+
+    MirrorEditor mirrorEditor;
+
+    boolean contentChanged = false;
+
+    IVariablePart variablePart;
     
-	String contentScript = StringUtils.EMPTY;
-	
-	boolean contentChanged = false;
-	
-    private List<VariableEntity> variables;
-
-    @Inject
-    private EPartService partService;
-
     MPart mpart;
-	
+
+    String contentScript = StringUtils.EMPTY;
+    
+    Composite parentTestCaseCompositePart;
+
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
         this.mpart = mpart;
-        this.variables = new ArrayList<VariableEntity>();
-        if (mpart.getParent().getParent() instanceof MGenericTile
-                && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
-            MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
-            if (compositePart.getObject() instanceof TestCaseCompositePart) {
-                parentTestCaseCompositePart = ((TestCaseCompositePart) compositePart.getObject());
-            }
-        }
-        initialize(mpart, partService);
-        
-        createComposite(parent);
+    }
+    
+    public TestCaseVariableEditorView(IVariablePart variablePart, Composite parent) {        
+        this.variablePart = variablePart;
+        parentTestCaseCompositePart = parent;
+        createComponents(parent);
     }
 
-	private void createComposite(Composite parent) {
-        composite = new Composite(parent, SWT.NONE);
+    public void createComponents(Composite variableEditorPartComposite) {
+
+        composite = new Composite(variableEditorPartComposite, SWT.NONE);
         composite.setLayout(new GridLayout(1, false));
         composite.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
-		
+
         mirrorEditor = new MirrorEditor(composite, SWT.NONE);
         mirrorEditor.setEditable(true);
         mirrorEditor.registerDocumentHandler(new DocumentReadyHandler() {
-            
+
             @Override
             public void onDocumentReady() {
                 mirrorEditor.changeMode(TextContentType.XML.getText());
             }
         });
-        
-        mirrorEditor.addListener(SWT.Modify, event ->{
-        	if(contentChanged == false){
-        		contentChanged = true;
-        	}else{
-        		setDirty(true);
-        	}
+
+        mirrorEditor.addListener(SWT.Modify, event -> {
+            if (contentChanged == false) {
+                contentChanged = true;
+            } else {
+                setDirty(true);
+            }
         });
-	}
-	
-    public void setDirty(boolean isDirty) {
-    	mpart.setDirty(true);
-        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables(getVariables());
-        parentTestCaseCompositePart.updateDirty();
-    }
 
-    public VariableEntity[] getVariables() {
-        if (variables == null) {
-            return new VariableEntity[0];
-        }
-        return variables.toArray(new VariableEntity[variables.size()]);
     }
+    
 
+    private void setDirty(boolean b) {
+        variablePart.setDirty(b);
+    }
+    
     public void setScriptContentFrom(VariableEntityWrapper entityWrapper) throws Exception {
         String incomingContentScript = getScriptContentFromVariableEntityWrapper(entityWrapper);
         if (!contentScript.equals(incomingContentScript)) {
@@ -123,37 +108,22 @@ public class TestCaseVariableEditorPart extends CPart implements SavableComposit
         }
         return content;
     }
-	
-	public String getScriptContent(){
-		return mirrorEditor.getText();
-	}
 
-	public MPart getMPart() {
-		return mpart;
-	}
-	
-    @Persist
-    @Override
-	public void save() {
-
-	}
-    
-    @PreDestroy
-    @Override
-    public void dispose() {
-        super.dispose();
-        partService.hidePart(mpart);
+    public String getScriptContent() {
+       return mirrorEditor.getText();
     }
 
-	public MirrorEditor getEditor() {
-		return mirrorEditor;
-	}
+    @Override
+    public List<MPart> getChildParts() {
+        List<MPart> res = new ArrayList<>();
+        res.add(mpart);
+        return res;
+    }
 
-	@Override
-	public List<MPart> getChildParts() {
-		List<MPart> res = new ArrayList<>();
-		res.add(getMPart());
-		return res;
-	}
+    @Persist
+    @Override
+    public void save() throws Exception {
+        
+    }
 
 }
