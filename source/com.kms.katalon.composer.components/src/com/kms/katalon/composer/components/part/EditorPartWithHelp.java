@@ -70,6 +70,10 @@ public class EditorPartWithHelp implements SavableCompositePart {
         };
     }
     
+    public IEditorPart getEditor() {
+        return GroovyEditorUtil.getEditor(editorPart);
+    }
+    
     @Override
     public List<MPart> getChildParts() {
         return Arrays.asList(editorPart);
