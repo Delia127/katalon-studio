@@ -442,6 +442,10 @@ public class WSRequestPartUI {
     public MPart getVariablePart() {
         return variablePart;
     }
+    
+    public MPart getVariableEditorPart(){
+        return variableEditorPart;
+    }
 
     public MCompositePart getVerificationPart() {
         return verificationPart;

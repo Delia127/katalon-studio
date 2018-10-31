@@ -3,6 +3,9 @@ package com.kms.katalon.composer.webservice.constants;
 import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
+    
+    public static final String PA_ERROR_MSG_UNABLE_TO_SAVE_PART = ComposerWebserviceMessageConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART;
+    
 	// NewWebServiceRequestObjectHandler
     public static final String HAND_NEW_REQUEST = ComposerWebserviceMessageConstants.HAND_NEW_REQUEST;
 	public static final String ERROR_TITLE = ERROR;

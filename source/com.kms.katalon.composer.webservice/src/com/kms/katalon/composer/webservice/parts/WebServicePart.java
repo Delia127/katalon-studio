@@ -150,6 +150,7 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.IVariablePart;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
+import com.kms.katalon.composer.testcase.parts.TestCaseVariableEditorPart;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableEditorView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableViewEvent;
@@ -393,6 +394,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected Label lblVerificationResultStatus;
 
     private Composite verificationResultComposite;
+    
+    private boolean invalidScheme = false;
 
     @PostConstruct
     public void createComposite(Composite parent, MCompositePart part) {
@@ -400,7 +403,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         new HelpToolBarForMPart(part, DocumentationMessageConstants.TEST_OBJECT_WEB_SERVICES);
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
         this.parent = parent;
-
         verificationScriptSnippets = VerificationScriptSnippetFactory.getSnippets();
         verificationScriptImport = VerificationScriptSnippetFactory.getCommonScriptSnippet();
     }
@@ -428,13 +430,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         createParamsComposite(apiControlsPartInnerComposite);
 
+        createVariableComposite();
+        
+        createVariableEditorComposite();
+        
         createTabsComposite();
 
         createSnippetComposite();
 
-        createVariableComposite();
-        
-        createVariableEditorComposite();
 
         Composite responsePartComposite = ui.getResponsePartComposite();
         Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
@@ -789,16 +792,20 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 }
                 
                 if (tabFolder.getSelectionIndex() == 4) {
-                    return; 
+                    updateVariableManualView();
+                    return;
                 }
 
                 if (tabFolder.getSelectionIndex() == 5) {
+                    updateVariableScriptView();
                     return;
                 }
             }
+
         });
         tabFolder.layout();
-
+        // Initialize editor's content
+        updateVariableScriptView();
 
         tabFolder.setSelection(0);
     }
@@ -834,8 +841,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private void createVariableEditorComposite() {
         Composite variableEditorPartComposite = ui.getVariableEditorPartComposite();
         
-        variableEditorView = new TestCaseVariableEditorView(this);
-        variableEditorView.createComponents(variableEditorPartComposite);
+        variableEditorView = new TestCaseVariableEditorView(this, variableEditorPartComposite);
     }
 
     @Override
@@ -1814,6 +1820,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Persist
     public void save() {
         try {
+            updateVariableManualView();
+            if (invalidScheme == true) {
+                MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                        StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
+                return;
+            }
             saveVariables();
             saveVerificationScript();
             preSaving();
@@ -1833,6 +1845,24 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
     }
 
+    private void updateVariableManualView() {
+        try {
+            variableView.setVariablesFromScriptContent(variableEditorView.getScriptContent());
+            setInvalidScheme(false);
+        } catch (Exception e) {
+            setInvalidScheme(true);
+        }
+    }
+
+    private void updateVariableScriptView() {
+        try {
+            variableEditorView.setScriptContentFrom(variableView.getVariableEntityWrapper());
+            setInvalidScheme(false);
+        } catch (Exception e) {
+            setInvalidScheme(true);
+        }
+    }
+
     private void saveVariables() {
         VariableEntity[] variables = variableView.getVariables();
         originalWsObject.setVariables(Arrays.asList(variables));
@@ -1846,6 +1876,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             originalWsObject.setVerificationScript(script);
         }
         editor.saveEditor(scriptEditorPart);
+    }
+    
+    private void setInvalidScheme(boolean value){
+        invalidScheme = value;
     }
 
     public WebServiceRequestEntity getWSRequestObject() {
@@ -2077,7 +2111,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Override
     public List<MPart> getChildParts() {
         return Arrays.asList(ui.getApiControlsPart(), ui.getHeadersPart(), ui.getAuthorizationPart(), ui.getBodyPart(),
-                ui.getScriptEditorPart(), ui.getSnippetPart(), ui.getResponsePart(), ui.getVariablePart());
+                ui.getScriptEditorPart(), ui.getSnippetPart(), ui.getResponsePart(), ui.getVariablePart(), ui.getVariableEditorPart());
     }
 
     private class ToolBarForVerificationPart extends ToolBarForMPart {

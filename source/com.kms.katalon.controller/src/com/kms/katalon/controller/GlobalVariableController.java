@@ -140,16 +140,8 @@ public class GlobalVariableController extends EntityController {
         return profiles;
     }
     
-    public String toXmlString(Object profileEntity) throws Exception {
-    	return getDataProviderSetting().getEntityDataProvider().toXmlString(profileEntity);
-    }
-    
     public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws DALException{
-<<<<<<< HEAD
     	return getDataProviderSetting().getEntityDataProvider().toEntity(xmlString, ExecutionProfileEntity.class);
-=======
-    	return (ExecutionProfileEntity) getDataProviderSetting().getEntityDataProvider().toObject(xmlString);
->>>>>>> origin/KAT-3778
     }
 
     public ExecutionProfileEntity copyProfile(ExecutionProfileEntity profileEntity) throws Exception {

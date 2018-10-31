@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.constants.TextContentType;
 import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
 import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.parts.SavableCompositePart;
@@ -100,42 +101,28 @@ public class TestCaseVariableEditorPart extends CPart implements SavableComposit
         return variables.toArray(new VariableEntity[variables.size()]);
     }
 
-	public void setScriptContentFrom(VariableEntityWrapper entityWrapper) {
-		String incomingContentScript = getScriptContentFromVariableEntityWrapper(entityWrapper);
-		if(!contentScript.equals(incomingContentScript)){
-			mirrorEditor.setText(incomingContentScript);	
-			if(!contentScript.equals(StringUtils.EMPTY))
-				contentChanged = true;
-			contentScript = incomingContentScript;
-		}
-	}
-	
-	public String getScriptContentFromVariableEntityWrapper(VariableEntityWrapper entityWrapper){
-		boolean failedToParse = false;
-		String content = null;
-		try {			
-			if(entityWrapper != null && entityWrapper.getVariables() != null 
-					&& entityWrapper.getVariables().size() != 0){
-				// Arrays.asList returns unmodifiable list and therefore
-				// operations (add, delete, modify, etc) are not supported
-				List<VariableEntity> incomingVariablesList = entityWrapper.getVariables();
-				VariableEntityWrapper variableEntityWrapper = new VariableEntityWrapper();
-				variableEntityWrapper.setVariables(incomingVariablesList);
-				content = GlobalVariableController.getInstance().toXmlString(variableEntityWrapper);
-				if(content != null){
-					return content;
-				}else{
-					failedToParse = true;
-				}
-			}			
-		} catch (Exception e) {
-			failedToParse = true;
-		} finally {
-			if(failedToParse)
-				return null;
-		}
-		return content;
-	}
+    public void setScriptContentFrom(VariableEntityWrapper entityWrapper) throws Exception {
+        String incomingContentScript = getScriptContentFromVariableEntityWrapper(entityWrapper);
+        if (!contentScript.equals(incomingContentScript)) {
+            mirrorEditor.setText(incomingContentScript);
+            if (!contentScript.equals(StringUtils.EMPTY))
+                contentChanged = true;
+            contentScript = incomingContentScript;
+        }
+    }
+    
+    public String getScriptContentFromVariableEntityWrapper(VariableEntityWrapper entityWrapper) throws Exception{
+        String content = StringUtils.EMPTY;
+        if (entityWrapper != null && entityWrapper.getVariables() != null && entityWrapper.getVariables().size() != 0) {
+            // Arrays.asList returns unmodifiable list and therefore
+            // operations (add, delete, modify, etc) are not supported
+            List<VariableEntity> incomingVariablesList = entityWrapper.getVariables();
+            VariableEntityWrapper variableEntityWrapper = new VariableEntityWrapper();
+            variableEntityWrapper.setVariables(incomingVariablesList);
+            content = GlobalVariableController.toXmlString(variableEntityWrapper);
+        }
+        return content;
+    }
 	
 	public String getScriptContent(){
 		return mirrorEditor.getText();

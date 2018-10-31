@@ -558,33 +558,25 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
 
     }
 
-	public void setVariablesFromScriptContent(String scriptContent) {
-		VariableEntityWrapper newVariableEntityWrapper = getVariableEntityWrapperFromScriptContent(scriptContent);
-		if(newVariableEntityWrapper != null && !variableEntityWrapper.getVariables().equals(newVariableEntityWrapper.getVariables())){
-			variableEntityWrapper.setVariables(newVariableEntityWrapper.getVariables());
-            tableViewer.setInput(variableEntityWrapper.getVariables());
-            tableViewer.refresh();
-		}
-	}
-	
-	public VariableEntityWrapper getVariableEntityWrapperFromScriptContent(String scriptContent){
-		boolean failedToParse = false;
-		VariableEntityWrapper newVariableEntityWrapper = null;
-		try {
-			if(scriptContent != null && scriptContent != StringUtils.EMPTY){
-				newVariableEntityWrapper = LocalVariableController.getInstance().toVariables(scriptContent);
-				if(newVariableEntityWrapper != null){
-					return newVariableEntityWrapper;
-				} else{
-					failedToParse = true;
-				}
-			}
-		} catch (DALException e) {
-			failedToParse = true;
-		} finally {
-			if(failedToParse)
-				return null;
-		}
-		return newVariableEntityWrapper;
-	}
+    public void setVariablesFromScriptContent(String scriptContent) throws Exception {
+        VariableEntityWrapper newVariableEntityWrapper = getVariableEntityWrapperFromScriptContent(scriptContent);
+        if (newVariableEntityWrapper != null) {
+            variableEntityWrapper.setVariables(newVariableEntityWrapper.getVariables());
+        }else{
+            newVariableEntityWrapper = new VariableEntityWrapper();
+            newVariableEntityWrapper.setVariables(new ArrayList<VariableEntity>());
+        }
+        
+        tableViewer.setInput(newVariableEntityWrapper.getVariables());
+        tableViewer.refresh();
+    }
+    
+    public VariableEntityWrapper getVariableEntityWrapperFromScriptContent(String scriptContent) throws Exception{
+        VariableEntityWrapper newVariableEntityWrapper = null;
+        if (scriptContent != null && scriptContent != StringUtils.EMPTY) {
+            newVariableEntityWrapper = LocalVariableController.getInstance().toVariableEntityWrapper(scriptContent);
+            return newVariableEntityWrapper;
+        }
+        return newVariableEntityWrapper;
+    }
 }

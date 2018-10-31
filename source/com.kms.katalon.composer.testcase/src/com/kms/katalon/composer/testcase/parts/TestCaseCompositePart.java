@@ -352,13 +352,13 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
-                        	childTestCaseVariablesPart.setVariablesFromScriptContent(childTestCaseVariableEditorPart.getScriptContent());
+                        	updateVariableManualView();
                             Trackings.trackOpenObject("testCaseVariable");
                             return;
                         }
                         
                         if(tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX){
-                        	childTestCaseVariableEditorPart.setScriptContentFrom(childTestCaseVariablesPart.getVariableEntityWrapper());
+                        	updateVariableScriptView();
                         	return;
                         }
                         
@@ -370,11 +370,13 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                             return;
                         }
                     }
+
                 });
                 tabFolder.layout();
             }
             childTestCaseVariablesPart.loadVariables();
-            childTestCaseVariableEditorPart.setScriptContentFrom(childTestCaseVariablesPart.getVariableEntityWrapper());
+            // Initialize editor's content
+            updateVariableScriptView();
             childTestCaseIntegrationPart.loadInput();
             initDefaultSelectedPart();
             if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX) {
@@ -382,6 +384,25 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             }
             propertiesPart.loadInput();
             isInitialized = true;
+        }
+    }
+    
+
+    private void updateVariableManualView() {
+        try {
+            childTestCaseVariablesPart.setVariablesFromScriptContent(childTestCaseVariableEditorPart.getScriptContent());
+            setInvalidScheme(false);
+        } catch (Exception e) {    
+            setInvalidScheme(true);
+        }
+    }
+
+    private void updateVariableScriptView() {
+        try {
+            childTestCaseVariableEditorPart.setScriptContentFrom(childTestCaseVariablesPart.getVariableEntityWrapper());
+            setInvalidScheme(false);
+        } catch (Exception e) {                               
+            setInvalidScheme(true);
         }
     }
 
@@ -581,28 +602,24 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     public TestCaseEntity getOriginalTestCase() {
         return originalTestCase;
     }
+    
+    private void setInvalidScheme(boolean value){
+        invalidScheme = value;
+    }
 
     @Override
     public void save() throws Exception {
-    	
-    	invalidScheme = 
-    			childTestCaseVariablesPart.
-    			getVariableEntityWrapperFromScriptContent(childTestCaseVariableEditorPart.
-    					getScriptContent()) == null
-    			|| childTestCaseVariableEditorPart.
-    			getScriptContentFromVariableEntityWrapper(childTestCaseVariablesPart.
-    					getVariableEntityWrapper()) == null;
-    	
-    	if(invalidScheme == true){
+        updateVariableManualView();
+        if (invalidScheme == true) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
             return;
-    	}
-    	
+        }
+
         if (childTestCasePart.isManualScriptChanged()) {
             setChildEditorContents(scriptNode);
         }
-        
+
         saveTestScript();
         saveTestCase();
         updateDirty();

@@ -394,26 +394,10 @@ public final class EntityService {
         return StringUtils.EMPTY;
 	}
 
-<<<<<<< HEAD
+
     public <T> T toEntity(String xmlString, Class<T> clazz) throws JAXBException {
-	    JAXBContext jc = JAXBContext.newInstance(clazz);
-	    Unmarshaller unmarshaller = jc.createUnmarshaller();
-	    T obj = clazz.cast(unmarshaller.unmarshal(new StringReader(xmlString)));
+	    T obj = clazz.cast(JAXBIntrospector.getValue(unmarshaller.unmarshal(new StringReader(xmlString))));
 	    return obj;
-=======
-	public Object toObject(String xmlString) throws JAXBException {
-        try {
-        	Object obj = 
-        			JAXBIntrospector.getValue(unmarshaller.unmarshal(new InputSource(new StringReader(xmlString))));
-	        if(obj != null)
-	        	return obj;
-		} catch (JAXBException e) {
-			throw e;
-		} finally {
-			
-		}
-        return null;
->>>>>>> origin/KAT-3778
 	}
 	
 	

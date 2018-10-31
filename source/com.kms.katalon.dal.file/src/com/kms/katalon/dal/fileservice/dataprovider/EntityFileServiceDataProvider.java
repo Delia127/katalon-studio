@@ -27,15 +27,9 @@ public class EntityFileServiceDataProvider implements IEntityDataProvider {
 	}
 
 	@Override
-<<<<<<< HEAD
 	public <T> T toEntity(String xmlString, Class<T> clazz) throws DALException {
 		 try {
 	            return EntityFileServiceManager.toEntity(xmlString, clazz);
-=======
-	public Object toObject(String xmlString) throws DALException {
-		 try {
-	            return EntityFileServiceManager.toObject(xmlString);
->>>>>>> origin/KAT-3778
 	        } catch (Exception e) {
 	            throw new DALException(e);
 	        }

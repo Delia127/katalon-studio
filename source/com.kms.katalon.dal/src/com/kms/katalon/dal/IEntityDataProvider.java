@@ -10,10 +10,6 @@ public interface IEntityDataProvider {
     
     public String toXmlString(Object entity) throws DALException;
 
-<<<<<<< HEAD
 	public <T> T toEntity(String xmlString, Class<T> clazz) throws DALException;
-=======
-	public Object toObject(String xmlString) throws DALException;
->>>>>>> origin/KAT-3778
 
 }
