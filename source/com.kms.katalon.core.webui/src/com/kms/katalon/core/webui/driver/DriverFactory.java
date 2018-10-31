@@ -823,8 +823,10 @@ public class DriverFactory {
             if (executionGeneralProperties.containsKey(ACTION_DELAY)) {
                 actionDelay = RunConfiguration.getIntProperty(ACTION_DELAY, executionGeneralProperties);
             }
-            KeywordLogger.getInstance()
-                    .logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
+            if (RunConfiguration.getPort() > 0) {
+                KeywordLogger.getInstance()
+                        .logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
+            }
         }
         return actionDelay;
     }

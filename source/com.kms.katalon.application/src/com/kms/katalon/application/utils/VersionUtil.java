@@ -1,11 +1,10 @@
 package com.kms.katalon.application.utils;
 
-import java.awt.Desktop;
-import java.net.URI;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.swt.program.Program;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.logging.LogUtil;
@@ -50,7 +49,7 @@ public class VersionUtil {
 
     public static void gotoDownloadPage() {
         try {
-            Desktop.getDesktop().browse(new URI(URL_NEW_VERSION));
+            Program.launch(URL_NEW_VERSION);
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }

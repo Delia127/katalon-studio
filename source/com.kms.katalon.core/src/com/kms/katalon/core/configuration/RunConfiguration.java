@@ -200,6 +200,9 @@ public class RunConfiguration {
     }
 
     public static int getIntProperty(String propertyKey, Map<String, Object> jsonObjProperties) {
+        if (jsonObjProperties == null) {
+            return 0;
+        }
         Number doubleValue = (Number) jsonObjProperties.get(propertyKey);
 
         return doubleValue.intValue();

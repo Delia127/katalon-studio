@@ -20,6 +20,7 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -414,5 +415,9 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
             }
             return highest;
         }
+    }
+    
+    private void openBrowserToLink(String url) {
+        Program.launch(url);
     }
 }
