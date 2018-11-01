@@ -47,7 +47,7 @@ node {
 	mail body: "Katalon Studio build is here: ${env.BUILD_URL} \n" ,
             from: 'build-ci@katalon.com',
             replyTo: 'build-ci@katalon.com',
-		subject: "${JOB_NAME}' (${BUILD_NUMBER}) ${BUILD_STATUS} ",
+		subject: "${JOB_NAME}' (${BUILD_NUMBER})",
             to: 'qa@katalon.com'
     }
 }
