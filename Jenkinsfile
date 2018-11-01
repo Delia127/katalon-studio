@@ -30,19 +30,7 @@ node {
 		def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
 		def versionNumber = (versionContent =~ /([0-9]+)[\.,]?([0-9]+)[\.,]?([0-9])/)
 		String buildVersion = versionNumber[0][0]
-		def changeLogSets = currentBuild.changeSets
-		for (int i = 0; i < changeLogSets.size(); i++) {
-		    def entries = changeLogSets[i].items
-		    for (int j = 0; j < entries.length; j++) {
-			def entry = entries[j]
-			echo "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}: ${entry.msg}"
-			def files = new ArrayList(entry.affectedFiles)
-			for (int k = 0; k < files.size(); k++) {
-			    def file = files[k]
-			    echo "  ${file.editType.name} ${file.path}"
-			}
-		    }
-		}
+		
 	}
 	   
         sh '''
@@ -56,7 +44,7 @@ node {
         }
     }
     stage('Notify') {
-	mail body: "Katalon Studio build is here: ${env.BUILD_URL} \n ${env.changeLogSets}" ,
+	mail body: "Katalon Studio build is here: ${env.BUILD_URL} \n" ,
             from: 'build-ci@katalon.com',
             replyTo: 'build-ci@katalon.com',
 		subject: "${JOB_NAME}' (${BUILD_NUMBER}) ${BUILD_STATUS} ",
