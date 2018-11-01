@@ -687,5 +687,17 @@ public interface IImageKeys {
 
     // History Request
     public static final String HISTORY_REQUEST_16 = "history_request_16.png";
-
+    
+    // Api Quick Start
+    public static final String API_QUICKSTART_BACKGROUND = "api_quickstart/bg.png"; //$NON-NLS-1$
+    
+    public static final String NEW_DRAFT_REST_REQUEST = "api_quickstart/new_draft_rest.png";  //$NON-NLS-1$
+    
+    public static final String NEW_DRAFT_SOAP_REQUEST = "api_quickstart/new_draft_soap.png"; //$NON-NLS-1$
+    
+    public static final String IMPORT_SWAGGER = "api_quickstart/import_swagger.png"; //$NON-NLS-1$
+    
+    public static final String IMPORT_WSDL = "api_quickstart/import_wsdl.png"; //$NON-NLS-1$
+    
+    public static final String API_QUICKSTART_BACKGROUND_LEFT = "api_quickstart/bg_left_part.png"; //$NON-NLS-1$
 }

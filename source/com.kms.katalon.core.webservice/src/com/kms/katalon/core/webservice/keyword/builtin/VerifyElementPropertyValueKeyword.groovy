@@ -51,7 +51,7 @@ public class VerifyElementPropertyValueKeyword extends WebserviceAbstractKeyword
                     WebServiceCommonHelper.parseAndGetPropertyValueForXml(locator, response.getResponseBodyContent()) :
                     WebServiceCommonHelper.parseAndGetPropertyValueForJson(locator, response.getResponseBodyContent())
             
-            boolean isEqual = ObjectUtils.equals(value, retValue)
+            boolean isEqual = String.valueOf(value).equals(String.valueOf(retValue))
             if (!isEqual) {
                 KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_PROP_VAL_NOT_EQUAL, [value, retValue.toString()] as Object[]), flowControl, null, null)
             } else {
