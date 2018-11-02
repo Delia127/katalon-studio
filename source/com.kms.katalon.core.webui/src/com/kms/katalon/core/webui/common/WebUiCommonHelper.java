@@ -757,19 +757,10 @@ public class WebUiCommonHelper extends KeywordHelper {
                 miliseconds = System.currentTimeMillis();
             }
 
-
+            // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
+            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);   
             
-
-            List<WebElement> tryAutoApplyNeighborXpaths = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);    
-            if(smartXPathsEnabled == false){
-                throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
-            }
-       
-            if(tryAutoApplyNeighborXpaths!= null && tryAutoApplyNeighborXpaths.size() > 0) {
-                return tryAutoApplyNeighborXpaths;
-            }
-
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
