@@ -1204,6 +1204,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     setSelectedConsoleView();
                     updateProgressBar();
                 }
+                if (parentComposite.isDisposed()) {
+                    return;
+                }
                 createLogViewerControl(parentComposite);
                 eventBroker.send(EventConstants.JOB_REFRESH, null);
             }
