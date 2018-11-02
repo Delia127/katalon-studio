@@ -415,6 +415,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         this.ui = wsRequestPartUI;
 
         new ToolBarForVerificationPart(ui.getVerificationPart());
+        
+        new HelpToolBarForMPart(ui.getVariablePart(), DocumentationMessageConstants.WEB_SERVICE_VARIABLES);
+        
+        new HelpToolBarForMPart(ui.getAuthorizationPart(), DocumentationMessageConstants.WEB_SERVICE_AUTHORIZATION);
 
         scriptEditorPart = ui.getScriptEditorPart();
         verificationScriptEditor = (GroovyEditor) editor.getEditor(scriptEditorPart);
@@ -437,7 +441,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         createTabsComposite();
 
         createSnippetComposite();
-
 
         Composite responsePartComposite = ui.getResponsePartComposite();
         Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
