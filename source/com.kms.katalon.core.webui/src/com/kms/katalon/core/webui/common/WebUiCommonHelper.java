@@ -756,7 +756,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
-<<<<<<< HEAD
+
 
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             
@@ -769,12 +769,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             if(tryAutoApplyNeighborXpaths!= null && tryAutoApplyNeighborXpaths.size() > 0) {
                 return tryAutoApplyNeighborXpaths;
             }
-=======
-            
-            // If this code is reached, then no elements were found, try to use other methods
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
->>>>>>> origin/Staging-5.9.0
+
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
@@ -792,17 +787,12 @@ public class WebUiCommonHelper extends KeywordHelper {
     
     private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
-    		boolean objectInsideShadowDom, 
-<<<<<<< HEAD
+    		boolean objectInsideShadowDom,
     		TestObject testObject,
     		Boolean smartXPathsEnabled){
 
         return findWebElementsByAutoApplyNeighborXpaths(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
-=======
-    		TestObject testObject){
-        findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
-        findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);       
->>>>>>> origin/Staging-5.9.0
+
     }
     
     private static List<WebElement> findWebElementsByAutoApplyNeighborXpaths(
