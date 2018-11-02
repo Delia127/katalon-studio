@@ -121,7 +121,7 @@ LST_REMOVEFILE=($(sudo ls -la $KATABUILD | grep  -v "$(date +"%b %d")" | awk '/^
 for filename in $LST_REMOVEFILE
 do
   echo "Begin to clean up $filename\n"
-  sudo rm -f $filename
+  sudo rm -f $KATABUILD/$filename
 done;
 
 sudo umount -f $KATABUILD
