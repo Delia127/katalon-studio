@@ -6,9 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -22,6 +24,7 @@ import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.logging.LogUtil;
 
 @Creatable
 public class ProjectController extends EntityController {
@@ -91,12 +94,16 @@ public class ProjectController extends EntityController {
     }
 
     public ProjectEntity openProject(String projectPk) throws Exception {
+        LogUtil.printOutputLine("Opening project file: " + projectPk);
         ProjectEntity project = getDataProviderSetting().getProjectDataProvider().openProject(projectPk);
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
             addRecentProject(project);
+            LogUtil.printOutputLine("Parsing custom keywords...");
             KeywordController.getInstance().parseAllCustomKeywords(project, null);
+            LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
+            LogUtil.printOutputLine(MessageFormat.format("Project ''{0}'' opened", project.getName()));
         }
         return project;
     }
@@ -104,7 +111,9 @@ public class ProjectController extends EntityController {
     public void closeProject(String projectPk, IProgressMonitor monitor) throws Exception {
         ProjectEntity project = getDataProviderSetting().getProjectDataProvider().openProjectWithoutClasspath(projectPk);
         if (project != null) {
-            GroovyUtil.getGroovyProject(project).close(monitor);
+            IProject groovyProject = GroovyUtil.getGroovyProject(project);
+            groovyProject.clearHistory(monitor);
+            groovyProject.close(monitor);
         }
         DataProviderState.getInstance().setCurrentProject(null);
     }

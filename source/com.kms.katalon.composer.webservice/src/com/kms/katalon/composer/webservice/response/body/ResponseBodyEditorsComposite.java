@@ -16,14 +16,16 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.impl.constants.TextContentType;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.constants.TextContentType;
+import com.kms.katalon.composer.webservice.parts.VerificationScriptEventHandler;
 import com.kms.katalon.core.testobject.ResponseObject;
 
 public class ResponseBodyEditorsComposite extends Composite {
-    protected final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(ResponseBodyEditorsComposite.class).getSymbolicName();
-    
+    protected final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(ResponseBodyEditorsComposite.class)
+            .getSymbolicName();
+
     private Map<EditorMode, ResponseBodyEditor> bodyEditors = new HashMap<>();
 
     private Map<EditorMode, Button> bodySelectionButtons = new HashMap<>();
@@ -48,8 +50,8 @@ public class ResponseBodyEditorsComposite extends Composite {
 
     private final String PRETTY_MODE_DEFAULT_INITAL_MESSAGE = StringUtils.EMPTY;
 
-    public ResponseBodyEditorsComposite(Composite parent, int style) {
-
+    public ResponseBodyEditorsComposite(Composite parent, int style,
+            VerificationScriptEventHandler editorEventHandler) {
         super(parent, style);
         setLayout(new GridLayout());
 
@@ -73,6 +75,7 @@ public class ResponseBodyEditorsComposite extends Composite {
 
         PrettyEditor prettyEditor = new PrettyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put(EditorMode.PRETTY, prettyEditor);
+        prettyEditor.addHandler(editorEventHandler);
 
         // Raw Mode
         rawRadio = new Button(tbBodyType, SWT.RADIO);
@@ -150,7 +153,7 @@ public class ResponseBodyEditorsComposite extends Composite {
 
                         slBodyContent.topControl = (Composite) editorComposite;
                         ((Composite) editorComposite).getParent().layout();
-                        
+
                     } catch (Exception ex) {
                         LoggerSingleton.logError(ex);
                         ErrorDialog.openError(getShell(), StringConstants.ERROR_TITLE,

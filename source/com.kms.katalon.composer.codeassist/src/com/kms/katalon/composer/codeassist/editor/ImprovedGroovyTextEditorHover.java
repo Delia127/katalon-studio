@@ -1,8 +1,6 @@
 package com.kms.katalon.composer.codeassist.editor;
 
-import java.awt.Desktop;
 import java.lang.reflect.Field;
-import java.net.URI;
 
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.eclipse.codebrowsing.elements.GroovyResolvedBinaryMethod;
@@ -21,6 +19,7 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -124,7 +123,7 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
                     @Override
                     public void handleEvent(Event event) {
                         try {
-                            Desktop.getDesktop().browse(new URI(keywordDescURI));
+                            Program.launch(keywordDescURI);
                         } catch (Exception ex) {
                             LoggerSingleton.logError(ex);
                         }

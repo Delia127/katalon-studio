@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.graphics.Image;
@@ -11,17 +13,22 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
 
 public class Dropdown {
 
     private Shell shell;
 
-    private static int style = SWT.ON_TOP | SWT.NO_TRIM;
+    private static int style = SWT.NO_TRIM;
 
     private Composite container;
 
     private List<DropdownGroup> groups;
+    
+    private Listener eventListener;
 
     public Dropdown(Display display) {
         shell = new Shell(display, style);
@@ -56,6 +63,27 @@ public class Dropdown {
             @Override
             public void focusLost(FocusEvent e) {
                 shell.setVisible(false);
+            }
+        });
+        
+        eventListener = new Listener() {
+            
+            @Override
+            public void handleEvent(Event event) {
+                Widget widget = event.widget;
+                if (widget instanceof Shell && widget != shell && shell.isVisible()) {
+                    shell.setVisible(false);
+                }
+            }
+        };
+
+        shell.getDisplay().addFilter(SWT.Activate, eventListener);
+
+        shell.addDisposeListener(new DisposeListener() {
+            
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                shell.getDisplay().removeFilter(SWT.Activate, eventListener);
             }
         });
     }

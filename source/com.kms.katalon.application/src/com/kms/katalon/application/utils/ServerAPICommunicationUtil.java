@@ -38,9 +38,17 @@ public class ServerAPICommunicationUtil {
     private static final String POST = "POST";
 
     private static final String GET = "GET";
+    
+    private static final String PUT = "PUT";
+    
+    private static final String HTTP ="http";
 
     public static String post(String function, String jsonData) throws IOException, GeneralSecurityException {
         return invoke(POST, function, jsonData);
+    }
+
+    public static String put(String function, String jsonData) throws IOException, GeneralSecurityException {
+        return invoke(PUT, function, jsonData);
     }
 
     public static String invokeFormEncoded(String endpoint, String method, String data)
@@ -141,14 +149,15 @@ public class ServerAPICommunicationUtil {
     }
     
     public static String getAPIUrl() {
-        if (VersionUtil.isInternalBuild()) {
+        if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
             return DEVELOPMENT_URL_API;
+        } else {
+            return PRODUCTION_URL_API;
         }
-        return PRODUCTION_URL_API;
     }
 
     public static String getWebUrl() {
-        if (VersionUtil.isInternalBuild()) {
+        if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
             return DEVELOPMENT_WEB_URL;
         }
         return PRODUCTION_WEB_URL;
@@ -213,7 +222,9 @@ public class ServerAPICommunicationUtil {
             }
         }
         String result = "";
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(uc.getInputStream()))) {
+        int statusCode = uc.getResponseCode();
+        
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader((statusCode >= 400)? uc.getErrorStream(): uc.getInputStream()))) {
             String line;
             StringBuilder response = new StringBuilder();
 
@@ -231,19 +242,27 @@ public class ServerAPICommunicationUtil {
             throws IOException, GeneralSecurityException {
         URL url = new URL(sUrl);
 
-        SSLContext sc = SSLContext.getInstance("SSL");
-        sc.init(null, getTrustManagers(), new java.security.SecureRandom());
-        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-        HttpsURLConnection uc = null;
-        uc = (HttpsURLConnection) url.openConnection(proxy);
-        uc.setHostnameVerifier(getHostnameVerifier());
-        uc.setRequestMethod(method);
-        uc.setRequestProperty("Content-Type", "application/json");
-        uc.setUseCaches(false);
-        uc.setDoOutput(true);
-
-        return uc;
+        if (HTTP.equals(url.getProtocol())) {
+            HttpURLConnection uc = null;
+            uc = (HttpURLConnection) url.openConnection(proxy);
+            uc.setRequestMethod(method);
+            uc.setRequestProperty("Content-Type", "application/json");
+            uc.setUseCaches(false);
+            uc.setDoOutput(true);
+            return uc;
+        } else {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection uc = null;
+            uc = (HttpsURLConnection) url.openConnection(proxy);
+            uc.setHostnameVerifier(getHostnameVerifier());
+            uc.setRequestMethod(method);
+            uc.setRequestProperty("Content-Type", "application/json");
+            uc.setUseCaches(false);
+            uc.setDoOutput(true);
+            return uc;
+        }
     }
 
     private static TrustManager[] getTrustManagers() throws IOException {

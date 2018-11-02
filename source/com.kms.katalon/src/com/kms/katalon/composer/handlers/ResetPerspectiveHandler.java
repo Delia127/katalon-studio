@@ -17,6 +17,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolControl;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
@@ -113,6 +114,7 @@ public class ResetPerspectiveHandler extends AbstractHandler {
         }
 
         if (IdConstants.KEYWORD_PERSPECTIVE_ID.equals(perspective.getElementId())) {
+            MPart requestHistoryPart = partService.findPart(IdConstants.COMPOSER_REQUEST_HISTORY_PART_ID);
             cleanPerspective.setToBeRendered(true);
             List<MPerspective> perspectives = perspectiveStack.getChildren();
             int pIndex = perspectives.indexOf(perspective);
@@ -121,8 +123,15 @@ public class ResetPerspectiveHandler extends AbstractHandler {
             perspectiveStack.setSelectedElement(cleanPerspective);
             updatePerspectiveToolbar(pIndex, cleanPerspective);
             partService.switchPerspective(cleanPerspective);
-            reselectParts(cleanPerspective, partService);
-
+            reselectParts(cleanPerspective, partService);          
+            
+            // Re-attach history request part after refreshing Explorer Part
+            MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID,
+                    application);
+            if(requestHistoryPart != null){
+            	stack.getChildren().add(requestHistoryPart);
+            }
+            
             // reload explorer tree entities
             eventBroker.post(EventConstants.EXPLORER_RELOAD_DATA, false);
             return;

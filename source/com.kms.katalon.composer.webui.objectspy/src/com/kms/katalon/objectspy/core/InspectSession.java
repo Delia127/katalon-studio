@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -210,6 +211,18 @@ public class InspectSession implements Runnable {
                 }
             }
 
+            if (webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
+                CFirefoxDriver firefoxDriver = (CFirefoxDriver) driver;
+                URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
+                CloseableHttpClient client = HttpClientBuilder.create().build();
+                HttpPost httpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/" + 
+                        ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
+                httpPost.setEntity(new StringEntity(String.format("{\"path\": \"%s\"}",
+                    getFirefoxAddonFile().getAbsolutePath())));
+                CloseableHttpResponse response = client.execute(httpPost);
+
+                handleForFirefoxAddon();
+            }
             while (isRunFlag) {
                 try {
                     Thread.sleep(1000L);
@@ -340,7 +353,7 @@ public class InspectSession implements Runnable {
         }
         return null;
     }
-    
+
     protected File getFirefoxAddonFile() throws IOException {
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {

@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -57,6 +58,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -282,7 +284,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected int getShellStyle() {
         boolean onTop = store.getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW);
-        if (onTop) {
+        if (onTop && !Platform.OS_LINUX.equals(Platform.getOS())) {
             return SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER;
         } else {
             return SWT.SHELL_TRIM | SWT.CENTER;
@@ -1309,10 +1311,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
                     private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
                         String url = getAddonUrl(webUIDriverType);
-                        if (url == null || !Desktop.isDesktopSupported()) {
+                        if (StringUtils.isEmpty(url)) {
                             return;
                         }
-                        Desktop.getDesktop().browse(new URI(url));
+                        Program.launch(url);
                     }
 
                     private String getAddonUrl(final WebUIDriverType webUIDriverType) {

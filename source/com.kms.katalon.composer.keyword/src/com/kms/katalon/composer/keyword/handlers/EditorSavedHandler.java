@@ -24,7 +24,7 @@ import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
@@ -48,11 +48,11 @@ public class EditorSavedHandler implements EventHandler {
                     return;
                 }
                 MPart part = (MPart) object;
-                if (!GroovyEditorUtil.isGroovyEditorPart(part)) {
+                if (!editor.isGroovyEditorPart(part)) {
                     return;
                 }
 
-                final IFile file = ((FileEditorInput) (GroovyEditorUtil.getEditor(part).getEditorInput())).getFile();
+                final IFile file = ((FileEditorInput) (editor.getEditor(part).getEditorInput())).getFile();
                 Executors.newSingleThreadExecutor().submit(() -> {
                     if (!isScriptRightFormat(file)) {
                         return;

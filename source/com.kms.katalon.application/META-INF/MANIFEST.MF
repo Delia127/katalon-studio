@@ -15,7 +15,8 @@ Require-Bundle: com.google.gson,
  com.kms.katalon.core,
  com.kms.katalon.util,
  com.kms.katalon.dal,
- org.greenrobot.eventbus
+ org.greenrobot.eventbus,
+ org.eclipse.swt
 Export-Package: com.kms.katalon.application,
  com.kms.katalon.application.constants,
  com.kms.katalon.application.usagetracking,

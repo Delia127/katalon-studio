@@ -65,8 +65,6 @@ public class JiraSettingsComposite {
 
     private Button chckEncrypt;
 
-    private Button chckShowPassword;
-
     public JiraSettingsComposite() {
         settingStore = new JiraIntegrationSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
@@ -104,22 +102,10 @@ public class JiraSettingsComposite {
                                 result.getUser().getDisplayName()));
             }
         });
-
-        chckShowPassword.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                maskPasswordField();
-            }
-        });
     }
 
     private void maskPasswordField() {
-        if (chckShowPassword.getSelection()) {
-            // show password
-            txtPassword.setEchoChar('\0');
-        } else {
-            txtPassword.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
-        }
+        txtPassword.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
     }
 
     public void setShell(Shell shell) {
@@ -222,17 +208,13 @@ public class JiraSettingsComposite {
 
         Composite passwordComposite = new Composite(grpAuthentication, SWT.NONE);
         passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glPassword = new GridLayout(2, false);
+        GridLayout glPassword = new GridLayout(1, false);
         glPassword.marginWidth = 0;
         glPassword.marginHeight = 0;
         passwordComposite.setLayout(glPassword);
 
         txtPassword = new Text(passwordComposite, SWT.BORDER);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        chckShowPassword = new Button(passwordComposite, SWT.CHECK);
-        chckShowPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        chckShowPassword.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_SHOW_PASSWORD);
 
         chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
         chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 2, 1));

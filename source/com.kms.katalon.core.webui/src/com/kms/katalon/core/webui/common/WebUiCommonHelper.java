@@ -682,9 +682,10 @@ public class WebUiCommonHelper extends KeywordHelper {
                 documentRect.getHeight()));
         return documentRect.intersects(elementRect);
     }
-
-    public static List<WebElement> findWebElements(TestObject testObject, int timeOut)
-            throws WebElementNotFoundException {
+    
+    // Return an empty list if no elements found,
+    // Let the caller decides what to do (throw exception, not throw, etc)
+    public static List<WebElement> findWebElements(TestObject testObject, int timeOut) {
         timeOut = WebUiCommonHelper.checkTimeout(timeOut);
         boolean isSwitchToParentFrame = false;
         try {
@@ -755,6 +756,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
+<<<<<<< HEAD
 
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             
@@ -767,11 +769,19 @@ public class WebUiCommonHelper extends KeywordHelper {
             if(tryAutoApplyNeighborXpaths!= null && tryAutoApplyNeighborXpaths.size() > 0) {
                 return tryAutoApplyNeighborXpaths;
             }
+=======
+            
+            // If this code is reached, then no elements were found, try to use other methods
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
+            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
+>>>>>>> origin/Staging-5.9.0
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
             // interrupted, do nothing
+        } catch(WebElementNotFoundException e){
+        	// element not found, do nothing
         } finally {
             if (isSwitchToParentFrame) {
                 switchToDefaultContent();
@@ -783,10 +793,16 @@ public class WebUiCommonHelper extends KeywordHelper {
     private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
+<<<<<<< HEAD
     		TestObject testObject,
     		Boolean smartXPathsEnabled){
 
         return findWebElementsByAutoApplyNeighborXpaths(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
+=======
+    		TestObject testObject){
+        findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
+        findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);       
+>>>>>>> origin/Staging-5.9.0
     }
     
     private static List<WebElement> findWebElementsByAutoApplyNeighborXpaths(

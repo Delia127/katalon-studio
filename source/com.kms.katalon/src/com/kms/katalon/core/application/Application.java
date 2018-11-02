@@ -107,11 +107,11 @@ public class Application implements IApplication {
     private int internalRunGUI() {
         Display display = PlatformUI.createDisplay();
         try {
-            if (Platform.OS_LINUX.equals(Platform.getOS())) {
-                LinuxNotSupportedDialog dialog = new LinuxNotSupportedDialog(display.getActiveShell());
-                dialog.open();
-                return PlatformUI.RETURN_OK;
-            }
+//            if (Platform.OS_LINUX.equals(Platform.getOS())) {
+//                LinuxNotSupportedDialog dialog = new LinuxNotSupportedDialog(display.getActiveShell());
+//                dialog.open();
+//                return PlatformUI.RETURN_OK;
+//            }
             return PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
         } catch (Exception e) {
             LogUtil.logError(e);

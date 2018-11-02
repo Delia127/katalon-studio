@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.report.handlers;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -16,6 +15,7 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -82,7 +82,7 @@ public class ExportPDFReportHandler {
                     File exportedFile = generator.exportToPDF(
                             new File(exportDirectory, FilenameUtils.getBaseName(reportEntity.getDisplayName())
                                     + ReportEntity.EXTENSION_PDF_REPORT).getAbsolutePath());
-                    Desktop.getDesktop().open(exportedFile);
+                    Program.launch(exportedFile.toURI().toString());
                 } catch (final JasperReportException | IOException e) {
                     sync.syncExec(new Runnable() {
                         @Override

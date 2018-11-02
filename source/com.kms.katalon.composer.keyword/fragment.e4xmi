@@ -29,6 +29,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__11C0D-1EeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="index:7">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_vMV08EIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.menu.submenu.new.package" label="Package" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/package_16.png" tooltip="" command="_ojWuwEIOEeSPr8gi-fpUXw"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="__11C0T-1EeSqW-o8jtXO1g" elementId="com.kms.katalon.menu.submenu.new.keyword" label="Keyword" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/keyword_16.png" tooltip="" command="_2KeX0T-1EeSqW-o8jtXO1g"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_-QN3gMugEei1Mp3q_oBPVg" elementId="com.kms.katalon.menu.submenu.new.groovyscript" label="Groovy Script" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/keyword_16.png" command="_M_6k8JqzEeiUoqydjVCwsw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_RYbW4D-2EeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="first">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_RYbW4T-2EeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.keyword.popupmenu.new.dynamicmenucontribution" label="Keyword" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.NewKeywordPopupMenuContribution"/>
@@ -42,6 +43,7 @@
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_0cRKcNuzEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword" label="Keyword" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/keyword_16.png" command="_2KeX0T-1EeSqW-o8jtXO1g">
       <persistedState key="index" value="9"/>
     </elements>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_HNHFkMuXEei1Mp3q_oBPVg" elementId="com.kms.katalon.composer.keyword.handledmenuitem.groovyscript" label="Groovy Script" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/keyword_16.png" command="_M_6k8JqzEeiUoqydjVCwsw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_80JzgF_DEeintYngWAF35w" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:10">
     <elements xsi:type="menu:Menu" xmi:id="_ADZWsF_EEeintYngWAF35w" elementId="com.kms.katalon.composer.menu.file.importKeywords" label="Import Keywords" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/import_keywords_16.png">

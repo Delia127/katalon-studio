@@ -20,7 +20,7 @@ public class GroovyTemplateProcessor {
         if (prefStore == null) {
             return;
         }
-
+        
         // prevent user clear all or remove the predefined templates
         prefStore.setDefault(GROOVY_PREF_KEY, GROOVY_TEMPLATES);
         prefStore.setToDefault(GROOVY_PREF_KEY);
