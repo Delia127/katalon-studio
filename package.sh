@@ -5,7 +5,7 @@ KATABUILD2=/tmp/katabuild2
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
 MAC_PRODUCT_NAME="Katalon Studio"
-TIMESTAMP=`date +%Y-%m-%d-%H:%M`
+TIMESTAMP=`date +%Y-%m-%d-%H-%M`
 
 WINDOWS_32_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_32.zip"
 WINDOWS_64_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_64.zip"
