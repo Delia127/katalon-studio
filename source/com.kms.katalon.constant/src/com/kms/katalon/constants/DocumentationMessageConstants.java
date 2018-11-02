@@ -120,6 +120,12 @@ public class DocumentationMessageConstants extends NLS {
 	public static String MANAGE_TEST_PROJECT;
 	
 	public static String CUSTOM_KEYWORD;
+	
+	public static String REQUEST_HISTORY;
+	
+	public static String WEB_SERVICE_VARIABLES;
+	
+	public static String WEB_SERVICE_AUTHORIZATION;
 
     static {
         // initialize resource bundle
