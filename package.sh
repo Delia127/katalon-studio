@@ -116,7 +116,7 @@ cp -Rf "Katalon_Studio-MacOS-$1-$TIMESTAMP.dmg" $KATABUILD/
 
 # Clean up old files from shared public folder
 # Get older today file name and assign to array
-LST_REMOVEFILE=($(sudo ls -la $KATABUILD | grep  -v "$(date +"%b %d")" | awk '/^-/{ print $NF }'))
+LST_REMOVEFILE=($(sudo ls -la /tmp/katabuild/ | grep  -v "$(date +"%b %d")" | awk '/^-/{ print $NF }'))
 # for loop array then execute command to remove it
 for filename in $LST_REMOVEFILE
 do
