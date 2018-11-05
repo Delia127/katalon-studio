@@ -1342,7 +1342,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         }
         for (int index = 0; index < launchersWatched.size(); index++) {
             IDEObservableLauncher launcherWatched = launchersWatched.get(index);
-            if (launcherId.equals(launcherWatched.getId()) && index != selectedLauncherWatchedIndex) {
+            if (launcherId.equals(launcherWatched.getName()) && index != selectedLauncherWatchedIndex) {
                 selectedLauncherWatchedIndex = index;
                 currentRecords.clear();
                 refreshPart(this);
