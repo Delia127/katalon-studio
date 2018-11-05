@@ -692,6 +692,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
 
     public ExecutionProfileEntity getExecutionProfileEntity() {
+        updateProfilEntityWithCurrentVariables();
         return executionProfileEntity;
     }
 

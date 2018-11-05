@@ -87,6 +87,8 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	    protected Composite parent;
 	    	    
 	    private boolean invalidSchema;
+	    
+	    private boolean variableTab = true;
 
 		@PostConstruct
 	    public void init(Composite parent, MCompositePart part) {
@@ -153,12 +155,16 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                        }
 	                        
 	                        if (tabFolder.getSelectionIndex() == 0) {
-	                            updateManualView();
+	                            if(dirty.isDirty())
+	                                updateVariableManualView();
+	                            variableTab = true;
 	                            return;
 	                        }
 
 	                        if (tabFolder.getSelectionIndex() == 1) {
-	                            updateScriptView();
+	                            if(dirty.isDirty())
+	                                updateVariableScriptView();
+	                            variableTab = false;
 	                            return;
                         	}
 	                    }
@@ -167,11 +173,11 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                tabFolder.layout();
 	            }
 	            // Initialize editor's view
-	            updateScriptView();	
+	            updateVariableScriptView();	
 	        }	
 		}
 
-        private void updateScriptView() {
+        private void updateVariableScriptView() {
             try {
                 globalVariableEditorPart.setScriptContentFrom(globalVariablePart.getExecutionProfileEntity());
                 setInvalidScheme(false);
@@ -181,7 +187,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
         }
         
 
-        private void updateManualView() {
+        private void updateVariableManualView() {
             try {
                 globalVariablePart.setVariablesFromScriptContent(globalVariableEditorPart.getScriptContent());
                 setInvalidScheme(false);
@@ -198,7 +204,15 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	    @Override
 		public void save(){
 	        try {
-	            updateManualView();
+	            // If VariableView is switched from VariableEditorView
+	            // then they are already in sync. If user only interact on VariableView so far 
+	            // then update VariableEditorView (vice versa)
+	            if(variableTab == true){
+	                updateVariableScriptView();
+	            }else{
+	                updateVariableManualView();
+	            }
+	            
 	        	if(invalidSchema == true){
 	    			MessageDialog.openError(null, StringConstants.ERROR_TITLE,
 	                        StringConstants.PA_ERROR_MSG_UNABLE_TO_UPDATE_PROFILE);
