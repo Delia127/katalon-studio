@@ -115,7 +115,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             }
         }
         initialize(mpart, partService);
-        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.GLOBAL_VARIABLES);
         createComposite(parent);
         registerEventListeners();
     }

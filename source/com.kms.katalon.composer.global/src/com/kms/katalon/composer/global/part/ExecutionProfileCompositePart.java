@@ -31,6 +31,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
@@ -39,7 +40,7 @@ import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
-
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.GlobalVariableController;
@@ -96,6 +97,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	        this.executionProfileEntity = (ExecutionProfileEntity) part.getObject();
 	        this.parent = parent;
 	        dirty.setDirty(false);
+	        new HelpToolBarForMPart(part, DocumentationMessageConstants.GLOBAL_VARIABLES);
 	        invalidSchema = false;
 	    }
 	    
