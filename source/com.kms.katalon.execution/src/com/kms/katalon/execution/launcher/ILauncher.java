@@ -26,4 +26,6 @@ public interface ILauncher extends Executable {
      * Provides an instance that describes the results of test cases of the current launcher.
      */
     ILauncherResult getResult();
+    
+    String getExecutionUUID();
 }

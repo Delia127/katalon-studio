@@ -152,6 +152,8 @@ public class ReportUtil {
             writeJUnitReport(testSuiteLogRecord, new File(logFolder));
         }
     }
+    
+    
 
     public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
             throws JAXBException, IOException {
@@ -309,6 +311,11 @@ public class ReportUtil {
         FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + reportDirLocationHashCode + ".html"),
                 htmlSb.toString(), StringConstants.DF_CHARSET);
     }
+    
+    public static void writeExecutionUUIDToFile(String UUID, File logFolder) throws IOException, URISyntaxException {
+        FileUtils.writeStringToFile(new File(logFolder, "execution.uuid"),
+    		UUID, StringConstants.DF_CHARSET);
+   }
 
     public static void writeCSVReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
         CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"),
