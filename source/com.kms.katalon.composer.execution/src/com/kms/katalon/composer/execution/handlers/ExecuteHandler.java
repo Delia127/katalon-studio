@@ -11,6 +11,8 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.contributions.IContributionFactory;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.model.application.ui.menu.MDynamicMenuContribution;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
@@ -51,21 +53,30 @@ public class ExecuteHandler extends AbstractExecutionHandler {
 
     private MHandledToolItem debugToolItem;
     
-    private MMenu runMenu;
+    private MMenu runToolMenu;
     
-    private MMenu debugMenu;
+    private MMenu debugToolMenu;
     
     @Override
     protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException {
         return null;
     }
-
+    
     @PostConstruct
     public void init() {
         runToolItem = (MHandledToolItem) modelService.find(IdConstants.RUN_TOOL_ITEM_ID, application);
         debugToolItem = (MHandledToolItem) modelService.find(IdConstants.DEBUG_TOOL_ITEM_ID, application);
-        runMenu = runToolItem.getMenu();
-        debugMenu = debugToolItem.getMenu();
+        runToolMenu = runToolItem.getMenu();
+        debugToolMenu = debugToolItem.getMenu();
+        
+        MUIElement item = modelService.find(IdConstants.MAIN_WINDOW_ID, application);
+        MUIElement mainMenu = ((MWindow) item).getMainMenu();
+        MUIElement actionMenu = modelService.find(IdConstants.MENU_ID_ACTION, mainMenu);
+        MUIElement runMenu = modelService.find(IdConstants.MENU_ID_RUN_MENU, actionMenu);
+        MUIElement debugMenu = modelService.find(IdConstants.MENU_ID_DEBUG_MENU, actionMenu);
+        MUIElement runMenuItem = modelService.find(IdConstants.MENU_ID_RUN, actionMenu);
+        MUIElement debugMenuItem = modelService.find(IdConstants.MENU_ID_DEBUG, actionMenu);
+        
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventServiceAdapter() {
 
             @Override
@@ -74,15 +85,22 @@ public class ExecuteHandler extends AbstractExecutionHandler {
                 if (currentProject.getType() == ProjectType.WEBSERVICE) {
                     runToolItem.setMenu(null);
                     debugToolItem.setMenu(null);
+                    runMenu.setVisible(false);
+                    debugMenu.setVisible(false);
+                    runMenuItem.setVisible(true);
+                    debugMenuItem.setVisible(true);
                 } else {
-                	runToolItem.setMenu(runMenu);
-                	debugToolItem.setMenu(debugMenu);
+                	runToolItem.setMenu(runToolMenu);
+                	debugToolItem.setMenu(debugToolMenu);
+                	runMenu.setVisible(true);
+                    debugMenu.setVisible(true);
+                    runMenuItem.setVisible(false);
+                    debugMenuItem.setVisible(false);
                 }
             }
         });
     }
     
-    @Execute
     public void execute(ParameterizedCommand command) {
         try {
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
@@ -106,7 +124,7 @@ public class ExecuteHandler extends AbstractExecutionHandler {
             LoggerSingleton.logError(e);
         }
     }
-    
+
     private void executeWebService(LaunchMode launchMode) {
         EventBusSingleton.getInstance().getEventBus().post(
                 new ExecutionEvent(EventConstants.WEBSERVICE_EXECUTE, launchMode));
@@ -115,9 +133,9 @@ public class ExecuteHandler extends AbstractExecutionHandler {
     private ExecutionHandledMenuItem findDefaultMenuItem(LaunchMode launchMode) {
         switch (launchMode) {
             case RUN:
-                return findDefaultMenuItem(runMenu);
+                return findDefaultMenuItem(runToolMenu);
             case DEBUG:
-                return findDefaultMenuItem(debugMenu);
+                return findDefaultMenuItem(debugToolMenu);
             default:
                 return null;
         }

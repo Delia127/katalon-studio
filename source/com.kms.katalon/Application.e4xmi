@@ -87,6 +87,10 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_4CHQ8KP_EeenLui14LsBfQ" elementId="com.kms.katalon.composer.menu.file.importSettings" label="Import Settings" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/import_16.png" command="_AKimEKP_EeenLui14LsBfQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.quit" label="Quit" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/quit_16.png" tooltip="" command="_hQQH3BYMEeSUMbyEN2kbFQ"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_uD5BUMw5Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.menu.action" label="Action">
+        <children xsi:type="menu:Menu" xmi:id="_bq1zIMxJEeis-d8dVdcONw" elementId="com.kms.katalon.menu.spy" label="Spy" mnemonics=""/>
+        <children xsi:type="menu:Menu" xmi:id="_dweC4MxJEeis-d8dVdcONw" elementId="com.kms.katalon.menu.record" label="Record" mnemonics=""/>
+      </children>
       <children xsi:type="menu:Menu" xmi:id="_wT2ksBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.edit" label="Edit">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GDm1EI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.undo" label="Undo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/undo_16.png" tooltip="" command="_uIL9wI7GEeantftUyMtBVg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_Kg3qkI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.redo" label="Redo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/redo_16.png" tooltip="" command="_2yTOMI7GEeantftUyMtBVg"/>
