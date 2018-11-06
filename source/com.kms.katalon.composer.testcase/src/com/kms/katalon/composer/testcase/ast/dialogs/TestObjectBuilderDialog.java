@@ -582,7 +582,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
             @Override
             public void setDirty(boolean isDirty) {
-            	webServiceRequestVariablesView.setDirty(isDirty);
+            	
             }
 
             @Override
