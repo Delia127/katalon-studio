@@ -70,7 +70,7 @@ public class SoapRequestMessageEditor extends Composite {
         });
 
         mirrorEditor.addListener(SWT.Modify, event -> {
-            servicePart.updateDirty(true);
+            servicePart.setDirty(true);
         });
     }
 
