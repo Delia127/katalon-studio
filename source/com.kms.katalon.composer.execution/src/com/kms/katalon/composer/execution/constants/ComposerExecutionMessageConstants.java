@@ -84,6 +84,16 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String TRACE_WARN_MSG_UNABLE_TO_OPEN_KEYWORD_FILE;
 
     public static String PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT;
+    
+    public static String PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT;
+    
+    public static String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT;
+    
+    public static String PREF_LBL_ENABLE_DEFAULT_PAGE_LOAD_TIMEOUT;
+    
+    public static String PREF_LBL_CUSTOM_PAGE_LOAD_TIMEOUT;
+    
+    public static String PREF_LBL_IGNORE_DEFAULT_PAGE_LOAD_TIMEOUT_EXCEPTION;
 
     public static String PREF_GRP_POST_EXECUTION_OPTIONS;
 
@@ -244,6 +254,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String LBL_SETT_RECIPIENT_CLR;
 
     public static String LBL_SETT_RECIPIENT_DEL;
+    
+    public static String LBL_ACTION_DELAY;
 
     public static String MSG_DELETING_FILE_X;
 

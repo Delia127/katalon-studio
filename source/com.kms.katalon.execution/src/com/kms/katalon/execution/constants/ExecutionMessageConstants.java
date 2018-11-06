@@ -54,6 +54,8 @@ public class ExecutionMessageConstants extends NLS {
     public static String MSG_PREPARE_GENERATE_REPORT;
 
     public static String MSG_PREPARE_REPORT_CSV;
+    
+    public static String MSG_PREPARE_REPORT_UUID;
 
     public static String MSG_PREPARE_REPORT_HTML;
 

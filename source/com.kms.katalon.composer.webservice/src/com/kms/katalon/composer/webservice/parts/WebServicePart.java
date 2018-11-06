@@ -397,6 +397,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     
     private boolean invalidScheme = false;
 
+    private boolean variableTab = true;
+    
     @PostConstruct
     public void createComposite(Composite parent, MCompositePart part) {
         this.mPart = part;
@@ -415,6 +417,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         this.ui = wsRequestPartUI;
 
         new ToolBarForVerificationPart(ui.getVerificationPart());
+        
+        new HelpToolBarForMPart(ui.getVariablePart(), DocumentationMessageConstants.WEB_SERVICE_VARIABLES);
+        
+        new HelpToolBarForMPart(ui.getAuthorizationPart(), DocumentationMessageConstants.WEB_SERVICE_AUTHORIZATION);
 
         scriptEditorPart = ui.getScriptEditorPart();
         verificationScriptEditor = (GroovyEditor) editor.getEditor(scriptEditorPart);
@@ -437,7 +443,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         createTabsComposite();
 
         createSnippetComposite();
-
 
         Composite responsePartComposite = ui.getResponsePartComposite();
         Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
@@ -792,12 +797,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 }
                 
                 if (tabFolder.getSelectionIndex() == 4) {
-                    updateVariableManualView();
+                    variableTab = true;
+                    if(dirtyable.isDirty())
+                        updateVariableManualView();
                     return;
                 }
 
                 if (tabFolder.getSelectionIndex() == 5) {
-                    updateVariableScriptView();
+                    variableTab = false;
+                    if(dirtyable.isDirty())
+                        updateVariableScriptView();
                     return;
                 }
             }
@@ -1820,7 +1829,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Persist
     public void save() {
         try {
-            updateVariableManualView();
+            // If VariableView is switched from VariableEditorView
+            // then they are already in sync. If user only interact on VariableView so far 
+            // then update VariableEditorView (vice versa)
+            if(variableTab == true){
+                updateVariableScriptView();
+            }else{
+                updateVariableManualView();
+            }
+            
             if (invalidScheme == true) {
                 MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                         StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);

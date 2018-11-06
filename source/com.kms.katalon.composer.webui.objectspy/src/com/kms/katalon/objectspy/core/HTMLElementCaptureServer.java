@@ -8,7 +8,6 @@ import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -18,7 +17,6 @@ import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainer
 
 import com.kms.katalon.objectspy.filter.CrossOriginFilter;
 
-@SuppressWarnings("restriction")
 public class HTMLElementCaptureServer {
     protected Server server;
 
@@ -26,12 +24,7 @@ public class HTMLElementCaptureServer {
 
     protected ServletContextHandler context;
 
-    public HTMLElementCaptureServer(Logger logger, HTMLElementCollector objectSpyDialog, Class<?> socketClass) {
-        this(0, logger, objectSpyDialog, socketClass);
-        isUsingDynamicPort = true;
-    }
-
-    public HTMLElementCaptureServer(int port, Logger logger, Class<?> socketClass) {
+    public HTMLElementCaptureServer(int port, Class<?> socketClass) {
         server = new Server(port);
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
@@ -58,14 +51,19 @@ public class HTMLElementCaptureServer {
 			e.printStackTrace();
 		}
     }
-
-    public HTMLElementCaptureServer(int port, Logger logger, HTMLElementCollector objectSpyDialog, Class<?> socketClass) {
-        this(port, logger, socketClass);
-        addServlets(logger, objectSpyDialog, context);
+    
+    public HTMLElementCaptureServer(HTMLElementCollector objectSpyDialog, Class<?> socketClass) {
+        this(0, objectSpyDialog, socketClass);
+        isUsingDynamicPort = true;
     }
 
-    protected void addServlets(Logger logger, HTMLElementCollector objectSpyDialog, ServletContextHandler context) {
-        context.addServlet(new ServletHolder(new HTMLElementServlet(logger, objectSpyDialog)), "/*");
+    public HTMLElementCaptureServer(int port, HTMLElementCollector objectSpyDialog, Class<?> socketClass) {
+        this(port, socketClass);
+        addServlets(objectSpyDialog, context);
+    }
+
+    protected void addServlets(HTMLElementCollector objectSpyDialog, ServletContextHandler context) {
+        context.addServlet(new ServletHolder(new HTMLElementServlet(objectSpyDialog)), "/*");
     }
 
     public void start() throws Exception {
