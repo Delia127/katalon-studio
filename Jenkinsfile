@@ -1,15 +1,22 @@
 node {
-    stage('Prepare'){
-	// Start neccessary services to download required dependencies
-   //       build job: 'StartServices'
+    stage('Prepare') {
 	  build job: 'Sync-Repo'
+	  build job: 'run-gradle'
     }
+	
     stage('Check out') {
 	    retry(3){
         	checkout scm
 	    }
     }
+	
     stage('Build') {
+	sh '''
+	  cd /Users/katalon/deploy-app
+	  chmod 777 gradlew
+	 ./gradlew changeVersion --info
+	 '''
+	    
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
     	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
     		sh '''
@@ -22,25 +29,12 @@ node {
 		    sudo /usr/local/bin/mvn clean verify -Pdev
 	        '''
     	}       
-   }
+    }
+	
     stage('Package') {
-	script {
-		//Retrieves version number from source    
-		//String workspace = pwd()
-		def versionContent = readFile "${env.WORKSPACE}/source/com.kms.katalon/about.mappings"
-		def versionNumber = (versionContent =~ /([0-9]+)[\.,]?([0-9]+)[\.,]?([0-9])/)
-		String buildVersion = versionNumber[0][0]
-	}
-	   
-        sh '''
-            sudo ./package.sh ${JOB_BASE_NAME} ${buildVersion} ${BUILD_TIMESTAMP}
-        '''
-
-        if (env.BRANCH_NAME == 'release') {
-                sh '''
-                    sudo ./verify.sh ${JOB_BASE_NAME} ${buildVersion} ${BUILD_TIMESTAMP}
-                '''
-        }
+	sh '''
+	  ./gradlew accessJenkinsChanges packageMac copyAndRename --info
+	  '''
     }
     stage('Notify') {
 	mail body: "Katalon Studio build is here: ${env.BUILD_URL}" ,
