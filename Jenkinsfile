@@ -35,7 +35,7 @@ node {
 	sh '''
 	  cd /Users/katalon/deploy-app
 	  chmod 777 gradlew
-	  .gradlew accessJenkinsChanges packageMac copyAndRename --info
+	  ./gradlew accessJenkinsChanges packageMac copyAndRename --info
 	  '''
     }
     stage('Notify') {
