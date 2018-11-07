@@ -62,6 +62,8 @@ public class ProjectStatistics {
     
     private boolean qTestIntegrated = false;
     
+    private boolean katalonAnalyticsIntegrated = false;
+    
     private boolean remoteWebDriverConfigured = false;
     
     private boolean continueOnFailure = false;
@@ -306,6 +308,14 @@ public class ProjectStatistics {
 
     public void setqTestIntegrated(boolean qTestIntegrated) {
         this.qTestIntegrated = qTestIntegrated;
+    }
+    
+    public boolean isKatalonAnalyticsIntegrated() {
+        return katalonAnalyticsIntegrated;
+    }
+
+    public void setKatalonAnalyticsIntegrated(boolean katalonAnalyticsIntegrated) {
+        this.katalonAnalyticsIntegrated = katalonAnalyticsIntegrated;
     }
 
     public boolean isRemoteWebDriverConfigured() {

@@ -218,6 +218,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TAB_SCRIPT = ComposerTestcaseMessageConstants.PA_TAB_SCRIPT;
 
     public static final String PA_TAB_VARIABLE = ComposerTestcaseMessageConstants.PA_TAB_VARIABLE;
+    
+    public static final String PA_TAB_VARIABLE_EDITOR = ComposerTestcaseMessageConstants.PA_TAB_VARIABLE_EDITOR;
 
     public static final String PA_TAB_INTEGRATION = ComposerTestcaseMessageConstants.PA_TAB_INTEGRATION;
 
@@ -239,8 +241,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TOOLBAR_TIP_RECORD_TEST = ComposerTestcaseMessageConstants.PA_TOOLBAR_TIP_RECORD_TEST;
 
     public static final String PA_LBL_NAME = NAME;
+    
+    
 
     public static final String PA_BTN_TIP_ADD = ADD;
+    
+    public static final String PA_BTN_ADD_WEB_SERVICE_KEYWORD = ComposerTestcaseMessageConstants.PA_BTN_ADD_WEB_SERVICE_KEYWORD;
 
     public static final String PA_BTN_TIP_INSERT = INSERT;
 

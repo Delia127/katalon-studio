@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
-import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -45,6 +45,8 @@ import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class WSRequestPartUI {
+    
+    public static final int MAX_LABEL_LENGTH = 40;
 
     private static final String BUNDLE_URI_WEBSERVICE = "bundleclass://com.kms.katalon.composer.webservice/";
 
@@ -71,6 +73,8 @@ public class WSRequestPartUI {
     private MPart bodyPart;
 
     private MPart variablePart;
+    
+    private MPart variableEditorPart;
 
     private MCompositePart verificationPart;
 
@@ -97,7 +101,8 @@ public class WSRequestPartUI {
         compositePart = modelService.createModelElement(MCompositePart.class);
         compositePart.setElementId(compositePartId);
         if (requestObject instanceof DraftWebServiceRequestEntity) {
-            compositePart.setLabel("(Draft) " + requestObject.getRestUrl());
+            String label = getShortenLabel(requestObject);
+            compositePart.setLabel("(Draft) " + label);
         } else {
             compositePart.setLabel(requestObject.getName());
         }
@@ -109,9 +114,9 @@ public class WSRequestPartUI {
         }
         compositePart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
         if (requestObject instanceof DraftWebServiceRequestEntity) {
-            compositePart.setLabel("(Draft) " + requestObject.getRestUrl());
+            compositePart.setTooltip("(Draft) " + ((DraftWebServiceRequestEntity) requestObject).getNameAsUrl());
         } else {
-            compositePart.setLabel(requestObject.getIdForDisplay());
+            compositePart.setTooltip(requestObject.getIdForDisplay());
         }
         compositePart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
         stack.getChildren().add(compositePart);
@@ -187,7 +192,7 @@ public class WSRequestPartUI {
         String scriptEditorPartId = getScriptEditorPartId(requestObject);
         IFile tempScriptFile = createTempScriptFile(requestObject);
         tempScriptFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
-        scriptEditorPart = GroovyEditorUtil.createEditorPart(tempScriptFile, partService);
+        scriptEditorPart = editor.createEditorPart(tempScriptFile, partService);
         scriptEditorPart.setElementId(scriptEditorPartId);
         verificationPartSashContainer.getChildren().add(scriptEditorPart);
 
@@ -211,7 +216,16 @@ public class WSRequestPartUI {
         variablePart.setCloseable(false);
         variablePart.getTags().add(IPresentationEngine.NO_MOVE);
         bottomLeftPartStack.getChildren().add(variablePart);
-
+        
+        String variableEditorPartID = getVariableEditorPartID(requestObject);
+        variableEditorPart = modelService.createModelElement(MPart.class);
+        variableEditorPart.setElementId(variableEditorPartID);
+        variableEditorPart.setContributionURI(CHILD_PART_OBJECT_URI);
+        variableEditorPart.setLabel(StringConstants.PA_LBL_VARIABLE_EDITOR);
+        variableEditorPart.setCloseable(false);
+        variableEditorPart.getTags().add(IPresentationEngine.NO_MOVE);
+        bottomLeftPartStack.getChildren().add(variableEditorPart);
+        
         String responsePartId = getResponsePartId(requestObject);
         responsePart = modelService.createModelElement(MPart.class);
         responsePart.setElementId(responsePartId);
@@ -228,6 +242,7 @@ public class WSRequestPartUI {
         partService.activate(scriptEditorPart);
         partService.activate(snippetPart);
         partService.activate(variablePart);
+        partService.activate(variableEditorPart);
         // partService.activate(verificationToolbarPart);
 
         tabFolder = (CTabFolder) bottomLeftPartStack.getWidget();
@@ -235,6 +250,12 @@ public class WSRequestPartUI {
         calculateWeightsForVerificationChildParts();
 
         initComponents();
+    }
+
+    public static String getShortenLabel(WebServiceRequestEntity requestObject) {
+        String label = ((DraftWebServiceRequestEntity) requestObject).getNameAsUrl();
+        label = label.length() <= MAX_LABEL_LENGTH ? label : label.substring(0, MAX_LABEL_LENGTH) + "...";
+        return label;
     }
 
     private IFile createTempScriptFile(WebServiceRequestEntity requestObject) throws IOException, CoreException {
@@ -270,6 +291,10 @@ public class WSRequestPartUI {
 
             @Override
             public void controlResized(ControlEvent e) {
+                Composite wsComposite = webServicePart.getComposite();
+                if (wsComposite == null || wsComposite.isDisposed()) {
+                    return;
+                }
                 calculateLeftPartsWeight();
             }
 
@@ -298,6 +323,9 @@ public class WSRequestPartUI {
 
     private void calculateLeftPartsWeight() {
         WSRequestChildPart apiControlsPartObject = (WSRequestChildPart) apiControlsPart.getObject();
+        if (apiControlsPartObject == null) {
+            return;
+        }
         Point apiControlsCompositeSize = apiControlsPartObject.getComposite().getChildren()[0].computeSize(SWT.DEFAULT,
                 SWT.DEFAULT);
 
@@ -363,6 +391,10 @@ public class WSRequestPartUI {
         return getBottomLeftPartStackId(requestObject) + ".variable";
     }
 
+    private String getVariableEditorPartID(WebServiceRequestEntity requestObject) {
+        return getBottomLeftPartStackId(requestObject) + ".variableEditor";
+    }
+
     private String getVerificationPartId(WebServiceRequestEntity requestObject) {
         return getBottomLeftPartStackId(requestObject) + ".verification";
     }
@@ -410,6 +442,10 @@ public class WSRequestPartUI {
     public MPart getVariablePart() {
         return variablePart;
     }
+    
+    public MPart getVariableEditorPart(){
+        return variableEditorPart;
+    }
 
     public MCompositePart getVerificationPart() {
         return verificationPart;
@@ -445,6 +481,10 @@ public class WSRequestPartUI {
 
     public Composite getVariablePartComposite() {
         return getPartComposite(variablePart);
+    }
+    
+    public Composite getVariableEditorPartComposite() {
+        return getPartComposite(variableEditorPart);
     }
 
     public Composite getVerificationPartComposite() {
@@ -491,4 +531,17 @@ public class WSRequestPartUI {
     public CTabItem getVerificationTab() {
         return tabFolder.getItem(3);
     }
+
+    public CTabItem getVariableTab() {
+        return tabFolder.getItem(4);
+    }
+    
+    public CTabItem getVariableEditorTab(){
+        return tabFolder.getItem(5);
+    }
+    
+    public void setSelectedTab(CTabItem tabItem) {
+        tabFolder.setSelection(tabItem);
+    }
+
 }

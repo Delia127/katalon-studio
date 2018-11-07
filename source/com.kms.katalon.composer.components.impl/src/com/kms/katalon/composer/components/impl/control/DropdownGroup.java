@@ -57,6 +57,11 @@ public class DropdownGroup {
             return item;
         }
         item.addSelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                super.widgetDefaultSelected(e);
+            }
 
             @Override
             public void widgetSelected(SelectionEvent e) {

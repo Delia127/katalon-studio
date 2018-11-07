@@ -36,6 +36,7 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String ERROR_TITLE = ERROR;
     public static final String PA_ERROR_MSG_UNABLE_TO_UPDATE_VAR_REFERENCES = ComposerGlobalMessageConstants.PA_ERROR_MSG_UNABLE_TO_UPDATE_VAR_REFERENCES;
     public static final String PA_ERROR_MSG_UNABLE_TO_SAVE_ALL_VAR = ComposerGlobalMessageConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_ALL_VAR;
+    public static final String PA_ERROR_MSG_UNABLE_TO_UPDATE_PROFILE = ComposerGlobalMessageConstants.PA_ERROR_MSG_UNABLE_TO_UPDATE_PROFILE;
     public static final String PA_INFO_MSG_REQUIRE_SAVE_B4_REFRESH = ComposerGlobalMessageConstants.PA_INFO_MSG_REQUIRE_SAVE_B4_REFRESH;
     public static final String PA_WARN_TITLE_INVALID_VAR = ComposerGlobalMessageConstants.PA_WARN_TITLE_INVALID_VAR;
     public static final String PA_WARN_MSG_INVALID_VAR_NAME = ComposerGlobalMessageConstants.PA_WARN_MSG_INVALID_VAR_NAME;

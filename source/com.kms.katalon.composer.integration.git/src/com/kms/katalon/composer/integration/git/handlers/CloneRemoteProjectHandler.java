@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -50,15 +51,15 @@ import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
 import com.kms.katalon.composer.project.dialog.ProjectChoosingDialog;
 import com.kms.katalon.composer.project.handlers.NewProjectHandler;
 import com.kms.katalon.composer.project.handlers.OpenProjectHandler;
+import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
-import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
-
+import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.tracking.service.Trackings;
 
 
@@ -203,9 +204,9 @@ public class CloneRemoteProjectHandler {
         try {
             shouldHandleProjectOpenAfterClone = true;
             
-            ProjectEntity project = updateProjectType(projectFile);
+            ProjectEntity project = updateProject(projectFile);
             
-            Trackings.trackCreatingSampleProject(sample.getName(), project.getUUID());
+            Trackings.trackCreatingSampleProject(sample.getName(), project.getUUID(), projectType);
             
             OpenProjectHandler.doOpenProject(null, projectFile.getAbsolutePath(),
 
@@ -213,6 +214,11 @@ public class CloneRemoteProjectHandler {
                     PartServiceSingleton.getInstance().getPartService(),
                     ModelServiceSingleton.getInstance().getModelService(),
                     ApplicationSingleton.getInstance().getApplication());
+            
+            TimeUnit.SECONDS.sleep(1);
+            if (projectType == ProjectType.WEBSERVICE) {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), GitStringConstants.ERROR,
@@ -221,8 +227,9 @@ public class CloneRemoteProjectHandler {
         return;
     }
 
-    private ProjectEntity updateProjectType(File projectFile) throws Exception {
+    private ProjectEntity updateProject(File projectFile) throws Exception {
         ProjectEntity project = ProjectController.getInstance().getProject(projectFile.getAbsolutePath());
+        project.setUUID(Util.generateGuid());
         project.setType(projectType);
         project.setFolderLocation(destinationFolder.getAbsolutePath());
         ProjectController.getInstance().updateProject(project);

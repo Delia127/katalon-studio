@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
@@ -47,20 +48,24 @@ import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.handlers.IRequestHistoryListener;
 import com.kms.katalon.composer.webservice.handlers.OpenWebServiceRequestObjectHandler;
 import com.kms.katalon.composer.webservice.handlers.RequestHistoryHandler;
+import com.kms.katalon.composer.webservice.handlers.SaveDraftRequestHandler;
 import com.kms.katalon.composer.webservice.parts.tree.IRequestHistoryItem;
 import com.kms.katalon.composer.webservice.parts.tree.RequestDateTreeItem;
 import com.kms.katalon.composer.webservice.parts.tree.RequestHistoryStyleCellProvider;
 import com.kms.katalon.composer.webservice.parts.tree.RequestHistoryTreeItem;
 import com.kms.katalon.composer.webservice.view.NewHistoryRequestDialog;
 import com.kms.katalon.composer.webservice.view.NewHistoryRequestDialog.NewHistoryRequestResult;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.DateTimes;
 
 public class RequestHistoryPart implements IRequestHistoryListener {
@@ -86,6 +91,8 @@ public class RequestHistoryPart implements IRequestHistoryListener {
         requestHistoryHandler = context.get(RequestHistoryHandler.class);
         createControl(parent);
         registerEventBroker();
+        
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REQUEST_HISTORY);
     }
 
     private void registerEventBroker() {
@@ -214,38 +221,15 @@ public class RequestHistoryPart implements IRequestHistoryListener {
                 }
                 RequestHistoryTreeItem selectedTreeItem = (RequestHistoryTreeItem) structuredSelection
                         .getFirstElement();
-                NewHistoryRequestDialog dialog = new NewHistoryRequestDialog(imgBtnSave.getDisplay().getActiveShell(),
-                        selectedTreeItem.getRequestHistoryEntity());
-                if (dialog.open() != NewHistoryRequestDialog.OK) {
-                    return;
-                }
-
-                NewHistoryRequestResult result = dialog.getResult();
-
-                WebServiceRequestEntity entity = selectedTreeItem.getRequestHistoryEntity().getRequest();
-                entity.setName(result.getName());
-                entity.setParentFolder(result.getParentFolder());
-                entity.setDescription(result.getDescription());
-                ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                entity.setProject(currentProject);
-                try {
-                    entity = (WebServiceRequestEntity) ObjectRepositoryController.getInstance()
-                            .saveNewTestObject(entity);
-                    WebElementTreeEntity treeEntity = new WebElementTreeEntity(entity,
-                            TreeEntityUtil.createSelectedTreeEntityHierachy(entity.getParentFolder(),
-                                    FolderController.getInstance().getObjectRepositoryRoot(currentProject)));
-                    eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, treeEntity);
-                    eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, entity);
-                } catch (Exception ex) {
-                    MultiStatusErrorDialog.showErrorDialog("Unable to save this request", ex.getMessage(),
-                            ExceptionsUtil.getStackTraceForThrowable(ex));
-                }
+                SaveDraftRequestHandler.saveDraftRequest(imgBtnSave.getDisplay().getActiveShell(),
+                        selectedTreeItem.getRequestHistoryEntity().getRequest());
             }
         });
 
         imgBtnDelete.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                Trackings.trackClickDeletingDraftRequest();
                 ITreeSelection structuredSelection = treeViewer.getStructuredSelection();
                 if (structuredSelection == null || structuredSelection.isEmpty()) {
                     return;
@@ -269,6 +253,7 @@ public class RequestHistoryPart implements IRequestHistoryListener {
                     imgBtnDelete.setEnabled(false);
                     requestHistoryHandler.removeRequestHistories(new ArrayList<>(removedEntities),
                             ProjectController.getInstance().getCurrentProject());
+                    Trackings.trackDeleteDraftRequest(removedEntities.size());
                 } catch (IOException ex) {
                     MultiStatusErrorDialog.showErrorDialog("Unable to remove selected items", ex.getMessage(),
                             ExceptionsUtil.getStackTraceForThrowable(ex));
@@ -364,29 +349,10 @@ public class RequestHistoryPart implements IRequestHistoryListener {
 
     @Override
     public void addHistoryRequest(RequestHistoryEntity addedRequest) {
+        reloadTreeData();
+
         RequestDateTreeItem dateItem = contentProvider.findElementByDate(addedRequest.getReceivedResponseTime());
-        if (dateItem == null) {
-            reloadTreeData();
-            dateItem = contentProvider.findElementByDate(addedRequest.getReceivedResponseTime());
-            RequestHistoryTreeItem treeItem = new RequestHistoryTreeItem(addedRequest, dateItem);
-            treeViewer.setSelection(new StructuredSelection(treeItem));
-            Event event = new Event();
-            treeViewer.getTree().notifyListeners(SWT.Selection, event);
-            return;
-        }
-
         RequestHistoryTreeItem historyItem = new RequestHistoryTreeItem(addedRequest, dateItem);
-        List<RequestHistoryTreeItem> items = dateItem.getItems();
-        items.add(historyItem);
-        items.sort(new Comparator<RequestHistoryTreeItem>() {
-
-            @Override
-            public int compare(RequestHistoryTreeItem dateItem, RequestHistoryTreeItem dateItem2) {
-                return dateItem.getRequestHistoryEntity().getReceivedResponseTime().before(
-                        dateItem2.getRequestHistoryEntity().getReceivedResponseTime()) ? 1 : -1;
-            }
-        });
-        dateItem.setItems(items);
         treeViewer.refresh(dateItem);
         treeViewer.setSelection(new StructuredSelection(historyItem));
         Event event = new Event();

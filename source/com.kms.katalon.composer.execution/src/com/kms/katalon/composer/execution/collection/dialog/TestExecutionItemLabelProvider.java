@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.collection.dialog;
 
 import java.net.MalformedURLException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedLabelProvider;
@@ -19,11 +20,14 @@ public class TestExecutionItemLabelProvider extends TypeCheckedLabelProvider<Tes
     @Override
     protected Image getColumnImageByIndex(TestExecutionItem element, int columnIndex) {
         try {
-            return ImageUtil.loadImage(element.getImageUrlAsString());
+            String imageUrlAsString = element.getImageUrlAsString();
+            if (StringUtils.isNotEmpty(imageUrlAsString)) {
+                return ImageUtil.loadImage(imageUrlAsString);
+            }
         } catch (MalformedURLException e) {
             LoggerSingleton.logError(e);
-            return null;
         }
+        return null;
     }
 
     @Override

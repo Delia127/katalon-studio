@@ -29,4 +29,8 @@ public abstract class EntityController {
     public static String toValidFileName(String fileName) {
         return fileName.replaceAll("[^A-Za-z-0-9_().\\- ]", "");
     }
+    
+    public static String toXmlString(Object entity) throws Exception {
+        return getDataProviderSetting().getEntityDataProvider().toXmlString(entity);
+    }
 }

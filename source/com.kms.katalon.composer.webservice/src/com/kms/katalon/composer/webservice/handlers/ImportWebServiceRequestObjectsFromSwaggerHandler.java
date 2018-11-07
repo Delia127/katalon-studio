@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.webservice.handlers;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +37,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ImportWebServiceRequestObjectsFromSwaggerHandler {
 
@@ -99,11 +101,11 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
                  	toController.saveNewTestObject(entity);
                  }
                  
+                 trackImportSwagger(dialog.getSwaggerSpecLocation());
+                 
                  eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                  eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
             }
-           
-            
         } catch (FilePathTooLongException e) {
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, e.getMessage());
         } catch (Exception e) {
@@ -113,6 +115,15 @@ public class ImportWebServiceRequestObjectsFromSwaggerHandler {
         }
     }
 	
+    private void trackImportSwagger(String swaggerSpecLocation) {
+    	try{
+    	   	 Paths.get(swaggerSpecLocation);
+ 			Trackings.trackImportSwagger("file");
+    	} catch (Throwable e){
+    			Trackings.trackImportSwagger("url");
+    	}
+    }
+    
 	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
         if (selectedObjects != null) {
             for (Object entity : selectedObjects) {

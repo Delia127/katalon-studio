@@ -52,6 +52,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
@@ -133,7 +134,8 @@ public class RestServicePart extends WebServicePart {
         }
 
         try {
-            Trackings.trackTestWebServiceObject(runVerificationScript);
+            Trackings.trackTestWebServiceObject(runVerificationScript,
+                    getOriginalWsObject() instanceof DraftWebServiceRequestEntity);
             wsApiControl.setSendButtonState(true);
             progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
             progress.setOpenOnRun(false);
@@ -309,6 +311,7 @@ public class RestServicePart extends WebServicePart {
 
     private void updateRequestUrlWithNewParams(List<WebElementPropertyEntity> paramProperties) {
         List<NameValuePair> params = toNameValuePair(paramProperties);
+        urlBuilder = new URLBuilder();
         urlBuilder.setParameters(params);
         try {
             String newUrl = urlBuilder.build().toString();
@@ -376,7 +379,7 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void createResponseComposite(Composite parent) {
         super.createResponseComposite(parent);
-        responseBodyEditor = new ResponseBodyEditorsComposite(responseBodyComposite, SWT.NONE);
+        responseBodyEditor = new ResponseBodyEditorsComposite(responseBodyComposite, SWT.NONE, this);
         responseBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
 
@@ -389,6 +392,9 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void preSaving() {
+        tblParams.removeEmptyProperty();
+        updateRequestUrlWithNewParams(tblParams.getInput());
+        
         originalWsObject.setRestUrl(wsApiControl.getRequestURL());
         String requestMethod = wsApiControl.getRequestMethod();
         originalWsObject.setRestRequestMethod(requestMethod);
@@ -398,10 +404,10 @@ public class RestServicePart extends WebServicePart {
 
         if (isBodySupported(requestMethod) && requestBodyEditor.getHttpBodyType() != null) {
             originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
+            originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
         }
 
-        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
-                originalWsObject.getRestRequestMethod()));
+        updatePartImage();
     }
 
     private boolean isBodySupported(String requestMethod) {
@@ -457,5 +463,11 @@ public class RestServicePart extends WebServicePart {
         if (progress != null) {
             progress.getProgressMonitor().setCanceled(true);
         }
+    }
+
+    @Override
+    protected void updatePartImage() {
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
+                originalWsObject.getRestRequestMethod()));
     }
 }

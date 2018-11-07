@@ -188,6 +188,26 @@ public class WebDriverPropertyUtil {
         chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argsEntry);
         caps.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
     }
+    
+    public static void removeArgumentsForChrome(DesiredCapabilities caps, String... args) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> chromeOptions = (Map<String, Object>) caps.getCapability(ChromeOptions.CAPABILITY);
+        if (chromeOptions == null) {
+            chromeOptions= new HashMap<>();
+        }
+        
+        @SuppressWarnings("unchecked")
+        List<String> argsEntry = (List<String>) chromeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY);
+        if (argsEntry == null) {
+            argsEntry = new ArrayList<>();
+        }
+        argsEntry.removeAll(Arrays.asList(args));
+        if (isRunningInDocker()) {
+            argsEntry.add(CHROME_NO_SANDBOX);
+        }
+        chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argsEntry);
+        caps.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+    }
 
     public static boolean isRunningInDocker() {
         if (System.getenv().containsKey(KATALON_DOCKER_ENV_KEY)) {

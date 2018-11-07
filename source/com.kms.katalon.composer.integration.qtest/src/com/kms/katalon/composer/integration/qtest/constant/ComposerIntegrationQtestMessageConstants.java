@@ -3,7 +3,7 @@ package com.kms.katalon.composer.integration.qtest.constant;
 import org.eclipse.osgi.util.NLS;
 
 public class ComposerIntegrationQtestMessageConstants extends NLS {
-    private static final String BUNDLE_NAME = "com.kms.katalon.composer.integration.qtest.constant.composerIntegrationQtestMessages";
+    private static String BUNDLE_NAME = "com.kms.katalon.composer.integration.qtest.constant.composerIntegrationQtestMessages";
 
     public static String CM_TYPE;
 
@@ -316,7 +316,7 @@ public class ComposerIntegrationQtestMessageConstants extends NLS {
     public static String WZ_P_AUTHENTICATION_INFO;
 
     public static String WZ_P_AUTHENTICATION_SHOW_PASSWORD;
-    
+
     public static String WZ_P_AUTHENTICATION_ENCRYPT_AUTHENTICATION_DATA;
 
     public static String WZ_P_AUTHENTICATION_CONNECT_ACCOUNT;
@@ -362,15 +362,47 @@ public class ComposerIntegrationQtestMessageConstants extends NLS {
     public static String HDL_TITLE_PROJECT_SETTINGS;
 
     public static String REPORT_MSG_UPLOAD_SUCCESFULLY;
-    
+
     // QTestPreferenceMainPage
     public static String DIA_LABEL_INCLUDE_ATTACH_IF_PASSES;
 
     public static String DIA_LABEL_INCLUDE_ATTACH_IF_FAILS;
 
     public static String CM_TEST_RESULT;
-    
+
     public static String JOB_TASK_UNABLE_TO_UPLOAD_TEST_RESULTS_REASON;
+
+    // QTest Activation Dialog
+    public static String DIA_LBL_QTEST_USERNAME;
+
+    public static String DIA_LBL_QTEST_CODE;
+
+    public static String DIA_MSG_ENTER_USERNAME_CODE;
+
+    public static String DIA_LBL_OFFLINE_ACTIVATION_QTEST_CODE;
+
+    public static String DIA_MSG_EXPIRED_ACTIVATION_CODE;
+
+    public static String DIA_MSG_INVALID_ACTIVATION_CODE;
+
+    public static String DIA_MSG_OFFLINE_ACTIVATION_HINT;
+
+    public static String DIA_WARN_EXPIRED_LICENSE;
+
+    public static String DIA_MSG_ACTIVATION_LICENSE_ALREADY_ACTIVTED;
+
+    public static String DIA_MSG_ONLINE_ACTIVATION_LICENSE_NOT_FOUND;
+
+    public static String DIA_MSG_ONLINE_ACTIVATION_INTERNAL_SERVER_ERROR;
+
+    // QTestActivationSuccessDialog
+    public static String DIA_TITLE_LICENSE_INFORMATION;
+
+    public static String DIA_LBL_MSG_ACTIVATED_SUCCESSFULLY;
+
+    public static String DIA_LBL_EXPIRATION_DATE;
+
+    public static String DIA_LBL_PRODUCT;
 
     static {
         // initialize resource bundle

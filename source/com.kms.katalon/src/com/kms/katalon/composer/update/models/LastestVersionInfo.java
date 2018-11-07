@@ -11,6 +11,8 @@ public class LastestVersionInfo {
 
     private boolean newMechanism;
 
+    private boolean quickRelease;
+
     public boolean isLatestVersionIgnored() {
         return latestVersionIgnored;
     }
@@ -49,6 +51,14 @@ public class LastestVersionInfo {
 
     public void setReleaseNotesLink(String releaseNotesLink) {
         this.releaseNotesLink = releaseNotesLink;
+    }
+
+    public boolean isQuickRelease() {
+        return quickRelease;
+    }
+
+    public void setQuickRelease(boolean quickRelease) {
+        this.quickRelease = quickRelease;
     }
 
 }

@@ -155,7 +155,8 @@ public class RecordHandler {
     }
 
     private Shell getShell(Shell activeShell) {
-        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+        String os = Platform.getOS();
+        if (Platform.OS_WIN32.equals(os) || Platform.OS_LINUX.equals(os)) {
             return null;
         }
         Shell shell = new Shell();

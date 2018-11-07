@@ -69,7 +69,7 @@ public class KatalonAboutDialog extends TrayDialog {
     
     private AboutTextManager aboutTextManager;
     
-    private static final String VERSION_UPDATE = "KatalonVersionUpdate";
+    protected static final String VERSION_UPDATE = "KatalonVersionUpdate";
 
     /**
      * Create an instance of the AboutDialog for the given window.
@@ -169,7 +169,7 @@ public class KatalonAboutDialog extends TrayDialog {
         b.setFocus();
     }
     
-    private String updateVersionInfo(String aboutText) {
+    protected String updateVersionInfo(String aboutText) {
         int start = aboutText.indexOf(VERSION_UPDATE);
         if (start < 0) {
             return aboutText;
@@ -286,6 +286,8 @@ public class KatalonAboutDialog extends TrayDialog {
             data.horizontalAlignment = GridData.FILL;
             data.verticalAlignment = GridData.BEGINNING;
             data.grabExcessHorizontalSpace = false;
+            data.verticalIndent = 5;
+            data.horizontalIndent = 5;
             imageLabel.setLayoutData(data);
             imageLabel.setImage(aboutImage);
             topContainerHeightHint = Math.max(topContainerHeightHint, aboutImage.getBounds().height);
@@ -296,9 +298,8 @@ public class KatalonAboutDialog extends TrayDialog {
         data.verticalAlignment = GridData.FILL;
         data.grabExcessHorizontalSpace = true;
         data.grabExcessVerticalSpace = true;
-        data.heightHint = topContainerHeightHint;
         topContainer.setLayoutData(data);
-        
+
         if (item != null) {
             final int minWidth = 400; // This value should really be calculated
             // from the computeSize(SWT.DEFAULT,
@@ -418,10 +419,7 @@ public class KatalonAboutDialog extends TrayDialog {
                 textManager.dispose();
             }
         });
-        
     }
-
-    
     
 
     /*
@@ -431,6 +429,6 @@ public class KatalonAboutDialog extends TrayDialog {
      */
     @Override
     protected boolean isResizable() {
-        return true;
+        return false;
     }
 }

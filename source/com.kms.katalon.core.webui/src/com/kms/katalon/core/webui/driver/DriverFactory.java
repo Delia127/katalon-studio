@@ -493,7 +493,7 @@ public class DriverFactory {
         }
     }
 
-    public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
+    public static WebDriver openWebDriver(DriverType driver, Object options) throws Exception {
         try {
             if (!(driver instanceof WebUIDriverType)) {
                 return null;
@@ -507,9 +507,9 @@ public class DriverFactory {
                         DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
                         desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
                         webDriver = createNewFirefoxDriver(desiredCapabilities);
-                    } else if (options instanceof GeckoDriverService) {
+                    } else if (options instanceof DesiredCapabilities) {
                         System.setProperty("webdriver.gecko.driver", DriverFactory.getGeckoDriverPath());
-                        webDriver = new CFirefoxDriver((GeckoDriverService) options);
+                        webDriver = new CFirefoxDriver(GeckoDriverService.createDefaultService(), (DesiredCapabilities) options);
                     } else {
                         webDriver = new CFirefoxDriver(DesiredCapabilities.firefox(), getActionDelay());
                     }
@@ -523,7 +523,9 @@ public class DriverFactory {
                     webDriver = new InternetExplorerDriver();
                     break;
                 case SAFARI_DRIVER:
-                    webDriver = new SafariDriver();
+                    if (options instanceof DesiredCapabilities) {
+                        webDriver = createNewSafariDriver((DesiredCapabilities) options);
+                    }
                     break;
                 case CHROME_DRIVER:
                     System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
@@ -823,8 +825,10 @@ public class DriverFactory {
             if (executionGeneralProperties.containsKey(ACTION_DELAY)) {
                 actionDelay = RunConfiguration.getIntProperty(ACTION_DELAY, executionGeneralProperties);
             }
-            KeywordLogger.getInstance()
-                    .logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
+            if (RunConfiguration.getPort() > 0) {
+                KeywordLogger.getInstance()
+                        .logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
+            }
         }
         return actionDelay;
     }
