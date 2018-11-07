@@ -33,7 +33,7 @@ node {
 	
     stage('Package') {
 	sh '''
-	  ./gradlew accessJenkinsChanges packageMac copyAndRename --info
+	  sudo /Users/katalon/deploy-app/gradlew accessJenkinsChanges packageMac copyAndRename --info
 	  '''
     }
     stage('Notify') {
