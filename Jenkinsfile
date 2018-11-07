@@ -2,6 +2,7 @@ node {
     stage('Prepare') {
 	  build job: 'Sync-Repo'
 	  build job: 'run-gradle'
+	  build job: 'StartServices'
     }
 	
     stage('Check out') {
