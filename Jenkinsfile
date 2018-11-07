@@ -18,7 +18,7 @@ node {
 	 '''
 	    
 	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
-    	if (env.BRANCH_NAME.findAll(/^[Release]+/)) {
+    	if (env.BRANCH_NAME.findAll(/^[release]+/)) {
     		sh '''
 		    cd source
 		    sudo /usr/local/bin/mvn clean verify -Pprod
@@ -33,9 +33,12 @@ node {
 	
     stage('Package') {
 	sh '''
+	  cd /Users/katalon/deploy-app
+	  chmod 777 gradlew
 	  ./gradlew accessJenkinsChanges packageMac copyAndRename --info
 	  '''
     }
+	
     stage('Notify') {
 	mail body: "Katalon Studio build is here: ${env.BUILD_URL}" ,
             from: 'build-ci@katalon.com',
