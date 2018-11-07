@@ -111,8 +111,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     public void setTestCasePart(ITestCasePart testCasePart) {
         this.testCasePart = testCasePart;
     }
-
-    public ITestCasePart getTestCasePart() {
+     public ITestCasePart getTestCasePart() {
         return testCasePart;
     }
 

@@ -36,6 +36,8 @@ import com.kms.katalon.composer.testcase.ast.editors.ThrowableInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.VariableComboBoxCellEditor;
 import com.kms.katalon.composer.testcase.editors.TypeSelectionDialogCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.FieldNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
@@ -177,7 +179,8 @@ public class AstValueUtil {
     public static CellEditor getCellEditorForBooleanConstantExpression(Composite parent) {
         return new BooleanConstantComboBoxCellEditor(parent);
     }
-
+    
+    // Use this when testCasePart's information cannot be retrieved otherwise
     public static CellEditor getCellEditorForVariableExpression(Composite parent,
             VariableExpressionWrapper variableExpressionWrapper, ITestCasePart variablesPart) {
         List<String> variableStringList = Optional.ofNullable(variablesPart)
@@ -187,6 +190,18 @@ public class AstValueUtil {
                 .stream()
                 .map(VariableEntity::getName)
                 .collect(Collectors.toList());
+        return new VariableComboBoxCellEditor(parent, variableStringList);
+    }
+    
+    public static CellEditor getCellEditorForVariableExpression(Composite parent,
+            VariableExpressionWrapper variableExpressionWrapper) {
+    	List<String> variableStringList = new ArrayList<>();
+    	ScriptNodeWrapper scriptClass = variableExpressionWrapper.getScriptClass();
+    	if(scriptClass != null){
+    		for(FieldNodeWrapper field: scriptClass.getFields()){
+    			variableStringList.add(field.getName());
+    		}
+    	}
         return new VariableComboBoxCellEditor(parent, variableStringList);
     }
 
