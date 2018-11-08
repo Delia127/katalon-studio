@@ -277,16 +277,6 @@ public interface IdConstants {
     public static final String MENU_ID_HELP = "com.kms.katalon.composer.menu.help";
 
     public static final String MENU_ID_HELP_ABOUT = "com.kms.katalon.composer.menu.help.about";
-    
-    public static final String MENU_ID_ACTION = "com.kms.katalon.composer.menu.action";
-    
-    public static final String MENU_ID_RUN_MENU = "com.kms.katalon.composer.execution.menu.action.run";
-    
-    public static final String MENU_ID_DEBUG_MENU = "com.kms.katalon.composer.execution.menu.action.debug";
-    
-    public static final String MENU_ID_RUN = "com.kms.katalon.composer.execution.handledmenuitem.run";
-    
-    public static final String MENU_ID_DEBUG = "com.kms.katalon.composer.execution.handledmenuitem.debug";
 
     // Command IDs
     public static final String MENU_CMD_ID_FILE_SAVE_ALL = "com.kms.katalon.command.saveAll";
