@@ -90,7 +90,9 @@ public class RunConfiguration {
 
     // This property is available for record - playback mode only. 
     public static final String RECORD_CAPTURED_OBJECTS_FILE = "recordCapturedObjectsCache";
-
+    
+    public static final String AUTO_APPLY_NEIGHBOR_XPATHS = "autoApplyNeighborXpaths";
+    
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
@@ -512,5 +514,9 @@ public class RunConfiguration {
     
     public static String getCapturedObjectsCacheFile() {
         return getStringProperty(RECORD_CAPTURED_OBJECTS_FILE);
+    }
+    
+    public static Boolean getAutoApplyNeighborXpaths(){
+    	return (Boolean) getExecutionGeneralProperties().get(AUTO_APPLY_NEIGHBOR_XPATHS);
     }
 }

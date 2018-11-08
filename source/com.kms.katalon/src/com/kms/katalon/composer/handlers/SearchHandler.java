@@ -66,8 +66,9 @@ public class SearchHandler extends AbstractHandler {
 
     @Override
     public void execute() {
-        if (ProjectController.getInstance().getCurrentProject() == null)
-            return;
+        if (ProjectController.getInstance().getCurrentProject() == null) {
+        	return;
+        }
         openSearchView();
 
         new OpenSearchDialogAction(PlatformUI.getWorkbench().getActiveWorkbenchWindow(),

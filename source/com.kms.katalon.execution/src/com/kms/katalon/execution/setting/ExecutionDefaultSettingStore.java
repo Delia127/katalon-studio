@@ -20,6 +20,8 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     public static final int EXECUTION_DEFAULT_TIMEOUT_VALUE = 30;
 
     public static final String EXECUTION_DEFAULT_CONFIGURATION = "Firefox";
+    
+    public static final Boolean DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED = false;
 
     public static ExecutionDefaultSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
@@ -120,5 +122,37 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
         setProperty(ExecutionDefaultSettingConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE,
                 EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE);
     }
+    
 
+    public void setDefaultApplyNeighborXpathsEnabled() throws IOException {
+    	setProperty(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED, 
+    			DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED);
+    }
+    
+    public void setApplyNeighborXpathsEnabled(Boolean value) throws IOException {
+    	setProperty(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED,
+    			value);
+    }
+    
+    public Boolean isAutoApplyNeighborXpathsEnabled() {
+    	try{
+    	return getBoolean(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED, 
+        					DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED);
+    	} catch ( IOException e){
+    		return DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED;
+    	}
+    }
+    
+    public Boolean getDefaultAutoApplyNeighborXpathsEnabled() {
+    	return DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED;
+    }
+    
+    public Boolean getAutoApplyNeighborXpathsEnabled(){
+        try{
+            return getBoolean(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED, 
+                            DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED);
+        } catch ( IOException e){
+            return DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED;
+        }
+    }
 }
