@@ -3,7 +3,10 @@ package com.kms.katalon.composer.explorer.parts;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -75,6 +78,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.components.impl.tree.AbstractTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
@@ -98,10 +102,12 @@ import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.explorer.providers.TreeEntityDropListener;
+import com.kms.katalon.composer.explorer.util.ExplorerTreeViewerComparator;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -146,6 +152,8 @@ public class ExplorerPart {
 
     private void setViewer(CTreeViewer viewer) {
         this.treeViewer = viewer;
+        // Comparator for sorting alphabetically
+        viewer.setComparator(new ExplorerTreeViewerComparator());
     }
 
     @Inject
@@ -451,7 +459,6 @@ public class ExplorerPart {
                             entityViewerFilter.setSearchString(broadcastMessage);
                             treeViewer.getTree().setRedraw(false);
                             treeViewer.refresh(true);
-
                             if (StringUtils.isNotBlank(searchString)) {
                                 treeViewer.expandAll();
                             } else {
@@ -564,7 +571,8 @@ public class ExplorerPart {
             while (treeViewer.isBusy()) {
                 // wait for tree is not busy
             }
-            // wait for reseting search field complete
+            
+            // wait for r.eseting search field complete
             resetSearchField();
             searchDropDownBox.clearInput();
             treeViewer.getTree().clearAll(true);
@@ -585,8 +593,8 @@ public class ExplorerPart {
             LoggerSingleton.logError(e);
         }
     }
-
-    private void reloadTreeEntityTransfers() {
+    
+	private void reloadTreeEntityTransfers() {
         List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
         dragSource.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
     }
