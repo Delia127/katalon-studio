@@ -1,7 +1,6 @@
 package com.kms.katalon.execution.setting;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.osgi.framework.FrameworkUtil;
 
@@ -9,8 +8,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.constants.ExecutionDefaultSettingConstants;
-import com.kms.katalon.execution.util.StringUtil;
-import com.kms.katalon.util.collections.Pair;
 
 public class ExecutionDefaultSettingStore extends BundleSettingStore {
 
@@ -137,7 +134,7 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     			value);
     }
     
-    public Boolean getAutoApplyNeighborXpathsEnabled(){
+    public Boolean isAutoApplyNeighborXpathsEnabled() {
     	try{
     	return getBoolean(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED, 
         					DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED);
@@ -146,8 +143,16 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     	}
     }
     
-    public Boolean getDefaultAutoApplyNeighborXpathsEnabled(){
+    public Boolean getDefaultAutoApplyNeighborXpathsEnabled() {
     	return DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED;
     }
-
+    
+    public Boolean getAutoApplyNeighborXpathsEnabled(){
+        try{
+            return getBoolean(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED, 
+                            DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED);
+        } catch ( IOException e){
+            return DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED;
+        }
+    }
 }

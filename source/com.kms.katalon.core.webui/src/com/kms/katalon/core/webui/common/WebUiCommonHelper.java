@@ -11,9 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -759,8 +756,8 @@ public class WebUiCommonHelper extends KeywordHelper {
 
             // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);   
-            
+            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
+
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
@@ -778,12 +775,11 @@ public class WebUiCommonHelper extends KeywordHelper {
     
     private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
-    		boolean objectInsideShadowDom,
+    		boolean objectInsideShadowDom, 
     		TestObject testObject,
     		Boolean smartXPathsEnabled){
 
         return findWebElementsByAutoApplyNeighborXpaths(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
-
     }
     
     private static List<WebElement> findWebElementsByAutoApplyNeighborXpaths(

@@ -87,7 +87,7 @@ public class ExecutionUtil {
     }
     
     public static Boolean getAutoApplyNeighborXpaths(){
-    	return getStore().getAutoApplyNeighborXpathsEnabled();
+    	return getStore().isAutoApplyNeighborXpathsEnabled();
     }
 
     public static int getDefaultImplicitTimeout() {

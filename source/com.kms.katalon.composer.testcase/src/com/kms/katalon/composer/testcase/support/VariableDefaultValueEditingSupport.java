@@ -24,13 +24,17 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
     private ITestCasePart testCasePart;
 
     public VariableDefaultValueEditingSupport(ColumnViewer viewer, TableActionOperator variablesPart) {
-        this(viewer, variablesPart, null);
+        super(viewer);
+        this.variablesPart = variablesPart;
     }
+    
+    // This constructor is only used in TestCaseVariablePartView that is called by TestObjectBuilder
     public VariableDefaultValueEditingSupport(ColumnViewer viewer, TableActionOperator variablesPart, ITestCasePart testCasePart) {
         super(viewer);
         this.variablesPart = variablesPart;
         this.testCasePart = testCasePart;
     }
+
 
     @Override
     protected CellEditor getCellEditor(Object element) {
@@ -41,7 +45,12 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
         InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
         if (inputValueType != null) {
         	inputValueType.changeValue(expression, StringUtils.EMPTY);
-            return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression, testCasePart);
+        	
+        	// Pass testCasePart's information to the editor if available
+        	if(testCasePart != null)
+        		return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression, testCasePart);
+        	else 
+        		return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression);
         }
         return null;
     }

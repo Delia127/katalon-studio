@@ -341,7 +341,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         try {
             webSettingStore.setDefaultCapturedTestObjectAttributeLocators();
             webSettingStore.setDefaultCapturedTestObjectXpathLocators();
-            webSettingStore.setDefaultCapturedTestObjectSelectionMethods();
+            webSettingStore.setDefaultCapturedTestObjectSelectorMethods();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
