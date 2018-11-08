@@ -138,6 +138,11 @@
 			<layout>p2</layout>
 		</repository>
 
+		<repository>
+			<id>ansi_console_repo</id>
+			<url>${ansiConsoleRepoUrl}</url>
+			<layout>p2</layout>
+		</repository>
 	</repositories>
 
 	<build>

@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.util.internal.PathUtil;
 
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
@@ -110,8 +109,9 @@ public class BrowserMobProxyManager {
                         })
                         .collect(Collectors.toList());
                 originalEntries.clear();
-                originalEntries.addAll(newEntries);
-                har.writeTo(file);
+                originalEntries.addAll(newEntries);                
+//                har.writeTo(file);
+                HarFileWriter.write(har, file);
             }
         } catch (Exception e) {
             logError("Cannot close HAR entry", e);
