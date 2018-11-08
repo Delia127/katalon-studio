@@ -8,12 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.e4.core.services.log.Logger;
-
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.WebElementUtils;
 
-@SuppressWarnings("restriction")
 public class HTMLElementServlet extends HttpServlet {
     public static final String WILD_CARD = "*";
 
@@ -29,12 +27,9 @@ public class HTMLElementServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private Logger logger;
-
     private HTMLElementCollector objectSpyDialog;
 
-    public HTMLElementServlet(Logger logger, HTMLElementCollector objectSpyDialog) {
-        this.logger = logger;
+    public HTMLElementServlet(HTMLElementCollector objectSpyDialog) {
         this.objectSpyDialog = objectSpyDialog;
     }
 
@@ -81,7 +76,7 @@ public class HTMLElementServlet extends HttpServlet {
             objectSpyDialog.addNewElement(WebElementUtils.buildWebElement(value));
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
-            logger.error(e);
+            LoggerSingleton.logError(e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

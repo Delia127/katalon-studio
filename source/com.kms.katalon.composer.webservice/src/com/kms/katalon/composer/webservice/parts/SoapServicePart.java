@@ -118,7 +118,7 @@ public class SoapServicePart extends WebServicePart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setDirty();
+            	setDirty(true);
             }
         });
 
@@ -155,7 +155,7 @@ public class SoapServicePart extends WebServicePart {
                                     if (servFuncs.size() > 0) {
                                         ccbOperation.select(0);
                                     }
-                                    setDirty();
+                                    setDirty(true);
                                 });
                             } catch (WSDLException e) {
                                 throw new InvocationTargetException(e);
@@ -353,7 +353,7 @@ public class SoapServicePart extends WebServicePart {
 
             @Override
             public void documentChanged(DocumentEvent event) {
-                setDirty();
+                setDirty(true);
             }
 
             @Override
@@ -369,7 +369,7 @@ public class SoapServicePart extends WebServicePart {
             StyledText requestBodyWidget = requestBody.getTextWidget();
             String sw = formatXMLContent(requestBodyWidget.getText());
             requestBodyWidget.setText(sw);
-            setDirty();
+            setDirty(true);
         } catch (Exception ex) {
             ErrorDialog.openError(null, StringConstants.ERROR_TITLE,
                     ComposerWebserviceMessageConstants.PART_MSG_CANNOT_FORMAT_THE_XML_CONTENT,

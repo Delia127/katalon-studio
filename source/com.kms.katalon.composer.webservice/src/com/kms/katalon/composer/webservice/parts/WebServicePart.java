@@ -464,8 +464,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     private void insertImportsForVerificationScript() {
         StringBuilder importBuilder = new StringBuilder().append(verificationScriptImport.getScript()).append("\n");
-
         insertVerificationScript(0, importBuilder.toString());
+        // Insert Import <=> content changed <=> ScriptEditorPart marked dirty <=> Save All icon enabled
+        // Since this "content changed" is irrelevant to the users, ix to the above problem
+        scriptEditorPart.setDirty(false);
     }
 
     private void insertVerificationScript(int offset, String script) {
@@ -505,7 +507,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 if (requestBody != null && !isSOAP()) {
                     tabBody.getControl().setEnabled(isBodySupported());
                 }
-                setDirty();
+                setDirty(true);
             }
         });
 
@@ -516,14 +518,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 if (!isSOAP()) {
                     tabBody.getControl().setEnabled(isBodySupported());
                 }
-                setDirty();
+                setDirty(true);
             }
         });
 
         wsApiControl.addRequestURLModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                setDirty();
+                setDirty(true);
             }
         });
 
@@ -855,7 +857,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     @Override
     public void setDirty(boolean isDirty) {
-        this.setDirty();
+    	dirtyable.setDirty(isDirty);
     }
 
     @Override
@@ -1178,7 +1180,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 String authType = ccbAuthType.getText();
                 if (tblHeaders.deleteRowByColumnValue(0, HTTP_HEADER_AUTHORIZATION)) {
                     tblHeaders.refresh();
-                    setDirty();
+                    setDirty(true);
                 }
 
                 if (BASIC_AUTH.equals(authType)) {
@@ -2082,9 +2084,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         return WebServiceRequestEntity.SOAP.equals(originalWsObject.getServiceType());
     }
 
-    protected void setDirty() {
-        dirtyable.setDirty(true);
-    }
 
     protected String getPrettyHeaders(ResponseObject reponseObject) {
         StringBuilder sb = new StringBuilder();
@@ -2120,10 +2119,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     protected abstract void updatePartImage();
-
-    public void updateDirty(boolean dirty) {
-        dirtyable.setDirty(dirty);
-    }
 
     @Override
     public List<MPart> getChildParts() {
