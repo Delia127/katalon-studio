@@ -1,16 +1,50 @@
 package com.kms.katalon.composer.webui.setting;
 
+import java.io.IOException;
+
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.webui.constants.ComposerWebuiMessageConstants;
+import com.kms.katalon.composer.webui.constants.StringConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 
 public class WebUiSettingsPerferencePage extends PreferencePage {
     
-    public WebUiSettingsPerferencePage() {
-        noDefaultAndApplyButton();
-    }
+	public static final short TIMEOUT_MIN_VALUE = 0;
 
+    public static final short TIMEOUT_MAX_VALUE = 9999;
+
+    private static final int INPUT_WIDTH = 60;
+
+    private WebUiExecutionSettingStore store;
+
+    private Text txtDefaultPageLoadTimeout, txtActionDelay, txtDefaultIEHangTimeout;
+
+    private Composite container;
+
+    private Button radioNotUsePageLoadTimeout, radioUsePageLoadTimeout, chckIgnorePageLoadTimeoutException;
+
+    public WebUiSettingsPerferencePage() {
+        store = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
+    }
     @Override
     protected Control createContents(Composite parent) {
         container = new Composite(parent, SWT.NONE);
