@@ -9,6 +9,7 @@ import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.process.ConsoleProcess;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
@@ -54,5 +55,11 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
     @Override
     public String getStatusMessage(int consoleWidth) {
         return getDefaultStatusMessage(consoleWidth);
+    }
+    
+    @Override
+    protected void onStartExecution() {
+    	// TODO Auto-generated method stub
+    	super.onStartExecution();
     }
 }
