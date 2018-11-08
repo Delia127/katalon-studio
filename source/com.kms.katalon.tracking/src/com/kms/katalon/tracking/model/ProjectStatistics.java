@@ -66,6 +66,8 @@ public class ProjectStatistics {
     
     private boolean remoteWebDriverConfigured = false;
     
+    private boolean continueOnFailure = false;
+    
     private String webLocatorConfig;
 
     public String getProjectId() {
@@ -322,6 +324,14 @@ public class ProjectStatistics {
 
     public void setRemoteWebDriverConfigured(boolean remoteWebDriverConfigured) {
         this.remoteWebDriverConfigured = remoteWebDriverConfigured;
+    }
+    
+    public boolean isContinueOnFailure() {
+        return continueOnFailure;
+    }
+
+    public void setContinueOnFailure(boolean continueOnFailure) {
+        this.continueOnFailure = continueOnFailure;
     }
 
     public String getWebLocatorConfig() {

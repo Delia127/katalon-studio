@@ -125,6 +125,7 @@ public class InspectSession implements Runnable {
         DefaultExecutionSetting executionSetting = new DefaultExecutionSetting();
         executionSetting.setTimeout(ExecutionUtil.getDefaultImplicitTimeout());
 
+
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
         driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, driverConnector);
 
