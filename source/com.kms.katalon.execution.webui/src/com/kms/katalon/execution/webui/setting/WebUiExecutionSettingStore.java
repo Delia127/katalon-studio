@@ -35,8 +35,9 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true;";
     
+
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
-    
+
     
     public static WebUiExecutionSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
