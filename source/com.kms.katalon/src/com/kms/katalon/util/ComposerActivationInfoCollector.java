@@ -105,6 +105,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
 //        finishDialog.open();
         QuickStartDialog dialog = new QuickStartDialog(null);
         
+        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
         if(dialog.open() == Dialog.CANCEL) {
         	try {
 				new CommandCaller().call(CommandId.PROJECT_OPEN);
