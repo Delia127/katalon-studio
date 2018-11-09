@@ -2,6 +2,7 @@ node {
     stage('Prepare') {
 	  build job: 'Sync-Repo'
 	  build job: 'run-gradle'
+	  build job: 'StartServices'
     }
 	
     stage('Check out') {
@@ -35,10 +36,9 @@ node {
 	sh '''
 	  cd /Users/katalon/deploy-app
 	  chmod 777 gradlew
-	  ./gradlew accessJenkinsChanges packageMac copyAndRename --info
+	  ./gradlew accessJenkinsChanges copyAndRename --info
 	  '''
     }
-	
     stage('Notify') {
 	mail body: "Katalon Studio build is here: ${env.BUILD_URL}" ,
             from: 'build-ci@katalon.com',
