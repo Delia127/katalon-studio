@@ -409,6 +409,8 @@ public interface IImageKeys {
     public static final String PROFILE_ENTITY_16 = "entity/entity_global_variable_16.png"; //$NON-NLS-1$
 
     public static final String FEATURE_16 = "entity/feature_16.png"; //$NON-NLS-1$
+    
+    public static final String CONFIG_16 = "entity/config_16.png"; //$NON-NLS-1$
 
     public static final String FOLDER_FEATURE_16 = "entity/folder_feature_16.png"; //$NON-NLS-1$
     
