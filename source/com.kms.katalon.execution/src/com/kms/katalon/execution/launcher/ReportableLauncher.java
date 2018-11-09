@@ -40,6 +40,7 @@ import com.kms.katalon.execution.entity.Rerunable;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.setting.EmailVariableBinding;
@@ -55,7 +56,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
-
+    
     @Override
     protected void preExecutionComplete() {
         if (getStatus() == LauncherStatus.TERMINATED) {
