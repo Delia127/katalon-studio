@@ -44,23 +44,15 @@ pipeline {
                 sleep 60
                 script {
                     dir("source") {
-                        try {
-                            if (BRANCH_NAME.findAll(/^[release]+/)) {
-                                sh ''' mvn clean verify -P prod '''
-                            } else {
-                                sh ''' mvn clean verify -P dev '''
-
-                            }
-                        }
-                        catch (Exception err) {
-                            echo 'Maven clean verify failed'
-                            currentBuild.result = 'FAILURE'
+                        if (BRANCH_NAME.findAll(/^[release]+/)) {
+                            sh ''' mvn clean verify -P prod '''
+                        } else {
+                            sh ''' mvn clean verify -P dev '''
                         }
                     }
                 }
             }
         }
-
 
         stage('Copy builds') {
             // copy generated builds and changelogs to shared folder on server
@@ -73,7 +65,7 @@ pipeline {
                         fileOperations([
                                 fileCopyOperation(
                                         excludes: '',
-                                        includes: '*.zip, *.tar.gz, changeLogs.txt',
+                                        includes: '*.zip, *.tar.gz',
                                         flattenFiles: true,
                                         targetLocation: "${tmpDir}")
                         ])
@@ -81,11 +73,18 @@ pipeline {
                 }
             }
         }
+
+        stage ('Success') {
+            steps {
+                script {
+                    currentBuild.result = 'SUCCESS'
+                }
+            }
+        }
     }
 
     post {
         always {
-            // send email
             mail(
                     from: 'build-ci@katalon.com',
                     replyTo: 'build-ci@katalon.com',
@@ -100,7 +99,7 @@ pipeline {
     options {
         // keep only last 10 builds
         buildDiscarder(logRotator(numToKeepStr: '10'))
-        // timeout job after 30 minutes
+        // timeout job after 60 minutes
         timeout(time: 30, unit: 'MINUTES')
         // wait 10 seconds before starting scheduled build
         quietPeriod 10
