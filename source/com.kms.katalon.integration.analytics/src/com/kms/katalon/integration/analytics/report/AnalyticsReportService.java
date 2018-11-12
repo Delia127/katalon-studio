@@ -7,9 +7,11 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
@@ -43,10 +45,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
         if (isIntegrationEnabled()) {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_START);
             try {
-                String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
-                String email = getSettingStore().getEmail(isEncryptionEnabled());
-                String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
-                AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                AnalyticsTokenInfo token = getKAToken();
                 if (token != null) {
                     perform(token.getAccess_token(), folderPath);
                 } else {
@@ -58,6 +57,14 @@ public class AnalyticsReportService implements AnalyticsComponent {
             }
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_END);
         }
+    }
+    
+    private AnalyticsTokenInfo getKAToken() throws IOException, GeneralSecurityException, AnalyticsApiExeception {
+    	String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+        String email = getSettingStore().getEmail(isEncryptionEnabled());
+        String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
+        AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+        return token;
     }
 
     private void perform(String token, String path) throws AnalyticsApiExeception, IOException, GeneralSecurityException {
@@ -124,6 +131,22 @@ public class AnalyticsReportService implements AnalyticsComponent {
             folderPath = filePath.getParent().toFile().getName();
         }
         return folderPath;
+    }
+    
+    public void updateExecutionProccess(AnalyticsTestRun testRun) throws AnalyticsApiExeception {
+    	try {
+            AnalyticsTokenInfo token = getKAToken();
+            if (token != null) {
+            	String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+            	long projectId = getSettingStore().getProject().getId();
+            	AnalyticsApiProvider.updateTestRunResult(serverUrl, projectId, token.getAccess_token(), testRun);
+            } else {
+                LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+            }
+        } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
+            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
+            throw new AnalyticsApiExeception(e);
+        }
     }
 
 }

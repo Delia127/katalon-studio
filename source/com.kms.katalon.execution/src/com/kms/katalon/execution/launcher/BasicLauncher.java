@@ -44,6 +44,7 @@ import com.kms.katalon.logging.LogUtil;
     
     protected void notifyProccess(Object event, IExecutedEntity executedEntity, ExecutionEntityResult result) {
     	result.setExecutedEntity(executedEntity);
+    	result.setSessionId(executionUUID);
     	result.setEvent(event);
     	for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
                 .getInstance().getIntegrationContributorMap().entrySet()) {
@@ -56,7 +57,7 @@ import com.kms.katalon.logging.LogUtil;
             }
         }
     }
-
+    
     public void addListener(LauncherListener l) {
         listeners.add(l);
     }
