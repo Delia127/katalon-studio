@@ -100,7 +100,7 @@ pipeline {
         // keep only last 10 builds
         buildDiscarder(logRotator(numToKeepStr: '10'))
         // timeout job after 60 minutes
-        timeout(time: 30, unit: 'MINUTES')
+        timeout(time: 60, unit: 'MINUTES')
         // wait 10 seconds before starting scheduled build
         quietPeriod 10
     }
