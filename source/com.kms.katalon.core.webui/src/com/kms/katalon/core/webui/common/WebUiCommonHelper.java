@@ -756,8 +756,10 @@ public class WebUiCommonHelper extends KeywordHelper {
 
             // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
-
+            
+            List<WebElement> elementsByOtherMethods = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
+            if(smartXPathsEnabled == true)
+            	return elementsByOtherMethods;
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
