@@ -28,7 +28,7 @@ pipeline {
             // start maven commands to get dependencies
             steps {
                 dir("tools") {
-                    sh '''  ./start-dev-server.sh . '''
+                    sh ''' ./start-dev-server.sh '''
                 }
             }
         }
