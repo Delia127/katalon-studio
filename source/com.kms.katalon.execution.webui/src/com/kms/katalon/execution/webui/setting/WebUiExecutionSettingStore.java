@@ -35,8 +35,9 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:attributes,true;xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true;";
     
-    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "XPATH";
-    
+
+    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
+
     
     public static WebUiExecutionSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
@@ -101,6 +102,8 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
                 EXECUTION_DEFAULT_WAIT_FOR_IE_HANGING);
     }
 
+    
+    // TestObjectAttributeLocators
     public void setDefaultCapturedTestObjectAttributeLocators() throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
                 DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES);
@@ -110,6 +113,14 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
                 flattenStringBooleanList(locators));
     }
+
+    public List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocators() throws IOException {
+        return parseStringBooleanString(
+                getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
+                        DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES));
+    }
+    
+    // TestObjectXpathLocators - has a getDefault function for resetDefault button
 
     public List<Pair<String, Boolean>> getCapturedTestObjectXpathLocators() throws IOException {
         return parseStringBooleanString(
@@ -132,13 +143,9 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
                 flattenStringBooleanList(locators));
     }
 
-    public List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocators() throws IOException {
-        return parseStringBooleanString(
-                getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
-                        DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES));
-    }
+    // TestObjectSelectorMethod
     
-    public void setDefaultCapturedTestObjectSelectionMethods() throws IOException {
+    public void setDefaultCapturedTestObjectSelectorMethods() throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD,
         		DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD);
     }
@@ -153,7 +160,6 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
                 getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD,
                 		DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD));
     }
-    
 
     /**
      * @param list List&lt;Pair&lt;String, Boolean>>
@@ -190,4 +196,5 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         }
         return SelectorMethod.valueOf(str);
     }    
+
 }

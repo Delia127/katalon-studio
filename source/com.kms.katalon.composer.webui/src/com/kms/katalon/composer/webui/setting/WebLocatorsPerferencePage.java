@@ -579,7 +579,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         try {
             store.setDefaultCapturedTestObjectAttributeLocators();
             store.setDefaultCapturedTestObjectXpathLocators();
-            store.setDefaultCapturedTestObjectSelectionMethods();
+            store.setDefaultCapturedTestObjectSelectorMethods();
             setInputForCapturedObjectPropertySetting(store.getCapturedTestObjectAttributeLocators());
             setInputForCapturedObjectXpathSetting(store.getCapturedTestObjectXpathLocators());
         } catch (IOException e) {

@@ -47,6 +47,7 @@ public class QuickStartDialog extends Dialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.CANCEL_ID, StringConstants.DIA_OPEN_PROJECT, false);
         createButton(parent, IDialogConstants.OK_ID, StringConstants.DIA_NEW_PROJECT, true);
     }
 

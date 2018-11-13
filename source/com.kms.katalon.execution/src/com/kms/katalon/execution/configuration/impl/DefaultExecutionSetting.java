@@ -15,6 +15,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.setting.ExecutionSettingStore;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -31,11 +32,14 @@ public class DefaultExecutionSetting implements IExecutionSetting {
     private File scriptFile;
     
     private String rawScript;
+    
+    private Boolean autoApplyNeighborXpaths;
 
     private Map<String, Object> generalProperties;
 
     public DefaultExecutionSetting() {
         timeout = 0;
+        setAutoApplyNeighborXpaths(ExecutionUtil.getAutoApplyNeighborXpaths());
     }
 
     @Override
@@ -53,9 +57,15 @@ public class DefaultExecutionSetting implements IExecutionSetting {
         generalProperties.put(RunConfiguration.PROXY_PROPERTY, getJsonProxyInformation());
         generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_CASE, ExecutionUtil.isQuitDriversAfterExecutingTestCase());
         generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_SUITE, ExecutionUtil.isQuitDriversAfterExecutingTestSuite());
+        
         if (executedEntity != null) {
             generalProperties.put(RunConfiguration.EXECUTION_TEST_DATA_INFO_PROPERTY, executedEntity.getCollectedDataInfo());
         }
+        
+        if(this.autoApplyNeighborXpaths != null){
+        	generalProperties.put(RunConfiguration.AUTO_APPLY_NEIGHBOR_XPATHS, this.autoApplyNeighborXpaths);
+        }
+        
         return generalProperties;
     }
 
@@ -84,6 +94,14 @@ public class DefaultExecutionSetting implements IExecutionSetting {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+    
+    public Boolean getAutoApplyNeighborXpaths(){
+    	return this.autoApplyNeighborXpaths;
+    }
+    
+    public void setAutoApplyNeighborXpaths(Boolean val){
+    	this.autoApplyNeighborXpaths = val;
     }
 
     public String getLogFileName() {
