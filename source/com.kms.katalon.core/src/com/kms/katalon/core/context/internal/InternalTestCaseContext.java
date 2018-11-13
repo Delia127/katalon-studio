@@ -76,7 +76,7 @@ public class InternalTestCaseContext implements TestCaseContext {
 		this.message = message;		
 	}
 	
-
+	@Override
 	public String getMessage(){
 		return message;
 	}
