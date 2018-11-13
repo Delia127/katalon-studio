@@ -2330,6 +2330,13 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+         
+	<plugin
+	     id="com.kms.katalon.ansiconsole"
+	     download-size="0"
+	     install-size="0"
+	     version="0.0.0"
+	     unpack="false"/>
 
    <plugin
          id="org.greenrobot.eventbus"
@@ -2527,8 +2534,8 @@
          version="0.0.0"
          unpack="false"/>
 
-   <plugin
-         id="net.lightbody.bmp.browsermob-core"
+    <plugin
+         id="com.jcraft.jzlib"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -2536,20 +2543,6 @@
 
    <plugin
          id="io.netty.all"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.lightbody.bmp.littleproxy"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.lightbody.bmp.mitm"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -2613,13 +2606,6 @@
 
    <plugin
          id="slf4j.api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.mihai-nita.ansicon.plugin"
          download-size="0"
          install-size="0"
          version="0.0.0"

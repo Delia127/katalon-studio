@@ -14,7 +14,7 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-data config
+      <programArgs>-data config -clearPersistedState
       </programArgs>
       <programArgsLin>-noSplash
       </programArgsLin>

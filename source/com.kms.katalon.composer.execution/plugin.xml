@@ -102,23 +102,4 @@
             delegateClass="com.kms.katalon.composer.execution.debug.WatchExpressionDelegate">
       </watchExpressionDelegate>
    </extension>
-   <extension
-         point="org.eclipse.ui.console.consolePatternMatchListeners">
-      <consolePatternMatchListener
-            class="com.kms.katalon.composer.execution.handlers.HarLinkyConsolePatternMatchListenerDelegate"
-            id="com.kms.katalon.composer.execution.harLinkyConsolePatternMatchListener"
-            regex="HAR:\s(.*)">
-         <enablement></enablement>
-      </consolePatternMatchListener>
-   </extension>
-   <extension
-         point="org.eclipse.ui.console.consolePageParticipants">
-      <consolePageParticipant
-            class="com.kms.katalon.composer.execution.part.ConsolePageParticipant"
-            id="com.kms.katalon.composer.execution.consolePageParticipant">
-         <enablement>
-			<instanceof value="org.eclipse.ui.console.IConsole" />
-		</enablement>
-	</consolePageParticipant>
-   </extension>
 </plugin>

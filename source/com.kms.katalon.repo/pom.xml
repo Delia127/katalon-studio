@@ -261,15 +261,6 @@
 								<artifact>
 									<id>io.swagger:swagger-parser:2.0.0-rc1</id>
 								</artifact>
-								<artifact>
-									<id>net.lightbody.bmp:browsermob-core:2.1.5</id>
-									<excludes>
-											<exclude>com.fasterxml.jackson.core:*:*:*</exclude>
-											<exclude>com.google.guava:*:*:*</exclude>
-											<exclude>org.seleniumhq.selenium:*:*:*</exclude>
-											<exclude>org.slf4j:*:*:*</exclude>
-									</excludes>
-								</artifact>
                                 <artifact>
                                     <id>ch.qos.logback:logback-classic:1.2.3</id>
                                 </artifact>

@@ -188,6 +188,8 @@ import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 
+import mnita.ansiconsole.participants.AnsiConsoleStyleListener;
+
 public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent {
 
     protected static final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(WebServicePart.class).getSymbolicName();
@@ -363,7 +365,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected Composite parent;
 
-    protected Text txtVerificationLog;
+    protected StyledText txtVerificationLog;
 
     private MPart scriptEditorPart;
 
@@ -1276,11 +1278,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         lblVerificationResultStatus = new Label(resultStatusComposite, SWT.NONE);
         lblVerificationResultStatus.setForeground(ColorUtil.getTextWhiteColor());
 
-        txtVerificationLog = new Text(verificationResultComposite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        txtVerificationLog = new StyledText(verificationResultComposite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
         txtVerificationLog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         txtVerificationLog.setEditable(false);
         txtVerificationLog.setBackground(ColorUtil.getWhiteBackgroundColor());
         txtVerificationLog.setFont(FONT_CONSOLAS_10);
+        txtVerificationLog.addLineStyleListener(new AnsiConsoleStyleListener());
     }
 
     private void createResponseStatusComposite() {

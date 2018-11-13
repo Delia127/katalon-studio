@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.execution.handlers;
+package com.kms.katalon.ansiconsole.listeners;
 
 import java.io.File;
 
@@ -13,7 +13,6 @@ import org.eclipse.ui.console.TextConsole;
 import org.eclipse.ui.ide.IDE;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.execution.constants.StringConstants;
 
 public class HarLinkyConsolePatternMatchListenerDelegate implements IPatternMatchListenerDelegate {
     
@@ -67,7 +66,7 @@ public class HarLinkyConsolePatternMatchListenerDelegate implements IPatternMatc
                     IDE.openEditorOnFileStore(page, EFS.getStore(new File(harFilePath).toURI()));
                 } catch (Exception exception) {
                     MultiStatusErrorDialog.showErrorDialog(exception,
-                            StringConstants.DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE,
+                            "Unable to open HAR file",
                             exception.getClass().getSimpleName());
                 }
             }

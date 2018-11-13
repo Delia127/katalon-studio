@@ -27,4 +27,3 @@ Export-Package: com.kms.katalon.core.webservice.common,
  com.kms.katalon.core.webservice.keyword,
  com.kms.katalon.core.webservice.setting,
  com.kms.katalon.core.webservice.support
-Import-Package: net.lightbody.bmp

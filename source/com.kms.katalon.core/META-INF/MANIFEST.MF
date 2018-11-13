@@ -68,9 +68,6 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.greenrobot.eventbus,
  org.assertj.core,
  org.junit,
- net.lightbody.bmp.browsermob-core,
- net.lightbody.bmp.littleproxy,
- net.lightbody.bmp.mitm,
  bcpkix,
  bcprov,
  io.netty.all,
@@ -83,4 +80,7 @@ Require-Bundle: net.sf.supercsv.super-csv,
  slf4j.api,
  org.fusesource.jansi
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: resources/lib/browsermob-core-2.1.5.jar,
+ resources/lib/littleproxy-1.1.0-beta-bmp-17.jar,
+ resources/lib/mitm-2.1.5.jar,
+ .
