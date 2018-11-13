@@ -55,7 +55,7 @@ pipeline {
         stage('Copy builds') {
             // copy generated builds and changelogs to shared folder on server
             steps {
-                dir("source/com.kms.katalon.product/target/products") {
+                dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
                         String tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
                         writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
