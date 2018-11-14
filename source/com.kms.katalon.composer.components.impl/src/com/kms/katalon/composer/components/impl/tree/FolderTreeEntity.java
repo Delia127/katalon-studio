@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.components.impl.tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +23,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class FolderTreeEntity extends AbstractTreeEntity {
@@ -36,8 +39,8 @@ public class FolderTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Object[] getChildren() throws Exception {
+        List<ITreeEntity> childrenEntities = new ArrayList<ITreeEntity>();
         if (folder.getFolderType() == FolderType.KEYWORD) {
-            List<Object> childrenEntities = new ArrayList<Object>();
 
             for (IPackageFragment packageFragment : GroovyUtil.getAllPackageInFolder(folder.getProject(),
                     GlobalStringConstants.ROOT_FOLDER_NAME_KEYWORD)) {
@@ -45,11 +48,8 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                     childrenEntities.add(new PackageTreeEntity(packageFragment, this));
                 }
             }
-            return childrenEntities.toArray();
-        }
-        if (FolderController.getInstance().isSourceFolder(ProjectController.getInstance().getCurrentProject(),
+        } else if (FolderController.getInstance().isSourceFolder(ProjectController.getInstance().getCurrentProject(),
                 folder)) {
-            List<Object> childrenEntities = new ArrayList<Object>();
 
             for (IPackageFragment packageFragment : GroovyUtil.getAllPackageInFolder(folder.getProject(),
                     folder.getRelativePath())) {
@@ -57,10 +57,26 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                     childrenEntities.add(new PackageTreeEntity(packageFragment, this));
                 }
             }
-            return childrenEntities.toArray();
+        } else {
+            childrenEntities.addAll(Arrays.asList(TreeEntityUtil.getChildren(this)));
         }
 
-        return TreeEntityUtil.getChildren(this);
+        childrenEntities.sort(new Comparator<ITreeEntity>() {
+            @Override
+            public int compare(ITreeEntity nodeA, ITreeEntity nodeB) {
+                try {
+                    if (nodeA instanceof ReportTreeEntity && nodeB instanceof ReportTreeEntity) {
+                        ReportEntity reportA = (ReportEntity) nodeA.getObject();
+                        ReportEntity reportB = (ReportEntity) nodeB.getObject();
+                        return reportA.getDateCreated().after(reportB.getDateCreated()) ? 1 : -1;
+                    }
+                    return nodeA.getText().compareTo(nodeB.getText());
+                } catch (Exception e) {
+                    return 0;
+                }
+            }
+        });
+        return childrenEntities.toArray();
     }
 
     @Override
