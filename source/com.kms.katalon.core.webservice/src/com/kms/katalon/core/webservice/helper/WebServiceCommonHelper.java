@@ -65,28 +65,28 @@ public class WebServiceCommonHelper {
 	}
 
 	public static Object parseAndGetPropertyValueForXml(String locator, String xmlText){
-		String[] tokens = locator.split("\\.");
-		String rootName = "";
-		String locatorExp = "";
-		for(int i=0; i<tokens.length; i++){
-			String token = tokens[i];
-			//locatorExp += token;
-			locatorExp += ((i == tokens.length -1) && !token.startsWith("@")? "@" : "") + token;
-			if(i < tokens.length -1){
-				locatorExp += ".";
-			}
-			if(i==0){
-				rootName = token;
-			}
-		}
-		StringBuilder groovyScript = new StringBuilder();
-		groovyScript.append("def "+ rootName +" = new XmlSlurper().parseText(xmlText);");
-		groovyScript.append("return " + locatorExp);
+        String[] tokens = locator.split("\\.");
+        String rootName = "";
+        String locatorExp = "";
+        for (int i = 0; i < tokens.length; i++) {
+            String token = tokens[i];
+            locatorExp += token;
+            if (i < tokens.length - 1) {
+                locatorExp += ".";
+            }
 
-		Binding binding = new Binding();
-		binding.setVariable("xmlText", xmlText);
-		GroovyShell shell = new GroovyShell(binding);
-		return shell.evaluate(groovyScript.toString());
+            if (i == 0) {
+                rootName = token;
+            }
+        }
+        StringBuilder groovyScript = new StringBuilder();
+        groovyScript.append("def " + rootName + " = new XmlSlurper().parseText(xmlText);");
+        groovyScript.append("return " + locatorExp);
+
+        Binding binding = new Binding();
+        binding.setVariable("xmlText", xmlText);
+        GroovyShell shell = new GroovyShell(binding);
+        return shell.evaluate(groovyScript.toString());
 	}
 
 	public static Object parseAndExecuteExpressionForJson(String locator, String groovyFunction, String jsonText){

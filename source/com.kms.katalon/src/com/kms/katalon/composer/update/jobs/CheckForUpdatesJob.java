@@ -42,7 +42,7 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         monitor.beginTask("Checking for Updates...", 100);
-        if (VersionUtil.isInternalBuild()) {
+        if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
             updateResult = new CheckForUpdateResult();
             updateResult.setUpdateResult(UpdateResultValue.UP_TO_DATE);
             return Status.OK_STATUS;
@@ -70,13 +70,13 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
                 updateResult.setUpdateResult(UpdateResultValue.APPLIED_LEGACY_MECHANISM);
                 return Status.OK_STATUS;
             }
-        } catch (IOException | UpdateException e) {
+        } catch (InterruptedException e) {
+            return Status.CANCEL_STATUS;
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
             updateResult = new CheckForUpdateResult();
             updateResult.setUpdateResult(UpdateResultValue.APPLIED_LEGACY_MECHANISM);
             return Status.OK_STATUS;
-        } catch (InterruptedException e) {
-            return Status.CANCEL_STATUS;
         }
         monitor.worked(40);
 
@@ -99,13 +99,13 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
 
             monitor.worked(20);
             return Status.OK_STATUS;
-        } catch (IOException e) {
-            return new Status(Status.ERROR, "com.kms.katalon", "Unable to connect to katalon update server",
-                    new UpdateException(e));
-        } catch (UpdateException e) {
-            return new Status(Status.ERROR, "com.kms.katalon", "Unable to connect to katalon update server", e);
         } catch (InterruptedException e) {
             return Status.CANCEL_STATUS;
+        } catch (UpdateException e) {
+            return new Status(Status.ERROR, "com.kms.katalon", "Unable to connect to katalon update server", e);
+        } catch (Exception e) {
+            return new Status(Status.ERROR, "com.kms.katalon", "Unable to connect to katalon update server",
+                    new UpdateException(e));
         } finally {
             monitor.done();
         }

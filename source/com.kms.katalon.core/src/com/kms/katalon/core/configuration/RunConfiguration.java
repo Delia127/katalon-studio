@@ -92,7 +92,9 @@ public class RunConfiguration {
 
     // This property is available for record - playback mode only. 
     public static final String RECORD_CAPTURED_OBJECTS_FILE = "recordCapturedObjectsCache";
-
+    
+    public static final String AUTO_APPLY_NEIGHBOR_XPATHS = "autoApplyNeighborXpaths";
+    
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>() {
@@ -202,6 +204,9 @@ public class RunConfiguration {
     }
 
     public static int getIntProperty(String propertyKey, Map<String, Object> jsonObjProperties) {
+        if (jsonObjProperties == null) {
+            return 0;
+        }
         Number doubleValue = (Number) jsonObjProperties.get(propertyKey);
 
         return doubleValue.intValue();
@@ -515,5 +520,9 @@ public class RunConfiguration {
     
     public static String getCapturedObjectsCacheFile() {
         return getStringProperty(RECORD_CAPTURED_OBJECTS_FILE);
+    }
+    
+    public static Boolean getAutoApplyNeighborXpaths(){
+    	return (Boolean) getExecutionGeneralProperties().get(AUTO_APPLY_NEIGHBOR_XPATHS);
     }
 }

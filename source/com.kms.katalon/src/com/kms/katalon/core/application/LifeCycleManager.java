@@ -31,6 +31,7 @@ import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
 import com.kms.katalon.composer.handlers.QuitHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
@@ -43,6 +44,7 @@ import com.kms.katalon.composer.initializer.DefaultTextFontInitializer;
 import com.kms.katalon.composer.initializer.DisplayInitializer;
 import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.GroovyTemplatePreferenceConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -135,9 +137,29 @@ public class LifeCycleManager {
 
     private void setupPreferences() {
         setupResourcePlugin();
+        setupGroovyTemplatePlugin();
     }
 
-    private void setupResourcePlugin() {
+    private void setupGroovyTemplatePlugin() {
+		try {
+			ScopedPreferenceStore prefStore = getPreferenceStore(
+					GroovyTemplatePreferenceConstants.ORG_CODEHAUS_GROOVY_ECLIPSE_QUICKFIX_PLUGIN_ID);
+
+			if (!prefStore.getBoolean(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP)) {
+				// prevent user clear all or remove the predefined templates
+				prefStore.setDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY,
+						GroovyTemplatePreferenceConstants.GROOVY_TEMPLATES);
+				prefStore.setToDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY);
+				prefStore.setValue(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP, true);
+			}
+			prefStore.save();
+		} catch (IOException e) {
+			logError(e);
+		}
+
+	}
+
+	private void setupResourcePlugin() {
         try {
             ScopedPreferenceStore runtimePrefStore = getPreferenceStore(ResourcesPlugin.PI_RESOURCES);
             if (!runtimePrefStore.getBoolean(ResourcesPlugin.PREF_AUTO_BUILDING)) {

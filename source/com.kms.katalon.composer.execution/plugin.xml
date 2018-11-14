@@ -67,14 +67,8 @@
             name="Execution">
       </page>
       <page
-            class="com.kms.katalon.composer.execution.settings.DefaultExecutionSettingPage"
-            category="com.kms.katalon.composer.execution.settings"
-            id="com.kms.katalon.composer.execution.settings.default"
-            name="Default">
-      </page>
-      <page
             class="com.kms.katalon.composer.execution.settings.CustomExecutionSettingPage"
-            category="com.kms.katalon.composer.execution.settings"
+            category="com.kms.katalon.composer.execution.desiredcapabilities"
             id="com.kms.katalon.composer.execution.settings.custom"
             name="Custom">
       </page>
@@ -93,6 +87,11 @@
             class="com.kms.katalon.composer.execution.settings.EmailTemplatePage"
             id="com.kms.katalon.composer.execution.page.emailTemplate"
             name="Template">
+      </page>
+      <page
+            class="com.kms.katalon.composer.execution.settings.DesiredCapabilitiesSettingPage"
+            id="com.kms.katalon.composer.execution.desiredcapabilities"
+            name="Desired Capabilities">
       </page>   
    </extension>
    <extension

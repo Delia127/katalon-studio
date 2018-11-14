@@ -12,8 +12,8 @@ public class CFirefoxDriver extends FirefoxDriver implements IDelayableDriver {
     private int actionDelayInMiliseconds;
     private GeckoDriverService geckoDriverService;
     
-    public CFirefoxDriver(GeckoDriverService driverService) {
-        super(driverService);
+    public CFirefoxDriver(GeckoDriverService driverService, Capabilities capabilities) {
+        super(driverService, new FirefoxOptions(capabilities));
         this.setGeckoDriverService(driverService);
     }
 

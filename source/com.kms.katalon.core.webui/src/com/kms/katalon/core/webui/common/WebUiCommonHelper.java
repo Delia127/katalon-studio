@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -35,6 +36,7 @@ import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.core.testobject.TestObjectXpath;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webui.common.XPathBuilder.PropertyType;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
@@ -675,15 +677,17 @@ public class WebUiCommonHelper extends KeywordHelper {
                 documentRect.getHeight()));
         return documentRect.intersects(elementRect);
     }
-
-    public static List<WebElement> findWebElements(TestObject testObject, int timeOut)
-            throws WebElementNotFoundException {
+    
+    // Return an empty list if no elements found,
+    // Let the caller decides what to do (throw exception, not throw, etc)
+    public static List<WebElement> findWebElements(TestObject testObject, int timeOut) {
         timeOut = WebUiCommonHelper.checkTimeout(timeOut);
         boolean isSwitchToParentFrame = false;
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
             
-                        
+            Boolean smartXPathsEnabled = RunConfiguration.getAutoApplyNeighborXpaths();
+                 
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
             By defaultLocator = null;
@@ -747,16 +751,20 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
+
+            // If this code is reached, then no elements were found, try to use other methods
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             
-            // If this code is reached, then it's definitely a WebElementNotFoundException
-            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
-            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));      
+            List<WebElement> elementsByOtherMethods = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
+            if(smartXPathsEnabled == true)
+            	return elementsByOtherMethods;
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
             // interrupted, do nothing
+        } catch(WebElementNotFoundException e){
+        	// element not found, do nothing
         } finally {
             if (isSwitchToParentFrame) {
                 switchToDefaultContent();
@@ -765,41 +773,82 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
-    private static void findWebElementsByOtherMethods(
+    private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
-    		TestObject testObject){
+    		TestObject testObject,
+    		Boolean smartXPathsEnabled){
 
-        List<WebElement> webElementsFoundByHeuristicMethod = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
-        List<WebElement> webElementsFoundByTrialAndErrorMethod = findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);       
+        return findWebElementsByAutoApplyNeighborXpaths(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
     }
     
-    private static List<WebElement> findWebElementsUsingTrialAndErrorMethod(
+    private static List<WebElement> findWebElementsByAutoApplyNeighborXpaths(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
-    		TestObject testObject){
-    	
+    		TestObject testObject,
+    		Boolean smartXPathsEnabled){
+  	
     	if(objectInsideShadowDom){
     		 return Collections.emptyList();
+    	}    	
+    	
+    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_START);
+    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_TRIGGER);
+    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_LEARN_ABOUT);
+    	logger.logInfo("");
+    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_USING);
+
+    	List<WebElement> elementsFoundBeforeNeighborXPaths = new ArrayList<>();
+    	
+    	List<TestObjectXpath> allXPaths = testObject.getXpaths();
+    	
+    	Optional<TestObjectXpath> workingNeighborXPath = 
+    			allXPaths
+    			.stream()
+    			.filter(xpath -> xpath.getName().equals("xpath:neighbor"))
+    			.findFirst();
+    	
+    	// Use Neighbor as the stop condition if exists, otherwise just loop through all XPaths
+    	int firstNeighborXPathIndex = allXPaths.size();
+    	if(workingNeighborXPath.isPresent()){
+    		firstNeighborXPathIndex = allXPaths.indexOf(workingNeighborXPath.get());
     	}
-    	logger.logDebug(StringConstants.KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD);
-    	List<WebElement> webElements = new ArrayList<>();
-    	
-    	testObject.getXpaths().forEach(xpath ->{
-            By byXpath =  By.xpath(xpath.getValue());
-            List<WebElement> webElementsByThisXpath = webDriver.findElements(byXpath);
-            if(webElementsByThisXpath != null && !webElementsByThisXpath.isEmpty()){
-                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_TRIAL_AND_ERROR_METHOD, testObject.getObjectId(), xpath.getValue()));
-            	webElements.addAll(webElementsByThisXpath);
-            }            
-    	});
-    	logger.logDebug(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_TRIAL_AND_ERROR_METHOD);
-    	
-    	return webElements;
+		for(int i = 0; i < firstNeighborXPathIndex; i++){
+			TestObjectXpath thisXPath = allXPaths.get(i);
+	   		By byThisXPath =  By.xpath(thisXPath.getValue());
+    		List<WebElement> elementsFoundByThisXPath = webDriver.findElements(byThisXPath);
+    		if(elementsFoundByThisXPath != null 
+    				&& elementsFoundByThisXPath.size() > 0){
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS, 
+                		testObject.getObjectId(), thisXPath.getValue()));
+                elementsFoundBeforeNeighborXPaths = elementsFoundByThisXPath;
+    			break;
+    		}
+		}
+		
+		// Checking useAllNeighbors every time before we want to return
+		// makes sure every desired log is displayed 
+		if(elementsFoundBeforeNeighborXPaths.size() > 0 && smartXPathsEnabled == true){
+			logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION);
+	    	logger.logInfo("");
+	    	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_OFF_SMART_XPATHS);
+	    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
+			return elementsFoundBeforeNeighborXPaths;			
+			
+		} else if (elementsFoundBeforeNeighborXPaths.size() == 0){
+			logger.logInfo(StringConstants.KW_LOG_INFO_NOT_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS);
+		}
+		
+    	logger.logInfo("");
+    	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_ON_SMART_XPATHS);
+    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
+
+    	return Collections.emptyList();    	
     }
 
 
-    private static List<WebElement> findWebElementsUsingHeuristicMethod(
+    @SuppressWarnings("unused")
+	private static List<WebElement> findWebElementsUsingHeuristicMethod(
             WebDriver webDriver, 
             boolean objectInsideShadowDom,
             TestObject testObject) {

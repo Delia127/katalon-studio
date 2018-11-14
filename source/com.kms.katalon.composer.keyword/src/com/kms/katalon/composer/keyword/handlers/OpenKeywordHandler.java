@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.keyword.handlers;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -11,6 +14,11 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
@@ -20,7 +28,9 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
+import com.kms.katalon.composer.testcase.providers.TestObjectScriptDropListener;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -95,6 +105,28 @@ public class OpenKeywordHandler {
 
         IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
         formatAction.run(new TextSelection(0, document.getLength()));
+        addTestObjectDropListener(editor);
         editor.doSave(new NullProgressMonitor());
+    }
+    
+    private void addTestObjectDropListener(ITextEditor editor) {
+        Control control = (Control) editor.getAdapter(Control.class);
+        if (!(control instanceof StyledText)) {
+            return;
+        }
+        DropTarget dropTarget = null;
+        Object existingDropTarget = control.getData(DND.DROP_TARGET_KEY);
+        if (existingDropTarget != null) {
+            dropTarget = (DropTarget) existingDropTarget;
+        } else {
+            dropTarget = new DropTarget(control, DND.DROP_COPY);
+        }
+        Transfer[] transfers = dropTarget.getTransfer();
+        List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
+        if (transfers.length != 0) {
+            treeEntityTransfers.addAll(Arrays.asList(transfers));
+        }
+        dropTarget.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
+        dropTarget.addDropListener(new TestObjectScriptDropListener((StyledText)editor.getAdapter(Control.class)));
     }
 }

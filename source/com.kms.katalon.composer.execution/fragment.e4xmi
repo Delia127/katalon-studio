@@ -105,4 +105,24 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8hLLIAWEEeiwwLBO_0k_Ig" featurename="children" parentElementId="com.kms.katalon.trimbar" positionInList="before:com.kms.katalon.composer.toolbar.switcher">
     <elements xsi:type="menu:ToolControl" xmi:id="_AwhgcAWFEeiwwLBO_0k_Ig" elementId="com.kms.katalon.composer.toolbar.executionGroup" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.toolbar.ExecutionToolControl"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_aRHiMNfxEeilW6ltg3pXaA" featurename="bindings" parentElementId="com.kms.katalon.bindingtable.window">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_tYSnYNfxEeilW6ltg3pXaA" elementId="com.kms.katalon.composer.execution.keybinding.execute" keySequence="M1+M2+A" command="_1Vr3wEvpEeWSR5dl8TkM5g">
+      <parameters xmi:id="_Xj0RoNf1Eeip0P00ARdx0w" elementId="com.kms.katalon.composer.execution.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_unBEUNfxEeilW6ltg3pXaA" elementId="com.kms.katalon.composer.execution.keybinding.debug" keySequence="M1+M2+D" command="_Z3Hl4OJWEeSyVPtKyNklew">
+      <parameters xmi:id="_X9Ma8Nf1Eeip0P00ARdx0w" elementId="com.kms.katalon.composer.execution.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
+	</elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4dEXYM0EEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="">
+    <elements xsi:type="menu:MenuSeparator" xmi:id="_zzdSgM0FEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.execution.menuseparator.0"/>
+    <elements xsi:type="menu:Menu" xmi:id="_fPCzQM0FEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.execution.menu.customcapabilities" label="Custom capabilities">
+      <children xsi:type="menu:DynamicMenuContribution" xmi:id="_AgNucM0FEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.execution.dynamicmenucontribution.customcapabilities" label="Custom capabilities" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4wzywM0EEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="">
+    <elements xsi:type="menu:MenuSeparator" xmi:id="_zmHaEM0FEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.execution.menuseparator.0"/>
+    <elements xsi:type="menu:Menu" xmi:id="_gzrOwM0FEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.execution.menu.customcapabilities.debug" label="Custom capabilities">
+      <children xsi:type="menu:DynamicMenuContribution" xmi:id="_OGuAYM0FEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.execution.dynamicmenucontribution.customcapabilities.debug" label="Custom capabilities" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution"/>
+    </elements>
+  </fragments>
 </fragment:ModelFragments>

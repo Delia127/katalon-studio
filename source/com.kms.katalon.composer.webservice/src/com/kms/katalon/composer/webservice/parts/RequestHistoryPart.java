@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -50,6 +51,7 @@ import com.kms.katalon.composer.webservice.parts.tree.IRequestHistoryItem;
 import com.kms.katalon.composer.webservice.parts.tree.RequestDateTreeItem;
 import com.kms.katalon.composer.webservice.parts.tree.RequestHistoryStyleCellProvider;
 import com.kms.katalon.composer.webservice.parts.tree.RequestHistoryTreeItem;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
@@ -79,6 +81,8 @@ public class RequestHistoryPart implements IRequestHistoryListener {
         requestHistoryHandler = context.get(RequestHistoryHandler.class);
         createControl(parent);
         registerEventBroker();
+        
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REQUEST_HISTORY);
     }
 
     private void registerEventBroker() {

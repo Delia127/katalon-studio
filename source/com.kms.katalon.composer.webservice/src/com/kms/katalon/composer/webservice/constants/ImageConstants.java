@@ -75,5 +75,17 @@ public class ImageConstants {
     public static final Image IMG_16_DELETE = ImageManager.getImage(IImageKeys.DELETE_16);
 
     public static final String WS_PATCH_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_PATCH_METHOD_16);
+    
+    public static final Image API_QUICKSTART_BACKGROUND = ImageManager.getImage(IImageKeys.API_QUICKSTART_BACKGROUND);
+    
+    public static final Image NEW_DRAFT_REST_REQUEST = ImageManager.getImage(IImageKeys.NEW_DRAFT_REST_REQUEST);
+    
+    public static final Image NEW_DRAFT_SOAP_REQUEST = ImageManager.getImage(IImageKeys.NEW_DRAFT_SOAP_REQUEST);
+    
+    public static final Image IMPORT_SWAGGER = ImageManager.getImage(IImageKeys.IMPORT_SWAGGER);
+    
+    public static final Image IMPORT_WSDL = ImageManager.getImage(IImageKeys.IMPORT_WSDL);
+    
+    public static final Image API_QUICKSTART_BACKGROUND_LEFT = ImageManager.getImage(IImageKeys.API_QUICKSTART_BACKGROUND_LEFT);
 
 }

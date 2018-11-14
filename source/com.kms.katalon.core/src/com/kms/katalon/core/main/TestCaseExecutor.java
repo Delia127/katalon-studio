@@ -227,6 +227,7 @@ public class TestCaseExecutor {
             return testCaseResult;
         } finally {
             testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
+        	testCaseContext.setMessage(testCaseResult.getMessage());
 
             if (testCaseContext.isMainTestCase()) {
                 eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_CASE, new Object[] { testCaseContext });

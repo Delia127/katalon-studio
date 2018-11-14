@@ -27,8 +27,8 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 
 public class WebUiSettingsPerferencePage extends PreferencePage {
-
-    public static final short TIMEOUT_MIN_VALUE = 0;
+    
+	public static final short TIMEOUT_MIN_VALUE = 0;
 
     public static final short TIMEOUT_MAX_VALUE = 9999;
 
@@ -45,7 +45,6 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
     public WebUiSettingsPerferencePage() {
         store = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
     }
-
     @Override
     protected Control createContents(Composite parent) {
         container = new Composite(parent, SWT.NONE);
@@ -220,44 +219,9 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         try {
             store.setDefaultCapturedTestObjectAttributeLocators();
             store.setDefaultCapturedTestObjectXpathLocators();
-            store.setDefaultCapturedTestObjectSelectionMethods();
+            store.setDefaultCapturedTestObjectSelectorMethods();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
     }
-
-    @Override
-    protected void performApply() {
-        if (container == null) {
-            return;
-        }
-        try {
-            if (radioUsePageLoadTimeout != null) {
-                store.setEnablePageLoadTimeout(radioUsePageLoadTimeout.getSelection());
-            }
-            if (txtDefaultPageLoadTimeout != null) {
-                store.setPageLoadTimeout(Integer.parseInt(txtDefaultPageLoadTimeout.getText()));
-            }
-            if (chckIgnorePageLoadTimeoutException != null) {
-                store.setIgnorePageLoadTimeout(chckIgnorePageLoadTimeoutException.getSelection());
-            }
-            if (txtActionDelay != null) {
-                store.setActionDelay(Integer.parseInt(txtActionDelay.getText()));
-            }
-            if (txtDefaultIEHangTimeout != null) {
-                store.setIEHangTimeout(Integer.parseInt(txtDefaultIEHangTimeout.getText()));
-            }
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
-    }
-
-    @Override
-    public boolean performOk() {
-        if (super.performOk() && isValid()) {
-            performApply();
-        }
-        return true;
-    }
-
 }

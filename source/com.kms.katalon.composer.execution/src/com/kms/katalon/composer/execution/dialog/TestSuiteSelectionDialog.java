@@ -12,6 +12,8 @@ import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.providers.AbstractEntityViewerFilter;
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
+import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 
@@ -40,9 +42,8 @@ public class TestSuiteSelectionDialog extends TreeEntitySelectionDialog {
         try {
             return selection != null
                     && selection.length > 0
-                    && StringUtils
-                            .equals(com.kms.katalon.composer.components.impl.constants.StringConstants.TREE_TEST_SUITE_TYPE_NAME,
-                                    ((ITreeEntity) selection[0]).getTypeName());
+                    && (((ITreeEntity) selection[0]) instanceof TestSuiteTreeEntity ||
+                    ((ITreeEntity) selection[0]) instanceof TestSuiteCollectionTreeEntity);
         } catch (Exception e) {
             logError(e);
         }

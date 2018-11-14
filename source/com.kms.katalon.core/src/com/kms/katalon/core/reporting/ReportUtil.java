@@ -149,6 +149,8 @@ public class ReportUtil {
             writeJUnitReport(testSuiteLogRecord, new File(logFolder));
         }
     }
+    
+    
 
     public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
             throws JAXBException, IOException {
@@ -308,7 +310,6 @@ public class ReportUtil {
     }
     
     public static void writeExecutionUUIDToFile(String UUID, File logFolder) throws IOException, URISyntaxException {
-
         FileUtils.writeStringToFile(new File(logFolder, "execution.uuid"),
         		UUID, StringConstants.DF_CHARSET);
     }

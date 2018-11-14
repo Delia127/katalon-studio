@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class GlobalMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.constants.globalMessages";
 
+	public static String DIA_OPEN_PROJECT;
+
     public static String APP_NAME;
 
     public static String ADD;
@@ -187,8 +189,6 @@ public class GlobalMessageConstants extends NLS {
 
     public static String FILE_NAME_GLOBAL_VARIABLE;
 
-    public static String INCLUDE_SCRIPTS_FOLDER;
-
     public static String NULL;
 
     public static String UNKNOWN;
@@ -233,8 +233,12 @@ public class GlobalMessageConstants extends NLS {
     
     public static String DIA_LET_START;
     
+    public static String DIA_NEW_PROJECT;
+    
     public static String DIA_NAME_EXISTED;
 
+    public static String DIA_TITLE_QUICKSTART;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, GlobalMessageConstants.class);

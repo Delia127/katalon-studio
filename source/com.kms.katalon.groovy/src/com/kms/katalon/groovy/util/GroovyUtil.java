@@ -208,7 +208,7 @@ public class GroovyUtil {
         } else {
             if (isNew) {
                 keywordLibFolder.clearHistory(null);
-                cleanDirectory(keywordLibFolder.getRawLocation().toFile());
+                // cleanDirectory(keywordLibFolder.getRawLocation().toFile());
             }
         }
 
@@ -305,8 +305,12 @@ public class GroovyUtil {
             if (libFolder.exists()) {
                 File desXercesBundleFile = new File(libFolder, xercesBundleFile.getName());
                 File desXmlApisBundleFile = new File(libFolder, xmlApisBundleFile.getName());
-                FileUtils.copyFile(xercesBundleFile, desXercesBundleFile);
-                FileUtils.copyFile(xmlApisBundleFile, desXmlApisBundleFile);
+                if (!desXercesBundleFile.exists()) {
+                    FileUtils.copyFile(xercesBundleFile, desXercesBundleFile);
+                }
+                if (!desXmlApisBundleFile.exists()) {
+                    FileUtils.copyFile(xmlApisBundleFile, desXmlApisBundleFile);
+                }
             }
         }
 

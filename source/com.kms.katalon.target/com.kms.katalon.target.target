@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="439">
+<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="444">
 <locations>
+<location path="${eclipse_home}" type="Directory"/>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.codehaus.groovy.compilerless.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
 <unit id="org.codehaus.groovy23.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
 <unit id="org.codehaus.groovy18.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
 <unit id="org.codehaus.groovy.m2eclipse.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
+<unit id="org.codehaus.groovy.headless.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
 <unit id="org.codehaus.groovy.jdt.patch.feature.group" version="2.9.2.xx-201611170128-e46"/>
 <unit id="org.codehaus.groovy20.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
 <unit id="org.codehaus.groovy24.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
@@ -13,7 +16,6 @@
 <unit id="org.codehaus.groovy21.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
 <repository location="http://localhost:33333/site/"/>
 </location>
-<location path="${eclipse_home}" type="Directory"/>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.objectweb.asm.all.debug" version="5.0.3"/>
 <unit id="ch.qos.logback.classic" version="1.2.3"/>
@@ -59,12 +61,13 @@
 <unit id="io.cucumber.expressions" version="5.0.19"/>
 <unit id="com.google.j2objc.annotations" version="1.1.0"/>
 <unit id="org.fusesource.jansi" version="1.17.1"/>
+<unit id="org.apache.aries.spifly.weaver-internal" version="1.0.8"/>
 <unit id="commons-codec" version="1.3.0"/>
+<unit id="org.apache.aries.spifly.core-internal" version="1.0.8"/>
 <unit id="org.eclipse.jetty.security" version="9.3.9.v20160517"/>
 <unit id="xml-apis" version="1.0.0.b2"/>
 <unit id="javax.validation.api" version="1.1.0.Final"/>
 <unit id="org.jboss.logging.jboss-logging-annotations" version="1.2.0.Beta1"/>
-<unit id="org.apache.aries.spifly.org.apache.aries.spifly.weaver-internal" version="1.0.8"/>
 <unit id="org.hibernate.common.hibernate-commons-annotations" version="4.0.5.Final"/>
 <unit id="io.swagger.parser" version="2.0.0.rc1"/>
 <unit id="org.json" version="20140107.0.0"/>
@@ -72,7 +75,6 @@
 <unit id="org.apache.commons.lang" version="2.6.0"/>
 <unit id="org.apache.commons.validator" version="1.5.0"/>
 <unit id="org.qas.qtest.sdk-java" version="1.4.5"/>
-<unit id="org.apache.aries.spifly.org.apache.aries.spifly.core-internal" version="1.0.8"/>
 <unit id="org.eclipse.persistence.eclipselink" version="2.5.0.RC1"/>
 <unit id="org.eclipse.jetty.websocket.javax.websocket" version="9.3.9.v20160517"/>
 <unit id="org.apache.httpcomponents.httpmime" version="4.5.1"/>
@@ -81,6 +83,7 @@
 <unit id="javassist" version="3.18.1.GA"/>
 <unit id="ch.qos.logback.core" version="1.2.3"/>
 <unit id="antlr" version="2.7.7"/>
+<unit id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations" version="2.9.1"/>
 <unit id="org.apache.commons.collections" version="3.2.2"/>
 <unit id="com.google.gson" version="2.8.0"/>
 <unit id="org.eclipse.jetty.websocket.common" version="9.3.9.v20160517"/>
@@ -97,6 +100,7 @@
 <unit id="com.mysql.jdbc" version="5.1.38"/>
 <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
 <unit id="org.apache.commons.io" version="2.4.0"/>
+<unit id="javax.inject" version="1.0.0"/>
 <unit id="com.oracle.jdbc.ojdbc7" version="12.1.0.2"/>
 <unit id="org.yaml.snakeyaml" version="1.18.0"/>
 <unit id="com.google.errorprone.error_prone_annotations" version="2.0.18"/>
@@ -108,9 +112,11 @@
 <unit id="javax.persistence" version="2.1.0.v201304241213"/>
 <unit id="net.sf.jopt-simple.jopt-simple" version="5.0.0"/>
 <unit id="io.cucumber.java" version="3.0.2"/>
+<unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-xml" version="2.9.1"/>
 <unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
 <unit id="org.hibernate.core" version="4.3.6.Final"/>
-<unit id="javax.inject.javax.inject" version="1.0.0"/>
+<unit id="com.auth0.java-jwt" version="3.4.0"/>
+<unit id="org.jboss.logging.jboss-logging" version="3.1.3.GA"/>
 <unit id="org.eclipse.jetty.util" version="9.3.9.v20160517"/>
 <unit id="org.jboss.logging.jboss-logging" version="3.1.3.GA"/>
 <unit id="javax.servlet-api" version="3.1.0"/>
@@ -137,6 +143,7 @@
 <unit id="org.apache.commons.digester" version="1.8.1"/>
 <unit id="org.apache.commons.email" version="1.4.0"/>
 <unit id="stax.api" version="1.0.1"/>
+<unit id="stax2-api" version="3.1.4"/>
 <unit id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
 <unit id="javax.ws.rs" version="1.1.1.v20130318-1750"/>
 <unit id="org.zeroturnaround.zt-exec" version="1.7.0"/>
@@ -144,6 +151,7 @@
 <unit id="com.google.oauth-client.google-oauth-client" version="1.22.0"/>
 <unit id="io.swagger.parser-v2" version="2.0.0.rc1"/>
 <unit id="cal10n.api" version="0.7.4"/>
+<unit id="com.fasterxml.woodstox.woodstox-core" version="5.0.3"/>
 <unit id="javax.interceptor-api" version="1.2.0"/>
 <unit id="slf4j.ext" version="1.6.3"/>
 <unit id="javax.el-api" version="3.0.0"/>
@@ -169,10 +177,14 @@
 <plugin id="ch.qos.logback.core" version="1.2.3"/>
 <plugin id="ch.qos.logback.slf4j"/>
 <plugin id="classmate"/>
+<plugin id="com.auth0.java-jwt"/>
 <plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
 <plugin id="com.fasterxml.jackson.core.jackson-core"/>
 <plugin id="com.fasterxml.jackson.core.jackson-databind"/>
+<plugin id="com.fasterxml.jackson.dataformat.jackson-dataformat-xml"/>
 <plugin id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml"/>
+<plugin id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"/>
+<plugin id="com.fasterxml.woodstox.woodstox-core"/>
 <plugin id="com.google.code.findbugs.jsr305"/>
 <plugin id="com.google.gerrit.common"/>
 <plugin id="com.google.gerrit.prettify"/>
@@ -186,7 +198,6 @@
 <plugin id="com.google.inject"/>
 <plugin id="com.google.inject.multibindings"/>
 <plugin id="com.google.oauth-client.google-oauth-client"/>
-<plugin id="com.googlecode.json-simple"/>
 <plugin id="com.gradleware.tooling.client"/>
 <plugin id="com.gradleware.tooling.model"/>
 <plugin id="com.gradleware.tooling.utils"/>
@@ -223,7 +234,7 @@
 <plugin id="io.swagger.parser-v3"/>
 <plugin id="jackson-core-asl"/>
 <plugin id="jackson-mapper-asl"/>
-<plugin id="javaewah"/>
+<plugin id="javaewah" version="0.7.9.v201605172130"/>
 <plugin id="javassist"/>
 <plugin id="javax.activation"/>
 <plugin id="javax.annotation"/>
@@ -233,8 +244,7 @@
 <plugin id="javax.el-api"/>
 <plugin id="javax.el.source"/>
 <plugin id="javax.enterprise.cdi-api"/>
-<plugin id="javax.inject"/>
-<plugin id="javax.inject.javax.inject"/>
+<plugin id="javax.inject" version="1.0.0.v20091030"/>
 <plugin id="javax.inject.source"/>
 <plugin id="javax.interceptor-api"/>
 <plugin id="javax.mail"/>
@@ -242,14 +252,14 @@
 <plugin id="javax.naming.jndi"/>
 <plugin id="javax.persistence"/>
 <plugin id="javax.persistence.api"/>
-<plugin id="javax.servlet" version="3.1.0.v201410161800"/>
 <plugin id="javax.servlet" version="3.0.0.v201112011016"/>
+<plugin id="javax.servlet" version="3.1.0.v201410161800"/>
 <plugin id="javax.servlet-api"/>
 <plugin id="javax.servlet.jsp"/>
 <plugin id="javax.servlet.jsp.source"/>
 <plugin id="javax.servlet.source"/>
 <plugin id="javax.validation.api"/>
-<plugin id="javax.websocket-api" version="1.1.0.201606171313"/>
+<plugin id="javax.websocket-api"/>
 <plugin id="javax.ws.rs"/>
 <plugin id="javax.xml"/>
 <plugin id="javax.xml.jaxp-api"/>
@@ -298,13 +308,13 @@
 <plugin id="org.apache.felix.gogo.shell"/>
 <plugin id="org.apache.felix.gogo.shell.source"/>
 <plugin id="org.apache.httpcomponents.httpclient" version="4.5.1"/>
-<plugin id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
 <plugin id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
+<plugin id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
 <plugin id="org.apache.httpcomponents.httpmime"/>
 <plugin id="org.apache.jasper.glassfish"/>
 <plugin id="org.apache.jasper.glassfish.source"/>
 <plugin id="org.apache.log4j"/>
-<plugin id="org.apache.lucene.analysis" version="3.5.0.v20120725-1805"/>
+<plugin id="org.apache.lucene.analysis"/>
 <plugin id="org.apache.lucene.analysis.source"/>
 <plugin id="org.apache.lucene.core" version="6.3.0"/>
 <plugin id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
@@ -323,32 +333,33 @@
 <plugin id="org.apache.xmlrpc"/>
 <plugin id="org.assertj.core"/>
 <plugin id="org.beanshell.bsh"/>
-<plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.4.3.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.3.10.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.m2eclipse" version="2.9.2.xx-201706151221-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.m2eclipse" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.dom4j"/>
 <plugin id="org.eclipse.aether.api"/>
 <plugin id="org.eclipse.aether.connector.basic"/>
@@ -474,17 +485,17 @@
 <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient4.ssl"/>
 <plugin id="org.eclipse.ecf.provider.filetransfer.ssl"/>
 <plugin id="org.eclipse.ecf.ssl"/>
-<plugin id="org.eclipse.egit"/>
-<plugin id="org.eclipse.egit.core"/>
+<plugin id="org.eclipse.egit" version="4.4.1.201607150455-r"/>
+<plugin id="org.eclipse.egit.core" version="4.4.1.201607150455-r"/>
 <plugin id="org.eclipse.egit.core.source"/>
-<plugin id="org.eclipse.egit.doc"/>
+<plugin id="org.eclipse.egit.doc" version="4.4.1.201607150455-r"/>
 <plugin id="org.eclipse.egit.gitflow"/>
 <plugin id="org.eclipse.egit.gitflow.source"/>
 <plugin id="org.eclipse.egit.gitflow.ui"/>
 <plugin id="org.eclipse.egit.gitflow.ui.source"/>
 <plugin id="org.eclipse.egit.mylyn.ui"/>
 <plugin id="org.eclipse.egit.mylyn.ui.source"/>
-<plugin id="org.eclipse.egit.ui"/>
+<plugin id="org.eclipse.egit.ui" version="4.4.1.201607150455-r"/>
 <plugin id="org.eclipse.egit.ui.smartimport"/>
 <plugin id="org.eclipse.egit.ui.source"/>
 <plugin id="org.eclipse.emf.common"/>
@@ -629,8 +640,8 @@
 <plugin id="org.eclipse.jdt.debug"/>
 <plugin id="org.eclipse.jdt.debug.ui"/>
 <plugin id="org.eclipse.jdt.doc.user"/>
-<plugin id="org.eclipse.jdt.groovy.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.groovy.core" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.eclipse.jdt.groovy.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.junit"/>
 <plugin id="org.eclipse.jdt.junit.core"/>
 <plugin id="org.eclipse.jdt.junit.runtime"/>
@@ -670,8 +681,8 @@
 <plugin id="org.eclipse.jface.source"/>
 <plugin id="org.eclipse.jface.text"/>
 <plugin id="org.eclipse.jface.text.source"/>
-<plugin id="org.eclipse.jgit"/>
-<plugin id="org.eclipse.jgit.archive"/>
+<plugin id="org.eclipse.jgit" version="4.4.1.201607150455-r"/>
+<plugin id="org.eclipse.jgit.archive" version="4.4.1.201607150455-r"/>
 <plugin id="org.eclipse.jgit.http.apache"/>
 <plugin id="org.eclipse.jgit.lfs"/>
 <plugin id="org.eclipse.jgit.lfs.server"/>
@@ -1126,6 +1137,7 @@
 <plugin id="org.zeroturnaround.zt-process"/>
 <plugin id="slf4j.api"/>
 <plugin id="stax.api"/>
+<plugin id="stax2-api"/>
 <plugin id="wsdl4j"/>
 <plugin id="xml-apis"/>
 </includeBundles>

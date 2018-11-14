@@ -160,6 +160,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String PA_TAB_SCRIPT;
 
     public static String PA_TAB_VARIABLE;
+    
+    public static String PA_TAB_VARIABLE_EDITOR;
 
     public static String PA_TAB_INTEGRATION;
 
@@ -406,7 +408,10 @@ public class ComposerTestcaseMessageConstants extends NLS {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);
     }
-
+    
+    // Test object hyperlink detector
+    public static String WARN_TEST_OBEJCT_NOT_FOUND;
+    
     private ComposerTestcaseMessageConstants() {
     }
 }

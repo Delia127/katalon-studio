@@ -16,7 +16,7 @@
 		<product.buildDirectory>${project.build.directory}/products</product.buildDirectory>
 		<product.win32OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86</product.win32OutputDirectory>
 		<product.win64OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86_64</product.win64OutputDirectory>
-		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64/${product.name}.app/Contents/Eclipse</product.mac64OutputDirectory>
+		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64/${product.macName}.app/Contents/Eclipse</product.mac64OutputDirectory>
 		<product.linux32OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86</product.linux32OutputDirectory>
 		<product.linux64OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86_64</product.linux64OutputDirectory>
 
@@ -31,22 +31,23 @@
 		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
 
 		<product.archiveFileName>katalon-studio</product.archiveFileName>
-		<product.name>Katalon Studio</product.name>
+		<product.name>Katalon_Studio</product.name>
+		<product.macName>Katalon Studio</product.macName>
 
 		<product.win32ZipFileSrc>${product.buildDirectory}/${product.id}-win32.win32.x86.zip</product.win32ZipFileSrc>
-		<product.win32ZipFileDest>${product.buildDirectory}/${product.name} Windows 32.zip</product.win32ZipFileDest>
+		<product.win32ZipFileDest>${product.buildDirectory}/${product.name}_Windows_32.zip</product.win32ZipFileDest>
 
 		<product.win64ZipFileSrc>${product.buildDirectory}/${product.id}-win32.win32.x86_64.zip</product.win64ZipFileSrc>
-		<product.win64ZipFileDest>${product.buildDirectory}/${product.name} Windows 64.zip</product.win64ZipFileDest>
+		<product.win64ZipFileDest>${product.buildDirectory}/${product.name}_Windows_64.zip</product.win64ZipFileDest>
 
 		<product.mac64ZipFileSrc>${product.buildDirectory}/${product.id}-macosx.cocoa.x86_64.tar.gz</product.mac64ZipFileSrc>
-		<product.mac64ZipFileDest>${product.buildDirectory}/${product.name} MacOS.tar.gz</product.mac64ZipFileDest>
+		<product.mac64ZipFileDest>${product.buildDirectory}/${product.name}_MacOS.tar.gz</product.mac64ZipFileDest>
 
 		<product.linux32ZipFileSrc>${product.buildDirectory}/${product.id}-linux.gtk.x86.tar.gz</product.linux32ZipFileSrc>
-		<product.linux32ZipFileDest>${product.buildDirectory}/${product.name} Linux 32.tar.gz</product.linux32ZipFileDest>
+		<product.linux32ZipFileDest>${product.buildDirectory}/${product.name}_Linux_32.tar.gz</product.linux32ZipFileDest>
 
 		<product.linux64ZipFileSrc>${product.buildDirectory}/${product.id}-linux.gtk.x86_64.tar.gz</product.linux64ZipFileSrc>
-		<product.linux64ZipFileDest>${product.buildDirectory}/${product.name} Linux 64.tar.gz</product.linux64ZipFileDest>
+		<product.linux64ZipFileDest>${product.buildDirectory}/${product.name}_Linux_64.tar.gz</product.linux64ZipFileDest>
 	</properties>
 
 	<build>
@@ -82,7 +83,7 @@
 						<product>
 							<id>${product.id}</id>
 							<rootFolders>
-								<macosx>${product.name}.app</macosx>
+								<macosx>${product.macName}.app</macosx>
 							</rootFolders>
 						</product>
 					</products>
@@ -146,7 +147,7 @@
 						<product>
 							<id>${product.id}</id>
 							<rootFolders>
-								<macosx>${product.name}.app</macosx>
+								<macosx>${product.macName}.app</macosx>
 							</rootFolders>
 						</product>
 					</products>

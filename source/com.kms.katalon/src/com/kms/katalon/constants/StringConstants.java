@@ -89,8 +89,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String SEPARATE_LINK = MessageConstants.SEPARATE_LINK;
 
-    public static final String DIALOG_TITLE = MessageConstants.DIALOG_TITLE;
-
     public static final String BTN_CLEAR_TILE = MessageConstants.BTN_CLEAR_TILE;
 
     public static final String BTN_ACTIVATE_TITLE = MessageConstants.BTN_ACTIVATE_TITLE;

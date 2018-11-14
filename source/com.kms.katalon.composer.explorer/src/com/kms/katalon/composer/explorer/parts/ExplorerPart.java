@@ -449,7 +449,6 @@ public class ExplorerPart {
                             entityViewerFilter.setSearchString(broadcastMessage);
                             treeViewer.getTree().setRedraw(false);
                             treeViewer.refresh(true);
-
                             if (StringUtils.isNotBlank(searchString)) {
                                 treeViewer.expandAll();
                             } else {
@@ -562,7 +561,8 @@ public class ExplorerPart {
             while (treeViewer.isBusy()) {
                 // wait for tree is not busy
             }
-            // wait for reseting search field complete
+            
+            // wait for r.eseting search field complete
             resetSearchField();
             searchDropDownBox.clearInput();
             treeViewer.getTree().clearAll(true);
@@ -583,8 +583,8 @@ public class ExplorerPart {
             LoggerSingleton.logError(e);
         }
     }
-
-    private void reloadTreeEntityTransfers() {
+    
+	private void reloadTreeEntityTransfers() {
         List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
         dragSource.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
     }

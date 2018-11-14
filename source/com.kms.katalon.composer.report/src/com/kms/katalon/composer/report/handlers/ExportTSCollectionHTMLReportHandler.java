@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.report.handlers;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -105,7 +105,7 @@ public class ExportTSCollectionHTMLReportHandler {
             }
             ReportUtil.writeTSCollectionHTMLReport(reportTreeEntity.getParent().getText(),
                     JsonUtil.toJson(tsInfoItems, false), destDir);
-            Desktop.getDesktop().open(destDir);
+            Program.launch(destDir.toURI().toString());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             exceptions.add(e.getMessage());

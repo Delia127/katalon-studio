@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.testcase.components;
 
-import java.awt.Desktop;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -17,6 +15,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -315,7 +314,7 @@ public class KeywordNodeTooltip {
     public void openKeywordDesc() {
         setIsOpeingKeywordDescription(true);
         try {
-            Desktop.getDesktop().browse(new URI(keywordDescURI));
+            Program.launch(keywordDescURI);
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
         } finally {

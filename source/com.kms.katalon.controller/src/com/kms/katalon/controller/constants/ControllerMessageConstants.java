@@ -50,6 +50,8 @@ public class ControllerMessageConstants extends NLS {
     public static String CTRL_EXC_REQUEST_BODY_IS_BLANK;
 
     public static String CTRL_EXC_REQUEST_URL_IS_BLANK;
+    
+    public static String GlobalVariableController_MSG_COULD_NOT_GENERATE_GLOBALVARIABLE;
 
     static {
         // initialize resource bundle

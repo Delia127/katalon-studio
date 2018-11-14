@@ -395,7 +395,7 @@ public class StringConstants {
     public static final String CONF_PROPERTY_VIDEO_RECORDER_OPTION = "videoRecorderOption";
 
     public static final String CONF_PROPERTY_DEFAULT_FAILURE_HANDLING = "defaultFailureHandling";
-    
+        
     public static final String CONF_PROPERTY_PROXY = "proxy";
 
     public static final String CONF_PROPERTY_TEST_DATA_INFO = "testDataInfo";

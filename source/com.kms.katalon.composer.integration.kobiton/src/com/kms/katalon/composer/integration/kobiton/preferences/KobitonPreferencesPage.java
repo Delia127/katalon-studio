@@ -1,9 +1,7 @@
 package com.kms.katalon.composer.integration.kobiton.preferences;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +18,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -242,8 +241,8 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(e.text));
-                } catch (IOException | URISyntaxException ex) {
+                    Program.launch(e.text);
+                } catch (IllegalArgumentException ex) {
                     LoggerSingleton.logError(ex);
                 }
             }
