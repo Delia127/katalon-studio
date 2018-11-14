@@ -26,7 +26,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.global.constants.StringConstants;
 import com.kms.katalon.composer.parts.CPart;
-import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.dal.exception.DALException;

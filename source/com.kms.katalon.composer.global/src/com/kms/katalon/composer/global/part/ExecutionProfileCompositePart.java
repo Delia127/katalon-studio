@@ -36,7 +36,7 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.global.constants.StringConstants;
-import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
