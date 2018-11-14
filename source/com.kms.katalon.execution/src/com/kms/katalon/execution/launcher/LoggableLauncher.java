@@ -68,7 +68,6 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                     	result.setName(name);
                     	notifyProccess(LauncherEvent.UPDATE_RECORD, executedEntity, result);
                     }
-                    record.setMessage(record.getMessage() + ", Depth: " + logDepth);
                     break;
                 case END:
                     if (isLogUnderTestCaseMainLevel(runConfig, logDepth) && isStartTestCaseLog(startRecords.peek())) {
@@ -105,14 +104,12 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                     if (logDepth == 0) {
                         watchdog.stop();
                     }
-                    record.setMessage(record.getMessage() + ", Depth: " + logDepth);
                     break;
                 default:
                     if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel(runConfig, logDepth)
                             && isStartTestCaseLog(startRecords.peek())) {
                         currentTestCaseResult = logLevel;
                     }
-                    record.setMessage(record.getMessage() + ", Depth: " + logDepth);
                     break;
             }
         }
