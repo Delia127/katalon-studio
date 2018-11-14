@@ -1,16 +1,13 @@
 package com.kms.katalon.composer.handlers;
 
-import javax.inject.Inject;
-
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.parts.SavableCompositePart;
-import com.kms.katalon.composer.util.groovy.editor;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.tracking.service.Trackings;
@@ -19,7 +16,7 @@ public class SaveHandler extends AbstractHandler {
 
     @Override
     public boolean canExecute() {
-        MPart part = getPartService().getActivePart();
+        MPart part = partService.getActivePart();
         if (getCompositeParentPart(part) != null) {
             return true;
         } else if (part != null) {
@@ -30,7 +27,7 @@ public class SaveHandler extends AbstractHandler {
 
     private SavableCompositePart getCompositeParentPart(MPart part) {
         SavableCompositePart parentCompositePart = null;
-        for (MPart dirtyPart : getPartService().getDirtyParts()) {
+        for (MPart dirtyPart : partService.getDirtyParts()) {
             if (dirtyPart.getObject() instanceof SavableCompositePart) {
                 SavableCompositePart compositePart = (SavableCompositePart) dirtyPart.getObject();
                 if (compositePart.getChildParts() != null && compositePart.getChildParts().contains(part)) {
@@ -43,7 +40,7 @@ public class SaveHandler extends AbstractHandler {
 
     @Override
     public void execute() {
-        MPart part = getPartService().getActivePart();
+        MPart part = partService.getActivePart();
         try {
             SavableCompositePart parentCompositePart = getCompositeParentPart(part);
             if (parentCompositePart != null) {
@@ -51,11 +48,11 @@ public class SaveHandler extends AbstractHandler {
                     parentCompositePart.save();
                 }
             } else {
-                if (editor.isGroovyEditorPart(part)) {
-                    editor.saveEditor(part);
+                if (GroovyEditorUtil.isGroovyEditorPart(part)) {
+                    GroovyEditorUtil.saveEditor(part);
                     eventBroker.post(EventConstants.ECLIPSE_EDITOR_SAVED, part);
                 } else {
-                	getPartService().savePart(part, false);
+                    partService.savePart(part, false);
                 }
             }
 

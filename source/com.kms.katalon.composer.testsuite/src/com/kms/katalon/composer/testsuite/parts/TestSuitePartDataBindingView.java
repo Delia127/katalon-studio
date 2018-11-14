@@ -363,7 +363,7 @@ public class TestSuitePartDataBindingView {
                                     break;
                                 case SCRIPT_VARIABLE:
                                     variableLink.setTestDataLinkId(StringUtils.EMPTY);
-                                    Object newValue = InputValueType.String.newValue();
+                                    Object newValue = InputValueType.Null.newValue();
                                     variableLink.setValue(((ASTNodeWrapper) newValue).getInputText());
                                     break;
                             }
