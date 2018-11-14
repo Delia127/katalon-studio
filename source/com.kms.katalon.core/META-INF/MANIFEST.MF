@@ -68,9 +68,6 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.greenrobot.eventbus,
  org.assertj.core,
  org.junit,
- bcpkix,
- bcprov,
- io.netty.all,
  com.fasterxml.jackson.core.jackson-databind,
  com.fasterxml.jackson.core.jackson-core,
  com.fasterxml.jackson.core.jackson-annotations,
@@ -78,9 +75,7 @@ Require-Bundle: net.sf.supercsv.super-csv,
  ch.qos.logback.classic,
  ch.qos.logback.core,
  slf4j.api,
- org.fusesource.jansi
+ org.fusesource.jansi,
+ com.kms.katalon.netlightbody
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: resources/lib/browsermob-core-2.1.5.jar,
- resources/lib/littleproxy-1.1.0-beta-bmp-17.jar,
- resources/lib/mitm-2.1.5.jar,
- .
+Bundle-ClassPath: .

@@ -158,8 +158,7 @@ public class ProjectFileServiceManager {
                 URL templateFileUrl = FileLocator.find(bundle, templateFilePath, null);
                 FileUtils.copyURLToFile(FileLocator.toFileURL(templateFileUrl), configFile);
             }
-        } catch (IOException e) {
-            System.out.println("error");
+        } catch (IOException ignored) {
         }
     }
 

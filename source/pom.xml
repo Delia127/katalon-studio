@@ -89,6 +89,7 @@
 		<module>com.kms.katalon.tracking</module>
 		<module>com.kms.katalon.tracking.service</module>
 		<module>com.kms.katalon.ansiconsole</module>
+		<module>com.kms.katalon.netlightbody</module>
 	</modules>
 
 	<properties>
@@ -116,8 +117,6 @@
 		<linux64ResourcesDirectory>linux64Resources</linux64ResourcesDirectory>
 		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
 		<cucumberRepo>file:///${basedir}/../third-party/cucumber-eclipse/cucumber.eclipse.p2updatesite/target/repository</cucumberRepo>
-
-		<ansiConsoleRepoUrl>https://www.mihai-nita.net/eclipse</ansiConsoleRepoUrl>
 	</properties>
 
 	<repositories>
@@ -136,12 +135,6 @@
 		<repository>
 			<id>cucumber_repo</id>
 			<url>${cucumberRepo}</url>
-			<layout>p2</layout>
-		</repository>
-
-		<repository>
-			<id>ansi_console_repo</id>
-			<url>${ansiConsoleRepoUrl}</url>
 			<layout>p2</layout>
 		</repository>
 	</repositories>

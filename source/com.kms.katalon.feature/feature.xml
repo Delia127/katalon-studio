@@ -1646,6 +1646,13 @@
          install-size="0"
          version="1.0.0.qualifier"
          unpack="false"/>
+         
+ 	<plugin
+         id="com.kms.katalon.netlightbody"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
 
    <plugin
          id="com.kms.katalon.execution.webui"
@@ -2534,36 +2541,8 @@
          version="0.0.0"
          unpack="false"/>
 
-    <plugin
-         id="com.jcraft.jzlib"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="io.netty.all"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
    <plugin
          id="javassist"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="bcpkix"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="bcprov"
          download-size="0"
          install-size="0"
          version="0.0.0"
