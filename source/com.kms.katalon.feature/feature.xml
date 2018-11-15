@@ -1395,13 +1395,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.xml.apis"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.kms.katalon.composer.execution"
          download-size="0"
          install-size="0"
@@ -2525,8 +2518,8 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
-	<plugin
+
+   <plugin
          id="stax2-api"
          download-size="0"
          install-size="0"
@@ -2535,6 +2528,13 @@
 
    <plugin
          id="com.kms.katalon.composer.integration.qtest.activation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="xml-apis"
          download-size="0"
          install-size="0"
          version="0.0.0"
