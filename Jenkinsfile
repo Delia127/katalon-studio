@@ -20,29 +20,35 @@ pipeline {
         stage('Set permissions to source') {
             // set write permissions to current workspace
             steps {
-                sh '''sudo chmod -R 777 ${WORKSPACE}'''
+                sh '''chmod -R 777 ${WORKSPACE}'''
             }
         }
 
-        stage('Setup Maven repositories') {
+        stage('Building') {
             // start maven commands to get dependencies
             steps {
-                dir("tools") {
-                    sh ''' ./start-dev-server.sh '''
-                }
-            }
-        }
+                sh 'cd source/com.kms.katalon.repo && mvn p2:site'
+                sh 'cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &'
+                sh '''
+                    until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
+                        printf '.'
+                        cat /tmp/9999.log
+                        sleep 5
+                    done
+                '''
 
-        stage('Compile & Build') {
-            // generate Katalon builds
-            steps {
-                echo "Maven version is:"
-                sh "mvn --version"
-                echo "Wait 60 seconds to start maven services successfully"
-                sleep 60
+                sh 'cd source/com.kms.katalon.p2site && nohup mvn -Djetty.port=33333 jetty:run > /tmp/33333.log &'
+                sh '''
+                    until $(curl --output /dev/null --silent --head --fail http://localhost:33333/site); do
+                        printf '.'
+                        cat /tmp/33333.log
+                        sleep 5
+                    done
+                '''
+             // generate katalon builds   
                 script {
                     dir("source") {
-                        if (BRANCH_NAME.findAll(/^[release]+/)) {
+                        if (BRANCH_NAME ==~ /^[release]+/) {
                             sh ''' mvn clean verify -P prod '''
                         } else {
                             sh ''' mvn clean verify -P dev '''
