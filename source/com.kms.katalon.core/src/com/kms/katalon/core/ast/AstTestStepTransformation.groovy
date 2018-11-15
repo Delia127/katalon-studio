@@ -14,6 +14,7 @@ import org.codehaus.groovy.ast.expr.MapEntryExpression
 import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.PropertyExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.CaseStatement
 import org.codehaus.groovy.ast.stmt.CatchStatement
@@ -51,11 +52,7 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     private static final List<ImportNode> importNodes = new ArrayList<ImportNode>()
 
-    private static final String KEYWORD_DEFAULT_NAME = "Statement"
-
     private static final String RUN_METHOD_NAME = "run"
-
-    private static final String COMMENT_STATEMENT_KEYWORD_NAME = "Comment";
 
     private static final String KEYWORD_LOGGER_LOG_NOT_RUN_METHOD_NAME = "logNotRun";
 
@@ -82,7 +79,7 @@ public class AstTestStepTransformation implements ASTTransformation {
             }
         }
     }
-    
+
     @CompileStatic
     private static boolean isRealMethod(MethodNode method) {
         return (method.getLineNumber() >= 0 || RUN_METHOD_NAME.equals(method.getName())) && method.getCode() instanceof BlockStatement;
@@ -163,13 +160,16 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         if (ifStatement.getElseBlock() instanceof IfStatement) {
             deferedStatements.push(
-                    new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else " +
-                    AstTextValueUtil.getInstance().getTextValue(ifStatement.getElseBlock()),
-                    ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
+                    new ExpressionStatement(
+                        createNewStartKeywordMethodCall("else " +
+                            AstTextValueUtil.getInstance().getTextValue(ifStatement.getElseBlock()),
+                            ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
         } else {
             deferedStatements.push(
-                    new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Else",
-                    ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
+                    new ExpressionStatement(
+                        createNewStartKeywordMethodCall(
+                            "else",
+                            ifStatement.getElseBlock(), indexMap, nestedLevel - 1)));
             if (!(ifStatement.getElseBlock() instanceof BlockStatement)) {
                 BlockStatement elseBlock = new BlockStatement();
                 elseBlock.getStatements().add(ifStatement.getElseBlock());
@@ -204,7 +204,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         Stack<Statement> deferedStatements = new Stack<Statement>();
         deferedStatements.push(
-                new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Finally",
+                new ExpressionStatement(createNewStartKeywordMethodCall("Finally",
                 tryCatchStatement.getFinallyStatement(), indexMap, nestedLevel - 1)));
         visit(tryCatchStatement.getFinallyStatement(), deferedStatements, nestedLevel);
     }
@@ -223,7 +223,7 @@ public class AstTestStepTransformation implements ASTTransformation {
         }
         Stack<Statement> deferedStatements = new Stack<Statement>();
         deferedStatements.push(
-                new ExpressionStatement(createNewStartKeywordMethodCall(KEYWORD_DEFAULT_NAME + " - Default",
+                new ExpressionStatement(createNewStartKeywordMethodCall("Default",
                 switchStatement.getDefaultStatement(), indexMap, nestedLevel)));
         visit(switchStatement.getDefaultStatement(), deferedStatements, nestedLevel + 1);
     }
@@ -262,7 +262,7 @@ public class AstTestStepTransformation implements ASTTransformation {
                     blockStatement.getStatements().add(index, new ExpressionStatement(createNewAddDescriptionMethodCall(commentContent)));
                     index += (popCommentStatements(commentStatementsStack, blockStatement, index, indexMap, nestedLevel) + 1);
                 }
-                
+
                 def keywordInfo = [index, description, keywordName]
                 List<Statement> tempStatementList = new ArrayList<>();
                 tempStatementList.add(createBeforeTestStepMethodCall(keywordInfo))
@@ -280,7 +280,7 @@ public class AstTestStepTransformation implements ASTTransformation {
             index++;
         }
     }
-    
+
     @CompileStatic
     private static boolean isStatementDisabled(Statement statement) {
         return StringUtils.startsWith(statement.getStatementLabel(), StringConstants.NOT_RUN_LABEL);
@@ -291,8 +291,11 @@ public class AstTestStepTransformation implements ASTTransformation {
         int commentNumber = 0;
         while (commentStatementsStack != null && !commentStatementsStack.isEmpty()) {
             Statement commentStatement = commentStatementsStack.pop();
-            blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(
-                    COMMENT_STATEMENT_KEYWORD_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
+            blockStatement.getStatements().add(
+                index,
+                new ExpressionStatement(
+                createNewStartKeywordMethodCall(
+                    AstTextValueUtil.getInstance().getTextValue(commentStatement), commentStatement, indexMap, nestedLevel)));
             commentNumber++;
         }
         return commentNumber;
@@ -300,18 +303,7 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     @CompileStatic
     private String getKeywordNameForStatement(Statement statement) {
-        String keywordName = null;
-        String builtinKeywordName = getBuiltinKeywordMethodCallStatement(statement);
-        if (builtinKeywordName != null) {
-            keywordName = builtinKeywordName;
-        } else {
-            String customKeywordName = getCustomKeywordMethodCallStatement(statement);
-            if (customKeywordName != null) {
-                keywordName = customKeywordName;
-            } else {
-                keywordName = KEYWORD_DEFAULT_NAME + " - " + AstTextValueUtil.getInstance().getTextValue(statement);
-            }
-        }
+        String keywordName = AstTextValueUtil.getInstance().getTextValue(statement);
         return keywordName;
     }
 
@@ -350,11 +342,8 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     @CompileStatic
     private MethodCallExpression createNewAddDescriptionMethodCall(String comment) {
+        MethodCallExpression loggerGetInstanceMethodCall = getLoggerGetInstanceMethodCall();
         List<Expression> expressionArguments = new ArrayList<Expression>();
-        MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
-                new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
-                new ArgumentListExpression(expressionArguments));
-        expressionArguments = new ArrayList<Expression>();
         expressionArguments.add(new ConstantExpression(comment));
         MethodCallExpression methodCall = new MethodCallExpression(loggerGetInstanceMethodCall,
                 KEYWORD_LOGGER_SET_PENDING_DESCRIPTION_METHOD_NAME, new ArgumentListExpression(expressionArguments))
@@ -363,11 +352,8 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     @CompileStatic
     private MethodCallExpression createNewStartKeywordMethodCall(String keywordName, Statement statement, Map<Statement, Integer> indexMap, int nestedLevel) {
-        List<Expression> expressionArguments = new ArrayList<Expression>();
-        MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
-                new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
-                new ArgumentListExpression(expressionArguments));
-        expressionArguments = new ArrayList<Expression>();
+        MethodCallExpression loggerGetInstanceMethodCall = getLoggerGetInstanceMethodCall();
+        List<Expression>expressionArguments = new ArrayList<Expression>();
         expressionArguments.add(new ConstantExpression(keywordName));
         expressionArguments.add(createPropertiesMapExpressionForKeyword(statement, indexMap));
         expressionArguments.add(new ConstantExpression(nestedLevel));
@@ -375,7 +361,19 @@ public class AstTestStepTransformation implements ASTTransformation {
                 StringConstants.LOG_START_KEYWORD_METHOD, new ArgumentListExpression(expressionArguments))
         return methodCall
     }
-    
+
+    private MethodCallExpression getLoggerGetInstanceMethodCall() {
+        VariableExpression thisExpression = new VariableExpression("this");
+        MethodCallExpression getClassMethodCall = new MethodCallExpression(
+                thisExpression, "getClass", new ArgumentListExpression(new ArrayList<Expression>()));
+        List<Expression> loggerExpressionArguments = new ArrayList<Expression>();
+        loggerExpressionArguments.add(getClassMethodCall);
+        MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
+                new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
+                new ArgumentListExpression(loggerExpressionArguments));
+        return loggerGetInstanceMethodCall;
+    }
+
     private ExpressionStatement createBeforeTestStepMethodCall(def keywordInfo) {
         List<Expression> expressionArguments = new ArrayList<Expression>();
         MethodCallExpression executionManagerMethodCall = new MethodCallExpression(
@@ -410,7 +408,7 @@ public class AstTestStepTransformation implements ASTTransformation {
                 new ClassExpression(new ClassNode(ExecutionListenerEvent.class)),
                 new ConstantExpression("AFTER_TEST_STEP")))
         List<Expression> injectedArguments = new ArrayList()
-        
+
         for (info in keywordInfo) {
             injectedArguments.add(new ConstantExpression(info))
         }
@@ -423,9 +421,7 @@ public class AstTestStepTransformation implements ASTTransformation {
 
     @CompileStatic
     private ExpressionStatement createNewNotRunLogMethodCallStatement(String keywordName) {
-        MethodCallExpression loggerGetInstanceMethodCall = new MethodCallExpression(
-                new ClassExpression(new ClassNode(KeywordLogger.class)), KEYWORD_LOGGER_GET_INSTANCE_METHOD_NAME,
-                new ArgumentListExpression());
+        MethodCallExpression loggerGetInstanceMethodCall = getLoggerGetInstanceMethodCall();
         List<Expression> expressionArguments = new ArrayList<Expression>();
         expressionArguments.add(new ConstantExpression("NOT_RUN: " + keywordName));
         return new ExpressionStatement(new MethodCallExpression(loggerGetInstanceMethodCall,

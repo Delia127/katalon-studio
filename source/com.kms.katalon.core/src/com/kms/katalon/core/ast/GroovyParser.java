@@ -289,7 +289,7 @@ public class GroovyParser {
     }
 
     public void parse(GStringExpression gStringExpression) {
-        print('"' + gStringExpression.getText() + '"');
+        print(gStringExpression.getText());
     }
 
     public void parse(MapExpression mapExpression) {

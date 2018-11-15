@@ -10,6 +10,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +36,9 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 public class ScriptEngine extends GroovyScriptEngine {
+    
+    private static final Map<String, String> testCaseNameLookup = new ConcurrentHashMap<>();
+    
     // Used to generate new temp script name
     private int counter;
 
@@ -102,8 +106,15 @@ public class ScriptEngine extends GroovyScriptEngine {
     }
 
     // Parse this class as script text
-    public Object runScriptAsRawText(final String scriptText, String className, Binding binding)
+    public Object runScriptAsRawText(
+            final String scriptText, String className, Binding binding, String testCaseName)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
+        
+        if (testCaseName != null) {
+            String scriptId = new File(className).getName();
+            testCaseNameLookup.put(scriptId, testCaseName);
+            testCaseNameLookup.put(scriptId.replace(".groovy", ""), testCaseName);
+        }
         String processedScriptText = preProcessScriptBeforeBuild(scriptText);
         return run(getGroovyCodeSource(processedScriptText, className), binding, true);
     }
@@ -246,4 +257,8 @@ public class ScriptEngine extends GroovyScriptEngine {
         }
     }
 
+    public static String getTestCaseName(String script) {
+        String testCaseName = testCaseNameLookup.get(script);
+        return testCaseName;
+    }
 }

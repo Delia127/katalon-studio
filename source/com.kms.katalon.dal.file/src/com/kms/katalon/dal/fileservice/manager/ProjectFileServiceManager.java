@@ -2,11 +2,17 @@ package com.kms.katalon.dal.fileservice.manager;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.EntityService;
@@ -25,6 +31,8 @@ public class ProjectFileServiceManager {
     private static final String MIGRATE_LEGACY_GLOBALVARIABLE_VS = "5.4.0";
 
     private static final String MIGRATE_SOURCE_CONTENT_VS = "5.7.0";
+    
+    private static final String MIGRATE_INTERNAL_LOGGING_VS = "5.9.0";
 
     public static ProjectEntity addNewProject(String name, String description, short pageLoadTimeout,
             String projectLocation) throws Exception {
@@ -46,6 +54,7 @@ public class ProjectFileServiceManager {
                 Collections.emptyList(), project);
         
         migrateNewIncludeFolder(project);
+        migrateNewConfigFolder(project);
 
         GroovyUtil.initGroovyProject(project,
                 FolderFileServiceManager.loadAllTestCaseDescendants(FolderFileServiceManager.getTestCaseRoot(project)),
@@ -94,6 +103,11 @@ public class ProjectFileServiceManager {
                     VersionUtil.isNewer(MIGRATE_SOURCE_CONTENT_VS, migratedVersion)) {
                 migrateNewIncludeFolder(project);
             }
+            
+            if (StringUtils.isEmpty(migratedVersion) ||
+                    VersionUtil.isNewer(MIGRATE_INTERNAL_LOGGING_VS, migratedVersion)) {
+                migrateNewConfigFolder(project);
+            }
 
             if (GlobalVariableFileServiceManager.getAll(project).isEmpty()) {
                 GlobalVariableFileServiceManager.newProfile(ExecutionProfileEntity.DF_PROFILE_NAME, true,
@@ -117,6 +131,35 @@ public class ProjectFileServiceManager {
         project.setMigratedVersion(MIGRATE_SOURCE_CONTENT_VS);
         
         EntityService.getInstance().saveEntity(project);
+    }
+    
+    private static void migrateNewConfigFolder(ProjectEntity project) throws Exception {
+        project.getSourceContent().addSystemFolder(
+                new SystemFolderConfiguration(FileServiceConstant.CONFIG_INCLUDE_FOLDER));
+        
+        String projectLocation = project.getFolderLocation();
+        File configFolder = new File(FileServiceConstant.getConfigFolderLocation(projectLocation));
+        createDefaultLogConfigFile(configFolder);
+        
+        project.setMigratedVersion(MIGRATE_INTERNAL_LOGGING_VS);
+        EntityService.getInstance().saveEntity(project);
+    }
+    
+    private static void createDefaultLogConfigFile(File configFolder) {
+        if (configFolder == null || !configFolder.exists()) {
+            return;
+        }
+        try {
+            File configFile = new File(configFolder, "log.properties");
+            if (!configFile.exists()) {
+                configFile.createNewFile();
+                Bundle bundle = FrameworkUtil.getBundle(ProjectFileServiceManager.class);
+                Path templateFilePath = new Path("/res/config/log.properties");
+                URL templateFileUrl = FileLocator.find(bundle, templateFilePath, null);
+                FileUtils.copyURLToFile(FileLocator.toFileURL(templateFileUrl), configFile);
+            }
+        } catch (IOException ignored) {
+        }
     }
 
     private static void migrateLegacyGlobalVariable(ProjectEntity project) throws Exception {

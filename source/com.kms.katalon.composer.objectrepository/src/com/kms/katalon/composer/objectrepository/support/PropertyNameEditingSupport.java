@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;

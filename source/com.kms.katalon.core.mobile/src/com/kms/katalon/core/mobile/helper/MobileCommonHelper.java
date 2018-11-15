@@ -20,6 +20,8 @@ import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 
 public class MobileCommonHelper {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(MobileCommonHelper.class);
 
     private static final String ATTRIBUTE_NAME_FOR_ANDROID_RESOURCE_ID = "resourceId";
 
@@ -125,13 +127,12 @@ public class MobileCommonHelper {
     }
 
     public static void checkXAndY(Number x, Number y) {
-        KeywordLogger logger = KeywordLogger.getInstance();
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_X);
         if (x == null) {
             throw new StepFailedException(
                     MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL, "x"));
         }
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_Y);
         if (y == null) {
             throw new StepFailedException(
                     MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL, "y"));

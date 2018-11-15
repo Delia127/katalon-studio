@@ -8,6 +8,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
 import com.kms.katalon.activation.dialog.LinuxNotSupportedDialog;
@@ -172,6 +173,7 @@ public class Application implements IApplication {
 
     private boolean activeLoggingBundle() {
         try {
+            Bundle bundle = Platform.getBundle("com.kms.katalon.ansiconsole");
             Platform.getBundle(IdConstants.KATALON_LOGGING_BUNDLE_ID).start();
             return true;
         } catch (BundleException ex) {

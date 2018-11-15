@@ -46,6 +46,8 @@ import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
 
 public class WebUiCommonHelper extends KeywordHelper {
     
+    private static final KeywordLogger logger = KeywordLogger.getInstance(WebUiCommonHelper.class);
+    
     public static final String CSS_LOCATOR_PROPERTY_NAME = "css";
     
     public static final String XPATH_LOCATOR_PROPERTY_NAME = "xpath";
@@ -58,14 +60,10 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     public static final String WEB_ELEMENT_XPATH = "xpath";
 
-    private static KeywordLogger logger = KeywordLogger.getInstance();
-    
-
-
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
             throws WebDriverException, IllegalArgumentException {
         String regularExpressionLog = ((isRegex) ? " using regular expression" : "");
-        logger.logInfo(MessageFormat.format(StringConstants.COMM_EXC_CHECKING_TEXT_PRESENT, regularExpressionLog));
+        logger.logDebug(MessageFormat.format(StringConstants.COMM_EXC_CHECKING_TEXT_PRESENT, regularExpressionLog));
         if (text == null) {
             throw new IllegalArgumentException(StringConstants.COMM_EXC_TEXT_IS_NULL);
         }
@@ -74,7 +72,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         WebElement bodyElement = webDriver.findElement(By.tagName("body"));
         String pageText = bodyElement.getText();
 
-        logger.logInfo(
+        logger.logDebug(
                 MessageFormat.format(StringConstants.COMM_LOG_INFO_FINDING_TEXT_ON_PAGE, text, regularExpressionLog));
         if (pageText != null && !pageText.isEmpty()) {
             if (isRegex) {
@@ -186,7 +184,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     public static void checkSelectIndex(Integer[] indexes, Select select) throws IllegalArgumentException {
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_INDEX_PARAMS);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_INDEX_PARAMS);
         List<WebElement> allSelectOptions = select.getOptions();
         if (allSelectOptions.size() > 0) {
             for (int index : indexes) {
@@ -200,19 +198,19 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     public static void selectOrDeselectAllOptions(Select select, boolean isSelect, TestObject to) {
         if (isSelect) {
-            logger.logInfo(
+            logger.logDebug(
                     MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_ALL_OPT_ON_OBJ, to.getObjectId()));
         } else {
-            logger.logInfo(
+            logger.logDebug(
                     MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTING_ALL_OPTS_ON_OBJ, to.getObjectId()));
         }
         for (int index = 0; index < select.getOptions().size(); index++) {
             if (isSelect) {
                 select.selectByIndex(index);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_W_INDEX_X_IS_SELECTED, index));
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_W_INDEX_X_IS_SELECTED, index));
             } else {
                 select.deselectByIndex(index);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTED_OPT_IDX_X, index));
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTED_OPT_IDX_X, index));
             }
         }
     }
@@ -221,19 +219,19 @@ public class WebUiCommonHelper extends KeywordHelper {
             TestObject to) {
         WebUiCommonHelper.checkSelectIndex(indexes, select);
         if (isSelect) {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OBJ_OPTS_W_INDEX_IN,
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OBJ_OPTS_W_INDEX_IN,
                     to.getObjectId(), WebUiCommonHelper.integerArrayToString(indexes)));
         } else {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTING_OPTS_ON_OBJ_W_IDX,
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTING_OPTS_ON_OBJ_W_IDX,
                     to.getObjectId(), WebUiCommonHelper.integerArrayToString(indexes)));
         }
         for (int index : indexes) {
             if (isSelect) {
                 select.selectByIndex(index);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_W_INDEX_X_IS_SELECTED, index));
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_W_INDEX_X_IS_SELECTED, index));
             } else {
                 select.deselectByIndex(index);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTED_OPT_IDX_X, index));
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTED_OPT_IDX_X, index));
             }
         }
     }
@@ -241,10 +239,10 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static boolean selectOrDeselectOptionsByValue(Select select, String value, boolean isRegex, boolean isSelect,
             TestObject to, String regularExpressionLog) {
         if (isSelect) {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_VAL_Y,
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_VAL_Y,
                     to.getObjectId(), value, regularExpressionLog));
         } else {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTING_OPTS_ON_OBJ_W_VAL,
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTING_OPTS_ON_OBJ_W_VAL,
                     to.getObjectId(), value, regularExpressionLog));
         }
         if (isRegex) {
@@ -270,11 +268,11 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
             if (isSelect) {
                 select.selectByIndex(index);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTED_OPT_AT_INDEX_W_VAL, index,
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTED_OPT_AT_INDEX_W_VAL, index,
                         optionValue, regularExpressionLog));
             } else {
                 select.deselectByIndex(index);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_VAL_Y_IS_SELECTED, index,
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_VAL_Y_IS_SELECTED, index,
                         optionValue, regularExpressionLog));
             }
             isMatched = true;
@@ -285,10 +283,10 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static boolean selectOrDeselectOptionsByLabel(Select select, String label, boolean isRegex, boolean isSelect,
             TestObject to, String regularExpressionLog) {
         if (isSelect) {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_LBL_Y,
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_LBL_Y,
                     to.getObjectId(), label, regularExpressionLog));
         } else {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTING_OPTS_ON_OBJ_X_W_LBL_Y,
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_DESELECTING_OPTS_ON_OBJ_X_W_LBL_Y,
                     to.getObjectId(), label, regularExpressionLog));
         }
         if (isRegex) {
@@ -314,11 +312,11 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
             if (isSelect) {
                 select.selectByIndex(index);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_LBL_TXT_Y_IS_SELECTED,
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_LBL_TXT_Y_IS_SELECTED,
                         index, optionValue, regularExpressionLog));
             } else {
                 select.deselectByIndex(index);
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_LBL_TXT_Y_IS_DESELECTED,
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_LBL_TXT_Y_IS_DESELECTED,
                         index, optionValue, regularExpressionLog));
             }
             isMatched = true;
@@ -329,14 +327,14 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static int getNumberOfOptionByLabel(Select select, String label, boolean isRegex, String objectId) {
         int count = 0;
         String regularExpressionLog = ((isRegex) ? " using regular expression" : "");
-        logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_LBL_PRESENT_ON_OBJ, label,
+        logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_LBL_PRESENT_ON_OBJ, label,
                 objectId, regularExpressionLog));
         List<WebElement> allOptions = select.getOptions();
         for (int index = 0; index < allOptions.size(); index++) {
             String optionLabel = allOptions.get(index).getText();
             if (optionLabel != null && KeywordHelper.match(optionLabel, label, isRegex)) {
                 count++;
-                logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_LBL_IS_PRESENT, index,
+                logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_LBL_IS_PRESENT, index,
                         optionLabel, regularExpressionLog));
             }
         }
@@ -346,14 +344,14 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static int getNumberOfOptionByValue(Select select, String value, boolean isRegex, String objectId) {
         int count = 0;
         String regularExpressionLog = ((isRegex) ? " using regular expression" : "");
-        logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_VAL_PRESENT_ON_OBJ, value,
+        logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_VAL_PRESENT_ON_OBJ, value,
                 objectId, regularExpressionLog));
         List<WebElement> allOptions = select.getOptions();
         for (int index = 0; index < allOptions.size(); index++) {
             String optionValue = allOptions.get(index).getAttribute("value");
             if (optionValue != null && KeywordHelper.match(optionValue, value, isRegex)) {
                 count++;
-                logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_VAL_IS_PRESENT, index,
+                logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_VAL_IS_PRESENT, index,
                         optionValue, regularExpressionLog));
             }
         }
@@ -363,7 +361,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static int getNumberOfSelectedOptionByLabel(Select select, String label, boolean isRegex, String objectId) {
         int count = 0;
         String regularExpressionLog = ((isRegex) ? " using regular expression" : "");
-        logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_LBL_SELECTED_ON_OBJ,
+        logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_LBL_SELECTED_ON_OBJ,
                 label, objectId, regularExpressionLog));
         List<WebElement> allOptions = select.getOptions();
         List<WebElement> allSelectedOptions = select.getAllSelectedOptions();
@@ -372,7 +370,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             if (optionLabel != null && KeywordHelper.match(optionLabel, label, isRegex)) {
                 if (allSelectedOptions.contains(allOptions.get(index))) {
                     count++;
-                    logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_LBL_IS_SELECTED,
+                    logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_LBL_IS_SELECTED,
                             index, optionLabel, regularExpressionLog));
                 }
             }
@@ -384,7 +382,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             String objectId) {
         int count = 0;
         String regularExpressionLog = ((isRegex) ? " using regular expression" : "");
-        logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_LBL_NOT_SELECTED_ON_OBJ,
+        logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_LBL_NOT_SELECTED_ON_OBJ,
                 label, objectId, regularExpressionLog));
         List<WebElement> allOptions = select.getOptions();
         List<WebElement> allSelectedOptions = select.getAllSelectedOptions();
@@ -393,7 +391,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             if (optionLabel != null && KeywordHelper.match(optionLabel, label, isRegex)) {
                 if (!allSelectedOptions.contains(allOptions.get(index))) {
                     count++;
-                    logger.logInfo(
+                    logger.logDebug(
                             MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_LBL_IS_NOT_SELECTED,
                                     index, optionLabel, regularExpressionLog));
                 }
@@ -405,7 +403,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static int getNumberOfSelectedOptionByValue(Select select, String value, boolean isRegex, String objectId) {
         int count = 0;
         String regularExpressionLog = ((isRegex) ? " using regular expression" : "");
-        logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_VAL_SELECTED_ON_OBJ,
+        logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_VAL_SELECTED_ON_OBJ,
                 value, objectId, regularExpressionLog));
         List<WebElement> allOptions = select.getOptions();
         List<WebElement> allSelectedOptions = select.getAllSelectedOptions();
@@ -414,7 +412,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             if (optionValue != null && KeywordHelper.match(optionValue, value, isRegex)) {
                 if (allSelectedOptions.contains(allOptions.get(index))) {
                     count++;
-                    logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_VAL_IS_SELECTED,
+                    logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_VAL_IS_SELECTED,
                             index, optionValue, regularExpressionLog));
                 }
             }
@@ -426,7 +424,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             String objectId) {
         int count = 0;
         String regularExpressionLog = ((isRegex) ? " using regular expression" : "");
-        logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_VAL_NOT_SELECTED_ON_OBJ,
+        logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_VAL_NOT_SELECTED_ON_OBJ,
                 value, objectId, regularExpressionLog));
         List<WebElement> allOptions = select.getOptions();
         List<WebElement> allSelectedOptions = select.getAllSelectedOptions();
@@ -435,7 +433,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             if (optionValue != null && KeywordHelper.match(optionValue, value, isRegex)) {
                 if (!allSelectedOptions.contains(allOptions.get(index))) {
                     count++;
-                    logger.logInfo(
+                    logger.logDebug(
                             MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_W_VAL_IS_NOT_SELECTED,
                                     index, optionValue, regularExpressionLog));
                 }
@@ -446,7 +444,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     public static int getNumberOfSelectedOptionByIndex(Select select, Integer[] indexes, String objectId)
             throws IllegalArgumentException {
-        logger.logInfo(
+        logger.logDebug(
                 MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_INDEX_RANGE_SELECTED_ON_OBJ,
                         integerArrayToString(indexes), objectId));
         int count = 0;
@@ -456,14 +454,14 @@ public class WebUiCommonHelper extends KeywordHelper {
             // number
             if (allSelectedOptions.contains(select.getOptions().get(index))) {
                 count++;
-                logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_IS_SELECTED, index));
+                logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_IS_SELECTED, index));
             }
         }
         return count;
     }
 
     public static int getNumberOfNotSelectedOptionByIndex(Select select, Integer[] indexes, String objectId) {
-        logger.logInfo(
+        logger.logDebug(
                 MessageFormat.format(StringConstants.COMM_LOG_INFO_COUNTING_NUM_OPTS_W_INDEX_RANGE_NOT_SELECTED_ON_OBJ,
                         integerArrayToString(indexes), objectId));
         int count = 0;
@@ -473,7 +471,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             // number
             if (!allSelectedOptions.contains(select.getOptions().get(index))) {
                 count++;
-                logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_IS_NOT_SELECTED, index));
+                logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_OPT_AT_INDEX_IS_NOT_SELECTED, index));
             }
         }
         return count;
@@ -622,30 +620,30 @@ public class WebUiCommonHelper extends KeywordHelper {
         double yOffset = 0;
         try {
             if (frames.size() > 0) {
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME,
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME,
                         testObject.getObjectId()));
                 for (int i = frames.size() - 1; i >= 0; i--) {
                     TestObject frameObject = frames.get(i);
-                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
+                    logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
                             frameObject.getObjectId()));
                     WebElement frameElement = findWebElement(frameObject, timeOut);
                     if (frameElement != null) {
-                        logger.logInfo(
+                        logger.logDebug(
                                 MessageFormat.format(StringConstants.KW_LOG_INFO_CHECKING_TO_IFRAME_X_IN_VIEWPORT,
                                         frameObject.getObjectId()));
 
                         Rectangle elementRect = WebUiCommonHelper.getElementRect(driver, frameElement);
                         elementRect.setRect(elementRect.getX() + xOffset, elementRect.getY() + yOffset,
                                 elementRect.getWidth(), elementRect.getHeight());
-                        logger.logInfo(
+                        logger.logDebug(
                                 MessageFormat.format(StringConstants.KW_LOG_INFO_ELEMENT_RECT, elementRect.getX(),
                                         elementRect.getY(), elementRect.getWidth(), elementRect.getHeight()));
                         Rectangle documentRect = new Rectangle(0, 0, WebUiCommonHelper.getViewportWidth(driver),
                                 WebUiCommonHelper.getViewportHeight(driver));
-                        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT,
+                        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT,
                                 documentRect.getWidth(), documentRect.getHeight()));
                         if (!documentRect.intersects(elementRect)) {
-                            logger.logInfo(MessageFormat.format(
+                            logger.logDebug(MessageFormat.format(
                                     StringConstants.KW_MSG_PARENT_OBJECT_IS_NOT_VISIBLE_IN_VIEWPORT,
                                     frameObject.getObjectId()));
                             return false;
@@ -654,7 +652,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                         yOffset += frameElement.getLocation().getY();
                         driver.switchTo().frame(frameElement);
                         isSwitchIntoFrame = true;
-                        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
+                        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
                                 frameObject.getObjectId()));
                     }
                 }
@@ -671,11 +669,11 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     public static boolean isElementVisibleInViewport(WebDriver driver, WebElement element) {
         Rectangle elementRect = WebUiCommonHelper.getElementRect(driver, element);
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_ELEMENT_RECT, elementRect.getX(),
+        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_ELEMENT_RECT, elementRect.getX(),
                 elementRect.getY(), elementRect.getWidth(), elementRect.getHeight()));
         Rectangle documentRect = new Rectangle(0, 0, WebUiCommonHelper.getViewportWidth(driver),
                 WebUiCommonHelper.getViewportHeight(driver));
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT, documentRect.getWidth(),
+        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_VIEWPORT_RECT, documentRect.getWidth(),
                 documentRect.getHeight()));
         return documentRect.intersects(elementRect);
     }
@@ -705,7 +703,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                                     testObject.getObjectId()));
                 }
                 locatorString = cssLocator;
-                logger.logInfo(
+                logger.logDebug(
                         MessageFormat.format(CoreWebuiMessageConstants.MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT,
                                 testObject.getObjectId(), testObject.getParentObject().getObjectId()));
                 isSwitchToParentFrame = switchToParentFrame(parentObject);
@@ -713,7 +711,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 if (shadowRootElement == null) {
                     return null;
                 }
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
                         testObject.getObjectId(), cssLocator, timeOut));
             } else {
                 defaultLocator = WebUiCommonHelper.buildLocator(testObject);
@@ -723,7 +721,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                                     testObject.getObjectId()));
                 }
                 locatorString = defaultLocator.toString();
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
+                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
                         testObject.getObjectId(), defaultLocator.toString(), timeOut));
             }
 
@@ -739,7 +737,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                     } else {
                         webElements = webDriver.findElements(defaultLocator);
                         if (webElements != null && webElements.size() > 0) {
-                            logger.logInfo(MessageFormat.format(
+                            logger.logDebug(MessageFormat.format(
                                     StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS, webElements.size(),
                                     testObject.getObjectId(), defaultLocator.toString(), timeOut));
                             return webElements;
@@ -893,7 +891,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 (left, right) -> left.getValue().size() - right.getValue().size());
         WebElement bestMatchElement = bestMatchEntry.getKey();
         List<String> matchingAttributes = bestMatchEntry.getValue();
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD, matchingAttributes));
+        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD, matchingAttributes));
         return bestMatchElement;
     }
 
@@ -965,7 +963,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             By locator) throws WebElementNotFoundException {
         List<WebElement> webElements = webDriver.findElements(locator);
         if (webElements != null && webElements.size() > 0) {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                     webElements.size(), testObject.getObjectId(), locator.toString(), timeOut));
         }
         return webElements;
@@ -984,7 +982,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         List<WebElement> webElements = (List<WebElement>) ((JavascriptExecutor) webDriver)
                 .executeScript("return arguments[0].querySelectorAll('" + cssLocator + "');", shadowRootElementSandbox);
         if (webElements != null && webElements.size() > 0) {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
+            logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                     webElements.size(), testObject.getObjectId(), cssLocator, timeOut));
         }
         return webElements;
@@ -1010,7 +1008,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 logger.logWarning(StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_ALERT_ON_PAGE);
                 return;
             }
-            logger.logInfo(StringConstants.KW_LOG_INFO_SWITCHING_TO_DEFAULT_CONTENT);
+            logger.logDebug(StringConstants.KW_LOG_INFO_SWITCHING_TO_DEFAULT_CONTENT);
             DriverFactory.getWebDriver().switchTo().defaultContent();
         } catch (NoSuchWindowException e) {
             // Switching to default content in IE without in frame will raise
@@ -1045,7 +1043,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (parentObjects.size() <= 0) {
             return false;
         }
-        logger.logInfo(
+        logger.logDebug(
                 MessageFormat.format(StringConstants.KW_LOG_INFO_OBJ_X_HAS_PARENT_FRAME, testObject.getObjectId()));
         WebDriver webDriver = DriverFactory.getWebDriver();
         for (int i = parentObjects.size() - 1; i >= 0; i--) {
@@ -1059,14 +1057,14 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     private static boolean switchToParentFrame(int timeOut, WebDriver webDriver, TestObject currentParentObject)
             throws WebElementNotFoundException {
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
+        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHING_TO_IFRAME_X,
                 currentParentObject.getObjectId()));
         WebElement frameElement = findWebElement(currentParentObject, timeOut);
         if (frameElement == null) {
             return false;
         }
         webDriver.switchTo().frame(frameElement);
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
+        logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SWITCHED_TO_IFRAME_X,
                 currentParentObject.getObjectId()));
         return true;
     }

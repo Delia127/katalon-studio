@@ -336,6 +336,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String AbstractExecutionHandler_HAND_MSG_UNABLE_TO_EXECUTE_FEATURE_FILE;
 
     public static String AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE;
+    
+    public static String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
 
     static {
         // initialize resource bundle

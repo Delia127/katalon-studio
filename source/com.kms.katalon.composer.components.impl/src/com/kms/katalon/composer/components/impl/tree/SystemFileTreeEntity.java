@@ -31,6 +31,8 @@ public class SystemFileTreeEntity extends AbstractTreeEntity {
     public Image getImage() throws Exception {
         if (".feature".equals(getObject().getFileExtension())) {
             return ImageConstants.IMG_16_FEATURE;
+        } else if (".properties".equals(getObject().getFileExtension())) {
+            return ImageConstants.IMG_16_CONFIG;
         }
         return null;
     }

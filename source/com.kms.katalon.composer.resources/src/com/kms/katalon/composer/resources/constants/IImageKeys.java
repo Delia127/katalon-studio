@@ -410,6 +410,8 @@ public interface IImageKeys {
 
     public static final String FEATURE_16 = "entity/feature_16.png"; //$NON-NLS-1$
     
+    public static final String CONFIG_16 = "entity/config_16.png"; //$NON-NLS-1$
+
     public static final String GROOVY_16 = "entity/groovy_16.png"; //$NON-NLS-1$
 
     public static final String FOLDER_FEATURE_16 = "entity/folder_feature_16.png"; //$NON-NLS-1$

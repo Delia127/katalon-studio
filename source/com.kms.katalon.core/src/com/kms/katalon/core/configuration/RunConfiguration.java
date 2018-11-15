@@ -87,6 +87,8 @@ public class RunConfiguration {
     public static final String TERMINATE_DRIVER_AFTER_TEST_SUITE = "terminateDriverAfterTestSuite";
 
     public static final String EXECUTION_PROFILE_PROPERTY = "executionProfile";
+    
+    public static final String LOGBACK_CONFIG_FILE_LOCATION = "logbackConfigFileLocation";
 
     // This property is available for record - playback mode only. 
     public static final String RECORD_CAPTURED_OBJECTS_FILE = "recordCapturedObjectsCache";
@@ -95,7 +97,7 @@ public class RunConfiguration {
     
     private static String settingFilePath;
 
-    private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
+    private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>() {
         @Override
         protected Map<String, Object> initialValue() {
             return new HashMap<String, Object>();
@@ -407,6 +409,10 @@ public class RunConfiguration {
         return (Map<String, Object>) getExecutionProperties().get(EXECUTION_GENERAL_PROPERTY);
     }
 
+    public static String getLogbackConfigFileLocation() {
+        return getStringProperty(LOGBACK_CONFIG_FILE_LOCATION);
+    }
+    
     public static Object[] getStoredDrivers() {
         return localDriverStorage.get().toArray();
     }

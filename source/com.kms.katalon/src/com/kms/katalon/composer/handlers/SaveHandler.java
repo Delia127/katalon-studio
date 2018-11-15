@@ -10,7 +10,6 @@ import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.tracking.service.Trackings;
 
 public class SaveHandler extends AbstractHandler {
 

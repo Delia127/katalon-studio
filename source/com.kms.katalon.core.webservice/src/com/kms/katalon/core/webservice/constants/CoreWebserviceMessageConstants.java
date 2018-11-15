@@ -1,7 +1,6 @@
 package com.kms.katalon.core.webservice.constants;
 
 import org.eclipse.osgi.util.NLS;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
 public class CoreWebserviceMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.core.webservice.constants.coreWebserviceMessages";

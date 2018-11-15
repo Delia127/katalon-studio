@@ -63,7 +63,7 @@ public class XMLLoggerParser {
     }
 
     public static String getRecordDate(LogRecord record) {
-        SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss a");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         return format.format(new Date(record.getMillis()));
     }
 

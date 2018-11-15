@@ -46,7 +46,7 @@ class GetElementHeight extends WebUIAbstractKeyword{
                 isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to)
                 WebElement element = WebUIAbstractKeyword.findWebElement(to)
                 String testObjectID = to.getObjectId()
-                logger.logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_LOG_INFO_GETTING_ELEMENT_HEIGHT, testObjectID))
+                logger.logDebug(MessageFormat.format(CoreWebuiMessageConstants.KW_LOG_INFO_GETTING_ELEMENT_HEIGHT, testObjectID))
                 int elementHeight = element.getSize().height;
                 logger.logPassed(MessageFormat.format(CoreWebuiMessageConstants.KW_LOG_PASSED_GET_ELEMENT_HEIGHT, to.getObjectId(), elementHeight))
                 return elementHeight

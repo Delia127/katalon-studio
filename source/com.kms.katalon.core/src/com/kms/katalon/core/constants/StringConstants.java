@@ -18,6 +18,8 @@ public class StringConstants {
 
     public static final String LOG_START_KEYWORD = "Start action";
     
+    public static final String LOG_START_ACTION_PREFIX = LOG_START_KEYWORD + " : ";
+    
     public static final String LOG_SETUP_ACTION = "setup action";
     
     public static final String LOG_TEAR_DOWN_ACTION = "tear down";
