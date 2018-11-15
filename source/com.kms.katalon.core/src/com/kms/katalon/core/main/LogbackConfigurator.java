@@ -19,7 +19,7 @@ import ch.qos.logback.classic.util.ContextInitializer;
 
 public class LogbackConfigurator {
 
-    private static final String CONFIG_PROPERTY_FILE = "config.properties";
+    private static final String CONFIG_PROPERTY_FILE = "log.properties";
 
     private static final String CONFIG_FOLDER = "Include/config";
 
