@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.LogRecord;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
@@ -1153,6 +1154,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
             @Override
             public void run() {
+                if (parentComposite.isDisposed()) {
+                    return;
+                }
                 resetProgressBar();
 
                 if (isLaunchersWatchedValid()) {
@@ -1167,6 +1171,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 eventBroker.send(EventConstants.JOB_REFRESH, null);
             }
         });
+    }
+    
+    @PreDestroy
+    public void destroy() {
+        eventBroker.unsubscribe(this);
     }
 
     @Override
@@ -1207,6 +1216,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 sync.syncExec(new Runnable() {
                     @Override
                     public void run() {
+                        if (parentComposite.isDisposed()) {
+                            return;
+                        }
                         resetProgressBar();
                         createLogViewerControl(parentComposite);
                         updateProgressBar();
