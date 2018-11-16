@@ -181,11 +181,11 @@ public class GlobalVariableEditorPart extends CPart implements SavableCompositeP
     public void setScriptContentFrom(ExecutionProfileEntity execProfEntity) throws Exception {
         String incomingContentScript = getScriptContentFromExecutionProfileEntity(execProfEntity);
         if (!contentScript.equals(incomingContentScript)) {
-            mirrorEditor.setText(incomingContentScript);
             if (!contentScript.equals(StringUtils.EMPTY))
                 contentChanged = true;
             contentScript = incomingContentScript;
         }
+        mirrorEditor.setText(incomingContentScript);
     }
     
     public String getScriptContentFromExecutionProfileEntity(ExecutionProfileEntity execProfEntity) throws Exception{
