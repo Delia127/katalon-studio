@@ -83,6 +83,7 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
     }
 
     public void addTestCase(TestCaseEntity testCase) throws Exception {
+        
         TestSuiteTestCaseLink link = createNewTestSuiteTestCaseLink(testCase);
 
         testCasesPKs.add(testCase.getId());
@@ -96,6 +97,10 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
     public TestSuiteTestCaseLink insertTestCase(TestCaseEntity testCase, int index) throws Exception {
         if (index < 0 || index > data.size()) {
             addTestCase(testCase);
+            return null;
+        }
+        // check testCase is in list or not
+        if (testCasesPKs.contains(testCase.getId())) {
             return null;
         }
 

@@ -74,7 +74,6 @@ public class DocumentationMessageConstants extends NLS {
     public static String TEST_CASE_MANUAL;
 
     public static String TEST_CASE_VARIABLE;
-    
     public static String TEST_CASE_VARIABLE_EDITOR;
 
     public static String TEST_CASE_SCRIPT;
@@ -126,6 +125,10 @@ public class DocumentationMessageConstants extends NLS {
 	public static String WEB_SERVICE_VARIABLES;
 	
 	public static String WEB_SERVICE_AUTHORIZATION;
+
+	public static String CUCUMBER_FEATURE_FILE;
+	
+	public static String CUCUMBER_STEP_DEFINITIONS;
 
     static {
         // initialize resource bundle

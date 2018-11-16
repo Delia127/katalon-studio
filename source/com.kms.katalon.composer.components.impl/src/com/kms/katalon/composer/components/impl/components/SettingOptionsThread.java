@@ -37,14 +37,18 @@ public class SettingOptionsThread extends Thread {
                 Thread.sleep(50L);
             } catch (InterruptedException ignored) {}
         }
-        try{
-            UISynchronizeService.syncExec(() -> executeCommand());                
-        } catch( Exception e){
-            // Do nothing for now
-        }
+
+        UISynchronizeService.syncExec(() -> {
+			try {
+				executeCommand();
+			} catch (Exception e) {
+				LoggerSingleton.logError(e);
+			}
+		});                
+
     }
 
-    private void executeCommand() {
+    private void executeCommand() throws Exception{
         for (String command : commands) {
             browser.evaluate(command);
         }

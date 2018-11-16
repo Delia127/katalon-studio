@@ -35,7 +35,7 @@ public class IDEConsoleManager {
         }
         
         IConsoleManager manager = ConsolePlugin.getDefault().getConsoleManager();
-        
+
         IConsole console = getIConsole(launch);        
         if (console != null) {
             manager.showConsoleView(console);

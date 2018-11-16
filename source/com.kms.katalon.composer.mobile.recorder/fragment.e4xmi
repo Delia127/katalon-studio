@@ -13,4 +13,7 @@
       <tags>FORCE_TEXT</tags>
     </elements>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6gzv0MxLEeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.record" positionInList="after:com.kms.katalon.composer.webui.recorder.handledmenuitem.recordweb">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_7Vc40MxLEeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.recorder.handledmenuitem.recordmobile" label="Record Mobile" iconURI="" command="_Ouqs4DRsEeem58Ih33kujQ"/>
+  </fragments>
 </fragment:ModelFragments>

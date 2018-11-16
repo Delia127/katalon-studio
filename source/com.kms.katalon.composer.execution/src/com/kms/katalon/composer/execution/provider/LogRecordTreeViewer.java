@@ -85,7 +85,9 @@ public class LogRecordTreeViewer extends TreeViewer {
                 if (currentParentNodeImpl.getResult() == null
                         || LogLevel.valueOf(currentParentNodeImpl.getResult().getLevel()) == LogLevel.PASSED) {
                     if (isScrollLogEnable()) {
-                        setExpandedState(currentParentNodeImpl, false);
+                        if (currentParentNodeImpl.getParent() != null) { // don't collapse root
+                            setExpandedState(currentParentNodeImpl, false);
+                        }
                     }
                 }
                 select(new StructuredSelection(currentParentNodeImpl));

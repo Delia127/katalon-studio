@@ -43,6 +43,9 @@ import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import io.appium.java_client.service.local.flags.IOSServerFlag;
 
 public class AppiumDriverManager {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(AppiumDriverManager.class);
+    
     public static final String WDA_LOCAL_PORT = "wdaLocalPort";
 
     public static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
@@ -164,7 +167,7 @@ public class AppiumDriverManager {
         }
         localStorageWebProxyProcess.set(webProxyProcess);
         localStorageWebProxyPort.set(freePort);
-        KeywordLogger.getInstance().logInfo(MSG_START_IOS_WEBKIT_SUCCESS + freePort);
+        logger.logInfo(MSG_START_IOS_WEBKIT_SUCCESS + freePort);
     }
 
     public static boolean isAppiumServerStarted(int timeToWait) {
@@ -218,7 +221,7 @@ public class AppiumDriverManager {
             try {
                 ensureWebProxyServerStarted(deviceId);
             } catch (IOException | InterruptedException | IOSWebkitStartException e) {
-                KeywordLogger.getInstance().logInfo(e.getMessage());
+                logger.logWarning(e.getMessage());
             }
         }
         startAppiumServerJS(RunConfiguration.getTimeOut());
@@ -241,7 +244,7 @@ public class AppiumDriverManager {
         // If not, start it
         startAppiumServer(environmentVariables);
         if (isAppiumServerStarted(timeout)) {
-            KeywordLogger.getInstance().logInfo(
+            logger.logInfo(
                     MessageFormat.format(AppiumStringConstants.APPIUM_STARTED_ON_PORT, localStorageAppiumPort.get()));
             return;
         }
@@ -457,7 +460,6 @@ public class AppiumDriverManager {
     }
 
     private static void logMobileRunData() {
-        KeywordLogger logger = KeywordLogger.getInstance();
         if (logger != null) {
             logger.logRunData(EXECUTED_DEVICE_ID, getDeviceId(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
             logger.logRunData(EXECUTED_DEVICE_NAME, getDeviceName(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
@@ -485,7 +487,7 @@ public class AppiumDriverManager {
             try {
                 ProcessUtil.terminateProcess(localStorageAppiumServer.get());
             } catch (ReflectiveOperationException | IOException e) {
-                KeywordLogger.getInstance().logInfo("Error when trying to stop Appium Server: " + e.getMessage());
+                logger.logWarning("Error when trying to stop Appium Server: " + e.getMessage());
             } finally {
                 localStorageAppiumServer.set(null);
             }
@@ -494,7 +496,7 @@ public class AppiumDriverManager {
             try {
                 ProcessUtil.terminateProcess(localStorageWebProxyProcess.get());
             } catch (ReflectiveOperationException | IOException e) {
-                KeywordLogger.getInstance().logInfo("Error when trying to stop Web Proxy Server: " + e.getMessage());
+                logger.logWarning("Error when trying to stop Web Proxy Server: " + e.getMessage());
             } finally {
                 localStorageWebProxyProcess.set(null);
             }

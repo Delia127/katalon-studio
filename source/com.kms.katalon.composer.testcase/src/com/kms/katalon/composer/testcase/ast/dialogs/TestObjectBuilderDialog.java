@@ -103,7 +103,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
             .getInputValueTypeOptions(InputValueType.Map);
 
     private static final InputValueType[] webServiceRequestVariableInputValueTypes = { InputValueType.String,
-            InputValueType.Number, InputValueType.Boolean, InputValueType.Variable, InputValueType.GlobalVariable,
+            InputValueType.Number, InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.Property, InputValueType.List, InputValueType.Map };
 
     private static final String DEFAULT_VARIABLE_NAME = "variable";
@@ -582,6 +582,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
             @Override
             public void setDirty(boolean isDirty) {
+            	
             }
 
             @Override
@@ -602,8 +603,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         };
 
         webServiceRequestVariablesView = new TestCaseVariableView(webServiceRequestVariablesPart);
+        webServiceRequestVariablesView.setTestCasePart(testCasePart);
         webServiceRequestVariablesView.setInputValueTypes(webServiceRequestVariableInputValueTypes);
-        webServiceRequestVariablesView.setTestCasePart(getTestCasePart());
         webServiceRequestVariablesView.createComponents(composite);
 
         // hide "Masked" column

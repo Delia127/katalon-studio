@@ -38,7 +38,7 @@ import groovy.util.ScriptException;
 
 public class ObjectRepository {
 
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    private static final KeywordLogger logger = KeywordLogger.getInstance(ObjectRepository.class);
 
     private static final String TEST_OBJECT_ROOT_FOLDER_NAME = "Object Repository";
 
@@ -156,7 +156,7 @@ public class ObjectRepository {
         }
 
         String testObjectId = getTestObjectId(testObjectRelativeId);
-        logger.logInfo(MessageFormat.format(StringConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID, testObjectId));
+        logger.logDebug(MessageFormat.format(StringConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID, testObjectId));
 
         // Read test objects cached in temporary in record session.
         Map<String, TestObject> testObjectsCached = getCapturedTestObjects();

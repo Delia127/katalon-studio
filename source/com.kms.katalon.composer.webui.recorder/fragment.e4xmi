@@ -16,4 +16,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_iQh2EM1IEeSTLup_fpV0TA" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_iQh2Ec1IEeSTLup_fpV0TA" elementId="com.kms.katalon.composer.webui.recorder.handler.record" contributionURI="bundleclass://com.kms.katalon.composer.webui.recorder/com.kms.katalon.composer.webui.recorder.handler.RecordHandler" command="_Yx0f8c1IEeSTLup_fpV0TA"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pvpfwMxLEeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.record" positionInList="first">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_uV1nwMxLEeis-d8dVdcONw" elementId="com.kms.katalon.composer.webui.recorder.handledmenuitem.recordweb" label="Record Web" iconURI="" command="_Yx0f8c1IEeSTLup_fpV0TA"/>
+  </fragments>
 </fragment:ModelFragments>

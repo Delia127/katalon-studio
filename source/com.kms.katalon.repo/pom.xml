@@ -261,6 +261,18 @@
 								<artifact>
 									<id>io.swagger:swagger-parser:2.0.0-rc1</id>
 								</artifact>
+                                <artifact>
+                                    <id>ch.qos.logback:logback-classic:1.2.3</id>
+                                </artifact>
+                                <artifact>
+                                    <id>ch.qos.logback:logback-core:1.2.3</id>
+                                </artifact>
+                                <artifact>
+                                    <id>org.slf4j:slf4j-api:1.7.25</id>
+                                </artifact>
+                                <artifact>
+                                    <id>org.fusesource.jansi:jansi:1.17.1</id>
+								</artifact>
 								<artifact>
 									<id>javax.websocket:javax.websocket-api:1.1</id>
 								</artifact>

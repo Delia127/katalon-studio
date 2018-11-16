@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
@@ -29,8 +29,6 @@ import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.tracking.service.Trackings;
-
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
@@ -246,11 +244,39 @@ public class ConsoleMain {
                 }
             }
         }
+        deleteLibFolders(projectPk);
         ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk);
         if (projectEntity == null) {
             throw new InvalidConsoleArgumentException(
                     MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X, projectPk));
         }
         return projectEntity;
+    }
+    
+    private static void deleteLibFolders(String projectPk) {
+        try {
+            File projectFile = new File(projectPk);
+            if (projectFile.isFile() && projectFile.exists()) {
+                File projectFolder = projectFile.getParentFile();
+                if (projectFolder.exists()) {
+                    deleteLibFolder(projectFolder, "bin");
+                    deleteLibFolder(projectFolder, "Libs");
+                }
+            }
+        } catch (Throwable t) {
+            LogUtil.printAndLogError(t, "Unable to delete lib folders");
+        }
+    }
+    
+    private static void deleteLibFolder(File projectFolder, String libFolderName) {
+        File libFolder = new File(projectFolder, libFolderName);
+        if (libFolder.exists()) {
+            LogUtil.printOutputLine("Delete folder: " + libFolderName);
+            try {
+                FileUtils.forceDelete(libFolder);
+            } catch (IOException e) {
+                LogUtil.printAndLogError(e, "Unable to delete folder: " + libFolderName);
+            }
+        }
     }
 }
