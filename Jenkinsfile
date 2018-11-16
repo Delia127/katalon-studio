@@ -51,9 +51,9 @@ pipeline {
                 script {
                     dir("source") {
                         if (BRANCH_NAME ==~ /^[release]+/) {
-                            sh ''' mvn clean install -P prod '''
+                            sh ''' mvn clean verify -P prod '''
                         } else {                      
-                            sh ''' mvn -pl com.kms.katalon.product.qtest_edition -am -amd clean install -P dev '''
+                            sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
                         }
                     }
                 }
