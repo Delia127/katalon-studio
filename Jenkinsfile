@@ -4,6 +4,10 @@ import jenkins.model.CauseOfInterruption.UserInterruption
 
 pipeline {
     agent any
+    
+    environment {
+        MAVEN_OPTS = '-T 4'
+    }
 
     tools {
         maven 'default'
