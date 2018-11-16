@@ -1,21 +1,22 @@
+import hudson.model.Result
+import hudson.model.Run
+import jenkins.model.CauseOfInterruption.UserInterruption
+
 pipeline {
     agent any
 
     tools {
         maven 'default'
     }
-
+    
     stages {
-        stage('Checkout') {
-            // checkout code
-            options {
-                retry(3)
-            }
+        stage('Prepare') {
             steps {
-                checkout scm
+                script {
+                    abortPreviousBuilds()          
+                }
             }
         }
-
 
         stage('Set permissions to source') {
             // set write permissions to current workspace
@@ -27,6 +28,7 @@ pipeline {
         stage('Building') {
             // start maven commands to get dependencies
             steps {
+                sh 'ulimit -c unlimited'
                 sh 'cd source/com.kms.katalon.repo && mvn p2:site'
                 sh 'cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &'
                 sh '''
@@ -107,6 +109,23 @@ pipeline {
         timeout(time: 60, unit: 'MINUTES')
         // wait 10 seconds before starting scheduled build
         quietPeriod 10
+    }
+}
+
+def abortPreviousBuilds() {
+    Run previousBuild = currentBuild.rawBuild.getPreviousBuildInProgress()
+    
+    while (previousBuild != null) {
+        if (previousBuild.isInProgress()) {
+            def executor = previousBuild.getExecutor()
+            if (executor != null) {
+                echo ">> Aborting older build #${previousBuild.number}"
+                executor.interrupt(Result.ABORTED, new UserInterruption(
+                    "Aborted by newer build #${currentBuild.number}"
+                ))
+            }
+        }
+        previousBuild = previousBuild.getPreviousBuildInProgress()
     }
 }
 

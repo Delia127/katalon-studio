@@ -371,6 +371,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
         VariableEntity newVariable = new VariableEntity();
         newVariable.setName(generateNewPropertyName());
         newVariable.setDefaultValue("''");
+
         executeOperation(new NewVariableOperation(this, newVariable));
         invoke(TestCaseVariableViewEvent.ADD_VARIABLE, null);
     }

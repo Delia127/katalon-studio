@@ -215,7 +215,8 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         if (container == null) {
             return;
         }
-        String selectedExecutionConfiguration = ExecutionDefaultSettingStore.EXECUTION_DEFAULT_CONFIGURATION;
+        String selectedExecutionConfiguration = ExecutionDefaultSettingStore.getStore()
+                .getDefaultExecutionConfiguration();
         runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
         if (runConfigs.length > 0) {
             List<String> runConfigIds = Arrays.stream(runConfigs)
