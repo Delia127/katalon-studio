@@ -4,11 +4,7 @@ import jenkins.model.CauseOfInterruption.UserInterruption
 
 pipeline {
     agent any
-    
-    environment {
-        MAVEN_OPTS = '-T 4'
-    }
-
+   
     tools {
         maven 'default'
     }
@@ -55,9 +51,9 @@ pipeline {
                 script {
                     dir("source") {
                         if (BRANCH_NAME ==~ /^[release]+/) {
-                            sh ''' mvn clean verify -P prod '''
+                            sh ''' mvn clean verify -P prod -T 4 '''
                         } else {                      
-                            sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
+                            sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev -T 4 '''
                         }
                     }
                 }
