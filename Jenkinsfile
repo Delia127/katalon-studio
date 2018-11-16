@@ -19,7 +19,6 @@ pipeline {
         }
 
         stage('Set permissions to source') {
-            // set write permissions to current workspace
             steps {
                 sh '''chmod -R 777 ${WORKSPACE}'''
             }
@@ -47,13 +46,14 @@ pipeline {
                         sleep 5
                     done
                 '''
+                
              // generate katalon builds   
                 script {
                     dir("source") {
                         if (BRANCH_NAME ==~ /^[release]+/) {
                             sh ''' mvn clean verify -P prod '''
-                        } else {
-                            sh ''' mvn clean verify -P dev '''
+                        } else {                      
+                            sh ''' mvn -pl \!com.kms.katalon.product clean verify -P dev '''
                         }
                     }
                 }
@@ -63,7 +63,7 @@ pipeline {
         stage('Copy builds') {
             // copy generated builds and changelogs to shared folder on server
             steps {
-                dir("source/com.kms.katalon.product/target/products") {
+                dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
                         String tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
                         writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
