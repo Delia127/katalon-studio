@@ -53,7 +53,7 @@ pipeline {
                         if (BRANCH_NAME ==~ /^[release]+/) {
                             sh ''' mvn clean verify -P prod -T 4 '''
                         } else {                      
-                            sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev -T 4 '''
+                            sh ''' mvn -pl com.kms.katalon.product.qtest_edition -am clean verify -P dev '''
                         }
                     }
                 }
