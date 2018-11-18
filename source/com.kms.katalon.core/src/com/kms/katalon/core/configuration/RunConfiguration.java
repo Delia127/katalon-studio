@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -89,6 +90,8 @@ public class RunConfiguration {
     public static final String EXECUTION_PROFILE_PROPERTY = "executionProfile";
     
     public static final String LOGBACK_CONFIG_FILE_LOCATION = "logbackConfigFileLocation";
+    
+    public static final String RUNNING_MODE = "runningMode";
 
     // This property is available for record - playback mode only. 
     public static final String RECORD_CAPTURED_OBJECTS_FILE = "recordCapturedObjectsCache";
@@ -524,5 +527,9 @@ public class RunConfiguration {
     
     public static Boolean getAutoApplyNeighborXpaths(){
     	return (Boolean) getExecutionGeneralProperties().get(AUTO_APPLY_NEIGHBOR_XPATHS);
+    }
+    
+    public static RunningMode getRunningMode() {
+        return RunningMode.valueOf(getStringProperty(RUNNING_MODE));
     }
 }

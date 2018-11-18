@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.LogbackUtil;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
@@ -158,6 +159,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         if (logbackConfigFileLocation != null) {
             propertyMap.put(RunConfiguration.LOGBACK_CONFIG_FILE_LOCATION, logbackConfigFileLocation);
         }
+        
+        propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
         
         return propertyMap;
     }
