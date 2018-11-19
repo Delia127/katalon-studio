@@ -120,7 +120,6 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     	super.setStatus(status);
     	if (LauncherStatus.DONE == status || LauncherStatus.TERMINATED == status) {
     		ExecutionEntityResult executionResult = new ExecutionEntityResult();
-    		executionResult.setName(executedEntity.getSourceName());
     		executionResult.setEnd(true);
     		notifyProccess(status, executedEntity, executionResult);
     	}

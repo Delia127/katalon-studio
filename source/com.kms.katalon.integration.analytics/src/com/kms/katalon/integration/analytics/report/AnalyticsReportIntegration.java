@@ -58,7 +58,9 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
 					AnalyticsTestRun testRun = new AnalyticsTestRun();
 					testRun.setName(result.getName());
 					testRun.setSessionId(result.getSessionId());
-					testRun.setStatus(result.getTestStatusValue().name());
+					if (result.getTestStatusValue() != null) {
+						testRun.setStatus(result.getTestStatusValue().name());
+					}
 					testRun.setTestSuiteId(executedEntity.getSourceName());
 					testRun.setEnd(result.isEnd());
 					reportService.updateExecutionProccess(testRun);

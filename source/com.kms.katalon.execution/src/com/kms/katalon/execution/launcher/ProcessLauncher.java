@@ -82,7 +82,6 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
     public void setStatus(LauncherStatus status) {
     	super.setStatus(status);
     	ExecutionEntityResult executionResult = new ExecutionEntityResult();
-    	executionResult.setName(executedEntity.getSourceName());
     	if ((LauncherStatus.DONE == status || LauncherStatus.TERMINATED == status) && parentLauncher == null) {
     		executionResult.setEnd(true);
         }
