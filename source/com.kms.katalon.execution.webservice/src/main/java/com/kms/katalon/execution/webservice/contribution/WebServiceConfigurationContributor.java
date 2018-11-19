@@ -25,7 +25,7 @@ public class WebServiceConfigurationContributor implements IRunConfigurationCont
 
     @Override
     public String getId() {
-        return "API/Web Service";
+        return "Web Service";
     }
 
     @Override

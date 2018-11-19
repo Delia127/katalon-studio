@@ -22,7 +22,7 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
 
     public static final String EXECUTION_DEFAULT_CONFIGURATION_FOR_GENERIC_PROJECT = "Firefox";
     
-    public static final String EXECUTION_DEFAULT_CONFIGURATION_FOR_WEBSERVICE_PROJECT = "API/Web Service";
+    public static final String EXECUTION_DEFAULT_CONFIGURATION_FOR_WEBSERVICE_PROJECT = "Web Service";
     
     public static final Boolean DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED = false;
 
