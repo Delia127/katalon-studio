@@ -496,4 +496,7 @@ public class StringConstants {
     public static final String WS_VERIFICATION_REQUEST_VARIABLES = "requestObjectVariables";
     
     public static final String WS_VERIFICATION_SUCCESS = CoreMessageConstants.WS_VERIFICATION_SUCCESS;
+    
+    // TestCaseExecutor
+	public static final String TEST_CASE_SKIPPED = CoreMessageConstants.TEST_CASE_SKIPPED;
 }
