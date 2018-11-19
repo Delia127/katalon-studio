@@ -56,22 +56,22 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__fiQIOiFEei2Q7mM03p58A" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:0">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_txLGEOiHEei2Q7mM03p58A" elementId="com.kms.katalon.composer.execution.menu.run.webservice" label="API/Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_txLGEOiHEei2Q7mM03p58A" elementId="com.kms.katalon.composer.execution.menu.run.webservice" label="Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
       <parameters xmi:id="_HdZhwOiKEei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_KMfFkOiHEei2Q7mM03p58A" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:0">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_5tj_kOiHEei2Q7mM03p58A" elementId="com.kms.katalon.composer.execution.menu.debug.webservice" label="API/Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_5tj_kOiHEei2Q7mM03p58A" elementId="com.kms.katalon.composer.execution.menu.debug.webservice" label="Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
       <parameters xmi:id="_N_8BsOiKEei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_xK1FgOizEei2Q7mM03p58A" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:0">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_4IATAOizEei2Q7mM03p58A" elementId="com.kms.katalon.menu.run.webservice" label="API/Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_4IATAOizEei2Q7mM03p58A" elementId="com.kms.katalon.menu.run.webservice" label="Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
       <parameters xmi:id="_9irzAOizEei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_5VK0QOi0Eei2Q7mM03p58A" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:0">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_-p9usOi0Eei2Q7mM03p58A" elementId="com.kms.katalon.menu.debug.webservice" label="API/Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_-p9usOi0Eei2Q7mM03p58A" elementId="com.kms.katalon.menu.debug.webservice" label="Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
       <parameters xmi:id="_NRexsOi1Eei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
   </fragments>
