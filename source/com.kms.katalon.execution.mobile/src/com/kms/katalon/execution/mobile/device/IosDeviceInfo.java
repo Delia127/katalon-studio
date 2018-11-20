@@ -1,7 +1,5 @@
 package com.kms.katalon.execution.mobile.device;
 
-import static com.kms.katalon.execution.mobile.util.OSUtil.toOSString;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;

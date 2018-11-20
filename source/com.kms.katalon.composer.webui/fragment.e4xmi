@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_lZUq4EurEeWj7OhDHfltSQ">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uad7QEurEeWj7OhDHfltSQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:0">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uad7QEurEeWj7OhDHfltSQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:1">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_SrfWAKWZEeaK56tdv0zM1g" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.chrome" label="Chrome" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.ChromeExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_EPA9IHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:1">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_EPA9IHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:2">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_4zgKQKiLEeaRfbi1ih-u3g" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.firefox" label="Firefox" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.FirefoxExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_GOuLEHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:2">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_GOuLEHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:3">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_QxqZAG6jEeaKGfb3bKlFGw" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.ie" label="IE" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.IEExecutionDynamicContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_HmAuIHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:3">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_HmAuIHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:4">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_QfNhsK_LEeaV-rlojFRf-w" elementId="com.kms.katalon.composer.webui.handledmenuitem.safari" label="Safari" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/safari_16.png" command="_6EqcEEusEeWj7OhDHfltSQ">
       <parameters xmi:id="_QfNhsa_LEeaV-rlojFRf-w" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_m1k4MIOrEeWd2KCe_pA0jw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:4">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_m1k4MIOrEeWd2KCe_pA0jw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:5">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_UPJ-IG6kEeaKGfb3bKlFGw" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.edge" label="Edge" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.EdgeExecutionDynamicContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_OZQAMOoLEeeq2OoMwFg3qQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:5">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_OZQAMOoLEeeq2OoMwFg3qQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:6">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_yBCC4OoJEeeq2OoMwFg3qQ" elementId="com.kms.katalon.composer.webui.menuseparator.1"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_d9G9YJa1Eea2iIudedNSVw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:6">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_d9G9YJa1Eea2iIudedNSVw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:7">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_mhup0Ja1Eea2iIudedNSVw" elementId="com.kms.katalon.composer.webui.handledmenuitem.headless" label="Chrome (headless)" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_headless_16.png" tooltip="" command="_YORLQJa1Eea2iIudedNSVw">
       <parameters xmi:id="_pOvpsJa1Eea2iIudedNSVw" elementId="com.kms.katalon.composer.webui.parameter.chromeHeadless.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BGhCMOVSEeePnpLHROc5Zg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:7">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BGhCMOVSEeePnpLHROc5Zg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:8">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_RGqPkOVTEeePnpLHROc5Zg" elementId="com.kms.katalon.composer.webui.handledmenuitem.firefoxHeadless" label="Firefox (headless)" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_headless_16.png" command="_zhL_gOVSEeePnpLHROc5Zg">
       <parameters xmi:id="_bNNo0OVTEeePnpLHROc5Zg" elementId="com.kms.katalon.composer.webui.parameter.firefoxHeadless.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ZqPMQOoLEeeq2OoMwFg3qQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:8">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ZqPMQOoLEeeq2OoMwFg3qQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:9">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_fvbB0OoLEeeq2OoMwFg3qQ" elementId="com.kms.katalon.composer.webui.menuseparator.2"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_I_kiEHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:9">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_I_kiEHfUEeWiVci6VZKWGw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:10">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_tbn00Kp0EeaObfOgcfWSAw" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.remote" label="Remote" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.RemoteExecutionMenuContribution"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_t9GNUEusEeWj7OhDHfltSQ" featurename="commands" parentElementId="com.kms.katalon.composer.application">
@@ -80,112 +80,112 @@
     <elements xsi:type="commands:Handler" xmi:id="_07MpwJa1Eea2iIudedNSVw" elementId="com.kms.katalon.composer.webui.handler.headless" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.HeadlessExecutionHandler" command="_YORLQJa1Eea2iIudedNSVw"/>
     <elements xsi:type="commands:Handler" xmi:id="_f4x0gOVdEeePnpLHROc5Zg" elementId="com.kms.katalon.composer.webui.handler.firefoxHeadless" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.handler.FirefoxHeadlessExecutionHandler" command="_zhL_gOVSEeePnpLHROc5Zg"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BKcpYAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:0">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BKcpYAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:1">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_C2UnQKcREeapg5rTAwHwMw" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.chrome.debug" label="Chrome" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.ChromeDebugExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BmoPEAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:1">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BmoPEAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:2">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_8yiLoKiLEeaRfbi1ih-u3g" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.firefox.debug" label="Firefox" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.FirefoxDebugExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_B5ikAAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:2">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_B5ikAAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:3">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_ZXX4UG6oEeaKGfb3bKlFGw" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.ie.debug" label="IE" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.IEDebugExecutionDynamicContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_CKOEUAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:3">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_CKOEUAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:4">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_bXNmAK_LEeaV-rlojFRf-w" elementId="com.kms.katalon.composer.webui.handledmenuitem.safari.debug" label="Safari" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/safari_16.png" command="_6EqcEEusEeWj7OhDHfltSQ">
       <parameters xmi:id="_bXNmAa_LEeaV-rlojFRf-w" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Ce7wEAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:4">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Ce7wEAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:5">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_41kkkG6oEeaKGfb3bKlFGw" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.edge.debug" label="Edge" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.EdgeDebugExecutionDynamicContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="__CtekOoLEeeq2OoMwFg3qQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:5">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="__CtekOoLEeeq2OoMwFg3qQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:6">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_CgPVYOoMEeeq2OoMwFg3qQ" elementId="com.kms.katalon.composer.webui.menuseparator.3"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_twNCsJa1Eea2iIudedNSVw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:6">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_twNCsJa1Eea2iIudedNSVw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:7">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_twNCsZa1Eea2iIudedNSVw" elementId="com.kms.katalon.composer.webui.handledmenuitem.chromeHeadless.debug" label="Chrome (headless)" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_headless_16.png" command="_YORLQJa1Eea2iIudedNSVw">
       <parameters xmi:id="_twNCspa1Eea2iIudedNSVw" elementId="com.kms.katalon.composer.webui.parameter.chromeHeadless.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_nbp7oOVTEeePnpLHROc5Zg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:7">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_nbp7oOVTEeePnpLHROc5Zg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:8">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_qw5ZIOVTEeePnpLHROc5Zg" elementId="com.kms.katalon.composer.webui.handledmenuitem.firefoxHeadless.debug" label="Firefox (headless)" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_headless_16.png" command="_zhL_gOVSEeePnpLHROc5Zg">
       <parameters xmi:id="_5Kzd8OVTEeePnpLHROc5Zg" elementId="com.kms.katalon.composer.webui.parameter.firefoxHeadless.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_y4Uv4OoMEeeq2OoMwFg3qQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:8">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_y4Uv4OoMEeeq2OoMwFg3qQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:9">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_zyl_wOoMEeeq2OoMwFg3qQ" elementId="com.kms.katalon.composer.webui.menuseparator.0" accessibilityPhrase="index:3"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_EfsG4AhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:9">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_EfsG4AhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:10">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_yNUpQKp0EeaObfOgcfWSAw" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.remote.debug" label="Remote" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.RemoteDebugExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_xOKOwM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:0">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_xOKOwM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:1">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_xOKOwc0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.chrome" label="Chrome" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.ChromeExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_xsmeQM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:1">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_xsmeQM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:2">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_xsmeQc0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.firefox" label="Firefox" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.FirefoxExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_yROOQM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:2">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_yROOQM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:3">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_yROOQc0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.ie" label="IE" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.IEExecutionDynamicContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_zDlfUM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:3">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_zDlfUM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:4">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_zDlfUc0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.handledmenuitem.safari" label="Safari" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/safari_16.png" command="_6EqcEEusEeWj7OhDHfltSQ">
       <parameters xmi:id="_zDlfUs0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0aUowM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:4">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0aUowM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:5">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_0aUowc0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.edge" label="Edge" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.EdgeExecutionDynamicContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2sMkwM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:5">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2sMkwM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:6">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_2sMkwc0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.menuseparator.1"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7IUx0M0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:6">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7IUx0M0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:7">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_7IUx0c0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.handledmenuitem.headless" label="Chrome (headless)" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_headless_16.png" tooltip="" command="_YORLQJa1Eea2iIudedNSVw">
       <parameters xmi:id="_7IUx0s0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.parameter.chromeHeadless.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7ti-wM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:7">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7ti-wM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:8">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_7ti-wc0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.handledmenuitem.firefoxHeadless" label="Firefox (headless)" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_headless_16.png" command="_zhL_gOVSEeePnpLHROc5Zg">
       <parameters xmi:id="_7ti-ws0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.parameter.firefoxHeadless.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8XcQUM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:8">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8XcQUM0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:9">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_8XcQUc0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.menuseparator.2"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_9GNa0M0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.run" positionInList="index:9">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_9GNa0M0GEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:10">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_9GNa0c0GEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.remote" label="Remote" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.RemoteExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_HKtBwM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:0">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_HKtBwM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:1">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_HKtBwc0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.chrome.debug" label="Chrome" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.ChromeDebugExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_HjMaQM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:1">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_HjMaQM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:2">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_HjMaQc0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.firefox.debug" label="Firefox" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.FirefoxDebugExecutionMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_H8rRQM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:2">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_H8rRQM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:3">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_H8rRQc0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.ie.debug" label="IE" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.IEDebugExecutionDynamicContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_IcuDQM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:3">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_IcuDQM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:4">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_IcuDQc0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.handledmenuitem.safari.debug" label="Safari" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/safari_16.png" command="_6EqcEEusEeWj7OhDHfltSQ">
       <parameters xmi:id="_IcuDQs0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_JNyT0M0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:4">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_JNyT0M0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:5">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_JNyT0c0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.edge.debug" label="Edge" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.EdgeDebugExecutionDynamicContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_KYnvQM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:5">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_KYnvQM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:6">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_KYnvQc0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.menuseparator.3"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_LUhW0M0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:6">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_LUhW0M0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:7">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_LUhW0c0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.handledmenuitem.chromeHeadless.debug" label="Chrome (headless)" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_headless_16.png" command="_YORLQJa1Eea2iIudedNSVw">
       <parameters xmi:id="_LUhW0s0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.parameter.chromeHeadless.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Lv6SUM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:7">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Lv6SUM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:8">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_Lv6SUc0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.handledmenuitem.firefoxHeadless.debug" label="Firefox (headless)" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_headless_16.png" command="_zhL_gOVSEeePnpLHROc5Zg">
       <parameters xmi:id="_Lv6SUs0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.parameter.firefoxHeadless.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_MFHtUM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:8">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_MFHtUM0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:9">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_MFHtUc0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.menuseparator.0" accessibilityPhrase="index:3"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Mfvz0M0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.action.debug" positionInList="index:9">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Mfvz0M0LEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:10">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_Mfvz0c0LEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.webui.dynamicmenucontribution.remote.debug" label="Remote" contributionURI="bundleclass://com.kms.katalon.composer.webui/com.kms.katalon.composer.webui.execution.menu.RemoteDebugExecutionMenuContribution"/>
   </fragments>
 </fragment:ModelFragments>

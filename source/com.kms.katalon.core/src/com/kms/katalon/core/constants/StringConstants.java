@@ -18,6 +18,8 @@ public class StringConstants {
 
     public static final String LOG_START_KEYWORD = "Start action";
     
+    public static final String LOG_START_ACTION_PREFIX = LOG_START_KEYWORD + " : ";
+    
     public static final String LOG_SETUP_ACTION = "setup action";
     
     public static final String LOG_TEAR_DOWN_ACTION = "tear down";
@@ -393,7 +395,7 @@ public class StringConstants {
     public static final String CONF_PROPERTY_VIDEO_RECORDER_OPTION = "videoRecorderOption";
 
     public static final String CONF_PROPERTY_DEFAULT_FAILURE_HANDLING = "defaultFailureHandling";
-    
+        
     public static final String CONF_PROPERTY_PROXY = "proxy";
 
     public static final String CONF_PROPERTY_TEST_DATA_INFO = "testDataInfo";

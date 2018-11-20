@@ -69,7 +69,7 @@ public class GetWindowTitleKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public String getWindowTitle(FailureHandling flowControl) throws StepFailedException {
         return WebUIKeywordMain.runKeyword({
-            logger.logInfo(StringConstants.KW_LOG_INFO_GETTING_CURR_WINDOW_TITLE)
+            logger.logDebug(StringConstants.KW_LOG_INFO_GETTING_CURR_WINDOW_TITLE)
             String windowTitle = String.valueOf(DriverFactory.getWebDriver().getTitle())
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CURR_WINDOW_TITLE, windowTitle))
             return windowTitle

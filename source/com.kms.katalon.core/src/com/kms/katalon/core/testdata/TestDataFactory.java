@@ -28,7 +28,7 @@ import com.kms.katalon.core.util.internal.PathUtil;
 
 public class TestDataFactory {
 
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    private static final KeywordLogger logger = KeywordLogger.getInstance(TestDataFactory.class);
 
     private static final String TEST_DATA_ROOT_FOLDER_NAME = "Data Files";
 
@@ -111,7 +111,7 @@ public class TestDataFactory {
      * @throws IllegalArgumentException <code>testCaseRelativeId</code> is null or test data doesn't exist
      */
     public static TestData findTestData(String testDataRelativeId) {
-        logger.logInfo(StringConstants.XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID);
+        logger.logDebug(StringConstants.XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID);
         if (testDataRelativeId == null) {
             throw new IllegalArgumentException(StringConstants.XML_LOG_ERROR_TEST_DATA_NULL_TEST_DATA_ID);
         }
@@ -126,7 +126,7 @@ public class TestDataFactory {
     }
 
     private static TestData internallyfindTestData(String projectDir, String testDataId) throws Exception {
-        logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_FINDING_TEST_DATA_WITH_ID_X, testDataId));
+        logger.logDebug(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_FINDING_TEST_DATA_WITH_ID_X, testDataId));
         File dataFile = new File(projectDir, testDataId + TEST_DATA_FILE_EXTENSION);
         if (dataFile.exists()) {
             SAXReader reader = new SAXReader();
@@ -136,16 +136,16 @@ public class TestDataFactory {
             String driverName = testDataElement.elementText(DRIVER_NODE);
             switch (TestDataType.fromValue(driverName)) {
                 case EXCEL_FILE:
-                    logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA);
+                    logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA);
                     return readExcelData(testDataElement, projectDir);
                 case INTERNAL_DATA:
-                    logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_INTERNAL_DATA);
+                    logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_INTERNAL_DATA);
                     return readInternalData(testDataElement, projectDir, dataFile);
                 case CSV_FILE:
-                    logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_CSV_DATA);
+                    logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_CSV_DATA);
                     return readCSVData(testDataElement, projectDir);
                 case DB_DATA:
-                    logger.logInfo(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA);
+                    logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA);
                     return readDBData(testDataElement, projectDir);
                 default:
                     return null;
@@ -185,7 +185,7 @@ public class TestDataFactory {
         if (isRelativePath) {
             sourceUrl = PathUtil.relativeToAbsolutePath(sourceUrl, projectDir);
         }
-        logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y,
+        logger.logDebug(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y,
                 sourceUrl, sheetName));
         return ExcelFactory.getExcelDataWithDefaultSheet(sourceUrl, sheetName, hasHeaders);
     }
@@ -242,7 +242,7 @@ public class TestDataFactory {
             sourceUrl = PathUtil.relativeToAbsolutePath(sourceUrl, projectDir);
         }
 
-        logger.logInfo(MessageFormat.format(
+        logger.logDebug(MessageFormat.format(
                 StringConstants.XML_LOG_TEST_DATA_READING_CSV_DATA_WITH_SOURCE_X_SEPERATOR_Y_AND_Z,
                 seperator.toString(), containsHeader ? "containing header" : "not containing header"));
         return new CSVData(sourceUrl, containsHeader, seperator);
@@ -291,7 +291,7 @@ public class TestDataFactory {
     }
 
     private static TestData readDBData(DatabaseConnection dbConnection, String query) throws SQLException {
-        logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA_WITH_QUERY_X, query));
+        logger.logDebug(MessageFormat.format(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA_WITH_QUERY_X, query));
         return new DBData(dbConnection, query);
     }
 

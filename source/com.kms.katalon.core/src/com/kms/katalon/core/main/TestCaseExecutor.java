@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
@@ -40,6 +39,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testcase.TestCaseFactory;
+import com.kms.katalon.core.util.BrowserMobProxyManager;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 import groovy.lang.Binding;
@@ -47,8 +47,8 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 public class TestCaseExecutor {
-
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    
+    private final KeywordLogger logger = KeywordLogger.getInstance(this.getClass());
 
     private static ErrorCollector errorCollector = ErrorCollector.getCollector();
 
@@ -114,11 +114,25 @@ public class TestCaseExecutor {
 
     private void onExecutionError(Throwable t) {
         if (!keywordStack.isEmpty()) {
+            String stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(t);
+            String message = MessageFormat.format(
+                    StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, 
+                    keywordStack.firstElement().getKeywordName(),
+                    stackTraceForThrowable);
+            logError(t, message);
             endAllUnfinishedKeywords(keywordStack);
         }
         testCaseResult.getTestStatus().setStatusValue(getResultByError(t));
-        String message = MessageFormat.format(StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, testCase.getTestCaseId(),
-                ExceptionsUtil.getStackTraceForThrowable(t));
+        String stackTraceForThrowable;
+        try {
+            stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(t);
+        } catch (Exception e) {
+            stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(t);
+        }
+        String message = MessageFormat.format(
+                StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, 
+                testCase.getTestCaseId(),
+                stackTraceForThrowable);
         testCaseResult.setMessage(message);
         logError(t, message);
 
@@ -168,6 +182,9 @@ public class TestCaseExecutor {
 
     private void postExecution() {
         errorCollector.getErrors().addAll(0, parentErrors);
+        if (testCaseContext.isMainTestCase()) {
+            BrowserMobProxyManager.shutdownProxy();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -175,8 +192,13 @@ public class TestCaseExecutor {
         try {
             preExecution();
 
-            logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
-                    keywordStack);
+            if (testCaseContext.isMainTestCase()) {
+                logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
+                        keywordStack);
+            } else {
+                logger.startCalledTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
+                        keywordStack);
+            }
 
             if (!processScriptPreparationPhase()) {
                 return testCaseResult;
@@ -205,12 +227,17 @@ public class TestCaseExecutor {
             return testCaseResult;
         } finally {
             testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
+        	testCaseContext.setMessage(testCaseResult.getMessage());
 
             if (testCaseContext.isMainTestCase()) {
                 eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_CASE, new Object[] { testCaseContext });
             }
 
-            logger.endTest(testCase.getTestCaseId(), null);
+            if (testCaseContext.isMainTestCase()) {
+                logger.endTest(testCase.getTestCaseId(), null);
+            } else {
+                logger.endCalledTest(testCase.getTestCaseId(), null);
+            }
 
             postExecution();
         }
@@ -291,8 +318,11 @@ public class TestCaseExecutor {
 
     private Object runScript(File scriptFile)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile, DF_CHARSET),
-                scriptFile.toURI().toURL().toExternalForm(), variableBinding);
+        return engine.runScriptAsRawText(
+                FileUtils.readFileToString(scriptFile, DF_CHARSET),
+                scriptFile.toURI().toURL().toExternalForm(), 
+                variableBinding,
+                getTestCase().getName());
     }
 
     protected void runMethod(File scriptFile, String methodName)
@@ -326,7 +356,7 @@ public class TestCaseExecutor {
         Binding variableBinding = new Binding(testCaseBinding != null ? testCaseBinding.getBindedValues() : Collections.emptyMap());
         engine.changeConfigForCollectingVariable();
 
-        logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
+        logger.logDebug(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
         testCase.getVariables().stream().forEach(testCaseVariable -> {
             String variableName = testCaseVariable.getName();
             if (getBindedValues().containsKey(variableName)) {
@@ -393,7 +423,7 @@ public class TestCaseExecutor {
             return;
         }
 
-        logger.logInfo(methodNodeWrapper.getStartMessage());
+        logger.logDebug(methodNodeWrapper.getStartMessage());
         int count = 1;
         for (MethodNode method : methodList) {
             runMethod(method.getName(), methodNodeWrapper.getActionType(), count++,
@@ -443,5 +473,9 @@ public class TestCaseExecutor {
     @SuppressWarnings("unchecked")
     public void setupContextClassLoader() {
         AccessController.doPrivileged(new DoSetContextAction(Thread.currentThread(), engine.getGroovyClassLoader()));
+    }
+    
+    public TestCase getTestCase() {
+        return testCase;
     }
 }

@@ -19,6 +19,7 @@ Require-Bundle: com.kms.katalon.entity,
  org.apache.commons.io,
  com.kms.katalon.tracking,
  org.eclipse.ui.workbench,
+ com.kms.katalon.execution,
  com.kms.katalon.integration.analytics
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/component.xml

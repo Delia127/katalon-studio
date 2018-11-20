@@ -40,7 +40,9 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  cucumber.eclipse.editor,
  cucumber.eclipse.steps.integration,
  cucumber.eclipse.steps.jdt,
- com.kms.katalon.tracking
+ com.kms.katalon.tracking,
+ com.kms.katalon,
+ org.eclipse.ui.workbench
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.composer.testcase.providers,
  javax.annotation;version="1.2.0"

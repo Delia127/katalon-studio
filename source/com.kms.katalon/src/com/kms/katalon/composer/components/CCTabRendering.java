@@ -25,17 +25,18 @@ public class CCTabRendering extends CTabRendering {
 
     @Override
     protected void draw(int part, int state, Rectangle bounds, GC gc) {
-        switch (part) {
-            case PART_MAX_BUTTON:
-                cDrawMaximize(gc, bounds);
-                break;
-            case PART_MIN_BUTTON:
-                cDrawMinimize(gc, bounds);
-                break;
-            default:
-                super.draw(part, state, bounds, gc);
-                break;
-        }
+//        switch (part) {
+//            case PART_MAX_BUTTON:
+//                cDrawMaximize(gc, bounds);
+//                break;
+//            case PART_MIN_BUTTON:
+//                cDrawMinimize(gc, bounds);
+//                break;
+//            default:
+//                super.draw(part, state, bounds, gc);
+//                break;
+//        }
+        super.draw(part, state, bounds, gc);
 
         // Fix the light grey background color at top-right CTabFolder (min max button)
         Control[] children = parent.getChildren();

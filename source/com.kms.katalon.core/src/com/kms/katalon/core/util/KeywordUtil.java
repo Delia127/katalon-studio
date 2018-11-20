@@ -6,6 +6,9 @@ import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 
 public class KeywordUtil {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(KeywordUtil.class);
+    
     /**
      * Mark a keyword to be failed and continue execution
      * 
@@ -30,7 +33,7 @@ public class KeywordUtil {
      * @param message log info message
      */
     public static void logInfo(String message) {
-        KeywordLogger.getInstance().logInfo(message);
+        logger.logInfo(message);
     }
 
     /**
@@ -39,7 +42,7 @@ public class KeywordUtil {
      * @param message warning message
      */
     public static void markWarning(String message) {
-        KeywordLogger.getInstance().logWarning(message);
+        logger.logWarning(message);
     }
 
     /**
@@ -48,7 +51,7 @@ public class KeywordUtil {
      * @param message passed message
      */
     public static void markPassed(String message) {
-        KeywordLogger.getInstance().logPassed(message);
+        logger.logPassed(message);
         ErrorCollector.getCollector().setKeywordPassed(true);
     }
     

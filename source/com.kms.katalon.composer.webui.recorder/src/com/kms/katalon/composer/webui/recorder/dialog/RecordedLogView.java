@@ -22,6 +22,8 @@ import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.logging.RecordingOutputStreamHandler.OutputType;
 import com.kms.katalon.execution.logging.RecordingOutputStreamHandler.RecordedOutputLine;
 
+import mnita.ansiconsole.participants.AnsiConsoleStyleListener;
+
 public class RecordedLogView {
     private StyledText txtVerificationLog;
     private Label lblVerificationResultStatus;
@@ -49,6 +51,7 @@ public class RecordedLogView {
         txtVerificationLog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         txtVerificationLog.setFont(JFaceResources.getTextFont());
         txtVerificationLog.setBackground(ColorUtil.getWhiteBackgroundColor());
+        txtVerificationLog.addLineStyleListener(new AnsiConsoleStyleListener());
         
         registerEventListeners();
         

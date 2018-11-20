@@ -25,9 +25,9 @@ import com.kms.katalon.logging.LogUtil;
     private List<LauncherListener> listeners;
 
     private String message;
-    
-    private String executionUUID;
 
+    private String executionUUID;
+    
     protected BasicLauncher() {
         status = LauncherStatus.WAITING;
 
@@ -44,8 +44,8 @@ import com.kms.katalon.logging.LogUtil;
     
     protected void notifyProccess(Object event, IExecutedEntity executedEntity, ExecutionEntityResult result) {
     	result.setExecutedEntity(executedEntity);
-    	result.setSessionId(executionUUID);
     	result.setEvent(event);
+		result.setSessionId(executionUUID);
     	for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
                 .getInstance().getIntegrationContributorMap().entrySet()) {
             ReportIntegrationContribution contribution = reportContributorEntry.getValue();
@@ -57,7 +57,7 @@ import com.kms.katalon.logging.LogUtil;
             }
         }
     }
-    
+
     public void addListener(LauncherListener l) {
         listeners.add(l);
     }
@@ -93,12 +93,12 @@ import com.kms.katalon.logging.LogUtil;
     private void setMessage(String message) {
         this.message = message;
     }
-
-	public String getExecutionUUID() {
-		return executionUUID;
-	}
-
-	public void setExecutionUUID(String executionUUID) {
-		this.executionUUID = executionUUID;
-	}
+    
+    public String getExecutionUUID() {
+    	return this.executionUUID;
+    }
+    
+    public void setExecutionUUID(String executionUUID) {
+    	this.executionUUID = executionUUID;
+    }
 }

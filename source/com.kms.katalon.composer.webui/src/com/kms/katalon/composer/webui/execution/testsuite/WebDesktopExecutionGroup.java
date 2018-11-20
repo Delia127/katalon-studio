@@ -9,8 +9,6 @@ import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
 import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.project.ProjectType;
 
 public class WebDesktopExecutionGroup implements TestExecutionGroup {
 

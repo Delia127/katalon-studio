@@ -36,7 +36,7 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.global.constants.StringConstants;
-import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
@@ -206,13 +206,18 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	    @Override
 		public void save(){
 	        try {
-	            // If VariableView is switched from VariableEditorView
-	            // then they are already in sync. If user only interact on VariableView so far 
-	            // then update VariableEditorView (vice versa)
+	           
 	            if(variableTab == true){
 	                updateVariableScriptView();
-	            }else{
+	            }
+	            // If users perform "save operation" from variableScriptView,
+	        	// we update VariableManualView to sync the variables, but since the
+	        	// user can copy/paste all content from another execution
+	        	// profile's script, the execution profile's name in the script may not be in
+	        	// sync with executionProfileEntity, we update VariableScriptView to sync the name
+	            else{
 	                updateVariableManualView();
+	                updateVariableScriptView();
 	            }
 	            
 	        	if(invalidSchema == true){

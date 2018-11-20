@@ -3,7 +3,6 @@ package com.kms.katalon.composer.testcase.preferences;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -37,7 +36,6 @@ import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
-import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 
 public class TestCasePreferencePage extends PreferencePageWithHelp {

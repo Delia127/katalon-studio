@@ -16,7 +16,30 @@
   </properties>
     
 	<build>
+	
 		<plugins>
+			<!-- Copies resources to parent's resources directory -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven-resources-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>copy-core-webui-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${resourcesDiretory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
       <!-- AntRun cannot read project.parent, so must workaround like this (http://stackoverflow.com/questions/4040778/parent-properties-inside-maven-antrun-plugin) -->
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>

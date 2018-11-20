@@ -8,6 +8,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
 import com.kms.katalon.activation.dialog.LinuxNotSupportedDialog;
@@ -15,6 +16,8 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.support.testing.katserver.KatServer;
 import com.kms.katalon.util.ApplicationSession;
@@ -69,6 +72,7 @@ public class Application implements IApplication {
         try {
             // hide splash screen
             context.applicationRunning();
+            ApplicationRunningMode.setRunningMode(RunningMode.CONSOLE);
             return com.kms.katalon.console.application.Application.runConsole(appArgs);
         } catch (Error e) {
             LogUtil.logError(e);
@@ -97,6 +101,7 @@ public class Application implements IApplication {
     }
 
     private int runGUI() {
+        ApplicationRunningMode.setRunningMode(RunningMode.GUI);
         int returnCode = internalRunGUI();
         if (returnCode == PlatformUI.RETURN_RESTART) {
             return IApplication.EXIT_RESTART;

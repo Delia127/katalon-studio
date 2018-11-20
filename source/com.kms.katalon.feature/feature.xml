@@ -1631,6 +1631,13 @@
          install-size="0"
          version="1.0.0.qualifier"
          unpack="false"/>
+         
+ 	<plugin
+         id="com.kms.katalon.netlightbody"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
 
    <plugin
          id="com.kms.katalon.execution.webui"
@@ -2308,6 +2315,13 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+         
+	<plugin
+	     id="com.kms.katalon.ansiconsole"
+	     download-size="0"
+	     install-size="0"
+	     version="0.0.0"
+	     unpack="false"/>
 
    <plugin
          id="org.greenrobot.eventbus"
@@ -2513,6 +2527,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.codehaus.mojo.animal-sniffer-annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+	<plugin
          id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"
          download-size="0"
          install-size="0"
@@ -2520,12 +2541,47 @@
          unpack="false"/>
 
    <plugin
+         id="com.google.errorprone.error_prone_annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+	<plugin
          id="com.fasterxml.woodstox.woodstox-core"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
+   <plugin
+         id="com.google.j2objc.annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.qos.logback.classic"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.qos.logback.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="slf4j.api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 	<plugin
          id="stax2-api"
          download-size="0"
@@ -2534,6 +2590,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.fusesource.jansi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+	<plugin
          id="com.kms.katalon.composer.integration.qtest.activation"
          download-size="0"
          install-size="0"

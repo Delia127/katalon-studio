@@ -46,7 +46,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         this.subLauncherManager = new TestSuiteCollectionLauncherManager();
         this.subLaunchers = subLaunchers;
         for (ReportableLauncher subLauncher : subLaunchers) {
-          	subLauncher.setExecutionUUID(super.getExecutionUUID());
+        	subLauncher.setExecutionUUID(super.getExecutionUUID());
         }
         this.result = new LauncherResult(executedEntity.getTotalTestCases());
         this.parentManager = parentManager;

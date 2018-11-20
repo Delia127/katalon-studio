@@ -3,6 +3,7 @@ package com.kms.katalon.util;
 import java.util.Random;
 
 import org.eclipse.core.commands.common.CommandException;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.activation.ActivationService;
@@ -46,6 +47,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                 return false;
             }
         }
+
         if (!isActivated) {
             showFunctionsIntroductionForTheFirstTime();
         }
@@ -102,12 +104,24 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
 //        FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
 //        finishDialog.open();
         QuickStartDialog dialog = new QuickStartDialog(null);
-        dialog.open();
-        try {
-            new CommandCaller().call(CommandId.PROJECT_ADD);
-        } catch (CommandException e) {
-            LogUtil.logError(e);
+        
+        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
+        if(dialog.open() == Dialog.CANCEL) {
+        	try {
+				new CommandCaller().call(CommandId.PROJECT_OPEN);
+			} catch (CommandException e) {
+				 LogUtil.logError(e);
+			}
+        }else {
+            
+            try {
+                new CommandCaller().call(CommandId.PROJECT_ADD);
+            } catch (CommandException e) {
+                LogUtil.logError(e);
+            }
+            
         }
+        
 //        if (finishDialog.open() == Dialog.OK) {
 //            try {
 //                new CommandCaller().call(CommandId.PROJECT_ADD);

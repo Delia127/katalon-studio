@@ -11,8 +11,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.parts.SavableCompositePart;
-import com.kms.katalon.composer.util.groovy.editor;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 
@@ -55,8 +55,8 @@ public class SaveAllHandler {
                     SavableCompositePart compositeParentPart = getCompositeParentPart(part, partService);
                     if (compositeParentPart != null) {
                         compositeParentPart.save();
-                    } else if (editor.isGroovyEditorPart(part)) {
-                        editor.saveEditor(part);
+                    } else if (GroovyEditorUtil.isGroovyEditorPart(part)) {
+                        GroovyEditorUtil.saveEditor(part);
                         EventBrokerSingleton.getInstance()
                                             .getEventBroker()
                                             .post(EventConstants.ECLIPSE_EDITOR_SAVED, part);

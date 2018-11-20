@@ -26,7 +26,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.global.constants.StringConstants;
 import com.kms.katalon.composer.parts.CPart;
-import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.dal.exception.DALException;
@@ -181,11 +181,11 @@ public class GlobalVariableEditorPart extends CPart implements SavableCompositeP
     public void setScriptContentFrom(ExecutionProfileEntity execProfEntity) throws Exception {
         String incomingContentScript = getScriptContentFromExecutionProfileEntity(execProfEntity);
         if (!contentScript.equals(incomingContentScript)) {
-            mirrorEditor.setText(incomingContentScript);
             if (!contentScript.equals(StringUtils.EMPTY))
                 contentChanged = true;
             contentScript = incomingContentScript;
         }
+        mirrorEditor.setText(incomingContentScript);
     }
     
     public String getScriptContentFromExecutionProfileEntity(ExecutionProfileEntity execProfEntity) throws Exception{
