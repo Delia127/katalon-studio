@@ -338,7 +338,8 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     
     private String getWebLocatorConfig() throws IOException {
         WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-        return store.getCapturedTestObjectSelectorMethod().toString();
+        String ret =  store.getCapturedTestObjectSelectorMethod().toString();
+        return ret;
     }
     
     private boolean isKatalonAnalyticsIntegrated() throws IOException {
