@@ -16,11 +16,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import com.katalon.platform.api.extension.execution.ExecutionEvent;
+import com.katalon.platform.api.extension.execution.TestCaseExecutionContext;
+import com.katalon.platform.api.extension.execution.impl.TestCaseExecutionContextImpl;
+import com.katalon.platform.api.extension.execution.impl.TestSuiteExecutionContextImpl;
+import com.katalon.platform.api.extension.execution.impl.TestSuiteExecutionEvent;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.testdata.reader.CSVReader;
@@ -47,6 +52,7 @@ import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.platform.ApplicationServiceImpl;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
     private ReportEntity reportEntity;
@@ -66,6 +72,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
+        
+        fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_FINISHED_EVENT);
 
         try {
             setStatus(LauncherStatus.PREPARE_REPORT);
@@ -98,8 +106,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                         getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
 
                 IRunConfiguration newConfig = getRunConfig().cloneConfig();
-                if (getRunConfig() instanceof AbstractRunConfiguration && 
-                        newConfig instanceof AbstractRunConfiguration) {
+                if (getRunConfig() instanceof AbstractRunConfiguration
+                        && newConfig instanceof AbstractRunConfiguration) {
                     ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
                 }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
@@ -390,5 +398,30 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     public void setReportEntity(ReportEntity reportEntity) {
         this.reportEntity = reportEntity;
+    }
+
+    protected TestSuiteExecutionEvent fireTestSuiteExecutionEvent(String eventName) {
+        IExecutedEntity executedEntity = getExecutedEntity();
+        if (executedEntity instanceof TestSuiteExecutedEntity) {
+            TestSuiteExecutedEntity testSuiteEx = (TestSuiteExecutedEntity) executedEntity;
+            
+            List<TestCaseExecutionContext> testCaseContexts = new ArrayList<>();
+            for (TestStatus testStatus : getResult().getStatuses()) {
+                testCaseContexts.add(
+                        TestCaseExecutionContextImpl.Builder.create("", "")
+                        .withTestCaseStatus(testStatus.getStatusValue().name())
+                        .withMessage(testStatus.getStackTrace())
+                        .build());
+            }
+
+            TestSuiteExecutionContextImpl executionContext = TestSuiteExecutionContextImpl.Builder
+                    .create(getId(), testSuiteEx.getSourceId())
+                    .withReportLocation(getRunConfig().getExecutionSetting().getFolderPath())
+                    .withTestCaseContext(testCaseContexts)
+                    .build();
+            TestSuiteExecutionEvent eventObject = new TestSuiteExecutionEvent(eventName, executionContext);
+            ApplicationServiceImpl.getEventService().fireEvent(eventName, eventObject);
+        }
+        return null;
     }
 }

@@ -91,6 +91,9 @@
 		<module>com.kms.katalon.selenium.ide</module>
 		<module>com.kms.katalon.tracking</module>
 		<module>com.kms.katalon.tracking.service</module>
+
+		<module>platform/com.katalon.platform</module>
+		<module>com.kms.katalon.platform</module>
 	</modules>
 
 	<properties>
@@ -117,7 +120,7 @@
 		<linux32ResourcesDirectory>linux32Resources</linux32ResourcesDirectory>
 		<linux64ResourcesDirectory>linux64Resources</linux64ResourcesDirectory>
 		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
-		<cucumberRepo>file:///${basedir}/../third-party/cucumber-eclipse/cucumber.eclipse.p2updatesite/target/repository</cucumberRepo>
+		<cucumberRepo>file:///${maven.multiModuleProjectDirectory}/third-party/cucumber-eclipse/cucumber.eclipse.p2updatesite/target/repository</cucumberRepo>
 	</properties>
 
 	<repositories>

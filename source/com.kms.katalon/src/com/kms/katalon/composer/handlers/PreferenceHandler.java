@@ -60,7 +60,11 @@ public class PreferenceHandler extends AbstractHandler {
     @Inject
     @Optional
     public void execute(@UIEventTopic(EventConstants.KATALON_PREFERENCES) Object eventData) {
-        execute();
+        if (eventData instanceof String) {
+            doExecute((String) eventData);
+        } else {
+            doExecute();
+        }
     }
 
     private static void removeUnnecessaryNodes(PreferenceManager workbenchPref) {

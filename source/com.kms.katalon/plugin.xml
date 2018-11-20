@@ -96,6 +96,12 @@
           id="com.kms.katalon.composer.preferences.GeneralPreferencePage"
           name="Katalon">
     </page>
+    <page
+          class="com.kms.katalon.composer.preferences.PluginPreferencePage"
+          id="com.kms.katalon.composer.preferences.PluginPreferencePage"
+          category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+          name="Plugins">
+    </page>
  	</extension> 
  	<extension
 	     point="org.eclipse.ui.contexts">

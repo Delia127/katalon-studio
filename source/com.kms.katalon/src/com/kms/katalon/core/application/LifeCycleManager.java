@@ -3,13 +3,16 @@ package com.kms.katalon.core.application;
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.filesystem.IFileInfo;
+import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
@@ -25,6 +28,7 @@ import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.dialogs.IDEResourceInfoUtils;
 import org.greenrobot.eventbus.EventBus;
+import org.osgi.framework.BundleException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -48,6 +52,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GroovyTemplatePreferenceConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.platform.KatalonPlatformActivator;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.core.TrackingManager;
 import com.kms.katalon.tracking.service.Trackings;
@@ -63,7 +68,7 @@ public class LifeCycleManager {
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.WORKSPACE_CREATED, "");
     }
 
-    protected void setupHandlers() {
+    protected void setupHandlers() throws BundleException {
         IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench()
                 .getActiveWorkbenchWindow()
                 .getService(IHandlerService.class);
@@ -132,7 +137,8 @@ public class LifeCycleManager {
         new ProblemViewImageInitializer().setup();
         new DefaultTextFontInitializer().setup();
         new DisplayInitializer().setup();
-        
+
+        KatalonPlatformActivator.boostrapPlatform(context, InternalPlatform.getDefault().getBundleContext());
 //        EventBus.builder().installDefaultEventBus();
     }
 
