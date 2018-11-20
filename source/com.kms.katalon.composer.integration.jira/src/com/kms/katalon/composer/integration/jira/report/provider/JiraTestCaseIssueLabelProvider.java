@@ -19,6 +19,7 @@ import com.kms.katalon.composer.integration.jira.report.JiraReportTestCaseColumn
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.integration.jira.JiraIntegrationException;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class JiraTestCaseIssueLabelProvider extends HoveredImageColumnLabelProvider<TestCaseLogRecord>
         implements JiraUIComponent {
@@ -49,6 +50,7 @@ public class JiraTestCaseIssueLabelProvider extends HoveredImageColumnLabelProvi
         int index = getTestCaseLogRecordIndex(logRecord, reportEntity);
         JiraLinkedIssuesDialog dialog = new JiraLinkedIssuesDialog(activeShell,
                 getJiraIssueCollection(index, logRecord, reportEntity), logRecord);
+        Trackings.trackOpenLinkedJiraIssuesDialog();
         if (dialog.open() != JiraLinkedIssuesDialog.OK || !dialog.isChanged()) {
             return;
         }

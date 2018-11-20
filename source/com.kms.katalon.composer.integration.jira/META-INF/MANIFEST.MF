@@ -28,7 +28,8 @@ Require-Bundle: com.kms.katalon.preferences,
  com.kms.katalon.composer.testcase,
  com.kms.katalon.groovy,
  com.kms.katalon.composer.util,
- org.eclipse.jdt.core
+ org.eclipse.jdt.core,
+ com.kms.katalon.tracking
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"
