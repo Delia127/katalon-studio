@@ -24,8 +24,6 @@ public class TestSuiteEntity extends IntegratedFileEntity {
 
     private int numberOfRerun;
 
-    private Date lastRun;
-
     private String mailRecipient;
 
     private boolean isPageLoadTimeoutDefault;
@@ -69,18 +67,9 @@ public class TestSuiteEntity extends IntegratedFileEntity {
         this.numberOfRerun = numberOfRerun;
     }
 
-    public void setLastRun(Date lastRun) {
-        this.lastRun = lastRun;
-    }
-
-    public Date getLastRun() {
-        return lastRun;
-    }
-
     public TestSuiteEntity clone() {
         TestSuiteEntity newTestSuite = (TestSuiteEntity) super.clone();
         newTestSuite.setTestSuiteGuid(Util.generateGuid());
-        newTestSuite.setLastRun(null);
         return newTestSuite;
     }
 

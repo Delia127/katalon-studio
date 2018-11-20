@@ -253,7 +253,6 @@ public class TestSuiteCompositePart implements EventHandler, SavableCompositePar
     private void cloneTestSuite() {
         testSuite = originalTestSuite.clone();
         testSuite.setTestSuiteGuid(originalTestSuite.getTestSuiteGuid());
-        testSuite.setLastRun(originalTestSuite.getLastRun());
     }
 
     public void dispose() {
