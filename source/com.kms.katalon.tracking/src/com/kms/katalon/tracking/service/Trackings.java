@@ -297,6 +297,26 @@ public class Trackings {
         trackUserAction("responseTwitterDialog", "type", option);
     }
     
+    public static void trackOpenLinkedJiraIssuesDialog() {
+        trackUserAction("openLinkedJiraIssuesDialog");
+    }
+    
+    public static void trackClickCreateNewJiraIssue() {
+        trackUserAction("clickCreateNewJiraIssue");
+    }
+    
+    public static void trackClickCreateJiraSubIssue() {
+        trackUserAction("clickCreateSubJiraIssue");
+    }
+    
+    public static void trackClickLinkToExistingJiraIssue() {
+        trackUserAction("clickLinkToExistingJiraIssue");
+    }
+    
+    public static void trackClickHarLink() {
+        trackUserAction("clickHarLink");
+    }
+    
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
     }

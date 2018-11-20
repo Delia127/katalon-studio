@@ -42,6 +42,7 @@ import com.kms.katalon.composer.integration.jira.report.provider.JiraIssueLabelP
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.integration.jira.entity.JiraIssue;
 import com.kms.katalon.integration.jira.entity.JiraIssueCollection;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComponent {
 
@@ -168,6 +169,7 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
                 newIssueItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
+                        Trackings.trackClickCreateNewJiraIssue();
                         openNewIssueDialog();
                     }
                 });
@@ -177,6 +179,7 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
                 newAsSubTaskItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
+                        Trackings.trackClickCreateJiraSubIssue();
                         openCreateAsSubTaskDialog();
                     }
                 });
@@ -186,6 +189,7 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
                 linkIssueItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
+                        Trackings.trackClickLinkToExistingJiraIssue();
                         openLinkIssueDialog();
                     }
                 });

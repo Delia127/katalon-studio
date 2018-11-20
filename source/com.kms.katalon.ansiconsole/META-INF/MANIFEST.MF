@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.core.filesystem,
  com.kms.katalon.composer.components.impl,
- org.eclipse.jface.text
+ org.eclipse.jface.text,
+ com.kms.katalon.tracking
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: KMS

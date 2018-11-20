@@ -6,6 +6,8 @@ public class ProjectStatistics {
     
     private int testCaseCount = 0;
     
+    private int jiraIntegratedTestCaseCount = 0;
+    
     private int webTestStepCount = 0;
     
     private int apiTestStepCount = 0;
@@ -84,6 +86,14 @@ public class ProjectStatistics {
 
     public void setTestCaseCount(int testCaseCount) {
         this.testCaseCount = testCaseCount;
+    }
+
+    public int getJiraIntegratedTestCaseCount() {
+        return jiraIntegratedTestCaseCount;
+    }
+
+    public void setJiraIntegratedTestCaseCount(int jiraIntegratedTestCaseCount) {
+        this.jiraIntegratedTestCaseCount = jiraIntegratedTestCaseCount;
     }
 
     public int getWebTestStepCount() {
