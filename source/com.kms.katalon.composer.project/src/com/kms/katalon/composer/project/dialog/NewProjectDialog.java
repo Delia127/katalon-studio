@@ -15,6 +15,7 @@ import javax.xml.bind.MarshalException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -442,11 +443,24 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     @Override
     protected void okPressed() {
-        okButtonClicked = true;
+    	okButtonClicked = true;
         
         name = txtProjectName.getText();
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
+        
+        try{
+        	 String katalonFolderAbsolutePath = new File(Platform.getInstallLocation().getURL().getFile()).getAbsolutePath();
+             String locFileAbsolutePath = new File(loc).getAbsolutePath();
+             if(locFileAbsolutePath.startsWith(katalonFolderAbsolutePath)){
+             	setErrorMessage(StringConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER);
+             	return;
+             }
+        } catch (Exception e){
+        	LoggerSingleton.logError(e);
+        	return;
+        }
+       
 
         int selectionIdx = cbProjects.getSelectionIndex();
         String selectedProjectName = cbProjects.getItem(selectionIdx);
@@ -465,6 +479,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         super.okPressed();
     }
+
 
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();
