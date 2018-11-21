@@ -5,7 +5,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.LinkedHashMap;
@@ -15,7 +14,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -46,7 +44,6 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.impl.util.PlatformUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -96,6 +93,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private enum GenerateCommandMode {
         CONSOLE_COMMAND, PROPERTIES_FILE
     };
+
+    private static final String KATALON_EXECUTABLE_LINUX = "./katalon --args";
 
     private static final String KATALON_EXECUTABLE_WIN32 = "katalon";
 
@@ -802,17 +801,21 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
     }
 
-    public File getApplicationExecFile() throws IOException {
-        File parent = new File(FileLocator.resolve(Platform.getInstanceLocation().getURL()).getFile()).getParentFile();
-        String execFileName = PlatformUtil.isWindows() ? "katalon.exe" : "katalon";
-        return new File(parent, execFileName);
-    }
-
-    private String generateCommand() throws ExecutionException, IOException {
+    private String generateCommand() throws ExecutionException {
         Map<String, String> consoleAgrsMap = getUserConsoleAgrsMap(GenerateCommandMode.CONSOLE_COMMAND);
         StringBuilder commandBuilder = new StringBuilder();
 
-        commandBuilder.append(getApplicationExecFile().getCanonicalPath());
+        switch (Platform.getOS()) {
+            case Platform.OS_MACOSX:
+                commandBuilder.append(KATALON_EXECUTABLE_MACOS);
+                break;
+                
+            case Platform.OS_WIN32:
+                commandBuilder.append(KATALON_EXECUTABLE_WIN32);
+                break;
+            default:
+                commandBuilder.append(KATALON_EXECUTABLE_LINUX);
+        }
 
         commandBuilder.append(" -noSplash ");
 
