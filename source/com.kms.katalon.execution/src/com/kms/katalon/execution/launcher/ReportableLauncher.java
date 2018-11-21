@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -85,6 +86,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             LogUtil.logError(e);
         }
 
+        waitForLoggingFinished();
+        
         if (needToRerun()) {
             Rerunable rerun = (Rerunable) getExecutedEntity();
 
@@ -114,12 +117,24 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     private boolean needToRerun() {
-        if (getResult().getNumErrors() + getResult().getNumFailures() > 0 && getExecutedEntity() instanceof Rerunable) {
+        if (getResult().getNumErrors() + getResult().getNumFailures() > 0 
+                && getExecutedEntity() instanceof Rerunable) {
             Rerunable rerun = (Rerunable) getExecutedEntity();
 
             return rerun.getRemainingRerunTimes() > 0;
         } else {
             return false;
+        }
+    }
+    
+    private void waitForLoggingFinished() {
+        try {
+            long startTime = System.currentTimeMillis();
+            while (!loggingFinished && System.currentTimeMillis() - startTime < TimeUnit.MINUTES.toMillis(1)) {
+                Thread.sleep(200);
+            }
+        } catch (Exception ignored) {
+            
         }
     }
 

@@ -30,6 +30,8 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
     private int logDepth;
 
     private LogLevel currentTestCaseResult;
+    
+    protected boolean loggingFinished = false;
 
     public LoggableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
@@ -93,16 +95,15 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                     	result.setName(name);
                     	result.setTestStatusValue(statusValue);
                     	notifyProccess(LauncherEvent.UPDATE_RECORD, executedEntity, result);
-                    	
-                    	
+
                         currentTestCaseResult = LogLevel.NOT_RUN;
-                        
                     }
                     logDepth--;
                     startRecords.pop();
 
                     if (logDepth == 0) {
                         watchdog.stop();
+                        loggingFinished = true;
                     }
                     break;
                 default:
