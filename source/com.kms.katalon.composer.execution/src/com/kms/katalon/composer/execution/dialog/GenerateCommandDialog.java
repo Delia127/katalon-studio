@@ -812,9 +812,9 @@ public class GenerateCommandDialog extends AbstractDialog {
         Map<String, String> consoleAgrsMap = getUserConsoleAgrsMap(GenerateCommandMode.CONSOLE_COMMAND);
         StringBuilder commandBuilder = new StringBuilder();
 
-        commandBuilder.append(getApplicationExecFile().getCanonicalPath());
+        commandBuilder.append(getApplicationExecFile().getCanonicalPath().replace(" ", "\\ "));
 
-        commandBuilder.append(" -noSplash ");
+        commandBuilder.append(" --args -noSplash ");
 
         for (String key : consoleAgrsMap.keySet()) {
             commandBuilder.append(" ");
