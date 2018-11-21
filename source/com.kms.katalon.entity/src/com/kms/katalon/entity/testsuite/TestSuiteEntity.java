@@ -2,7 +2,6 @@ package com.kms.katalon.entity.testsuite;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -148,7 +147,6 @@ public class TestSuiteEntity extends IntegratedFileEntity {
         result = prime * result + (isRerun ? 1231 : 1237);
         result = prime * result + (isPageLoadTimeoutDefault ? 1231 : 1237);
         result = prime * result + (rerunFailedTestCasesOnly ? 1231 : 1237);
-        result = prime * result + ((lastRun == null) ? 0 : lastRun.hashCode());
         result = prime * result + pageLoadTimeout;
         result = prime * result + numberOfRerun;
         return result;
