@@ -91,6 +91,10 @@ public class VersionUtil {
             if (thisVer[i] > thatVer[i]) {
                 return true;
             }
+            
+            if (thisVer[i] < thatVer[i]) {
+                return false;
+            }
         }
         return false;
     }
