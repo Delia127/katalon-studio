@@ -62,10 +62,10 @@ pipeline {
             }
         }
         
-/*        stage('Package .DMG file') {
+        stage('Package .DMG file') {
             steps {
                 // Execute codesign command to package .DMG file for macOS
-                dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64")
+                dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
                 { sh ''' codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
                     /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" '''        
                         fileOperations([
@@ -78,7 +78,7 @@ pipeline {
                 }
             }
         }
-*/              
+              
         stage('Copy builds') {
             // copy generated builds and changelogs to shared folder on server
             steps {
