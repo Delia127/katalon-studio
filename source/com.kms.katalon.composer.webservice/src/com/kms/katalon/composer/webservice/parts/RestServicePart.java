@@ -16,6 +16,7 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -62,6 +63,8 @@ import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestServicePart extends WebServicePart {
+    
+    private static final String DUMMY_PROTOCOL = "http://";
 
     protected HttpBodyEditorComposite requestBodyEditor;
 
@@ -76,6 +79,8 @@ public class RestServicePart extends WebServicePart {
     private ModifyListener requestURLModifyListener;
 
     private boolean allowEditParamsTable = true;
+    
+    private boolean useDummyProtocolForUrl = false;
 
     @Override
     protected void createAPIControls(Composite parent) {
@@ -247,6 +252,17 @@ public class RestServicePart extends WebServicePart {
     
     private List<WebElementPropertyEntity> extractRestParameters(String url) throws MalformedURLException {
         List<WebElementPropertyEntity> paramEntities;
+        
+        //Fix for KAT-3862, prepend the URL with a dummy protocol
+        //in case its host is parameterized, which causes a protocol is 
+        //missing and URLBuilder cannot parse it
+        if (isHostParameterized(url)) {
+            url = StringUtils.prependIfMissing(url, DUMMY_PROTOCOL);
+            useDummyProtocolForUrl = true;
+        } else {
+            useDummyProtocolForUrl = false;
+        }
+        
         urlBuilder = new URLBuilder(url);
         List<NameValuePair> params = urlBuilder.getQueryParams();
         paramEntities = params.stream().map(param -> new WebElementPropertyEntity(param.getName(), param.getValue()))
@@ -255,6 +271,10 @@ public class RestServicePart extends WebServicePart {
         return paramEntities;
     }
 
+    private boolean isHostParameterized(String url) {
+        return url.startsWith("${");
+    }
+    
     @Override
     protected void createParamsComposite(Composite parent) {
         ExpandableComposite paramsExpandableComposite = new ExpandableComposite(parent, StringConstants.PA_LBL_PARAMS,
@@ -311,10 +331,12 @@ public class RestServicePart extends WebServicePart {
 
     private void updateRequestUrlWithNewParams(List<WebElementPropertyEntity> paramProperties) {
         List<NameValuePair> params = toNameValuePair(paramProperties);
-        urlBuilder = new URLBuilder();
         urlBuilder.setParameters(params);
         try {
             String newUrl = urlBuilder.build().toString();
+            if (useDummyProtocolForUrl) {
+                newUrl = StringUtils.removeStart(newUrl, DUMMY_PROTOCOL);
+            }
             Text text = wsApiControl.getRequestURLControl();
             text.removeModifyListener(requestURLModifyListener);
             text.setText(newUrl);
