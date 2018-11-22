@@ -62,7 +62,10 @@ pipeline {
             }
         }
         
-/*        stage('Package .DMG file') {
+        stage('Package .DMG file') {
+            when {
+                branch 'release'
+            }
             steps {
                 // Execute codesign command to package .DMG file for macOS
                 dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
@@ -78,7 +81,7 @@ pipeline {
                 }
             }
         }
-*/              
+              
         stage('Copy builds') {
             // copy generated builds and changelogs to shared folder on server
             steps {
