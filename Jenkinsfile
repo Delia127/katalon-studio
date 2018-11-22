@@ -64,7 +64,7 @@ pipeline {
         
         stage('Package .DMG file') {
             when {
-                branch 'release'
+                expression { BRANCH_NAME ==~ /^[release]+/ }
             }
             steps {
                 // Execute codesign command to package .DMG file for macOS
@@ -93,7 +93,7 @@ pipeline {
                         fileOperations([
                                 fileCopyOperation(
                                         excludes: '',
-                                        includes: '*.zip, *.tar.gz',
+                                        includes: '*.zip, *.tar.gz, *.dmg',
                                         flattenFiles: true,
                                         targetLocation: "${tmpDir}")
                         ])
