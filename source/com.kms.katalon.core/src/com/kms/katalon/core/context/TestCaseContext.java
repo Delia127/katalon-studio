@@ -66,6 +66,17 @@ public interface TestCaseContext {
      * 
      * @return Stacktrace if test case fails, empty string otherwise
      */
-    
     String getMessage();
+    
+    /**
+     * Set flag to signal this test case was skipped, implementing class determines
+     * further logic if necessary 
+     */
+    void skipThisTestCase();
+    
+    /**
+     * @return true if skipThisTestCase() was called
+     */
+    boolean isSkipped();
+    
 }

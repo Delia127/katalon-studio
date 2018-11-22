@@ -19,6 +19,8 @@ public class InternalTestCaseContext implements TestCaseContext {
 
     private int testCaseIndex;
 
+    private boolean isSkipped = false; // by default always run a test case
+    
     public InternalTestCaseContext(String testCaseId, int testCaseIndex) {
         this.testCaseId = testCaseId;
         this.testCaseIndex = testCaseIndex;
@@ -79,5 +81,15 @@ public class InternalTestCaseContext implements TestCaseContext {
 	@Override
 	public String getMessage(){
 		return message;
+	}
+
+	@Override
+	public void skipThisTestCase() {
+		isSkipped = true;
+	}
+	
+	@Override
+	public boolean isSkipped(){
+		return isSkipped;
 	}
 }
