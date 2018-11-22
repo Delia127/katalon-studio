@@ -704,4 +704,7 @@ public interface IImageKeys {
     public static final String IMPORT_WSDL = "api_quickstart/import_wsdl.png"; //$NON-NLS-1$
     
     public static final String API_QUICKSTART_BACKGROUND_LEFT = "api_quickstart/bg_left_part.png"; //$NON-NLS-1$
+    
+    // In App Survey
+    public static final String STAR = "highlight_24.png";
 }

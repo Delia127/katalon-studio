@@ -34,24 +34,26 @@ public class ShowInAppSurveyDialogHandler {
 				boolean shouldShowInAppSurveyDialog = prefStore
 						.getBoolean(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE);
 
-				if (true) {
+				if (shouldShowInAppSurveyDialog == true) {
 					InAppSurveyDialog inAppSurveyDialog = new InAppSurveyDialog(Display.getCurrent().getActiveShell());
 					inAppSurveyDialog.setBlockOnOpen(true);
-					int status = inAppSurveyDialog.open();
-
+					inAppSurveyDialog.open();
+					int numberOfStars = inAppSurveyDialog.getNumberOfStars();
+					String userIdea = inAppSurveyDialog.getUserIdea();
+					int status = inAppSurveyDialog.getStatus();
 					switch (status) {
-						case IDialogConstants.OK_ID:
-							String userIdea = inAppSurveyDialog.getUserIdea();
+						case 0: // Send
+							Trackings.trackInAppSurveyRatingAndIdea(numberOfStars, userIdea);
 							prefStore.setValue(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE,
 									false);
 							break;
-						case IDialogConstants.CANCEL_ID:
-							prefStore.setValue(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE,
-									false);
-							break;
-						case IDialogConstants.NEXT_ID:
+						case 1: // Later
 							prefStore.setValue(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE,
 									true);
+							break;
+						case 2: // No, thanks
+							prefStore.setValue(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE,
+									false);
 							break;
 					}
 				}

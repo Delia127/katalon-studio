@@ -297,6 +297,10 @@ public class Trackings {
         trackUserAction("responseTwitterDialog", "type", option);
     }
     
+    public static void trackInAppSurveyRatingAndIdea(int numberOfStars, String userIdea){
+    	trackUserAction("katalonStudioSurvey", "star", numberOfStars, "content", userIdea);
+    }
+    
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
     }
