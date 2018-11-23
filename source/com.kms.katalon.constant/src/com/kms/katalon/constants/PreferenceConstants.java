@@ -17,6 +17,8 @@ public interface PreferenceConstants {
     
     public static final String GENERAL_SHOW_USER_FEEDBACK_DIALOG_ON_APP_CLOSE = "general.showUserFeedbackDialogOnAppClose";
     
+    public static final String GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE = "general.showInAppSurveyDialogOnAppFirstClose";
+    
     public static final String GENERAL_NUMBER_OF_APP_CLOSES = "general.numberOfAppCloses";
 
     // Composer WebUi

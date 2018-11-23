@@ -22,6 +22,11 @@ public class ImageProcessor {
         registerRecorderImages();
         registerHistoryRequestImages();
         registerApiQuickStartImages();
+        registerInAppSurveyImages();
+    }
+    
+    private void registerInAppSurveyImages(){
+    	ImageManager.registerImage(IImageKeys.STAR);
     }
     
     private void registerApiQuickStartImages() {
