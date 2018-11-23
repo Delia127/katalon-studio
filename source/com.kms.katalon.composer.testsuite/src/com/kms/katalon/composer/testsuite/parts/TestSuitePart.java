@@ -112,6 +112,8 @@ public class TestSuitePart implements EventHandler {
     private Composite parent;
 
     private boolean isLoading;
+    
+    private ReportEntity lastRunReport;
 
     private Listener layoutExecutionCompositeListener = new Listener() {
 
@@ -332,10 +334,8 @@ public class TestSuitePart implements EventHandler {
 
     private void openReportOfLastRun() {
         try {
-            ReportEntity reportEntity = ReportController.getInstance().getLastRunReportEntity(
-                    parentTestSuiteCompositePart.getTestSuiteClone());
-            if (reportEntity != null) {
-                eventBroker.post(EventConstants.REPORT_OPEN, reportEntity);
+            if (lastRunReport != null) {
+                eventBroker.post(EventConstants.REPORT_OPEN, lastRunReport);
             } else {
                 MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
                         StringConstants.PA_WARN_MSG_REPORT_FILE_DOES_NOT_EXIST);
@@ -380,10 +380,11 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
-        if (testSuite.getLastRun() != null) {
+        lastRunReport = ReportController.getInstance().getLastRunReportEntity(testSuite);
+        if (lastRunReport != null) {
             lblLastRun.setText("<A>" + StringConstants.PA_LBL_LAST_RUN + "</A>");
             lblLastRun.setToolTipText(StringConstants.PA_LBL_TIP_LAST_RUN);
-            txtLastRun.setText(testSuite.getLastRun().toString());
+            txtLastRun.setText(ReportController.getInstance().getReportDate(lastRunReport).toString());
         } else {
             lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
             lblLastRun.setToolTipText("");
