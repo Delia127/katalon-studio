@@ -5,26 +5,20 @@ import java.io.File;
 import javax.inject.Inject;
 
 import org.eclipse.core.internal.runtime.InternalPlatform;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import org.eclipse.e4.core.services.events.IEventBroker;
 
-import com.kms.katalon.platform.KatalonPlatformActivator;
-
+@SuppressWarnings("restriction")
 public class UninstallPluginHandler {
+
     @Inject
-    IEclipseContext context;
+    IEventBroker eventBroker;
 
     @Execute
     public void installPlugin() {
-        try {
-            KatalonPlatformActivator.disablePlugin(context, InternalPlatform.getDefault().getBundleContext(),
-                    new File("/Users/duyanhluong/Documents/Work/code/katalon-slack-plugin/target/classes").toURI()
-                            .toString());
-        } catch (BundleException e) {
-            MessageDialog.openError(null, "Error", e.getMessage());
-        }
+        eventBroker.post("KATALON_PLUGIN/UNINSTALL",
+                new Object[] { InternalPlatform.getDefault().getBundleContext(),
+                        new File("/Users/duyanhluong/Documents/Work/code/katalon-slack-plugin/target/testplugin-1.0-SNAPSHOT.jar").toURI()
+                                .toString() });
     }
 }

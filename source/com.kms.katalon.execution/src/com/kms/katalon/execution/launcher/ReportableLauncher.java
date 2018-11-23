@@ -15,12 +15,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.e4.core.services.events.IEventBroker;
 
 import com.katalon.platform.api.extension.execution.ExecutionEvent;
 import com.katalon.platform.api.extension.execution.TestCaseExecutionContext;
 import com.katalon.platform.api.extension.execution.impl.TestCaseExecutionContextImpl;
 import com.katalon.platform.api.extension.execution.impl.TestSuiteExecutionContextImpl;
 import com.katalon.platform.api.extension.execution.impl.TestSuiteExecutionEvent;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -52,7 +55,6 @@ import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.platform.ApplicationServiceImpl;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
     private ReportEntity reportEntity;
@@ -420,7 +422,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     .withTestCaseContext(testCaseContexts)
                     .build();
             TestSuiteExecutionEvent eventObject = new TestSuiteExecutionEvent(eventName, executionContext);
-            ApplicationServiceImpl.getEventService().fireEvent(eventName, eventObject);
+            EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
         }
         return null;
     }
