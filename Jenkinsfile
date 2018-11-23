@@ -27,35 +27,37 @@ pipeline {
         }
 
         stage('Building') {
-            // start maven commands to get dependencies
-            steps {
-                sh 'ulimit -c unlimited'
-                sh 'cd source/com.kms.katalon.repo && mvn p2:site'
-                sh 'cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &'
-                sh '''
-                    until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
-                        printf '.'
-                        cat /tmp/9999.log
-                        sleep 5
-                    done
-                '''
+            retry(3) {
+                // start maven commands to get dependencies
+                steps {
+                    sh 'ulimit -c unlimited'
+                    sh 'cd source/com.kms.katalon.repo && mvn p2:site'
+                    sh 'cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &'
+                    sh '''
+                        until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
+                            printf '.'
+                            cat /tmp/9999.log
+                            sleep 5
+                        done
+                    '''
 
-                sh 'cd source/com.kms.katalon.p2site && nohup mvn -Djetty.port=33333 jetty:run > /tmp/33333.log &'
-                sh '''
-                    until $(curl --output /dev/null --silent --head --fail http://localhost:33333/site); do
-                        printf '.'
-                        cat /tmp/33333.log
-                        sleep 5
-                    done
-                '''
-                
-             // generate katalon builds   
-                script {
-                    dir("source") {
-                        if (BRANCH_NAME ==~ /^[release]+/) {
-                            sh ''' mvn clean verify -P prod '''
-                        } else {                      
-                            sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
+                    sh 'cd source/com.kms.katalon.p2site && nohup mvn -Djetty.port=33333 jetty:run > /tmp/33333.log &'
+                    sh '''
+                        until $(curl --output /dev/null --silent --head --fail http://localhost:33333/site); do
+                            printf '.'
+                            cat /tmp/33333.log
+                            sleep 5
+                        done
+                    '''
+
+                 // generate katalon builds   
+                    script {
+                        dir("source") {
+                            if (BRANCH_NAME ==~ /^[release]+/) {
+                                sh ''' mvn clean verify -P prod '''
+                            } else {                      
+                                sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
+                            }
                         }
                     }
                 }
