@@ -469,7 +469,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         insertVerificationScript(0, importBuilder.toString());
         // Insert Import <=> content changed <=> ScriptEditorPart marked dirty <=> Save All icon enabled
         // Since this "content changed" is irrelevant to the users, ix to the above problem
-        scriptEditorPart.setDirty(false);
+//        scriptEditorPart.setDirty(false);
+        GroovyEditorUtil.saveEditor(scriptEditorPart);
     }
 
     private void insertVerificationScript(int offset, String script) {
