@@ -2,7 +2,6 @@ package com.kms.katalon.composer.project.dialog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,11 +52,9 @@ import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
-import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewProjectDialog extends TitleAreaDialog {
@@ -460,9 +457,6 @@ public class NewProjectDialog extends TitleAreaDialog {
         } else {
             handleCreatingBlankProject();
         }
-
-        setDefaultSelectorMethod();
-
         super.okPressed();
     }
 
@@ -482,22 +476,6 @@ public class NewProjectDialog extends TitleAreaDialog {
                 new Object[] { sampleRemoteProject, projectEntity, false });
     }
 
-    /*
-     * This method exists from 5.7 onward - it will explicitly assign a default SelectorMethod of XPATH
-     * to newly created BLANK projects so that we can load default SelectorMethod for old and new projects appropriately
-     */
-    private void setDefaultSelectorMethod() {
-        WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-
-        if (store != null) {
-            try {
-                store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }
 
     private void handleCreatingSampleBuiltInProject(SampleLocalProject sampleBuiltInProject) {
         try {
