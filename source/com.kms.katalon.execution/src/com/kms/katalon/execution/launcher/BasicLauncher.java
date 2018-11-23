@@ -45,6 +45,7 @@ import com.kms.katalon.logging.LogUtil;
     protected void notifyProccess(Object event, IExecutedEntity executedEntity, ExecutionEntityResult result) {
     	result.setExecutedEntity(executedEntity);
     	result.setEvent(event);
+		result.setSessionId(executionUUID);
     	for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
                 .getInstance().getIntegrationContributorMap().entrySet()) {
             ReportIntegrationContribution contribution = reportContributorEntry.getValue();

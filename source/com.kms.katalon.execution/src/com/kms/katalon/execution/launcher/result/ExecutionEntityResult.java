@@ -9,9 +9,13 @@ public class ExecutionEntityResult {
 	
 	private String description;
 	
+	private String sessionId;
+	
 	private TestStatusValue testStatusValue;
 	
 	private IExecutedEntity executedEntity;
+	
+	private boolean end = false;
 	
 	private Object event;
 
@@ -53,6 +57,22 @@ public class ExecutionEntityResult {
 
 	public void setEvent(Object event) {
 		this.event = event;
+	}
+
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public boolean isEnd() {
+		return end;
+	}
+
+	public void setEnd(boolean end) {
+		this.end = end;
 	}
 
 	
