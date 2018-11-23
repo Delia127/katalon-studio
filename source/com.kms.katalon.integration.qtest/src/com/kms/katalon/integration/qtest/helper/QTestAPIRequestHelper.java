@@ -6,17 +6,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.util.internal.ProxyUtil;
+import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.qtest.QTestIntegrationAuthenticationManager;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.integration.qtest.exception.QTestAPIConnectionException;
 import com.kms.katalon.integration.qtest.exception.QTestException;
+import com.kms.katalon.integration.qtest.exception.QTestIOException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 
 public class QTestAPIRequestHelper {
@@ -25,16 +30,16 @@ public class QTestAPIRequestHelper {
      * Connects to qTest server via API, sends POST or PUT request and returns the response.
      * 
      * @param url
-     *            qTest URL as {@link String}
+     * qTest URL as {@link String}
      * @param token
-     *            QTest token
+     * QTest token
      * @param body
-     *            String body of the request
+     * String body of the request
      * @param type
-     *            <code>PUT<code/> or <code>POST</code>
+     * <code>PUT<code/> or <code>POST</code>
      * @return response message as {@link String}
      * @throws QTestException
-     *             if the connection is invalid.
+     * if the connection is invalid.
      */
     public static String sendPostOrPutRequestViaAPI(String url, IQTestToken token, String body, String type)
             throws QTestException {
@@ -47,7 +52,7 @@ public class QTestAPIRequestHelper {
         OutputStream os = null;
         try {
             URL obj = new URL(url);
-            con = (HttpURLConnection) obj.openConnection();
+            con = (HttpURLConnection) obj.openConnection(getProxy());
             con.setRequestMethod(type);
             con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_USER_AGENT,
                     QTestStringConstants.RQ_DF_VALUE_USER_AGENT);
@@ -65,8 +70,8 @@ public class QTestAPIRequestHelper {
         } catch (IOException e) {
             if (con != null) {
                 try {
-                    throw new QTestAPIConnectionException(con.getResponseCode(), e.getMessage()
-                            + "\n. Body = [" + body + "]");
+                    throw new QTestAPIConnectionException(con.getResponseCode(),
+                            e.getMessage() + "\n. Body = [" + body + "]");
                 } catch (IOException ex) {
                     throw new QTestAPIConnectionException(ex.getMessage());
                 }
@@ -90,12 +95,12 @@ public class QTestAPIRequestHelper {
      * Connects to qTest server via API, sends GET request and returns the response.
      * 
      * @param url
-     *            qTest URL as {@link String}
+     * qTest URL as {@link String}
      * @param token
-     *            QTest token
+     * QTest token
      * @return response message as {@link String}
      * @throws QTestException
-     *             if the connection is invalid.
+     * if the connection is invalid.
      */
     public static String sendGetRequestViaAPI(String url, IQTestToken token) throws QTestException {
         if (!QTestIntegrationAuthenticationManager.validateToken(token.getAccessTokenHeader())) {
@@ -106,12 +111,12 @@ public class QTestAPIRequestHelper {
         BufferedReader in = null;
         try {
             URL obj = new URL(url);
-            con = (HttpURLConnection) obj.openConnection();
+            con = (HttpURLConnection) obj.openConnection(getProxy());
             con.setRequestMethod(QTestStringConstants.CON_GET_METHOD);
             con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_USER_AGENT,
                     QTestStringConstants.RQ_DF_VALUE_USER_AGENT);
             con.setRequestProperty(QTestStringConstants.RQ_PROPERTY_AUTHORIZATION, token.getAccessTokenHeader());
-            
+
             return getResponse(con.getInputStream());
         } catch (IOException e) {
             if (con != null) {
@@ -152,6 +157,16 @@ public class QTestAPIRequestHelper {
             return response.toString();
         } finally {
             IOUtils.closeQuietly(inputStream);
+        }
+    }
+
+    public static Proxy getProxy() throws QTestIOException {
+        try {
+            return ProxyUtil.getProxy(ProxyPreferences.getProxyInformation());
+        } catch (IOException e) {
+            throw new QTestIOException(e);
+        } catch (URISyntaxException e) {
+            throw new QTestIOException(e.getMessage());
         }
     }
 }

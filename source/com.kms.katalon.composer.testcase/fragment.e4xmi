@@ -8,10 +8,14 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_l6UxoBrrEeSXreVpxhllQw" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_HK4zYBrsEeSXreVpxhllQw" elementId="com.kms.katalon.composer.testcase.command.add" commandName=""/>
     <elements xsi:type="commands:Command" xmi:id="_tWKmoAD8EeiMhoUeXENg3Q" elementId="com.kms.katalon.composer.testcase.command.encrypt" commandName="Text Encryption"/>
+    <elements xsi:type="commands:Command" xmi:id="_pvqIAMxlEeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.command.addmobilekeywords" commandName="Add Mobile Keywords"/>
+    <elements xsi:type="commands:Command" xmi:id="_zK2QEMxlEeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.command.addwebuikeywords" commandName="Add Web UI Keywords"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Xyzn4BrsEeSXreVpxhllQw" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_inpqgBrsEeSXreVpxhllQw" elementId="com.kms.katalon.composer.testcase.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler" command="_HK4zYBrsEeSXreVpxhllQw"/>
     <elements xsi:type="commands:Handler" xmi:id="_G1Db0AD9EeiMhoUeXENg3Q" elementId="com.kms.katalon.composer.testcase.handler.encrypt" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.handlers.TextEncryptionHandler" command="_tWKmoAD8EeiMhoUeXENg3Q"/>
+    <elements xsi:type="commands:Handler" xmi:id="_E0njIMxmEeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.handler.addmobilekeywords" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.handlers.AddMobileKeywordsHandler" command="_pvqIAMxlEeis-d8dVdcONw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_FOoloMxmEeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.handler.addwebuikeywords" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.handlers.AddWebUIKeywordsHandler" command="_zK2QEMxlEeis-d8dVdcONw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_bvYgcBsTEeSXreVpxhllQw" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="index:2">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_9LE0IBsTEeSXreVpxhllQw" elementId="com.kms.katalon.menu.submenu.new.testcase" label="Test Case" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_case_16.png" tooltip="" command="_HK4zYBrsEeSXreVpxhllQw"/>
@@ -34,5 +38,11 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pmd3MAD7EeiMhoUeXENg3Q" featurename="children" parentElementId="com.kms.katalon.composer.menu.help">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_ahJL8AD9EeiMhoUeXENg3Q" elementId="com.kms.katalon.composer.testcase.handledmenuitem.encrypt" label="Encrypt Text" command="_tWKmoAD8EeiMhoUeXENg3Q"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_at7lUMxREeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.action" positionInList="after:com.kms.katalon.menu.record">
+    <elements xsi:type="menu:Menu" xmi:id="_jF0dUMxREeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.menu.add" label="Add">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_gMw1cMxlEeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.handledmenuitem.addmobilekeywords" label="Add Mobile Keywords" command="_pvqIAMxlEeis-d8dVdcONw"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_3SrBEMxlEeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.handledmenuitem.addwebuikeywords" label="Add Web UI Keywords" command="_zK2QEMxlEeis-d8dVdcONw"/>
+    </elements>
   </fragments>
 </fragment:ModelFragments>

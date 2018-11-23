@@ -17,6 +17,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -88,6 +89,11 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor, Edito
             }
         });
         mirrorEditor.addEventListener(this);
+        
+        Label lblInstruction = new Label(this, SWT.WRAP);
+        lblInstruction.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        lblInstruction.setText(ComposerWebserviceMessageConstants.HOW_TO_ADD_JSON_AND_XML_PATH_TO_VERIFICATION_SCRIPT);
+        
         Composite bottomComposite = new Composite(this, SWT.NONE);
         GridLayout bottomLayout = new GridLayout(2, false);
         bottomLayout.marginWidth = bottomLayout.marginHeight = 0;

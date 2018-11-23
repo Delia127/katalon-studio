@@ -13,6 +13,9 @@ import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 
 public class MobileGestureCommonHelper {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(MobileGestureCommonHelper.class);
+    
     private static final int IOS_PINCH_OFFSET = 5;
 
     private static final int ANDROID_PINCH_OFFSET = 150;
@@ -23,7 +26,7 @@ public class MobileGestureCommonHelper {
         MobileCommonHelper.checkXAndY(startX, startY);
         checkOffset(offset);
         pinchToZoomIn(startX.intValue(), startY.intValue(), offset.intValue());
-        KeywordLogger.getInstance().logPassed(
+        logger.logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_ZOOM_AT_X_Y_WITH_OFFSET_Z, startX, startY, offset));
     }
 
@@ -53,7 +56,7 @@ public class MobileGestureCommonHelper {
         MobileCommonHelper.checkXAndY(endX, endY);
         checkOffset(offset);
         pinchToZoomOut(endX.intValue(), endY.intValue(), offset.intValue());
-        KeywordLogger.getInstance().logPassed(
+        logger.logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_PINCH_AT_X_Y_WITH_OFFSET_Z, endX, endY, offset));
     }
 
@@ -80,7 +83,7 @@ public class MobileGestureCommonHelper {
     }
 
     private static void checkOffset(Number offset) {
-        KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_OFFSET);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_OFFSET);
         if (offset == null) {
             throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
                     "offset"));

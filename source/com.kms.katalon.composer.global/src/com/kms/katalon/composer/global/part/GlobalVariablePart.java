@@ -64,7 +64,7 @@ import com.kms.katalon.composer.global.dialog.GlobalVariableBuilderDialog;
 import com.kms.katalon.composer.global.provider.TableViewerProvider;
 import com.kms.katalon.composer.global.support.GlobalVariableEdittingSupport;
 import com.kms.katalon.composer.parts.CPart;
-import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.GlobalVariableController;
@@ -115,7 +115,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             }
         }
         initialize(mpart, partService);
-        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.GLOBAL_VARIABLES);
         createComposite(parent);
         registerEventListeners();
     }
@@ -692,6 +691,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
 
     public ExecutionProfileEntity getExecutionProfileEntity() {
+        updateProfilEntityWithCurrentVariables();
         return executionProfileEntity;
     }
 

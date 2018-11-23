@@ -1,49 +1,343 @@
 package com.kms.katalon.core.logging;
 
-import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Stack;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Logger;
-import java.util.logging.SocketHandler;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.constants.CoreMessageConstants;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.main.ScriptEngine;
 
 public class KeywordLogger {
-    private static final int MAXIMUM_LOG_FILES = 100;
+    
+    private static final int HR_LENGTH = 20;
+    
+    private static final String TEST_CASE_HR = String.join("", Collections.nCopies(HR_LENGTH, "-"));
+    
+    private static final String TEST_SUITE_HR = String.join("", Collections.nCopies(HR_LENGTH, "="));
 
-    private static final int MAXIMUM_LOG_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
-    private Logger logger;
-
-    private String pendingDescription = null;
-
-    private Stack<KeywordStackElement> currentKeywordStack = null;
-
-    private Stack<Stack<KeywordStackElement>> keywordStacksContainer = new Stack<Stack<KeywordStackElement>>();
-
-    private int nestedLevel;
-
-    private static final ThreadLocal<KeywordLogger> localKeywordLoggerStorage = new ThreadLocal<KeywordLogger>() {
-        @Override
-        protected KeywordLogger initialValue() {
-            return new KeywordLogger();
+    private static final String PASSED = "\u2713"; // check
+    
+    private static final String FAILED = "\u274C"; // X
+    
+    private static final Logger selfLogger = LoggerFactory.getLogger(KeywordLogger.class);
+    
+    private static final Map<String, KeywordLogger> keywordLoggerLookup = new ConcurrentHashMap<>();
+    
+    private final Logger logger;
+    
+    private final XmlKeywordLogger xmlKeywordLogger;
+    
+    public static KeywordLogger getInstance(Class<?> clazz) {
+        if (clazz == null) { // just in case
+            selfLogger.error("Logger name is null. This should be a bug of Katalon Studio.");
+            clazz = KeywordLogger.class;
         }
-    };
+        return getInstance(clazz.getName());
+    }
 
-    public class KeywordStackElement {
+    private static KeywordLogger getInstance(String name) {
+        KeywordLogger keywordLogger = keywordLoggerLookup.get(name);
+        if (keywordLogger == null) {
+            String testCaseName = ScriptEngine.getTestCaseName(name);
+            if (testCaseName == null) {
+                keywordLogger = new KeywordLogger(name);
+            } else {
+                String fullTestCaseName = "testcase." + testCaseName;
+                keywordLogger = new KeywordLogger(fullTestCaseName);
+            }
+            keywordLoggerLookup.put(name, keywordLogger);
+        }
+        return keywordLogger;
+    }
+
+    private KeywordLogger(String className) {
+        logger = LoggerFactory.getLogger(className);
+        xmlKeywordLogger = XmlKeywordLogger.getInstance();
+    }
+
+
+    public void close() {
+        xmlKeywordLogger.close();
+    }
+
+
+    public String getLogFolderPath() {
+        return xmlKeywordLogger.getLogFolderPath();
+    }
+
+
+    public void startSuite(String name, Map<String, String> attributes) {
+        
+        logger.info("START {}", name);
+        
+        xmlKeywordLogger.startSuite(name, attributes);
+        
+        logRunData(RunConfiguration.HOST_NAME, RunConfiguration.getHostName());
+        logRunData(RunConfiguration.HOST_OS, RunConfiguration.getOS());
+        logRunData(RunConfiguration.HOST_ADDRESS, RunConfiguration.getHostAddress());
+        logRunData(RunConfiguration.APP_VERSION, RunConfiguration.getAppVersion());
+
+        RunConfiguration.getCollectedTestDataProperties().entrySet().stream().forEach(collectedDataInfo -> {
+            logRunData(collectedDataInfo.getKey(), collectedDataInfo.getValue());
+        });
+    }
+
+
+    public void endSuite(String name, Map<String, String> attributes) {
+        logger.info(TEST_CASE_HR);
+        logger.info("END {}", name);
+        logger.info(TEST_SUITE_HR);
+        xmlKeywordLogger.endSuite(name, attributes);
+    }
+
+
+    public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
+        logger.info(TEST_CASE_HR);
+        logger.info("START {}", name);
+        xmlKeywordLogger.startTest(name, attributes, keywordStack);
+    }
+
+
+    public void endTest(String name, Map<String, String> attributes) {
+        logger.info("END {}", name);
+        xmlKeywordLogger.endTest(name, attributes);
+    }
+    
+    public void startCalledTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
+        logger.info(TEST_CASE_HR);
+        logger.info("CALL {}", name);
+        xmlKeywordLogger.startTest(name, attributes, keywordStack);
+    }
+
+
+    public void endCalledTest(String name, Map<String, String> attributes) {
+        logger.info("END CALL {}", name);
+        logger.info(TEST_CASE_HR);
+        xmlKeywordLogger.endTest(name, attributes);
+    }
+
+
+    public void startListenerKeyword(
+            String name, 
+            Map<String, String> attributes,
+            Stack<KeywordStackElement> keywordStack) {
+        
+        logStartKeyword(name, attributes);
+        xmlKeywordLogger.startListenerKeyword(name, attributes, keywordStack);
+    }
+
+
+    public void startKeyword(
+            String name, 
+            String actionType, 
+            Map<String, String> attributes,
+            Stack<KeywordStackElement> keywordStack) {
+        logStartKeyword(name, attributes);
+        xmlKeywordLogger.startKeyword(name, actionType, attributes, keywordStack);
+    }
+
+    private void logStartKeyword(String name, Map<String, String> attributes) {
+        String stepIndex = getStepIndex(attributes);
+        if (stepIndex == null) {
+            logger.debug("STEP {}", name);
+        } else {
+            logger.debug("{}: {}", stepIndex, name);
+        }
+    }
+
+    private String getStepIndex(Map<String, String> attributes) {
+        String stepIndex = null;
+        if (attributes != null) {
+            stepIndex = attributes.get(StringConstants.XML_LOG_STEP_INDEX);
+        }
+        return stepIndex;
+    }
+
+
+    public void startKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
+        logStartKeyword(name, attributes);
+        xmlKeywordLogger.startKeyword(name, attributes, keywordStack);
+    }
+
+
+    public void startKeyword(String name, Map<String, String> attributes, int nestedLevel) {
+        logStartKeyword(name, attributes);
+        xmlKeywordLogger.startKeyword(name, attributes, nestedLevel);
+    }
+
+
+    public void endKeyword(String name, Map<String, String> attributes, int nestedLevel) {
+        logEndKeyword(name, attributes);
+        xmlKeywordLogger.endKeyword(name, attributes, nestedLevel);
+    }
+
+    private void logEndKeyword(String name, Map<String, String> attributes) {
+        String stepIndex = getStepIndex(attributes);
+        if (stepIndex == null) {
+            logger.trace("END {}: {}", stepIndex, name);
+        } else {
+            logger.trace("END STEP {}", name);
+        }
+    }
+
+
+    public void endListenerKeyword(
+            String name, 
+            Map<String, String> attributes,
+            Stack<KeywordStackElement> keywordStack) {
+        logEndKeyword(name, attributes);
+        xmlKeywordLogger.endListenerKeyword(name, attributes, keywordStack);
+    }
+
+
+    public void endKeyword(
+            String name, 
+            String keywordType, 
+            Map<String, String> attributes,
+            Stack<KeywordStackElement> keywordStack) {
+        logEndKeyword(name, attributes);
+        xmlKeywordLogger.endKeyword(name, keywordType, attributes, keywordStack);
+    }
+
+
+    public void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
+        logEndKeyword(name, attributes);
+        xmlKeywordLogger.endKeyword(name, attributes, keywordStack);
+    }
+
+
+    public void logFailed(String message) {
+        logFailed(message, null);
+    }
+
+
+    public void logFailed(String message, Map<String, String> attributes) {
+        logger.error("{} {}", FAILED, message);
+        xmlKeywordLogger.logFailed(message, attributes);
+    }
+
+
+    public void logWarning(String message) {
+        logWarning(message, null);
+    }
+
+
+    public void logWarning(String message, Map<String, String> attributes) {
+        logger.warn(message);
+        xmlKeywordLogger.logWarning(message, attributes);
+    }
+
+
+    public void logPassed(String message) {
+        logPassed(message, null);
+    }
+
+
+    public void logPassed(String message, Map<String, String> attributes) {
+        logger.debug("{} {}", PASSED, message);
+        xmlKeywordLogger.logPassed(message, attributes);
+    }
+
+
+    public void logInfo(String message) {
+        logInfo(message, null);
+    }
+
+
+    public void logInfo(String message, Map<String, String> attributes) {
+        logger.info(message);
+        xmlKeywordLogger.logInfo(this, message, attributes);
+    }
+
+
+    public void logRunData(String dataKey, String dataValue) {
+        logger.info("{} = {}", dataKey, dataValue);
+        xmlKeywordLogger.logRunData(dataKey, dataValue);
+    }
+
+
+    public void logError(String message) {
+        logError(message, null);
+    }
+
+
+    public void logError(String message, Map<String, String> attributes) {
+        logger.error("{} {}", FAILED, message);
+        xmlKeywordLogger.logError(message, attributes);
+    }
+
+
+    public void logMessage(LogLevel level, String message) {
+        logMessage(level, message, new HashMap<>());
+    }
+
+
+    public void logMessage(LogLevel level, String message, Map<String, String> attributes) {
+        log(level, message);
+        xmlKeywordLogger.logMessage(this, level, message, attributes);
+    }
+
+    private void log(LogLevel level, String message) {
+        switch (level) {
+            case WARNING:
+                logger.warn(message);
+                break;
+            case NOT_RUN:
+                logger.warn("SKIP {}", message);
+                break;
+            case FAILED:
+            case ERROR:
+            case ABORTED:
+            case INCOMPLETE:
+                logger.error("{} {}", FAILED, message);
+                break;
+            default:
+                logger.info(message);
+        }
+    }
+
+
+    public void logMessage(LogLevel level, String message, Throwable thrown) {
+        log(level, message);
+        xmlKeywordLogger.logMessage(level, message, thrown);
+    }
+
+
+    public void setPendingDescription(String stepDescription) {
+        xmlKeywordLogger.setPendingDescription(stepDescription);
+    }
+
+
+    public void logNotRun(String message) {
+        logNotRun(message, null);
+    }
+
+
+    public void logNotRun(String message, Map<String, String> attributes) {
+        logger.warn("SKIPPED {}", message);
+        xmlKeywordLogger.logNotRun(message, attributes);
+    }
+
+    public void logDebug(String message) {
+        logger.debug(message);
+        xmlKeywordLogger.logDebug(this, message, null);
+    }
+    
+    public boolean isInfoEnabled() {
+        return logger.isInfoEnabled();
+    }
+    
+    public boolean isDebugEnabled() {
+        return logger.isDebugEnabled();
+    }
+
+    public static class KeywordStackElement {
         private String keywordName;
 
         private int nestedLevel;
@@ -68,304 +362,5 @@ public class KeywordLogger {
         public void setNestedLevel(int nestedLevel) {
             this.nestedLevel = nestedLevel;
         }
-    }
-
-    public static KeywordLogger getInstance() {
-        return localKeywordLoggerStorage.get();
-    }
-
-    private KeywordLogger() {
-    }
-
-    /**
-     * @return Returns current logger if it exists. Otherwise, create a new one includes: customized log file with XML
-     * format and customized console handler.
-     */
-    private Logger getLogger() {
-        if (logger == null) {
-            logger = Logger.getLogger(KeywordLogger.class.getName());
-
-            // remove default parent's setting
-            logger.setUseParentHandlers(false);
-        }
-
-        String logFolder = getLogFolderPath();
-        if (logger.getHandlers().length == 0 && StringUtils.isNotEmpty(logFolder)) {
-            try {
-                SystemConsoleHandler consoleHandler = new SystemConsoleHandler();
-                consoleHandler.setEncoding(DF_CHARSET);
-                logger.addHandler(consoleHandler);
-
-                // Split log into 100 files, every file is maximum 10MB
-                FileHandler fileHandler = new FileHandler(logFolder + File.separator + "execution%g.log",
-                        MAXIMUM_LOG_FILE_SIZE, MAXIMUM_LOG_FILES, true);
-
-                fileHandler.setEncoding(DF_CHARSET);
-                fileHandler.setFormatter(new CustomXmlFormatter());
-                logger.addHandler(fileHandler);
-
-                SocketHandler socketHandler = new SystemSocketHandler(StringConstants.DF_LOCAL_HOST_ADDRESS, getPort());
-                socketHandler.setEncoding(DF_CHARSET);
-                socketHandler.setFormatter(new CustomSocketLogFomatter());
-                logger.addHandler(socketHandler);
-            } catch (SecurityException e) {
-                System.err.println(
-                        MessageFormat.format(CoreMessageConstants.MSG_ERR_UNABLE_TO_CREATE_LOGGER, e.getMessage()));
-            } catch (IOException e) {
-                System.err.println(
-                        MessageFormat.format(CoreMessageConstants.MSG_ERR_UNABLE_TO_CREATE_LOGGER, e.getMessage()));
-            }
-        }
-        return logger;
-    }
-
-    public void close() {
-        for (Handler handler : logger.getHandlers()) {
-            handler.close();
-        }
-    }
-
-    public static void cleanUp() {
-
-    }
-
-    public String getLogFolderPath() {
-        String logFilePath = RunConfiguration.getSettingFilePath();
-        return (logFilePath != null) ? new File(logFilePath).getParentFile().getAbsolutePath() : null;
-    }
-
-    private int getPort() {
-        return RunConfiguration.getPort();
-    }
-
-    public void startSuite(String name, Map<String, String> attributes) {
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_SUITE + " : " + name,
-                nestedLevel, attributes));
-        logRunData(RunConfiguration.HOST_NAME, RunConfiguration.getHostName());
-        logRunData(RunConfiguration.HOST_OS, RunConfiguration.getOS());
-        logRunData(RunConfiguration.HOST_ADDRESS, RunConfiguration.getHostAddress());
-        logRunData(RunConfiguration.APP_VERSION, RunConfiguration.getAppVersion());
-
-        for (Entry<String, String> collectedDataInfo : RunConfiguration.getCollectedTestDataProperties().entrySet()) {
-            logRunData(collectedDataInfo.getKey(), collectedDataInfo.getValue());
-        }
-    }
-
-    public void endSuite(String name, Map<String, String> attributes) {
-        getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), StringConstants.LOG_END_SUITE + " : " + name,
-                nestedLevel, attributes));
-    }
-
-    public void startTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        nestedLevel++;
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_TEST + " : " + name,
-                nestedLevel, attributes));
-        setCurrentKeywordStack(keywordStack);
-    }
-    
-    private void setCurrentKeywordStack(Stack<KeywordStackElement> newKeywordStack) {
-        if (currentKeywordStack != null) {
-            keywordStacksContainer.push(currentKeywordStack);
-        }
-        this.currentKeywordStack = newKeywordStack;
-    }
-    
-    public void endTest(String name, Map<String, String> attributes) {
-        nestedLevel--;
-        getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), StringConstants.LOG_END_TEST + " : " + name,
-                nestedLevel, attributes));
-        restorePreviousKeywordStack();
-    }
-    
-    private void restorePreviousKeywordStack() {
-        if (!keywordStacksContainer.isEmpty()) {
-            currentKeywordStack = keywordStacksContainer.pop();
-        } else {
-            currentKeywordStack = null;
-        }
-    }
-
-    public void startListenerKeyword(String name, Map<String, String> attributes,
-            Stack<KeywordStackElement> keywordStack) {
-        Map<String, String> modifiedAttr = new HashMap<>(attributes != null ? attributes : Collections.emptyMap());
-        modifiedAttr.put(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED, Boolean.toString(true));
-        startKeyword(name, StringConstants.LOG_LISTENER_ACTION, attributes, keywordStack);
-    }
-
-    public void startKeyword(String name, String actionType, Map<String, String> attributes,
-            Stack<KeywordStackElement> keywordStack) {
-        if (attributes == null) {
-            attributes = new HashMap<String, String>();
-        }
-        if (pendingDescription != null) {
-            attributes.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, pendingDescription);
-            pendingDescription = null;
-        }
-        getLogger()
-                .log(new XmlLogRecord(LogLevel.START.getLevel(), 
-                        "Start " + actionType + " : " + name, nestedLevel, attributes));
-        if (currentKeywordStack != null) {
-            keywordStacksContainer.push(currentKeywordStack);
-        }
-        this.currentKeywordStack = keywordStack;
-    }
-
-    public void startKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        if (attributes == null) {
-            attributes = new HashMap<String, String>();
-        }
-        if (pendingDescription != null) {
-            attributes.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, pendingDescription);
-            pendingDescription = null;
-        }
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_KEYWORD + " : " + name,
-                nestedLevel, attributes));
-        if (currentKeywordStack != null) {
-            keywordStacksContainer.push(currentKeywordStack);
-        }
-        this.currentKeywordStack = keywordStack;
-    }
-
-    public void startKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-        if (attributes == null) {
-            attributes = new HashMap<String, String>();
-        }
-        if (pendingDescription != null) {
-            attributes.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, pendingDescription);
-            pendingDescription = null;
-        }
-        popKeywordFromStack(nestedLevel);
-        getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_KEYWORD + " : " + name,
-                nestedLevel, attributes));
-        pushKeywordToStack(name, nestedLevel);
-    }
-
-    private void pushKeywordToStack(String keywordName, int nestedLevel) {
-        if (currentKeywordStack != null) {
-            currentKeywordStack.push(new KeywordStackElement(keywordName, nestedLevel));
-        }
-    }
-
-    private void popKeywordFromStack(int nestedLevel) {
-        while (currentKeywordStack != null && !currentKeywordStack.isEmpty()
-                && currentKeywordStack.peek().getNestedLevel() >= nestedLevel) {
-            KeywordStackElement keywordStackElement = currentKeywordStack.pop();
-            endKeyword(keywordStackElement.getKeywordName(), null, keywordStackElement.getNestedLevel());
-        }
-    }
-
-    public void endKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-        getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), StringConstants.LOG_END_KEYWORD + " : " + name,
-                nestedLevel, attributes));
-    }
-
-    public void endListenerKeyword(String name, Map<String, String> attributes,
-            Stack<KeywordStackElement> keywordStack) {
-        endKeyword(name, StringConstants.LOG_LISTENER_ACTION, attributes, keywordStack);
-    }
-
-    public void endKeyword(String name, String keywordType, Map<String, String> attributes,
-            Stack<KeywordStackElement> keywordStack) {
-        getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), 
-                "End " + keywordType + " : " + name, nestedLevel, attributes));
-        if (currentKeywordStack == keywordStack && !keywordStacksContainer.isEmpty()) {
-            currentKeywordStack = keywordStacksContainer.pop();
-        } else {
-            currentKeywordStack = null;
-        }
-    }
-
-    public void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-        endKeyword(name, StringConstants.LOG_END_KEYWORD, attributes, keywordStack);
-    }
-
-    public void logFailed(String message) {
-        logMessage(LogLevel.FAILED, message);
-    }
-
-    public void logFailed(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.FAILED, message, attributes);
-    }
-
-    public void logWarning(String message) {
-        logMessage(LogLevel.WARNING, message);
-    }
-
-    public void logWarning(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.WARNING, message, attributes);
-    }
-
-    public void logPassed(String message) {
-        logMessage(LogLevel.PASSED, message);
-    }
-
-    public void logPassed(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.PASSED, message, attributes);
-    }
-
-    public void logInfo(String message) {
-        logMessage(LogLevel.INFO, message);
-    }
-
-    public void logInfo(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.INFO, message, attributes);
-    }
-
-    public void logRunData(String dataKey, String dataValue) {
-        Map<String, String> attributeMap = new HashMap<String, String>();
-        attributeMap.put(dataKey, dataValue);
-        logMessage(LogLevel.RUN_DATA, "Logging run data '" + dataKey + "' with value '" + dataValue + "'",
-                attributeMap);
-    }
-
-    public void logError(String message) {
-        logMessage(LogLevel.ERROR, message);
-    }
-
-    public void logError(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.ERROR, message, attributes);
-    }
-
-    public void logMessage(LogLevel level, String message) {
-        if (message == null) {
-            message = "";
-        }
-        Logger logger = getLogger();
-        if (logger != null) {
-            logger.log(new XmlLogRecord(level.getLevel(), message, nestedLevel));
-        }
-    }
-
-    public void logMessage(LogLevel level, String message, Map<String, String> attributes) {
-        if (message == null) {
-            message = "";
-        }
-        Logger logger = getLogger();
-        if (logger != null) {
-            logger.log(new XmlLogRecord(level.getLevel(), message, nestedLevel, attributes));
-        }
-
-    }
-
-    public void logMessage(LogLevel level, String message, Throwable thrown) {
-        if (message == null) {
-            message = "";
-        }
-        Logger logger = getLogger();
-        if (logger != null) {
-            logger.log(level.getLevel(), message, thrown);
-        }
-    }
-
-    public void setPendingDescription(String stepDescription) {
-        pendingDescription = stepDescription;
-    }
-
-    public void logNotRun(String message) {
-        logMessage(LogLevel.NOT_RUN, message);
-    }
-
-    public void logNotRun(String message, Map<String, String> attributes) {
-        logMessage(LogLevel.NOT_RUN, message, attributes);
     }
 }

@@ -177,15 +177,29 @@ public class CoreWebuiMessageConstants extends NLS {
     
     public static String KW_LOG_INFO_RETRIEVING_WEB_ELEMENT_FROM_CACHE;
     
-    public static String KW_LOG_INFO_USING_TRIAL_AND_ERROR_METHOD; 
+    public static String KW_LOG_INFO_SMART_XPATHS_SUPPORT_START; 
+    
+    public static String KW_LOG_INFO_SMART_XPATHS_TRIGGER;
+    
+    public static String KW_LOG_INFO_SMART_XPATHS_LEARN_ABOUT;
+    
+    public static String KW_LOG_INFO_SMART_XPATHS_USING;
+    
+    public static String KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION;
+    
+    public static String KW_LOG_INFO_SMART_XPATHS_SUPPORT_END;
     
     public static String KW_LOG_INFO_USING_HEURISTIC_METHOD;
     
-    public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_TRIAL_AND_ERROR_METHOD;
+    public static String KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS;
     
     public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD;
     
-    public static String KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_TRIAL_AND_ERROR_METHOD;
+    public static String KW_LOG_INFO_NOT_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS;
+    
+    public static String KW_LOG_INFO_WHERE_TO_TURN_OFF_SMART_XPATHS;
+    
+    public static String KW_LOG_INFO_WHERE_TO_TURN_ON_SMART_XPATHS;
     
     public static String KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_HEURISTIC_METHOD;
     

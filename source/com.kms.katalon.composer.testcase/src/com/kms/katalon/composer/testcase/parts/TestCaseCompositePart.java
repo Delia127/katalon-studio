@@ -68,8 +68,8 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
-import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.testcase.actions.KatalonFormatAction;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
@@ -184,6 +184,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     private boolean disposed;
 
 	private boolean invalidScheme;
+	
+	private boolean variableTab = true;
 
     public boolean isInitialized() {
         return isInitialized;
@@ -352,13 +354,17 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
-                        	updateVariableManualView();
+                        	if(dirty.isDirty())
+                        	        updateVariableManualView();
                             Trackings.trackOpenObject("testCaseVariable");
+                            variableTab = true;
                             return;
                         }
                         
                         if(tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX){
-                        	updateVariableScriptView();
+                            if(dirty.isDirty())
+                                updateVariableScriptView();                        	
+                        	variableTab = false;
                         	return;
                         }
                         
@@ -609,7 +615,15 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     @Override
     public void save() throws Exception {
-        updateVariableManualView();
+        // If VariableView is switched from VariableEditorView
+        // then they are already in sync. If user only interact on VariableView so far 
+        // then update VariableEditorView (vice versa)
+        if(variableTab == true){
+            updateVariableScriptView();
+        }else{
+            updateVariableManualView();
+        }
+        
         if (invalidScheme == true) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);

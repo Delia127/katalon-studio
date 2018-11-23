@@ -49,6 +49,7 @@ import com.kms.katalon.execution.entity.Rerunable;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.setting.EmailVariableBinding;
@@ -64,7 +65,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
-
+    
     @Override
     protected void preExecutionComplete() {
         if (getStatus() == LauncherStatus.TERMINATED) {
@@ -171,12 +172,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     protected void updateLastRun(Date startTime) throws Exception {
-        TestSuiteEntity testSuite = getTestSuite();
-
-        if (testSuite.getLastRun() == null || startTime.after(testSuite.getLastRun())) {
-            testSuite.setLastRun(startTime);
-            TestSuiteController.getInstance().updateTestSuite(testSuite);
-        }
     }
 
     protected TestSuiteLogRecord prepareReport() {
@@ -191,11 +186,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_CSV);
             ReportUtil.writeCSVReport(suiteLog, reportFolder);
 
-            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_SIMPLE_HTML);
-            ReportUtil.writeSimpleHTMLReport(suiteLog, reportFolder);
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_UUID);
+            ReportUtil.writeExecutionUUIDToFile(this.getExecutionUUID(), reportFolder);
 
-            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
-            ReportUtil.writeJsonReport(suiteLog, reportFolder);
+//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
+//            ReportUtil.writeJsonReport(suiteLog, reportFolder);
 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
             ReportUtil.writeJUnitReport(suiteLog, reportFolder);

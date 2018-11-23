@@ -154,7 +154,8 @@ public class SoapPrettyEditor extends Composite implements ResponseBodyEditor, E
                 int line = positionJsonObject.get("line").getAsInt();
                 Map<Integer, String> jsonPathCollection = lineIndexing.get(preferedContentType);
                 if (jsonPathCollection.containsKey(line)) {
-                    mirrorEditor.setHintText(jsonPathCollection.get(line));
+                    String hintText = XPathUtils.getXmlPropertyForSoapBody(jsonPathCollection.get(line));
+                    mirrorEditor.setHintText(hintText);
                 } else {
                     mirrorEditor.setHintText("");
                 }
@@ -197,8 +198,8 @@ public class SoapPrettyEditor extends Composite implements ResponseBodyEditor, E
                         break;
                 }
                 
-                String script = String.format("WS.verifyElementPropertyValue(response, '%s', %s)", 
-                        propertyName.replace("'", "\\'"), StringUtils.defaultIfEmpty(propertyValue, "''"));
+                String script = String.format("WS.verifyElementText(response, '%s', %s)", 
+                        XPathUtils.getXmlPropertyForSoapBody(propertyName), StringUtils.defaultIfEmpty(propertyValue, "''"));
                 Iterator<VerificationScriptEventHandler> iterator = eventHanders.iterator();
                 while (iterator.hasNext()) {
                     iterator.next().insertScript(script);

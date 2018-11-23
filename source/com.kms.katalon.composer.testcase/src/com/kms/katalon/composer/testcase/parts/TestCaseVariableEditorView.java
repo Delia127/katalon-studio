@@ -1,18 +1,8 @@
 package com.kms.katalon.composer.testcase.parts;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.e4.ui.di.Persist;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-import org.eclipse.e4.ui.model.application.ui.MGenericTile;
-import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -20,15 +10,13 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.constants.TextContentType;
 import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
 import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.CPart;
-import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.entity.variable.VariableEntityWrapper;
 
-public class TestCaseVariableEditorView extends CPart implements SavableCompositePart{
+public class TestCaseVariableEditorView extends CPart{
 
     Composite composite;
 
@@ -37,18 +25,11 @@ public class TestCaseVariableEditorView extends CPart implements SavableComposit
     boolean contentChanged = false;
 
     IVariablePart variablePart;
-    
-    MPart mpart;
 
     String contentScript = StringUtils.EMPTY;
     
     Composite parentTestCaseCompositePart;
 
-    @PostConstruct
-    public void init(Composite parent, MPart mpart) {
-        this.mpart = mpart;
-    }
-    
     public TestCaseVariableEditorView(IVariablePart variablePart, Composite parent) {        
         this.variablePart = variablePart;
         parentTestCaseCompositePart = parent;
@@ -111,19 +92,6 @@ public class TestCaseVariableEditorView extends CPart implements SavableComposit
 
     public String getScriptContent() {
        return mirrorEditor.getText();
-    }
-
-    @Override
-    public List<MPart> getChildParts() {
-        List<MPart> res = new ArrayList<>();
-        res.add(mpart);
-        return res;
-    }
-
-    @Persist
-    @Override
-    public void save() throws Exception {
-        
     }
 
 }

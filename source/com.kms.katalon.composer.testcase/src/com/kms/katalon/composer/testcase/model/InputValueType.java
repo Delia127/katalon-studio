@@ -38,6 +38,7 @@ public enum InputValueType implements InputValueEditorProvider {
     String,
     Number,
     Boolean,
+    Null,
     Variable,
     MethodCall,
     List,
@@ -67,14 +68,23 @@ public enum InputValueType implements InputValueEditorProvider {
     }
 
     public boolean isEditable(Object astObject) {
+    	if(this == Null){
+    		return false;
+    	}
         return true;
     }
     
+    // Use this to pass testCasePart's information (specifically about TestCaseVariable) to the editor
+    public CellEditor getCellEditorForValue(Composite parent, Object astObject, ITestCasePart testCasePart){
+    	switch(this){
+    		case Variable:
+    			return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject, testCasePart);
+			default:
+				return getCellEditorForValue(parent, astObject);
+    	}
+    }
+    
     public CellEditor getCellEditorForValue(Composite parent, Object astObject) {
-        return getCellEditorForValue(parent, astObject, null);
-    }    
-
-    public CellEditor getCellEditorForValue(Composite parent, Object astObject, ITestCasePart testCasePart) {
         switch (this) {
             case Binary:
                 return AstValueUtil.getCellEditorForBinaryExpression(parent, (BinaryExpressionWrapper) astObject);
@@ -118,7 +128,7 @@ public enum InputValueType implements InputValueEditorProvider {
             case Throwable:
                 return AstValueUtil.getCellEditorForThrowable(parent, (ConstructorCallExpressionWrapper) astObject);
             case Variable:
-                return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject, testCasePart);
+                return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject);
             case Key:
                 return AstValueUtil.getCellEditorForKeyExpression(parent);
             case Keys:
@@ -150,6 +160,8 @@ public enum InputValueType implements InputValueEditorProvider {
                 return new ConstantExpressionWrapper(0, parent);
             case Boolean:
                 return new ConstantExpressionWrapper(true, parent);
+            case Null:
+            	return new ConstantExpressionWrapper(parent);
             case Binary:
                 return new BinaryExpressionWrapper(parent);
             case Variable:
@@ -275,6 +287,8 @@ public enum InputValueType implements InputValueEditorProvider {
             case Condition:
             case Boolean:
                 return isClassAssignable(java.lang.Boolean.class, paramType);
+            case Null:	
+                return !paramType.isPrimitive() && isClassAssignable(java.lang.Boolean.class, paramType);
             case Class:
                 return isClassAssignable(Type.class, paramType);
             case List:

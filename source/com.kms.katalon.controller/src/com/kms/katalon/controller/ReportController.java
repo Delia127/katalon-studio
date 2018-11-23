@@ -109,9 +109,30 @@ public class ReportController extends EntityController {
     }
 
     public ReportEntity getLastRunReportEntity(TestSuiteEntity testSuite) throws Exception {
-        String reportName = dateFormat.format(testSuite.getLastRun()).toString();
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        return getDataProviderSetting().getReportDataProvider().getReportEntity(project, testSuite, reportName);
+        ReportEntity lastRunReport = null;
+        List<ReportEntity> reports = listReportEntities(testSuite, project);
+        if (reports.size() > 0) {
+            lastRunReport = reports.get(0);
+            Date lastRunDate = parseReportDateFromName(lastRunReport.getName());
+            for (ReportEntity report : reports) {
+                String reportName = report.getName();
+                Date reportDate = parseReportDateFromName(reportName);
+                if (reportDate.after(lastRunDate)) {
+                    lastRunDate = reportDate;
+                    lastRunReport = report;
+                }
+            }
+        }
+        return lastRunReport;
+    }
+    
+    private Date parseReportDateFromName(String reportName) throws ParseException {
+        return dateFormat.parse(reportName);
+    }
+    
+    public Date getReportDate(ReportEntity report) throws Exception {
+        return parseReportDateFromName(report.getName());
     }
 
     public void deleteReport(ReportEntity report) throws Exception {

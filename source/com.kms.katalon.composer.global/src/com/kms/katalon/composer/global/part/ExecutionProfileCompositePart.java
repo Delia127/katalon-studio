@@ -31,15 +31,16 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.global.constants.StringConstants;
-import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
-
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.GlobalVariableController;
@@ -87,6 +88,8 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	    protected Composite parent;
 	    	    
 	    private boolean invalidSchema;
+	    
+	    private boolean variableTab = true;
 
 		@PostConstruct
 	    public void init(Composite parent, MCompositePart part) {
@@ -94,6 +97,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	        this.executionProfileEntity = (ExecutionProfileEntity) part.getObject();
 	        this.parent = parent;
 	        dirty.setDirty(false);
+	        new HelpToolBarForMPart(part, DocumentationMessageConstants.GLOBAL_VARIABLES);
 	        invalidSchema = false;
 	    }
 	    
@@ -153,12 +157,16 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                        }
 	                        
 	                        if (tabFolder.getSelectionIndex() == 0) {
-	                            updateManualView();
+	                            if(dirty.isDirty())
+	                                updateVariableManualView();
+	                            variableTab = true;
 	                            return;
 	                        }
 
 	                        if (tabFolder.getSelectionIndex() == 1) {
-	                            updateScriptView();
+	                            if(dirty.isDirty())
+	                                updateVariableScriptView();
+	                            variableTab = false;
 	                            return;
                         	}
 	                    }
@@ -167,11 +175,11 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                tabFolder.layout();
 	            }
 	            // Initialize editor's view
-	            updateScriptView();	
+	            updateVariableScriptView();	
 	        }	
 		}
 
-        private void updateScriptView() {
+        private void updateVariableScriptView() {
             try {
                 globalVariableEditorPart.setScriptContentFrom(globalVariablePart.getExecutionProfileEntity());
                 setInvalidScheme(false);
@@ -181,7 +189,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
         }
         
 
-        private void updateManualView() {
+        private void updateVariableManualView() {
             try {
                 globalVariablePart.setVariablesFromScriptContent(globalVariableEditorPart.getScriptContent());
                 setInvalidScheme(false);
@@ -198,7 +206,20 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	    @Override
 		public void save(){
 	        try {
-	            updateManualView();
+	           
+	            if(variableTab == true){
+	                updateVariableScriptView();
+	            }
+	            // If users perform "save operation" from variableScriptView,
+	        	// we update VariableManualView to sync the variables, but since the
+	        	// user can copy/paste all content from another execution
+	        	// profile's script, the execution profile's name in the script may not be in
+	        	// sync with executionProfileEntity, we update VariableScriptView to sync the name
+	            else{
+	                updateVariableManualView();
+	                updateVariableScriptView();
+	            }
+	            
 	        	if(invalidSchema == true){
 	    			MessageDialog.openError(null, StringConstants.ERROR_TITLE,
 	                        StringConstants.PA_ERROR_MSG_UNABLE_TO_UPDATE_PROFILE);

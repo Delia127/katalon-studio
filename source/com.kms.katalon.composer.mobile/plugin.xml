@@ -13,7 +13,7 @@
 	<extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
-      		category="com.kms.katalon.composer.execution.settings.default"
+      		category="com.kms.katalon.composer.execution.desiredcapabilities"
             class="com.kms.katalon.composer.mobile.setting.MobilePreferencePage"
             id="com.kms.katalon.composer.execution.settings.default.2"
             name="Mobile">

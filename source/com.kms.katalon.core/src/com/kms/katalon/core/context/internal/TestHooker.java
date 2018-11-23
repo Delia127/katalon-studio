@@ -36,7 +36,8 @@ import com.kms.katalon.core.util.internal.PrimitiesUtil;
 import groovy.lang.GroovyObject;
 
 public class TestHooker {
-    private static final KeywordLogger LOG = KeywordLogger.getInstance();
+    
+    private final KeywordLogger logger = KeywordLogger.getInstance(this.getClass());
 
     private String sourceFile;
 
@@ -125,20 +126,20 @@ public class TestHooker {
             errorCollector.clearErrors();
 
             String methodDisplayName = scriptClazz.getName() + "." + methodName + "(...)";
-            LOG.startListenerKeyword(methodName, null, keywordStack);
-            LOG.logInfo(MessageFormat.format(CoreMessageConstants.EXEC_LOG_STARTING_INVOKE_LISTENER_METHOD,
+            logger.startListenerKeyword(methodName, null, keywordStack);
+            logger.logDebug(MessageFormat.format(CoreMessageConstants.EXEC_LOG_STARTING_INVOKE_LISTENER_METHOD,
                     listenerAnnotationName, methodDisplayName));
             testContextClassInstance.invokeMethod(methodName, getValueForParemeters(method, injectedObjects));
-            LOG.logInfo(MessageFormat.format(CoreMessageConstants.EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED,
+            logger.logDebug(MessageFormat.format(CoreMessageConstants.EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED,
                     listenerAnnotationName, methodDisplayName));
         } catch (Throwable e) {
-            LOG.logError(ExceptionsUtil.getMessageForThrowable(e));
+            logger.logError(ExceptionsUtil.getMessageForThrowable(e));
         } finally {
             while (!keywordStack.isEmpty()) {
                 KeywordStackElement keywordStackElement = keywordStack.pop();
-                LOG.endKeyword(keywordStackElement.getKeywordName(), null, keywordStackElement.getNestedLevel());
+                logger.endKeyword(keywordStackElement.getKeywordName(), null, keywordStackElement.getNestedLevel());
             }
-            LOG.endListenerKeyword(methodName, null, keywordStack);
+            logger.endListenerKeyword(methodName, null, keywordStack);
             errorCollector.clearErrors();
             errorCollector.getErrors().addAll(oldErrors);
         }

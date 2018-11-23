@@ -19,6 +19,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -287,5 +288,10 @@ public class ResponseObject implements PerformanceResourceTiming, HttpMessage {
 
     public void setContentCharset(String contentCharset) {
         this.contentCharset = contentCharset;
+    }
+    
+    @Override
+    public String toString() {
+        return getStatusCode() + " " + FileUtils.byteCountToDisplaySize(getResponseSize());
     }
 }

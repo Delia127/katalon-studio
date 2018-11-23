@@ -22,6 +22,11 @@ public class ImageProcessor {
         registerRecorderImages();
         registerHistoryRequestImages();
         registerApiQuickStartImages();
+        registerInAppSurveyImages();
+    }
+    
+    private void registerInAppSurveyImages(){
+    	ImageManager.registerImage(IImageKeys.STAR);
     }
     
     private void registerApiQuickStartImages() {
@@ -230,6 +235,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_SOURCE_16);
+        ImageManager.registerImage(IImageKeys.CONFIG_16);
+        ImageManager.registerImage(IImageKeys.GROOVY_16);
     }
 
     private void registerTestCaseStepImages() {

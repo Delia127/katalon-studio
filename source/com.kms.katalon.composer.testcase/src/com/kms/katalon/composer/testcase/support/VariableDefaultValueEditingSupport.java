@@ -40,7 +40,6 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
         }
         InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
         if (inputValueType != null) {
-        	inputValueType.changeValue(expression, StringUtils.EMPTY);
             return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression, testCasePart);
         }
         return null;

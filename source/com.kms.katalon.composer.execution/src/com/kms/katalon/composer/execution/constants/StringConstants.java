@@ -311,4 +311,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_SEND_EMAIL_REPORT_FOR_FAILED_TEST_ONLY = ComposerExecutionMessageConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_FAILED_TEST_ONLY;
 
     public static final String DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES = ComposerExecutionMessageConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES;
+
+    public static final String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE = ComposerExecutionMessageConstants.DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
 }

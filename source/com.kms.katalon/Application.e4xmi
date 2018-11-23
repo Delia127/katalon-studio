@@ -87,6 +87,12 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_4CHQ8KP_EeenLui14LsBfQ" elementId="com.kms.katalon.composer.menu.file.importSettings" label="Import Settings" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/import_16.png" command="_AKimEKP_EeenLui14LsBfQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.quit" label="Quit" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/quit_16.png" tooltip="" command="_hQQH3BYMEeSUMbyEN2kbFQ"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_uD5BUMw5Eeis-d8dVdcONw" elementId="com.kms.katalon.menu.action" label="Action">
+        <children xsi:type="menu:Menu" xmi:id="_bq1zIMxJEeis-d8dVdcONw" elementId="com.kms.katalon.menu.spy" label="Spy" mnemonics=""/>
+        <children xsi:type="menu:Menu" xmi:id="_dweC4MxJEeis-d8dVdcONw" elementId="com.kms.katalon.menu.record" label="Record" mnemonics=""/>
+        <children xsi:type="menu:Menu" xmi:id="_bhQ68Mz6Eeis-d8dVdcONw" elementId="com.kms.katalon.menu.run" label="Run" mnemonics=""/>
+        <children xsi:type="menu:Menu" xmi:id="_4ReW8Mz6Eeis-d8dVdcONw" elementId="com.kms.katalon.menu.debug" label="Debug"/>
+      </children>
       <children xsi:type="menu:Menu" xmi:id="_wT2ksBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.edit" label="Edit">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GDm1EI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.undo" label="Undo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/undo_16.png" tooltip="" command="_uIL9wI7GEeantftUyMtBVg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_Kg3qkI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.redo" label="Redo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/redo_16.png" tooltip="" command="_2yTOMI7GEeantftUyMtBVg"/>
@@ -102,7 +108,7 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" tooltip="" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_bv02QDdbEeiyIrMgpAUQAg" elementId="com.kms.katalon.handledmenuitem.checkForUpdates" label="Check for Updates..." command="_VC7xYDdkEeiyIrMgpAUQAg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_bv02QDdbEeiyIrMgpAUQAg" elementId="com.kms.katalon.handledmenuitem.checkForUpdates" toBeRendered="false" visible="false" label="Check for Updates..." command="_VC7xYDdkEeiyIrMgpAUQAg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_QCrHEDdlEeiyIrMgpAUQAg" elementId="com.kms.katalon.menuseparator.1"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" tooltip="" command="_jm89wGgxEeatJ4Re1SnNtw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" toBeRendered="false" visible="false" label="Quick Guide" tooltip="" command="_agaP0Gp9EeakEakFblwi9Q">
@@ -111,6 +117,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_YU7NEOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handledmenuitem.reportIssue" label="Report Issue" tooltip="" command="_blPuUOxNEeal34fhcBE7BQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GLb_kMeZEeiT4f3fp0QbHA" elementId="com.kms.katalon.handledmenuitem.errorLog" label="Error Log" command="_xthpkMebEeiT4f3fp0QbHA"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_4l8VEFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handledmenuitem.service" label="Business Support" command="_CeYPQFdcEeiRfOF4k51oXA"/>
+        <children xsi:type="menu:DynamicMenuContribution" xmi:id="_JEmWAOi_Eei2Q7mM03p58A" elementId="com.kms.katalon.dynamicmenucontribution.checkForUpdates" label="Check for Updates..." contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.menu.CheckForUpdatesMenuContribution"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_kCdBsOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.menu.plugin" label="Plugin">
         <children xsi:type="menu:DirectMenuItem" xmi:id="_nemYcOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.installPlugin" label="Install Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.InstallPluginHandler"/>

@@ -5,7 +5,6 @@ import javax.annotation.PostConstruct;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
-import com.kms.katalon.composer.project.handlers.CloseProjectHandler;
 import com.kms.katalon.composer.project.handlers.ProjectSessionHandler;
 import com.kms.katalon.composer.project.menu.RecentProjectsMenuContribution;
 

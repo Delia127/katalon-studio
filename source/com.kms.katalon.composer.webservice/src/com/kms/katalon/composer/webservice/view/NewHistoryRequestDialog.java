@@ -36,7 +36,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class NewHistoryRequestDialog extends CustomTitleAreaDialog {

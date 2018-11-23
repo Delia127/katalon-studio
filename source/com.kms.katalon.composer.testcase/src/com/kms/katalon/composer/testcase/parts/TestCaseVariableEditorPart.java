@@ -23,7 +23,7 @@ import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.CPart;
-import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.variable.VariableEntity;

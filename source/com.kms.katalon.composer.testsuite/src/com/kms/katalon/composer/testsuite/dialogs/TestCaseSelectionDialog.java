@@ -143,16 +143,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
     public void updateTestCaseTableViewer() throws Exception {
         List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
         List<TestSuiteTestCaseLink> links = tableViewer.getInput();
-        if (links != null && !links.isEmpty()) {
-            List<TestSuiteTestCaseLink> removedTestCases = new ArrayList<TestSuiteTestCaseLink>();
-            // Remove unchecked items
-            for (int i = 0; i < tcTreeEntities.size(); i++) {
-                if (!selectedObjects.contains(tcTreeEntities.get(i))) {
-                    removedTestCases.add(links.get(i));
-                }
-            }
-            tableViewer.removeTestCases(removedTestCases);
-        }
+
 
         // add new checked items
         for (Object object : selectedObjects) {
@@ -215,9 +206,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
                 }
             }
         });
-        Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
-        treeViewer.setCheckedElements(addedTestCases);
-        checkedItems = new ArrayList<Object>(Arrays.asList(addedTestCases));
+        checkedItems = new ArrayList<Object>();
         return treeViewer;
     }
 

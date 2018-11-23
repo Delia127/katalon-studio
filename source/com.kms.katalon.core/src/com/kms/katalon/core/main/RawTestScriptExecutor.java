@@ -31,7 +31,11 @@ public class RawTestScriptExecutor extends TestCaseExecutor {
 
     private Object runScript(String rawScript)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        return engine.runScriptAsRawText(rawScript, getScriptFile().getName(), variableBinding);
+        return engine.runScriptAsRawText(
+                rawScript, 
+                getScriptFile().getName(), 
+                variableBinding,
+                getTestCase().getName());
     }
 
     @Override

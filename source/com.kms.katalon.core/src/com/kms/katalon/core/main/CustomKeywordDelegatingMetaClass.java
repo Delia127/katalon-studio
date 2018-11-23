@@ -18,6 +18,9 @@ import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 
 public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(CustomKeywordDelegatingMetaClass.class);
+    
     private GroovyClassLoader groovyClassLoader;
 
     private ErrorCollector errorCollector = ErrorCollector.getCollector();
@@ -48,10 +51,10 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
             if (errorCollector.containsErrors()) {
                 Throwable throwable = errorCollector.getFirstError();
 
-                KeywordLogger.getInstance().logMessage(ErrorCollector.fromError(throwable),
+                logger.logMessage(ErrorCollector.fromError(throwable),
                         ExceptionsUtil.getMessageForThrowable(throwable));
             } else if (!errorCollector.isKeywordPassed()) {
-                KeywordLogger.getInstance().logMessage(LogLevel.PASSED, methodName + " is PASSED");
+                logger.logMessage(LogLevel.PASSED, methodName + " is PASSED");
             }
 
             return result;
@@ -71,9 +74,8 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
     }
 
     private static void throwError(Throwable error) {
-        KeywordLogger keywordLogger = KeywordLogger.getInstance();
         if (ErrorCollector.isErrorFailed(error)) {
-            keywordLogger.logFailed(error.getMessage());
+            logger.logFailed(error.getMessage());
             if (error instanceof InvokerInvocationException) {
                 throw (InvokerInvocationException) error;
             }
@@ -85,7 +87,7 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
             }
             throw new StepFailedException(error);
         }
-        keywordLogger.logError(error.getMessage());
+        logger.logError(error.getMessage());
         if (error instanceof StepErrorException) {
             throw (StepErrorException) error;
         }

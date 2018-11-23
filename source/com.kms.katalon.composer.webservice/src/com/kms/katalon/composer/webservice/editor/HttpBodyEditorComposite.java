@@ -141,7 +141,7 @@ public class HttpBodyEditorComposite extends Composite {
                 if (!isInputReady) {
                     return;
                 }
-                servicePart.updateDirty(true);
+                servicePart.setDirty(true);
                 updateContentTypeByEditor(httpBodyEditor);
             }
         };
@@ -153,7 +153,7 @@ public class HttpBodyEditorComposite extends Composite {
         bodyEditors.values().forEach(editor -> {
             editor.addListener(SWT.Modify, event -> {
                 if (isInputReady) {
-                    servicePart.updateDirty(true);
+                    servicePart.setDirty(true);
                     updateContentTypeByEditor(editor);
                 }
             });

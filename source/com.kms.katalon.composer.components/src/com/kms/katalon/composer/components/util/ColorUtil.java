@@ -13,9 +13,9 @@ public class ColorUtil {
 
     private static final String ODD_TABLE_ITEM_BACKGROUND_COLOR = "#f3f3f3";
 
-    private static final String PASSED_LOG_BACKGROUND_COLOR = "#5bb135";
+    public static final String PASSED_LOG_BACKGROUND_COLOR = "#5bb135";
 
-    private static final String FAILED_LOG_BACKGROUND_COLOR = "#ce2c2c";
+    public static final String FAILED_LOG_BACKGROUND_COLOR = "#ce2c2c";
 
     private static final String ERROR_LOG_BACKGROUND_COLOR = "#ec5c51";
 
