@@ -262,7 +262,18 @@ public class TestCaseMenuUtil {
         }
         return null;
     }
-
+    
+//    --------------------------
+    public static void fillActionMenuAddTestSuite(AddAction addAction, SelectionListener selectionListener, Menu actionMenu) {
+        addNewMenuItem(addAction, selectionListener, actionMenu,
+                TreeTableMenuItemConstants.ADD_TO_AN_EXISTING_TEST_SUITE_LABEL,
+                TreeTableMenuItemConstants.ADD_TO_AN_EXISTING_TEST_SUITE_ID, SWT.PUSH);
+        
+        addNewMenuItem(addAction, selectionListener, actionMenu,
+                TreeTableMenuItemConstants.ADD_TO_A_NEW_TEST_SUITE_LABEL,
+                TreeTableMenuItemConstants.ADD_TO_A_NEW_TEST_SUITE_ID, SWT.PUSH);
+    }
+//    ----------------------------
     private static MenuItem addNewMenuItem(AddAction addAction, SelectionListener selectionListener, Menu actionMenu,
             String text, int id, int type) {
         MenuItem newMenuItem = new MenuItem(actionMenu, type);
