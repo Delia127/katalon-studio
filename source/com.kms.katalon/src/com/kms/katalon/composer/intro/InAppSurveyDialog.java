@@ -1,10 +1,13 @@
 package com.kms.katalon.composer.intro;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -24,10 +27,8 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
-public class InAppSurveyDialog extends TitleAreaDialog {
+public class InAppSurveyDialog extends Dialog {
 	protected boolean shouldShowDialogAgain;
-    private String title = "In-app Survey";
-    private String dialogMessage = "Help us improve Katalon Studio";
     
     private Label lblStarRating;
     private Label lblUserIdea;
@@ -59,8 +60,11 @@ public class InAppSurveyDialog extends TitleAreaDialog {
             {
                 int numberOfStarsSelected = star.getSelection();
                 numberOfStars = numberOfStarsSelected;
+                if(numberOfStarsSelected != 0){
+                	getButton(Dialog.OK).setEnabled(true);
+                }
                 if(numberOfStarsSelected >= 0 && numberOfStarsSelected <= 2){
-                	lblUserIdea.setText("What do you dislike the most in Katalon Studio");
+                	lblUserIdea.setText("What do you dislike the most in Katalon Studio");  
                 }else if(numberOfStarsSelected == 3){
                 	lblUserIdea.setText("What feature should we improve in Katalon Studio");
                 }else {
@@ -72,13 +76,7 @@ public class InAppSurveyDialog extends TitleAreaDialog {
     	return star;
     }
     
-    @Override
-    public void create() {
-        super.create();
-        setTitle(title);
-        setMessage(dialogMessage, IMessageProvider.INFORMATION);
-    }
-	
+   
     private ScopedPreferenceStore getPreferenceStore() {
         return PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
     }
@@ -87,7 +85,9 @@ public class InAppSurveyDialog extends TitleAreaDialog {
     @Override
     protected Control createDialogArea(Composite parent) {
     	Composite container = new Composite(parent, SWT.NONE);
-    	container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+    	GridData gdContainer = new GridData(SWT.FILL, SWT.FILL, true, true);
+    	gdContainer.heightHint = 300;
+    	container.setLayoutData(gdContainer);
     	GridLayout glContainer = new GridLayout(1, false);
     	container.setLayout(glContainer);
     	
@@ -113,7 +113,7 @@ public class InAppSurveyDialog extends TitleAreaDialog {
         lblUserIdea = new Label(userIdeaComposite, SWT.NONE);
         lblUserIdea.setText("We are happy to receive your idea");
         lblUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        txtUserIdea = new Text(userIdeaComposite, SWT.NONE);
+        txtUserIdea = new Text(userIdeaComposite, SWT.BORDER);
         txtUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         return container;
 	}
@@ -125,6 +125,7 @@ public class InAppSurveyDialog extends TitleAreaDialog {
         createButton(parent, IDialogConstants.CANCEL_ID, "No, thanks", false); // status = 2
         
         Button sendButton = getButton(IDialogConstants.OK_ID);
+        sendButton.setEnabled(false);
 		sendButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				switch (e.type) {
@@ -157,17 +158,7 @@ public class InAppSurveyDialog extends TitleAreaDialog {
 			}
 		});
     }
-    
-    @Override
-    protected void okPressed() {
-    	userIdea = txtUserIdea.getText();
-     	if(numberOfStars == 0 || getUserIdea().equals(StringUtils.EMPTY)){
-     		setMessage("Please rating and provide us with your idea");
-     		return;
-     	} 
-        super.okPressed();
-    }
-    
+
     @Override
 	protected void buttonPressed(int buttonId) {
 		if(buttonId == IDialogConstants.FINISH_ID){
