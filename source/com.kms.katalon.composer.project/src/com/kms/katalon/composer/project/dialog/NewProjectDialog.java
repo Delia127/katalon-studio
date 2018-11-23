@@ -370,6 +370,8 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     private boolean validateProjectFolderLocation() {
+    	
+    	
         String projectLocation = getProjectLocationInput();
         if (StringUtils.isBlank(projectLocation)) {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK);
@@ -394,6 +396,18 @@ public class NewProjectDialog extends TitleAreaDialog {
         if (!folderLocation.canWrite()) {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE);
             return false;
+        }
+        
+        try{
+        	 String katalonFolderAbsolutePath = new File(Platform.getInstallLocation().getURL().getFile()).getAbsolutePath();
+             String locFileAbsolutePath = new File(projectLocation).getAbsolutePath();
+             if(locFileAbsolutePath.startsWith(katalonFolderAbsolutePath)){
+             	setErrorMessage(StringConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER);
+             	return false;
+             }
+        } catch (Exception e){
+        	LoggerSingleton.logError(e);
+        	return false;
         }
         return true;
     }
@@ -448,19 +462,6 @@ public class NewProjectDialog extends TitleAreaDialog {
         name = txtProjectName.getText();
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
-        
-        try{
-        	 String katalonFolderAbsolutePath = new File(Platform.getInstallLocation().getURL().getFile()).getAbsolutePath();
-             String locFileAbsolutePath = new File(loc).getAbsolutePath();
-             if(locFileAbsolutePath.startsWith(katalonFolderAbsolutePath)){
-             	setErrorMessage(StringConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER);
-             	return;
-             }
-        } catch (Exception e){
-        	LoggerSingleton.logError(e);
-        	return;
-        }
-       
 
         int selectionIdx = cbProjects.getSelectionIndex();
         String selectedProjectName = cbProjects.getItem(selectionIdx);
