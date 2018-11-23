@@ -27,9 +27,9 @@ pipeline {
         }
 
         stage('Building') {
-            retry(3) {
                 // start maven commands to get dependencies
-                steps {
+            steps {
+                retry(3) {
                     sh 'ulimit -c unlimited'
                     sh 'cd source/com.kms.katalon.repo && mvn p2:site'
                     sh 'cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &'
