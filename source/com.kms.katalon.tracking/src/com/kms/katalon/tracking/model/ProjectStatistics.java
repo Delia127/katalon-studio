@@ -62,9 +62,13 @@ public class ProjectStatistics {
     
     private boolean qTestIntegrated = false;
     
+    private boolean katalonAnalyticsIntegrated = false;
+    
     private boolean remoteWebDriverConfigured = false;
     
-    private String defaultTestCaseView;
+    private boolean continueOnFailure = false;
+    
+    private String webLocatorConfig;
 
     public String getProjectId() {
         return projectId;
@@ -305,6 +309,14 @@ public class ProjectStatistics {
     public void setqTestIntegrated(boolean qTestIntegrated) {
         this.qTestIntegrated = qTestIntegrated;
     }
+    
+    public boolean isKatalonAnalyticsIntegrated() {
+        return katalonAnalyticsIntegrated;
+    }
+
+    public void setKatalonAnalyticsIntegrated(boolean katalonAnalyticsIntegrated) {
+        this.katalonAnalyticsIntegrated = katalonAnalyticsIntegrated;
+    }
 
     public boolean isRemoteWebDriverConfigured() {
         return remoteWebDriverConfigured;
@@ -313,12 +325,21 @@ public class ProjectStatistics {
     public void setRemoteWebDriverConfigured(boolean remoteWebDriverConfigured) {
         this.remoteWebDriverConfigured = remoteWebDriverConfigured;
     }
-
-    public String getDefaultTestCaseView() {
-        return defaultTestCaseView;
+    
+    public boolean isContinueOnFailure() {
+        return continueOnFailure;
     }
 
-    public void setDefaultTestCaseView(String defaultTestCaseView) {
-        this.defaultTestCaseView = defaultTestCaseView;
+    public void setContinueOnFailure(boolean continueOnFailure) {
+        this.continueOnFailure = continueOnFailure;
     }
+
+    public String getWebLocatorConfig() {
+        return webLocatorConfig;
+    }
+
+    public void setWebLocatorConfig(String webLocatorConfig) {
+        this.webLocatorConfig = webLocatorConfig;
+    }
+
 }

@@ -11,7 +11,6 @@ Require-Bundle: com.kms.katalon.entity,
  com.kms.katalon.logging,
  com.kms.katalon.integration.jira,
  com.kms.katalon.integration.kobiton,
- com.kms.katalon.integration.qtest,
  com.kms.katalon.composer.integration.slack,
  org.apache.commons.lang3,
  com.kms.katalon.core,
@@ -19,7 +18,9 @@ Require-Bundle: com.kms.katalon.entity,
  com.kms.katalon.execution.webui,
  org.apache.commons.io,
  com.kms.katalon.tracking,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ com.kms.katalon.execution,
+ com.kms.katalon.integration.analytics
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/component.xml
 Bundle-ActivationPolicy: lazy

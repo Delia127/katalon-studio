@@ -1,33 +1,13 @@
 
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-81802338-9']);
-_gaq.push(['_trackPageview']);
+// var _gaq = _gaq || [];
+// _gaq.push(['_setAccount', 'UA-81802338-9']);
+// _gaq.push(['_trackPageview']);
 
-(function() {
-  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  ga.src = 'https://ssl.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
-// KAT-BEGIN show docs on install or upgrade from 1.0
-chrome.runtime.onInstalled.addListener(function(details) {
-    if (details.reason === 'install') {
-        _gaq.push(['_trackEvent', 'app', 'install']);
-        _gaq.push(['_trackEvent', 'app', 'open-landing-page']);
-        //chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
-    } else if (details.reason === 'update') {
-        _gaq.push(['_trackEvent', 'app', 'update']);
-        var previousVersion = details.previousVersion;
-        var previousMajorVersion = previousVersion.substring(0, previousVersion.indexOf('.'));
-        if (previousMajorVersion === '1') {
-            _gaq.push(['_trackEvent', 'app', 'open-landing-page']);
-            //chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
-        }
-    }
-});
-
-chrome.runtime.setUninstallURL('https://www.surveymonkey.com/r/katalon-recorder');
-// KAT-END
+// (function() {
+//   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+//   ga.src = 'https://ssl.google-analytics.com/ga.js';
+//   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+// })();
 
 // KAT-BEGIN save last window size
 function getWindowSize(callback) {
@@ -52,7 +32,6 @@ function getWindowSize(callback) {
 // KAT-END
 
 var attachedTabs = {};
-var version = "1.2";
 
 function onDetach(debuggeeId) {
     var tabId = debuggeeId.tabId;
@@ -138,8 +117,8 @@ function doSendSpecialKeys(request, sendResponse, debuggeeId, frameId) {
                                 "Input.dispatchKeyEvent",
                                 {
                                     type: 'rawKeyDown',
-                                    windowsVirtualKeyCode: keyCode, 
-                                    nativeVirtualKeyCode : keyCode, 
+                                    windowsVirtualKeyCode: keyCode,
+                                    nativeVirtualKeyCode : keyCode,
                                     macCharCode: keyCode,
                                     key: keyboardEventKey,
                                     code: keyboardEventCode,
@@ -154,8 +133,8 @@ function doSendSpecialKeys(request, sendResponse, debuggeeId, frameId) {
                                             "Input.dispatchKeyEvent",
                                             {
                                                 type: 'keyUp',
-                                                windowsVirtualKeyCode: keyCode, 
-                                                nativeVirtualKeyCode : keyCode, 
+                                                windowsVirtualKeyCode: keyCode,
+                                                nativeVirtualKeyCode : keyCode,
                                                 macCharCode: keyCode,
                                                 key: keyboardEventKey,
                                                 code: keyboardEventCode,
@@ -260,7 +239,7 @@ function doActionOnNode(frameId, debuggeeId, sendResponse, request, f) {
 }
 
 function doAttachDebugger(sendResponse, debuggeeId, f) {
-    chrome.debugger.attach(debuggeeId, version, function() {
+    chrome.debugger.attach(debuggeeId, "1.2", function() {
         if (chrome.runtime.lastError) {
             doDetach(sendResponse, debuggeeId, chrome.runtime.lastError);
         } else {

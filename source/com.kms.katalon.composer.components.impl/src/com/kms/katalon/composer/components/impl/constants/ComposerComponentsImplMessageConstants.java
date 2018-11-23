@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerComponentsImplMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.components.impl.constants.composerComponentsImplMessages";
 
+    public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
+    
     public static String DIA_LBL_EMAIL;
 
     public static String DIA_DESC_PLS_ENTER_EMAIL_ADDR;
@@ -138,6 +140,10 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String COMMAND_NAME_GENERATE_COMMAND;
 
     public static String COMMAND_NAME_WEBSERVICE_OBJECT;
+    
+    public static String COMMAND_NAME_WEBSERVICE_OBJECTS_FROM_SWAGGER;
+    
+    public static String COMMAND_NAME_WEBSERVICE_OBJECTS_FROM_WSDL;
 
     public static String KATALON_QA_URL;
 
@@ -155,6 +161,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String VIEW_LBL_MATCH_COND;
 
     public static String VIEW_LBL_ADD_PROPERTY;
+    
+    public static String VIEW_LBL_ADD_XPATH;
 
     public static String VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK;
     

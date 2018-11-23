@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -14,16 +16,25 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 
+import com.kms.katalon.composer.project.constants.StringConstants;
+import com.kms.katalon.composer.project.sample.SampleLocalProject;
+import com.kms.katalon.composer.project.sample.SampleProjectType;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 
 public class SampleProjectProvider {
     private static final String RESOURCES_SAMPLE_PROJECTS_FOLDER = "resources" + File.separator + "samples";
 
-    public static final String SAMPLE_WEB_UI = "WebUI";
+    public static final String SAMPLE_WEB_UI = StringConstants.SAMPLE_WEB_UI_PROJECT;
 
-    public static final String SAMPLE_MOBILE = "Mobile";
+    public static final String SAMPLE_MOBILE = StringConstants.SAMPLE_MOBILE_PROJECT;
 
-    public static final String SAMPLE_WEB_SERVICE = "WebService";
+    public static final String SAMPLE_WEB_SERVICE = StringConstants.SAMPLE_WEB_SERVICE_PROJECT;
+    
+    private static final List<SampleLocalProject> SAMPLE_PROJECTS = Arrays.asList(
+        createSampleProjectInfo(SampleProjectType.WEBUI, SAMPLE_WEB_UI, "WebUI"),
+        createSampleProjectInfo(SampleProjectType.MOBILE, SAMPLE_MOBILE, "Mobile"),
+        createSampleProjectInfo(SampleProjectType.WS, SAMPLE_WEB_SERVICE, "WebService")
+    );
 
     private static SampleProjectProvider instance;
 
@@ -37,7 +48,19 @@ public class SampleProjectProvider {
         }
         return instance;
     }
-
+    
+    public List<SampleLocalProject> getSampleProjects() {
+        return SAMPLE_PROJECTS;
+    }
+    
+    private static SampleLocalProject createSampleProjectInfo(SampleProjectType type, String name, String resourceFileName) {
+        SampleLocalProject sampleProject = new SampleLocalProject();
+        sampleProject.setType(type);
+        sampleProject.setName(name);
+        sampleProject.setResourceName(resourceFileName);
+        return sampleProject;
+    }
+    
     private String getResourcesLocation(String projectName) {
         return RESOURCES_SAMPLE_PROJECTS_FOLDER + File.separator + projectName;
     }
@@ -103,8 +126,8 @@ public class SampleProjectProvider {
         }
     }
 
-    public void extractSampleWebUIProject(String projectType, String location) throws IOException {
-        extractProjectSource(projectType, location);
+    public void extractSampleWebUIProject(SampleLocalProject sampleProject, String location) throws IOException {
+        extractProjectSource(sampleProject.getResourceName(), location);
     }
 
 }

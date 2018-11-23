@@ -40,23 +40,15 @@ Require-Bundle: org.eclipse.e4.core.services,
  com.kms.katalon.groovy,
  com.kms.katalon.tracking,
  org.eclipse.jgit,
- org.eclipse.egit
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: com.kms.katalon.composer.integration.git.components.wizards,
- com.kms.katalon.composer.integration.git.constants,
- com.kms.katalon.dal.exception,
+ org.eclipse.egit,
+ com.kms.katalon.composer.integration.git,
  com.kms.katalon.util,
+ com.kms.katalon.dal,
  org.apache.commons.io,
- org.apache.commons.io.output;version="2.4.0",
- org.apache.commons.lang3;version="3.1.0",
- org.eclipse.egit.core;version="4.4.1",
- org.eclipse.egit.core.internal.util;version="4.4.1",
- org.eclipse.egit.core.op;version="4.4.1",
- org.eclipse.egit.core.securestorage;version="4.4.1",
- org.eclipse.egit.ui;version="4.4.1",
- org.eclipse.egit.ui.internal;version="4.4.1",
- org.eclipse.egit.ui.internal.clone;version="4.4.1",
- org.eclipse.egit.ui.internal.components;version="4.4.1",
- org.eclipse.egit.ui.internal.credentials;version="4.4.1",
- org.eclipse.egit.ui.internal.provisional.wizards;version="4.4.1",
- org.eclipse.ui.texteditor
+ org.eclipse.egit.core,
+ org.eclipse.egit.ui,
+ org.apache.commons.lang3,
+ org.eclipse.ui.workbench.texteditor,
+ com.kms.katalon.composer.resources
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: com.kms.katalon.composer.testcase.providers

@@ -88,6 +88,8 @@ public class ImageConstants {
 
     public static final Image IMG_16_WS_PUT_METHOD = ImageManager.getImage(IImageKeys.WS_PUT_METHOD_16);
     
+    public static final Image IMG_16_WS_PATCH_METHOD = ImageManager.getImage(IImageKeys.WS_PATCH_METHOD_16);
+    
     public static final Image IMG_16_WS_SOAP_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP_METHOD_16);
     
     public static final Image IMG_16_WS_SOAP12_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP12_METHOD_16);
@@ -106,6 +108,9 @@ public class ImageConstants {
     public static final Image IMG_16_FEATURE = ImageManager.getImage(IImageKeys.FEATURE_16);
 
     public static final Image IMG_16_FOLDER_FEATURE = ImageManager.getImage(IImageKeys.FOLDER_FEATURE_16);
+    
+    //Config file
+    public static final Image IMG_16_CONFIG = ImageManager.getImage(IImageKeys.CONFIG_16);
 
     // Some common images
     public static final Image IMG_16_CHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16);

@@ -26,6 +26,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -37,7 +38,6 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.PreferenceDialogBuilder;
-import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -461,7 +461,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
 
             URL url = QTestIntegrationTestSuiteManager.navigatedUrlForQTestSuite(getProjectDir(), selectedQTestSuite,
                     repo.getQTestProject());
-            DesktopUtils.openUri(url.toURI());
+            Program.launch(url.toString());
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_SUITE, e.getClass()
                     .getSimpleName());

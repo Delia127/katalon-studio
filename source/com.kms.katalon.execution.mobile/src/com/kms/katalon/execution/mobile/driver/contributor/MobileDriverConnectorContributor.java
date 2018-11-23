@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.eclipse.core.runtime.Platform;
 
+import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.contributor.IDriverConnectorContributor;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
@@ -22,6 +23,6 @@ public class MobileDriverConnectorContributor implements IDriverConnectorContrib
 
     @Override
     public String getName() {
-        return "Mobile";
+        return DriverFactory.MOBILE_DRIVER_PROPERTY;
     }
 }

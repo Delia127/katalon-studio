@@ -74,7 +74,7 @@ public class CheckpointFactory {
 
     private static final String TEST_DATA = "Test Data";
 
-    private static final KeywordLogger logger = KeywordLogger.getInstance();
+    private static final KeywordLogger logger = KeywordLogger.getInstance(CheckpointFactory.class);
 
     private static final String[] SUPPORTED_TEST_DATA_TYPES = new String[] { TestDataType.EXCEL_FILE.toString(),
             TestDataType.CSV_FILE.toString(), TestDataType.DB_DATA.toString() };
@@ -99,7 +99,7 @@ public class CheckpointFactory {
         }
         try {
             File checkpointFile = new File(getProjectDir() + File.separator + checkpointId + CHECKPOINT_FILE_EXTENSION);
-            logger.logInfo(MessageFormat.format(StringConstants.INFO_MSG_FINDING_CHECKPOINT_WITH_ID, checkpointId));
+            logger.logDebug(MessageFormat.format(StringConstants.INFO_MSG_FINDING_CHECKPOINT_WITH_ID, checkpointId));
             if (checkpointFile == null || !checkpointFile.exists()) {
                 throw new IllegalArgumentException(StringConstants.EXC_MSG_CHECKPOINT_DOES_NOT_EXIST);
             }
@@ -146,7 +146,7 @@ public class CheckpointFactory {
 
             // source data is from Test Data
             if (isFromTestData) {
-                logger.logInfo(MessageFormat.format(StringConstants.INFO_MSG_CHECKPOINT_HAS_SOURCE_FROM_X, TEST_DATA));
+                logger.logDebug(MessageFormat.format(StringConstants.INFO_MSG_CHECKPOINT_HAS_SOURCE_FROM_X, TEST_DATA));
                 return updateSourceData(checkpoint, getTestData(sourceUrl));
             }
 
@@ -159,7 +159,7 @@ public class CheckpointFactory {
             }
 
             TestDataType testDataSourceType = TestDataType.fromValue(sourceType);
-            logger.logInfo(MessageFormat.format(StringConstants.INFO_MSG_CHECKPOINT_HAS_SOURCE_FROM_X,
+            logger.logDebug(MessageFormat.format(StringConstants.INFO_MSG_CHECKPOINT_HAS_SOURCE_FROM_X,
                     testDataSourceType.toString()));
 
             // source data is from Database

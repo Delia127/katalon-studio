@@ -55,7 +55,7 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.integration.analytics,
  org.greenrobot.eventbus,
  com.kms.katalon.tracking,
- com.kms.katalon.logging
+ org.eclipse.ui.workbench.texteditor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.testcase.actions,

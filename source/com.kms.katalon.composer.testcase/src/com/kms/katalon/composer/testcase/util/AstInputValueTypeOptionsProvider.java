@@ -44,8 +44,7 @@ public class AstInputValueTypeOptionsProvider {
     private static final InputValueType[] caseOptions = { InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Condition, InputValueType.Binary,
             InputValueType.Property, InputValueType.List, InputValueType.Map, InputValueType.Range,
-            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean,
-            InputValueType.Null };
+            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };
 
     private static final InputValueType[] forOptions = { InputValueType.Range, InputValueType.ClosureList,
             InputValueType.List, InputValueType.Map, InputValueType.String, InputValueType.Number,
@@ -69,8 +68,7 @@ public class AstInputValueTypeOptionsProvider {
     private static final InputValueType[] switchOptions = { InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Condition, InputValueType.Binary,
             InputValueType.Property, InputValueType.List, InputValueType.Map, InputValueType.Range,
-            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean,
-            InputValueType.Null };
+            InputValueType.Class, InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };
 
     private static final InputValueType[] testDataValueOptions = { InputValueType.Variable, InputValueType.TestData,
             InputValueType.String, InputValueType.Number, InputValueType.Boolean, InputValueType.Null };

@@ -6,17 +6,18 @@ import java.util.logging.Level;
 
 
 public enum LogLevel {
-    START(1002),
-    END(1003),
-    PASSED(1000),
-    INFO(1001),
-    WARNING(1004),
-    FAILED(1005),
-    ERROR(1006),
-    ABORTED(1009),
-    INCOMPLETE(1010),
-    NOT_RUN(999),
-    RUN_DATA(2000);
+    START(10020),
+    END(10030),
+    PASSED(10000),
+    INFO(10010),
+    WARNING(10040),
+    FAILED(10050),
+    ERROR(10060),
+    ABORTED(10090), // not use
+    INCOMPLETE(10100),
+    NOT_RUN(9909),
+    RUN_DATA(20000),
+    DEBUG(10009);
     
     private final int value;
     private Level level;

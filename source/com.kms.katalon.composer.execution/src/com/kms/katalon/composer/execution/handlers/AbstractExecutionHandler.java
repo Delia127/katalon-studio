@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.execution.handlers;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -43,9 +44,9 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
-import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseFromTestScriptJob;
 import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
 import com.kms.katalon.composer.execution.launcher.IDELaunchShorcut;
 import com.kms.katalon.composer.execution.launcher.IDELauncher;
@@ -53,24 +54,21 @@ import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.SystemFileEntity;
-import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.entity.FeatureFileExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
-import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
@@ -130,12 +128,12 @@ public abstract class AbstractExecutionHandler {
                             || partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)) {
                         return true;
                     }
-                    // if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
-                    // CompatibilityEditor editor = (CompatibilityEditor) part.getObject();
-                    // if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
-                    // return true;
-                    // }
-                    // }
+                    if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
+                        CompatibilityEditor editor = (CompatibilityEditor) part.getObject();
+                        if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
+                            return true;
+                        }
+                    }
                 }
                 return false;
             }
@@ -206,7 +204,8 @@ public abstract class AbstractExecutionHandler {
                 CompatibilityEditor editor = (CompatibilityEditor) selectedPart.getObject();
                 if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
                     FileEditorInput editorInput = (FileEditorInput) editor.getEditor().getEditorInput();
-                    String featureFilePath = editorInput.getFile().getRawLocationURI().toString();
+                    String featureFilePath = new File(editorInput.getFile().getRawLocationURI()).getAbsolutePath();
+
                     return SystemFileController.getInstance().getSystemFile(featureFilePath,
                             ProjectController.getInstance().getCurrentProject());
                 }
@@ -234,6 +233,7 @@ public abstract class AbstractExecutionHandler {
         try {
             AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
                     projectDir);
+           
             if (runConfiguration == null) {
                 return;
             }
@@ -262,16 +262,50 @@ public abstract class AbstractExecutionHandler {
 
     public void executeFeatureFile(final SystemFileEntity feature, final LaunchMode launchMode,
             final IRunConfiguration runConfig) throws Exception {
-        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-        TestCaseEntity testCase = new TestCaseEntity();
-        testCase.setName("Temporary Test Case");
-        testCase.setParentFolder(FolderController.getInstance().getTestCaseRoot(projectEntity));
-        testCase.setProject(projectEntity);
-        String rawScript = "import com.kms.katalon.core.cucumber.keyword.CucumberBuiltinKeywords as CucumberKW\n" +
+        Job job = new Job(ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE) {
+            @Override
+            protected IStatus run(final IProgressMonitor monitor) {
+                try {
+                    monitor.beginTask(
+                            ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE,
+                            3);
 
-                "CucumberKW.runFeatureFile('Features/New Feature File')";
-        Job job = new ExecuteTestCaseFromTestScriptJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, runConfig,
-                testCase, launchMode, sync, rawScript);
+                    final FeatureFileExecutedEntity testSuiteExecutedEntity = new FeatureFileExecutedEntity(feature);
+                    monitor.subTask(StringConstants.HAND_JOB_ACTIVATING_VIEWERS);
+                    openConsoleLog();
+                    validateJobProgressMonitor(monitor);
+                    monitor.worked(1);
+
+                    monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
+                    runConfig.build(feature, testSuiteExecutedEntity);
+                    validateJobProgressMonitor(monitor);
+                    monitor.worked(1);
+
+                    monitor.subTask(
+                            ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE);
+                    LauncherManager launcherManager = LauncherManager.getInstance();
+                    launcherManager.removeAllTerminated();
+                    ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
+                    launcherManager.addLauncher(launcher);
+
+                    monitor.worked(1);
+
+                    monitor.done();
+                    return Status.OK_STATUS;
+
+                } catch (JobCancelException e) {
+                    return Status.CANCEL_STATUS;
+                } catch (final Exception e) {
+                    sync.syncExec(() -> {
+                        MultiStatusErrorDialog.showErrorDialog(e,
+                                ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_MSG_UNABLE_TO_EXECUTE_FEATURE_FILE,
+                                e.getMessage());
+                    });
+
+                    return Status.CANCEL_STATUS;
+                }
+            }
+        };
         job.setUser(true);
         job.schedule();
     }
@@ -320,6 +354,7 @@ public abstract class AbstractExecutionHandler {
 
                         monitor.subTask(StringConstants.HAND_JOB_LAUNCHING_TEST_SUITE);
                         LauncherManager launcherManager = LauncherManager.getInstance();
+                        launcherManager.removeAllTerminated();
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
 

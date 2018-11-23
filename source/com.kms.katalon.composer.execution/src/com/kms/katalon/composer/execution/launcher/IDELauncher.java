@@ -32,6 +32,7 @@ import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
@@ -307,5 +308,10 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         String displayMessage = StringUtils.isNotEmpty(currentStatusMessage) ? currentStatusMessage
                 : getStatus().toString();
         return "<" + displayMessage + ">" + " - " + getRunConfig().getName();
+    }
+    
+    @Override
+    protected void onStartExecution() {
+    	super.onStartExecution();
     }
 }

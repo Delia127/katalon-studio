@@ -30,11 +30,29 @@ KURecorder.addEventHandler('type', 'change', function (event) {
                 this.processOnChangeTarget(event.target);
 
                 // © Chen-Chieh Ping, SideeX Team
-                if (enterTarget != null) {
-                    this.processOnSendKeyTarget(enterTarget);
+                if (enterTarget != null) {                    
+                    var tempTarget = event.target.parentElement;
+                    var formChk = tempTarget.tagName.toLowerCase();
+                    while (formChk != 'form' && formChk != 'body') {
+                        tempTarget = tempTarget.parentElement;
+                        formChk = tempTarget.tagName.toLowerCase();
+                    }
+                    // KS doesn't handle SUBMIT
+                    if (formChk == 'form' && (tempTarget.hasAttribute("id") || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
+                        if (tempTarget.hasAttribute("id")){
+                            //this.record("submit", [ ["id=" + tempTarget.id, "id"]], "");
+                        }
+                        else if (tempTarget.hasAttribute("name")){
+                            //this.record("submit", [ ["id=" + tempTarget.id, "id"]], "");
+                        }
+                    } else
+                        this.processOnSendKeyTarget(enterTarget);
                     enterTarget = null;
                 }
                 // END
+            }
+            else {
+                this.processOnChangeTarget(event.target);
             }
         } else if ('textarea' == tagName) {
             this.processOnChangeTarget(event.target);
@@ -46,15 +64,53 @@ KURecorder.addEventHandler('type', 'change', function (event) {
 
 KURecorder.addEventHandler('type', 'input', function (event) {
     //console.log(event.target);
-    typeTarget = event.target;
-    this.processOnInputChangeTarget(typeTarget);
+    typeTarget = event.target;    
+    // NOTE: this must be processOnInputChangeTarget, processOnChangeTarget won't handle textarea
+    this.processOnInputChangeTarget(event.target);
 });
+
+// © Jie-Lin You, SideeX Team
+var preventClickTwice = false;
+KURecorder.addEventHandler('clickAt', 'click', function(event) {
+    if (event.button == 0 && !preventClick && event.isTrusted) {
+        if (!preventClickTwice) {
+            var top = event.pageY,
+                left = event.pageX;
+            var element = event.target;
+            do {
+                top -= element.offsetTop;
+                left -= element.offsetLeft;
+                element = element.offsetParent;
+            } while (element);
+            var target = event.target;
+            var currentURL = this.window.document.URL;           
+            var clickType = this.rec_getMouseButton(event);            
+            if(this.rec_isElementMouseUpEventRecordable(target, clickType)){
+                this.processOnClickTarget(target, clickType, currentURL);
+            }
+            //var arrayTest = this.locatorBuilders.buildAll(event.target);
+            preventClickTwice = true;
+        }
+        setTimeout(function() { preventClickTwice = false; }, 30);
+    }
+}, true);
+// END
 
 
 // © Chen-Chieh Ping, SideeX Team
 KURecorder.addEventHandler('doubleClickAt', 'dblclick', function (event) {
-    clearTimeout(this.waitUntilDoubleClickIsConfirmed);
-    this.processOnDbClickTarget(event.target);
+    var top = event.pageY,
+    left = event.pageX;
+    var element = event.target;
+    do {
+        top -= element.offsetTop;
+        left -= element.offsetLeft;
+        element = element.offsetParent;
+    } while (element);
+    var clickType = this.rec_getMouseButton(event);
+    if(this.rec_isElementMouseUpEventRecordable(event.target, clickType)){
+        this.processOnDbClickTarget(event.target);
+    }
 }, true);
 // END
 
@@ -105,7 +161,20 @@ KURecorder.addEventHandler('sendKeys', 'keydown', function (event) {
                     enterTarget = null;
                     preventType = true;
                 } else if (focusValue == enterTarget.value) {
-                    this.processOnSendKeyTarget(enterTarget);
+                    while (formChk != 'form' && formChk != 'body') {
+                        tempTarget = tempTarget.parentElement;
+                        formChk = tempTarget.tagName.toLowerCase();
+                    }
+                    // KS doesn't handle SUBMIT
+                    if (formChk == 'form' && (tempTarget.hasAttribute("id") || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
+                        if (tempTarget.hasAttribute("id")){
+                            //this.record("submit", [["id=" + tempTarget.id]], "");
+                        }
+                        else if (tempTarget.hasAttribute("name")){
+                            //this.record("submit", [["name=" + tempTarget.name]], "");
+                        }                            
+                    } else
+                            this.processOnSendKeyTarget(enterTarget);
                     enterTarget = null;
                 }
                 if (typeTarget.tagName && !preventType && (typeLock = 1)) {
@@ -118,7 +187,22 @@ KURecorder.addEventHandler('sendKeys', 'keydown', function (event) {
 
                             // © Chen-Chieh Ping, SideeX Team
                             if (enterTarget != null) {
-                                this.processOnSendKeyTarget(enterTarget);
+                                var tempTarget = typeTarget.parentElement;
+                                var formChk = tempTarget.tagName.toLowerCase();
+                                while (formChk != 'form' && formChk != 'body') {
+                                    tempTarget = tempTarget.parentElement;
+                                    formChk = tempTarget.tagName.toLowerCase();
+                                }
+                                // KS doesn't handle SUBMIT
+                                if (formChk == 'form' && (tempTarget.hasAttribute("id") || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
+                                    if (tempTarget.hasAttribute("id")){
+                                        //this.record("submit", [["id=" + tempTarget.id]], "");
+                                    }
+                                    else if (tempTarget.hasAttribute("name")){
+                                        //this.record("submit", [["name=" + tempTarget.name]], "");
+                                    }                            
+                                } else
+                                    this.processOnSendKeyTarget(enterTarget);
                                 enterTarget = null;
                             }
                             // END
@@ -137,6 +221,31 @@ KURecorder.addEventHandler('sendKeys', 'keydown', function (event) {
                     if (enterValue != event.target.value) enterTarget = null;
                 }, 50);
             }
+            // KS doesn't handle the followingz
+            /* var tempbool = false;
+            if ((key == 38 || key == 40) && event.target.value != '') {
+                if (focusTarget != null && focusTarget.value != tempValue) {
+                    tempbool = true;
+                    tempValue = focusTarget.value;
+                }
+                if (tempbool) {
+                    this.record("type", this.locatorBuilders.buildAll(event.target), tempValue);
+                }
+
+                setTimeout(function() {
+                    tempValue = focusTarget.value;
+                }, 250);
+
+                if (key == 38) this.record("sendKeys", this.locatorBuilders.buildAll(event.target), "${KEY_UP}");
+                else this.record("sendKeys", this.locatorBuilders.buildAll(event.target), "${KEY_DOWN}");
+                tabCheck = event.target;
+            }
+            if (key == 9) {
+                if (tabCheck == event.target) {
+                    this.record("sendKeys", this.locatorBuilders.buildAll(event.target), "${KEY_TAB}");
+                    preventType = true;
+                }
+            } */
         }
     }
 }, true);
@@ -173,103 +282,72 @@ KURecorder.addEventHandler('dragAndDrop', 'mousedown', function (event) {
 // END
 
 // © Shuo-Heng Shih, SideeX Team
-var preventAutomaticClick = false;
-var preventClickTwice = false;
 KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
-    clearTimeout(this.selectMouseup);
-    if (!preventAutomaticClick) {
+    clearTimeout(this.selectMouseup);    
+    if (this.selectMousedown) {
+        var x = event.clientX - this.selectMousedown.clientX;
+        var y = event.clientY - this.selectMousedown.clientY;
 
-        preventAutomaticClick = true;
-        setTimeout(function () { preventAutomaticClick = false; }, 30);
-
-        if (this.selectMousedown) {
-            var x = event.clientX - this.selectMousedown.clientX;
-            var y = event.clientY - this.selectMousedown.clientY;
-
-            function getSelectionText() {
-                var text = "";
-                var activeEl = window.document.activeElement;
-                var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
-                if (activeElTagName == "textarea" || activeElTagName == "input") {
-                    text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
-                } else if (window.getSelection) {
-                    text = window.getSelection().toString();
-                }
-                return text.trim();
+        function getSelectionText() {
+            var text = "";
+            var activeEl = window.document.activeElement;
+            var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+            if (activeElTagName == "textarea" || activeElTagName == "input") {
+                text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+            } else if (window.getSelection) {
+                text = window.getSelection().toString();
             }
+            return text.trim();
+        }
 
-            if (this.selectMousedown && event.button === 0 && (x + y) && (event.clientX < window.document.documentElement.clientWidth && event.clientY < window.document.documentElement.clientHeight) && getSelectionText() === '') {
-                var sourceRelateX = this.selectMousedown.pageX - this.selectMousedown.target.getBoundingClientRect().left - window.scrollX;
-                var sourceRelateY = this.selectMousedown.pageY - this.selectMousedown.target.getBoundingClientRect().top - window.scrollY;
-                var targetRelateX, targetRelateY;
-                if (!!this.mouseoverQ.length && this.mouseoverQ[1].relatedTarget == this.mouseoverQ[0].target && this.mouseoverQ[0].target == event.target) {
-                    targetRelateX = event.pageX - this.mouseoverQ[1].target.getBoundingClientRect().left - window.scrollX;
-                    targetRelateY = event.pageY - this.mouseoverQ[1].target.getBoundingClientRect().top - window.scrollY;
-                    // this.record("mouseDownAt", this.ku_locatorBuilders.buildAll(this.selectMousedown.target), sourceRelateX + ',' + sourceRelateY);
-                    // this.record("mouseMoveAt", this.ku_locatorBuilders.buildAll(this.mouseoverQ[1].target), targetRelateX + ',' + targetRelateY);
-                    // this.record("mouseUpAt", this.ku_locatorBuilders.buildAll(this.mouseoverQ[1].target), targetRelateX + ',' + targetRelateY);
-                } else {
-                    targetRelateX = event.pageX - event.target.getBoundingClientRect().left - window.scrollX;
-                    targetRelateY = event.pageY - event.target.getBoundingClientRect().top - window.scrollY;
-                    // this.record("mouseDownAt", this.ku_locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
-                    // this.record("mouseMoveAt", this.ku_locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
-                    // this.record("mouseUpAt", this.ku_locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
-                }
-            }
-        } else {
-            delete this.clickLocator;
-            delete this.mouseup;
-            if (this.mousedown) {
-                var mouseDownTemp = this.mousedown;
-                var mouseDownTempTarget = this.mousedown.target;
-                var currentURL = this.window.document.URL;
-                var clickType = this.rec_getMouseButton(event);
-                var action = {};
-
-                // We want to handle double click, hence the 200ms wait
-                // But there is no guaranteed that the document would still
-                // contain event.target after 200ms, if it doesn't, then no xpath
-                // construction method can be done, hence we have to break
-                // encapsulation here by constructing all the relevant xpaths first
-                // and then the 200ms is to decide wether to send the data or not
-                
-                this.checkForNavigateAction(currentURL);
-                action["actionName"] = 'click';
-                action["actionData"] = clickType;
-
-                if (!event.target) {
-                    return;
-                }
-                var jsonObject = mapDOMForRecord(action, event.target, window);                
-
-                this.waitUntilDoubleClickIsConfirmed = setTimeout(function (){
-                    if (mouseDownTempTarget !== event.target && !(x + y)) {
-                        var x = event.clientX - this.mouseDownTemp.clientX;
-                        var y = event.clientY - this.mouseDownTemp.clientY;
-                        var self = this;
-                    }
-                    // this.record("mouseDown", this.ku_locatorBuilders.buildAll(this.mousedown.target), '');
-                    // this.record("mouseUp", this.ku_locatorBuilders.buildAll(event.target), '');    
-                    else if (mouseDownTempTarget === event.target) {
-                        var self = this;
-                        if (event.button == 0 && !preventClick && event.isTrusted) {
-                            if (!preventClickTwice) {                                
-                                if (this.rec_isElementMouseUpEventRecordable(event.target, clickType)) {
-                                    self.rec_processObject(jsonObject);
-                                }
-                                preventClickTwice = true;
-                            }
-                            setTimeout(function () { preventClickTwice = false; }, 30);
-                        }
-                    }
-                }.bind(this), 200);
+        if (this.selectMousedown && event.button === 0 && (x + y) && (event.clientX < window.document.documentElement.clientWidth && event.clientY < window.document.documentElement.clientHeight) && getSelectionText() === '') {
+            var sourceRelateX = this.selectMousedown.pageX - this.selectMousedown.target.getBoundingClientRect().left - window.scrollX;
+            var sourceRelateY = this.selectMousedown.pageY - this.selectMousedown.target.getBoundingClientRect().top - window.scrollY;
+            var targetRelateX, targetRelateY;
+            if (!!this.mouseoverQ.length && this.mouseoverQ[1].relatedTarget == this.mouseoverQ[0].target && this.mouseoverQ[0].target == event.target) {
+                targetRelateX = event.pageX - this.mouseoverQ[1].target.getBoundingClientRect().left - window.scrollX;
+                targetRelateY = event.pageY - this.mouseoverQ[1].target.getBoundingClientRect().top - window.scrollY;
+                // this.record("mouseDownAt", this.ku_locatorBuilders.buildAll(this.selectMousedown.target), sourceRelateX + ',' + sourceRelateY);
+                // this.record("mouseMoveAt", this.ku_locatorBuilders.buildAll(this.mouseoverQ[1].target), targetRelateX + ',' + targetRelateY);
+                // this.record("mouseUpAt", this.ku_locatorBuilders.buildAll(this.mouseoverQ[1].target), targetRelateX + ',' + targetRelateY);
+            } else {
+                targetRelateX = event.pageX - event.target.getBoundingClientRect().left - window.scrollX;
+                targetRelateY = event.pageY - event.target.getBoundingClientRect().top - window.scrollY;
+                // this.record("mouseDownAt", this.ku_locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
+                // this.record("mouseMoveAt", this.ku_locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
+                // this.record("mouseUpAt", this.ku_locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
             }
         }
-        delete this.mousedown;
-        delete this.selectMousedown;
-        delete this.mouseoverQ;
-
+    } else {
+        if (this.mousedown) {
+            delete this.clickLocator;
+            delete this.mouseup;
+            var x = event.clientX - this.mousedown.clientX;
+            var y = event.clientY - this.mousedown.clientY;
+    
+            if (this.mousedown && this.mousedown.target !== event.target && !(x + y)) {
+                // this.record("mouseDown", this.locatorBuilders.buildAll(this.mousedown.target), '');
+                // this.record("mouseUp", this.locatorBuilders.buildAll(event.target), '');
+            } else if (this.mousedown && this.mousedown.target === event.target) {
+                // Click handler won't handle right click
+                var self = this;
+                var target = event.target;
+                var currentURL = this.window.document.URL;
+                var clickType = this.rec_getMouseButton(event);
+                if(clickType == 'right'){
+                    this.processOnClickTarget(target, clickType, currentURL);
+                }   
+                // var target = this.locatorBuilders.buildAll(this.mousedown.target);
+                // setTimeout(function() {
+                //     if (!self.clickLocator)
+                //         this.record("click", target, '');
+                // }.bind(this), 100);
+            }
+        }
     }
+    delete this.mousedown;
+    delete this.selectMousedown;
+    delete this.mouseoverQ;
 }, true);
 // END
 
@@ -316,14 +394,19 @@ KURecorder.addEventHandler('mouseOver', 'mouseover', function (event) {
     if (pageLoaded === true) {
         var clickable = this.findClickableElement(event.target);
 
-        if (event.target == this.rec_hoverElement) {
-            return;
-        }
-
-        this.rec_hoverElement = event.target;
-        this.rec_hoverElement.style.outline = ELEMENT_HOVER_OUTLINE_STYLE;
-        this.rec_elementInfoDiv.style.display = 'block';
-        this.rec_updateInfoDiv(getElementInfo(this.rec_hoverElement));
+        // KU: Start hover handling
+        if (event.target != this.rec_hoverElement) {
+            try{
+                this.rec_hoverElement = event.target;
+                this.rec_hoverElement.style.outline = ELEMENT_HOVER_OUTLINE_STYLE;
+                this.rec_elementInfoDiv.style.display = 'block';
+                this.rec_updateInfoDiv(getElementInfo(this.rec_hoverElement));
+            } catch( e ){
+                // Fail silently
+                console.log("Hover handling fail: " + e);
+            }
+        }        
+        // KU: End hover handling
 
         if (clickable) {
             this.nodeInsertedLocator = event.target;
@@ -331,10 +414,11 @@ KURecorder.addEventHandler('mouseOver', 'mouseover', function (event) {
                 delete self.nodeInsertedLocator;
             }.bind(self), 500);
 
-            this.nodeAttrChange = this.ku_locatorBuilders.buildAll(event.target);
-            this.nodeAttrChangeTimeout = setTimeout(function () {
-                delete self.nodeAttrChange;
-            }.bind(self), 10);
+            // this.nodeAttrChange is not called anywhere else and has no use
+            // this.nodeAttrChange = this.ku_locatorBuilders.buildAll(event.target);
+            // this.nodeAttrChangeTimeout = setTimeout(function () {
+            //     delete self.nodeAttrChange;
+            // }.bind(self), 10);
         }
         //drop target overlapping
         if (this.mouseoverQ) //mouse keep down
@@ -349,13 +433,19 @@ KURecorder.addEventHandler('mouseOver', 'mouseover', function (event) {
 
 // © Shuo-Heng Shih, SideeX Team
 KURecorder.addEventHandler('mouseOut', 'mouseout', function (event) {
-    if (this.rec_hoverElement != event.target) {
-        return;
+    // KU: Start hover handling
+    if (this.rec_hoverElement == event.target) {
+        try{
+            this.rec_clearHoverElement();
+            this.rec_elementInfoDiv.style.display = 'none';
+            this.rec_updateInfoDiv("");
+        } catch (e){
+            // Fail silently 
+            console.log("Hover handling fail: " + e);
+        }
     }
-    this.rec_clearHoverElement();
-    this.rec_elementInfoDiv.style.display = 'none';
-    this.rec_updateInfoDiv("");
-
+    // KU: End hover handling
+    
     if (this.mouseoutLocator !== null && event.target === this.mouseoutLocator) {
         // this.record("mouseOut", this.ku_locatorBuilders.buildAll(event.target), '');
 
@@ -412,11 +502,12 @@ KURecorder.addEventHandler('checkPageLoaded', 'readystatechange', function (even
 // © Ming-Hung Hsu, SideeX Team
 KURecorder.addEventHandler('contextMenu', 'contextmenu', function (event) {
     var myPort = browser.runtime.connect();
-    var tmpText = this.ku_locatorBuilders.buildAll(event.target);
+    // var tmpText = this.ku_locatorBuilders.buildAll(event.target);
     var tmpVal = getText(event.target);
     var tmpTitle = normalizeSpaces(event.target.ownerDocument.title);
     var self = this;
     myPort.onMessage.addListener(function portListener(m) {
+        // KS doesn't handle these kind of things
         if (m.cmd.includes("Text")) {
             //self.record(m.cmd, tmpText, tmpVal);
         } else if (m.cmd.includes("Title")) {
@@ -448,6 +539,7 @@ KURecorder.addEventHandler('editContent', 'blur', function (event) {
     if (checkFocus == 1) {
         if (event.target == getEle) {
             if (getEle.innerHTML != contentTest) {
+                // processOnChangeTarget also handles contentEditable
                 this.processOnChangeTarget(event.target);
                 //this.record("editContent", this.ku_locatorBuilders.buildAll(event.target), getEle.innerHTML);
             }
@@ -526,6 +618,7 @@ KURecorder.addEventHandler('select', 'change', function (event) {
         var tagName = event.target.tagName.toLowerCase();
         if ('select' == tagName) {
             if (!event.target.multiple) {
+                // KS doens't handle addSelection & removeSelection yet
                 var option = event.target.options[event.target.selectedIndex];
                 this.processOnChangeTarget(event.target);
                 //this.record("select", this.ku_locatorBuilders.buildAll(event.target), this.getOptionLocator(option));
@@ -535,9 +628,8 @@ KURecorder.addEventHandler('select', 'change', function (event) {
                     if (options[i]._wasSelected == null) { }
 
                     if (options[i]._wasSelected != options[i].selected) {
-                        options[i]._wasSelected = options[i].selected;
                         this.processOnChangeTarget(event.target);
-                        break;
+                        options[i]._wasSelected = options[i].selected;
                     }
                 }
             }
@@ -545,3 +637,6 @@ KURecorder.addEventHandler('select', 'change', function (event) {
     }
 }, true);
 
+KURecorder.addEventHandler('moveDiv', 'mousemove', function(event){
+    this.moveDivAway(event);
+}, true);

@@ -9,7 +9,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_RuJzABJ4EeaBC_8l6YNNlg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="after:com.kms.katalon.composer.testsuite.popupmenu.new.dynamicmenucontribution">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_XJ5qABJ4EeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.testsuite.collection.dynamicmenucontribution.new" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.menu.NewTestSuiteCollectionPopupMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_jNdGABJ5EeaBC_8l6YNNlg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.new.menu" positionInList="">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_jNdGABJ5EeaBC_8l6YNNlg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.new.menu" positionInList="index:8">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_2IVOMNu0EeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.testsuite.collection.new" label="Test Suite Collection" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_suite_collection_16.png" command="_Ov8x8BJ3EeaBC_8l6YNNlg">
       <persistedState key="index" value="3"/>
     </elements>

@@ -125,7 +125,7 @@ public class ActivationInfoCollector {
 
         return activatedResult;
     }
-
+    
     public static boolean activate(String activationCode, StringBuilder errorMessage) {
         try {
             String checkCode = activationCode.substring(0, 2);

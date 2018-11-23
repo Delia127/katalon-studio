@@ -111,8 +111,16 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
             Object[] expandedHTMLElements) {
         super(parentShell, new EntityLabelProvider(), new FolderProvider(),
                 new EntityViewerFilter(new FolderProvider()));
+        List<WebPage> tmpPages = new ArrayList<>();
+        
+        for(Object wp : expandedHTMLElements){
+        	if(wp instanceof WebPage){
+            	tmpPages.add((WebPage) wp );
+        	}
+        }
+        
         this.isCheckable = isCheckable;
-        this.wrapConflictStatusPages = convertToConflictWebPageWrapper(pages);
+        this.wrapConflictStatusPages = convertToConflictWebPageWrapper(tmpPages);      
         this.store = PreferenceStoreManager.getPreferenceStore(this.getClass());
         this.leftTreeContentProvider = new ResolveConflictWebElementTreeContentProvider(true);
         setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
@@ -124,12 +132,12 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     private List<ConflictWebElementWrapper> convertToConflictWebPageWrapper(List<WebPage> inputPages) {
         List<ConflictWebElementWrapper> conflictPages = new ArrayList<>();
         List<WebPage> flatPages = flattenWebPages(inputPages);
-
+        
         for (WebPage webPage : flatPages) {
             ConflictWebElementWrapper webPageWrapper = new ConflictWebElementWrapper(webPage, false);
             List<ConflictWebElementWrapper> childListWrapper = new ArrayList<>();
 
-            for (WebElement webElement : webPage.getChildren()) {
+            for (WebElement webElement : webPage.getChildren()) {            	
                 ConflictWebElementWrapper childWrapper = new ConflictWebElementWrapper(webElement, false);
                 childWrapper.setParent(webPageWrapper);
                 childListWrapper.add(childWrapper);

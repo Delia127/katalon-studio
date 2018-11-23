@@ -44,7 +44,7 @@ public class CurrentWatchedEntityMenuContribution {
             final MDirectMenuItem directMenuItem = MMenuFactory.INSTANCE.createDirectMenuItem();
             directMenuItem.setLabel(launcherWatched.getName());
             directMenuItem.setType(ItemType.CHECK);
-            directMenuItem.setElementId(launcherWatched.getId());
+            directMenuItem.setElementId(launcherWatched.getName());
             directMenuItem.setVisible(true);
             directMenuItem.setToBeRendered(true);
             if (selectedLauncherWatched == launcherWatched) {

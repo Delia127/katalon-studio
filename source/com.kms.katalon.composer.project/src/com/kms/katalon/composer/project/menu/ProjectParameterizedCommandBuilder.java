@@ -11,6 +11,7 @@ import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.ui.commands.ICommandService;
 
 import com.kms.katalon.composer.components.impl.handler.WorkbenchUtilizer;
+import com.kms.katalon.composer.project.sample.SampleLocalProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -29,10 +30,10 @@ public class ProjectParameterizedCommandBuilder extends WorkbenchUtilizer {
                 IdConstants.NEW_REMOTE_PROJECT_COMMAND_PARAMETER_ID, JsonUtil.toJson(project));
     }
 
-    public ParameterizedCommand createSampleLocalProjectParameterizedCommand(String projectType)
+    public ParameterizedCommand createSampleLocalProjectParameterizedCommand(SampleLocalProject project)
             throws CommandException {
         return createProjectParameterizedCommand(IdConstants.NEW_LOCAL_PROJECT_COMMAND_ID,
-                IdConstants.NEW_LOCAL_PROJECT_COMMAND_PARAMETER_TYPE_ID, projectType);
+                IdConstants.NEW_LOCAL_PROJECT_COMMAND_PARAMETER_TYPE_ID, JsonUtil.toJson(project));
     }
 
     private ParameterizedCommand createProjectParameterizedCommand(String commandId, String parameterId,

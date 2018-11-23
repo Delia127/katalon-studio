@@ -7,11 +7,14 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
+import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
@@ -23,7 +26,7 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
 
     private ILauncherResult result;
 
-    private IExecutedEntity executedEntity;
+    protected IExecutedEntity executedEntity;
 
     protected Set<IWatcher> watchers;
 
@@ -72,6 +75,14 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
     public ILauncherResult getResult() {
         return result;
     }
+    
+    @Override
+    public void setStatus(LauncherStatus status) {
+    	super.setStatus(status);
+    	ExecutionEntityResult executionResult = new ExecutionEntityResult();
+    	executionResult.setName(executedEntity.getSourceName());
+    	notifyProccess(status, executedEntity, executionResult);
+    }
 
     /**
      * Launches execution process and starts <code>watchdog</code> to monitor
@@ -101,6 +112,11 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
         } catch (ExecutionException e) {
             stop();
         }
+    }
+    
+    @Override
+    protected void onUpdateResult(TestStatusValue testStatusValue) {
+    	super.onUpdateResult(testStatusValue);
     }
 
     protected synchronized void writeLine(String line) {

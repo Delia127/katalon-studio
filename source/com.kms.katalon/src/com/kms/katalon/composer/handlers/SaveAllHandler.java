@@ -9,18 +9,12 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.greenrobot.eventbus.EventBus;
-
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.core.event.EventBusSingleton;
-import com.kms.katalon.tracking.service.Trackings;
 
 
 public class SaveAllHandler {

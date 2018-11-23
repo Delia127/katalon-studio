@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.openqa.selenium.firefox.internal.Extension;
 import org.openqa.selenium.io.FileHandler;
 import org.openqa.selenium.io.TemporaryFilesystem;
@@ -21,7 +22,8 @@ public class FirefoxWebExtension implements Extension {
     }
 
     public void writeTo(File extensionsDir) throws IOException {
-        if (!toInstall.isDirectory() && !FileHandler.isZipped(toInstall.getAbsolutePath())) {
+        if (!toInstall.isDirectory() && !FileHandler.isZipped(toInstall.getAbsolutePath())
+                && !"xpi".equals(FilenameUtils.getExtension(toInstall.getName()))) {
             throw new IOException(String.format("Can only install from a zip file, an XPI or a directory: %s",
                     toInstall.getAbsolutePath()));
         }
@@ -45,6 +47,7 @@ public class FirefoxWebExtension implements Extension {
     private File obtainRootDirectory(File extensionToInstall) throws IOException {
         File root = extensionToInstall;
         if (!extensionToInstall.isDirectory()) {
+            root = TemporaryFilesystem.getDefaultTmpFS().createTempDir("katalon_addon", "firefox");
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(extensionToInstall));
             try {
                 Zip.unzip(bis, root);

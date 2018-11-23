@@ -1,13 +1,3 @@
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-81802338-9']);
-_gaq.push(['_trackPageview']);
-
-(function() {
-  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  ga.src = 'https://ssl.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
 var dataFiles;
 var extensions;
 
@@ -169,9 +159,9 @@ window.addEventListener('beforeunload', function(e) {
 // load all Selenium IDE command
 function _loadSeleniumCommands() {
     var commands = [];
-    
+
     var nonWaitActions = ['open', 'selectWindow', 'chooseCancelOnNextConfirmation', 'answerOnNextPrompt', 'close', 'setContext', 'setTimeout', 'selectFrame'];
-    
+
     for (func in Selenium.prototype) {
         //this.log.debug("func=" + func);
         var r;
@@ -203,7 +193,7 @@ function _loadSeleniumCommands() {
             }
         }
     }
-    
+
     commands.push("pause");
     commands.push("store");
     commands.push("echo");
@@ -340,9 +330,9 @@ function saveAsFileOfTestCase(fileName, content) {
 $(function() {
     $("#export").click(function() {
 
-        _gaq.push(['_trackEvent', 'app', 'export']);
+        // _gaq.push(['_trackEvent', 'app', 'export']);
 
-        browser.runtime.sendMessage({ 
+        browser.runtime.sendMessage({
             getExternalCapabilities: true
         }).then(function(externalCapabilities) {
             var selectInput = $('#select-script-language-id');
@@ -371,7 +361,7 @@ $(function() {
             handleGenerateToScript();
         });
     });
-    
+
     $("#select-script-language-id").change(function() {
         handleGenerateToScript();
         saveSetting();
@@ -420,7 +410,7 @@ $(function() {
     });
     dialog.dialog({
         close: function() {
-            _gaq.push(['_trackEvent', 'app', 'export-' + $("#select-script-language-id").val()]);
+            // _gaq.push(['_trackEvent', 'app', 'export-' + $("#select-script-language-id").val()]);
         }
     });
 });
@@ -505,6 +495,15 @@ function loadScripts() {
                 "js/katalon/selenium-ide/format/java/java-backed-junit4.js"
             ];
             break;
+        case 'python-appdynamics':
+            scriptNames = [
+                'js/katalon/selenium-ide/formatCommandOnlyAdapter.js',
+                'js/katalon/selenium-ide/remoteControl.js',
+                "js/katalon/selenium-ide/format/python/python2-rc.js",
+                'js/katalon/selenium-ide/webdriver.js',
+                "js/katalon/selenium-ide/format/python/python-appdynamics.js"
+            ];
+            break;
         case 'python2-wd-unittest':
             scriptNames = [
                 'js/katalon/selenium-ide/formatCommandOnlyAdapter.js',
@@ -569,7 +568,7 @@ function loadScripts() {
 
 function displayOnCodeMirror(language, outputScript) {
     var $textarea = $("#txt-script-id");
-    $textarea.val(outputScript);  
+    $textarea.val(outputScript);
     var textarea = $textarea.get(0);
 
     var language = $("#select-script-language-id").val();
@@ -588,6 +587,7 @@ function displayOnCodeMirror(language, outputScript) {
             case 'java-rc-junit':
                 mode = 'text/x-java';
                 break;
+            case 'python-appdynamics':
             case 'python2-wd-unittest':
                 mode = 'text/x-python';
                 break;
@@ -766,7 +766,7 @@ $(function() {
     extensionsLi.on('click', function() {
         setActiveTab(extensionsLi, extensionsContainer);
     });
-    
+
     function setActiveTab(li, container) {
         for (var i = 0; i < lis.length; i++) {
             lis[i].removeClass("active");
@@ -841,7 +841,7 @@ $(function() {
 // KAT-BEGIN modify log
 // $(function() {
 //     var logContainer = document.getElementById('logcontainer');
-    
+
 //     var callback = function(mutationList) {
 //         for (var mutation of mutationList) {
 //             if (mutation.type == "childList") {
@@ -869,7 +869,7 @@ $(function() {
 // })
 // KAT-END
 
-// KAT-BEGIN add pulse animation for record button 
+// KAT-BEGIN add pulse animation for record button
 // $(function() {
 //     var record = $('.sub_btn#record');
 //     record.on('click', function() {
@@ -971,14 +971,14 @@ $(function() {
 
 $(function() {
     var manifestData = chrome.runtime.getManifest();
-    $(document).attr('title', 'Katalon Automation Recorder ' + manifestData.version)
+    $(document).attr('title', 'Katalon Recorder ' + manifestData.version)
 });
 
 // KAT-BEGIN clear "Save" and "Clear" text
 $(function() {
     var saveLog = $('#save-log a');
     var clearLog = $('#clear-log a');
-   
+
     saveLog.empty();
     clearLog.empty();
 })
@@ -1054,7 +1054,7 @@ $(function() {
         buttons: {
             Upload: function() {
 
-                _gaq.push(['_trackEvent', 'app', 'upload_ka']);
+                // _gaq.push(['_trackEvent', 'app', 'upload_ka']);
 
                 $(this).dialog('close');
 
@@ -1283,13 +1283,24 @@ $(function() {
     });
 
     var csvInput = $('#load-csv-hidden');
-    $('#data-files-add').click(function() {
+    $('#data-files-add-csv').click(function() {
         csvInput.click();
+    });
+    var jsonInput = $('#load-json-hidden');
+    $('#data-files-add-json').click(function() {
+        jsonInput.click();
     });
     document.getElementById("load-csv-hidden").addEventListener("change", function(event) {
         event.stopPropagation();
         for (var i = 0; i < this.files.length; i++) {
             readCsv(this.files[i]);
+        }
+        this.value = null;
+    }, false);
+    document.getElementById("load-json-hidden").addEventListener("change", function(event) {
+        event.stopPropagation();
+        for (var i = 0; i < this.files.length; i++) {
+            readJson(this.files[i]);
         }
         this.value = null;
     }, false);
@@ -1302,6 +1313,18 @@ function readCsv(f) {
         dataFiles[f.name] = {
             content: reader.result,
             type: 'csv'
+        };
+        saveDataFiles();
+    }
+}
+
+function readJson(f) {
+    var reader = new FileReader();
+    reader.readAsText(f);
+    reader.onload = function(event) {
+        dataFiles[f.name] = {
+            content: reader.result,
+            type: 'json'
         };
         saveDataFiles();
     }
@@ -1353,12 +1376,20 @@ function renderDataListItem(name) {
 
 browser.runtime.onMessage.addListener(handleFormatCommand);
 
-function parseCsv(name) {
+function parseData(name) {
     var dataFile = dataFiles[name];
     if (!dataFile.data) {
-        dataFile.data = Papa.parse(dataFile.content, { header: true }).data;
+        var type = dataFile.type;
+        if (!type) {
+            type = 'csv';
+        }
+        if (type === 'csv') {
+            dataFile.data = Papa.parse(dataFile.content, { header: true }).data;
+        } else {
+            dataFile.data = JSON.parse(dataFile.content);
+        }
     }
-    return dataFile.data;
+    return dataFile;
 }
 
 $(function() {

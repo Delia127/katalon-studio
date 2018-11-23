@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
-import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.FileUtil;
@@ -18,6 +17,7 @@ import com.kms.katalon.application.utils.ServerAPICommunicationUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.logging.LogUtil;
 
@@ -30,7 +30,7 @@ public class UsageInfoCollector {
     private static final String EMAIL_KEY = "email";
 
     public static void collect(UsageInformation usageInfo) {
-        if (VersionUtil.isInternalBuild()) {
+        if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
            return;
         }
         JsonObject jsObject = new JsonObject();

@@ -28,7 +28,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -167,6 +166,7 @@ public class OpenProjectHandler {
 
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
+
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {

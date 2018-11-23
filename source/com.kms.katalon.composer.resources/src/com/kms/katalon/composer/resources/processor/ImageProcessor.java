@@ -20,6 +20,21 @@ public class ImageProcessor {
         registerSubToolbarImages();
         registerCommonImages();
         registerRecorderImages();
+        registerHistoryRequestImages();
+        registerApiQuickStartImages();
+    }
+    
+    private void registerApiQuickStartImages() {
+        ImageManager.registerImage(IImageKeys.API_QUICKSTART_BACKGROUND);
+        ImageManager.registerImage(IImageKeys.NEW_DRAFT_REST_REQUEST);
+        ImageManager.registerImage(IImageKeys.NEW_DRAFT_SOAP_REQUEST);
+        ImageManager.registerImage(IImageKeys.IMPORT_SWAGGER);
+        ImageManager.registerImage(IImageKeys.IMPORT_WSDL);
+        ImageManager.registerImage(IImageKeys.API_QUICKSTART_BACKGROUND_LEFT);
+    }
+
+    private void registerHistoryRequestImages() {
+        ImageManager.registerImage(IImageKeys.HISTORY_REQUEST_16);
     }
 
     private void registerRecorderImages() {
@@ -193,6 +208,11 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.WS_SOAP_METHOD_16);
         ImageManager.registerImage(IImageKeys.WS_SOAP_GET_METHOD_16);
         ImageManager.registerImage(IImageKeys.WS_SOAP_POST_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_NEW_REST_REQUEST_64);
+        ImageManager.registerImage(IImageKeys.WS_NEW_SOAP_REQUEST_64);
+        ImageManager.registerImage(IImageKeys.WS_IMPORT_REST_REQUEST_64);
+        ImageManager.registerImage(IImageKeys.WS_IMPORT_SOAP_REQUEST_64);
+        ImageManager.registerImage(IImageKeys.WS_PATCH_METHOD_16);
         ImageManager.registerImage(IImageKeys.RBT_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.TXT_TEST_OBJECT_16);
 
@@ -210,6 +230,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_SOURCE_16);
+        ImageManager.registerImage(IImageKeys.CONFIG_16);
+        ImageManager.registerImage(IImageKeys.GROOVY_16);
     }
 
     private void registerTestCaseStepImages() {
@@ -366,9 +388,9 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.STEP_5_26);
         ImageManager.registerImage(IImageKeys.SCREEN_SHOT_MOBILE_CONFIG_AND_RECORD_STEP);
         ImageManager.registerImage(IImageKeys.SCREEN_SHOT_MOBILE_LOG_VIEWER);
-        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_CREATE_WEB_SERVICE_REQUEST);
-        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_TEST_WEB_SERVICE_REQUEST);
-        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_ADD_WEB_SERVICE_KEYWORD);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_USE_DRAFT_REQUEST);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_SAVE_DRAFT_REQUEST);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_ADD_REQUEST_TO_TEST_CASE);
         ImageManager.registerImage(IImageKeys.SCREEN_SHOT_API_LOG_VIEWER);
         ImageManager.registerImage(IImageKeys.SCREEN_SHOT_SCRIPT_NEW_TEST_CASE);
         ImageManager.registerImage(IImageKeys.SCREEN_SHOT_ADD_OR_IMPORT_KEYWORDS);
@@ -386,5 +408,4 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_6);
         ImageManager.registerImage(IImageKeys.INTRO_SCREEN_WELCOME);
     }
-
 }

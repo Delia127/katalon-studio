@@ -8,16 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.composer.execution.collection.provider.CustomTestExecutionGroup;
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
-import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.util.ExecutionUtil;
 
 public class TestExecutionGroupCollector {
     private static TestExecutionGroupCollector instance;
@@ -85,17 +83,17 @@ public class TestExecutionGroupCollector {
         return testExecutionGroupCollector.get(groupName);
     }
 
-    public RunConfigurationDescription getDefaultConfiguration() {
-        IRunConfigurationContributor defaultRunConfiguration = ExecutionUtil.getDefaultExecutionConfiguration();
+    public RunConfigurationDescription getDefaultConfiguration(ProjectEntity project) {
         for (TestExecutionGroup group : getUnsortedGroups()) {
+            if (!group.shouldBeDisplayed(project)) {
+                continue;
+            }
             for (TestExecutionItem item : group.getChildren()) {
                 if (!(item instanceof TestExecutionConfigurationProvider)) {
                     continue;
                 }
                 TestExecutionConfigurationProvider executionProvider = (TestExecutionConfigurationProvider) item;
-                if (ObjectUtils.equals(executionProvider.getRunConfigurationContributor(), defaultRunConfiguration)) {
-                    return executionProvider.toConfigurationEntity(null);
-                }
+                return executionProvider.toConfigurationEntity(null);
             }
         }
         return null;

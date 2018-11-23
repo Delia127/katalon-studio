@@ -83,6 +83,9 @@ public interface IdConstants {
     public static final String TEST_CASE_EDITOR_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".editor";
 
     public static final String TEST_CASE_VARIABLES_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variables";
+    
+
+	public static final String TEST_CASE_VARIABLE_EDITOR_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variableEditor";
 
     public static final String TEST_CASE_INTEGRATION_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX
             + ".integration";
@@ -93,6 +96,8 @@ public interface IdConstants {
 
     // Test Object Part content
     public static final String TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testobject";
+    
+    public static final String DRAFT_REQUEST_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".draftRequest";
 
     // Test Suite Part content
     public static final String TESTSUITE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testsuite";
@@ -199,6 +204,8 @@ public interface IdConstants {
 
     public static final String WORKBENCH_WINDOW_ID = "org.eclipse.ui.workbench";
 
+    public static final String QTEST_INTEGRATION_BUNDLE_ID = "com.kms.katalon.composer.integration.qtest";
+
     // Groovy
     public static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
     
@@ -286,4 +293,6 @@ public interface IdConstants {
     public static final String COMPOSER_PARTSTACK_EXPLORER_ID = "com.kms.katalon.composer.partstack.explorer";
 
     public static final String COMPOSER_PARTSTACK_LEFT_OUTLINE_ID = "com.kms.katalon.partstack.left.outline";
+
+    public static final String COMPOSER_REQUEST_HISTORY_PART_ID = "com.kms.katalon.composer.webservice.part.requestHistory";
 }

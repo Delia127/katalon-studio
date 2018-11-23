@@ -10,4 +10,7 @@ public class ExecutionDefaultSettingConstants {
     public static final String EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_CASE = "execution.default.quitDriversAfterExecutingTestCase";
 
     public static final String EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE = "execution.default.quitDriversAfterExecutingTestSuite";
+
+    public static final String WEB_UI_DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED = "execution.default.autoApplyNeighborXpathsEnabled";
+
 }

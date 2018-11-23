@@ -8,22 +8,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.e4.core.services.log.Logger;
-
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionJsonParser;
 import com.kms.katalon.objectspy.core.HTMLElementServlet;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
-@SuppressWarnings("restriction")
 public class HTMLElementRecorderServlet extends HttpServlet {
     private static final String ELEMENT_KEY = "element";
     private static final long serialVersionUID = 1L;
-    private Logger logger;
     private RecorderDialog recorderDialog;
 
-    public HTMLElementRecorderServlet(Logger logger, RecorderDialog recorderDialog) {
-        this.logger = logger;
+    public HTMLElementRecorderServlet(RecorderDialog recorderDialog) {
         this.recorderDialog = recorderDialog;
     }
     
@@ -59,7 +55,7 @@ public class HTMLElementRecorderServlet extends HttpServlet {
             recorderDialog.addNewActionMapping(HTMLActionJsonParser.parseJsonIntoHTMLActionMapping(value));
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
-            logger.error(e);
+            LoggerSingleton.logError(e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

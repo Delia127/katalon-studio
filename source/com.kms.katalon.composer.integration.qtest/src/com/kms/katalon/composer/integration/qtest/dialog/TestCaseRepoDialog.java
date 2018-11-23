@@ -13,7 +13,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -178,7 +177,7 @@ public class TestCaseRepoDialog extends Dialog {
             cbProjects.select(0);
         } else {
             int index = projectNames.indexOf(selectedProjectName);
-            
+
             if (index >= 0) {
                 cbProjects.select(index);
             }
@@ -216,8 +215,8 @@ public class TestCaseRepoDialog extends Dialog {
         cbProjects.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                QTestProject[] qTestProjects = qTestProjectsMap.values().toArray(
-                        new QTestProject[qTestProjectsMap.values().size()]);
+                QTestProject[] qTestProjects = qTestProjectsMap.values()
+                        .toArray(new QTestProject[qTestProjectsMap.values().size()]);
                 int index = cbProjects.getSelectionIndex();
                 if (index >= 0) {
                     if (qTestProject != null && !qTestProject.equals(qTestProjects[index])) {
@@ -252,8 +251,8 @@ public class TestCaseRepoDialog extends Dialog {
     private void updateProjects() {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
-            List<QTestProject> updatedProjects = QTestIntegrationProjectManager.getAllProject(QTestSettingCredential
-                    .getCredential(projectDir));
+            List<QTestProject> updatedProjects = QTestIntegrationProjectManager
+                    .getAllProject(QTestSettingCredential.getCredential(projectDir));
             mergeProjects(updatedProjects);
             updateProjectComboboxItems();
         } catch (Exception e) {
@@ -281,10 +280,10 @@ public class TestCaseRepoDialog extends Dialog {
     private void findQTestModule() {
         try {
             String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-            QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
-                    QTestSettingCredential.getCredential(projectDir), qTestProject);
-            TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display
-                    .getDefault().getActiveShell(), moduleRoot, true);
+            QTestModule moduleRoot = QTestIntegrationFolderManager
+                    .getModuleRoot(QTestSettingCredential.getCredential(projectDir), qTestProject);
+            TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(
+                    Display.getDefault().getActiveShell(), moduleRoot, true);
             testCaseRootSelectionDialog.setProjectDir(projectDir);
             testCaseRootSelectionDialog.setQTestProject(qTestProject);
             if (testCaseRootSelectionDialog.open() == Dialog.OK) {
@@ -300,15 +299,13 @@ public class TestCaseRepoDialog extends Dialog {
     private void findTestCaseFolder() {
         try {
             EntityProvider entityProvider = new TestCaseFolderEntityProvider(folderIds);
-            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(this.getShell(),
-                    new EntityLabelProvider(), entityProvider, new EntityViewerFilter(entityProvider));
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(this.getShell(), new EntityLabelProvider(),
+                    entityProvider, new EntityViewerFilter(entityProvider));
             dialog.setAllowMultiple(false);
             dialog.setTitle(StringConstants.DIA_TITLE_TEST_CASE_FOLDER_BROWSER);
             ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
             FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
             FolderTreeEntity rootFolderTreeEntity = new FolderTreeEntity(rootFolder, null);
-
-            dialog.setInput(Arrays.asList(rootFolderTreeEntity));
 
             FolderEntity selectedFolderEntity = FolderController.getInstance().getFolderByDisplayId(currentProject,
                     folderId);
@@ -316,6 +313,7 @@ public class TestCaseRepoDialog extends Dialog {
                 dialog.setInitialSelection(new FolderTreeEntity(selectedFolderEntity, TreeEntityUtil
                         .createSelectedTreeEntityHierachy(selectedFolderEntity.getParentFolder(), rootFolder)));
             }
+            dialog.setInput(Arrays.asList(rootFolderTreeEntity));
             if (dialog.open() == Dialog.OK) {
                 Object[] results = dialog.getResult();
                 if (results == null || results.length != 1) {
@@ -327,8 +325,8 @@ public class TestCaseRepoDialog extends Dialog {
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_FIND_TEST_CASE_FOLDER, e
-                    .getClass().getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_FIND_TEST_CASE_FOLDER,
+                    e.getClass().getSimpleName());
         }
     }
 

@@ -8,6 +8,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,6 +34,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebElementSelectorMethod;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.objectspy.constants.StringConstants;
@@ -58,6 +61,10 @@ public class WebElementUtils {
     private static final String ELEMENT_PARENT_KEY = "parent";
 
     private static final String ELEMENT_PAGE_KEY = "page";
+    
+    private static final String ELEMENT_XPATHS_KEY = "xpaths";
+    
+    private static final String ELEMENT_USEFUL_NEIGHBOR_TEXT = "neighbor_text";
 
     private static final String ELEMENT_ATTRIBUTES_KEY = "attributes";
 
@@ -86,7 +93,7 @@ public class WebElementUtils {
                 "placeholder", "selected", "src", "title", "type", "text", "linked_text" });
     }
 
-    public static String generateWebElementName(String elementType, List<WebElementPropertyEntity> properties) {
+    public static String generateWebElementName(String elementType, List<WebElementPropertyEntity> properties, String usefulNeighborText) {
         Map<String, String> propsMap = properties.stream()
                 .filter(p -> ELEMENT_TEXT_KEY.equals(p.getName()) || ELEMENT_NAME_KEY.equals(p.getName())
                         || ELEMENT_ID_KEY.equals(p.getName()) || ELEMENT_CLASS_KEY.equals(p.getName()))
@@ -97,15 +104,27 @@ public class WebElementUtils {
         }
         String name = propsMap.get(ELEMENT_NAME_KEY);
         if (name != null) {
-            return elementType + "_" + toValidFileName(name);
+        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
+                return elementType + "_" + toValidFileName(name);
+        	}else{
+                return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(name);
+        	}
         }
         String id = propsMap.get(ELEMENT_ID_KEY);
         if (id != null) {
-            return elementType + "_" + toValidFileName(id);
+        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
+        		return elementType +  toValidFileName(id);
+        	}else{
+        		return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(id);
+        	}
         }
         String cssClass = propsMap.get(ELEMENT_CLASS_KEY);
         if (cssClass != null) {
-            return elementType + "_" + toValidFileName(cssClass);
+        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
+                return elementType + "_" + toValidFileName(cssClass);
+        	}else{
+                return elementType + "_" + toValidFileName(usefulNeighborText) + "_" +  toValidFileName(cssClass) ;
+        	}
         }
         return elementType;
     }
@@ -134,7 +153,10 @@ public class WebElementUtils {
         properties.add(new WebElementPropertyEntity(ELEMENT_TAG_KEY, elementType));
         collectElementContents(elementJsonObject, properties);
         collectElementAttributes(elementJsonObject, properties);
-
+        
+        List<WebElementXpathEntity> xpaths = new ArrayList<>();
+        collectElementXpaths(elementJsonObject, xpaths);
+        
         String xpathString = getElementXpath(elementJsonObject);
         if (xpathString != null) {
             boolean hasPriorityProperty = properties.stream()
@@ -143,34 +165,99 @@ public class WebElementUtils {
                     .isPresent();
             properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, !hasPriorityProperty));
         }
-
+        
         // Change default selected properties by user settings
-        Map<String, Boolean> customSettings = getCapturedTestObjectLocatorSettings().stream()
+        Map<String, Boolean> customSettings = getCapturedTestObjectAttributeLocatorSettings().stream()
                 .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
         properties.stream().filter(i -> customSettings.get(i.getName()) != null).forEach(i -> {
             i.setIsSelected(customSettings.get(i.getName()));
         });
 
+        // Change default selected properties by user settings
+        SelectorMethod selectorMethod = getCapturedTestObjectSelectorMethod();
+        
+        List<String> capturedTestObjectXpaths = getCapturedTestObjectXpathLocatorSettings().stream()
+        		.map(o -> o.getLeft()).collect(Collectors.toList());
+        
+        Comparator<WebElementXpathEntity> comparator = new Comparator<WebElementXpathEntity>() {
+            public int compare(WebElementXpathEntity o1, WebElementXpathEntity o2) {
+                int p1 = capturedTestObjectXpaths.indexOf(o1.getName());
+                int p2 = capturedTestObjectXpaths.indexOf(o2.getName());
+                if (p1 == -1 && p2 != -1) {
+                    return 1;
+                }
+                if (p1 != -1 && p2 == -1) {
+                    return -1;
+                }
+                if (p1 != p2) {
+                    return p1 - p2;
+                }
+                return o1.getName().compareTo(o2.getName());
+            }
+        };
+        
+        Collections.sort(xpaths, comparator);
+        
+        for (Iterator<WebElementXpathEntity> it = xpaths.iterator(); it.hasNext(); ) {
+        	WebElementXpathEntity xpath = it.next();
+            if (capturedTestObjectXpaths.indexOf(xpath.getName()) == -1) {
+                it.remove();
+            }
+        }
+        
+        if(!xpaths.isEmpty() && xpaths.size() > 0){
+            xpaths.get(0).setIsSelected(true);
+        }
+        
+        String usefulNeighborText = getElementUsefulNeighborText(elementJsonObject);
         WebFrame parentElement = getParentElement(elementJsonObject);
 
-        String newName = generateWebElementName(elementType, properties);
+        String newName = generateWebElementName(elementType, properties, usefulNeighborText);
+        
         if (newName.length() > NAME_LENGTH_LIMIT) {
             newName = newName.substring(0, NAME_LENGTH_LIMIT);
         }
+     
         WebElement el = isFrame ? new WebFrame(newName) : new WebElement(newName);
         el.setParent(parentElement);
         el.setProperties(properties);
+        el.setXpaths(xpaths);
+        el.setUsefulNeighborText(usefulNeighborText);
+        el.setSelectorMethod(selectorMethod);
+        
         return el;
     }
 
-    private static List<Pair<String, Boolean>> getCapturedTestObjectLocatorSettings() {
+    private static List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocatorSettings() {
         WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
                 ProjectController.getInstance().getCurrentProject());
         try {
-            return store.getCapturedTestObjectLocators();
+            return store.getCapturedTestObjectAttributeLocators();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
             return Collections.emptyList();
+        }
+    }
+    
+    private static List<Pair<String, Boolean>> getCapturedTestObjectXpathLocatorSettings() {
+        WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
+                ProjectController.getInstance().getCurrentProject());
+        try {
+            return store.getCapturedTestObjectXpathLocators();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            return Collections.emptyList();
+        }
+    }
+    
+    private static SelectorMethod getCapturedTestObjectSelectorMethod() {
+        WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
+                ProjectController.getInstance().getCurrentProject());
+        try {
+            return store.getCapturedTestObjectSelectorMethod();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            return SelectorMethod.BASIC;
         }
     }
 
@@ -213,16 +300,49 @@ public class WebElementUtils {
                     PRIORITY_PROPERTIES.contains(propertyName)));
         }
     }
+    
+    private static String getElementUsefulNeighborText(JsonObject elementJsonObject){
+    	 if (elementJsonObject.has(ELEMENT_USEFUL_NEIGHBOR_TEXT) && elementJsonObject.get(ELEMENT_USEFUL_NEIGHBOR_TEXT).isJsonPrimitive()) {
+             return elementJsonObject.getAsJsonPrimitive(ELEMENT_USEFUL_NEIGHBOR_TEXT).getAsString();
+         }
+         return null;
+    }
+    
+    private static void collectElementXpaths(JsonObject elementJsonObject,
+            List<WebElementXpathEntity> xpaths) {
+        if (!isElementXpathsSet(elementJsonObject)) {
+            return;
+        }
+        for (Entry<String, JsonElement> entry : elementJsonObject.getAsJsonObject(ELEMENT_XPATHS_KEY).entrySet()) {
+            String xpathFinder = entry.getKey();
+            JsonElement xpath = entry.getValue();
+            
+            if (xpath instanceof JsonObject) {
+                xpaths.add(new WebElementXpathEntity(xpathFinder, entry.getValue().getAsString(), false));
+             } else if (xpath instanceof JsonArray) {
+            	 for(JsonElement jsonElement : xpath.getAsJsonArray()){
+                     xpaths.add(new WebElementXpathEntity(xpathFinder, jsonElement.getAsString(), false));
+            	 }
+             }
+        }
+    }
 
     private static boolean isElementAttributesSet(JsonObject elementJsonObject) {
         return elementJsonObject.has(ELEMENT_ATTRIBUTES_KEY)
                 && elementJsonObject.get(ELEMENT_ATTRIBUTES_KEY).isJsonObject();
+    }
+    
+    private static boolean isElementXpathsSet(JsonObject elementJsonObject) {
+        return elementJsonObject.has(ELEMENT_XPATHS_KEY)
+                && elementJsonObject.get(ELEMENT_XPATHS_KEY).isJsonObject();
     }
 
     private static boolean isValidElementAttribute(Entry<String, JsonElement> attributeEntry) {
         return attributeEntry.getValue() != null && isNotBlank(attributeEntry.getValue().getAsString())
                 && !ELEMENT_ATTRIBUTES_STYLE_KEY.equals(attributeEntry.getKey());
     }
+    
+
 
     private static void collectElementContents(JsonObject elementJsonObject,
             List<WebElementPropertyEntity> properties) {
@@ -274,6 +394,7 @@ public class WebElementUtils {
         newWebElement.setElementGuidId(Util.generateGuid());
         newWebElement.setProject(parentFolder.getProject());
         newWebElement.setWebElementProperties(new ArrayList<>(element.getProperties()));
+        newWebElement.setWebElementXpaths(new ArrayList<>(element.getXpaths()));
         newWebElement.setSelectorMethod(WebElementSelectorMethod.valueOf(element.getSelectorMethod().name()));
         element.getSelectorCollection().entrySet().forEach(entry -> {
             SelectorMethod selectorMethod = entry.getKey();
@@ -389,6 +510,9 @@ public class WebElementUtils {
                 if (mappedWebElement.hasProperty()) {
                     replacedElement.setProperties(mappedWebElement.getProperties());
                 }
+                if (mappedWebElement.hasXpath()) {
+                    replacedElement.setXpaths(mappedWebElement.getXpaths());
+                }
                 elementsMap.put(entityId, replacedElement);
                 return replacedElement;
             } else {
@@ -416,7 +540,7 @@ public class WebElementUtils {
         WebElement element = isFrame ? new WebFrame(entityName) : new WebElement(entityName);
         element.setParent(parentFrameElement != null ? parentFrameElement : pageElement);
         element.setProperties(webElementEntity.getWebElementProperties());
-
+        element.setXpaths(webElementEntity.getWebElementXpaths());
         element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
         webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
             WebElementSelectorMethod selectorMethod = entry.getKey();
@@ -464,10 +588,17 @@ public class WebElementUtils {
             TestObject parent = buildTestObject(parentFrame);
             testObject.setParentObject(parent);
         }
+        
         webElement.getProperties().forEach(prop -> {
             testObject.addProperty(prop.getName(), ConditionType.fromValue(prop.getMatchCondition()), prop.getValue(),
                     prop.getIsSelected());
         });
+        
+        webElement.getXpaths().forEach(xpath -> {
+            testObject.addXpath(xpath.getName(), ConditionType.fromValue(xpath.getMatchCondition()), xpath.getValue(),
+            		xpath.getIsSelected());
+        });
+        
         testObject.setSelectorMethod(webElement.getSelectorMethod());
         webElement.getSelectorCollection().entrySet().forEach(entry -> {
             testObject.setSelectorValue(entry.getKey(), entry.getValue());

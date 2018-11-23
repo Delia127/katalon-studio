@@ -23,6 +23,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MElementContainer;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
@@ -447,7 +449,6 @@ public class ExplorerPart {
                             entityViewerFilter.setSearchString(broadcastMessage);
                             treeViewer.getTree().setRedraw(false);
                             treeViewer.refresh(true);
-
                             if (StringUtils.isNotBlank(searchString)) {
                                 treeViewer.expandAll();
                             } else {
@@ -560,7 +561,8 @@ public class ExplorerPart {
             while (treeViewer.isBusy()) {
                 // wait for tree is not busy
             }
-            // wait for reseting search field complete
+            
+            // wait for r.eseting search field complete
             resetSearchField();
             searchDropDownBox.clearInput();
             treeViewer.getTree().clearAll(true);
@@ -581,8 +583,8 @@ public class ExplorerPart {
             LoggerSingleton.logError(e);
         }
     }
-
-    private void reloadTreeEntityTransfers() {
+    
+	private void reloadTreeEntityTransfers() {
         List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
         dragSource.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
     }
@@ -671,6 +673,8 @@ public class ExplorerPart {
         // set new selection
         getViewer().setSelection(new StructuredSelection(object));
         getViewer().setExpandedState(object, true);
+
+        setSelectedPart();
     }
     
     @Inject
@@ -691,6 +695,17 @@ public class ExplorerPart {
 
         // set new selection
         getViewer().setSelection(new StructuredSelection(objects));
+
+        setSelectedPart();
+    }
+
+    private void setSelectedPart() {
+        // set part is active part in partStack
+        MElementContainer<MUIElement> parentStack = part.getParent();
+        if (parentStack != null && parentStack.getSelectedElement() != null 
+                && !parentStack.getSelectedElement().getElementId().equals(part.getElementId())) {
+            parentStack.setSelectedElement(part);
+        }
     }
 
     @Inject

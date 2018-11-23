@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.kms.katalon.application.utils.FileUtil;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
@@ -26,10 +28,12 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
-import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.GitToolbarExecutableStatus;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
@@ -93,9 +97,13 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         
         statistics.setSlackIntegrated(isSlackIntegrated());
         
+        statistics.setKatalonAnalyticsIntegrated(isKatalonAnalyticsIntegrated());
+        
         statistics.setRemoteWebDriverConfigured(isRemoteWebDriverConfigured());
         
-        statistics.setDefaultTestCaseView(getDefaultTestCaseView());
+        statistics.setContinueOnFailure(isAutoApplyNeighborXpathsEnabled());
+        
+        statistics.setWebLocatorConfig(getWebLocatorConfig());
         
         return statistics;
     }
@@ -150,7 +158,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
                         continue;
                     } else {
                         totalTestStepCount++;
-                    }                    
+                    }
                 }
             
             }
@@ -316,13 +324,28 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     }
     
     private boolean isqTestIntegrated() {
-        return QTestSettingStore.isIntegrationActive(project.getFolderLocation());
+        try {
+            return new BundleSettingStore(project.getFolderLocation(), "com.kms.katalon.integration.qtest", false).getBoolean("enableIntegration", false);
+        } catch (IOException e) {
+            LogUtil.logError(e);
+            return false;
+        }
     }
     
     private boolean isSlackIntegrated() {
         return SlackUtil.getInstance().isSlackEnabled();
     }
     
+    private String getWebLocatorConfig() throws IOException {
+        WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+        return store.getCapturedTestObjectSelectorMethod().toString();
+    }
+    
+    private boolean isKatalonAnalyticsIntegrated() throws IOException {
+        AnalyticsSettingStore store = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        return store.isIntegrationEnabled();
+    }
     private boolean isRemoteWebDriverConfigured() throws IOException {
         RemoteWebDriverConnector driverConnector = new RemoteWebDriverConnector(project.getFolderLocation() 
                 + File.separator
@@ -344,5 +367,10 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
             LogUtil.logError(e);
             return new File[0];
         }
+    }
+    
+    private boolean isAutoApplyNeighborXpathsEnabled() {
+        ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
+        return store.getAutoApplyNeighborXpathsEnabled();
     }
 }

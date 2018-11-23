@@ -2,6 +2,8 @@ package com.kms.katalon.core.context.internal;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.core.context.TestCaseContext;
 
 public class InternalTestCaseContext implements TestCaseContext {
@@ -12,12 +14,17 @@ public class InternalTestCaseContext implements TestCaseContext {
     private String testCaseId;
 
     private Map<String, Object> testCaseVariables;
+    
+    private String message;
 
     private int testCaseIndex;
 
+    private boolean isSkipped = false; // by default always run a test case
+    
     public InternalTestCaseContext(String testCaseId, int testCaseIndex) {
         this.testCaseId = testCaseId;
         this.testCaseIndex = testCaseIndex;
+        this.message = StringUtils.EMPTY;
     }
 
     public InternalTestCaseContext(String testCaseId) {
@@ -66,4 +73,23 @@ public class InternalTestCaseContext implements TestCaseContext {
     public void setMainTestCase(boolean isMainTestCase) {
         this.isMainTestCase = isMainTestCase;
     }
+
+	public void setMessage(String message) {
+		this.message = message;		
+	}
+	
+	@Override
+	public String getMessage(){
+		return message;
+	}
+
+	@Override
+	public void skipThisTestCase() {
+		isSkipped = true;
+	}
+	
+	@Override
+	public boolean isSkipped(){
+		return isSkipped;
+	}
 }

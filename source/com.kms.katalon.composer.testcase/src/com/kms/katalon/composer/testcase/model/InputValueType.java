@@ -29,6 +29,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
@@ -67,12 +68,22 @@ public enum InputValueType implements InputValueEditorProvider {
     }
 
     public boolean isEditable(Object astObject) {
-        if (this == Null) {
-            return false;
-        }
+    	if(this == Null){
+    		return false;
+    	}
         return true;
     }
-
+    
+    // Use this to pass testCasePart's information (specifically about TestCaseVariable) to the editor
+    public CellEditor getCellEditorForValue(Composite parent, Object astObject, ITestCasePart testCasePart){
+    	switch(this){
+    		case Variable:
+    			return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject, testCasePart);
+			default:
+				return getCellEditorForValue(parent, astObject);
+    	}
+    }
+    
     public CellEditor getCellEditorForValue(Composite parent, Object astObject) {
         switch (this) {
             case Binary:
@@ -150,7 +161,7 @@ public enum InputValueType implements InputValueEditorProvider {
             case Boolean:
                 return new ConstantExpressionWrapper(true, parent);
             case Null:
-                return new ConstantExpressionWrapper(parent);
+            	return new ConstantExpressionWrapper(parent);
             case Binary:
                 return new BinaryExpressionWrapper(parent);
             case Variable:
@@ -276,7 +287,7 @@ public enum InputValueType implements InputValueEditorProvider {
             case Condition:
             case Boolean:
                 return isClassAssignable(java.lang.Boolean.class, paramType);
-            case Null:
+            case Null:	
                 return !paramType.isPrimitive() && isClassAssignable(java.lang.Boolean.class, paramType);
             case Class:
                 return isClassAssignable(Type.class, paramType);

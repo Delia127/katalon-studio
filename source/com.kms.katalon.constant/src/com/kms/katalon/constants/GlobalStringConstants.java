@@ -162,6 +162,8 @@ public class GlobalStringConstants {
     public static final String TEST_CASE = GlobalMessageConstants.TEST_CASE;
 
     public static final String TEST_SUITE = GlobalMessageConstants.TEST_SUITE;
+    
+    public static final String TEST_SUITE_COLLECTION = GlobalMessageConstants.TEST_SUITE_COLLECTION;
 
     public static final String TEST_OBJECT = GlobalMessageConstants.TEST_OBJECT;
 
@@ -253,7 +255,7 @@ public class GlobalStringConstants {
 
     public static final String ROOT_FOLDER_NAME_TEST_LISTENER = GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_LISTENER;
 
-    public static final String ROOT_FOLDER_NAME_FEATURES = GlobalMessageConstants.ROOT_FOLDER_NAME_FEATURES;
+    public static final String ROOT_FOLDER_NAME_INCLUDE = GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE;
 
     public static final String FILE_NAME_GLOBAL_VARIABLE = GlobalMessageConstants.FILE_NAME_GLOBAL_VARIABLE;
     
@@ -311,6 +313,10 @@ public class GlobalStringConstants {
     public static final String DIA_NO = GlobalMessageConstants.DIA_NO;
     
     public static final String DIA_LET_START = GlobalMessageConstants.DIA_LET_START;
+    
+    public static final String DIA_NEW_PROJECT = GlobalMessageConstants.DIA_NEW_PROJECT;
+    
+    public static final String DIA_OPEN_PROJECT = GlobalMessageConstants.DIA_OPEN_PROJECT;
 
     public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
 
@@ -319,5 +325,7 @@ public class GlobalStringConstants {
     public static final String APPIUM_INSTALLATION_GUIDE_MSG = GlobalMessageConstants.APPIUM_INSTALLATION_GUIDE_MSG;
     
     public static final String URL_TROUBLESHOOTING_MOBILE_TESTING = GlobalMessageConstants.URL_TROUBLESHOOTING_MOBILE_TESTING;
+    
+    public static final String DIA_TITLE_QUICKSTART = GlobalMessageConstants.DIA_TITLE_QUICKSTART;
 
 }

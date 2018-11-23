@@ -62,6 +62,8 @@ public class ExecutionMessageConstants extends NLS {
     public static String MSG_PREPARE_REPORT_JSON;
 
     public static String MSG_PREPARE_REPORT_JUNIT;
+    
+    public static String MSG_PREPARE_REPORT_UUID;
 
     public static String MSG_RP_ERROR_TO_EMAIL_REPORT;
 
@@ -112,6 +114,8 @@ public class ExecutionMessageConstants extends NLS {
     public static String CONSOLE_CANNOT_START_EXECUTION;
 
     public static String LBL_DEFAULT_EXECUTION;
+    
+    public static String LBL_APPLY_NEIGHBOR_XPATHS;
     
     // ConsoleOptionBuilder
     public static String CONSOLE_RUN_CONFIGURATION_NOT_FOUND;

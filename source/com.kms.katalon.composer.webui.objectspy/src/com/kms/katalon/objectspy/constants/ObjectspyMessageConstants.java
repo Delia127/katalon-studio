@@ -54,6 +54,8 @@ public class ObjectspyMessageConstants extends NLS {
     public static String MENU_ITEM_NEW_BROWSERS;
 
     public static String MENU_ITEM_ACTIVE_BROWSERS;
+    
+    public static String MENU_ITEM_CUSTOM_BROWSERS;
 
     public static String MSG_DLG_INIT_OBJECT_SPY;
 
@@ -169,7 +171,7 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_RADIO_LABEL_XPATH;
 
-    public static String DIA_RADIO_LABEL_BASIC;
+    public static String DIA_RADIO_LABEL_ATTRIBUTES;
 
     public static String DIA_COL_LABEL_CONDITION;
 

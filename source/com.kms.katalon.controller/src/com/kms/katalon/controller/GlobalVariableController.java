@@ -1,21 +1,18 @@
 package com.kms.katalon.controller;
 
 import java.io.File;
-import java.util.Arrays;
+import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.kms.katalon.controller.constants.ControllerMessageConstants;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -57,12 +54,13 @@ public class GlobalVariableController extends EntityController {
     public void generateGlobalVariableLibFile(ProjectEntity project, IProgressMonitor monitor) throws Exception {
         try {
             if (monitor != null) {
-                monitor.beginTask("Generating global variables...", 1);
+                String taskName = "Generating global variables...";
+                monitor.beginTask(taskName, 1);
             }
+
             IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
             GlobalVariableParser.getInstance().generateGlobalVariableLibFile(libFolder,
                     getAllGlobalVariableCollections(project));
-            libFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
             waitForGlobalVariableClassFileAvailable(project);
         } finally {
             if (monitor != null) {
@@ -70,28 +68,24 @@ public class GlobalVariableController extends EntityController {
             }
         }
     }
-    
+
     private void waitForGlobalVariableClassFileAvailable(ProjectEntity project) throws InterruptedException {
         File globalVariableClassFile = new File(project.getFolderLocation(), "bin/lib/internal/GlobalVariable.class");
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Callable<Object> callable = new Callable<Object>() {
-
-            @Override
-            public Object call() throws Exception {
-                while (!globalVariableClassFile.exists()) {
-                    Thread.sleep(300);
-                }
-                return null;
-           }
-        };
-            
-        executor.invokeAll(Arrays.asList(callable), 2, TimeUnit.SECONDS);
+        long time = System.currentTimeMillis();
+        while (System.currentTimeMillis() - time < TimeUnit.MINUTES.toMillis(5) && !globalVariableClassFile.exists()) {
+            Thread.sleep(300L);
+        }
+        if (!globalVariableClassFile.exists()) {
+            throw new InterruptedException(MessageFormat.format(
+                    ControllerMessageConstants.GlobalVariableController_MSG_COULD_NOT_GENERATE_GLOBALVARIABLE,
+                    project.getFolderLocation()));
+        }
     }
 
     public void deleteExecutionProfile(ExecutionProfileEntity profile) throws DALException {
         getDataProviderSetting().getGlobalVariableDataProvider().delete(profile);
     }
-    
+
     public ExecutionProfileEntity getExecutionProfile(String name, ProjectEntity project) throws DALException {
         return getDataProviderSetting().getGlobalVariableDataProvider().get(name, project);
     }
@@ -138,6 +132,10 @@ public class GlobalVariableController extends EntityController {
             }
         });
         return profiles;
+    }
+    
+    public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws DALException{
+    	return getDataProviderSetting().getEntityDataProvider().toEntity(xmlString, ExecutionProfileEntity.class);
     }
 
     public ExecutionProfileEntity copyProfile(ExecutionProfileEntity profileEntity) throws Exception {

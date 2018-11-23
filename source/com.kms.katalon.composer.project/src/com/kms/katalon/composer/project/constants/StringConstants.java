@@ -107,6 +107,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DATABASE_SETTING_PAGE_ID = "com.kms.katalon.composer.testdata.settings.database";
 
     public static final String NETWORK_SETTING_PAGE_ID = "com.kms.katalon.composer.webservice.network";
+    
+    public static final String DESIRED_CAPABILITIES_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.desiredcapabilities";
 
     // UpdateProjectHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ = ComposerProjectMessageConstants.HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ;
@@ -159,7 +161,11 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String VIEW_OPTION_SAMPLE_PROJECT = ComposerProjectMessageConstants.VIEW_OPTION_SAMPLE_PROJECT;
     
-    public static final String VIEW_LBL_SAMPLE_PROJECT = ComposerProjectMessageConstants.VIEW_LBL_SAMPLE_PROJECT;
+    public static final String VIEW_OPTION_WEB_SERVICE_PROJECT = ComposerProjectMessageConstants.VIEW_OPTION_WEB_SERVICE_PROJECT;
+    
+    public static final String VIEW_OPTION_GENERIC_PROJECT = ComposerProjectMessageConstants.VIEW_OPTION_GENERIC_PROJECT;
+    
+    public static final String VIEW_LBL_PROJECT = ComposerProjectMessageConstants.VIEW_LBL_PROJECT;
     
     public static final String VIEW_LBL_REPOSITORY_URL = ComposerProjectMessageConstants.VIEW_LBL_REPOSITORY_URL;
 
@@ -168,4 +174,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String SAMPLE_MOBILE_PROJECT = ComposerProjectMessageConstants.SAMPLE_MOBILE_PROJECT;
     
     public static final String SAMPLE_WEB_SERVICE_PROJECT = ComposerProjectMessageConstants.SAMPLE_WEB_SERVICE_PROJECT;
+    
+    public static final String BLANK_PROJECT = ComposerProjectMessageConstants.BLANK_PROJECT;
 }

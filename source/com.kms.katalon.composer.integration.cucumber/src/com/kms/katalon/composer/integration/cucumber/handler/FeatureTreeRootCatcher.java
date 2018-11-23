@@ -54,8 +54,7 @@ public class FeatureTreeRootCatcher {
         try {
             FolderEntity folder = folderTree.getObject();
             return folder.getFolderType() == FolderType.INCLUDE
-                    && !FolderController.getInstance().isSystemFolder(
-                            ProjectController.getInstance().getCurrentProject(), folder);
+                    && !FolderController.getInstance().isSourceFolder(ProjectController.getInstance().getCurrentProject(), folder);
         } catch (Exception e) {
            return false;
         }

@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Map;
@@ -150,7 +149,7 @@ public class SoapClient extends BasicRequestor {
 
         URL oURL = new URL(endPoint);
         HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
-        if (isHttps) {
+        if (con instanceof HttpsURLConnection) {
             ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
         }
         con.setRequestMethod(POST);

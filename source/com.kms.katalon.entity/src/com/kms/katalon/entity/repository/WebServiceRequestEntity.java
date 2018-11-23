@@ -15,11 +15,15 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public static final String RESTFUL = "RESTful";
 
+    public static final String REST = "REST";
+
     public static final String GET_METHOD = "GET";
 
     public static final String POST_METHOD = "POST";
 
     public static final String PUT_METHOD = "PUT";
+    
+    public static final String PATCH_METHOD = "PATCH";
 
     public static final String DELETE_METHOD = "DELETE";
 
@@ -28,7 +32,7 @@ public class WebServiceRequestEntity extends WebElementEntity {
     public static final String[] SOAP_REQUEST_METHODS = new String[] { SOAP, SOAP12, GET_METHOD, POST_METHOD };
 
     public static final String[] REST_REQUEST_METHODS = new String[] { GET_METHOD, POST_METHOD, PUT_METHOD,
-            DELETE_METHOD };
+            PATCH_METHOD , DELETE_METHOD, };
 
     private String serviceType = SOAP; // Default
 
@@ -207,5 +211,125 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public void setVariables(List<VariableEntity> variables) {
         this.variables = variables;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((httpBody == null) ? 0 : httpBody.hashCode());
+        result = prime * result + ((httpBodyContent == null) ? 0 : httpBodyContent.hashCode());
+        result = prime * result + ((httpBodyType == null) ? 0 : httpBodyType.hashCode());
+        result = prime * result + ((httpHeaderProperties == null) ? 0 : httpHeaderProperties.hashCode());
+        result = prime * result + ((migratedVersion == null) ? 0 : migratedVersion.hashCode());
+        result = prime * result + ((restParameters == null) ? 0 : restParameters.hashCode());
+        result = prime * result + ((restRequestMethod == null) ? 0 : restRequestMethod.hashCode());
+        result = prime * result + ((restUrl == null) ? 0 : restUrl.hashCode());
+        result = prime * result + ((serviceType == null) ? 0 : serviceType.hashCode());
+        result = prime * result + ((soapBody == null) ? 0 : soapBody.hashCode());
+        result = prime * result + ((soapHeader == null) ? 0 : soapHeader.hashCode());
+        result = prime * result + ((soapParameters == null) ? 0 : soapParameters.hashCode());
+        result = prime * result + ((soapRequestMethod == null) ? 0 : soapRequestMethod.hashCode());
+        result = prime * result + ((soapServiceFunction == null) ? 0 : soapServiceFunction.hashCode());
+        result = prime * result + ((variables == null) ? 0 : variables.hashCode());
+        result = prime * result + ((verificationScript == null) ? 0 : verificationScript.hashCode());
+        result = prime * result + ((wsdlAddress == null) ? 0 : wsdlAddress.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof WebServiceRequestEntity)) {
+            return false;
+        }
+        WebServiceRequestEntity other = (WebServiceRequestEntity) obj;
+        if (httpBody == null) {
+            if (other.httpBody != null)
+                return false;
+        } else if (!httpBody.equals(other.httpBody))
+            return false;
+        if (httpBodyContent == null) {
+            if (other.httpBodyContent != null)
+                return false;
+        } else if (!httpBodyContent.equals(other.httpBodyContent))
+            return false;
+        if (httpBodyType == null) {
+            if (other.httpBodyType != null)
+                return false;
+        } else if (!httpBodyType.equals(other.httpBodyType))
+            return false;
+        if (httpHeaderProperties == null) {
+            if (other.httpHeaderProperties != null)
+                return false;
+        } else if (!httpHeaderProperties.equals(other.httpHeaderProperties))
+            return false;
+        if (migratedVersion == null) {
+            if (other.migratedVersion != null)
+                return false;
+        } else if (!migratedVersion.equals(other.migratedVersion))
+            return false;
+        if (restParameters == null) {
+            if (other.restParameters != null)
+                return false;
+        } else if (!restParameters.equals(other.restParameters))
+            return false;
+        if (restRequestMethod == null) {
+            if (other.restRequestMethod != null)
+                return false;
+        } else if (!restRequestMethod.equals(other.restRequestMethod))
+            return false;
+        if (restUrl == null) {
+            if (other.restUrl != null)
+                return false;
+        } else if (!restUrl.equals(other.restUrl))
+            return false;
+        if (serviceType == null) {
+            if (other.serviceType != null)
+                return false;
+        } else if (!serviceType.equals(other.serviceType))
+            return false;
+        if (soapBody == null) {
+            if (other.soapBody != null)
+                return false;
+        } else if (!soapBody.equals(other.soapBody))
+            return false;
+        if (soapHeader == null) {
+            if (other.soapHeader != null)
+                return false;
+        } else if (!soapHeader.equals(other.soapHeader))
+            return false;
+        if (soapParameters == null) {
+            if (other.soapParameters != null)
+                return false;
+        } else if (!soapParameters.equals(other.soapParameters))
+            return false;
+        if (soapRequestMethod == null) {
+            if (other.soapRequestMethod != null)
+                return false;
+        } else if (!soapRequestMethod.equals(other.soapRequestMethod))
+            return false;
+        if (soapServiceFunction == null) {
+            if (other.soapServiceFunction != null)
+                return false;
+        } else if (!soapServiceFunction.equals(other.soapServiceFunction))
+            return false;
+        if (variables == null) {
+            if (other.variables != null)
+                return false;
+        } else if (!variables.equals(other.variables))
+            return false;
+        if (verificationScript == null) {
+            if (other.verificationScript != null)
+                return false;
+        } else if (!verificationScript.equals(other.verificationScript))
+            return false;
+        if (wsdlAddress == null) {
+            if (other.wsdlAddress != null)
+                return false;
+        } else if (!wsdlAddress.equals(other.wsdlAddress))
+            return false;
+        return true;
     }
 }

@@ -218,6 +218,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TAB_SCRIPT = ComposerTestcaseMessageConstants.PA_TAB_SCRIPT;
 
     public static final String PA_TAB_VARIABLE = ComposerTestcaseMessageConstants.PA_TAB_VARIABLE;
+    
+    public static final String PA_TAB_VARIABLE_EDITOR = ComposerTestcaseMessageConstants.PA_TAB_VARIABLE_EDITOR;
 
     public static final String PA_TAB_INTEGRATION = ComposerTestcaseMessageConstants.PA_TAB_INTEGRATION;
 
@@ -233,15 +235,18 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_ACTION_FORMAT = ComposerTestcaseMessageConstants.PA_ACTION_FORMAT;
 
-    public static final String MSG_SET_SCRIPT_VIEW_AS_DEFAULT = ComposerTestcaseMessageConstants.MSG_SET_SCRIPT_VIEW_AS_DEFAULT;
     // TestCasePart
     public static final String PA_TOOLBAR_RECORD = ComposerTestcaseMessageConstants.PA_TOOLBAR_RECORD;
 
     public static final String PA_TOOLBAR_TIP_RECORD_TEST = ComposerTestcaseMessageConstants.PA_TOOLBAR_TIP_RECORD_TEST;
 
     public static final String PA_LBL_NAME = NAME;
+    
+    
 
     public static final String PA_BTN_TIP_ADD = ADD;
+    
+    public static final String PA_BTN_ADD_WEB_SERVICE_KEYWORD = ComposerTestcaseMessageConstants.PA_BTN_ADD_WEB_SERVICE_KEYWORD;
 
     public static final String PA_BTN_TIP_INSERT = INSERT;
 

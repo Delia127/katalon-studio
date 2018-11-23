@@ -12,4 +12,9 @@ public class WebUiExecutionSettingConstants {
     public static final String WEBUI_EXECUTION_WAIT_FOR_IE_HANGING = "execution.default.waitForIEHanging";
 
     public static final String WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES = "execution.default.selectingCapturedObjectProperties";
+    
+    public static final String WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "execution.default.selectingCapturedObjectXpaths";
+    
+    public static final String WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "execution.default.selectingCapturedObjectSelectorMethod";
+
 }
