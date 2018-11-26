@@ -117,7 +117,8 @@ pipeline {
         changed {
             emailext  body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n",
                 recipientProviders: [brokenBuildSuspects(), developers()],
-                subject: "Build $BUILD_NUMBER - " + currentBuild.currentResult + " ($JOB_NAME)"
+                subject: "Build $BUILD_NUMBER - " + currentBuild.currentResult + " ($JOB_NAME)",
+                attachLog: true
         }      
         success {
             mail(
