@@ -38,6 +38,7 @@ Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.credential.impl,
  com.kms.katalon.integration.qtest.entity,
  com.kms.katalon.integration.qtest.exception,
+ com.kms.katalon.integration.qtest.helper,
  com.kms.katalon.integration.qtest.setting
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
