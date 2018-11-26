@@ -114,7 +114,12 @@ pipeline {
     }
 
     post {
-        always {
+        changed {
+            emailext  body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n",
+                recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), developers()],
+                subject: "Build $BUILD_NUMBER - " + currentBuild.currentResult + " ($JOB_NAME)"
+        }      
+        success {
             mail(
                     from: 'build-ci@katalon.com',
                     replyTo: 'build-ci@katalon.com',
