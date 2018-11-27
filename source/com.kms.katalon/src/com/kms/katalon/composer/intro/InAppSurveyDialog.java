@@ -112,7 +112,7 @@ public class InAppSurveyDialog extends Dialog {
         userIdeaComposite.setLayout(glUserIdea);
         
         lblUserIdea = new Label(userIdeaComposite, SWT.NONE);
-        lblUserIdea.setText("we are happy to receive your ideas");
+        lblUserIdea.setText("We are happy to receive your ideas");
         lblUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         txtUserIdea = new Text(userIdeaComposite, SWT.BORDER);
         txtUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
