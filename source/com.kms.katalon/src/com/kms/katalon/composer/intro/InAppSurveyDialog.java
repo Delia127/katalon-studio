@@ -64,11 +64,11 @@ public class InAppSurveyDialog extends Dialog {
                 	getButton(Dialog.OK).setEnabled(true);
                 }
                 if(numberOfStarsSelected >= 0 && numberOfStarsSelected <= 2){
-                	lblUserIdea.setText("What do you dislike the most in Katalon Studio");  
-                }else if(numberOfStarsSelected == 3){
-                	lblUserIdea.setText("What feature should we improve in Katalon Studio");
+                	lblUserIdea.setText("We're sorry :(. What didn't you like about Katalon Studio?");  
+                }else if(numberOfStarsSelected <=4 ){
+                	lblUserIdea.setText("Thanks! How can we improve?");
                 }else {
-                	lblUserIdea.setText("What do you like the most in Katalon Studio");
+                	lblUserIdea.setText("Glad you like us :). What do you enjoy most about Katalon Studio?");
                 }
             }
         });
@@ -87,6 +87,7 @@ public class InAppSurveyDialog extends Dialog {
     	Composite container = new Composite(parent, SWT.NONE);
     	GridData gdContainer = new GridData(SWT.FILL, SWT.FILL, true, true);
     	gdContainer.heightHint = 300;
+    	gdContainer.widthHint = 400;
     	container.setLayoutData(gdContainer);
     	GridLayout glContainer = new GridLayout(1, false);
     	container.setLayout(glContainer);
@@ -111,7 +112,7 @@ public class InAppSurveyDialog extends Dialog {
         userIdeaComposite.setLayout(glUserIdea);
         
         lblUserIdea = new Label(userIdeaComposite, SWT.NONE);
-        lblUserIdea.setText("We are happy to receive your idea");
+        lblUserIdea.setText("we are happy to receive your ideas");
         lblUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         txtUserIdea = new Text(userIdeaComposite, SWT.BORDER);
         txtUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
