@@ -41,7 +41,7 @@ public class InAppSurveyDialog extends Dialog {
     
 	public InAppSurveyDialog(Shell parentShell) {
 		super(parentShell);
-        setShellStyle(SWT.APPLICATION_MODAL | SWT.NO_TRIM | SWT.ON_TOP);
+        setShellStyle(SWT.APPLICATION_MODAL | SWT.CLOSE | SWT.RESIZE);
         shouldShowDialogAgain = getPreferenceStore()
                 .getBoolean(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE);
 	}
@@ -86,7 +86,7 @@ public class InAppSurveyDialog extends Dialog {
     protected Control createDialogArea(Composite parent) {
     	Composite container = new Composite(parent, SWT.NONE);
     	GridData gdContainer = new GridData(SWT.FILL, SWT.FILL, true, true);
-    	gdContainer.heightHint = 300;
+    	gdContainer.heightHint = 200;
     	gdContainer.widthHint = 400;
     	container.setLayoutData(gdContainer);
     	GridLayout glContainer = new GridLayout(1, false);
