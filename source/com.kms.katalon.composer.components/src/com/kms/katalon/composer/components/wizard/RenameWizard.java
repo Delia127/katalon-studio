@@ -49,11 +49,11 @@ public class RenameWizard extends Wizard {
 	}
 
 	public void setNewNameValue(String newNameValue) {
-	    if (newNameValue != null) {
+        if (newNameValue != null) {
             // trim and replace multiple space by single one
             newNameValue = newNameValue.trim().replaceAll("\\s+", " ");
         }
-		this.newNameValue = newNameValue;
+        this.newNameValue = newNameValue;
 	}
 
 	public List<String> getExistingNames() {
