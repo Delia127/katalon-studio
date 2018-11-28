@@ -52,6 +52,7 @@ public class InAppSurveyDialog extends Dialog {
     	star.setImage(ImageManager.getImage(IImageKeys.STAR));
     	star.setVertical(false);
     	star.setNrOfStars(5);
+    	star.setAlpha(90);
     	star.setSelection(0);
     	star.addListener(SWT.MouseUp, new Listener()
         {
