@@ -41,7 +41,7 @@ public class InAppSurveyDialog extends Dialog {
     
 	public InAppSurveyDialog(Shell parentShell) {
 		super(parentShell);
-        setShellStyle(SWT.APPLICATION_MODAL | SWT.NO_TRIM | SWT.ON_TOP);
+        setShellStyle(SWT.APPLICATION_MODAL | SWT.CLOSE | SWT.RESIZE);
         shouldShowDialogAgain = getPreferenceStore()
                 .getBoolean(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE);
 	}
@@ -52,6 +52,7 @@ public class InAppSurveyDialog extends Dialog {
     	star.setImage(ImageManager.getImage(IImageKeys.STAR));
     	star.setVertical(false);
     	star.setNrOfStars(5);
+    	star.setAlpha(90);
     	star.setSelection(0);
     	star.addListener(SWT.MouseUp, new Listener()
         {
@@ -64,11 +65,11 @@ public class InAppSurveyDialog extends Dialog {
                 	getButton(Dialog.OK).setEnabled(true);
                 }
                 if(numberOfStarsSelected >= 0 && numberOfStarsSelected <= 2){
-                	lblUserIdea.setText("What do you dislike the most in Katalon Studio");  
-                }else if(numberOfStarsSelected == 3){
-                	lblUserIdea.setText("What feature should we improve in Katalon Studio");
+                	lblUserIdea.setText("We're sorry :(. What didn't you like about Katalon Studio?");  
+                }else if(numberOfStarsSelected <=4 ){
+                	lblUserIdea.setText("Thanks! How can we improve?");
                 }else {
-                	lblUserIdea.setText("What do you like the most in Katalon Studio");
+                	lblUserIdea.setText("Glad you like us :). What do you enjoy most about Katalon Studio?");
                 }
             }
         });
@@ -86,7 +87,8 @@ public class InAppSurveyDialog extends Dialog {
     protected Control createDialogArea(Composite parent) {
     	Composite container = new Composite(parent, SWT.NONE);
     	GridData gdContainer = new GridData(SWT.FILL, SWT.FILL, true, true);
-    	gdContainer.heightHint = 300;
+    	gdContainer.heightHint = 200;
+    	gdContainer.widthHint = 400;
     	container.setLayoutData(gdContainer);
     	GridLayout glContainer = new GridLayout(1, false);
     	container.setLayout(glContainer);
@@ -111,7 +113,7 @@ public class InAppSurveyDialog extends Dialog {
         userIdeaComposite.setLayout(glUserIdea);
         
         lblUserIdea = new Label(userIdeaComposite, SWT.NONE);
-        lblUserIdea.setText("We are happy to receive your idea");
+        lblUserIdea.setText("We are happy to receive your ideas");
         lblUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         txtUserIdea = new Text(userIdeaComposite, SWT.BORDER);
         txtUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

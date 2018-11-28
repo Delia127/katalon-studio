@@ -159,7 +159,7 @@ public class StarRating extends Composite {
      */
     public void setImage(Image image)
     {
-        this.image = new Image(Display.getDefault(), image, SWT.IMAGE_COPY);
+        this.image = image;
         width = image.getBounds().width;
         height = image.getBounds().height;
         redraw();
