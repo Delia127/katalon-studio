@@ -499,4 +499,5 @@ public class StringConstants {
     
     // TestCaseExecutor
 	public static final String TEST_CASE_SKIPPED = CoreMessageConstants.TEST_CASE_SKIPPED;
+
 }

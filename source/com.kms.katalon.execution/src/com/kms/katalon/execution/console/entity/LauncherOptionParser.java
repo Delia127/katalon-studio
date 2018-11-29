@@ -9,4 +9,8 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 public interface LauncherOptionParser extends ConsoleOptionContributor {
     IConsoleLauncher getConsoleLauncher(ProjectEntity project, LauncherManager manager)
             throws ExecutionException, InvalidConsoleArgumentException;
+    
+    void collectOverridingParameters(ProjectEntity project) throws ExecutionException;
+    
+    void setOverridingArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception;
 }

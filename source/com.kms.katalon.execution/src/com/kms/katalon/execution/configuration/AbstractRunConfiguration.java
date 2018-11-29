@@ -2,8 +2,10 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -17,6 +19,7 @@ import com.kms.katalon.core.util.LogbackUtil;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
+import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
@@ -38,7 +41,9 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected DefaultExecutionSetting executionSetting;
 
     private ExecutionProfileEntity executionProfile;
-
+    
+    private Map<String, Object> overridingParameters = new HashMap<>();
+    
     public AbstractRunConfiguration() {
         initExecutionSetting();
     }
@@ -146,6 +151,11 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         if (executedEntity == null) {
             return propertyMap;
         }
+        
+        if(!overridingParameters.isEmpty()){
+        	propertyMap.put(RunConfiguration.OVERRIDING_GLOBAL_VARIABLES, overridingParameters);
+        }
+
         propertyMap.put(RunConfiguration.EXCUTION_SOURCE_ID, executedEntity.getSourceId());
         propertyMap.put(RunConfiguration.EXCUTION_SOURCE_NAME, executedEntity.getSourceName());
         propertyMap.put(RunConfiguration.EXCUTION_SOURCE_DESCRIPTION, executedEntity.getSourceDescription());
@@ -226,5 +236,10 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     public void setExecutionProfile(ExecutionProfileEntity executionProfile) {
         this.executionProfile = executionProfile;
+    }
+    
+    public void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables) {
+    	if(overridingGlobalVariables == null) return;
+    	overridingParameters.putAll(overridingGlobalVariables);
     }
 }

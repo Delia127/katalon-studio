@@ -1,13 +1,21 @@
 package com.kms.katalon.execution.console.entity;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
+import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
@@ -25,7 +33,6 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParser {
     private static final String EXECUTION_PROFILE_OPTION = "executionProfile";
-
     private StringConsoleOption testSuitePathOption = new StringConsoleOption() {
         @Override
         public String getOption() {
@@ -49,23 +56,22 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     };
 
     private StringConsoleOption executionProfileOption = new StringConsoleOption() {
-
-        @Override
-        public String getOption() {
-            return EXECUTION_PROFILE_OPTION;
-        }
-
-        public boolean isRequired() {
+		@Override
+		public String getOption() {
+			return EXECUTION_PROFILE_OPTION;
+		}
+		
+    	public boolean isRequired() {
             return false;
-        };
+        }
 
         @Override
         public String getDefaultArgumentValue() {
             return ExecutionProfileEntity.DF_PROFILE_NAME;
         }
-
     };
 
+    
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> allOptions = super.getConsoleOptionList();
@@ -80,10 +86,11 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         super.setArgumentValue(consoleOption, argumentValue);
         if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
                 || consoleOption == executionProfileOption) {
-            consoleOption.setValue(argumentValue);
+        	consoleOption.setValue(argumentValue);
             return;
         }
     }
+
 
     @Override
     public IConsoleLauncher getConsoleLauncher(ProjectEntity project, LauncherManager manager)
@@ -96,6 +103,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             executedEntity.setRerunSetting(rerunSetting);
             AbstractRunConfiguration runConfig = (AbstractRunConfiguration) createRunConfiguration(project, testSuite,
                     browserTypeOption.getValue());
+            
             String profileName = executionProfileOption.getValue();
             if (StringUtils.isBlank(profileName)) {
                 profileName = ExecutionProfileEntity.DF_PROFILE_NAME;
@@ -107,6 +115,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
                         MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
             }
             runConfig.setExecutionProfile(executionProfile);
+            runConfig.setOverridingGlobalVariables(super.getOverridingGlobalVariables());
             runConfig.build(testSuite, executedEntity);
             return new ConsoleLauncher(manager, runConfig);
         } catch (Exception e) {
