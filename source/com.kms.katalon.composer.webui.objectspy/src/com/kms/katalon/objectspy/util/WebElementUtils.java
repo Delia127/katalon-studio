@@ -224,6 +224,7 @@ public class WebElementUtils {
         el.setXpaths(xpaths);
         el.setUsefulNeighborText(usefulNeighborText);
         el.setSelectorMethod(selectorMethod);
+        
         return el;
     }
 

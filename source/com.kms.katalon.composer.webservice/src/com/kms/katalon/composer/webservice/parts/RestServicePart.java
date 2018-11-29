@@ -77,8 +77,6 @@ public class RestServicePart extends WebServicePart {
     private ModifyListener requestURLModifyListener;
 
     private boolean allowEditParamsTable = true;
-    
-    private boolean useDummyProtocolForUrl = false;
 
     @Override
     protected void createAPIControls(Composite parent) {
@@ -314,6 +312,7 @@ public class RestServicePart extends WebServicePart {
 
     private void updateRequestUrlWithNewParams(List<WebElementPropertyEntity> paramProperties) {
         List<NameValuePair> params = toNameValuePair(paramProperties);
+        urlBuilder = new URLBuilder();
         urlBuilder.setParameters(params);
         try {
             String newUrl = urlBuilder.build().toString();
