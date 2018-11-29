@@ -1,23 +1,21 @@
 package com.kms.katalon.objectspy.dialog;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.BindException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -31,6 +29,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -38,12 +37,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.greenrobot.eventbus.EventBus;
 import org.openqa.selenium.WebDriver;
 import org.osgi.framework.Bundle;
 
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
@@ -51,9 +47,15 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.event.EventBusSingleton;
+import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
+import com.kms.katalon.execution.collector.RunConfigurationCollector;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
+import com.kms.katalon.execution.configuration.IDriverConnector;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.configuration.contributor.CustomRunConfigurationContributor;
+import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
@@ -77,13 +79,10 @@ import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
-@SuppressWarnings("restriction")
 public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
-    private static Logger logger = LoggerSingleton.getInstance().getLogger();
-
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
 
-    private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
+    private static final String RELATIVE_PATH_TO_IE_ADDON_SETUP = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
             + File.separator + "Object Spy" + File.separator + "setup.exe"; //$NON-NLS-1$ //$NON-NLS-2$
 
     private static final String RESOURCES_FOLDER_NAME = "resources"; //$NON-NLS-1$
@@ -102,7 +101,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
 
     private ToolItem startBrowser;
 
-    private WebUIDriverType defaultBrowser;
+    private IDriverConnector selectedBrowser;
 
     private boolean isInstant = false;
 
@@ -120,9 +119,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
 
     public ObjectSpyUrlView(HTMLElementCollector parent) {
         this.elementCollector = parent;
-
-        // set default browser
-        defaultBrowser = getWebUIDriver();
+        selectedBrowser = getDefaultBrowser();
         isInstant = getBrowserActiveFlag();
     }
 
@@ -146,7 +143,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.character == SWT.CR) {
-                    spy(defaultBrowser);
+                    spy();
                 }
             }
         });
@@ -158,15 +155,14 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).applyTo(startBrowserToolbar);
         startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);
         startBrowser.setText(getBrowserToolItemName());
-        startBrowser.setImage(getWebUIDriverToolItemImage(getWebUIDriver()));
+        startBrowser.setImage(getWebUIDriverToolItemImage(getSelectedBrowserType()));
         Dropdown dropdown = new Dropdown(shell);
         createDropdownContent(dropdown);
 
         startBrowser.addSelectionListener(new DropdownItemSelectionListener(dropdown) {
-
             @Override
             public void itemSelected(SelectionEvent event) {
-                spy(defaultBrowser);
+                spy();
             }
         });
 
@@ -174,34 +170,34 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         txtStartUrl.selectAll();
     }
 
-    private void spy(WebUIDriverType webUIDriverType) {
+    private void spy() {
         if (isInstant) {
-            spyInActiveBrowser(webUIDriverType);
+            spyInActiveBrowser();
         } else {
-            spyInNewBrowser(webUIDriverType);
+            spyInNewBrowser();
         }
     }
 
-    private void startObjectSpy(WebUIDriverType browser, boolean isInstant) {
-        if (!BrowserUtil.isBrowserInstalled(browser)) {
+    private void startObjectSpy() {
+        WebUIDriverType browserType = getSelectedBrowserType();
+        if (!BrowserUtil.isBrowserInstalled(browserType)) {
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE,
                     ObjectspyMessageConstants.DIA_MSG_CANNOT_START_BROWSER);
             return;
         }
         try {
-            if (browser == WebUIDriverType.IE_DRIVER) {
+            if (browserType == WebUIDriverType.IE_DRIVER) {
                 checkIEAddon();
             }
             changeBrowserToolItemName();
             if (isInstant) {
-                startInstantSession(browser);
+                startInstantSession();
                 return;
             }
             startServerWithPort(0);
-            startInspectSession(browser);
+            startInspectSession();
 
             invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
-//            sendEventForTracking();
             Trackings.trackSpy("web");
         } catch (final IEAddonNotInstalledException e) {
             stop();
@@ -217,14 +213,25 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, ex.getMessage());
         }
     }
-
-    private void startBrowser() {
-        startObjectSpy(defaultBrowser, isInstant);
+    
+    private void changeBrowser(final WebUIDriverType browserType, final boolean isInstant) {
+        try {
+            IDriverConnector driverConnector = WebUIExecutionUtil.getBrowserDriverConnector(browserType,
+                    ProjectController.getInstance().getCurrentProject().getFolderLocation());
+            changeBrowser(driverConnector, isInstant);
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
     }
     
-    private void sendEventForTracking() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.SPY, "web"));
+    private void changeBrowser(final IDriverConnector driverConnector, final boolean isInstant) {
+        this.selectedBrowser = driverConnector;
+        this.isInstant = isInstant;
+        this.startBrowser.setImage(getWebUIDriverToolItemImage((WebUIDriverType) driverConnector.getDriverType()));
+    }
+
+    private void startBrowser() {
+        startObjectSpy();
     }
 
     public void startServerWithPort(int port) throws Exception {
@@ -236,7 +243,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             server.stop();
         }
         try {
-            server = new HTMLElementCaptureServer(port, logger, elementCollector, AddonSocket.class);
+            server = new HTMLElementCaptureServer(port, elementCollector, AddonSocket.class);
             server.start();
         } catch (BindException e) {
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE,
@@ -322,9 +329,51 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         addActiveBrowserItem(activeBrowser, WebUIDriverType.CHROME_DRIVER);
         addActiveBrowserItem(activeBrowser, WebUIDriverType.FIREFOX_DRIVER);
 
+        DropdownGroup customCapabilities = dropdown.addDropdownGroupItem("Custom Capabilities", null);
+        addCustomCapabilitiesItem(customCapabilities);
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             addNewBrowserItem(newBrowser, WebUIDriverType.IE_DRIVER);
         }
+    }
+
+    private void addCustomCapabilitiesItem(DropdownGroup customCapabilities) {
+        boolean isAdded = false;
+
+        for (CustomRunConfigurationContributor customRunConfigContributor : RunConfigurationCollector.getInstance()
+                .getAllCustomRunConfigurationContributors()) {
+            IDriverConnector driverConnector = getBrowser(customRunConfigContributor);
+            customCapabilities.addItem(customRunConfigContributor.getId(), null,
+                    new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            if (driverConnector != null) {
+                                changeBrowser(driverConnector, false);
+                                spyInNewBrowser();
+                            }
+                        }
+                    });
+            isAdded = true;
+        }
+
+        if (!isAdded) {
+            customCapabilities.addItem("Empty", null, new SelectionAdapter() {});
+        }
+    }
+    
+    private IDriverConnector getBrowser(CustomRunConfigurationContributor customRunConfigContributor) {
+        IRunConfiguration runConfiguration = null;
+        
+        try {
+            runConfiguration = (AbstractRunConfiguration) customRunConfigContributor
+                    .getRunConfiguration(ProjectController.getInstance().getCurrentProject().getFolderLocation());      
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        } 
+        
+        return Optional.ofNullable(runConfiguration)
+                .map(IRunConfiguration::getDriverConnectors)
+                .map(driverConnectors -> driverConnectors.get(DriverFactory.WEB_UI_DRIVER_PROPERTY))
+                .orElse(null);
     }
 
     private void addNewBrowserItem(DropdownGroup newBrowserGroup, WebUIDriverType webUIDriverType) {
@@ -332,38 +381,33 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
                 new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        spyInNewBrowser(webUIDriverType);
+                        changeBrowser(webUIDriverType, false);
+                        spyInNewBrowser();
                     }
                 });
     }
-
-    private void spyInNewBrowser(WebUIDriverType webUIDriverType) {
-        isInstant = false;
-        defaultBrowser = webUIDriverType;
-        startBrowser.setImage(getWebUIDriverToolItemImage(webUIDriverType));
+    
+    private void spyInNewBrowser() {
         startBrowser();
     }
 
     private void addActiveBrowserItem(DropdownGroup activeBrowserGroup, WebUIDriverType webUIDriverType) {
         activeBrowserGroup.addItem(webUIDriverType.toString(), getWebUIDriverDropdownImage(webUIDriverType),
                 new SelectionAdapter() {
-
                     @Override
                     public void widgetSelected(SelectionEvent event) {
-                        spyInActiveBrowser(webUIDriverType);
+                        changeBrowser(webUIDriverType, true);
+                        spyInActiveBrowser();
                     }
                 });
     }
 
-    private void spyInActiveBrowser(WebUIDriverType webUIDriverType) {
+    private void spyInActiveBrowser() {
         try {
-            if (!UtilitiesAddonUtil.isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog(webUIDriverType)) {
+            if (!UtilitiesAddonUtil.isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog(getSelectedBrowserType())) {
                 return;
             }
             endInspectSession();
-            defaultBrowser = webUIDriverType;
-            startBrowser.setImage(getWebUIDriverToolItemImage(webUIDriverType));
-            isInstant = true;
             startBrowser();
         } catch (Exception exception) {
             LoggerSingleton.logError(exception);
@@ -393,10 +437,10 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
 
     private void openBrowserToAddonUrl(WebUIDriverType webUIDriverType) throws IOException, URISyntaxException {
         String url = getAddonUrl(webUIDriverType);
-        if (url == null || !Desktop.isDesktopSupported()) {
+        if (url == null) {
             return;
         }
-        Desktop.getDesktop().browse(new URI(url));
+        Program.launch(url);
     }
 
     protected void showMessageForStartingInstantIE() {
@@ -422,32 +466,18 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         return null;
     }
 
-    private WebUIDriverType getWebUIDriver() {
-        String defaultBrowserValue = getPreferenceStore()
-                .getString(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_BROWSER);
-        if (StringUtils.isEmpty(defaultBrowserValue)) {
-            return WebUIDriverType.CHROME_DRIVER;
-        } else {
-            return WebUIDriverType.fromStringValue(defaultBrowserValue);
-        }
-    }
-
     private boolean getBrowserActiveFlag() {
-        boolean isActive = getPreferenceStore().getBoolean(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_BROWSER_ACTIVE);
-        return isActive;
+        return getPreferenceStore().getBoolean(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_BROWSER_ACTIVE);
     }
 
     private Image getWebUIDriverDropdownImage(WebUIDriverType webUIDriverType) {
         switch (webUIDriverType) {
             case FIREFOX_DRIVER:
                 return ImageConstants.IMG_16_BROWSER_FIREFOX;
-
             case CHROME_DRIVER:
                 return ImageConstants.IMG_16_BROWSER_CHROME;
-
             case IE_DRIVER:
                 return ImageConstants.IMG_16_BROWSER_IE;
-
             default:
                 return null;
         }
@@ -457,13 +487,10 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         switch (webUIDriverType) {
             case FIREFOX_DRIVER:
                 return ImageConstants.IMG_24_FIREFOX;
-
             case CHROME_DRIVER:
                 return ImageConstants.IMG_24_CHROME;
-
             case IE_DRIVER:
                 return ImageConstants.IMG_24_IE;
-
             default:
                 return null;
         }
@@ -475,12 +502,11 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         }
     }
 
-    private void startInspectSession(WebUIDriverType browser) throws Exception {
+    private void startInspectSession() throws Exception {
         if (session != null) {
             session.stop();
         }
-        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(), logger,
-                txtStartUrl.getText());
+        session = new InspectSession(server, selectedBrowser, txtStartUrl.getText());
         new Thread(session).start();
     }
 
@@ -496,24 +522,23 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         AddonSocketServer.getInstance().stop();
     }
 
-    private void startInstantSession(WebUIDriverType browser) throws Exception {
-        if (browser == WebUIDriverType.IE_DRIVER) {
+    private void startInstantSession() throws Exception {
+        WebUIDriverType browserType = getSelectedBrowserType();
+        if (browserType == WebUIDriverType.IE_DRIVER) {
             runInstantIE();
         }
-        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(browser.toString());
+        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(browserType.toString());
         if (currentInstantSocket == null) {
             return;
         }
-        Win32Helper.switchFocusToBrowser(browser);
+        Win32Helper.switchFocusToBrowser(browserType);
         currentInstantSocket.sendMessage(new StartInspectAddonMessage());
         invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
-//        sendEventForTracking();
         Trackings.trackSpy("web");
     }
 
     protected void runInstantIE() throws Exception {
-        session = new InspectSession(server, WebUIDriverType.IE_DRIVER,
-                ProjectController.getInstance().getCurrentProject(), logger);
+        session = new InspectSession(server, selectedBrowser);
         session.setupIE();
         HWND hwnd = User32.INSTANCE.FindWindow(IE_WINDOW_CLASS, null);
         if (hwnd == null) {
@@ -528,12 +553,8 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
     }
 
     private void runIEAddonInstaller() throws IOException {
-        String ieAddonSetupPath = getResourcesDirectory().getAbsolutePath() + relativePathToIEAddonSetup;
-        Desktop desktop = Desktop.getDesktop();
-        if (!Desktop.isDesktopSupported()) {
-            return;
-        }
-        desktop.open(new File(ieAddonSetupPath));
+        String ieAddonSetupPath = getResourcesDirectory().getAbsolutePath() + RELATIVE_PATH_TO_IE_ADDON_SETUP;
+        Program.launch(new File(ieAddonSetupPath).toURI().toString());
     }
 
     private File getResourcesDirectory() throws IOException {
@@ -555,7 +576,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         preferenceStore.setValue(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_STARTING_URL,
                 txtStartUrl.getText());
         preferenceStore.setValue(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_BROWSER,
-                defaultBrowser.toString());
+                getSelectedBrowserType().toString());
         preferenceStore.setValue(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_BROWSER_ACTIVE, isInstant);
 
         try {
@@ -568,9 +589,31 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
     public boolean isInstant() {
         return isInstant;
     }
+    
+    private WebUIDriverType getDefaultBrowserType() {
+        String defaultBrowserValue = getPreferenceStore()
+                .getString(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_BROWSER);
+        if (StringUtils.isEmpty(defaultBrowserValue)) {
+            return WebUIDriverType.CHROME_DRIVER;
+        } else {
+            return WebUIDriverType.fromStringValue(defaultBrowserValue);
+        }
+    }
 
-    public WebUIDriverType getDefaultBrowser() {
-        return defaultBrowser;
+    private IDriverConnector getDefaultBrowser() {
+        try {
+            return WebUIExecutionUtil.getBrowserDriverConnector(getDefaultBrowserType(), ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+        return null;
+    }
+
+    private WebUIDriverType getSelectedBrowserType() {
+        if (selectedBrowser == null || !(selectedBrowser.getDriverType() instanceof WebUIDriverType)) {
+            return null;
+        }
+        return (WebUIDriverType) selectedBrowser.getDriverType();
     }
 
     public AddonSocket getCurrentInstanceSocket() {

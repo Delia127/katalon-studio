@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.report.handlers;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.util.Arrays;
 
@@ -8,6 +7,7 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -58,7 +58,7 @@ public class ExportCSVReportHandler {
                                 report.getDisplayName() + ReportEntity.EXTENSION_CSV_REPORT);
                         ReportUtil.writeLogRecordToCSVFile(suiteLogRecord, exportedFile,
                                 Arrays.asList(suiteLogRecord.getChildRecords()), !isSummaryReport);
-                        Desktop.getDesktop().open(exportedFile);
+                        Program.launch(exportedFile.toURI().toString());
                     }
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);

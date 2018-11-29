@@ -67,6 +67,15 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.apache.commons.lang3,
  org.greenrobot.eventbus,
  org.assertj.core,
- org.junit
+ org.junit,
+ com.fasterxml.jackson.core.jackson-databind,
+ com.fasterxml.jackson.core.jackson-core,
+ com.fasterxml.jackson.core.jackson-annotations,
+ org.slf4j.api,
+ ch.qos.logback.classic,
+ ch.qos.logback.core,
+ slf4j.api,
+ org.fusesource.jansi,
+ com.kms.katalon.netlightbody
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

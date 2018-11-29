@@ -42,8 +42,8 @@ public class TestSuiteSelectionDialog extends TreeEntitySelectionDialog {
         try {
             return selection != null
                     && selection.length > 0
-                    && (selection[0] instanceof TestSuiteTreeEntity
-                    || selection[0] instanceof TestSuiteCollectionTreeEntity);
+                    && (((ITreeEntity) selection[0]) instanceof TestSuiteTreeEntity ||
+                    ((ITreeEntity) selection[0]) instanceof TestSuiteCollectionTreeEntity);
         } catch (Exception e) {
             logError(e);
         }

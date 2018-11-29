@@ -21,6 +21,7 @@
     <elements xsi:type="commands:Command" xmi:id="_Rfc6YINREeiEhcbJpZFcgQ" elementId="com.kms.katalon.composer.project.command.newLocalProject" commandName="New Sample Local Project">
       <parameters xmi:id="_l2bakINREeiEhcbJpZFcgQ" elementId="com.kms.katalon.composer.project.command.newLocalProject.parameters.project" name="Project Type Parameter"/>
     </elements>
+    <elements xsi:type="commands:Command" xmi:id="_MeB8YOyjEei5BYFXUmB7Aw" elementId="com.kms.katalon.composer.project.command.projectCreated" commandName="Project created"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_5w-Z4BsVEeSXreVpxhllQw" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_G6emwBsWEeSXreVpxhllQw" elementId="com.kms.katalon.composer.project.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.NewProjectHandler" command="_kly1kBsVEeSXreVpxhllQw"/>
@@ -34,6 +35,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_nHftYNWYEeedQO9m9dDpVg" elementId="com.kms.katalon.composer.project.handler.importSeleniumIde" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ImportSeleniumIdeHandler" command="_gAi40NWYEeedQO9m9dDpVg"/>
     <elements xsi:type="commands:Handler" xmi:id="_FcDzQINMEeiEhcbJpZFcgQ" elementId="com.kms.katalon.composer.project.command.newRemoteProject" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.NewSampleRemoteProjectHandler" command="_yEIVQINLEeiEhcbJpZFcgQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_aMkbgINREeiEhcbJpZFcgQ" elementId="com.kms.katalon.composer.project.handler.newLocalProject" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.NewSampleLocalProjectHandler" command="_Rfc6YINREeiEhcbJpZFcgQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_VD4-8OyjEei5BYFXUmB7Aw" elementId="com.kms.katalon.composer.project.handler.projectCreated" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.ProjectCreatedHandler" command="_MeB8YOyjEei5BYFXUmB7Aw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_cyjp0Bx1EeShZZ1PXPrY1w" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:5">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_8pdzkAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.menu.submenu.project.clean" label="Clean up..." iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/clean_project_16.png" tooltip="" command="_NI-S8AmgEeWmsZWUQ_5cNA"/>

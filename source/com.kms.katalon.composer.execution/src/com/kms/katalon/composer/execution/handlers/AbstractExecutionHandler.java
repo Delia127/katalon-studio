@@ -233,6 +233,7 @@ public abstract class AbstractExecutionHandler {
         try {
             AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
                     projectDir);
+           
             if (runConfiguration == null) {
                 return;
             }
@@ -283,6 +284,7 @@ public abstract class AbstractExecutionHandler {
                     monitor.subTask(
                             ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE);
                     LauncherManager launcherManager = LauncherManager.getInstance();
+                    launcherManager.removeAllTerminated();
                     ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                     launcherManager.addLauncher(launcher);
 
@@ -352,6 +354,7 @@ public abstract class AbstractExecutionHandler {
 
                         monitor.subTask(StringConstants.HAND_JOB_LAUNCHING_TEST_SUITE);
                         LauncherManager launcherManager = LauncherManager.getInstance();
+                        launcherManager.removeAllTerminated();
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
 

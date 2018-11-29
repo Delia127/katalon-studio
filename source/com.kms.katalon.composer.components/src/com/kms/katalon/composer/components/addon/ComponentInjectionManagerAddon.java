@@ -8,14 +8,12 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
-import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.components.services.SelectionServiceSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 
@@ -26,9 +24,6 @@ public class ComponentInjectionManagerAddon {
 	
 	@Inject
 	private IEventBroker eventBroker;
-	
-	@Inject
-	private EPartService partService;
 	
 	@Inject 
 	private ESelectionService selectionService;
@@ -46,7 +41,6 @@ public class ComponentInjectionManagerAddon {
 	public void initHandlers() {
 		LoggerSingleton.getInstance().setLogger(logger);
 		EventBrokerSingleton.getInstance().setEventBroker(eventBroker);
-		PartServiceSingleton.getInstance().setPartService(partService);
 		SelectionServiceSingleton.getInstance().setSelectionService(selectionService);
 		ModelServiceSingleton.getInstance().setModelService(modelService);
 		ApplicationSingleton.getInstance().setApplication(application);

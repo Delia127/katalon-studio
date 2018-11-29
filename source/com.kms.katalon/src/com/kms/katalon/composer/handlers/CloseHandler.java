@@ -20,8 +20,8 @@ public class CloseHandler extends AbstractHandler {
 
     @Override
     public boolean canExecute() {
-        MPart part = partService.getActivePart();
-        return getCompositeParentPart(part, partService) != null || (part != null && part.isCloseable());
+        MPart part = getPartService().getActivePart();
+        return getCompositeParentPart(part, getPartService()) != null || (part != null && part.isCloseable());
     }
 
     private MPart getCompositeParentPart(MPart part, EPartService partService) {
@@ -39,12 +39,12 @@ public class CloseHandler extends AbstractHandler {
 
     @Override
     public void execute() {
-        MPart part = partService.getActivePart();
+        MPart part = getPartService().getActivePart();
 
-        MPart parentCompositePart = getCompositeParentPart(part, partService);
+        MPart parentCompositePart = getCompositeParentPart(part, getPartService());
         if (parentCompositePart != null) {
-            if (partService.savePart(parentCompositePart, true)) {
-                partService.hidePart(parentCompositePart);
+            if (getPartService().savePart(parentCompositePart, true)) {
+            	getPartService().hidePart(parentCompositePart);
 
                 if (parentCompositePart instanceof IComposerPart) {
                     eventBroker.post(EventConstants.WORKSPACE_DRAFT_PART_CLOSED,
@@ -55,8 +55,8 @@ public class CloseHandler extends AbstractHandler {
             if (part.getObject() instanceof CompatibilityEditor) {
                 part = ((CompatibilityEditor) part.getObject()).getModel();
             }
-            if (partService.savePart(part, true)) {
-                partService.hidePart(part);
+            if (getPartService().savePart(part, true)) {
+                getPartService().hidePart(part);
             }
             if (part instanceof IComposerPart) {
                 eventBroker.post(EventConstants.WORKSPACE_DRAFT_PART_CLOSED,

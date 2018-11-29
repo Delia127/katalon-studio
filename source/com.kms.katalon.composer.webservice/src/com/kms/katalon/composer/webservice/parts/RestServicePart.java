@@ -311,6 +311,7 @@ public class RestServicePart extends WebServicePart {
 
     private void updateRequestUrlWithNewParams(List<WebElementPropertyEntity> paramProperties) {
         List<NameValuePair> params = toNameValuePair(paramProperties);
+        urlBuilder = new URLBuilder();
         urlBuilder.setParameters(params);
         try {
             String newUrl = urlBuilder.build().toString();
@@ -391,6 +392,9 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void preSaving() {
+        tblParams.removeEmptyProperty();
+        updateRequestUrlWithNewParams(tblParams.getInput());
+        
         originalWsObject.setRestUrl(wsApiControl.getRequestURL());
         String requestMethod = wsApiControl.getRequestMethod();
         originalWsObject.setRestRequestMethod(requestMethod);

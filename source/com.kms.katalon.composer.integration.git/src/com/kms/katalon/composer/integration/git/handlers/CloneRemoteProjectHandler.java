@@ -207,7 +207,8 @@ public class CloneRemoteProjectHandler {
             ProjectEntity project = updateProject(projectFile);
             
             Trackings.trackCreatingSampleProject(sample.getName(), project.getUUID(), projectType);
-            
+            EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.PROJECT_CREATED,
+            		project);
             OpenProjectHandler.doOpenProject(null, projectFile.getAbsolutePath(),
 
                     UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),

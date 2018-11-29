@@ -29,18 +29,15 @@ public class XmlLogRecord extends LogRecord implements Serializable {
     }
 
     public XmlLogRecord(Level level, String message, int nestedLevel) {
-        super(level, message);
-        setLevel(level);
-        setMessage(message);
+        this(level, message);
         setNestedLevel(nestedLevel);
     }
 
     public XmlLogRecord(Level level, String message, int nestedLevel, Map<String, String> properties) {
-        super(level, message);
-        setLevel(level);
-        setMessage(message);
-        setNestedLevel(nestedLevel);
-        setProperties(properties);
+        this(level, message, nestedLevel);
+        if (properties != null) {
+            setProperties(properties);
+        }
     }
 
     public String getMethod() {

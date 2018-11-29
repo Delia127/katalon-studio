@@ -76,6 +76,10 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.fasterxml.jackson.module.jackson-module-jaxb-annotations,
  com.fasterxml.woodstox.woodstox-core,
  stax2-api,
- org.eclipse.osgi.services
-Export-Package: com.kms.katalon.composer.webservice.parser,
- com.kms.katalon.composer.webservice.util
+ org.eclipse.osgi.services,
+ com.kms.katalon.ansiconsole
+Export-Package: com.kms.katalon.composer.webservice.constants,
+ com.kms.katalon.composer.webservice.util,
+ com.kms.katalon.composer.webservice.editor,
+ com.kms.katalon.composer.webservice.parser
+ 

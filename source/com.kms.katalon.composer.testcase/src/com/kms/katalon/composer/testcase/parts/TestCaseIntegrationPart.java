@@ -57,7 +57,7 @@ public class TestCaseIntegrationPart {
 		toolBarComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
 		toolBar = new ToolBar(toolBarComposite, SWT.FLAT | SWT.VERTICAL);
-		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
 		container = new Composite(mainComposite, SWT.NONE);
 		container.setLayout(new FillLayout(SWT.HORIZONTAL));

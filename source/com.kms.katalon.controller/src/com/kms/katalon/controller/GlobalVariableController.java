@@ -4,6 +4,8 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -130,6 +132,10 @@ public class GlobalVariableController extends EntityController {
             }
         });
         return profiles;
+    }
+    
+    public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws DALException{
+    	return getDataProviderSetting().getEntityDataProvider().toEntity(xmlString, ExecutionProfileEntity.class);
     }
 
     public ExecutionProfileEntity copyProfile(ExecutionProfileEntity profileEntity) throws Exception {

@@ -15,11 +15,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -28,7 +30,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -57,6 +58,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -123,14 +125,21 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
+import com.kms.katalon.execution.collector.RunConfigurationCollector;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
+import com.kms.katalon.execution.configuration.IDriverConnector;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.configuration.contributor.CustomRunConfigurationContributor;
 import com.kms.katalon.execution.webservice.RecordingScriptGenerator;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
@@ -164,11 +173,10 @@ import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
-@SuppressWarnings("restriction")
 public class RecorderDialog extends AbstractDialog implements EventHandler, EventManager<ObjectSpyEvent> {
 	private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
 
-	private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
+	private static final String RELATIVE_PATH_TO_IE_ADDON_SETUP = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
 			+ File.separator + RecordSession.RECORDER_ADDON_NAME + File.separator + "setup.exe"; //$NON-NLS-1$
 
 	private static final String RESOURCES_FOLDER_NAME = "resources"; //$NON-NLS-1$
@@ -191,14 +199,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static Point MIN_DIALOG_SIZE = new Point(600, 800);
 
-
     static {
         RECORD_SESSION_ID = UUID.randomUUID().toString();
     }
 
     private HTMLElementRecorderServer server;
-
-    private Logger logger = LoggerSingleton.getInstance().getLogger();
 
     private List<WebPage> elements;
 
@@ -214,7 +219,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private SaveToObjectRepositoryDialogResult targetFolderSelectionResult;
 
-    private WebUIDriverType selectedBrowser;
+    private IDriverConnector selectedBrowser;
 
     private Text txtStartUrl;
 
@@ -256,17 +261,17 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public RecorderDialog(Shell parentShell, TestCaseEntity testCaseEntity, List<? extends ASTNodeWrapper> nodeWrappers,
             List<VariableEntity> variables) {
         super(parentShell);
+        this.nodeWrappers = nodeWrappers;
+        this.variables = variables;
+        this.testCaseEntity = testCaseEntity;
         store = PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
-        setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
         elements = new ArrayList<>();
         recordedActions = new ArrayList<HTMLActionMapping>();
         isPauseRecording = false;
         disposed = false;
+        setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
         registerEventListener();
         startSocketServer();
-        this.nodeWrappers = nodeWrappers;
-        this.variables = variables;
-        this.testCaseEntity = testCaseEntity;
     }
 
     private void registerEventListener() {
@@ -282,7 +287,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected int getShellStyle() {
         boolean onTop = store.getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW);
-        if (onTop) {
+        if (onTop && !Platform.OS_LINUX.equals(Platform.getOS())) {
             return SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER;
         } else {
             return SWT.SHELL_TRIM | SWT.CENTER;
@@ -304,21 +309,20 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         } catch (InterruptedException e) {
             // Ignore this
         }
-    }
+    }  
 
     private void startBrowser() {
         startBrowser(false);
     }    
     
     private void startBrowser(boolean isInstant) {
-        if (!BrowserUtil.isBrowserInstalled(selectedBrowser)) {
+        if (!BrowserUtil.isBrowserInstalled(getSelectedBrowserType())) {
             MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
                     ComposerWebuiRecorderMessageConstants.DIA_MSG_CANNOT_START_BROWSER);
             return;
         }
-        try {
-        	
-            if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
+        try {    	
+            if (getSelectedBrowserType() == WebUIDriverType.IE_DRIVER) {
             	isUsingIE = true;
                 checkIEAddon();
             }else{
@@ -330,7 +334,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
             } else {            	
                 startServer();
-                startRecordSession(selectedBrowser);
+                startRecordSession();
                 invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
             }
             if (!isPauseRecording) {
@@ -341,7 +345,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmStop.setEnabled(true);
             resume();
             resetInput();
-            Trackings.trackWebRecord(selectedBrowser, isInstant, getWebLocatorConfig());
+            Trackings.trackWebRecord(getSelectedBrowserType(), isInstant, getWebLocatorConfig());
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -352,20 +356,20 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 LoggerSingleton.logError(iOException);
             }
         } catch (Exception e) {
-            logger.error(e);
+            LoggerSingleton.logError(e);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
     }
 
     private void startInstantSession() throws Exception {
-        if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
+        if (getSelectedBrowserType() == WebUIDriverType.IE_DRIVER) {
             runInstantIE();
         }
-        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(selectedBrowser.toString());
+        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(getSelectedBrowserType().toString());
         if (currentInstantSocket == null) {
             return;
         }
-        Win32Helper.switchFocusToBrowser(selectedBrowser);
+        Win32Helper.switchFocusToBrowser(getSelectedBrowserType());
         currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
     }
 
@@ -376,8 +380,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     protected void runInstantIE() throws Exception {
-        session = new RecordSession(server, selectedBrowser, ProjectController.getInstance().getCurrentProject(),
-                logger);
+        session = new RecordSession(server, selectedBrowser);
         session.setupIE();
         HWND hwnd = User32.INSTANCE.FindWindow(IE_WINDOW_CLASS, null);
         if (hwnd == null) {
@@ -433,7 +436,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void runIEAddonInstaller() throws IOException {
-        String ieAddonSetupPath = getResourcesDirectory().getAbsolutePath() + relativePathToIEAddonSetup;
+        String ieAddonSetupPath = getResourcesDirectory().getAbsolutePath() + RELATIVE_PATH_TO_IE_ADDON_SETUP;
         Desktop desktop = Desktop.getDesktop();
         if (!Desktop.isDesktopSupported()) {
             return;
@@ -442,15 +445,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void resetInput() {
-        // elements.clear();
         recordedActions.clear();
-        // actionTableViewer.refresh();
     }
 
-    private void startRecordSession(WebUIDriverType webUiDriverType) throws Exception {
+    private void startRecordSession() throws Exception {
         stopRecordSession();
-        session = new RecordSession(server, webUiDriverType, ProjectController.getInstance().getCurrentProject(),
-                logger, txtStartUrl.getText());
+        session = new RecordSession(server, selectedBrowser, txtStartUrl.getText());
         session.addBrowserStoppedListener(new BrowserStoppedListener() {
 
             @Override
@@ -465,9 +465,15 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         new Thread(session).start();
     }
 
-    private WebUIDriverType getWebUIDriver() {
-        return WebUIDriverType.fromStringValue(
-                getPreferenceStore().getString(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_BROWSER));
+    private IDriverConnector getDefaultBrowser() {
+        try {
+            WebUIDriverType browserType = WebUIDriverType.fromStringValue(getPreferenceStore().getString(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_BROWSER));
+            return WebUIExecutionUtil.getBrowserDriverConnector(browserType, ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
+        }
+        return null;
     }
 
     private ScopedPreferenceStore getPreferenceStore() {
@@ -481,7 +487,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 		}
 		stopServer();
 		try {
-			server = new HTMLElementRecorderServer(port, logger, this, RecorderAddonSocket.class);
+			server = new HTMLElementRecorderServer(port, this, RecorderAddonSocket.class);
 			server.start();
 		} catch (BindException e) {
 			MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE,
@@ -611,7 +617,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         capturedObjectComposite.addListener(objectPropertiesView,
                 Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
-        // capturedObjectComposite.addListener(this, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
 
         selectorEditor.addListener(verifyView, Arrays.asList(ObjectSpyEvent.SELECTOR_HAS_CHANGED));
         objectPropertiesView.addListener(selectorEditor, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
@@ -1164,17 +1169,18 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 }
             }
         });
-
+        // set default browser
+        selectedBrowser = getDefaultBrowser();
+        
         toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
         toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
         toolItemBrowserDropdown.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_START_RECORDING);
-        toolItemBrowserDropdown.setImage(getWebUIDriverToolItemImage(getWebUIDriver()));
+        toolItemBrowserDropdown.setImage(getWebUIDriverToolItemImage(getSelectedBrowserType()));
         Dropdown dropdown = new Dropdown(getShell());
         createDropdownContent(dropdown);
-        // set default browser
-        selectedBrowser = getWebUIDriver();
+        
         toolItemBrowserDropdown.addSelectionListener(new DropdownItemSelectionListener(dropdown) {
 
             @Override
@@ -1226,9 +1232,51 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 ImageManager.getImage(IImageKeys.ACTIVE_BROWSER_16));
         addActiveBrowserItem(activeBrowser, WebUIDriverType.CHROME_DRIVER);
         addActiveBrowserItem(activeBrowser, WebUIDriverType.FIREFOX_DRIVER);
+        
+        DropdownGroup customCapabilities = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_CUSTOM_BROWSERS, null);
+        addCustomCapabilitiesItem(customCapabilities);
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             addNewBrowserItem(newBrowser, WebUIDriverType.IE_DRIVER);
         }
+    }
+    
+    private void addCustomCapabilitiesItem(DropdownGroup customCapabilities) {
+        boolean isAdded = false;
+
+        for (CustomRunConfigurationContributor customRunConfigContributor : RunConfigurationCollector.getInstance()
+                .getAllCustomRunConfigurationContributors()) {
+            IDriverConnector driverConnector = getBrowser(customRunConfigContributor);
+            customCapabilities.addItem(customRunConfigContributor.getId(), null,
+                    new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            if (driverConnector != null) {
+                                changeBrowser(driverConnector);
+                                startBrowser();
+                            }
+                        }
+                    });
+            isAdded = true;
+        }
+        if (!isAdded) {
+            customCapabilities.addItem("Empty", null, new SelectionAdapter() {});
+        }
+    }
+    
+    private IDriverConnector getBrowser(CustomRunConfigurationContributor customRunConfigContributor) {
+        IRunConfiguration runConfiguration = null;
+        
+        try {
+            runConfiguration = (AbstractRunConfiguration) customRunConfigContributor
+                    .getRunConfiguration(ProjectController.getInstance().getCurrentProject().getFolderLocation());      
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        } 
+        
+        return Optional.ofNullable(runConfiguration)
+                .map(IRunConfiguration::getDriverConnectors)
+                .map(driverConnectors -> driverConnectors.get(DriverFactory.WEB_UI_DRIVER_PROPERTY))
+                .orElse(null);
     }
 
     private void addNewBrowserItem(DropdownGroup newBrowserGroup, WebUIDriverType webUIDriverType) {
@@ -1309,10 +1357,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
                     private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
                         String url = getAddonUrl(webUIDriverType);
-                        if (url == null || !Desktop.isDesktopSupported()) {
+                        if (StringUtils.isEmpty(url)) {
                             return;
                         }
-                        Desktop.getDesktop().browse(new URI(url));
+                        Program.launch(url);
                     }
 
                     private String getAddonUrl(final WebUIDriverType webUIDriverType) {
@@ -1337,23 +1385,37 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             stopRecordSession();
             closeInstantSession();
         } catch (Exception e) {
-            logger.error(e);
+            LoggerSingleton.logError(e);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
         resume();
         tltmPauseAndResume.setEnabled(false);
         tltmStop.setEnabled(false);
     }
-
+  
     private void changeBrowser(final WebUIDriverType browserType) {
         changeBrowser(browserType, false);
     }
+    
+    private void changeBrowser(final WebUIDriverType browserType, final boolean isInstant) {     
+        try {
+            IDriverConnector driverConnector = WebUIExecutionUtil.getBrowserDriverConnector(browserType, ProjectController.getInstance().getCurrentProject().getFolderLocation());
+            changeBrowser(driverConnector, isInstant);
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
+        }     
+    }
+    
+    private void changeBrowser(IDriverConnector driverConnector) {
+        changeBrowser(driverConnector, false);
+    }
 
-    private void changeBrowser(final WebUIDriverType browserType, final boolean isInstant) {
-        if (browserType == null) {
+    private void changeBrowser(final IDriverConnector driverConnector, final boolean isInstant) {
+        if (driverConnector == null) {
             return;
         }
-        selectedBrowser = browserType;
+        selectedBrowser = driverConnector;
         UISynchronizeService.getInstance().getSync().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -1363,7 +1425,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                     label = StringConstants.ACTIVE_BROWSER_PREFIX;
                 }
                 toolItemBrowserDropdown.setText(label);
-                toolItemBrowserDropdown.setImage(getWebUIDriverToolItemImage(browserType));
+                toolItemBrowserDropdown.setImage(getWebUIDriverToolItemImage(getSelectedBrowserType()));
                 // reload layout
                 toolItemBrowserDropdown.getParent().getParent().layout(true, true);
             }
@@ -1412,7 +1474,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             try {
                 server.stop();
             } catch (Exception e) {
-                logger.error(e);
+                LoggerSingleton.logError(e);
             }
         }
         eventBroker.unsubscribe(this);
@@ -1486,7 +1548,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             
             Trackings.trackCloseWebRecord("ok", stepCount, getWebLocatorConfig());
         } catch (Exception exception) {
-            logger.error(exception);
+            LoggerSingleton.logError(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
         } 
     }
@@ -1541,7 +1603,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             try {
                 Trackings.trackCloseWebRecord("cancel", 0, getWebLocatorConfig());
             } catch (IOException e) {
-                logger.error(e);
+                LoggerSingleton.logError(e);
             }
         }
         return result;
@@ -1549,7 +1611,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void updateStore() {
         store.setValue(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_URL, txtStartUrl.getText());
-        store.setValue(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_BROWSER, selectedBrowser.toString());
+        store.setValue(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_BROWSER, getSelectedBrowserType().toString());
         try {
             store.save();
         } catch (IOException e) {
@@ -1845,7 +1907,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         try {
             Trackings.trackOpenWebRecord(continueRecording, getWebLocatorConfig());
         } catch (IOException e) {
-            logger.error(e);
+            LoggerSingleton.logError(e);
         }
     }
     
@@ -1944,6 +2006,13 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     public VariableEntity[] getVariables() {
         return recordStepsView.getVariables();
+    }
+    
+    private WebUIDriverType getSelectedBrowserType() {
+        if (selectedBrowser == null || !(selectedBrowser.getDriverType() instanceof WebUIDriverType)) {
+            return null;
+        }
+        return (WebUIDriverType) selectedBrowser.getDriverType();
     }
 
 }

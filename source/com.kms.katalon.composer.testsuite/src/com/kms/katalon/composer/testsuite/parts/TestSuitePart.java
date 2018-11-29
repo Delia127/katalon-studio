@@ -497,7 +497,6 @@ public class TestSuitePart implements EventHandler {
 
         radioUserDefinePageLoadTimeout = new Button(grpPageLoadTimeout, SWT.RADIO);
         GridData gd_radioUserDefinePageLoadTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_radioUserDefinePageLoadTimeout.widthHint = 83;
         radioUserDefinePageLoadTimeout.setLayoutData(gd_radioUserDefinePageLoadTimeout);
         radioUserDefinePageLoadTimeout.setText(StringConstants.PA_LBL_USER_DEFINE);
 

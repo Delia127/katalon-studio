@@ -21,6 +21,16 @@ public class ImageProcessor {
         registerCommonImages();
         registerRecorderImages();
         registerHistoryRequestImages();
+        registerApiQuickStartImages();
+    }
+    
+    private void registerApiQuickStartImages() {
+        ImageManager.registerImage(IImageKeys.API_QUICKSTART_BACKGROUND);
+        ImageManager.registerImage(IImageKeys.NEW_DRAFT_REST_REQUEST);
+        ImageManager.registerImage(IImageKeys.NEW_DRAFT_SOAP_REQUEST);
+        ImageManager.registerImage(IImageKeys.IMPORT_SWAGGER);
+        ImageManager.registerImage(IImageKeys.IMPORT_WSDL);
+        ImageManager.registerImage(IImageKeys.API_QUICKSTART_BACKGROUND_LEFT);
     }
 
     private void registerHistoryRequestImages() {
@@ -220,6 +230,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_FEATURE_16);
         ImageManager.registerImage(IImageKeys.FOLDER_SOURCE_16);
+        ImageManager.registerImage(IImageKeys.CONFIG_16);
         ImageManager.registerImage(IImageKeys.GROOVY_16);
     }
 

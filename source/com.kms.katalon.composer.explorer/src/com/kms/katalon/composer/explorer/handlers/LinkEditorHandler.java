@@ -32,7 +32,7 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.ExplorerPreferenceConstants;
-import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -142,7 +142,7 @@ public class LinkEditorHandler implements EventHandler {
     }
 
     private KeywordTreeEntity getKeywordTreeEntity(MPart mpart) throws Exception {
-        IEditorPart editorPart = GroovyEditorUtil.getEditor(mpart);
+        IEditorPart editorPart = editor.getEditor(mpart);
         if (editorPart != null) {
             IJavaElement elem = JavaUI.getEditorInputJavaElement(editorPart.getEditorInput());
             if (elem instanceof GroovyCompilationUnit && elem.getParent() instanceof IPackageFragment) {

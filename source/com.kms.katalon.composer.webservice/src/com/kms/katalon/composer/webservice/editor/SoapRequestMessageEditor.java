@@ -8,8 +8,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.impl.constants.TextContentType;
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
+import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
-import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.composer.webservice.parts.SoapServicePart;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
@@ -41,6 +43,7 @@ public class SoapRequestMessageEditor extends Composite {
                 handleControlModifyListeners();
             }
         });
+        
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginTop = 5;
         bodyContentComposite.setLayout(gridLayout);
@@ -67,7 +70,7 @@ public class SoapRequestMessageEditor extends Composite {
         });
 
         mirrorEditor.addListener(SWT.Modify, event -> {
-            servicePart.updateDirty(true);
+            servicePart.setDirty(true);
         });
     }
 

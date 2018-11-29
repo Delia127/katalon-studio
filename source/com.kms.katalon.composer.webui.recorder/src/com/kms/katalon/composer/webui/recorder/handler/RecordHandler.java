@@ -38,7 +38,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
-import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
@@ -59,7 +58,6 @@ import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjec
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
-import com.kms.katalon.tracking.service.Trackings;
 
 public class RecordHandler {
 
@@ -155,7 +153,8 @@ public class RecordHandler {
     }
 
     private Shell getShell(Shell activeShell) {
-        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+        String os = Platform.getOS();
+        if (Platform.OS_WIN32.equals(os) || Platform.OS_LINUX.equals(os)) {
             return null;
         }
         Shell shell = new Shell();

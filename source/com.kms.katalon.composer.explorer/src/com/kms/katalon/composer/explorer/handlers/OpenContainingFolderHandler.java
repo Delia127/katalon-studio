@@ -1,12 +1,12 @@
 package com.kms.katalon.composer.explorer.handlers;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.util.List;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.handler.CommonExplorerHandler;
@@ -53,7 +53,7 @@ public class OpenContainingFolderHandler extends CommonExplorerHandler {
             }
             ITreeEntity treeEntity = treeEntities.get(0);
             String parent = getParentFolderLocation(treeEntity);
-            Desktop.getDesktop().open(new File(parent));
+            Program.launch(new File(parent).toURI().toString());
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), GlobalMessageConstants.ERROR,
                     ComposerExplorerMessageConstants.ERROR_CANNOT_FIND_CONTAINING_FOLDER);

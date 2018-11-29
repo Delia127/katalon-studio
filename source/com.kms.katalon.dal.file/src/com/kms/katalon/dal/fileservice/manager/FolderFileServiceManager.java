@@ -61,6 +61,7 @@ public class FolderFileServiceManager {
             initRootFolder(FileServiceConstant.getSourceFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getGroovyScriptFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getFeatureFolderLocation(projectFolderLocation));
+            initRootFolder(FileServiceConstant.getConfigFolderLocation(projectFolderLocation));
         }
     }
 

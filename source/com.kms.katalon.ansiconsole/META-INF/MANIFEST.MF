@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ansi Console
+Bundle-SymbolicName: com.kms.katalon.ansiconsole;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: mnita.ansiconsole.AnsiConsoleActivator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.console,
+ org.eclipse.ui.ide,
+ org.eclipse.core.filesystem,
+ com.kms.katalon.composer.components.impl,
+ org.eclipse.jface.text,
+ com.kms.katalon.tracking
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: KMS
+Export-Package: com.kms.katalon.ansiconsole.listeners,
+ mnita.ansiconsole.participants

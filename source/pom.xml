@@ -91,6 +91,8 @@
 		<module>com.kms.katalon.selenium.ide</module>
 		<module>com.kms.katalon.tracking</module>
 		<module>com.kms.katalon.tracking.service</module>
+		<module>com.kms.katalon.ansiconsole</module>
+		<module>com.kms.katalon.netlightbody</module>
 	</modules>
 
 	<properties>
@@ -138,7 +140,6 @@
 			<url>${cucumberRepo}</url>
 			<layout>p2</layout>
 		</repository>
-
 	</repositories>
 
 	<build>
@@ -269,8 +270,7 @@
 			<artifactId>jansi</artifactId>
 			<version>1.11</version>
 		</dependency>
-	</dependencies>
-	
+	</dependencies>	
 	<!-- Used to distinguish between staging and production build -->
    	<profiles>
         	<profile>
@@ -290,3 +290,4 @@
         	</profile>
    	</profiles>
 </project> 
+

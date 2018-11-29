@@ -51,3 +51,4 @@ Require-Bundle: org.eclipse.e4.core.services,
  org.eclipse.ui.workbench.texteditor,
  com.kms.katalon.composer.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: com.kms.katalon.composer.testcase.providers

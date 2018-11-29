@@ -1,6 +1,8 @@
 ##  Development environment build
 - Check out source code from Git to your local, please make sure you have all Katalon plug-ins (sub projects with prefix names "com.kms.katalon...") under "source" folder
 
+- A pre-configured Eclipse is available at https://drive.google.com/file/d/1lop6gcc3xHEHKJL7oqEaoR6MaNnl4AKH/view?usp=sharing
+
 - Get Eclipse RCP version 4.6.0 at https://www.eclipse.org/downloads/packages/release/neon/3
 
 - Go to Installation Details and *UNINSTALL* EGit 4.6

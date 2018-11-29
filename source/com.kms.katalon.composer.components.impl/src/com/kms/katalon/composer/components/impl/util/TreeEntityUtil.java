@@ -2,7 +2,7 @@ package com.kms.katalon.composer.components.impl.util;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -60,51 +60,51 @@ import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TreeEntityUtil {
-    public static Object[] getChildren(FolderTreeEntity folderTreeEntity) throws Exception {
+    public static ITreeEntity[] getChildren(FolderTreeEntity folderTreeEntity) throws Exception {
         if (folderTreeEntity.getObject() instanceof FolderEntity) {
             return getChildren(folderTreeEntity, folderTreeEntity.getObject());
         }
-        return Collections.emptyList().toArray();
+        return new ITreeEntity[0];
     }
 
-    public static Object[] getChildren(FolderTreeEntity folderTreeEntity, FolderEntity folder) throws Exception {
-        Object[] childrenEntities = FolderController.getInstance().getChildren(folder).toArray();
+    public static ITreeEntity[] getChildren(FolderTreeEntity folderTreeEntity, FolderEntity folder) throws Exception {
+        FileEntity[] childrenEntities = FolderController.getInstance().getChildren(folder).toArray(new FileEntity[0]);
 
+        List<ITreeEntity> treeEntities = new ArrayList<>();
         if (childrenEntities != null) {
             for (int i = 0; i < childrenEntities.length; i++) {
                 if (childrenEntities[i] instanceof FolderEntity) {
-                    childrenEntities[i] = new FolderTreeEntity((FolderEntity) childrenEntities[i], folderTreeEntity);
+                    treeEntities.add(new FolderTreeEntity((FolderEntity) childrenEntities[i], folderTreeEntity));
                 } else if (childrenEntities[i] instanceof TestCaseEntity) {
-                    childrenEntities[i] = new TestCaseTreeEntity((TestCaseEntity) childrenEntities[i],
-                            folderTreeEntity);
+                    treeEntities.add(new TestCaseTreeEntity((TestCaseEntity) childrenEntities[i],
+                            folderTreeEntity));
                 } else if (childrenEntities[i] instanceof TestSuiteEntity) {
-                    childrenEntities[i] = new TestSuiteTreeEntity((TestSuiteEntity) childrenEntities[i],
-                            folderTreeEntity);
+                    treeEntities.add(new TestSuiteTreeEntity((TestSuiteEntity) childrenEntities[i],
+                            folderTreeEntity));
                 } else if (childrenEntities[i] instanceof DataFileEntity) {
-                    childrenEntities[i] = new TestDataTreeEntity((DataFileEntity) childrenEntities[i],
-                            folderTreeEntity);
+                    treeEntities.add(new TestDataTreeEntity((DataFileEntity) childrenEntities[i],
+                            folderTreeEntity));
                 } else if (childrenEntities[i] instanceof WebElementEntity) {
-                    childrenEntities[i] = new WebElementTreeEntity((WebElementEntity) childrenEntities[i],
-                            folderTreeEntity);
+                    treeEntities.add(new WebElementTreeEntity((WebElementEntity) childrenEntities[i],
+                            folderTreeEntity));
                 } else if (childrenEntities[i] instanceof ReportEntity) {
-                    childrenEntities[i] = new ReportTreeEntity((ReportEntity) childrenEntities[i], folderTreeEntity);
+                    treeEntities.add(new ReportTreeEntity((ReportEntity) childrenEntities[i], folderTreeEntity));
                 } else if (childrenEntities[i] instanceof TestSuiteCollectionEntity) {
-                    childrenEntities[i] = new TestSuiteCollectionTreeEntity(
-                            (TestSuiteCollectionEntity) childrenEntities[i], folderTreeEntity);
+                    treeEntities.add(new TestSuiteCollectionTreeEntity(
+                            (TestSuiteCollectionEntity) childrenEntities[i], folderTreeEntity));
                 } else if (childrenEntities[i] instanceof ReportCollectionEntity) {
-                    childrenEntities[i] = new ReportCollectionTreeEntity((ReportCollectionEntity) childrenEntities[i],
-                            folderTreeEntity);
+                    treeEntities.add(new ReportCollectionTreeEntity((ReportCollectionEntity) childrenEntities[i],
+                            folderTreeEntity));
                 } else if (childrenEntities[i] instanceof CheckpointEntity) {
-                    childrenEntities[i] = new CheckpointTreeEntity((CheckpointEntity) childrenEntities[i],
-                            folderTreeEntity);
+                    treeEntities.add(new CheckpointTreeEntity((CheckpointEntity) childrenEntities[i],
+                            folderTreeEntity));
                 } else if (childrenEntities[i] instanceof SystemFileEntity) {
-                    childrenEntities[i] = new SystemFileTreeEntity((SystemFileEntity) childrenEntities[i],
-                            folderTreeEntity);
+                    treeEntities.add(new SystemFileTreeEntity((SystemFileEntity) childrenEntities[i],
+                            folderTreeEntity));
                 }
             }
-            return childrenEntities;
         }
-        return Collections.emptyList().toArray();
+        return treeEntities.toArray(new ITreeEntity[0]);
     }
 
     public static FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity,

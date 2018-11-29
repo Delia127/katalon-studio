@@ -1,9 +1,7 @@
 package com.kms.katalon.activation.dialog;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.security.GeneralSecurityException;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -19,6 +17,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -182,11 +181,7 @@ public class ActivationDialog extends Dialog {
         linkForgotPass.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent e) {
-                try {
-                    Desktop.getDesktop().browse(new URI(StringConstants.FORGOT_PASS_LINK));
-                } catch (Exception ex) {
-                    LogUtil.logError(ex);
-                }
+                Program.launch(StringConstants.FORGOT_PASS_LINK);
             }
         });
         linkRegister.addMouseListener(new MouseAdapter() {

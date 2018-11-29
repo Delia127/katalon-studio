@@ -582,6 +582,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
             @Override
             public void setDirty(boolean isDirty) {
+            	
             }
 
             @Override
@@ -602,8 +603,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         };
 
         webServiceRequestVariablesView = new TestCaseVariableView(webServiceRequestVariablesPart);
+        webServiceRequestVariablesView.setTestCasePart(testCasePart);
         webServiceRequestVariablesView.setInputValueTypes(webServiceRequestVariableInputValueTypes);
-        webServiceRequestVariablesView.setTestCasePart(getTestCasePart());
         webServiceRequestVariablesView.createComponents(composite);
 
         // hide "Masked" column

@@ -14,6 +14,7 @@ import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.listener.LauncherListener;
 import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
@@ -44,6 +45,9 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             ReportCollectionEntity reportCollection) {
         this.subLauncherManager = new TestSuiteCollectionLauncherManager();
         this.subLaunchers = subLaunchers;
+        for (ReportableLauncher subLauncher : subLaunchers) {
+        	subLauncher.setExecutionUUID(super.getExecutionUUID());
+        }
         this.result = new LauncherResult(executedEntity.getTotalTestCases());
         this.parentManager = parentManager;
         this.executedEntity = executedEntity;
@@ -108,6 +112,14 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         } catch (InterruptedException e) {
             LogUtil.logError(e);
         }
+    }
+    
+    @Override
+    public void setStatus(LauncherStatus status) {
+    	super.setStatus(status);
+    	ExecutionEntityResult executionResult = new ExecutionEntityResult();
+    	executionResult.setName(executedEntity.getSourceName());
+    	notifyProccess(status, executedEntity, executionResult);
     }
 
     @Override

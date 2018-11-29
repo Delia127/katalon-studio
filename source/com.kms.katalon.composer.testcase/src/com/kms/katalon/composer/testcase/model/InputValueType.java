@@ -74,11 +74,17 @@ public enum InputValueType implements InputValueEditorProvider {
         return true;
     }
     
+    // Use this to pass testCasePart's information (specifically about TestCaseVariable) to the editor
+    public CellEditor getCellEditorForValue(Composite parent, Object astObject, ITestCasePart testCasePart){
+    	switch(this){
+    		case Variable:
+    			return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject, testCasePart);
+			default:
+				return getCellEditorForValue(parent, astObject);
+    	}
+    }
+    
     public CellEditor getCellEditorForValue(Composite parent, Object astObject) {
-        return getCellEditorForValue(parent, astObject, null);
-    }    
-
-    public CellEditor getCellEditorForValue(Composite parent, Object astObject, ITestCasePart testCasePart) {
         switch (this) {
             case Binary:
                 return AstValueUtil.getCellEditorForBinaryExpression(parent, (BinaryExpressionWrapper) astObject);
@@ -122,7 +128,7 @@ public enum InputValueType implements InputValueEditorProvider {
             case Throwable:
                 return AstValueUtil.getCellEditorForThrowable(parent, (ConstructorCallExpressionWrapper) astObject);
             case Variable:
-                return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject, testCasePart);
+                return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject);
             case Key:
                 return AstValueUtil.getCellEditorForKeyExpression(parent);
             case Keys:

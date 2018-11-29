@@ -1,7 +1,7 @@
 package com.kms.katalon.integration.analytics.exceptions;
 
-public class AnalyticsApiExeception extends Exception {
     
+public class AnalyticsApiExeception extends Exception {
     private static final long serialVersionUID = 8383665386658750568L;
     
     private Throwable e;

@@ -5,15 +5,18 @@ import java.util.List;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
@@ -21,6 +24,7 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -35,7 +39,13 @@ import com.kms.katalon.tracking.service.Trackings;
 
 public class ApiQuickStartDialog extends Dialog {
 
-    private static final Point ITEM_IMG_SIZE = new Point(64, 64);
+    private static final Color RIGHT_PART_BACKGROUND_COLOR = ColorUtil.getColor("#F7F7F7");
+    
+    private static final Point DIALOG_SIZE = new Point(718, 699);
+    
+    private static final Point LEFT_PART_SIZE = new Point(468, 699);
+    
+    private static final Point QUICKSTART_ITEM_SIZE = new Point(200, 47);
 
     private ITreeEntity parentTreeEntity;
 
@@ -48,18 +58,100 @@ public class ApiQuickStartDialog extends Dialog {
     protected Control createDialogArea(Composite parent) {
         Composite body = new Composite(parent, SWT.NONE);
         GridData gdBody = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gdBody.widthHint = 380;
+//        gdBody.widthHint = DIALOG_SIZE.x;
+//        gdBody.heightHint = DIALOG_SIZE.y;
         body.setLayoutData(gdBody);
-        body.setLayout(new GridLayout(2, false));
+        GridLayout glBody = new GridLayout(2, false);
+        glBody.marginWidth = 0;
+        glBody.marginHeight = 0;
+        glBody.horizontalSpacing = 0;
+        glBody.verticalSpacing = 0;
+        body.setLayout(glBody);
 
-        createNewRestRequestItem(body);
-        createNewSoapRequestItem(body);
-        createImportRestRequestItem(body);
-        createImportSoapRequestItem(body);
+        createLeftPart(body);
+        createRightPart(body);
 
         return super.createDialogArea(parent);
     }
-
+    
+    public void createLeftPart(Composite parent) {
+        Composite leftComposite = new Composite(parent, SWT.NONE);
+        GridLayout glLeft = new GridLayout(1, false);
+        glLeft.marginWidth = 0;
+        glLeft.marginHeight = 0;
+        glLeft.horizontalSpacing = 0;
+        glLeft.verticalSpacing = 0;
+        leftComposite.setLayout(glLeft);
+        GridData gdLeft = new GridData(SWT.FILL, SWT.FILL, false, true);
+        gdLeft.widthHint = LEFT_PART_SIZE.x;
+        gdLeft.heightHint = LEFT_PART_SIZE.y;
+        leftComposite.setLayoutData(gdLeft);
+        
+        Image backgroundImg = ImageConstants.API_QUICKSTART_BACKGROUND_LEFT;
+        leftComposite.setBackgroundImage(backgroundImg);
+    }
+    
+    public void createRightPart(Composite parent) {
+        Composite rightComposite = new Composite(parent, SWT.NONE);
+        GridLayout glRight = new GridLayout(1, false);
+        glRight.marginWidth = 0;
+        glRight.marginHeight = 0;
+        glRight.marginTop = 100;
+        rightComposite.setLayout(glRight);
+        rightComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        rightComposite.setBackground(RIGHT_PART_BACKGROUND_COLOR);
+        
+        Composite quickStartItemComposite = new Composite(rightComposite, SWT.NONE);
+        GridLayout glQuickStartItemComposite = new GridLayout(1, false);
+        glQuickStartItemComposite.marginWidth = 0;
+        glQuickStartItemComposite.marginHeight = 0;
+        glQuickStartItemComposite.horizontalSpacing = 0;
+        glQuickStartItemComposite.verticalSpacing = 20;
+        quickStartItemComposite.setLayout(glQuickStartItemComposite);
+        quickStartItemComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        quickStartItemComposite.setBackground(RIGHT_PART_BACKGROUND_COLOR);
+        
+        createNewRestRequestItem(quickStartItemComposite);
+        createNewSoapRequestItem(quickStartItemComposite);
+        createImportRestRequestItem(quickStartItemComposite);
+        createImportSoapRequestItem(quickStartItemComposite);
+        
+        Composite closeComposite = new Composite(rightComposite, SWT.NONE);
+        GridLayout glClose = new GridLayout(1, false);
+        glClose.marginWidth = 0;
+        glClose.marginHeight = 0;
+        glClose.marginRight = 20;
+        glClose.marginBottom = 10;
+        closeComposite.setLayout(glClose);
+        closeComposite.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+        closeComposite.setBackground(RIGHT_PART_BACKGROUND_COLOR);
+        
+        Button btnClose = new Button(closeComposite, SWT.NONE);
+        btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false));
+        btnClose.setText(IDialogConstants.CLOSE_LABEL);
+        btnClose.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                ApiQuickStartDialog.this.close();
+            }
+        });
+    }
+    
+    private Composite createQuickStartItem(Composite parent, Image image, String toolTip, Listener selectionListener) {
+        CLabel lblItem = new CLabel(parent, SWT.NONE);
+        GridData gdItem = new GridData(SWT.CENTER, SWT.FILL, true, false);
+        gdItem.widthHint = QUICKSTART_ITEM_SIZE.x;
+        gdItem.heightHint = QUICKSTART_ITEM_SIZE.y;
+        lblItem.setLayoutData(gdItem);
+        lblItem.setToolTipText(toolTip);
+        lblItem.setBackground(RIGHT_PART_BACKGROUND_COLOR);
+        
+        lblItem.setBackground(image);
+        lblItem.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
+        lblItem.addListener(SWT.MouseDown, selectionListener);
+        return lblItem;
+    }
+    
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
@@ -67,66 +159,31 @@ public class ApiQuickStartDialog extends Dialog {
     }
 
     @Override
-    protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, true);
+    protected Control createButtonBar(Composite parent) {
+        return parent;
     }
 
     private Composite createNewRestRequestItem(Composite parent) {
-        Composite item = createQuickStartItem(parent, ImageConstants.WS_NEW_REST_REQUEST_64,
+        Composite item = createQuickStartItem(parent, ImageConstants.NEW_DRAFT_REST_REQUEST,
                 StringConstants.QUICKSTART_NEW_DRAFT_REST_REQUEST, e -> createNewRestRequest());
         return item;
     }
 
     private Composite createNewSoapRequestItem(Composite parent) {
-        Composite item = createQuickStartItem(parent, ImageConstants.WS_NEW_SOAP_REQUEST_64,
+        Composite item = createQuickStartItem(parent, ImageConstants.NEW_DRAFT_SOAP_REQUEST,
                 StringConstants.QUICKSTART_NEW_DRAFT_SOAP_REQUEST, e -> createNewSoapRequest());
         return item;
     }
 
     private Composite createImportRestRequestItem(Composite parent) {
-        Composite item = createQuickStartItem(parent, ImageConstants.WS_IMPORT_REST_REQUEST_64,
+        Composite item = createQuickStartItem(parent, ImageConstants.IMPORT_SWAGGER,
                 StringConstants.QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL, e -> importSwaggerFromFileOrUrl());
         return item;
     }
 
     private Composite createImportSoapRequestItem(Composite parent) {
-        Composite item = createQuickStartItem(parent, ImageConstants.WS_IMPORT_SOAP_REQUEST_64,
+        Composite item = createQuickStartItem(parent, ImageConstants.IMPORT_WSDL,
                 StringConstants.QUICKSTART_IMPORT_WSDL_FROM_FILE_OR_URL, e -> importWsdlFromUrl());
-        return item;
-    }
-
-    private Composite createQuickStartItem(Composite parent, Image image, String text, Listener selectionListener) {
-        Composite item = new Composite(parent, SWT.NONE);
-        item.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        GridLayout glItem = new GridLayout(1, false);
-        glItem.marginTop = 10;
-        item.setLayout(glItem);
-        item.setBackground(parent.getBackground());
-        item.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
-        item.addListener(SWT.MouseDown, selectionListener);
-
-        Composite imgComposite = new Composite(item, SWT.NONE);
-        GridData gdImg = new GridData(SWT.CENTER, SWT.FILL, true, true);
-        gdImg.widthHint = ITEM_IMG_SIZE.x;
-        gdImg.heightHint = ITEM_IMG_SIZE.y;
-        imgComposite.setLayoutData(gdImg);
-        GridLayout glImg = new GridLayout(1, false);
-        imgComposite.setLayout(glImg);
-        imgComposite.addPaintListener(e -> {
-            e.gc.drawImage(image, 0, 0);
-        });
-        imgComposite.setToolTipText(text);
-        imgComposite.addListener(SWT.MouseDown, selectionListener);
-        
-        Color textColor = Display.getCurrent().getSystemColor(SWT.COLOR_BLUE);
-
-        Label lblItemText = new Label(item, SWT.NONE);
-        lblItemText.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
-        lblItemText.setText(text);
-        lblItemText.setForeground(textColor);
-        lblItemText.setBackground(item.getBackground());
-        lblItemText.addListener(SWT.MouseDown, selectionListener);
-
         return item;
     }
 
@@ -206,5 +263,10 @@ public class ApiQuickStartDialog extends Dialog {
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);
 		}
+    }
+    
+    @Override
+    protected Point getInitialSize() {
+        return getShell().computeSize(700, 680);
     }
 }

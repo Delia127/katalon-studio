@@ -83,6 +83,7 @@ public class ExecuteTestCaseJob extends Job {
     
     protected void startLauncher() {
         LauncherManager launcherManager = LauncherManager.getInstance();
+        launcherManager.removeAllTerminated();
         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
         launcherManager.addLauncher(launcher);
     }

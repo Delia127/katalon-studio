@@ -69,7 +69,7 @@ public class GetWindowIndexKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public int getWindowIndex(FailureHandling flowControl) throws StepFailedException {
         return WebUIKeywordMain.runKeywordAndReturnInt({
-            logger.logInfo(StringConstants.KW_LOG_INFO_GETTING_CURR_WINDOW_INDEX)
+            logger.logDebug(StringConstants.KW_LOG_INFO_GETTING_CURR_WINDOW_INDEX)
             int windowIndex = DriverFactory.getCurrentWindowIndex()
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CURR_WINDOW_INDEX, windowIndex))
             return windowIndex

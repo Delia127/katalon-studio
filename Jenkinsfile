@@ -1,51 +1,59 @@
+import hudson.model.Result
+import hudson.model.Run
+import jenkins.model.CauseOfInterruption.UserInterruption
+
 pipeline {
     agent any
-
+   
     tools {
         maven 'default'
     }
-
+    
     stages {
-        stage('Checkout') {
-            // checkout code
-            options {
-                retry(3)
-            }
+        stage('Prepare') {
             steps {
-                checkout scm
-            }
-        }
-
-
-        stage('Set permissions to source') {
-            // set write permissions to current workspace
-            steps {
-                sh '''sudo chmod -R 777 ${WORKSPACE}'''
-            }
-        }
-
-        stage('Setup Maven repositories') {
-            // start maven commands to get dependencies
-            steps {
-                dir("tools") {
-                    sh ''' ./start-dev-server.sh '''
+                script {
+                    abortPreviousBuilds()          
                 }
             }
         }
 
-        stage('Compile & Build') {
-            // generate Katalon builds
+        stage('Set permissions to source') {
             steps {
-                echo "Maven version is:"
-                sh "mvn --version"
-                echo "Wait 60 seconds to start maven services successfully"
-                sleep 60
+                sh '''chmod -R 777 ${WORKSPACE}'''
+            }
+        }
+
+        stage('Building') {
+            // start maven commands to get dependencies
+            steps {
+                sh 'ulimit -c unlimited'
+                sh 'cd source/com.kms.katalon.repo && mvn p2:site'
+                sh 'cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &'
+                sh '''
+                    until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
+                        printf '.'
+                        cat /tmp/9999.log
+                        sleep 5
+                    done
+                '''
+
+                sh 'cd source/com.kms.katalon.p2site && nohup mvn -Djetty.port=33333 jetty:run > /tmp/33333.log &'
+                sh '''
+                    until $(curl --output /dev/null --silent --head --fail http://localhost:33333/site); do
+                        printf '.'
+                        cat /tmp/33333.log
+                        sleep 5
+                    done
+                '''
+                
+             // generate katalon builds   
                 script {
                     dir("source") {
-                        if (BRANCH_NAME.findAll(/^[release]+/)) {
+                        if (BRANCH_NAME ==~ /^[release]+/) {
                             sh ''' mvn clean verify -P prod '''
-                        } else {
-                            sh ''' mvn clean verify -P dev '''
+                        } else {                      
+                            sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
                         }
                     }
                 }
@@ -55,7 +63,7 @@ pipeline {
         stage('Copy builds') {
             // copy generated builds and changelogs to shared folder on server
             steps {
-                dir("source/com.kms.katalon.product/target/products") {
+                dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
                         String tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
                         writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
@@ -101,6 +109,23 @@ pipeline {
         timeout(time: 60, unit: 'MINUTES')
         // wait 10 seconds before starting scheduled build
         quietPeriod 10
+    }
+}
+
+def abortPreviousBuilds() {
+    Run previousBuild = currentBuild.rawBuild.getPreviousBuildInProgress()
+    
+    while (previousBuild != null) {
+        if (previousBuild.isInProgress()) {
+            def executor = previousBuild.getExecutor()
+            if (executor != null) {
+                echo ">> Aborting older build #${previousBuild.number}"
+                executor.interrupt(Result.ABORTED, new UserInterruption(
+                    "Aborted by newer build #${currentBuild.number}"
+                ))
+            }
+        }
+        previousBuild = previousBuild.getPreviousBuildInProgress()
     }
 }
 

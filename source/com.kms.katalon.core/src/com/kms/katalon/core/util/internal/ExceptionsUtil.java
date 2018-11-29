@@ -1,14 +1,20 @@
 package com.kms.katalon.core.util.internal;
 
+import java.util.Arrays;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.codehaus.groovy.runtime.StackTraceUtils;
+
+import com.google.common.base.Throwables;
+import com.kms.katalon.core.main.ScriptEngine;
+
 import groovy.lang.MissingPropertyException;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import com.kms.katalon.core.exception.StepErrorException;
-import com.kms.katalon.core.exception.StepFailedException;
-
 public class ExceptionsUtil {
+    
+    private static final Pattern CLASS_PATTERN = Pattern.compile("Script[0-9]{13}");
+    
     public static String getMessageForThrowable(Throwable t) {
         if (t == null) {
             return "";
@@ -19,22 +25,10 @@ public class ExceptionsUtil {
     private static String getExceptionMessage(Throwable throwable) {
         if (throwable instanceof MissingPropertyException) {
             return getExceptionMessage((MissingPropertyException) throwable);
-        } else if (throwable instanceof StepFailedException) {
-            return getExceptionMessage((StepFailedException) throwable);
-        } else if (throwable instanceof StepErrorException) {
-            return getExceptionMessage((StepErrorException) throwable);
         } else {
             return throwable.getClass().getName()
                     + (throwable.getMessage() != null ? (": " + throwable.getMessage()) : "");
         }
-    }
-
-    private static String getExceptionMessage(StepFailedException exception) {
-        return exception.getMessage() != null ? (exception.getMessage()) : "";
-    }
-
-    private static String getExceptionMessage(StepErrorException exception) {
-        return exception.getMessage() != null ? (exception.getMessage()) : "";
     }
 
     private static String getExceptionMessage(MissingPropertyException exception) {
@@ -42,16 +36,26 @@ public class ExceptionsUtil {
     }
 
     public static String getStackTraceForThrowable(Throwable t) {
-        StringBuilder message = new StringBuilder("(Stack trace: ");
-        StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw));
-        message.append(sw.toString());
-        if (t.getCause() != null) {
-            message.append(" (caused by: ");
-            message.append(getStackTraceForThrowable(t.getCause()));
-            message.append(")");
-        }
-        message.append(")");
-        return message.toString();
+        t = StackTraceUtils.deepSanitize(t);
+        StackTraceElement[] newStackTrace = Arrays.stream(t.getStackTrace())
+                .map(stackTraceElement -> {
+                    String declaringClass = stackTraceElement.getClassName();
+                    if (CLASS_PATTERN.matcher(declaringClass).matches()) {
+                        declaringClass = ScriptEngine.getTestCaseName(declaringClass);
+                        if (declaringClass != null) {
+                            return new StackTraceElement(
+                                    declaringClass, 
+                                    stackTraceElement.getMethodName(), 
+                                    declaringClass, 
+                                    stackTraceElement.getLineNumber());
+                        }
+                    }
+                    return stackTraceElement;
+                })
+                .collect(Collectors.toList())
+                .toArray(new StackTraceElement[] {});
+        t.setStackTrace(newStackTrace);
+        String stackTrace = Throwables.getStackTraceAsString(t);
+        return stackTrace;
     }
 }

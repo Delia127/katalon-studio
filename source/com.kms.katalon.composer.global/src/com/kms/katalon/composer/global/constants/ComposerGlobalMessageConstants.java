@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerGlobalMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.global.constants.composerGlobalMessages";
 
+	public static String PA_ERROR_MSG_UNABLE_TO_UPDATE_PROFILE;
+
     public static String DIA_ERROR_MSG_INVALID_VAR_NAME;
 
     public static String DIA_LBL_DEFAULT_VALUE;

@@ -66,7 +66,10 @@ import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditing
 import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
+import com.kms.katalon.controller.LocalVariableController;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.entity.variable.VariableEntityWrapper;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.util.listener.EventListener;
@@ -82,7 +85,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
 
     private CTableViewer tableViewer;
 
-    private List<VariableEntity> variables = new ArrayList<>();
+    private VariableEntityWrapper variableEntityWrapper = new VariableEntityWrapper();
 
     private IVariablePart variablePart;
     
@@ -94,6 +97,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     
     public TestCaseVariableView(IVariablePart variablePart) {
         this.variablePart = variablePart;
+        variableEntityWrapper.setVariables(new ArrayList<VariableEntity>());
     }
     
     public void setInputValueTypes(InputValueType[] inputValueTypes) {
@@ -107,8 +111,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     public void setTestCasePart(ITestCasePart testCasePart) {
         this.testCasePart = testCasePart;
     }
-
-    public ITestCasePart getTestCasePart() {
+     public ITestCasePart getTestCasePart() {
         return testCasePart;
     }
 
@@ -199,7 +202,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
                     public void dragSetData(DragSourceEvent event) {
                         StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
                         VariableEntity variable = (VariableEntity) selection.getFirstElement();
-                        event.data = String.valueOf(variables.indexOf(variable));
+                        event.data = String.valueOf(variableEntityWrapper.getVariables().indexOf(variable));
                     }
                 });
         tableViewer.addDropSupport(DND.DROP_MOVE, new Transfer[] { TextTransfer.getInstance() },
@@ -216,7 +219,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
             @Override
             public String getText(Object element) {
                 if (element != null && element instanceof VariableEntity) {
-                    return Integer.toString(variables.indexOf(element) + 1);
+                    return Integer.toString(variableEntityWrapper.getVariables().indexOf(element) + 1);
                 }
                 return "";
             }
@@ -380,7 +383,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
         String newName = name;
         while (!isUnique) {
             isUnique = true;
-            for (VariableEntity variable : variables) {
+            for (VariableEntity variable : variableEntityWrapper.getVariables()) {
                 if (variable.getName().equals(newName)) {
                     isUnique = false;
                     break;
@@ -399,14 +402,14 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
         boolean isAdded = false;
         for (VariableEntity addedVariable : variablesArray) {
             boolean exists = false;
-            for (VariableEntity currentVariable : variables) {
+            for (VariableEntity currentVariable : variableEntityWrapper.getVariables()) {
                 if (currentVariable.getName().equals(addedVariable.getName())) {
                     exists = true;
                     break;
                 }
             }
             if (!exists) {
-                variables.add(addedVariable);
+                variableEntityWrapper.getVariables().add(addedVariable);
                 isAdded = true;
             }
         }
@@ -417,7 +420,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     }
 
     public void deleteVariables(List<VariableEntity> variableList) {
-        if (variables.removeAll(variableList)) {
+        if (variableEntityWrapper.getVariables().removeAll(variableList)) {
             tableViewer.refresh();
             setDirty(true);
         }
@@ -440,21 +443,21 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     }
 
     public void loadVariables(List<VariableEntity> newVariables) {
-        variables.clear();
-        variables.addAll(newVariables);
-        tableViewer.setInput(variables);
+        variableEntityWrapper.getVariables().clear();
+        variableEntityWrapper.getVariables().addAll(newVariables);
+        tableViewer.setInput(variableEntityWrapper.getVariables());
         tableViewer.refresh();
     }
 
     public VariableEntity[] getVariables() {
-        if (variables == null) {
+        if (variableEntityWrapper.getVariables() == null) {
             return new VariableEntity[0];
         }
-        return variables.toArray(new VariableEntity[variables.size()]);
+        return variableEntityWrapper.getVariables().toArray(new VariableEntity[variableEntityWrapper.getVariables().size()]);
     }
 
     public List<VariableEntity> getVariablesList() {
-        return variables;
+        return variableEntityWrapper.getVariables();
     }
 
     public TableViewer getTableViewer() {
@@ -464,8 +467,8 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     public boolean validateVariables() {
         StringBuilder errorCollector = new StringBuilder();
         List<String> names = new ArrayList<String>();
-        for (VariableEntity variable : variables) {
-            int index = variables.indexOf(variable) + 1;
+        for (VariableEntity variable : variableEntityWrapper.getVariables()) {
+            int index = variableEntityWrapper.getVariables().indexOf(variable) + 1;
             String variableName = variable.getName();
             String variableDefaultValue = variable.getDefaultValue();
             if (variableDefaultValue == null || variableDefaultValue.isEmpty())
@@ -535,5 +538,35 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
             eventListeners.put(e, listenerOnEvent);
         });
 
+    }
+
+    public TestCaseVariableView() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    public VariableEntityWrapper getVariableEntityWrapper() {
+        return this.variableEntityWrapper;
+    }
+    
+    public void setVariablesFromScriptContent(String scriptContent) throws Exception {
+        VariableEntityWrapper newVariableEntityWrapper = getVariableEntityWrapperFromScriptContent(scriptContent);
+        if (newVariableEntityWrapper != null) {
+            variableEntityWrapper.setVariables(newVariableEntityWrapper.getVariables());
+        }else{
+            newVariableEntityWrapper = new VariableEntityWrapper();
+            newVariableEntityWrapper.setVariables(new ArrayList<VariableEntity>());
+        }
+        tableViewer.setInput(newVariableEntityWrapper.getVariables());
+        tableViewer.refresh();
+    }
+    
+    public VariableEntityWrapper getVariableEntityWrapperFromScriptContent(String scriptContent) throws Exception{
+        VariableEntityWrapper newVariableEntityWrapper = null;
+        if (scriptContent != null && scriptContent != StringUtils.EMPTY) {
+            newVariableEntityWrapper = LocalVariableController.getInstance().toVariableEntityWrapper(scriptContent);
+            return newVariableEntityWrapper;
+        }
+        return newVariableEntityWrapper;
     }
 }

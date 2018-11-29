@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.egit.ui.UIUtils;
@@ -124,7 +125,7 @@ public class NewObjectSpyDialog extends Dialog
     public NewObjectSpyDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) throws Exception {
         super(parentShell);
         boolean onTop = getPreferenceStore().getBoolean(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_PIN_WINDOW);
-        if (onTop) {
+        if (onTop && !Platform.OS_LINUX.equals(Platform.getOS())) {
             setShellStyle(SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER);
         } else {
             setShellStyle(SWT.SHELL_TRIM | SWT.CENTER);

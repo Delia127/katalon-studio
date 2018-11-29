@@ -60,4 +60,12 @@ public interface TestCaseContext {
      * @return It should be <code>PASSED</code>, <code>FAILED</code>, or <code>ERROR</code>
      */
     String getTestCaseStatus();
+    
+    /**
+     * Returns error message if test case fails
+     * 
+     * @return Stacktrace if test case fails, empty string otherwise
+     */
+    
+    String getMessage();
 }

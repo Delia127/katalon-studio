@@ -36,6 +36,10 @@ import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
     private static final String LBL_DEFAULT_EXECUTION = ExecutionMessageConstants.LBL_DEFAULT_EXECUTION;
+    
+    // Smart XPath-related functionality - supported only in commercial version
+    @SuppressWarnings("unused")
+	private static final String LBL_APPLY_NEIGHBOR_XPATHS = ExecutionMessageConstants.LBL_APPLY_NEIGHBOR_XPATHS;
 
     public static final short TIMEOUT_MIN_VALUE = 0;
 
@@ -51,7 +55,8 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
     private Text txtDefaultElementTimeout;
 
-    private Button chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
+    @SuppressWarnings("unused")
+	private Button chckApplyNeighborXpaths, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
 
     private IRunConfigurationContributor[] runConfigs;
 
@@ -79,8 +84,7 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
         Label lblDefaultBrowser = new Label(comp, SWT.NONE);
         lblDefaultBrowser.setText(LBL_DEFAULT_EXECUTION);
-        GridData gdLblDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblDefaultBrowser.setLayoutData(gdLblDefaultBrowser);
+        lblDefaultBrowser.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
         cbDefaultBrowser = new Combo(comp, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
         GridData gdCbDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -89,21 +93,30 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
         Label lblDefaultElementTimeout = new Label(comp, SWT.NONE);
         lblDefaultElementTimeout.setText(StringConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT);
-        GridData gdLblDefaultElementTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblDefaultElementTimeout.setLayoutData(gdLblDefaultElementTimeout);
+        lblDefaultElementTimeout.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
         txtDefaultElementTimeout = new Text(comp, SWT.BORDER);
         GridData gdTxtDefaultElementTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdTxtDefaultElementTimeout.widthHint = INPUT_WIDTH;
         txtDefaultElementTimeout.setLayoutData(gdTxtDefaultElementTimeout);
-
+        
+        /*
+         * 	// Smart XPath-related functionality - supported only in commercial version
+         * 	Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
+	        lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
+	        lblApplyNeighborXpaths.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+	        
+	        chckApplyNeighborXpaths= new Button(comp, SWT.CHECK);
+	        chckApplyNeighborXpaths.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+         */
+        
         Group grpAfterExecuting = new Group(container, SWT.NONE);
         grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);
         GridLayout glGrpAfterExecuting = new GridLayout();
         glGrpAfterExecuting.marginLeft = 15;
         grpAfterExecuting.setLayout(glGrpAfterExecuting);
         grpAfterExecuting.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
+        
         chckOpenReport = new Button(grpAfterExecuting, SWT.CHECK);
         chckOpenReport.setText(StringConstants.PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY);
 
@@ -195,8 +208,11 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
             cbDefaultBrowser.setItems(runConfigIdList);
             cbDefaultBrowser.select(selectedIndex);
         }
-        txtDefaultElementTimeout.setText(Integer.toString(store.getElementTimeout()));
 
+        // Smart XPath-related functionality - supported only in commercial version
+        // chckApplyNeighborXpaths.setSelection(store.isAutoApplyNeighborXpathsEnabled());
+        
+        txtDefaultElementTimeout.setText(Integer.toString(store.getElementTimeout()));
         chckOpenReport.setSelection(store.isPostExecOpenReport());
         chckQuitDriversTestCase.setSelection(store.isPostTestCaseExecQuitDriver());
         chckQuitDriversTestSuite.setSelection(store.isPostTestSuiteExecQuitDriver());
@@ -207,7 +223,8 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         if (container == null) {
             return;
         }
-        String selectedExecutionConfiguration = ExecutionDefaultSettingStore.EXECUTION_DEFAULT_CONFIGURATION;
+        String selectedExecutionConfiguration = ExecutionDefaultSettingStore.getStore()
+                .getDefaultExecutionConfiguration();
         runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
         if (runConfigs.length > 0) {
             List<String> runConfigIds = Arrays.stream(runConfigs)
@@ -238,6 +255,11 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
                 selectedExecutionConfiguration = cbDefaultBrowser.getText();
                 store.setExecutionConfiguration(selectedExecutionConfiguration);
             }
+            
+            /*if (chckApplyNeighborXpaths != null) {
+            	store.setApplyNeighborXpathsEnabled(chckApplyNeighborXpaths.getSelection());
+            }*/
+            
             if (txtDefaultElementTimeout != null) {
                 store.setElementTimeout(Integer.parseInt(txtDefaultElementTimeout.getText()));
             }

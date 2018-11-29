@@ -16,15 +16,17 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
-import com.kms.katalon.composer.webservice.constants.TextContentType;
-import com.kms.katalon.composer.webservice.editor.DocumentReadyHandler;
-import com.kms.katalon.composer.webservice.editor.MirrorEditor;
-import com.kms.katalon.composer.webservice.editor.MirrorEditor.EditorChangeListener;
 import com.kms.katalon.composer.webservice.parts.VerificationScriptEventHandler;
+import com.kms.katalon.composer.components.impl.constants.TextContentType;
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor.EditorChangeListener;
+import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
+import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditor;
 import com.kms.katalon.composer.webservice.util.XPathUtils;
 import com.kms.katalon.core.testobject.ResponseObject;

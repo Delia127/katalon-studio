@@ -6,6 +6,8 @@ public class ProjectStatistics {
     
     private int testCaseCount = 0;
     
+    private int jiraIntegratedTestCaseCount = 0;
+    
     private int webTestStepCount = 0;
     
     private int apiTestStepCount = 0;
@@ -66,6 +68,8 @@ public class ProjectStatistics {
     
     private boolean remoteWebDriverConfigured = false;
     
+    private boolean continueOnFailure = false;
+    
     private String webLocatorConfig;
 
     public String getProjectId() {
@@ -82,6 +86,14 @@ public class ProjectStatistics {
 
     public void setTestCaseCount(int testCaseCount) {
         this.testCaseCount = testCaseCount;
+    }
+
+    public int getJiraIntegratedTestCaseCount() {
+        return jiraIntegratedTestCaseCount;
+    }
+
+    public void setJiraIntegratedTestCaseCount(int jiraIntegratedTestCaseCount) {
+        this.jiraIntegratedTestCaseCount = jiraIntegratedTestCaseCount;
     }
 
     public int getWebTestStepCount() {
@@ -322,6 +334,14 @@ public class ProjectStatistics {
 
     public void setRemoteWebDriverConfigured(boolean remoteWebDriverConfigured) {
         this.remoteWebDriverConfigured = remoteWebDriverConfigured;
+    }
+    
+    public boolean isContinueOnFailure() {
+        return continueOnFailure;
+    }
+
+    public void setContinueOnFailure(boolean continueOnFailure) {
+        this.continueOnFailure = continueOnFailure;
     }
 
     public String getWebLocatorConfig() {

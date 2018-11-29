@@ -37,6 +37,7 @@ public class SearchDropDownBox extends Composite {
 	private CLabel arrowLabel;
 	private ExplorerPart viewPart;
 	private int selectionIndex = -1;
+    private boolean selectionEventDisabled = false;
 	
 	public SearchDropDownBox(Composite parent, int style, ExplorerPart viewPart) {
 		super(parent, style);
@@ -126,12 +127,15 @@ public class SearchDropDownBox extends Composite {
 			event.doit = false;
 			dropDown(false);
 			break;
+		case SWT.Hide:
+		    dropDown(false);
+		    break;
 		}
 	}
 
 	public void createPopup() {
 		popup = new Shell(getShell(), SWT.NO_TRIM | SWT.ON_TOP);
-		int[] popupEvents = { SWT.Close, SWT.Paint };
+		int[] popupEvents = { SWT.Close, SWT.Paint, SWT.Hide };
 		for (int i = 0; i < popupEvents.length; i++)
 			popup.addListener(popupEvents[i], listener);
 
@@ -162,15 +166,16 @@ public class SearchDropDownBox extends Composite {
 	private void tableEvent(Event event) {
 		switch (event.type) {
 		case SWT.Selection:
-			refreshLabel();
-			dropDown(false);
-			Event e = new Event();
-			e.time = event.time;
-			e.stateMask = event.stateMask;
-			e.doit = event.doit;
-			notifyListeners(SWT.Selection, e);
-			event.doit = e.doit;
-			viewPart.filterTreeEntitiesByType();
+			if (!selectionEventDisabled) {
+	            refreshLabel();
+	            Event e = new Event();
+	            e.time = event.time;
+	            e.stateMask = event.stateMask;
+	            e.doit = event.doit;
+	            notifyListeners(SWT.Selection, e);
+	            event.doit = e.doit;
+                viewPart.filterTreeEntitiesByType();
+			}
 			break;
 		case SWT.FocusIn:
 			break;
@@ -223,6 +228,8 @@ public class SearchDropDownBox extends Composite {
 				tableItem.setImage(0, treeEntity.getEntryImage());
 				tableItem.setText(1, treeEntity.getCopyTag());
 			}
+			
+			table.setSelection(selectionIndex >= 0 ? selectionIndex : 0);
 			imageColumn.pack();
 			labelColumn.pack();
 		} catch (Exception e) {
@@ -235,6 +242,7 @@ public class SearchDropDownBox extends Composite {
 		if (!drop) {
 			popup.setVisible(false);
 		} else {
+		    selectionEventDisabled = true;
 			updateTableItems();
 			Point tableSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 			// Remove extra row-column space
@@ -243,15 +251,16 @@ public class SearchDropDownBox extends Composite {
             }
             tableSize.y -= IMG_SEARCH_ALL.getBounds().height;
 			// Set table bounds
-			table.setBounds(1, 1, tableSize.x + 2, tableSize.y + 2);
+			table.setBounds(1, 1, tableSize.x + 8, tableSize.y + 6);
 
 			Point comboSize = getSize();
 			Display display = getDisplay();
 			Rectangle parentRect = display.map(getParent(), null, getBounds());
-			popup.setBounds(parentRect.x - 3, comboSize.y + parentRect.y + 1, tableSize.x + 4, tableSize.y + 4);
+			popup.setBounds(parentRect.x - 3, comboSize.y + parentRect.y + 1, tableSize.x + 10, tableSize.y + 8);
 			popup.setVisible(true);
 
 			table.setFocus();
+			selectionEventDisabled = false;
 		}
 	}
 
