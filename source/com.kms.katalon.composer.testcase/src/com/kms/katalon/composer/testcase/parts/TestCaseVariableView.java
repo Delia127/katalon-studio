@@ -79,7 +79,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.TestObject, InputValueType.TestData, InputValueType.Property, InputValueType.List,
             InputValueType.Map };
 
@@ -256,7 +256,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
                     ExpressionWrapper expression = GroovyWrapperParser
                             .parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
                     if (expression == null) {
-                        return TreeEntityUtil.getReadableKeywordName(InputValueType.String.getName());
+                        return null;
                     }
                     InputValueType valueType = AstValueUtil.getTypeValue(expression);
                     if (valueType != null) {
@@ -278,12 +278,12 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
             @Override
             public String getText(Object element) {
                 if (!(element instanceof VariableEntity) || ((VariableEntity) element).getDefaultValue() == null) {
-                    return StringUtils.EMPTY;
+                    return "";
                 }
                 ExpressionWrapper expression = GroovyWrapperParser
                         .parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
                 if (expression == null) {
-                    return StringUtils.EMPTY;
+                    return "";
                 }
                 return expression.getText();
             }

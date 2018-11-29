@@ -38,7 +38,7 @@ import groovy.lang.Binding;
 
 public class TestSuiteExecutor {
 
-    private static final KeywordLogger LOG = KeywordLogger.getInstance();
+    private final KeywordLogger logger = KeywordLogger.getInstance(this.getClass());
 
     private final String testSuiteId;
 
@@ -74,7 +74,7 @@ public class TestSuiteExecutor {
     }
 
     public void execute(Map<String, String> suiteProperties, List<TestCaseBinding> testCaseBindings) {
-        LOG.startSuite(testSuiteId, suiteProperties);
+        logger.startSuite(testSuiteId, suiteProperties);
 
         eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_SUITE, new Object[] { testSuiteContext });
 
@@ -92,7 +92,7 @@ public class TestSuiteExecutor {
             DriverCleanerCollector.getInstance().cleanDrivers();
         }
 
-        LOG.endSuite(testSuiteId, Collections.emptyMap());
+        logger.endSuite(testSuiteId, Collections.emptyMap());
     }
 
     private void accessTestSuiteMainPhase(List<TestCaseBinding> testCaseBindings) {
@@ -165,7 +165,7 @@ public class TestSuiteExecutor {
 
         Map<String, String> startKeywordAttributeMap = new HashMap<>();
         startKeywordAttributeMap.put(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED, String.valueOf(ignoredIfFailed));
-        LOG.startKeyword(methodName, actionType, startKeywordAttributeMap, keywordStack);
+        logger.startKeyword(methodName, actionType, startKeywordAttributeMap, keywordStack);
 
         ErrorCollector errorCollector = ErrorCollector.getCollector();
         List<Throwable> oldErrors = errorCollector.getCoppiedErrors();
@@ -183,24 +183,24 @@ public class TestSuiteExecutor {
             endAllUnfinishedKeywords(keywordStack);
             String errorMessage = errorCollector.getFirstError().getMessage();
             if (ignoredIfFailed) {
-                LOG.logWarning(errorMessage);
+                logger.logWarning(errorMessage);
             } else {
                 oldErrors.add(errorCollector.getFirstError());
-                LOG.logError(errorMessage);
+                logger.logError(errorMessage);
             }
         } else {
-            LOG.logPassed(MessageFormat.format(StringConstants.MAIN_LOG_PASSED_METHOD_COMPLETED, methodName));
+            logger.logPassed(MessageFormat.format(StringConstants.MAIN_LOG_PASSED_METHOD_COMPLETED, methodName));
         }
 
         errorCollector.clearErrors();
         errorCollector.getErrors().addAll(oldErrors);
-        LOG.endKeyword(methodName, Collections.emptyMap(), keywordStack);
+        logger.endKeyword(methodName, Collections.emptyMap(), keywordStack);
     }
 
     private void endAllUnfinishedKeywords(Stack<KeywordStackElement> keywordStack) {
         while (!keywordStack.isEmpty()) {
             KeywordStackElement keywordStackElement = keywordStack.pop();
-            LOG.endKeyword(keywordStackElement.getKeywordName(), null, keywordStackElement.getNestedLevel());
+            logger.endKeyword(keywordStackElement.getKeywordName(), null, keywordStackElement.getNestedLevel());
         }
     }
 

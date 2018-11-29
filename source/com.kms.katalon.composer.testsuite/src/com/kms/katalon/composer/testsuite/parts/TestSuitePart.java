@@ -111,7 +111,9 @@ public class TestSuitePart implements EventHandler {
 
 	private Composite parent;
 
-	private boolean isLoading;
+    private boolean isLoading;
+    
+    private ReportEntity lastRunReport;
 
 	private Listener layoutExecutionCompositeListener = new Listener() {
 
@@ -160,477 +162,473 @@ public class TestSuitePart implements EventHandler {
 		childrenView.initExpandedState();
 	}
 
-	@Focus
-	public void setFocus() {
-		compositeMain.setFocus();
-	}
+    @Focus
+    public void setFocus() {
+        compositeMain.setFocus();
+    }
 
-	@PreDestroy
-	public void preDestroy() {
-		setDirty(false);
-		eventBroker.unsubscribe(this);
-	}
+    @PreDestroy
+    public void preDestroy() {
+        setDirty(false);
+        eventBroker.unsubscribe(this);
+    }
 
-	private void registerEventBrokerListerners() {
-		eventBroker.subscribe(TestSuiteEventConstants.TESTSUITE_UPDATE_DIRTY, this);
-		eventBroker.subscribe(TestSuiteEventConstants.TESTSUITE_UPDATE_IS_RUN_COLUMN_HEADER, this);
-		eventBroker.subscribe(EventConstants.TESTCASE_UPDATED, this);
-		eventBroker.subscribe(EventConstants.TEST_SUITE_UPDATED, this);
+    private void registerEventBrokerListerners() {
+        eventBroker.subscribe(TestSuiteEventConstants.TESTSUITE_UPDATE_DIRTY, this);
+        eventBroker.subscribe(TestSuiteEventConstants.TESTSUITE_UPDATE_IS_RUN_COLUMN_HEADER, this);
+        eventBroker.subscribe(EventConstants.TESTCASE_UPDATED, this);
+        eventBroker.subscribe(EventConstants.TEST_SUITE_UPDATED, this);
 		eventBroker.subscribe(EventConstants.TEST_DATA_UPDATED, this);
 		eventBroker.subscribe(EventConstants.ADD_TEST_CASE_FROM_TEST_CASE, this);
-		// eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM,
-		// this);
-	}
+        // eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM,
+        // this);
+    }
 
-	private void layoutExecutionInfo() {
-		Display.getDefault().timerExec(10, new Runnable() {
-			@Override
-			public void run() {
-				compositeExecutionDetails.setVisible(isExecutionCompositeExpanded);
-				if (!isExecutionCompositeExpanded) {
-					((GridData) compositeExecutionDetails.getLayoutData()).exclude = true;
-					compositeExecution.setSize(compositeExecution.getSize().x,
-							compositeExecution.getSize().y - compositeTablePart.getSize().y);
-				} else {
-					((GridData) compositeExecutionDetails.getLayoutData()).exclude = false;
-				}
-				compositeExecution.layout(true, true);
-				compositeExecution.getParent().layout();
-				redrawBtnExpandExecutionInfo();
-			}
-		});
-	}
+    private void layoutExecutionInfo() {
+        Display.getDefault().timerExec(10, new Runnable() {
+            @Override
+            public void run() {
+                compositeExecutionDetails.setVisible(isExecutionCompositeExpanded);
+                if (!isExecutionCompositeExpanded) {
+                    ((GridData) compositeExecutionDetails.getLayoutData()).exclude = true;
+                    compositeExecution.setSize(compositeExecution.getSize().x, compositeExecution.getSize().y
+                            - compositeTablePart.getSize().y);
+                } else {
+                    ((GridData) compositeExecutionDetails.getLayoutData()).exclude = false;
+                }
+                compositeExecution.layout(true, true);
+                compositeExecution.getParent().layout();
+                redrawBtnExpandExecutionInfo();
+            }
+        });
+    }
 
-	private void registerControlListeners() {
-		btnAddMailRcp.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Shell shell = Display.getDefault().getActiveShell();
-				AddMailRecipientDialog addMailDialog = new AddMailRecipientDialog(shell,
-						listMailRcpViewer.getList().getItems());
-				addMailDialog.open();
+    private void registerControlListeners() {
+        btnAddMailRcp.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Shell shell = Display.getDefault().getActiveShell();
+                AddMailRecipientDialog addMailDialog = new AddMailRecipientDialog(shell, listMailRcpViewer.getList()
+                        .getItems());
+                addMailDialog.open();
 
-				if (addMailDialog.getReturnCode() == Dialog.OK) {
-					String[] emails = addMailDialog.getEmails();
-					if (emails.length > 0) {
-						listMailRcpViewer.add(addMailDialog.getEmails());
-						setDirty(true);
-					}
-				}
-			}
-		});
+                if (addMailDialog.getReturnCode() == Dialog.OK) {
+                    String[] emails = addMailDialog.getEmails();
+                    if (emails.length > 0) {
+                        listMailRcpViewer.add(addMailDialog.getEmails());
+                        setDirty(true);
+                    }
+                }
+            }
+        });
 
-		btnClearMailRcp.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (listMailRcpViewer.getList().getItemCount() > 0) {
-					listMailRcpViewer.setInput(new String[0]);
-					setDirty(true);
-				}
-			}
-		});
+        btnClearMailRcp.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (listMailRcpViewer.getList().getItemCount() > 0) {
+                    listMailRcpViewer.setInput(new String[0]);
+                    setDirty(true);
+                }
+            }
+        });
 
-		btnDeleteMailRcp.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Object[] emails = ((IStructuredSelection) listMailRcpViewer.getSelection()).toArray();
-				if (emails.length > 0) {
-					listMailRcpViewer.remove(emails);
-					setDirty(true);
-				}
-			}
-		});
+        btnDeleteMailRcp.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Object[] emails = ((IStructuredSelection) listMailRcpViewer.getSelection()).toArray();
+                if (emails.length > 0) {
+                    listMailRcpViewer.remove(emails);
+                    setDirty(true);
+                }
+            }
+        });
 
-		lblExecutionInformation.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
+        lblExecutionInformation.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
 
-		btnExpandExecutionComposite.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
+        btnExpandExecutionComposite.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
 
-		radioUseDefaultPageLoadTimeout.addSelectionListener(new SelectionAdapter() {
+        radioUseDefaultPageLoadTimeout.addSelectionListener(new SelectionAdapter() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				txtUserDefinePageLoadTimeout.setEnabled(false);
-				getTestSuite().setPageLoadTimeoutDefault(true);
-				setDirty(true);
-			}
-		});
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                txtUserDefinePageLoadTimeout.setEnabled(false);
+                getTestSuite().setPageLoadTimeoutDefault(true);
+                setDirty(true);
+            }
+        });
 
-		radioUserDefinePageLoadTimeout.addSelectionListener(new SelectionAdapter() {
+        radioUserDefinePageLoadTimeout.addSelectionListener(new SelectionAdapter() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				txtUserDefinePageLoadTimeout.setEnabled(true);
-				getTestSuite().setPageLoadTimeoutDefault(false);
-				setDirty(true);
-			}
-		});
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                txtUserDefinePageLoadTimeout.setEnabled(true);
+                getTestSuite().setPageLoadTimeoutDefault(false);
+                setDirty(true);
+            }
+        });
 
-		// Number input only
-		VerifyListener verifyNumberListener = new VerifyListener() {
+        // Number input only
+        VerifyListener verifyNumberListener = new VerifyListener() {
 
-			@Override
-			public void verifyText(VerifyEvent e) {
-				String string = e.text;
-				char[] chars = new char[string.length()];
-				string.getChars(0, chars.length, chars, 0);
-				for (int i = 0; i < chars.length; i++) {
-					if (!('0' <= chars[i] && chars[i] <= '9')) {
-						e.doit = false;
-						return;
-					}
-				}
-				setDirty(true);
-			}
-		};
+            @Override
+            public void verifyText(VerifyEvent e) {
+                String string = e.text;
+                char[] chars = new char[string.length()];
+                string.getChars(0, chars.length, chars, 0);
+                for (int i = 0; i < chars.length; i++) {
+                    if (!('0' <= chars[i] && chars[i] <= '9')) {
+                        e.doit = false;
+                        return;
+                    }
+                }
+                setDirty(true);
+            }
+        };
 
-		txtUserDefinePageLoadTimeout.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				String text = ((Text) e.getSource()).getText();
-				try {
-					int timeout = Integer.parseInt(text);
-					getTestSuite().setPageLoadTimeout((short) timeout);
-				} catch (NumberFormatException ex) {
-				}
-			}
-		});
-		txtUserDefinePageLoadTimeout.addVerifyListener(verifyNumberListener);
+        txtUserDefinePageLoadTimeout.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String text = ((Text) e.getSource()).getText();
+                try {
+                    int timeout = Integer.parseInt(text);
+                    getTestSuite().setPageLoadTimeout((short) timeout);
+                } catch (NumberFormatException ex) {}
+            }
+        });
+        txtUserDefinePageLoadTimeout.addVerifyListener(verifyNumberListener);
 
-		lblLastRun.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				openReportOfLastRun();
-			}
-		});
+        lblLastRun.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                openReportOfLastRun();
+            }
+        });
 
-		txtRerun.addModifyListener(new ModifyListener() {
+        txtRerun.addModifyListener(new ModifyListener() {
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				String text = ((Text) e.getSource()).getText();
-				try {
-					int rerun = Integer.parseInt(text);
-					// limit to 100 times only
-					if (rerun > 100) {
-						rerun = 100;
-						((Text) e.getSource()).setText(String.valueOf(rerun));
-					}
-					getTestSuite().setNumberOfRerun(rerun);
-				} catch (NumberFormatException ex) {
-				}
-			}
-		});
-		txtRerun.addVerifyListener(verifyNumberListener);
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String text = ((Text) e.getSource()).getText();
+                try {
+                    int rerun = Integer.parseInt(text);
+                    // limit to 100 times only
+                    if (rerun > 100) {
+                        rerun = 100;
+                        ((Text) e.getSource()).setText(String.valueOf(rerun));
+                    }
+                    getTestSuite().setNumberOfRerun(rerun);
+                } catch (NumberFormatException ex) {}
+            }
+        });
+        txtRerun.addVerifyListener(verifyNumberListener);
 
-		rerunTestCaseOnly.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				getTestSuite().setRerunFailedTestCasesOnly(rerunTestCaseOnly.getSelection());
-				setDirty(true);
-			}
-		});
+        rerunTestCaseOnly.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                getTestSuite().setRerunFailedTestCasesOnly(rerunTestCaseOnly.getSelection());
+                setDirty(true);
+            }
+        });
 
-		childrenView.registerControlModifyListeners();
-	}
+        childrenView.registerControlModifyListeners();
+    }
 
-	private void openReportOfLastRun() {
-		try {
-			ReportEntity reportEntity = ReportController.getInstance()
-					.getLastRunReportEntity(parentTestSuiteCompositePart.getTestSuiteClone());
-			if (reportEntity != null) {
-				eventBroker.post(EventConstants.REPORT_OPEN, reportEntity);
-			} else {
-				MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
-						StringConstants.PA_WARN_MSG_REPORT_FILE_DOES_NOT_EXIST);
-			}
-		} catch (Exception ex) {
-			LoggerSingleton.logError(ex);
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-					StringConstants.PA_ERROR_MSG_UNABLE_TO_OPEN_REPORT);
-		}
-	}
+    private void openReportOfLastRun() {
+        try {
+            if (lastRunReport != null) {
+                eventBroker.post(EventConstants.REPORT_OPEN, lastRunReport);
+            } else {
+                MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
+                        StringConstants.PA_WARN_MSG_REPORT_FILE_DOES_NOT_EXIST);
+            }
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_UNABLE_TO_OPEN_REPORT);
+        }
+    }
 
-	public void loadTestSuite(final TestSuiteEntity testSuite) {
-		final Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					if (parent.isDisposed()) {
-						return;
-					}
-					loadTestSuiteInfo(testSuite);
-					childrenView.loadInput();
-				} catch (Exception e) {
-					LoggerSingleton.logError(e);
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-							StringConstants.PA_ERROR_MSG_UNABLE_TO_LOAD_TEST_SUITE);
-				}
-			}
-		};
+    public void loadTestSuite(final TestSuiteEntity testSuite) {
+        final Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (parent.isDisposed()) {
+                        return;
+                    }
+                    loadTestSuiteInfo(testSuite);
+                    childrenView.loadInput();
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                            StringConstants.PA_ERROR_MSG_UNABLE_TO_LOAD_TEST_SUITE);
+                }
+            }
+        };
 
-		Thread loadTestSuiteThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				isLoading = true;
-				parent.getDisplay().syncExec(task);
-				isLoading = false;
-			}
-		});
+        Thread loadTestSuiteThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                isLoading = true;
+                parent.getDisplay().syncExec(task);
+                isLoading = false;
+            }
+        });
 
-		uiThreads.add(loadTestSuiteThread);
+        uiThreads.add(loadTestSuiteThread);
 
-		loadTestSuiteThread.start();
-	}
+        loadTestSuiteThread.start();
+    }
 
-	private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
-		if (testSuite.getLastRun() != null) {
-			lblLastRun.setText("<A>" + StringConstants.PA_LBL_LAST_RUN + "</A>");
-			lblLastRun.setToolTipText(StringConstants.PA_LBL_TIP_LAST_RUN);
-			txtLastRun.setText(testSuite.getLastRun().toString());
-		} else {
-			lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
-			lblLastRun.setToolTipText("");
-		}
+    private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
+        lastRunReport = ReportController.getInstance().getLastRunReportEntity(testSuite);
+        if (lastRunReport != null) {
+            lblLastRun.setText("<A>" + StringConstants.PA_LBL_LAST_RUN + "</A>");
+            lblLastRun.setToolTipText(StringConstants.PA_LBL_TIP_LAST_RUN);
+            txtLastRun.setText(ReportController.getInstance().getReportDate(lastRunReport).toString());
+        } else {
+            lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
+            lblLastRun.setToolTipText("");
+        }
 
-		txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
-		rerunTestCaseOnly.setSelection(testSuite.isRerunFailedTestCasesOnly());
+        txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
+        rerunTestCaseOnly.setSelection(testSuite.isRerunFailedTestCasesOnly());
 
-		// binding mailRecipient
-		listMailRcpViewer
-				.setInput(TestSuiteController.getInstance().mailRcpStringToArray(testSuite.getMailRecipient()));
+        // binding mailRecipient
+        listMailRcpViewer
+                .setInput(TestSuiteController.getInstance().mailRcpStringToArray(testSuite.getMailRecipient()));
 
-		// binding page load timeout values
-		short pageLoadTimeOut = testSuite.getPageLoadTimeout();
-		if (testSuite.isPageLoadTimeoutDefault()) {
-			radioUseDefaultPageLoadTimeout.setSelection(true);
-			radioUserDefinePageLoadTimeout.setSelection(false);
-			txtUserDefinePageLoadTimeout.setEnabled(false);
-		} else {
-			radioUseDefaultPageLoadTimeout.setSelection(false);
-			radioUserDefinePageLoadTimeout.setSelection(true);
-			txtUserDefinePageLoadTimeout.setEnabled(true);
-			txtUserDefinePageLoadTimeout.setText(Integer.toString(pageLoadTimeOut));
-		}
+        // binding page load timeout values
+        short pageLoadTimeOut = testSuite.getPageLoadTimeout();
+        if (testSuite.isPageLoadTimeoutDefault()) {
+            radioUseDefaultPageLoadTimeout.setSelection(true);
+            radioUserDefinePageLoadTimeout.setSelection(false);
+            txtUserDefinePageLoadTimeout.setEnabled(false);
+        } else {
+            radioUseDefaultPageLoadTimeout.setSelection(false);
+            radioUserDefinePageLoadTimeout.setSelection(true);
+            txtUserDefinePageLoadTimeout.setEnabled(true);
+            txtUserDefinePageLoadTimeout.setText(Integer.toString(pageLoadTimeOut));
+        }
 
-	}
+    }
 
-	private void createComponents(Composite parent) {
-		parent.setLayout(new GridLayout(1, false));
-		parent.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
-		compositeMain = new Composite(parent, SWT.NONE);
-		GridLayout glCompositeMain = new GridLayout(1, false);
-		glCompositeMain.marginWidth = 0;
-		glCompositeMain.marginHeight = 0;
-		compositeMain.setLayout(glCompositeMain);
-		compositeMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+    private void createComponents(Composite parent) {
+        parent.setLayout(new GridLayout(1, false));
+        parent.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
+        compositeMain = new Composite(parent, SWT.NONE);
+        GridLayout glCompositeMain = new GridLayout(1, false);
+        glCompositeMain.marginWidth = 0;
+        glCompositeMain.marginHeight = 0;
+        compositeMain.setLayout(glCompositeMain);
+        compositeMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		createExecutionInformationComposite();
+        createExecutionInformationComposite();
 
-		compositeTablePart = childrenView.createCompositeTestCase(compositeMain);
-	}
+        compositeTablePart = childrenView.createCompositeTestCase(compositeMain);
+    }
 
-	private void redrawBtnExpandExecutionInfo() {
-		btnExpandExecutionComposite.getParent().setRedraw(false);
-		if (isExecutionCompositeExpanded) {
-			btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN);
-		} else {
-			btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW);
-		}
-		btnExpandExecutionComposite.getParent().setRedraw(true);
-	}
+    private void redrawBtnExpandExecutionInfo() {
+        btnExpandExecutionComposite.getParent().setRedraw(false);
+        if (isExecutionCompositeExpanded) {
+            btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN);
+        } else {
+            btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW);
+        }
+        btnExpandExecutionComposite.getParent().setRedraw(true);
+    }
 
-	private void createExecutionInformationComposite() {
-		compositeExecution = new Composite(compositeMain, SWT.NONE);
-		compositeExecution.setBackground(ColorUtil.getCompositeBackgroundColor());
-		GridLayout glCompositeExecution = new GridLayout(1, true);
-		glCompositeExecution.verticalSpacing = 0;
-		glCompositeExecution.horizontalSpacing = 0;
-		glCompositeExecution.marginHeight = 0;
-		glCompositeExecution.marginWidth = 0;
-		compositeExecution.setLayout(glCompositeExecution);
-		compositeExecution.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+    private void createExecutionInformationComposite() {
+        compositeExecution = new Composite(compositeMain, SWT.NONE);
+        compositeExecution.setBackground(ColorUtil.getCompositeBackgroundColor());
+        GridLayout glCompositeExecution = new GridLayout(1, true);
+        glCompositeExecution.verticalSpacing = 0;
+        glCompositeExecution.horizontalSpacing = 0;
+        glCompositeExecution.marginHeight = 0;
+        glCompositeExecution.marginWidth = 0;
+        compositeExecution.setLayout(glCompositeExecution);
+        compositeExecution.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
-		Composite compositeExecutionCompositeHeader = new Composite(compositeExecution, SWT.NONE);
-		compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-		GridLayout glCompositeExecutionCompositeHeader = new GridLayout(3, false);
-		glCompositeExecutionCompositeHeader.marginHeight = 0;
-		glCompositeExecutionCompositeHeader.marginWidth = 0;
-		compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
-		compositeExecutionCompositeHeader
-				.setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-		compositeExecutionCompositeHeader
-				.setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+        Composite compositeExecutionCompositeHeader = new Composite(compositeExecution, SWT.NONE);
+        compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(3, false);
+        glCompositeExecutionCompositeHeader.marginHeight = 0;
+        glCompositeExecutionCompositeHeader.marginWidth = 0;
+        compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
+        compositeExecutionCompositeHeader.setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(
+                SWT.CURSOR_HAND));
+        compositeExecutionCompositeHeader.setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(
+                SWT.CURSOR_HAND));
 
-		btnExpandExecutionComposite = new ImageButton(compositeExecutionCompositeHeader, SWT.NONE);
-		redrawBtnExpandExecutionInfo();
+        btnExpandExecutionComposite = new ImageButton(compositeExecutionCompositeHeader, SWT.NONE);
+        redrawBtnExpandExecutionInfo();
 
-		lblExecutionInformation = new Label(compositeExecutionCompositeHeader, SWT.NONE);
-		lblExecutionInformation.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-		lblExecutionInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
-		lblExecutionInformation.setText("Execution Information");
+        lblExecutionInformation = new Label(compositeExecutionCompositeHeader, SWT.NONE);
+        lblExecutionInformation.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblExecutionInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
+        lblExecutionInformation.setText("Execution Information");
 
-		compositeExecutionDetails = new Composite(compositeExecution, SWT.NONE);
-		compositeExecutionDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		GridLayout glCompositeExecutionDetail = new GridLayout(3, true);
-		glCompositeExecutionDetail.marginLeft = 45;
-		glCompositeExecutionDetail.horizontalSpacing = 40;
-		compositeExecutionDetails.setLayout(glCompositeExecutionDetail);
+        compositeExecutionDetails = new Composite(compositeExecution, SWT.NONE);
+        compositeExecutionDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glCompositeExecutionDetail = new GridLayout(3, true);
+        glCompositeExecutionDetail.marginLeft = 45;
+        glCompositeExecutionDetail.horizontalSpacing = 40;
+        compositeExecutionDetails.setLayout(glCompositeExecutionDetail);
 
-		Composite compositePageLoadTimeout = new Composite(compositeExecutionDetails, SWT.NONE);
-		GridData gdCompositePageLoadTimeout = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		gdCompositePageLoadTimeout.minimumWidth = MINIMUM_COMPOSITE_SIZE;
-		compositePageLoadTimeout.setLayoutData(gdCompositePageLoadTimeout);
-		GridLayout glCompositePageLoadTimeout = new GridLayout(1, false);
-		glCompositePageLoadTimeout.marginWidth = 0;
-		glCompositePageLoadTimeout.marginHeight = 0;
-		glCompositePageLoadTimeout.horizontalSpacing = 10;
-		compositePageLoadTimeout.setLayout(glCompositePageLoadTimeout);
+        Composite compositePageLoadTimeout = new Composite(compositeExecutionDetails, SWT.NONE);
+        GridData gdCompositePageLoadTimeout = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        gdCompositePageLoadTimeout.minimumWidth = MINIMUM_COMPOSITE_SIZE;
+        compositePageLoadTimeout.setLayoutData(gdCompositePageLoadTimeout);
+        GridLayout glCompositePageLoadTimeout = new GridLayout(1, false);
+        glCompositePageLoadTimeout.marginWidth = 0;
+        glCompositePageLoadTimeout.marginHeight = 0;
+        glCompositePageLoadTimeout.horizontalSpacing = 10;
+        compositePageLoadTimeout.setLayout(glCompositePageLoadTimeout);
 
-		Group grpPageLoadTimeout = new Group(compositePageLoadTimeout, SWT.NONE);
-		grpPageLoadTimeout.setText(StringConstants.PA_LBL_PAGE_LOAD_TIMEOUT);
-		grpPageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		GridLayout gl_grpPageLoadTimeout = new GridLayout(2, false);
-		gl_grpPageLoadTimeout.marginLeft = 50;
-		gl_grpPageLoadTimeout.marginWidth = 0;
-		grpPageLoadTimeout.setLayout(gl_grpPageLoadTimeout);
+        Group grpPageLoadTimeout = new Group(compositePageLoadTimeout, SWT.NONE);
+        grpPageLoadTimeout.setText(StringConstants.PA_LBL_PAGE_LOAD_TIMEOUT);
+        grpPageLoadTimeout.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        GridLayout gl_grpPageLoadTimeout = new GridLayout(2, false);
+        gl_grpPageLoadTimeout.marginLeft = 50;
+        gl_grpPageLoadTimeout.marginWidth = 0;
+        grpPageLoadTimeout.setLayout(gl_grpPageLoadTimeout);
 
-		radioUseDefaultPageLoadTimeout = new Button(grpPageLoadTimeout, SWT.RADIO);
-		radioUseDefaultPageLoadTimeout.setText(StringConstants.PA_LBL_USE_DEFAULT);
-		new Label(grpPageLoadTimeout, SWT.NONE);
+        radioUseDefaultPageLoadTimeout = new Button(grpPageLoadTimeout, SWT.RADIO);
+        radioUseDefaultPageLoadTimeout.setText(StringConstants.PA_LBL_USE_DEFAULT);
+        new Label(grpPageLoadTimeout, SWT.NONE);
 
-		radioUserDefinePageLoadTimeout = new Button(grpPageLoadTimeout, SWT.RADIO);
-		GridData gd_radioUserDefinePageLoadTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		radioUserDefinePageLoadTimeout.setLayoutData(gd_radioUserDefinePageLoadTimeout);
-		radioUserDefinePageLoadTimeout.setText(StringConstants.PA_LBL_USER_DEFINE);
+        radioUserDefinePageLoadTimeout = new Button(grpPageLoadTimeout, SWT.RADIO);
+        GridData gd_radioUserDefinePageLoadTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        radioUserDefinePageLoadTimeout.setLayoutData(gd_radioUserDefinePageLoadTimeout);
+        radioUserDefinePageLoadTimeout.setText(StringConstants.PA_LBL_USER_DEFINE);
 
-		txtUserDefinePageLoadTimeout = new Text(grpPageLoadTimeout, SWT.BORDER);
-		GridData gdTxtUserDefinePageLoadTimeout = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gdTxtUserDefinePageLoadTimeout.heightHint = 20;
-		txtUserDefinePageLoadTimeout.setLayoutData(gdTxtUserDefinePageLoadTimeout);
-		// limit the input length for the range of
-		// TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue()
-		// and
-		// TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()
-		txtUserDefinePageLoadTimeout.setTextLimit(4);
+        txtUserDefinePageLoadTimeout = new Text(grpPageLoadTimeout, SWT.BORDER);
+        GridData gdTxtUserDefinePageLoadTimeout = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdTxtUserDefinePageLoadTimeout.heightHint = 20;
+        txtUserDefinePageLoadTimeout.setLayoutData(gdTxtUserDefinePageLoadTimeout);
+        // limit the input length for the range of
+        // TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue() and
+        // TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()
+        txtUserDefinePageLoadTimeout.setTextLimit(4);
 
-		compositeLastRunAndReRun = new Composite(compositeExecutionDetails, SWT.NONE);
-		GridData gdCompositeTestDataAndLastRun = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		gdCompositeTestDataAndLastRun.minimumWidth = MINIMUM_COMPOSITE_SIZE;
-		compositeLastRunAndReRun.setLayoutData(gdCompositeTestDataAndLastRun);
-		GridLayout glCompositeTestDataAndLastRun = new GridLayout(4, false);
-		glCompositeTestDataAndLastRun.verticalSpacing = 10;
-		compositeLastRunAndReRun.setLayout(glCompositeTestDataAndLastRun);
+        compositeLastRunAndReRun = new Composite(compositeExecutionDetails, SWT.NONE);
+        GridData gdCompositeTestDataAndLastRun = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        gdCompositeTestDataAndLastRun.minimumWidth = MINIMUM_COMPOSITE_SIZE;
+        compositeLastRunAndReRun.setLayoutData(gdCompositeTestDataAndLastRun);
+        GridLayout glCompositeTestDataAndLastRun = new GridLayout(4, false);
+        glCompositeTestDataAndLastRun.verticalSpacing = 10;
+        compositeLastRunAndReRun.setLayout(glCompositeTestDataAndLastRun);
 
-		lblLastRun = new Link(compositeLastRunAndReRun, SWT.NONE);
-		GridData gdLblLastRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gdLblLastRun.widthHint = 85;
-		lblLastRun.setLayoutData(gdLblLastRun);
-		lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
+        lblLastRun = new Link(compositeLastRunAndReRun, SWT.NONE);
+        GridData gdLblLastRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdLblLastRun.widthHint = 85;
+        lblLastRun.setLayoutData(gdLblLastRun);
+        lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
 
-		txtLastRun = new Text(compositeLastRunAndReRun, SWT.BORDER | SWT.READ_ONLY);
-		GridData gdTxtLastRun = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
-		gdTxtLastRun.heightHint = 20;
-		txtLastRun.setLayoutData(gdTxtLastRun);
+        txtLastRun = new Text(compositeLastRunAndReRun, SWT.BORDER | SWT.READ_ONLY);
+        GridData gdTxtLastRun = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
+        gdTxtLastRun.heightHint = 20;
+        txtLastRun.setLayoutData(gdTxtLastRun);
 
-		Label lblReRun = new Label(compositeLastRunAndReRun, SWT.NONE);
-		GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gdLblReRun.widthHint = 85;
-		lblReRun.setLayoutData(gdLblReRun);
-		lblReRun.setText(StringConstants.PA_LBL_RETRY);
-		lblReRun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
+        Label lblReRun = new Label(compositeLastRunAndReRun, SWT.NONE);
+        GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdLblReRun.widthHint = 85;
+        lblReRun.setLayoutData(gdLblReRun);
+        lblReRun.setText(StringConstants.PA_LBL_RETRY);
+        lblReRun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
 
-		txtRerun = new Text(compositeLastRunAndReRun, SWT.BORDER);
-		GridData gdTxtRerun = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gdTxtRerun.heightHint = 20;
-		gdTxtRerun.widthHint = 40;
-		txtRerun.setLayoutData(gdTxtRerun);
-		txtRerun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
-		txtRerun.setTextLimit(3);
+        txtRerun = new Text(compositeLastRunAndReRun, SWT.BORDER);
+        GridData gdTxtRerun = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdTxtRerun.heightHint = 20;
+        gdTxtRerun.widthHint = 40;
+        txtRerun.setLayoutData(gdTxtRerun);
+        txtRerun.setToolTipText(StringConstants.PA_LBL_TOOLTIP_RETRY);
+        txtRerun.setTextLimit(3);
 
-		Label lblReRunTestCaseOnly = new Label(compositeLastRunAndReRun, SWT.NONE);
-		GridData gdLblReRunTestCaseOnly = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
-		gdLblReRunTestCaseOnly.widthHint = 150;
-		lblReRunTestCaseOnly.setLayoutData(gdLblReRunTestCaseOnly);
-		lblReRunTestCaseOnly.setText(StringConstants.PA_LBL_TEST_CASE_ONLY);
-		lblReRunTestCaseOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
+        Label lblReRunTestCaseOnly = new Label(compositeLastRunAndReRun, SWT.NONE);
+        GridData gdLblReRunTestCaseOnly = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
+        gdLblReRunTestCaseOnly.widthHint = 150;
+        lblReRunTestCaseOnly.setLayoutData(gdLblReRunTestCaseOnly);
+        lblReRunTestCaseOnly.setText(StringConstants.PA_LBL_TEST_CASE_ONLY);
+        lblReRunTestCaseOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
 
-		rerunTestCaseOnly = new Button(compositeLastRunAndReRun, SWT.CHECK);
-		GridData gdRerunTestCase = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gdRerunTestCase.heightHint = 20;
-		gdRerunTestCase.minimumWidth = 20;
-		rerunTestCaseOnly.setLayoutData(gdRerunTestCase);
-		rerunTestCaseOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
+        rerunTestCaseOnly = new Button(compositeLastRunAndReRun, SWT.CHECK);
+        GridData gdRerunTestCase = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        gdRerunTestCase.heightHint = 20;
+        gdRerunTestCase.minimumWidth = 20;
+        rerunTestCaseOnly.setLayoutData(gdRerunTestCase);
+        rerunTestCaseOnly.setToolTipText(StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
 
-		Composite compositeMailRecipients = new Composite(compositeExecutionDetails, SWT.NONE);
-		GridData gdCompositeMailRecipients = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		gdCompositeMailRecipients.minimumWidth = MINIMUM_COMPOSITE_SIZE;
-		compositeMailRecipients.setLayoutData(gdCompositeMailRecipients);
-		GridLayout glCompositeMailRecipients = new GridLayout(3, false);
-		compositeMailRecipients.setLayout(glCompositeMailRecipients);
+        Composite compositeMailRecipients = new Composite(compositeExecutionDetails, SWT.NONE);
+        GridData gdCompositeMailRecipients = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        gdCompositeMailRecipients.minimumWidth = MINIMUM_COMPOSITE_SIZE;
+        compositeMailRecipients.setLayoutData(gdCompositeMailRecipients);
+        GridLayout glCompositeMailRecipients = new GridLayout(3, false);
+        compositeMailRecipients.setLayout(glCompositeMailRecipients);
 
-		Label lblMailRecipients = new Label(compositeMailRecipients, SWT.NONE);
-		GridData gdLblMailRecipients = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
-		gdLblMailRecipients.verticalIndent = 5;
-		lblMailRecipients.setLayoutData(gdLblMailRecipients);
-		lblMailRecipients.setText(StringConstants.PA_LBL_MAIL_RECIPIENTS);
+        Label lblMailRecipients = new Label(compositeMailRecipients, SWT.NONE);
+        GridData gdLblMailRecipients = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+        gdLblMailRecipients.verticalIndent = 5;
+        lblMailRecipients.setLayoutData(gdLblMailRecipients);
+        lblMailRecipients.setText(StringConstants.PA_LBL_MAIL_RECIPIENTS);
 
-		listMailRcpViewer = new ListViewer(compositeMailRecipients, SWT.BORDER | SWT.V_SCROLL);
-		listMailRcp = listMailRcpViewer.getList();
-		GridData gdListMailRcp = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		gdListMailRcp.heightHint = 70;
-		listMailRcp.setLayoutData(gdListMailRcp);
-		listMailRcpViewer.setContentProvider(ArrayContentProvider.getInstance());
+        listMailRcpViewer = new ListViewer(compositeMailRecipients, SWT.BORDER | SWT.V_SCROLL);
+        listMailRcp = listMailRcpViewer.getList();
+        GridData gdListMailRcp = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdListMailRcp.heightHint = 70;
+        listMailRcp.setLayoutData(gdListMailRcp);
+        listMailRcpViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-		Composite compositeMailRcpButtons = new Composite(compositeMailRecipients, SWT.NONE);
-		compositeMailRcpButtons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		GridLayout glCompositeMailRcpButtons = new GridLayout(1, false);
-		glCompositeMailRcpButtons.marginWidth = 0;
-		glCompositeMailRcpButtons.marginHeight = 0;
-		compositeMailRcpButtons.setLayout(glCompositeMailRcpButtons);
+        Composite compositeMailRcpButtons = new Composite(compositeMailRecipients, SWT.NONE);
+        compositeMailRcpButtons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        GridLayout glCompositeMailRcpButtons = new GridLayout(1, false);
+        glCompositeMailRcpButtons.marginWidth = 0;
+        glCompositeMailRcpButtons.marginHeight = 0;
+        compositeMailRcpButtons.setLayout(glCompositeMailRcpButtons);
 
-		btnAddMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
-		btnAddMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		btnAddMailRcp.setText(StringConstants.PA_BTN_ADD);
+        btnAddMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
+        btnAddMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        btnAddMailRcp.setText(StringConstants.PA_BTN_ADD);
 
-		btnDeleteMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
-		btnDeleteMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnDeleteMailRcp.setText(StringConstants.PA_BTN_DEL);
+        btnDeleteMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
+        btnDeleteMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnDeleteMailRcp.setText(StringConstants.PA_BTN_DEL);
 
-		btnClearMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
-		btnClearMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnClearMailRcp.setText(StringConstants.PA_BTN_CLEAR);
-	}
+        btnClearMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
+        btnClearMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnClearMailRcp.setText(StringConstants.PA_BTN_CLEAR);
+    }
 
-	@Override
-	public void handleEvent(Event event) {
-		if (event.getTopic().equals(EventConstants.TESTCASE_UPDATED)) {
-			Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-			if (object != null && object instanceof Object[]) {
-				try {
-					String oldPk = (String) ((Object[]) object)[0];
-					TestCaseEntity testCase = (TestCaseEntity) ((Object[]) object)[1];
-					childrenView.updateTestCaseTable(oldPk, testCase);
-				} catch (Exception e) {
-					LoggerSingleton.logError(e);
-				}
-			}
-		} else if (event.getTopic().equals(EventConstants.TEST_DATA_UPDATED)) {
-			try {
-				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-				if (object != null && object instanceof Object[]) {
-					String oldTestDataPk = (String) ((Object[]) object)[0];
-					DataFileEntity newTestData = (DataFileEntity) ((Object[]) object)[1];
-					String projectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-					String oldTestDataId = TestDataController.getInstance().getTestDataDisplayIdByPk(oldTestDataPk,
-							projectLocation);
-					String newTestDataId = TestDataController.getInstance()
-							.getTestDataDisplayIdByPk(newTestData.getId(), projectLocation);
-					childrenView.refreshTestSuiteAfterTestDataChanged(oldTestDataId, newTestDataId);
-				}
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		} else if (event.getTopic().equals(EventConstants.ADD_TEST_CASE_FROM_TEST_CASE)) {
+    @Override
+    public void handleEvent(Event event) {
+        if (event.getTopic().equals(EventConstants.TESTCASE_UPDATED)) {
+            Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+            if (object != null && object instanceof Object[]) {
+                try {
+                    String oldPk = (String) ((Object[]) object)[0];
+                    TestCaseEntity testCase = (TestCaseEntity) ((Object[]) object)[1];
+                    childrenView.updateTestCaseTable(oldPk, testCase);
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                }
+            }
+        } else if (event.getTopic().equals(EventConstants.TEST_DATA_UPDATED)) {
+            try {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (object != null && object instanceof Object[]) {
+                    String oldTestDataPk = (String) ((Object[]) object)[0];
+                    DataFileEntity newTestData = (DataFileEntity) ((Object[]) object)[1];
+                    String projectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+                    String oldTestDataId = TestDataController.getInstance().getTestDataDisplayIdByPk(oldTestDataPk,
+                            projectLocation);
+                    String newTestDataId = TestDataController.getInstance().getTestDataDisplayIdByPk(
+                            newTestData.getId(), projectLocation);
+                    childrenView.refreshTestSuiteAfterTestDataChanged(oldTestDataId, newTestDataId);
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        } else if (event.getTopic().equals(EventConstants.ADD_TEST_CASE_FROM_TEST_CASE)) {
 			try {
 				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
 
@@ -647,66 +645,65 @@ public class TestSuitePart implements EventHandler {
 				LoggerSingleton.logError(e);
 			}
 		}
-	}
+    }
 
-	public void dispose() {
-		eventBroker.unsubscribe(this);
-	}
+    public void dispose() {
+        eventBroker.unsubscribe(this);
+    }
 
-	public void setDirty(boolean dirty) {
-		if (!isTestSuiteLoading()) {
-			mpart.setDirty(dirty);
-			parentTestSuiteCompositePart.checkDirty();
-		}
-	}
+    public void setDirty(boolean dirty) {
+        if (!isTestSuiteLoading()) {
+            mpart.setDirty(dirty);
+            parentTestSuiteCompositePart.checkDirty();
+        }
+    }
 
-	/* package */TestSuiteEntity getTestSuite() {
-		return parentTestSuiteCompositePart.getTestSuiteClone();
-	}
+    /* package */TestSuiteEntity getTestSuite() {
+        return parentTestSuiteCompositePart.getTestSuiteClone();
+    }
 
-	public boolean prepareForSaving() {
-		childrenView.beforeSaving();
+    public boolean prepareForSaving() {
+        childrenView.beforeSaving();
 
-		getTestSuite().setMailRecipient(
-				TestSuiteController.getInstance().arrayMailRcpToString(listMailRcpViewer.getList().getItems()));
-		return true;
-	}
+        getTestSuite().setMailRecipient(
+                TestSuiteController.getInstance().arrayMailRcpToString(listMailRcpViewer.getList().getItems()));
+        return true;
+    }
 
-	/* package */void afterSaving() {
-		childrenView.afterSaving();
-	}
+    /* package */void afterSaving() {
+        childrenView.afterSaving();
+    }
 
-	/* package */void interuptUIThreads() {
-		Iterator<Thread> iterator = uiThreads.iterator();
-		while (iterator.hasNext()) {
-			Thread thread = iterator.next();
-			if (thread.isAlive()) {
-				thread.interrupt();
-			}
-		}
-		uiThreads.clear();
-		isLoading = false;
-	}
+    /* package */void interuptUIThreads() {
+        Iterator<Thread> iterator = uiThreads.iterator();
+        while (iterator.hasNext()) {
+            Thread thread = iterator.next();
+            if (thread.isAlive()) {
+                thread.interrupt();
+            }
+        }
+        uiThreads.clear();
+        isLoading = false;
+    }
 
-	private boolean isTestSuiteLoading() {
-		for (Thread thread : uiThreads) {
-			if (thread.isAlive()) {
-				return true;
-			}
-		}
-		return isLoading;
-	}
+    private boolean isTestSuiteLoading() {
+        for (Thread thread : uiThreads) {
+            if (thread.isAlive()) {
+                return true;
+            }
+        }
+        return isLoading;
+    }
 
-	public void openAddTestCaseDialog() {
-		childrenView.openAddTestCaseDialog();
-	}
+    public void openAddTestCaseDialog() {
+        childrenView.openAddTestCaseDialog();
+    }
+    
+    public void openAddedTestCase(TestCaseEntity testCaseEntity) {
+        eventBroker.post(EventConstants.TESTCASE_OPEN, testCaseEntity);
+    }
 
-	public void openAddedTestCase(TestCaseEntity testCaseEntity) {
-		eventBroker.post(EventConstants.TESTCASE_OPEN, testCaseEntity);
-	}
-
-	public void openAddedTestData(DataFileEntity dataFileEntity) {
-		eventBroker.post(EventConstants.TEST_DATA_OPEN, dataFileEntity);
-	}
-
+    public void openAddedTestData(DataFileEntity dataFileEntity) {
+        eventBroker.post(EventConstants.TEST_DATA_OPEN, dataFileEntity);
+    }
 }

@@ -237,7 +237,8 @@ public class TestStepManualComposite {
 			ToolBarManager toolBarManager2 = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
 			toolbarTwo = toolBarManager2.createControl(compositeTableButtons);
 			toolbarTwo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-			toolbarTwo.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+//			toolbarTwo.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+			
 			btnViewHistory = new Button(compositeTableButtons, SWT.NONE);
 			btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
 			btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));

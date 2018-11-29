@@ -1,19 +1,15 @@
 package com.kms.katalon.composer.handlers;
 
-import javax.inject.Inject;
-
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.parts.SavableCompositePart;
-import com.kms.katalon.composer.util.groovy.editor;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.tracking.service.Trackings;
 
 public class SaveHandler extends AbstractHandler {
 
@@ -51,11 +47,11 @@ public class SaveHandler extends AbstractHandler {
                     parentCompositePart.save();
                 }
             } else {
-                if (editor.isGroovyEditorPart(part)) {
-                    editor.saveEditor(part);
+                if (GroovyEditorUtil.isGroovyEditorPart(part)) {
+                    GroovyEditorUtil.saveEditor(part);
                     eventBroker.post(EventConstants.ECLIPSE_EDITOR_SAVED, part);
                 } else {
-                	getPartService().savePart(part, false);
+                    getPartService().savePart(part, false);
                 }
             }
 

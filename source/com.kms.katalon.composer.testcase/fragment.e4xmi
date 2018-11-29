@@ -39,7 +39,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pmd3MAD7EeiMhoUeXENg3Q" featurename="children" parentElementId="com.kms.katalon.composer.menu.help">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_ahJL8AD9EeiMhoUeXENg3Q" elementId="com.kms.katalon.composer.testcase.handledmenuitem.encrypt" label="Encrypt Text" command="_tWKmoAD8EeiMhoUeXENg3Q"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_at7lUMxREeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.composer.menu.action" positionInList="after:com.kms.katalon.menu.record">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_at7lUMxREeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.action" positionInList="after:com.kms.katalon.menu.record">
     <elements xsi:type="menu:Menu" xmi:id="_jF0dUMxREeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.menu.add" label="Add">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_gMw1cMxlEeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.handledmenuitem.addmobilekeywords" label="Add Mobile Keywords" command="_pvqIAMxlEeis-d8dVdcONw"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_3SrBEMxlEeis-d8dVdcONw" elementId="com.kms.katalon.composer.testcase.handledmenuitem.addwebuikeywords" label="Add Web UI Keywords" command="_zK2QEMxlEeis-d8dVdcONw"/>

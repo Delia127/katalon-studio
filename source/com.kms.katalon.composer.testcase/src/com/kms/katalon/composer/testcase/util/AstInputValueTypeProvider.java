@@ -47,7 +47,7 @@ public class AstInputValueTypeProvider {
             } else if (constantExpression.isNumberExpression()) {
                 return InputValueType.Number;
             } else if (constantExpression.isNullExpression()) {
-                return InputValueType.String;
+                return InputValueType.Null;
             }
             return InputValueType.String;
         }
@@ -173,7 +173,7 @@ public class AstInputValueTypeProvider {
             if (Throwable.class.isAssignableFrom(throwableClass)) {
                 return InputValueType.Throwable;
             }
-            return InputValueType.String;
+            return InputValueType.Null;
         }
     };
     
@@ -183,7 +183,7 @@ public class AstInputValueTypeProvider {
             if (castExpression.getExpression() instanceof ListExpressionWrapper) {
                 return InputValueType.List;
             }
-            return InputValueType.String;
+            return InputValueType.Null;
         }
     };
 

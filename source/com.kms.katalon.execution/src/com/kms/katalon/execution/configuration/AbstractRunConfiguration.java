@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.util.LogbackUtil;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -152,7 +154,28 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         ExecutionSessionSocketServer sessionServer = ExecutionSessionSocketServer.getInstance();
         propertyMap.put(RunConfiguration.SESSION_SERVER_HOST, sessionServer.getServerHost());
         propertyMap.put(RunConfiguration.SESSION_SERVER_PORT, sessionServer.getServerPort());
+        
+        String logbackConfigFileLocation = getLogbackConfigFileLocation();
+        if (logbackConfigFileLocation != null) {
+            propertyMap.put(RunConfiguration.LOGBACK_CONFIG_FILE_LOCATION, logbackConfigFileLocation);
+        }
+        
+        propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
+        
         return propertyMap;
+    }
+    
+    private String getLogbackConfigFileLocation() {
+        String logbackConfigFileLocation = null;
+        try {
+            File logbackConfigFile = LogbackUtil.getLogbackConfigFile();
+            if (logbackConfigFile != null && logbackConfigFile.exists()) {
+                logbackConfigFileLocation = logbackConfigFile.getAbsolutePath();
+            }
+        } catch (IOException ignored) {
+        }
+        
+        return logbackConfigFileLocation;
     }
 
     @Override

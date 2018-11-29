@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.LogRecord;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,13 +45,11 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.MouseAdapter;
@@ -127,6 +126,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogViewerPart implements EventHandler, LauncherListener {
 
+    private static final String MESSAGE_PART_DELIMITER = "\n\n";
+
     private static final int RIGHT_CLICK = 3;
 
     private static final int AFTER_STATUS_MENU_INDEX = 1;
@@ -161,7 +162,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private LogRecordTreeViewer treeViewer;
 
-    private StyledText txtStartTime, txtName, txtEslapedTime, txtMessage;
+    private StyledText txtMessage;
 
     // For log table viewer
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs,
@@ -562,17 +563,23 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void showFailureTreeLogMessage(ILogParentTreeNode logParentTreeNode) throws Exception {
+        StringBuilder messageBuilder = new StringBuilder()
+                .append(logParentTreeNode.getRecordStart().getLogTimeString())
+                .append(" ")
+                .append(logParentTreeNode.getMessage())
+                .append(MESSAGE_PART_DELIMITER)
+                .append("Elapsed time: ")
+                .append(logParentTreeNode.getFullElapsedTime())
+                .append(MESSAGE_PART_DELIMITER);
+        
         if (logParentTreeNode.getResult() != null) {
             XmlLogRecord result = logParentTreeNode.getResult();
             LogLevel resultLevel = LogLevel.valueOf(logParentTreeNode.getResult().getLevel());
             if (resultLevel == LogLevel.FAILED || resultLevel == LogLevel.ERROR) {
-                StringBuilder messageBuilder = new StringBuilder(result.getMessage());
                 List<StyleRange> styleRanges = new ArrayList<StyleRange>();
                 if (result.getExceptions() != null) {
-                    messageBuilder.append("\n");
                     for (XmlLogRecordException exceptionLogEntry : result.getExceptions()) {
                         if (LogExceptionFilter.isTraceableException(exceptionLogEntry)) {
-                            messageBuilder.append("\n");
 
                             StyleRange range = new StyleRange();
                             range.start = messageBuilder.length();
@@ -588,7 +595,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                                 }
                             }
 
-                            messageBuilder.append(exceptionLogString);
+                            messageBuilder.append(exceptionLogString).append(MESSAGE_PART_DELIMITER);
 
                             range.length = exceptionLogString.length();
                             range.underline = true;
@@ -599,17 +606,27 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                         }
                     }
                 }
+                
+                messageBuilder.append(result.getMessage());
 
-                txtMessage.setText(messageBuilder.toString());
+                writeMessage(true, messageBuilder.toString());
+                
                 if (styleRanges.size() > 0) {
                     txtMessage.setStyleRanges(styleRanges.toArray(new StyleRange[0]));
                 }
             } else {
-                txtMessage.setText(result.getMessage());
+                messageBuilder.append(result.getMessage());
+                writeMessage(false, messageBuilder.toString());
             }
         } else {
-            txtMessage.setText(StringConstants.EMPTY);
+            writeMessage(false, messageBuilder.toString());
         }
+    }
+    
+    private void writeMessage(boolean error, String message) {
+        Color color = error ? ColorUtil.getTextErrorColor() : ColorUtil.getDefaultTextColor();
+        txtMessage.setForeground(color);
+        txtMessage.setText(message);
     }
 
     // Handle mouse down event on txtMessage
@@ -657,19 +674,10 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             if (logTreeNode instanceof ILogParentTreeNode) {
                 ILogParentTreeNode logParentTreeNode = (ILogParentTreeNode) logTreeNode;
 
-                txtStartTime.setText(logParentTreeNode.getRecordStart().getLogTimeString());
-                txtName.setText(logParentTreeNode.getMessage());
-                txtEslapedTime.setText(logParentTreeNode.getFullElapsedTime());
-                StyledString styledString = new StyledString(txtEslapedTime.getText(), StyledString.COUNTER_STYLER);
-                txtEslapedTime.setStyleRanges(styledString.getStyleRanges());
-
                 showFailureTreeLogMessage(logParentTreeNode);
 
             } else {
-                txtStartTime.setText(StringConstants.EMPTY);
-                txtEslapedTime.setText(StringConstants.EMPTY);
-                txtMessage.setText(logTreeNode.getMessage());
-                txtName.setText(StringConstants.EMPTY);
+                writeMessage(false, logTreeNode.getMessage());
             }
             String message = txtMessage.getText();
             ARTIFACT_MATCHERS.forEach(matcher -> {
@@ -689,67 +697,13 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void createTreeNodePropertiesComposite(SashForm sashForm) {
-        ScrolledComposite scrolledComposite = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
-        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        scrolledComposite.setLayout(new GridLayout());
-        scrolledComposite.setExpandHorizontal(true);
-        scrolledComposite.setExpandVertical(true);
 
-        final Color whiteBackgroundColor = ColorUtil.getWhiteBackgroundColor();
-        scrolledComposite.setBackground(whiteBackgroundColor);
-
-        Composite compositeTreeNodeProperties = new Composite(scrolledComposite, SWT.BORDER);
-        compositeTreeNodeProperties.setLayout(new GridLayout(4, false));
-        compositeTreeNodeProperties.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        compositeTreeNodeProperties.setBackground(whiteBackgroundColor);
-        scrolledComposite.setContent(compositeTreeNodeProperties);
-
-        Label lblName = new Label(compositeTreeNodeProperties, SWT.NONE);
-        lblName.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblName.setText(ComposerExecutionMessageConstants.PA_LBL_NAME);
-        lblName.setBackground(whiteBackgroundColor);
-
-        txtName = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
-        txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        txtName.setEditable(false);
-
-        Label lblLogStart = new Label(compositeTreeNodeProperties, SWT.NONE);
-        lblLogStart.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblLogStart.setText(StringConstants.PA_LBL_START);
-        lblLogStart.setBackground(whiteBackgroundColor);
-
-        txtStartTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
-        final GridData layoutDataStartTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        layoutDataStartTime.minimumWidth = 200;
-        layoutDataStartTime.widthHint = 200;
-        txtStartTime.setLayoutData(layoutDataStartTime);
-        txtStartTime.setEditable(false);
-
-        Label lblLogRunTime = new Label(compositeTreeNodeProperties, SWT.NONE);
-        lblLogRunTime.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblLogRunTime.setText(StringConstants.PA_LBL_ELAPSED_TIME);
-        lblLogRunTime.setBackground(whiteBackgroundColor);
-
-        txtEslapedTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
-        final GridData layoutDataElapsedTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        layoutDataElapsedTime.minimumWidth = 200;
-        layoutDataElapsedTime.widthHint = 200;
-        txtEslapedTime.setLayoutData(layoutDataElapsedTime);
-        txtEslapedTime.setEditable(false);
-
-        Label lblMessage = new Label(compositeTreeNodeProperties, SWT.NONE);
-        lblMessage.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblMessage.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblMessage.setText(StringConstants.PA_LBL_MESSAGE);
-        lblMessage.setBackground(whiteBackgroundColor);
-
-        txtMessage = new StyledText(compositeTreeNodeProperties, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+        txtMessage = new StyledText(sashForm, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
         txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
         txtMessage.addListener(SWT.MouseDown, mouseDownListener);
+        txtMessage.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
         setWrapTxtMessage();
-
-        scrolledComposite.setMinSize(compositeTreeNodeProperties.computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
 
     private void createStatusComposite(Composite container) {
@@ -1074,6 +1028,12 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 lblNumErrors.setText(Integer.toString(result.getNumErrors()));
 
                 lblNumTestcases.getParent().getParent().layout();
+                
+                if (numExecuted == result.getNumPasses()) {
+                    progressBar.setState(SWT.NORMAL);
+                } else {
+                    progressBar.setState(SWT.ERROR);
+                }
             }
         });
     }
@@ -1194,6 +1154,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
             @Override
             public void run() {
+                if (parentComposite.isDisposed()) {
+                    return;
+                }
                 resetProgressBar();
 
                 if (isLaunchersWatchedValid()) {
@@ -1208,6 +1171,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 eventBroker.send(EventConstants.JOB_REFRESH, null);
             }
         });
+    }
+    
+    @PreDestroy
+    public void destroy() {
+        eventBroker.unsubscribe(this);
     }
 
     @Override
@@ -1248,6 +1216,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 sync.syncExec(new Runnable() {
                     @Override
                     public void run() {
+                        if (parentComposite.isDisposed()) {
+                            return;
+                        }
                         resetProgressBar();
                         createLogViewerControl(parentComposite);
                         updateProgressBar();

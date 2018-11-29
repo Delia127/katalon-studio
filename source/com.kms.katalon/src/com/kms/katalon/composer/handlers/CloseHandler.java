@@ -8,7 +8,7 @@ import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.components.part.IComposerPart;
-import com.kms.katalon.composer.parts.SavableCompositePart;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.constants.EventConstants;
 
 /**

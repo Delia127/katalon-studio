@@ -409,6 +409,10 @@ public interface IImageKeys {
     public static final String PROFILE_ENTITY_16 = "entity/entity_global_variable_16.png"; //$NON-NLS-1$
 
     public static final String FEATURE_16 = "entity/feature_16.png"; //$NON-NLS-1$
+    
+    public static final String CONFIG_16 = "entity/config_16.png"; //$NON-NLS-1$
+
+    public static final String GROOVY_16 = "entity/groovy_16.png"; //$NON-NLS-1$
 
     public static final String FOLDER_FEATURE_16 = "entity/folder_feature_16.png"; //$NON-NLS-1$
     
@@ -700,4 +704,7 @@ public interface IImageKeys {
     public static final String IMPORT_WSDL = "api_quickstart/import_wsdl.png"; //$NON-NLS-1$
     
     public static final String API_QUICKSTART_BACKGROUND_LEFT = "api_quickstart/bg_left_part.png"; //$NON-NLS-1$
+    
+    // In App Survey
+    public static final String STAR = "highlight_24.png";
 }

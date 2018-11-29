@@ -42,4 +42,8 @@ public class LoggerSingleton {
     public static void logInfo(String msg) {
         getInstance().getLogger().info(msg);
     }
+
+    public static void logDebug(String msg) {
+        getInstance().getLogger().debug(msg);
+    }
 }

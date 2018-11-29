@@ -53,8 +53,6 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.entity.repository.WebElementPropertyEntity;
-import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;

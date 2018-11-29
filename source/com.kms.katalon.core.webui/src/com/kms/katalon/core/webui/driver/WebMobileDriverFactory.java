@@ -24,6 +24,8 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.constants.StringConstants;
 
 public class WebMobileDriverFactory {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(WebMobileDriverFactory.class);
 
     private static final String CHROME = "Chrome";
 
@@ -66,7 +68,7 @@ public class WebMobileDriverFactory {
             WebUIDriverType WebUIDriverType) {
         DesiredCapabilities desireCapabilities = new DesiredCapabilities();
         for (Entry<String, Object> property : propertyMap.entrySet()) {
-            KeywordLogger.getInstance().logInfo(MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING,
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING,
                     property.getKey(), property.getValue()));
             desireCapabilities.setCapability(property.getKey(), property.getValue());
         }

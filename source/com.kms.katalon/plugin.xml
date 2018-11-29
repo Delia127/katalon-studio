@@ -11,9 +11,9 @@
                name="appName"
                value="Katalon Studio">
          </property>
-         <property 
-         		name="applicationXMI" 
-         		value="com.kms.katalon/Application.e4xmi"> 
+         <property
+         		name="applicationXMI"
+         		value="com.kms.katalon/Application.e4xmi">
 	     </property>
 	     <property
            name="lifeCycleURI"
@@ -34,7 +34,7 @@
          <property
                name="aboutText"
                value="%productBlurb">
-         </property>       
+         </property>
          <property
                name="startupForegroundColor"
                value="404040">
@@ -96,7 +96,7 @@
           id="com.kms.katalon.composer.preferences.GeneralPreferencePage"
           name="Katalon">
     </page>
- 	</extension> 
+ 	</extension>
  	<extension
 	     point="org.eclipse.ui.contexts">
 	  <context
@@ -124,7 +124,7 @@
 		 </activeWhen>
 	  	</handler>
 	  </extension>
-	  
+
 	<extension
 	     point="org.eclipse.ui.handlers">
 	  	<handler

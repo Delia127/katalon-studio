@@ -1,49 +1,175 @@
-node {
-    stage('Prepare') {
-	  build job: 'Sync-Repo'
-	  build job: 'run-gradle'
-	  build job: 'StartServices'
+import hudson.model.Result
+import hudson.model.Run
+import jenkins.model.CauseOfInterruption.UserInterruption
+
+pipeline {
+    agent any
+   
+    tools {
+        maven 'default'
     }
-	
-    stage('Check out') {
-	    retry(3){
-        	checkout scm
-	    }
+    
+    stages {
+        stage('Prepare') {
+            steps {
+                script {
+                    // Terminate running builds of the same job
+                    abortPreviousBuilds()          
+                }
+            }
+        }
+
+        stage('Set permissions to source') {
+            steps {
+                // Set r+w permissions to source folder
+                sh '''chmod -R 777 ${WORKSPACE}'''
+            }
+        }
+
+        stage('Building') {
+                // start maven commands to get dependencies
+            steps {
+                retry(3) {
+                    sh 'ulimit -c unlimited'
+                    sh 'cd source/com.kms.katalon.repo && mvn p2:site'
+                    sh 'cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &'
+                    sh '''
+                        until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
+                            printf '.'
+                            cat /tmp/9999.log
+                            sleep 5
+                        done
+                    '''
+
+                    sh 'cd source/com.kms.katalon.p2site && nohup mvn -Djetty.port=33333 jetty:run > /tmp/33333.log &'
+                    sh '''
+                        until $(curl --output /dev/null --silent --head --fail http://localhost:33333/site); do
+                            printf '.'
+                            cat /tmp/33333.log
+                            sleep 5
+                        done
+                    '''
+
+                 // generate katalon builds   
+                    script {
+                        dir("source") {
+                            if (BRANCH_NAME ==~ /^[release]+/) {
+                                sh ''' mvn clean verify -P prod '''
+                            } else {                      
+                                sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Package .DMG file') {
+            when {
+                expression { BRANCH_NAME ==~ /^[release]+/ }
+            }
+            steps {
+                // Execute codesign command to package .DMG file for macOS
+                dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
+                { sh ''' codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
+                    sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" '''        
+                        fileOperations([
+                            fileCopyOperation(
+                                    excludes: '',
+                                    includes: '*.dmg',
+                                    flattenFiles: true,
+                                    targetLocation: "source/com.kms.katalon.product.qtest_edition/target/products")
+                    ])
+                }
+            }
+        }
+              
+        stage('Copy builds') {
+            // copy generated builds and changelogs to shared folder on server
+            steps {
+                dir("source/com.kms.katalon.product.qtest_edition/target/products") {
+                    script {
+                        String tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
+                        writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
+                        // copy builds, require https://wiki.jenkins.io/display/JENKINS/File+Operations+Plugin
+                        fileOperations([
+                                fileCopyOperation(
+                                        excludes: '',
+                                        includes: '*.zip, *.tar.gz, *.dmg',
+                                        flattenFiles: true,
+                                        targetLocation: "${tmpDir}")
+                        ])
+                    }
+                }
+            }
+        }
+
+        stage ('Success') {
+            steps {
+                script {
+                    currentBuild.result = 'SUCCESS'
+                }
+            }
+        }
     }
-	
-    stage('Build') {
-	sh '''
-	  cd /Users/katalon/deploy-app
-	  chmod 777 gradlew
-	 ./gradlew changeVersion --info
-	 '''
-	    
-	// FIXME: Use full mvn patch due to mvn command not found issue - no idea why
-    	if (env.BRANCH_NAME.findAll(/^[release]+/)) {
-    		sh '''
-		    cd source
-		    sudo /usr/local/bin/mvn clean verify -Pprod
-	        '''
-    	} else {
-    		sh '''
-		    cd source
-		    sudo /usr/local/bin/mvn clean verify -Pdev
-	        '''
-    	}       
+
+    post {
+        always {
+            mail(
+                    from: 'build-ci@katalon.com',
+                    replyTo: 'build-ci@katalon.com',
+                    to: "qa@katalon.com",
+                    subject: "Build $BUILD_NUMBER - " + currentBuild.currentResult + " ($JOB_NAME)",
+                    body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n"
+            )
+        }
     }
-	
-    stage('Package') {
-	sh '''
-	  cd /Users/katalon/deploy-app
-	  chmod 777 gradlew
-	  ./gradlew accessJenkinsChanges copyAndRename --info
-	  '''
+
+    // configure Pipeline-specific options
+    options {
+        // keep only last 10 builds
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        // timeout job after 60 minutes
+        timeout(time: 60, unit: 'MINUTES')
+        // wait 10 seconds before starting scheduled build
+        quietPeriod 10
     }
-    stage('Notify') {
-	mail body: "Katalon Studio build is here: ${env.BUILD_URL}" ,
-            from: 'build-ci@katalon.com',
-            replyTo: 'build-ci@katalon.com',
-            subject: "${JOB_NAME}' (${BUILD_NUMBER} info",
-            to: 'qa@katalon.com'
+}
+
+def abortPreviousBuilds() {
+    Run previousBuild = currentBuild.rawBuild.getPreviousBuildInProgress()
+    
+    while (previousBuild != null) {
+        if (previousBuild.isInProgress()) {
+            def executor = previousBuild.getExecutor()
+            if (executor != null) {
+                echo ">> Aborting older build #${previousBuild.number}"
+                executor.interrupt(Result.ABORTED, new UserInterruption(
+                    "Aborted by newer build #${currentBuild.number}"
+                ))
+            }
+        }
+        previousBuild = previousBuild.getPreviousBuildInProgress()
     }
+}
+
+@NonCPS
+def getChangeString() {
+    MAX_MSG_LEN = 100
+    String changeString = ""
+    echo "Gathering SCM changes"
+    def changeLogSets = currentBuild.rawBuild.changeSets
+    for (int i = 0; i < changeLogSets.size(); i++) {
+        def entries = changeLogSets[i].items
+        for (int j = 0; j < entries.length; j++) {
+            def entry = entries[j]
+            truncated_msg = entry.msg.take(MAX_MSG_LEN)
+            changeString += " - ${truncated_msg} [${entry.author}]\n"
+        }
+    }
+
+    if (!changeString) {
+        changeString = " - No new changes"
+    }
+    return changeString
 }

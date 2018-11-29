@@ -30,6 +30,9 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 
 public class MobileElementCommonHelper {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(MobileElementCommonHelper.class);
+    
     private static final int ANDROID_SEEKBAR_PADDING = 56;
 
     private static final int DEFAULT_DRAG_AND_DROP_DELAY = 2000;
@@ -93,17 +96,15 @@ public class MobileElementCommonHelper {
                 ? longPressAction.longPress(element, Duration.ofSeconds(gitIntValueForDuration(duration)))
                 : longPressAction.longPress(element);
         longPressAction.release().perform();
-        KeywordLogger.getInstance()
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y,
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y,
                         to.getObjectId(), getStringForDuration(duration)));
     }
 
     public static boolean checkDuration(Number duration) {
         boolean useCustomDuration = true;
-        KeywordLogger logger = KeywordLogger.getInstance();
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_DURATION);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_DURATION);
         if (isDurationInvalid(duration)) {
-            logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_DURATION, duration));
+            logger.logWarning(MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_DURATION, duration));
             useCustomDuration = false;
         }
         return useCustomDuration;
@@ -122,8 +123,7 @@ public class MobileElementCommonHelper {
                         Duration.ofSeconds(gitIntValueForDuration(duration)))
                 : longPressAction.longPress(x.intValue(), y.intValue());
         longPressAction.release().perform();
-        KeywordLogger.getInstance()
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z, x, y,
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAP_AND_HOLD_AT_X_Y_WITH_DURATION_Z, x, y,
                         getStringForDuration(duration)));
     }
 
@@ -151,8 +151,7 @@ public class MobileElementCommonHelper {
             TouchAction tap = new TouchAction(MobileDriverFactory.getDriver()).tap(element, 1, 1);
             tap.perform();
         }
-        KeywordLogger.getInstance()
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CHECK_ELEMENT, to.getObjectId()));
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CHECK_ELEMENT, to.getObjectId()));
     }
 
     public static boolean isElementChecked(WebElement element) {
@@ -173,8 +172,7 @@ public class MobileElementCommonHelper {
             TouchAction tap = new TouchAction(MobileDriverFactory.getDriver()).tap(element, 1, 1);
             tap.perform();
         }
-        KeywordLogger.getInstance()
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
     }
 
     public static void selectItemByIndex(TestObject to, int index, int timeout, FailureHandling flowControl)
@@ -201,7 +199,7 @@ public class MobileElementCommonHelper {
         } else if (driver instanceof AndroidDriver) {
             throw new StepFailedException(StringConstants.KW_LOG_FAILED_FEATURE_NOT_AVAILABLE);
         }
-        KeywordLogger.getInstance().logPassed(
+        logger.logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_LIST_ITEM_CLICKED, index, to.getObjectId()));
     }
 
@@ -223,7 +221,7 @@ public class MobileElementCommonHelper {
                         .waitAction(Duration.ofMillis(DEFAULT_DRAG_AND_DROP_DELAY))
                         .release();
         dragAndDropAction.perform();
-        KeywordLogger.getInstance().logPassed(MessageFormat
+        logger.logPassed(MessageFormat
                 .format(StringConstants.KW_LOG_PASSED_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y, fromObj.getObjectId()));
     }
 
@@ -254,7 +252,7 @@ public class MobileElementCommonHelper {
                     label, to.getObjectId()));
         }
 
-        KeywordLogger.getInstance().logPassed(
+        logger.logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_LIST_LABELED_ITEM_CLICKED, label, to.getObjectId()));
     }
 
@@ -273,8 +271,7 @@ public class MobileElementCommonHelper {
     }
 
     public static void moveSlider(TestObject to, Number percent, int timeout) throws StepFailedException, Exception {
-        KeywordLogger logger = KeywordLogger.getInstance();
-        logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_PERCENTAGE);
+        logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_PERCENTAGE);
         if (percent == null || percent.floatValue() < 0 || percent.floatValue() > 100) {
             throw new StepFailedException(
                     MessageFormat.format(StringConstants.KW_MSG_FAILED_SET_SLIDER_INVALID_PERCENTAGE_X, percent));
@@ -310,7 +307,7 @@ public class MobileElementCommonHelper {
     public static int getElementLeftPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
         WebElement element = findElementWithCheck(to, timeout);
         Point location = element.getLocation();
-        KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_LEFT_POSITION,
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_LEFT_POSITION,
                 to.getObjectId(), location.getX()));
         return location.getX();
     }
@@ -318,7 +315,7 @@ public class MobileElementCommonHelper {
     public static int getElementTopPosition(TestObject to, int timeout, FailureHandling flowControl) throws Exception {
         WebElement element = findElementWithCheck(to, timeout);
         Point location = element.getLocation();
-        KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_TOP_POSITION,
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_TOP_POSITION,
                 to.getObjectId(), location.getY()));
         return location.getY();
     }
@@ -330,21 +327,20 @@ public class MobileElementCommonHelper {
                 .waitAction(Duration.ofMillis(DEFAULT_TAP_DURATION))
                 .release();
         tap.perform();
-        KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_AT_X_Y, x, y));
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_AT_X_Y, x, y));
     }
 
     public static int getElementWidth(TestObject to, int timeout) throws Exception {
         WebElement element = findElementWithCheck(to, timeout);
         int width = element.getSize().getWidth();
-        KeywordLogger.getInstance()
-                .logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_WIDTH, to.getObjectId(), width));
+        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_WIDTH, to.getObjectId(), width));
         return width;
     }
 
     public static int getElementHeight(TestObject to, int timeout) throws Exception {
         WebElement element = findElementWithCheck(to, timeout);
         int height = element.getSize().getHeight();
-        KeywordLogger.getInstance().logPassed(
+        logger.logPassed(
                 MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_HAS_HEIGHT, to.getObjectId(), height));
         return height;
     }

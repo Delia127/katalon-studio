@@ -44,8 +44,8 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
-import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
@@ -253,7 +253,6 @@ public class TestSuiteCompositePart implements EventHandler, SavableCompositePar
     private void cloneTestSuite() {
         testSuite = originalTestSuite.clone();
         testSuite.setTestSuiteGuid(originalTestSuite.getTestSuiteGuid());
-        testSuite.setLastRun(originalTestSuite.getLastRun());
     }
 
     public void dispose() {

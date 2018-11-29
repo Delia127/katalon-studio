@@ -10,6 +10,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -19,11 +22,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
@@ -43,6 +48,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
@@ -50,6 +56,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeamPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
@@ -407,19 +414,44 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("fileName", fileName);
             uriBuilder.setParameter("uploadedPath", uploadedPath);
 
-            HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
-            HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
             HttpPost httpPost = new HttpPost(uriBuilder.build());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
 
-            httpClient.execute(httpPost);
+            executeRequest(httpPost);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
     }
+    
+    private static HttpResponse executeRequest(HttpUriRequest httpRequest) throws Exception {
+    	HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
+        HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
+        return httpClient.execute(httpRequest);
+    }
 
     private static URI getApiURI(String host, String path) throws URISyntaxException {
         return new URIBuilder().setPath(host + path).build();
+    }
+    
+    public static void updateTestRunResult(String serverUrl, long projectId, String token, AnalyticsTestRun testRun) 
+		throws AnalyticsApiExeception {
+    	try {
+    		URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_KATALON_TEST_RUN_RESULT);
+    		URIBuilder uriBuilder = new URIBuilder(uri);
+    		uriBuilder.setParameter("projectId", String.valueOf(projectId));
+    		
+    		HttpPost httpPost = new HttpPost(uriBuilder.build());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            Gson gson = new GsonBuilder().create();
+            StringEntity entity = new StringEntity(gson.toJson(testRun));
+            httpPost.setEntity(entity);
+            executeRequest(httpPost);
+    		
+    	} catch (Exception e) {
+    		throw new AnalyticsApiExeception(e);
+    	}
     }
 
 }

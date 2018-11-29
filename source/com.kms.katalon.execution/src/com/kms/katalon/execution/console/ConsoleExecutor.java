@@ -5,14 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.greenrobot.eventbus.EventBus;
-
 import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleOption;

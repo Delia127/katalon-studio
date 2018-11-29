@@ -51,7 +51,8 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  org.greenrobot.eventbus,
  com.kms.katalon.application,
  com.kms.katalon.tracking,
- com.kms.katalon.execution.webui
+ com.kms.katalon.execution.webui,
+ com.kms.katalon.ansiconsole
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.e4.core.services.log
 Bundle-ActivationPolicy: lazy

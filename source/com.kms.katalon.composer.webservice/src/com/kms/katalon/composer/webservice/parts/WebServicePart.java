@@ -124,12 +124,12 @@ import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
-import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
@@ -191,6 +191,8 @@ import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
+
+import mnita.ansiconsole.participants.AnsiConsoleStyleListener;
 
 public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent, VerificationScriptEventHandler {
 
@@ -269,7 +271,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
 
     private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.List, InputValueType.Map };
 
     @Inject
@@ -371,7 +373,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected Composite parent;
 
-    protected Text txtVerificationLog;
+    protected StyledText txtVerificationLog;
 
     private MPart scriptEditorPart;
 
@@ -1337,11 +1339,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         lblVerificationResultStatus = new Label(resultStatusComposite, SWT.NONE);
         lblVerificationResultStatus.setForeground(ColorUtil.getTextWhiteColor());
 
-        txtVerificationLog = new Text(verificationResultComposite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        txtVerificationLog = new StyledText(verificationResultComposite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
         txtVerificationLog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         txtVerificationLog.setEditable(false);
         txtVerificationLog.setBackground(ColorUtil.getWhiteBackgroundColor());
         txtVerificationLog.setFont(FONT_CONSOLAS_10);
+        txtVerificationLog.addLineStyleListener(new AnsiConsoleStyleListener());
     }
 
     private void createResponseStatusComposite() {

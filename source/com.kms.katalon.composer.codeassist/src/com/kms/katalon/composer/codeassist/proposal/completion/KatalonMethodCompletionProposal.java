@@ -49,7 +49,6 @@ import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
 import com.kms.katalon.composer.codeassist.util.KatalonContextUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;

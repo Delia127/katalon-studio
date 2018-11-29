@@ -3,13 +3,19 @@ package com.kms.katalon.integration.analytics.report;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
@@ -43,36 +49,41 @@ public class AnalyticsReportService implements AnalyticsComponent {
         if (isIntegrationEnabled()) {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_START);
             try {
-                String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
-                String email = getSettingStore().getEmail(isEncryptionEnabled());
-                String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
-                AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                AnalyticsTokenInfo token = getKAToken();
                 if (token != null) {
                     perform(token.getAccess_token(), folderPath);
                 } else {
                     LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
                 }
-            } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
+            } catch (Exception e ) {
                 LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
                 throw new AnalyticsApiExeception(e);
             }
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_END);
         }
     }
+    
+    private AnalyticsTokenInfo getKAToken() throws IOException, GeneralSecurityException, AnalyticsApiExeception {
+    	String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+        String email = getSettingStore().getEmail(isEncryptionEnabled());
+        String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
+        AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+        return token;
+    }
 
-    private void perform(String token, String path) throws AnalyticsApiExeception, IOException, GeneralSecurityException {
+    private void perform(String token, String path) throws Exception {
         LogUtil.printOutputLine("Uploading log files in folder path: " + path);
         String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         Long projectId = getSettingStore().getProject().getId();
         List<Path> files = scanFiles(path);
         long timestamp = System.currentTimeMillis();
-        boolean isEnd;
-        String folderPath;
-        Path filePath;
+        Path reportFolder = Paths.get(FolderController.getInstance().getReportRoot(project).getLocation());
+        
         for (int i = 0; i < files.size(); i++) {
-            filePath = files.get(i);
-            folderPath = getFolderPath(filePath);
-            isEnd = i == (files.size() - 1);
+        	Path filePath = files.get(i);
+        	String folderPath = reportFolder.relativize(filePath.getParent()).toString();
+        	boolean isEnd = i == (files.size() - 1);
             
             LogUtil.printOutputLine("Sending file: " + filePath.toAbsolutePath());
             if (AnalyticsStringConstants.ANALYTICS_STOREAGE.equalsIgnoreCase("s3")) {
@@ -94,6 +105,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
             addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachScreenshot(), AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
             addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachLog(), AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
             addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachCapturedVideos(), AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_HAR_FILE_EXTENSION_PATTERN));
             addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
         } catch (IOException e) {
             LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
@@ -124,6 +136,22 @@ public class AnalyticsReportService implements AnalyticsComponent {
             folderPath = filePath.getParent().toFile().getName();
         }
         return folderPath;
+    }
+    
+    public void updateExecutionProccess(AnalyticsTestRun testRun) throws AnalyticsApiExeception {
+    	try {
+            AnalyticsTokenInfo token = getKAToken();
+            if (token != null) {
+            	String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+            	long projectId = getSettingStore().getProject().getId();
+            	AnalyticsApiProvider.updateTestRunResult(serverUrl, projectId, token.getAccess_token(), testRun);
+            } else {
+                LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+            }
+        } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
+            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
+            throw new AnalyticsApiExeception(e);
+        }
     }
 
 }

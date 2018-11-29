@@ -5,7 +5,7 @@ KATABUILD2=/tmp/katabuild2
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon_Studio"
 MAC_PRODUCT_NAME="Katalon Studio"
-TIMESTAMP=`date +%Y-%m-%d`
+TIMESTAMP=`date +%Y-%m-%d-%H-%M`
 
 WINDOWS_32_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_32.zip"
 WINDOWS_64_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME}_Windows_64.zip"
@@ -113,6 +113,17 @@ cp -Rf "Katalon_Studio_Windows_32-$1-$TIMESTAMP.zip" $KATABUILD/
 cp -Rf "Katalon_Studio_Windows_64-$1-$TIMESTAMP.zip" $KATABUILD/
 cp -Rf "Katalon_Studio-MacOS-$1-$TIMESTAMP.dmg" $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
+
+# Clean up old files from shared public folder
+# Get older today file name and assign to array
+LST_REMOVEFILE=($(sudo ls -la /tmp/katabuild/ | grep  -v "$(date +"%b %d")" | awk '/^-/{ print $NF }'))
+# for loop array then execute command to remove it
+for filename in $LST_REMOVEFILE
+do
+  echo "Begin to clean up $filename\n"
+  sudo rm -f $KATABUILD/$filename
+done;
+
 sudo umount -f $KATABUILD
 echo "Distribute packages on macOS ... Done"
 #sudo rsync -vaE --progress $TEMP_PATH $KATABUILD2/

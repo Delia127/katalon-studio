@@ -29,6 +29,11 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class XPathUtils {
+    
+    public static String getXmlPropertyForSoapBody(String xpath) {
+        return StringUtils.replaceFirst(xpath, "Body.", "");
+    }
+    
     public static Map<Integer, String> evaluateXmlProperty(String jsonString) throws IOException {
         if (StringUtils.isEmpty(jsonString)) {
             return Collections.emptyMap();

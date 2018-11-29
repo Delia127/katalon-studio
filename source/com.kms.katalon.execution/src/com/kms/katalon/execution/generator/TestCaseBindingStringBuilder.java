@@ -180,7 +180,8 @@ public class TestCaseBindingStringBuilder {
     }
 
     private String getErrorSyntaxMessageWithReason(String variableName, String variableValue, String reason) {
-        return new StringBuilder("Wrong syntax at [Test case ID: ").append(testCaseExecutedEntity.getSourceId())
+        return new StringBuilder("Wrong syntax at [Test case ID: ")
+                .append(testCaseExecutedEntity.getSourceId())
                 .append(", Variable name: ")
                 .append(variableName)
                 .append(", Variable value: ")

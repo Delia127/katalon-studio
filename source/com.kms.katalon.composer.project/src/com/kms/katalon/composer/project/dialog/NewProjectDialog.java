@@ -22,10 +22,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -374,6 +370,8 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     private boolean validateProjectFolderLocation() {
+    	
+    	
         String projectLocation = getProjectLocationInput();
         if (StringUtils.isBlank(projectLocation)) {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK);
@@ -398,6 +396,18 @@ public class NewProjectDialog extends TitleAreaDialog {
         if (!folderLocation.canWrite()) {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE);
             return false;
+        }
+        
+        try{
+        	 String katalonFolderAbsolutePath = new File(Platform.getInstallLocation().getURL().getFile()).getAbsolutePath();
+             String locFileAbsolutePath = new File(projectLocation).getAbsolutePath();
+             if(locFileAbsolutePath.startsWith(katalonFolderAbsolutePath)){
+             	setErrorMessage(StringConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER);
+             	return false;
+             }
+        } catch (Exception e){
+        	LoggerSingleton.logError(e);
+        	return false;
         }
         return true;
     }
@@ -447,7 +457,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     @Override
     protected void okPressed() {
-        okButtonClicked = true;
+    	okButtonClicked = true;
         
         name = txtProjectName.getText();
         loc = getProjectLocationInput();
@@ -470,6 +480,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         super.okPressed();
     }
+
 
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();

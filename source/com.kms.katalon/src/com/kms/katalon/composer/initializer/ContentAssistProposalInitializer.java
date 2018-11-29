@@ -31,13 +31,13 @@ public class ContentAssistProposalInitializer implements ApplicationInitializer 
 
     private static final String SEPARATOR = "\u0000";
 
-    private static final String CONTENT_ASSIST_AUTOACTIVATION_TRIGGER_JAVA = "content_assist_autoactivation_triggers_java";
+    // private static final String CONTENT_ASSIST_AUTOACTIVATION_TRIGGER_JAVA = "content_assist_autoactivation_triggers_java";
 
     private static final String CONTENT_ASSIST_AUTOACTIVATION_DELAY = "content_assist_autoactivation_delay";
 
-    private static final String AUTOACTIVATION_TRIGGER = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.";
+    // private static final String AUTOACTIVATION_TRIGGER = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.";
 
-    private static final int AUTOACTIVATION_DELAY_IN_MILLIS = 300;
+    private static final int AUTOACTIVATION_DELAY_IN_MILLIS = 500;
 
     private ScopedPreferenceStore jdtStore = PreferenceStoreManager.getPreferenceStore(JDT_PREF_ID);
 
@@ -61,7 +61,7 @@ public class ContentAssistProposalInitializer implements ApplicationInitializer 
     }
 
     private void enableAutoActivationTrigger() {
-        jdtStore.setValue(CONTENT_ASSIST_AUTOACTIVATION_TRIGGER_JAVA, AUTOACTIVATION_TRIGGER);
+        //jdtStore.setValue(CONTENT_ASSIST_AUTOACTIVATION_TRIGGER_JAVA, AUTOACTIVATION_TRIGGER);
 
         jdtStore.setValue(CONTENT_ASSIST_AUTOACTIVATION_DELAY, AUTOACTIVATION_DELAY_IN_MILLIS);
     }

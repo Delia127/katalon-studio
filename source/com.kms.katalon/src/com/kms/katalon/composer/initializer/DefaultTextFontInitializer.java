@@ -19,7 +19,7 @@ public class DefaultTextFontInitializer implements ApplicationInitializer {
 
     private static final String DF_FONT_ON_WIN = "Consolas";
 
-    private static final String DF_FONT_ON_MAC = "Menlo";
+    private static final String DF_FONT_ON_MAC = "Monaco";
 
     private static final String FALLBACK_FONT = "Courier New";
 
@@ -34,10 +34,10 @@ public class DefaultTextFontInitializer implements ApplicationInitializer {
         FontDescriptor fontDescriptor = null;
         switch (Platform.getOS()) {
             case Platform.OS_MACOSX:
-                fontDescriptor = FontDescriptor.createFrom(DF_FONT_ON_MAC, 14, SWT.NORMAL);
+                fontDescriptor = FontDescriptor.createFrom(DF_FONT_ON_MAC, 11, SWT.NORMAL);
                 break;
             case Platform.OS_WIN32:
-                fontDescriptor = FontDescriptor.createFrom(DF_FONT_ON_WIN, 12, SWT.NORMAL);
+                fontDescriptor = FontDescriptor.createFrom(DF_FONT_ON_WIN, 10, SWT.NORMAL);
                 break;
         }
         if (fontDescriptor == null) {

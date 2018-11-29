@@ -14,10 +14,8 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil;
 public abstract class ScreenCaptor {
 
     protected static final String SCREENSHOT_EXT = "png";
-
-    private final KeywordLogger getKeywordLogger() {
-        return KeywordLogger.getInstance();
-    }
+    
+    protected final KeywordLogger logger = KeywordLogger.getInstance(this.getClass());
 
     /**
      * System will take browser screenshot when the executed keyword decides it can do
@@ -34,13 +32,13 @@ public abstract class ScreenCaptor {
 
         Map<String, String> attributes = new HashMap<>();
         try {
-            File newScreenshot = getNewFile(getKeywordLogger().getLogFolderPath());
+            File newScreenshot = getNewFile(logger.getLogFolderPath());
 
             take(newScreenshot);
 
             attributes.put(StringConstants.XML_LOG_ATTACHMENT_PROPERTY, newScreenshot.getName());
         } catch (ScreenCaptureException e) {
-            getKeywordLogger().logWarning(
+            logger.logWarning(
                     MessageFormat.format(StringConstants.KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT,
                             ExceptionsUtil.getMessageForThrowable(e)));
         }

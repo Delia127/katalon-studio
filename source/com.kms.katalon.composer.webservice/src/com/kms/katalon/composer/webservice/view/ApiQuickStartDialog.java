@@ -35,6 +35,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.util.Util;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ApiQuickStartDialog extends Dialog {
 
@@ -191,6 +192,7 @@ public class ApiQuickStartDialog extends Dialog {
                 .newDraftWebServiceEntity(ProjectController.getInstance().getCurrentProject());
         entity.setServiceType(DraftWebServiceRequestEntity.RESTFUL);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_OPEN_DRAFT_WEBSERVICE, entity);
+        Trackings.trackOpenDraftRequest(entity.getServiceType(), "apiQuickStart");
         close();
     }
 
@@ -199,6 +201,7 @@ public class ApiQuickStartDialog extends Dialog {
                 .newDraftWebServiceEntity(ProjectController.getInstance().getCurrentProject());
         entity.setServiceType(DraftWebServiceRequestEntity.SOAP);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_OPEN_DRAFT_WEBSERVICE, entity);
+        Trackings.trackOpenDraftRequest(entity.getServiceType(), "apiQuickStart");
         close();
     }
 

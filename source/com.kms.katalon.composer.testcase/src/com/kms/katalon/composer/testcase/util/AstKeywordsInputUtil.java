@@ -31,7 +31,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.KeywordController;

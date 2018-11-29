@@ -29,6 +29,8 @@ public class FileServiceConstant {
     
     public static final String FEATURES_INCLUDE_FOLDER = GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE + "/" + GlobalMessageConstants.ROOT_FOLDER_NAME_FEATURES;
 
+    public static final String CONFIG_INCLUDE_FOLDER = GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE + "/" + GlobalMessageConstants.ROOT_FOLDER_NAME_CONFIG;
+    
     public static final String TEMP_DIR = System.getProperty("java.io.tmpdir") + File.separator + "Katalon";
 
     public static final String SETTING_DIR = "settings";
@@ -78,6 +80,10 @@ public class FileServiceConstant {
 
     public static String getFeatureFolderLocation(String projectFolder) {
         return projectFolder + File.separator + FEATURES_INCLUDE_FOLDER;
+    }
+    
+    public static String getConfigFolderLocation(String projectFolder) {
+        return projectFolder + File.separator + CONFIG_INCLUDE_FOLDER;
     }
 
     public static String getSourceFolderLocation(String projectFolder) {

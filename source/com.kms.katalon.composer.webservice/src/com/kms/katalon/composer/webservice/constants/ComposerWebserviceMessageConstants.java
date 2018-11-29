@@ -207,6 +207,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
             
     public static String SHOW_SNIPPETS;
     
+    public static String HOW_TO_ADD_JSON_AND_XML_PATH_TO_VERIFICATION_SCRIPT;
+    
     public static String MENU_ITEM_TEST_REQUEST_AND_VERIFY;
     
     public static String RequestHistoryHandler_PA_TITLE_REQUEST_HISTORY;

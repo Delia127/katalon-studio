@@ -85,6 +85,10 @@ public class ExecutionUtil {
         }
         return null;
     }
+    
+    public static Boolean getAutoApplyNeighborXpaths(){
+    	return getStore().isAutoApplyNeighborXpathsEnabled();
+    }
 
     public static int getDefaultImplicitTimeout() {
         return getStore().getElementTimeout();

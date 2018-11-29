@@ -26,11 +26,9 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.services.EMenuService;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -451,7 +449,6 @@ public class ExplorerPart {
                             entityViewerFilter.setSearchString(broadcastMessage);
                             treeViewer.getTree().setRedraw(false);
                             treeViewer.refresh(true);
-
                             if (StringUtils.isNotBlank(searchString)) {
                                 treeViewer.expandAll();
                             } else {
@@ -564,7 +561,8 @@ public class ExplorerPart {
             while (treeViewer.isBusy()) {
                 // wait for tree is not busy
             }
-            // wait for reseting search field complete
+            
+            // wait for r.eseting search field complete
             resetSearchField();
             searchDropDownBox.clearInput();
             treeViewer.getTree().clearAll(true);
@@ -585,8 +583,8 @@ public class ExplorerPart {
             LoggerSingleton.logError(e);
         }
     }
-
-    private void reloadTreeEntityTransfers() {
+    
+	private void reloadTreeEntityTransfers() {
         List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
         dragSource.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
     }

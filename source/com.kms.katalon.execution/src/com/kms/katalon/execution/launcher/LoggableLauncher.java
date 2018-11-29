@@ -11,6 +11,7 @@ import com.kms.katalon.execution.configuration.IHostConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.logging.ILogCollection;
 import com.kms.katalon.execution.logging.LogEvaluator;
@@ -22,7 +23,7 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
     private List<XmlLogRecord> logRecords = new ArrayList<XmlLogRecord>();
 
     private Stack<XmlLogRecord> startRecords = new Stack<>();
-
+    
     /**
      * Returns the level of the current {@link XmlLogRecord}
      */
@@ -79,7 +80,17 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                         }
                         TestStatusValue statusValue = TestStatusValue.valueOf(currentTestCaseResult.name());
                         onUpdateResult(statusValue);
+                        
+                        XmlLogRecord testCaseRecord = startRecords.peek();
+                        String name = testCaseRecord.getProperties().get("name");
+                    	ExecutionEntityResult result = new ExecutionEntityResult();
+                    	result.setName(name);
+                    	result.setTestStatusValue(statusValue);
+                    	notifyProccess(LauncherEvent.UPDATE_RECORD, executedEntity, result);
+                    	
+                    	
                         currentTestCaseResult = LogLevel.NOT_RUN;
+                        
                     }
                     logDepth--;
                     startRecords.pop();

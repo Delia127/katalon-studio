@@ -118,9 +118,9 @@ public class SlackUtil {
                 boolean isOk = (boolean) response.get(RES_IS_OK);
                 String errorMsg = (String) response.get(RES_ERROR_MSG);
 
-                LoggerSingleton.logInfo(StringConstants.UTIL_SENDING_MSG_PREFIX + msg);
+                LoggerSingleton.logDebug(StringConstants.UTIL_SENDING_MSG_PREFIX + msg);
                 if (isOk && errorMsg == null) {
-                    LoggerSingleton.logInfo(StringConstants.UTIL_SUCCESS_MSG_PREFIX + msg);
+                    LoggerSingleton.logDebug(StringConstants.UTIL_SUCCESS_MSG_PREFIX + msg);
                 } else if (!isOk && errorMsg != null) {
                     LoggerSingleton.logWarn(StringConstants.UTIL_ERROR_MSG_PREFIX
                             + SlackMsgStatus.getInstance().getMsgDescription(errorMsg));

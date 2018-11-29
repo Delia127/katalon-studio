@@ -108,7 +108,7 @@
 									<id>org.apache:xerces.impl:2.11.0</id>
 								</artifact>
 								<artifact>
-									<id>xml-apis:xml-apis:1.0.b2</id>
+									<id>org.apache:xml.apis:1.4.01</id>
 								</artifact>
 								<artifact>
 									<id>org.apache.commons:commons-email:1.4</id>
@@ -260,6 +260,18 @@
 								</artifact>
 								<artifact>
 									<id>io.swagger:swagger-parser:2.0.0-rc1</id>
+								</artifact>
+                                <artifact>
+                                    <id>ch.qos.logback:logback-classic:1.2.3</id>
+                                </artifact>
+                                <artifact>
+                                    <id>ch.qos.logback:logback-core:1.2.3</id>
+                                </artifact>
+                                <artifact>
+                                    <id>org.slf4j:slf4j-api:1.7.25</id>
+                                </artifact>
+                                <artifact>
+                                    <id>org.fusesource.jansi:jansi:1.17.1</id>
 								</artifact>
 								<artifact>
 									<id>javax.websocket:javax.websocket-api:1.1</id>
