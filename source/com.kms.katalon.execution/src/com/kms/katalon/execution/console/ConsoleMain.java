@@ -100,6 +100,7 @@ public class ConsoleMain {
             options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
             
             consoleExecutor.execute(project, options);
+            
             waitForExecutionToFinish(options);
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();

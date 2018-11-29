@@ -57,6 +57,7 @@ public class ConsoleExecutor {
 
     public void execute(ProjectEntity projectEntity, OptionSet optionSet) throws Exception {
         setValueForOptionalOptions(optionalOptions, optionSet);
+        
         LauncherOptionParser launcherOption = new LauncherOptionSelector().getSelectedOption(optionSet);
         
         launcherOption.collectOverridingParameters(projectEntity);
@@ -69,9 +70,10 @@ public class ConsoleExecutor {
 						String.valueOf(optionSet.valueOf(consoleOption.getOption())));
             }
         }
-        
+
         LauncherManager launcherManager = LauncherManager.getInstance();
         launcherManager.addLauncher(launcherOption.getConsoleLauncher(projectEntity, launcherManager));
+        
         trackExecution(launcherOption);
         
 //        Executors.newSingleThreadExecutor().submit(() -> {

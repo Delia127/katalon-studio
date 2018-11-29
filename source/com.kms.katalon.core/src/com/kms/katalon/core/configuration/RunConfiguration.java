@@ -105,7 +105,7 @@ public class RunConfiguration {
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>(){
         @Override
-        protected HashMap<String, Object> initialValue() {
+        protected Map<String, Object> initialValue() {
             return new HashMap<String, Object>();
         }
     };

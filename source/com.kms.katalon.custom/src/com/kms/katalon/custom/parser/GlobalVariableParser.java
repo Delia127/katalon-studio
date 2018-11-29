@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 
 import groovy.lang.GroovyObject;

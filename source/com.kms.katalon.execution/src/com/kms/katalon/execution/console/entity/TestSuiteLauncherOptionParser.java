@@ -1,21 +1,12 @@
 package com.kms.katalon.execution.console.entity;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
-import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
@@ -33,7 +24,9 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParser {
     private static final String EXECUTION_PROFILE_OPTION = "executionProfile";
+    
     private StringConsoleOption testSuitePathOption = new StringConsoleOption() {
+    	
         @Override
         public String getOption() {
             return ConsoleMain.TESTSUITE_ID_OPTION;
@@ -83,14 +76,13 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-        super.setArgumentValue(consoleOption, argumentValue);
-        if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
-                || consoleOption == executionProfileOption) {
-        	consoleOption.setValue(argumentValue);
-            return;
-        }
+		super.setArgumentValue(consoleOption, argumentValue);
+		if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
+				|| consoleOption == executionProfileOption) {
+			consoleOption.setValue(argumentValue);
+			return;
+		}
     }
-
 
     @Override
     public IConsoleLauncher getConsoleLauncher(ProjectEntity project, LauncherManager manager)
