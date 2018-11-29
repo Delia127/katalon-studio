@@ -64,7 +64,7 @@ public class LauncherManager {
     }
 
     private void addLauncherToTerminatedList(ILauncher launcher) {
-    	removeAllTerminatedBut(4);
+    	removeAllTerminatedBut(5);
         terminatedLaunchers.add(0, launcher);
     }
 
