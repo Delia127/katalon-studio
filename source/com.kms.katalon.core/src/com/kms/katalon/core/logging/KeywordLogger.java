@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,19 +47,34 @@ public class KeywordLogger {
         if (keywordLogger == null) {
             String testCaseName = ScriptEngine.getTestCaseName(name);
             if (testCaseName == null) {
-                keywordLogger = new KeywordLogger(name);
+                keywordLogger = new KeywordLogger(name, null);
             } else {
                 String fullTestCaseName = "testcase." + testCaseName;
-                keywordLogger = new KeywordLogger(fullTestCaseName);
+                keywordLogger = new KeywordLogger(fullTestCaseName, null);
             }
             keywordLoggerLookup.put(name, keywordLogger);
         }
         return keywordLogger;
     }
-
-    private KeywordLogger(String className) {
+    
+    private KeywordLogger(String className, String dummy) {
         logger = LoggerFactory.getLogger(className);
         xmlKeywordLogger = XmlKeywordLogger.getInstance();
+    }
+
+    public KeywordLogger(String className) {
+        
+        selfLogger.warn("Please use \"KeywordUtil.logInfo()\" instead of \"new KeywordLogger()\" constructor. \"KeywordLogger\" is an internal API and might be changed in the future.");
+
+        if (StringUtils.isBlank(className)) {
+            className = KeywordLogger.class.getName();
+        }
+        logger = LoggerFactory.getLogger(className);
+        xmlKeywordLogger = XmlKeywordLogger.getInstance();
+    }
+    
+    public KeywordLogger() {
+        this(null);
     }
 
 
