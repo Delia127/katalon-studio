@@ -84,7 +84,7 @@ public class ProfileTreeEntity extends AbstractTreeEntity {
         if ("name".equals(key)) {
             return variableCollection.getName();
         }
-        if ("folder".equals("key")) {
+        if ("folder".equals(key)) {
             return variableCollection.getParentFolder().getIdForDisplay();
         }
         return StringUtils.EMPTY;
