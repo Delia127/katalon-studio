@@ -83,7 +83,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 			return;
 		}
     }
-
+    
     @Override
     public IConsoleLauncher getConsoleLauncher(ProjectEntity project, LauncherManager manager)
             throws InvalidConsoleArgumentException, ExecutionException {

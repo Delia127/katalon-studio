@@ -68,7 +68,8 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
     protected Map<String, Object> getOverridingGlobalVariables(){
     	Map<String, Object> overridingGlobalVariables = new HashMap<>();
 		overridingOptions.forEach(a -> {
-			if (a.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX) && a.getValue() != null) {
+			if (a.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX) 
+					&& a.getValue() != null) {
 				overridingGlobalVariables.put(a.getOption().
 						replace(OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
 						String.valueOf(a.getValue()));
