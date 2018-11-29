@@ -21,7 +21,7 @@ public class TestSuiteCollectionTreeEntity extends AbstractTreeEntity {
 
     public static final String KEY_WORD = GlobalStringConstants.ENTITY_KW_TEST_SUITE;
 
-    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description", "tag" };
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description", "tag", "folder" };
 
     private TestSuiteCollectionEntity testSuiteCollection;
 
@@ -96,6 +96,8 @@ public class TestSuiteCollectionTreeEntity extends AbstractTreeEntity {
                 return testSuiteCollection.getDescription();
             case "tag":
                 return testSuiteCollection.getTag();
+            case "folder":
+                return testSuiteCollection.getParentFolder().getIdForDisplay();
             default:
                 return StringUtils.EMPTY;
         }

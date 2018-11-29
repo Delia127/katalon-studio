@@ -11,7 +11,7 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 public class SystemFileTreeEntity extends AbstractTreeEntity {
     private static final long serialVersionUID = -6134975225093034560L;
     
-    public static final String[] SEARCH_TAGS = new String[] { "id", "name" };
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "folder", "folder" };
 
     public SystemFileTreeEntity(SystemFileEntity entity, FolderTreeEntity parentTreeEntity) {
         super(entity, parentTreeEntity);
@@ -84,6 +84,8 @@ public class SystemFileTreeEntity extends AbstractTreeEntity {
                 return entity.getId();
             case "name":
                 return entity.getName();
+            case "folder":
+                return entity.getParentFolder().getIdForDisplay();
         }
         return StringUtils.EMPTY;
     }
