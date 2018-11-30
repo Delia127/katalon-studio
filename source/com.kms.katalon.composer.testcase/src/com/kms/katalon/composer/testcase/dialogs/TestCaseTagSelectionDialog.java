@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.testcase.dialogs;
 
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -16,25 +18,34 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.setting.TestCaseSettingStore;
+import com.kms.katalon.entity.project.ProjectEntity;
+
 public class TestCaseTagSelectionDialog extends Dialog {
     
     private Set<String> tags;
     
     private Set<String> selectedTags;
+    
+    private TestCaseSettingStore store = getStore();
 
     public TestCaseTagSelectionDialog(Shell parentShell, Set<String> initialTags) {
         super(parentShell);
-        loadProjectTags();
+        loadTags();
         if (initialTags != null) {
             selectedTags = new HashSet<>(initialTags);
             selectedTags.retainAll(tags);
         }
     }
-
-    private void loadProjectTags() {
-        tags = new HashSet<>();
-        for (int i = 1; i <= 5; i++) {
-            tags.add("tag " + i);
+    
+    private void loadTags() {
+        try {
+            tags = store.getTestCaseTags();
+        } catch (IOException e) {
+            tags = new LinkedHashSet<>();
+            LoggerSingleton.logError(e);
         }
     }
 
@@ -43,8 +54,8 @@ public class TestCaseTagSelectionDialog extends Dialog {
         Composite body = new Composite(parent, SWT.NONE);
         body.setLayout(new GridLayout(1, false));
         GridData gdBody = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gdBody.widthHint = 200;
-        gdBody.heightHint = 400;
+        gdBody.widthHint = 250;
+        gdBody.heightHint = 300;
         body.setLayoutData(gdBody);
         
         ScrolledComposite scrolledComposite = new ScrolledComposite(body, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
@@ -76,8 +87,6 @@ public class TestCaseTagSelectionDialog extends Dialog {
         }
         tagList.setSize(tagList.computeSize(SWT.DEFAULT, SWT.DEFAULT));
         scrolledComposite.setContent(tagList);
-//        scrolledComposite.setExpandHorizontal(true);
-//        scrolledComposite.setExpandVertical(true);
         return body;
     }
     
@@ -88,6 +97,11 @@ public class TestCaseTagSelectionDialog extends Dialog {
     @Override
     protected boolean isResizable() {
         return true;
+    }
+    
+    private TestCaseSettingStore getStore() {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        return new TestCaseSettingStore(project.getFolderLocation());
     }
     
     @Override

@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.util.CssUtil;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.dialogs.ManageTestCaseTagDialog;
 import com.kms.katalon.composer.testcase.dialogs.TestCaseTagSelectionDialog;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
@@ -68,6 +69,8 @@ public class TestCasePropertiesPart extends CPart {
     private Text txtComment;
     
     private Button btnSelectTags;
+    
+    private Button btnManageTags;
 
     private boolean isInputLoaded;
 
@@ -133,10 +136,12 @@ public class TestCasePropertiesPart extends CPart {
         
         Composite tagComposite = new Composite(left, SWT.NONE);
         tagComposite.setLayout(new GridLayout(2, false));
-        tagComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        tagComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false));
         btnSelectTags = new Button(tagComposite, SWT.NONE);
         btnSelectTags.setText("Select tags");
-
+        btnManageTags = new Button(tagComposite, SWT.NONE);
+        btnManageTags.setText("Manage tags");
+        
         createLabel(StringConstants.DESCRIPTION, left, SWT.TOP);
         txtDescription = new Text(left, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         GridData gdDesc = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -186,6 +191,7 @@ public class TestCasePropertiesPart extends CPart {
                 setDirty(true);
             }
         });
+        
         txtDescription.addModifyListener(new ModifyListener() {
 
             @Override
@@ -195,6 +201,7 @@ public class TestCasePropertiesPart extends CPart {
                 setDirty(true);
             }
         });
+        
         btnSelectTags.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -207,6 +214,14 @@ public class TestCasePropertiesPart extends CPart {
                     String tagsString = joinTags(tags);
                     txtTag.setText(tagsString);
                 }
+            }
+        });
+        
+        btnManageTags.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                ManageTestCaseTagDialog dialog = new ManageTestCaseTagDialog(Display.getCurrent().getActiveShell());
+                dialog.open();
             }
         });
     }
