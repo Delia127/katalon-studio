@@ -26,13 +26,21 @@ public class WebServiceRequestEntity extends WebElementEntity {
     public static final String PATCH_METHOD = "PATCH";
 
     public static final String DELETE_METHOD = "DELETE";
+    
+    public static final String HEAD_METHOD = "HEAD";
+    
+    public static final String CONNECT_METHOD = "CONNECT";
+    
+    public static final String OPTIONS_METHOD = "OPTIONS";
+    
+    public static final String TRACE_METHOD = "TRACE";
 
     public static final String[] SERVICE_TYPES = new String[] { SOAP, RESTFUL };
 
     public static final String[] SOAP_REQUEST_METHODS = new String[] { SOAP, SOAP12, GET_METHOD, POST_METHOD };
 
     public static final String[] REST_REQUEST_METHODS = new String[] { GET_METHOD, POST_METHOD, PUT_METHOD,
-            PATCH_METHOD , DELETE_METHOD, };
+            PATCH_METHOD , DELETE_METHOD, HEAD_METHOD, CONNECT_METHOD, OPTIONS_METHOD, TRACE_METHOD};
 
     private String serviceType = SOAP; // Default
 
@@ -212,7 +220,7 @@ public class WebServiceRequestEntity extends WebElementEntity {
     public void setVariables(List<VariableEntity> variables) {
         this.variables = variables;
     }
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;

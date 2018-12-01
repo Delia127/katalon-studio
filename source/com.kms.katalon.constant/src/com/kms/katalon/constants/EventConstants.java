@@ -46,6 +46,8 @@ public class EventConstants {
     public static final String PROJECT_SETTINGS = "PROJECT/SETTINGS";
 
     public static final String PROJECT_INDEX = "PROJECT/INDEX";
+    
+    public static final String PROJECT_SETTINGS_PAGE = "PROJECT/SETTINGS_PAGE";
 
     // Eclipse Events
     public static final String ECLIPSE_EDITOR_CLOSED = "EDITORS_CLOSED";
@@ -347,4 +349,7 @@ public class EventConstants {
     
     // Web Service Execution Events
     public static final String WEBSERVICE_EXECUTE = "WEBSERVICE/EXECUTE";
+    
+    // Web Sevice Method Events
+    public static final String UPDATE_WEBSERVICE_METHODS = "WEBSERVICE/UPDATE_METHODS";
 };
