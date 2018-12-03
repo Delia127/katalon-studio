@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.collection.dialog;
+package com.kms.katalon.composer.testcase.dialogs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
+import com.kms.katalon.composer.testcase.constants.StringConstants;
 
 public class TestSuiteSelectionDialog extends TreeEntitySelectionDialog {
 

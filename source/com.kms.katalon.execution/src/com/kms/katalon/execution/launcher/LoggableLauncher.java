@@ -64,12 +64,6 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                 case START:
                     startRecords.push(record);
                     logDepth++;
-                    if (isStartTestCaseLog(record)) {
-                    	String name = record.getProperties().get("name");
-                    	ExecutionEntityResult result = new ExecutionEntityResult();
-                    	result.setName(name);
-                    	notifyProccess(LauncherEvent.UPDATE_RECORD, executedEntity, result);
-                    }
                     break;
                 case END:
                     if (isLogUnderTestCaseMainLevel(runConfig, logDepth) && isStartTestCaseLog(startRecords.peek())) {

@@ -176,4 +176,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String SAMPLE_WEB_SERVICE_PROJECT = ComposerProjectMessageConstants.SAMPLE_WEB_SERVICE_PROJECT;
     
     public static final String BLANK_PROJECT = ComposerProjectMessageConstants.BLANK_PROJECT;
+
+	public static final String CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER = ComposerProjectMessageConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER;
 }

@@ -240,7 +240,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_TEST_CASE_BROWSER = ComposerTestsuiteMessageConstants.DIA_TITLE_TEST_CASE_BROWSER;
 
     public static final String DIA_WARN_NO_TEST_CASE_SELECTION = ComposerTestsuiteMessageConstants.DIA_WARN_NO_TEST_CASE_SELECTION;
-
+   
     // TestSuitePropertiesDialog
     public static final String DIA_TITLE_TEST_SUITE_PROPERTIES = ComposerTestsuiteMessageConstants.DIA_TITLE_TEST_SUITE_PROPERTIES;
 
