@@ -60,6 +60,11 @@ public class TreeTableMenuItemConstants {
 	
 	public static final int RUN_FROM_THIS_STEP_ID = 256;
 	public static final int RUN_SELECTED_STEPS_ID = 257;
+	
+//	----------------------
+	public static final int ADD_TO_AN_EXISTING_TEST_SUITE_ID = 80;
+	public static final int ADD_TO_A_NEW_TEST_SUITE_ID = 81;
+//	----------------------
 
 	public static final String FAILURE_HANDLING_KEY = "FAILURE_HANDLING_KEY";
 
@@ -87,7 +92,12 @@ public class TreeTableMenuItemConstants {
     public static final String LOOPING_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_LOOPING_STATEMENT;
     public static final String BRANCHING_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_BRANCHING_STATEMENT;
     public static final String EXCEPTION_HANDLING_STATEMENT_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_EXCEPTION_HANDLING_STATEMENT;
-	
+    
+    
+//	--------------------------
+    public static final String ADD_TO_AN_EXISTING_TEST_SUITE_LABEL = StringConstants.CONS_MENU_CONTEXT_ADD_TO_AN_EXISTING_TEST_SUITE;
+    public static final String ADD_TO_A_NEW_TEST_SUITE_LABEL = StringConstants.CONS_MENU_CONTEXT_ADD_TO_A_NEW_TEST_SUITE;
+    
 	public static final String METHOD_MENU_ITEM_LABEL = StringConstants.CONS_MENU_CONTEXT_METHOD;
 	
 	private static Map<String, Integer> keywordClassOffsets = new HashMap<String, Integer>();
