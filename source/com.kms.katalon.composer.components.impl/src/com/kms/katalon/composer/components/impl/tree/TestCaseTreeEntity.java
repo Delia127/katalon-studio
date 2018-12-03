@@ -24,7 +24,7 @@ public class TestCaseTreeEntity extends AbstractTreeEntity {
 
     public static final String KEY_WORD = StringConstants.TREE_TEST_CASE_KW;
 
-    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "tag", "comment", "description" };
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "tag", "comment", "description", "folder" };
 
     private TestCaseEntity testCase;
 
@@ -102,6 +102,8 @@ public class TestCaseTreeEntity extends AbstractTreeEntity {
             return testCase.getComment();
         } else if (key.equals("description")) {
             return testCase.getDescription();
+        } else if (key.equals("folder")) {
+            return testCase.getParentFolder().getIdForDisplay();
         }
         return StringUtils.EMPTY;
     }
