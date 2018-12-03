@@ -176,12 +176,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     protected void updateLastRun(Date startTime) throws Exception {
-        TestSuiteEntity testSuite = getTestSuite();
-
-        if (testSuite.getLastRun() == null || startTime.after(testSuite.getLastRun())) {
-            testSuite.setLastRun(startTime);
-            TestSuiteController.getInstance().updateTestSuite(testSuite);
-        }
     }
 
     protected TestSuiteLogRecord prepareReport() {

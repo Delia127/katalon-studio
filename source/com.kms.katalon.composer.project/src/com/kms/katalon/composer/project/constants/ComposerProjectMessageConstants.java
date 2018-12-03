@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerProjectMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.project.constants.composerProjectMessages";
 
+	public static String CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER;
+
     public static String HAND_TEMP_CLEANER;
 
     public static String HAND_CLEANING_TEMP_FILES;

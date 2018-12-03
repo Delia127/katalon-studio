@@ -62,103 +62,105 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuitePart implements EventHandler {
 
-    private static final int MINIMUM_COMPOSITE_SIZE = 300;
+	private static final int MINIMUM_COMPOSITE_SIZE = 300;
 
-    @Inject
-    protected EModelService modelService;
+	@Inject
+	protected EModelService modelService;
 
-    @Inject
-    protected MApplication application;
+	@Inject
+	protected MApplication application;
 
-    @Inject
-    private IEventBroker eventBroker;
+	@Inject
+	private IEventBroker eventBroker;
 
-    private Composite compositeExecution, compositeMain;
+	private Composite compositeExecution, compositeMain;
 
-    private ScrolledComposite compositeTablePart;
+	private ScrolledComposite compositeTablePart;
 
-    private boolean isExecutionCompositeExpanded;
+	private boolean isExecutionCompositeExpanded;
 
-    private Text txtLastRun, txtRerun, txtUserDefinePageLoadTimeout;
+	private Text txtLastRun, txtRerun, txtUserDefinePageLoadTimeout;
 
-    private Link lblLastRun;
+	private Link lblLastRun;
 
-    private MPart mpart;
+	private MPart mpart;
 
-    private Composite compositeExecutionDetails;
+	private Composite compositeExecutionDetails;
 
-    private org.eclipse.swt.widgets.List listMailRcp;
+	private org.eclipse.swt.widgets.List listMailRcp;
 
-    private ListViewer listMailRcpViewer;
+	private ListViewer listMailRcpViewer;
 
-    private Button btnAddMailRcp, btnDeleteMailRcp, btnClearMailRcp;
+	private Button btnAddMailRcp, btnDeleteMailRcp, btnClearMailRcp;
 
-    private Button radioUseDefaultPageLoadTimeout, radioUserDefinePageLoadTimeout;
+	private Button radioUseDefaultPageLoadTimeout, radioUserDefinePageLoadTimeout;
 
-    private Composite compositeLastRunAndReRun;
+	private Composite compositeLastRunAndReRun;
 
-    private ImageButton btnExpandExecutionComposite;
+	private ImageButton btnExpandExecutionComposite;
 
-    private Button rerunTestCaseOnly;
+	private Button rerunTestCaseOnly;
 
-    private TestSuiteCompositePart parentTestSuiteCompositePart;
+	private TestSuiteCompositePart parentTestSuiteCompositePart;
 
-    private Label lblExecutionInformation;
+	private Label lblExecutionInformation;
 
-    private TestSuitePartTestCaseView childrenView;
+	private TestSuitePartTestCaseView childrenView;
 
-    private List<Thread> uiThreads;
+	private List<Thread> uiThreads;
 
-    private Composite parent;
+	private Composite parent;
 
     private boolean isLoading;
+    
+    private ReportEntity lastRunReport;
 
-    private Listener layoutExecutionCompositeListener = new Listener() {
+	private Listener layoutExecutionCompositeListener = new Listener() {
 
-        @Override
-        public void handleEvent(org.eclipse.swt.widgets.Event event) {
-            isExecutionCompositeExpanded = !isExecutionCompositeExpanded;
-            layoutExecutionInfo();
-        }
-    };
+		@Override
+		public void handleEvent(org.eclipse.swt.widgets.Event event) {
+			isExecutionCompositeExpanded = !isExecutionCompositeExpanded;
+			layoutExecutionInfo();
+		}
+	};
 
-    @PostConstruct
-    public void createControls(Composite parent, MPart mpart) {
-        this.parent = parent;
-        this.mpart = mpart;
+	@PostConstruct
+	public void createControls(Composite parent, MPart mpart) {
+		this.parent = parent;
+		this.mpart = mpart;
 
-        if (mpart.getParent().getParent() instanceof MGenericTile
-                && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
-            MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
-            if (compositePart.getObject() instanceof TestSuiteCompositePart) {
-                parentTestSuiteCompositePart = ((TestSuiteCompositePart) compositePart.getObject());
-            }
-        }
+		if (mpart.getParent().getParent() instanceof MGenericTile
+				&& ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
+			MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
+			if (compositePart.getObject() instanceof TestSuiteCompositePart) {
+				parentTestSuiteCompositePart = ((TestSuiteCompositePart) compositePart.getObject());
+			}
+		}
 
-        childrenView = new TestSuitePartTestCaseView(this);
-        uiThreads = new LinkedList<Thread>();
-        isLoading = false;
+		childrenView = new TestSuitePartTestCaseView(this);
+		uiThreads = new LinkedList<Thread>();
+		isLoading = false;
 
-        initExpandedState();
+		initExpandedState();
 
-        registerEventBrokerListerners();
+		registerEventBrokerListerners();
 
-        createComponents(parent);
+		createComponents(parent);
 
-        registerControlListeners();
+		registerControlListeners();
 
-        layoutExecutionInfo();
-        childrenView.layout();
-    }
+		layoutExecutionInfo();
+		childrenView.layout();
+	}
 
-    public MPart getMPart() {
-        return mpart;
-    }
+	public MPart getMPart() {
+		return mpart;
+	}
 
-    private void initExpandedState() {
-        isExecutionCompositeExpanded = false;
-        childrenView.initExpandedState();
-    }
+	private void initExpandedState() {
+		isExecutionCompositeExpanded = false;
+		childrenView.initExpandedState();
+	}
 
     @Focus
     public void setFocus() {
@@ -176,7 +178,8 @@ public class TestSuitePart implements EventHandler {
         eventBroker.subscribe(TestSuiteEventConstants.TESTSUITE_UPDATE_IS_RUN_COLUMN_HEADER, this);
         eventBroker.subscribe(EventConstants.TESTCASE_UPDATED, this);
         eventBroker.subscribe(EventConstants.TEST_SUITE_UPDATED, this);
-        eventBroker.subscribe(EventConstants.TEST_DATA_UPDATED, this);
+		eventBroker.subscribe(EventConstants.TEST_DATA_UPDATED, this);
+		eventBroker.subscribe(EventConstants.ADD_TEST_CASE_FROM_TEST_CASE, this);
         // eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM,
         // this);
     }
@@ -332,10 +335,8 @@ public class TestSuitePart implements EventHandler {
 
     private void openReportOfLastRun() {
         try {
-            ReportEntity reportEntity = ReportController.getInstance().getLastRunReportEntity(
-                    parentTestSuiteCompositePart.getTestSuiteClone());
-            if (reportEntity != null) {
-                eventBroker.post(EventConstants.REPORT_OPEN, reportEntity);
+            if (lastRunReport != null) {
+                eventBroker.post(EventConstants.REPORT_OPEN, lastRunReport);
             } else {
                 MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
                         StringConstants.PA_WARN_MSG_REPORT_FILE_DOES_NOT_EXIST);
@@ -380,10 +381,11 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
-        if (testSuite.getLastRun() != null) {
+        lastRunReport = ReportController.getInstance().getLastRunReportEntity(testSuite);
+        if (lastRunReport != null) {
             lblLastRun.setText("<A>" + StringConstants.PA_LBL_LAST_RUN + "</A>");
             lblLastRun.setToolTipText(StringConstants.PA_LBL_TIP_LAST_RUN);
-            txtLastRun.setText(testSuite.getLastRun().toString());
+            txtLastRun.setText(ReportController.getInstance().getReportDate(lastRunReport).toString());
         } else {
             lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
             lblLastRun.setToolTipText("");
@@ -626,7 +628,23 @@ public class TestSuitePart implements EventHandler {
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }
-        }
+        } else if (event.getTopic().equals(EventConstants.ADD_TEST_CASE_FROM_TEST_CASE)) {
+			try {
+				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+
+				if (object != null) {
+					try {
+						String nameTestSuite = (String) ((Object[]) object)[1];
+						TestCaseEntity testCase = (TestCaseEntity) ((Object[]) object)[0];
+						childrenView.addNewTestCase(nameTestSuite, testCase);
+					} catch (Exception e) {
+						LoggerSingleton.logError(e);
+					}
+				}
+			} catch (Exception e) {
+				LoggerSingleton.logError(e);
+			}
+		}
     }
 
     public void dispose() {

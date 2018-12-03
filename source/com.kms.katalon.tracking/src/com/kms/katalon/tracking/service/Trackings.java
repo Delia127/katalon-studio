@@ -316,6 +316,10 @@ public class Trackings {
     public static void trackClickHarLink() {
         trackUserAction("clickHarLink");
     }
+
+    public static void trackInAppSurveyRatingAndIdea(int numberOfStars, String userIdea) {
+    	trackUserAction("katalonStudioSurvey", "star", numberOfStars, "content", userIdea);
+    }
     
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);

@@ -4,14 +4,6 @@ Bundle-Name: Qtest
 Bundle-SymbolicName: com.kms.katalon.integration.qtest;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.integration.qtest,
- com.kms.katalon.integration.qtest.constants,
- com.kms.katalon.integration.qtest.credential,
- com.kms.katalon.integration.qtest.credential.impl,
- com.kms.katalon.integration.qtest.entity,
- com.kms.katalon.integration.qtest.exception,
- com.kms.katalon.integration.qtest.helper,
- com.kms.katalon.integration.qtest.setting
 Require-Bundle: com.kms.katalon.entity,
  org.qas.qtest.sdk-java,
  com.fasterxml.jackson.core.jackson-core,
@@ -32,6 +24,7 @@ Require-Bundle: com.kms.katalon.entity,
  com.fasterxml.jackson.core.jackson-databind,
  org.apache.commons.logging,
  com.kms.katalon.util,
+ com.kms.katalon.execution,
  com.auth0.java-jwt,
  org.apache.commons.codec,
  com.kms.katalon.controller,
@@ -39,5 +32,13 @@ Require-Bundle: com.kms.katalon.entity,
  com.google.gson,
  com.kms.katalon.application,
  com.google.http-client.google-http-client
+Export-Package: com.kms.katalon.integration.qtest,
+ com.kms.katalon.integration.qtest.constants,
+ com.kms.katalon.integration.qtest.credential,
+ com.kms.katalon.integration.qtest.credential.impl,
+ com.kms.katalon.integration.qtest.entity,
+ com.kms.katalon.integration.qtest.exception,
+ com.kms.katalon.integration.qtest.helper,
+ com.kms.katalon.integration.qtest.setting
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

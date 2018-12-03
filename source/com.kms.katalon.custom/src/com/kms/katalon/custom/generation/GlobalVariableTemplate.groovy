@@ -59,10 +59,17 @@ public class GlobalVariable {
 )<% } %>
         
         String profileName = RunConfiguration.getExecutionProfile()
-        
         def selectedVariables = allVariables[profileName]
+		
+		for(object in selectedVariables){
+			String overridingGlobalVariable = RunConfiguration.getOverridingGlobalVariable(object.key)
+			if(overridingGlobalVariable != null){
+				selectedVariables.put(object.key, overridingGlobalVariable)
+			}
+		}
+
         <% globalVariables.each { entry -> %>\
-<%=entry.value.getName()%> = selectedVariables['<%=entry.value.getName()%>']
+<%=entry.value.getName()%> = selectedVariables["<%=entry.value.getName()%>"]
         <% } %>
     }
 }

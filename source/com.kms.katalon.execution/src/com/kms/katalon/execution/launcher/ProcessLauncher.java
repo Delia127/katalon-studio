@@ -35,6 +35,8 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
     protected ILaunchProcess process;
 
     private LauncherManager manager;
+    
+    private BasicLauncher parentLauncher;
 
     private ProcessLauncher() {
         super();
@@ -80,7 +82,9 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
     public void setStatus(LauncherStatus status) {
     	super.setStatus(status);
     	ExecutionEntityResult executionResult = new ExecutionEntityResult();
-    	executionResult.setName(executedEntity.getSourceName());
+    	if ((LauncherStatus.DONE == status || LauncherStatus.TERMINATED == status) && parentLauncher == null) {
+    		executionResult.setEnd(true);
+        }
     	notifyProccess(status, executedEntity, executionResult);
     }
 
@@ -235,5 +239,9 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
     public void clean() {
         File scriptFile = getRunConfig().getExecutionSetting().getScriptFile();
         FileUtils.deleteQuietly(scriptFile);
+    }
+    
+    public void setParentLauncher(BasicLauncher parentLauncher) {
+    	this.parentLauncher = parentLauncher;
     }
 }

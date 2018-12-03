@@ -3,6 +3,8 @@ package com.kms.katalon.integration.qtest.helper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -27,6 +29,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
 
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.exception.QTestAPIConnectionException;
 import com.kms.katalon.integration.qtest.exception.QTestException;
@@ -60,7 +65,7 @@ public class QTestHttpRequestHelper {
             throws QTestIOException {
         CloseableHttpClient client = null;
         try {
-            client = HttpClientBuilder.create().build();
+            client = HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
             List<NameValuePair> postParams = new ArrayList<NameValuePair>();
             postParams.add(new BasicNameValuePair("grant_type", "password"));
             postParams.add(new BasicNameValuePair("username", credential.getUsername()));
@@ -97,6 +102,8 @@ public class QTestHttpRequestHelper {
             } finally {
                 IOUtils.closeQuietly(response);
             }
+        } catch (URISyntaxException | GeneralSecurityException | IOException e) {
+            throw new QTestIOException(ExceptionsUtil.getStackTraceForThrowable(e));
         } finally {
             IOUtils.closeQuietly(client);
         }
@@ -106,7 +113,7 @@ public class QTestHttpRequestHelper {
             throws QTestException {
         CloseableHttpClient client = null;
         try {
-            client = HttpClientBuilder.create().build();
+            client = HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
 
             Map<String, String> cookies = new HashMap<String, String>();
             doLogin(credential, client, cookies);
@@ -114,6 +121,8 @@ public class QTestHttpRequestHelper {
             doLogout(credential, client, cookies);
 
             return result;
+        } catch (URISyntaxException | GeneralSecurityException | IOException e) {
+            throw new QTestIOException(ExceptionsUtil.getStackTraceForThrowable(e));
         } finally {
             IOUtils.closeQuietly(client);
         }
