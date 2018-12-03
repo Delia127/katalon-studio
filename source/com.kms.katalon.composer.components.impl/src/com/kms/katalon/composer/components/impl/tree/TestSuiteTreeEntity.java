@@ -23,7 +23,7 @@ public class TestSuiteTreeEntity extends AbstractTreeEntity {
 
     public static final String KEY_WORD = StringConstants.TREE_TEST_SUITE_KW;
 
-    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description", "folder" };
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description" };
 
     private TestSuiteEntity testSuite;
 
@@ -103,8 +103,6 @@ public class TestSuiteTreeEntity extends AbstractTreeEntity {
             return testSuite.getRelativePathForUI().replace(File.separator, "/");
         } else if (key.equals("description")) {
             return testSuite.getDescription();
-        } else if (key.equals("folder")) {
-            return testSuite.getParentFolder().getIdForDisplay();
         }
         return StringUtils.EMPTY;
     }

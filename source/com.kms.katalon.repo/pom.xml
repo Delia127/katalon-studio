@@ -109,10 +109,6 @@
 								</artifact>
 								<artifact>
 									<id>org.apache:xml.apis:1.4.01</id>
-									<override>true</override>
-									<instructions>
-										<_noee>true</_noee>
-									</instructions>
 								</artifact>
 								<artifact>
 									<id>org.apache.commons:commons-email:1.4</id>
