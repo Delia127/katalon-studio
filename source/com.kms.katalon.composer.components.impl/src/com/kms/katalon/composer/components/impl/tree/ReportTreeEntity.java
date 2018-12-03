@@ -25,7 +25,7 @@ public class ReportTreeEntity extends AbstractTreeEntity {
 
     public static final String KEY_WORD = StringConstants.TREE_REPORT_KW;
 
-    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "folder" };
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name" };
 
     private ReportEntity report;
 
@@ -105,8 +105,6 @@ public class ReportTreeEntity extends AbstractTreeEntity {
             return report.getRelativePathForUI().replace(File.separator, "/");
         } else if (key.equals("name")) {
             return report.getName();
-        } else if (key.equals("folder")) {
-            return report.getParentFolder().getIdForDisplay();
         }
         return StringUtils.EMPTY;
     }

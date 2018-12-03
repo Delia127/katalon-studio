@@ -25,7 +25,7 @@ public class TestDataTreeEntity extends AbstractTreeEntity {
 
     public static final String KEY_WORD = StringConstants.TREE_TEST_DATA_KW;
 
-    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description", "source name", "folder" };
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "description", "source name" };
 
     private DataFileEntity testData;
 
@@ -110,8 +110,6 @@ public class TestDataTreeEntity extends AbstractTreeEntity {
                 return testData.getDescription();
             } else if (key.equals("source name")) {
                 return testData.getLocation();
-            } else if (key.equals("folder")) {
-                return testData.getParentFolder().getIdForDisplay();
             }
         }
         return StringUtils.EMPTY;

@@ -33,7 +33,7 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
 
     public static final String KEY_WORD = StringConstants.TREE_OBJECT_KW;
 
-    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "folder" };
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name" };
 
     private WebElementEntity webElement;
 
@@ -177,8 +177,6 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
             return webElement.getName();
         } else if (key.equals("id")) {
             return webElement.getRelativePathForUI().replace(File.separator, "/");
-        } else if (key.equals("folder")) {
-            return webElement.getParentFolder().getIdForDisplay();
         }
         return StringUtils.EMPTY;
     }

@@ -15,7 +15,7 @@ public class ProfileTreeEntity extends AbstractTreeEntity {
 
     private static final long serialVersionUID = -117775481186850234L;
     
-    private static final String[] SEARCH_TAGS = new String[] { "name", "folder" };
+    private static final String[] SEARCH_TAGS = new String[] { "name" };
 
     private ExecutionProfileEntity variableCollection;
     
@@ -83,9 +83,6 @@ public class ProfileTreeEntity extends AbstractTreeEntity {
     public String getPropertyValue(String key) {
         if ("name".equals(key)) {
             return variableCollection.getName();
-        }
-        if ("folder".equals("key")) {
-            return variableCollection.getParentFolder().getIdForDisplay();
         }
         return StringUtils.EMPTY;
     }

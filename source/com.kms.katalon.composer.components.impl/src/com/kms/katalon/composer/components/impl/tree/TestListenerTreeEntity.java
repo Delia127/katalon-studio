@@ -84,9 +84,6 @@ public class TestListenerTreeEntity extends AbstractTreeEntity {
                 return entity.getIdForDisplay();
             case "name":
                 return entity.getName();
-            case "folder":
-                return entity.getParentFolder().getIdForDisplay();
-                
         }
         return StringUtils.EMPTY;
     }
