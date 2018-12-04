@@ -89,7 +89,11 @@ pipeline {
                 dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
                 {
                     sh '''curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip '''
-                    unzip zipfile: 'master.zip', dir: '${WORKSPACE}/katalon-keyword-tests'
+                    fileOperations([
+                            fileUnzipOperation(
+                                    filePath: 'master.zip'
+                                    targetLocation: '.')
+                            )     
                     sh './Katalon\\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="${WORKSPACE}/katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests"'
                 }
             }
