@@ -70,7 +70,7 @@ pipeline {
             }
             steps {
                 // Execute codesign command to package .DMG file for macOS
-                dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
+                dir ("source/com.kms.katalon.product/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
                 { sh ''' codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
                     sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" '''        
                         fileOperations([
@@ -80,6 +80,17 @@ pipeline {
                                     flattenFiles: true,
                                     targetLocation: "source/com.kms.katalon.product.qtest_edition/target/products")
                     ])
+                }
+            }
+        }
+        
+        stage ('Testing') {
+            steps {
+                dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
+                {
+                    sh '''curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip '''
+                    unzip zipfile: 'master.zip', dir: '${WORKSPACE}/katalon-keyword-tests'
+                    sh './Katalon\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="${WORKSPACE}/katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests"'
                 }
             }
         }
