@@ -231,6 +231,26 @@ public class ComposerWebserviceMessageConstants extends NLS {
     
     public static String QUICKSTART_IMPORT_WSDL_FROM_FILE_OR_URL;
     
+    public static String LINK_CUSTOMIZE_API_METHODS;
+
+    public static String METHOD_TABLE_COL_METHOD;
+
+    public static String METHOD_TABLE_COL_TYPE;
+
+    public static String METHOD_TABLE_COL_DESCRIPTION;
+    
+    public static String DiaEditWSMethod_LBL_METHOD;
+    
+    public static String DiaEditWSMethod_LBL_DESCRIPTION;
+    
+    public static String DiaEditWSMethod_MSG_EMPTY_METHOD_NAME;
+    
+    public static String DiaEditWSMethod_MSG_DUPLICATED_METHOD_NAME;
+    
+    public static String DiaEditWSMethod_TITLE_ADD_NEW;
+    
+    public static String DiaEditWSMethod_TITLE_EDIT;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);

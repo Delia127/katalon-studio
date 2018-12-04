@@ -55,6 +55,25 @@ public class SettingHandler {
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, PreferencesRegistry preferencesRegistry) {
+        openSettingsDialogToPage(shell, preferencesRegistry, null);
+    }
+    
+    @Inject
+    @Optional
+    public void openSettingsPage(@UIEventTopic(EventConstants.PROJECT_SETTINGS_PAGE) Object eventData) {
+        if (!canExecute()) {
+            return;
+        }
+
+        PreferencesRegistry preferencesRegistry = ContextInjectionFactory.make(PreferencesRegistry.class,
+                eclipseContext);
+
+        String pageId = (String) eventData;
+        
+        openSettingsDialogToPage(Display.getCurrent().getActiveShell(), preferencesRegistry, pageId);
+    }
+    
+    private void openSettingsDialogToPage(Shell shell, PreferencesRegistry preferencesRegistry, String pageId) {
         PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP);
 
         hideIOSPageOnNoneMacOS(pm);
@@ -159,7 +178,8 @@ public class SettingHandler {
                 super.createButtonsForButtonBar(parent);
             }
         };
-        dialog.setSelectedNode(StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID);
+        String initialSelectedPage = pageId != null ? pageId : StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID;
+        dialog.setSelectedNode(initialSelectedPage);
         dialog.create();
         dialog.getTreeViewer().setComparator(new DefinedOrderedPageComparator());
         dialog.getShell().setText(StringConstants.HAND_PROJ_SETTING);
