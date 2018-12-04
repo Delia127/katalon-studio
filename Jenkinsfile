@@ -90,7 +90,7 @@ pipeline {
                 {
                     sh '''curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip '''
                     unzip zipfile: 'master.zip', dir: '${WORKSPACE}/katalon-keyword-tests'
-                    sh './Katalon\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="${WORKSPACE}/katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests"'
+                    sh './Katalon\\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="${WORKSPACE}/katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests"'
                 }
             }
         }
