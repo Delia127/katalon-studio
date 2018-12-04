@@ -28,7 +28,7 @@ public class AbstractEntityDialog extends TitleAreaDialog {
 
     private static final int BASE_NUMBER_COLUMN = 2;
 
-    private static final int DIFF_SIZE = 2;
+    private static final int DIFF_SIZE = 1;
 
     private static final int H_GAP_IMAGE = 5;
 
