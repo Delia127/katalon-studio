@@ -92,8 +92,8 @@ pipeline {
                     fileOperations([
                             fileUnzipOperation(
                                     filePath: 'master.zip'
-                                    targetLocation: '.')
-                            )     
+                                    targetLocation: ' ')
+                            ])     
                     sh './Katalon\\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="${WORKSPACE}/katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests"'
                 }
             }
