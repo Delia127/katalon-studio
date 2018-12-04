@@ -90,7 +90,7 @@ pipeline {
                 {
                     sh '''curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip '''
                     fileOperations([
-                            fileUnzipOperation(
+                            fileUnZipOperation(
                                     filePath: 'master.zip',
                                     targetLocation: '${pwd}')
                             ])     
