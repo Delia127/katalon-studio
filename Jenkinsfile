@@ -82,7 +82,8 @@ pipeline {
             steps {
                 dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
                 {
-                    sh '''curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip '''
+                    sh 'curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip'
+                    sh 'mkdir -p katalon-keyword-tests'
                     fileOperations([
                             fileUnZipOperation(
                                     filePath: 'katalon-keyword-tests-master.zip',
