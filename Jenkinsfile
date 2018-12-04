@@ -14,18 +14,12 @@ pipeline {
             steps {
                 script {
                     // Terminate running builds of the same job
-                    abortPreviousBuilds()          
+                    abortPreviousBuilds()
+                    sh '''chmod -R 777 ${WORKSPACE}'''
                 }
             }
         }
-
-        stage('Set permissions to source') {
-            steps {
-                // Set r+w permissions to source folder
-                sh '''chmod -R 777 ${WORKSPACE}'''
-            }
-        }
-
+        
         stage('Building') {
                 // start maven commands to get dependencies
             steps {
@@ -91,7 +85,7 @@ pipeline {
                     sh '''curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip '''
                     fileOperations([
                             fileUnZipOperation(
-                                    filePath: 'master.zip',
+                                    filePath: 'katalon-keyword-tests-master.zip',
                                     targetLocation: 'katalon-keyword-tests')
                             ])     
                     sh './Katalon\\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests"'
