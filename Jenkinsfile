@@ -86,7 +86,7 @@ pipeline {
                     sh 'mkdir -p katalon-keyword-tests'
                     fileOperations([
                             fileUnZipOperation(
-                                    filePath: 'master.zip',
+                                    filePath: '${WORKSPACE}/source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64/master.zip',
                                     targetLocation: 'katalon-keyword-tests')
                             ])     
                     sh './Katalon\\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests"'
