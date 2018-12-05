@@ -58,8 +58,12 @@ public class GitPreferencePage extends FieldEditorPreferencePageWithHelp {
 
     @Override
     public boolean performOk() {
+		if (gitEnableFieldEditor == null) {
+			return super.performOk();
+		}
         if (gitEnableFieldEditor.getBooleanValue()) {
             GitProjectData.attachToWorkspace();
+            
         } else {
             GitProjectData.detachFromWorkspace();
         }
