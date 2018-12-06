@@ -51,6 +51,7 @@ import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
 import com.kms.katalon.composer.execution.launcher.IDELaunchShorcut;
 import com.kms.katalon.composer.execution.launcher.IDELauncher;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
+import com.kms.katalon.composer.testsuite.parts.ParentTestSuiteCompositePart;
 import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -60,6 +61,7 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
@@ -189,6 +191,22 @@ public abstract class AbstractExecutionHandler {
                 }
                 return testCaseCompositePart.getOriginalTestCase();
             } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
+                    && selectedPart.getObject() instanceof ParentTestSuiteCompositePart) {
+                ParentTestSuiteCompositePart testSuiteComposite = (ParentTestSuiteCompositePart) selectedPart.getObject();
+                TestSuiteEntity originalTestSuite = testSuiteComposite.getOriginalTestSuite();
+                if (originalTestSuite instanceof FilteringTestSuiteEntity) {
+                    return originalTestSuite;
+                }
+                if (originalTestSuite.getTestSuiteTestCaseLinks().isEmpty()) {
+                    if (MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                            StringConstants.HAND_TITLE_INFORMATION,
+                            StringConstants.HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE)) {
+                        ((TestSuiteCompositePart) testSuiteComposite).openAddTestCaseDialog();
+                    }
+                    return null;
+                }
+                return originalTestSuite;
+            }  else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestSuiteCompositePart) {
                 TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
                 if (testSuiteComposite.getOriginalTestSuite().getTestSuiteTestCaseLinks().isEmpty()) {
@@ -335,11 +353,14 @@ public abstract class AbstractExecutionHandler {
             @Override
             protected IStatus run(final IProgressMonitor monitor) {
                 try {
-                    monitor.beginTask(StringConstants.HAND_JOB_LAUNCHING_TEST_SUITE, 4);
+                    monitor.beginTask(StringConstants.HAND_JOB_LAUNCHING_TEST_SUITE, 5);
                     monitor.subTask(StringConstants.HAND_JOB_VALIDATING_TEST_SUITE);
                     // back-up
 
                     final TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity(testSuite);
+                    monitor.subTask("Preparing test cases...");
+                    testSuiteExecutedEntity.prepareTestCases();
+
                     final int totalTestCases = testSuiteExecutedEntity.getTotalTestCases();
                     if (totalTestCases > 0) {
                         monitor.subTask(StringConstants.HAND_JOB_ACTIVATING_VIEWERS);

@@ -119,6 +119,7 @@ public final class EntityService {
                 com.kms.katalon.entity.testdata.DataFileEntity.class,
                 com.kms.katalon.entity.testdata.InternalDataColumnEntity.class,
                 com.kms.katalon.entity.testsuite.TestSuiteEntity.class,
+                com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity.class,
                 com.kms.katalon.entity.variable.VariableEntity.class,
                 com.kms.katalon.entity.link.TestSuiteTestCaseLink.class, 
                 com.kms.katalon.entity.link.VariableLink.class,

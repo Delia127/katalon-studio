@@ -22,30 +22,40 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.katalon.platform.api.extension.filter.impl.InternalFilterAction;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.controller.FilterController;
 
 public class AdvancedSearchDialog extends Dialog {
 
-    private static final int MIN_WIDTH = 500;
-    
+    public static final int MIN_WIDTH = 500;
+
     private static final String DIALOG_TITLE = StringConstants.CUS_DIALOG_TITLE;
+
     private static final String SEARCH_LABEL = StringConstants.CUS_LBL_SEARCH;
+
     private static final String CLEAR_LABEL = StringConstants.CUS_LBL_CLEAR;
+
     private String[] searchTags;
-    private Map<String, String> properties; //key: searchTag, value: input to search
-    private Map<String, Text> textMap; //key: searchTag, text: where to place input
+
+    private Map<String, String> properties; // key: searchTag, value: input to search
+
+    private Map<String, Text> textMap; // key: searchTag, text: where to place input
+
     private String txtInput;
+
     private Point location;
 
-    public AdvancedSearchDialog(Shell parentShell, String[] searchTags, String txtInput, Point location) {
+    public AdvancedSearchDialog(Shell parentShell, String txtInput, Point location) {
         super(parentShell);
         this.txtInput = txtInput;
-        this.searchTags = searchTags;
         textMap = new LinkedHashMap<String, Text>();
         this.location = location;
+        this.searchTags = FilterController.getInstance().getAllKeywords().toArray(new String[0]);
     }
 
     @SuppressWarnings("restriction")
@@ -53,7 +63,7 @@ public class AdvancedSearchDialog extends Dialog {
         Composite container = (Composite) super.createDialogArea(parent);
         GridLayout gridLayout = (GridLayout) container.getLayout();
         gridLayout.numColumns = 2;
-        
+
         try {
             if (searchTags != null) {
                 properties = EntityViewerFilter.parseSearchedString(searchTags, txtInput);
@@ -108,22 +118,22 @@ public class AdvancedSearchDialog extends Dialog {
         createButton(parent, IDialogConstants.OK_ID, SEARCH_LABEL, true);
         Button clear = createButton(parent, -1, CLEAR_LABEL, false);
         clear.addListener(SWT.Selection, new Listener() {
-            
+
             @Override
             public void handleEvent(Event event) {
                 clearOptions();
             }
         });
-        
+
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
-    
+
     private void clearOptions() {
         this.txtInput = StringUtils.EMPTY;
         properties.clear();
         refreshControls();
     }
-    
+
     private void refreshControls() {
         if (properties == null) {
             properties = new LinkedHashMap<String, String>();
@@ -137,17 +147,17 @@ public class AdvancedSearchDialog extends Dialog {
             }
         }
     }
-    
+
     @Override
     public Point getInitialSize() {
         Point preferSize = super.getInitialSize();
         return new Point(Math.max(preferSize.x, MIN_WIDTH), preferSize.y);
     }
-    
+
     @Override
     public Point getInitialLocation(Point initialSize) {
         return new Point(this.location.x, this.location.y);
-        
+
     }
 
 }

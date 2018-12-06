@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +72,9 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                     if (nodeA instanceof ReportTreeEntity && nodeB instanceof ReportTreeEntity) {
                         ReportEntity reportA = (ReportEntity) nodeA.getObject();
                         ReportEntity reportB = (ReportEntity) nodeB.getObject();
-                        return reportA.getDateCreated().after(reportB.getDateCreated()) ? 1 : -1;
+                        Date dateCreatedOfA = reportA.getDateCreated() != null ? reportA.getDateCreated() : new Date();
+                        Date dateCreatedOfB = reportB.getDateCreated() != null ? reportB.getDateCreated() : new Date();
+                        return dateCreatedOfA.compareTo(dateCreatedOfB);
                     }
                     return StringUtils.compareIgnoreCase(nodeA.getText(), nodeB.getText());
                 } catch (Exception e) {

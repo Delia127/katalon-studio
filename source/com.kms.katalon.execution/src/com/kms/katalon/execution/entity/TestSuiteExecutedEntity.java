@@ -6,19 +6,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import com.kms.katalon.composer.components.impl.util.EntityIndexingUtil;
+import com.kms.katalon.controller.FilterController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.core.testdata.TestDataInfo;
 import com.kms.katalon.core.testdata.TestData;
 import com.kms.katalon.core.testdata.TestDataFactory;
+import com.kms.katalon.core.testdata.TestDataInfo;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestDataCombinationType;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
@@ -58,10 +63,41 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     public void setTestSuite(TestSuiteEntity testSuite) throws IOException, Exception {
         updateEntity(testSuite);
-        getEmailConfig(testSuite.getProject()).addRecipients(MailUtil.splitRecipientsString(testSuite.getMailRecipient()));
+        getEmailConfig(testSuite.getProject())
+                .addRecipients(MailUtil.splitRecipientsString(testSuite.getMailRecipient()));
         rerunSetting.setRemainingRerunTimes(testSuite.getNumberOfRerun());
         rerunSetting.setRerunFailedTestCaseOnly(testSuite.isRerunFailedTestCasesOnly());
-        loadTestDataForTestSuiteExecutedEntity(testSuite);
+    }
+
+    public void prepareTestCases() throws IOException, Exception {
+        TestSuiteEntity testSuite = (TestSuiteEntity) getEntity();
+        List<IExecutedEntity> executedItems;
+        if (testSuite instanceof FilteringTestSuiteEntity) {
+            executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite);
+        } else {
+            executedItems = loadTestCases(testSuite);
+        }
+        setTestCaseExecutedEntities(executedItems);
+    }
+
+    private List<IExecutedEntity> loadTestCasesForFilteringTestSuite(FilteringTestSuiteEntity testSuite)
+            throws IOException {
+        List<String> testCaseIds = EntityIndexingUtil.getInstance(ProjectController.getInstance().getCurrentProject())
+                .getIndexedEntityIds("tc");
+        List<TestCaseEntity> filteredTestCases = new ArrayList<>();
+        List<TestCaseEntity> testCaseEntities = testCaseIds.stream().map(id -> {
+            try {
+                return TestCaseController.getInstance().getTestCaseByDisplayId(id);
+            } catch (Exception e1) {
+                return null;
+            }
+        }).collect(Collectors.toList());
+        filteredTestCases = FilterController.getInstance().filter(testCaseEntities, testSuite.getFilteringText());
+        return filteredTestCases.stream().map(tc -> {
+            TestCaseExecutedEntity executedTestCase = new TestCaseExecutedEntity(tc);
+            executedTestCase.setLoopTimes(1);
+            return executedTestCase;
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -70,14 +106,16 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
      * 
      * @param testSuite
      */
-    private void loadTestDataForTestSuiteExecutedEntity(TestSuiteEntity testSuite) throws Exception {
+    private List<IExecutedEntity> loadTestCases(TestSuiteEntity testSuite) throws Exception {
         String projectDir = testSuite.getProject().getFolderLocation();
 
         testDataMap.clear();
 
-        for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite)) {
-            TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-                    testCaseLink.getTestCaseId());
+        List<IExecutedEntity> executedItems = new ArrayList<>();
+        for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance()
+                .getTestSuiteTestCaseRun(testSuite)) {
+            TestCaseEntity testCase = TestCaseController.getInstance()
+                    .getTestCaseByDisplayId(testCaseLink.getTestCaseId());
 
             if (testCase == null) {
                 throw new IllegalArgumentException(MessageFormat.format(StringConstants.UTIL_EXC_TEST_CASE_X_NOT_FOUND,
@@ -91,8 +129,9 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             // make sure all TestDataExecutedEntity in testCaseExecutedEntity
             // has the same rows to prevent NullPointerException
 
-            getExecutedItems().add(testCaseExecutedEntity);
+            executedItems.add(testCaseExecutedEntity);
         }
+        return executedItems;
     }
 
     private void prepareTestCaseExecutedEntity(String projectDir, TestSuiteTestCaseLink testCaseLink,
@@ -137,7 +176,8 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         return Math.min(numberTestCaseUsedOnce, rowCount);
     }
 
-    private void updateMultiplierForSibblingTestDataExecuted(TestCaseExecutedEntity testCaseExecutedEntity, int rowCount) {
+    private void updateMultiplierForSibblingTestDataExecuted(TestCaseExecutedEntity testCaseExecutedEntity,
+            int rowCount) {
         for (TestDataExecutedEntity siblingDataExecuted : testCaseExecutedEntity.getTestDataExecutions()) {
             if (siblingDataExecuted.getType() != TestDataCombinationType.MANY) {
                 continue;
@@ -236,15 +276,15 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
                 if (rowStart > totalRowCount) {
                     throw new IllegalArgumentException(MessageFormat.format(
                             StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
-                            testDataLink.getTestDataId(), Integer.toString(totalRowCount),
-                            testCaseLink.getTestCaseId(), Integer.toString(rowStart)));
+                            testDataLink.getTestDataId(), Integer.toString(totalRowCount), testCaseLink.getTestCaseId(),
+                            Integer.toString(rowStart)));
                 }
 
                 if (rowEnd > totalRowCount) {
-                    throw new IllegalArgumentException(MessageFormat.format(
-                            StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
-                            testDataLink.getTestDataId(), Integer.toString(totalRowCount),
-                            testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
+                    throw new IllegalArgumentException(
+                            MessageFormat.format(StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
+                                    testDataLink.getTestDataId(), Integer.toString(totalRowCount),
+                                    testCaseLink.getTestCaseId(), Integer.toString(rowEnd)));
                 }
                 for (int rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
                     rowIndexArray.add(rowIndex);
@@ -253,9 +293,9 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             }
             int rowIndex = Integer.valueOf(rowIndexString);
             if (rowIndex < TestData.BASE_INDEX || rowIndex > totalRowCount) {
-                throw new IllegalArgumentException(MessageFormat.format(
-                        StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexString, testCaseLink.getTestCaseId(),
-                        testDataLink.getTestDataId()));
+                throw new IllegalArgumentException(
+                        MessageFormat.format(StringConstants.UTIL_EXC_IDX_X_INVALID_TC_Y_TD_Z, rowIndexString,
+                                testCaseLink.getTestCaseId(), testDataLink.getTestDataId()));
             }
             rowIndexArray.add(rowIndex);
         }
@@ -268,15 +308,15 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         int rowEnd = testDataLink.getIterationEntity().getTo();
         int totalRowCount = testData.getRowNumbers();
         if (rowStart > totalRowCount) {
-            throw new IllegalArgumentException(MessageFormat.format(
-                    StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
-                    testDataLink.getTestDataId(), totalRowCount, testCaseLink.getTestCaseId(), rowStart));
+            throw new IllegalArgumentException(
+                    MessageFormat.format(StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_START_AT_ROW_IDX,
+                            testDataLink.getTestDataId(), totalRowCount, testCaseLink.getTestCaseId(), rowStart));
         }
 
         if (rowEnd > totalRowCount) {
-            throw new IllegalArgumentException(MessageFormat.format(
-                    StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
-                    testDataLink.getTestDataId(), totalRowCount, testCaseLink.getTestCaseId(), rowEnd));
+            throw new IllegalArgumentException(
+                    MessageFormat.format(StringConstants.UTIL_EXC_TD_X_HAS_ONLY_Y_ROWS_BUT_TC_Z_ENDS_AT_ROW_IDX,
+                            testDataLink.getTestDataId(), totalRowCount, testCaseLink.getTestCaseId(), rowEnd));
         }
         int rowCount = rowEnd - rowStart + 1;
 
@@ -292,8 +332,8 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         int rowCount = testData.getRowNumbers();
 
         if (rowCount <= 0) {
-            throw new IllegalArgumentException(MessageFormat.format(
-                    StringConstants.UTIL_EXC_TD_X_DOES_NOT_CONTAIN_ANY_RECORDS, testDataLink.getTestDataId()));
+            throw new IllegalArgumentException(MessageFormat
+                    .format(StringConstants.UTIL_EXC_TD_X_DOES_NOT_CONTAIN_ANY_RECORDS, testDataLink.getTestDataId()));
         }
 
         int[] rowIndexes = new int[rowCount];
@@ -302,8 +342,6 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         }
         return rowIndexes;
     }
-
-
 
     public List<IExecutedEntity> getExecutedItems() {
         return executedItems;
@@ -366,7 +404,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
     public int getRemainingRerunTimes() {
         return rerunSetting.getRemainingRerunTimes();
     }
-    
+
     public void setEmailConfig(EmailConfig emailConfig) {
         this.emailSettings.setEmailConfig(emailConfig);
     }
@@ -390,7 +428,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         emailSettings.setArgumentValue(consoleOption, argumentValue);
         rerunSetting.setArgumentValue(consoleOption, argumentValue);
     }
-    
+
     @Override
     public Map<String, String> getCollectedDataInfo() {
         Map<String, String> collectedInfo = new HashMap<>();

@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.explorer.providers;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -9,17 +11,27 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.Viewer;
 
+import com.katalon.platform.api.extension.filter.impl.InternalFilterAction;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.impl.providers.AbstractEntityViewerFilter;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
+import com.kms.katalon.controller.FilterController;
 
 public class EntityViewerFilter extends AbstractEntityViewerFilter {
+
     private String searchString;
+
     private EntityProvider entityProvider;
+
+    private InternalFilterAction filterAction;
+    
+    private FilterController filterController = FilterController.getInstance();
 
     public EntityViewerFilter(EntityProvider entityProvider) {
         this.entityProvider = entityProvider;
+        this.filterAction = ApplicationManager.getInstance().getActionService().getAction(InternalFilterAction.class);
     }
 
     public void setSearchString(String searchString) {
@@ -40,7 +52,8 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                 LoggerSingleton.getInstance().getLogger().error(e);
             }
 
-            if (returnValue) return true;
+            if (returnValue)
+                return true;
             ITreeEntity entity = ((ITreeEntity) element);
             try {
                 if (searchString.startsWith(ExplorerPart.KEYWORD_SEARCH_ALL)
@@ -66,7 +79,7 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
      * filter all tree elements by searched string
      * 
      * @param element
-     *            is a instance of ITreeEntity
+     * is a instance of ITreeEntity
      * @return
      */
     @SuppressWarnings("restriction")
@@ -81,7 +94,7 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
             String keyWordAll = ExplorerPart.KEYWORD_SEARCH_ALL + ":";
             String regexKeyWordAll = "^" + keyWordAll + ".*$";
 
-            String contentString = searchString.toLowerCase().trim();
+            String contentString = searchString.trim();
             if (searchString.matches(regex) || searchString.matches(regexKeyWordAll)) {
                 // cut keyword
                 if (searchString.matches(regex)) {
@@ -90,21 +103,31 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                     contentString = contentString.substring(keyWordAll.length()).trim();
                 }
 
-                if (contentString.isEmpty()) return true;
+                if (contentString.isEmpty()) {
+                    return true;
+                }
 
-                if (entity.getText().toLowerCase().contains(contentString)) return true;
+                if (entity.getText().toLowerCase().contains(contentString)) {
+                    return true;
+                }
 
-                Map<String, String> tagMap = parseSearchedString(entity.getSearchTags(), contentString);
+                List<String> keywordList = filterController.getAllKeywords();
+                Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), contentString);
+
                 if (tagMap != null && !tagMap.isEmpty()) {
                     for (Entry<String, String> entry : tagMap.entrySet()) {
-                        String entityValue = entity.getPropertyValue(entry.getKey());
-                        if (entityValue != null) {
-                            if (!entityValue.toLowerCase().contains(entry.getValue())) {
+                        String keyword = entry.getKey();
+                        if (filterController.getDefaultKeywords().contains(keyword)) {
+                            String entityValue = entity.getPropertyValue(keyword);
+                            if (entityValue == null
+                                    || !entityValue.toLowerCase().contains(entry.getValue().toLowerCase())) {
                                 return false;
                             }
-                        } else {
-                            return false;
                         }
+                    }
+                    if (filterAction.hasFilters()
+                            && !(filterAction.filter(entity.toPlatformEntity(), tagMap, searchString))) {
+                        return false;
                     }
                     return true;
                 }
@@ -112,7 +135,9 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                 if (entity.getSearchTags() != null) {
                     for (String tag : entity.getSearchTags()) {
                         String entityValue = entity.getPropertyValue(tag);
-                        if (entityValue != null && entityValue.toLowerCase().contains(contentString)) return true;
+                        if (entityValue != null && entityValue.toLowerCase().contains(contentString)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -126,7 +151,7 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
      * parse searched string into a map of search tags of an entity element
      * 
      * @param element
-     *            is ITreeEntity
+     * is ITreeEntity
      * @return
      */
     @SuppressWarnings("restriction")
@@ -138,8 +163,8 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                     String tagRegex = searchTags[i] + "=\\([^\\)]+\\)";
                     Matcher m = Pattern.compile(tagRegex).matcher(contentString);
                     while (m.find()) {
-                        String tagContent = contentString
-                                .substring(m.start() + searchTags[i].length() + 2, m.end() - 1);
+                        String tagContent = contentString.substring(m.start() + searchTags[i].length() + 2,
+                                m.end() - 1);
                         tagMap.put(searchTags[i], tagContent);
                     }
                 }

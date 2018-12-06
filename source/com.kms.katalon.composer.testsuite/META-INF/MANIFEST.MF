@@ -39,7 +39,8 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.apache.commons.io,
  com.kms.katalon.integration.analytics,
  com.kms.katalon.tracking,
- com.kms.katalon.core.webservice
+ com.kms.katalon.core.webservice,
+ com.katalon.platform
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.testsuite.constants,

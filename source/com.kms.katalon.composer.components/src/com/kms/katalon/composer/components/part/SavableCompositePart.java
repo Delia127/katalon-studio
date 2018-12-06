@@ -6,5 +6,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 
 public interface SavableCompositePart {
 	public List<MPart> getChildParts();
+
 	public void save() throws Exception;
+
+	void setDirty(boolean dirty);
 }

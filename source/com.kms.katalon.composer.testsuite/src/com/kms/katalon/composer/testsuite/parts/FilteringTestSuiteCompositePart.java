@@ -44,6 +44,7 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
@@ -59,23 +60,18 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 @SuppressWarnings("restriction")
-public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteCompositePart, IComposerPartEvent {
-    // compositePart has only one child is subPartStack.
-    // Children of subPartStack: childTestSuiteGeneralPart &
-    // childTestSuiteIntegrationPart
-    // Control of subPartStack is tabFolder.
-    // Children of tabFolder are CTabItem that also are widgets of children of
-    // subPartStack
+public class FilteringTestSuiteCompositePart implements EventHandler, ParentTestSuiteCompositePart, IComposerPartEvent {
     private MCompositePart compositePart;
 
     private MPartStack subPartStack;
 
     private CTabFolder tabFolder;
 
-    private TestSuitePart childTestSuiteMainPart;
+    private FilteringTestSuitePart childTestSuiteMainPart;
 
     private TestSuiteIntegrationPart childTestSuiteIntegrationPart;
 
@@ -97,9 +93,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
 
     private static boolean isConfirmationDialogShowed = false;
 
-    // originalTestSuite for saving.
-    // testSuite for working on children part;
-    private TestSuiteEntity originalTestSuite, testSuite;
+    private FilteringTestSuiteEntity originalTestSuite, testSuite;
 
     private Composite parent;
 
@@ -138,7 +132,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
 
             @Override
             protected String getDocumentationUrlForPartObject(Object partObject) {
-                if (partObject instanceof TestSuitePart) {
+                if (partObject instanceof FilteringTestSuitePart) {
                     return DocumentationMessageConstants.TEST_SUITE_MAIN;
                 }
                 if (partObject instanceof TestSuiteIntegrationPart) {
@@ -148,7 +142,6 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
             }
         };
 
-        changeOriginalTestSuite((TestSuiteEntity) compositePart.getObject());
         initListeners();
     }
 
@@ -165,8 +158,8 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
                 }
 
                 Object part = ((MPart) stackElement).getObject();
-                if (part instanceof TestSuitePart) {
-                    childTestSuiteMainPart = (TestSuitePart) part;
+                if (part instanceof FilteringTestSuitePart) {
+                    childTestSuiteMainPart = (FilteringTestSuitePart) part;
                 } else if (part instanceof TestSuiteIntegrationPart) {
                     childTestSuiteIntegrationPart = (TestSuiteIntegrationPart) part;
                 } else if (part instanceof CompatibilityEditor) {
@@ -214,6 +207,8 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
     private void loadTestSuite() {
         childTestSuiteMainPart.loadTestSuite(testSuite);
         childTestSuiteIntegrationPart.loadInput();
+        
+        setDirty(false);
     }
 
     private void initListeners() {
@@ -244,7 +239,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         }
     }
 
-    private void changeOriginalTestSuite(TestSuiteEntity testSuite) {
+    private void changeOriginalTestSuite(FilteringTestSuiteEntity testSuite) {
         originalTestSuite = testSuite;
         cloneTestSuite();
     }
@@ -261,24 +256,12 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         childTestSuiteMainPart.dispose();
     }
 
-    public void checkDirty() {
-        boolean isDirty = false;
-        for (MPart childPart : getChildParts()) {
-            if (childPart.isDirty()) {
-                isDirty = true;
-                break;
-            }
-        }
-
-        setDirty(isDirty);
+    public void setDirty(boolean isDirty) {
+        dirty.setDirty(isDirty);
 
         for (MPart childPart : getChildParts()) {
             childPart.setDirty(false);
         }
-    }
-
-    public void setDirty(boolean isDirty) {
-        dirty.setDirty(isDirty);
     }
 
     @Persist
@@ -307,10 +290,10 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
             return;
         }
         // back-up
-        TestSuiteEntity temp = new TestSuiteEntity();
-        TestSuiteEntityUtil.copyTestSuiteProperties(originalTestSuite, temp);
+        FilteringTestSuiteEntity temp = new FilteringTestSuiteEntity();
+        TestSuiteEntityUtil.copyFilteringTestSuiteProperties(originalTestSuite, temp);
         String oldIdForDisplay = originalTestSuite.getIdForDisplay();
-        TestSuiteEntityUtil.copyTestSuiteProperties(testSuite, originalTestSuite);
+        TestSuiteEntityUtil.copyFilteringTestSuiteProperties(testSuite, originalTestSuite);
 
         try {
             scriptPart.save();
@@ -345,7 +328,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         }
     }
 
-    private void updateTestSuitePart(TestSuiteEntity testSuite) {
+    private void updateTestSuitePart(FilteringTestSuiteEntity testSuite) {
         // update mpart
         int index = tabFolder.getSelectionIndex();
         String newElementId = EntityPartUtil.getTestSuiteCompositePartId(testSuite.getId());
@@ -401,7 +384,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
                 if (object != null && object instanceof ITreeEntity) {
                     if (object instanceof TestSuiteTreeEntity) {
                         TestSuiteTreeEntity testSuiteTreeEntity = (TestSuiteTreeEntity) object;
-                        TestSuiteEntity testSuite = (TestSuiteEntity) (testSuiteTreeEntity).getObject();
+                        FilteringTestSuiteEntity testSuite = (FilteringTestSuiteEntity) (testSuiteTreeEntity).getObject();
                         if (testSuite != null && testSuite.getId().equals(originalTestSuite.getId())) {
                             if (TestSuiteController.getInstance().getTestSuite(testSuite.getId()) != null) {
                                 if (dirty.isDirty()) {
@@ -432,7 +415,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
                 String elementId = EntityPartUtil.getTestSuiteCompositePartId((String) ((Object[]) object)[0]);
 
                 if (elementId.equalsIgnoreCase(compositePart.getElementId())) {
-                    TestSuiteEntity testSuite = (TestSuiteEntity) ((Object[]) object)[1];
+                    FilteringTestSuiteEntity testSuite = (FilteringTestSuiteEntity) ((Object[]) object)[1];
                     updateTestSuitePart(testSuite);
                 }
             }
@@ -445,7 +428,6 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
         compositePart.getChildren().clear();
         eventBroker.unsubscribe(this);
-        interuptUIThreads();
     }
 
     @Focus
@@ -453,15 +435,12 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         verifyTestSuiteChanged();
     }
 
-    private void interuptUIThreads() {
-        childTestSuiteMainPart.interuptUIThreads();
-        //scriptPart.interuptUIThreads();
-    }
-
+    @Override
     public TestSuiteEntity getTestSuiteClone() {
         return testSuite;
     }
 
+    @Override
     public TestSuiteEntity getOriginalTestSuite() {
         return originalTestSuite;
     }
@@ -469,7 +448,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
     private void verifyTestSuiteChanged() {
         try {
             if (originalTestSuite != null) {
-                TestSuiteEntity testSuiteInFile = TestSuiteController.getInstance()
+                FilteringTestSuiteEntity testSuiteInFile = (FilteringTestSuiteEntity) TestSuiteController.getInstance()
                         .getTestSuite(originalTestSuite.getId());
                 if (testSuiteInFile != null) {
                     if (!testSuiteInFile.equals(originalTestSuite) && !isConfirmationDialogShowed) {
@@ -501,13 +480,13 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
-        MPart part = EventUtil.getPart(event);
-        if (part == null || !StringUtils.startsWith(part.getElementId(),
-                EntityPartUtil.getTestSuiteCompositePartId(originalTestSuite.getId()))) {
-            return;
-        }
-
-        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalTestSuite);
+//        MPart part = EventUtil.getPart(event);
+//        if (part == null || !StringUtils.startsWith(part.getElementId(),
+//                EntityPartUtil.getTestSuiteCompositePartId(originalTestSuite.getId()))) {
+//            return;
+//        }
+//
+//        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalTestSuite);
     }
 
     @Override
@@ -525,5 +504,9 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         }
         originalTestSuite.setTag(updatedEntity.getTag());
         originalTestSuite.setDescription(updatedEntity.getDescription());
+    }
+
+    public void setOriginalTestSuite(FilteringTestSuiteEntity testSuite) {
+        changeOriginalTestSuite(testSuite);
     }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="com.kms.katalon.entity.testsuite">
+	<java-types>
+		<java-type name="FilteringTestSuiteEntity">
+			<xml-root-element name="FilteringTestSuiteEntity" />
+			<java-attributes>
+				<xml-element java-attribute="filteringText" />
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>
