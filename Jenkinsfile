@@ -21,7 +21,7 @@ pipeline {
         }
         
         stage('Building') {
-                // start maven commands to get dependencies
+                // Start maven commands to get dependencies
             steps {
                 retry(3) {
                     sh 'ulimit -c unlimited'
@@ -44,7 +44,7 @@ pipeline {
                         done
                     '''
 
-                 // generate katalon builds   
+                 // Generate katalon builds   
                     script {
                         dir("source") {
                             if (BRANCH_NAME ==~ /^[release]+/) {
@@ -77,20 +77,20 @@ pipeline {
                 }
             }
         }
-/*        
+        
         stage ('Testing') {
             steps {
                 dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
                 {
                     sh 'curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip'
-                    sh 'unzip -a master.zip'
-                    sh './Katalon\\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests"'
+                    sh 'unzip master.zip'
+                    sh './Katalon\\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests -browserType=Chrome (headless)"'
                 }
             }
         }
-*/              
+              
         stage('Copy builds') {
-            // copy generated builds and changelogs to shared folder on server
+            // Copy generated builds and changelogs to shared folder on server
             steps {
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
