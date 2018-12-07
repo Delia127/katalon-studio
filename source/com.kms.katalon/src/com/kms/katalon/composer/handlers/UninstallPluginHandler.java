@@ -9,6 +9,10 @@ import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+
+import com.kms.katalon.constants.GlobalStringConstants;
 
 @SuppressWarnings("restriction")
 public class UninstallPluginHandler {
@@ -23,11 +27,13 @@ public class UninstallPluginHandler {
 
     @Execute
     public void installPlugin() {
-        eventBroker.post("KATALON_PLUGIN/UNINSTALL", 
+        eventBroker.send("KATALON_PLUGIN/UNINSTALL", 
                 new Object[] { 
                         InternalPlatform.getDefault().getBundleContext(),
                         new File(InstallPluginHandler.getPluginPath()).toURI().toString()
                 });
+        MessageDialog.openInformation(Display.getCurrent().getActiveShell(), GlobalStringConstants.INFO,
+                "Plugin installed sucessfully");
         InstallPluginHandler.resetPluginPath();
     }
 }
