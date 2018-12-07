@@ -26,8 +26,6 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
     private EntityProvider entityProvider;
 
     private InternalFilterAction filterAction;
-    
-    private FilterController filterController = FilterController.getInstance();
 
     public EntityViewerFilter(EntityProvider entityProvider) {
         this.entityProvider = entityProvider;
@@ -111,13 +109,13 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                     return true;
                 }
 
-                List<String> keywordList = filterController.getAllKeywords();
+                List<String> keywordList = FilterController.getInstance().getAllKeywords();
                 Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), contentString);
 
                 if (tagMap != null && !tagMap.isEmpty()) {
                     for (Entry<String, String> entry : tagMap.entrySet()) {
                         String keyword = entry.getKey();
-                        if (filterController.getDefaultKeywords().contains(keyword)) {
+                        if (FilterController.getInstance().getDefaultKeywords().contains(keyword)) {
                             String entityValue = entity.getPropertyValue(keyword);
                             if (entityValue == null
                                     || !entityValue.toLowerCase().contains(entry.getValue().toLowerCase())) {

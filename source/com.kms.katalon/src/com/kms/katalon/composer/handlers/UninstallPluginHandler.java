@@ -33,7 +33,7 @@ public class UninstallPluginHandler {
                         new File(InstallPluginHandler.getPluginPath()).toURI().toString()
                 });
         MessageDialog.openInformation(Display.getCurrent().getActiveShell(), GlobalStringConstants.INFO,
-                "Plugin installed sucessfully");
+                "Plugin uninstalled sucessfully");
         InstallPluginHandler.resetPluginPath();
     }
 }

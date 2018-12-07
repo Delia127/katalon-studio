@@ -44,7 +44,7 @@ public class InstallPluginHandler {
             eventBroker.send("KATALON_PLUGIN/INSTALL", new Object[] { InternalPlatform.getDefault().getBundleContext(),
                     new File(filePath).toURI().toString() });
             MessageDialog.openInformation(Display.getCurrent().getActiveShell(), GlobalStringConstants.INFO,
-                    "Plugin uninstalled sucessfully");
+                    "Plugin installed sucessfully");
             pluginPath = filePath;
         }
     }
