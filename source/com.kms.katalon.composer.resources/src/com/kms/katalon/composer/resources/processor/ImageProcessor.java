@@ -209,6 +209,11 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.WS_GET_METHOD_16);
         ImageManager.registerImage(IImageKeys.WS_PUT_METHOD_16);
         ImageManager.registerImage(IImageKeys.WS_DELETE_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_CONNECT_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_CUSTOM_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_HEAD_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_OPTIONS_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_TRACE_METHOD_16);
         ImageManager.registerImage(IImageKeys.WS_SOAP12_METHOD_16);
         ImageManager.registerImage(IImageKeys.WS_SOAP_METHOD_16);
         ImageManager.registerImage(IImageKeys.WS_SOAP_GET_METHOD_16);

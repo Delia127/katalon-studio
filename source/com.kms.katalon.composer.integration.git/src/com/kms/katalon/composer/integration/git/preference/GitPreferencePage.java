@@ -63,10 +63,10 @@ public class GitPreferencePage extends FieldEditorPreferencePageWithHelp {
 		}
         if (gitEnableFieldEditor.getBooleanValue()) {
             GitProjectData.attachToWorkspace();
-            
         } else {
             GitProjectData.detachFromWorkspace();
         }
+
         if (remoteTimeoutFieldEditor != null) {
             Activator.getDefault().getPreferenceStore().setValue(UIPreferences.REMOTE_CONNECTION_TIMEOUT,
                     remoteTimeoutFieldEditor.getIntValue());

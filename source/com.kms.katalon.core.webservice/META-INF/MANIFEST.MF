@@ -25,6 +25,7 @@ Require-Bundle: org.codehaus.groovy,
 Export-Package: com.kms.katalon.core.webservice.common,
  com.kms.katalon.core.webservice.constants,
  com.kms.katalon.core.webservice.contribution,
+ com.kms.katalon.core.webservice.helper,
  com.kms.katalon.core.webservice.keyword,
  com.kms.katalon.core.webservice.setting,
  com.kms.katalon.core.webservice.support

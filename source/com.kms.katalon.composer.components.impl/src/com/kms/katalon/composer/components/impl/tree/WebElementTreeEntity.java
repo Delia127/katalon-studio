@@ -5,6 +5,10 @@ import static com.kms.katalon.entity.repository.WebServiceRequestEntity.GET_METH
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.POST_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PUT_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PATCH_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.CONNECT_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.HEAD_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.OPTIONS_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.TRACE_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP12;
 import java.io.File;
@@ -76,8 +80,16 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
                         return ImageConstants.IMG_16_WS_DELETE_METHOD;
                     case PATCH_METHOD:
                         return ImageConstants.IMG_16_WS_PATCH_METHOD;
+                    case CONNECT_METHOD:
+                        return ImageConstants.IMG_16_WS_CONNECT_METHOD;
+                    case HEAD_METHOD:
+                        return ImageConstants.IMG_16_WS_HEAD_METHOD;
+                    case OPTIONS_METHOD:
+                        return ImageConstants.IMG_16_WS_OPTIONS_METHOD;
+                    case TRACE_METHOD:
+                        return ImageConstants.IMG_16_WS_TRACE_METHOD;
                     default:
-                        return ImageConstants.IMG_16_WS_GET_METHOD;
+                        return ImageConstants.IMG_16_WS_CUSTOM_METHOD;
                 }
             }
             // SOAP

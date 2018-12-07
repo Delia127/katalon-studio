@@ -15,6 +15,12 @@
             id="com.kms.katalon.composer.webservice.network"
             name="Network">
       </page>
+       <page
+           category="com.kms.katalon.composer.webui.setting.testdesign"
+           class="com.kms.katalon.composer.webservice.settings.WebServiceMethodSettingPage"
+           id="com.kms.katalon.composer.webui.setting.testdesign.webservicemethod"
+           name="API/Web Service Method">
+     </page>
    </extension>
    <extension
          point="com.kms.katalon.composer.execution.tetSuiteExecutionItem">
