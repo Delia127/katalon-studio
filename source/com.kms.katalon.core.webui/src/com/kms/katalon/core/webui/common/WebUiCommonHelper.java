@@ -688,6 +688,9 @@ public class WebUiCommonHelper extends KeywordHelper {
             Boolean smartXPathsEnabled = RunConfiguration.getAutoApplyNeighborXpaths();
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
+            By defaultLocator = null;	
+            String cssLocator = null;	
+            String locatorString = null;
             final TestObject parentObject = testObject.getParentObject();
             WebElement shadowRootElement = null;
             if (objectInsideShadowDom) {
@@ -749,13 +752,12 @@ public class WebUiCommonHelper extends KeywordHelper {
 
             // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-/*            // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
-            if(testObject.getSelectorMethod() == SelectorMethod.XPATH){
+            // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
+            if(testObject.getSelectorMethod() == SelectorMethod.XPATH && smartXPathsEnabled == true){
                 List<WebElement> elementsByOtherMethods = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
-                if(smartXPathsEnabled == true)
-                	return elementsByOtherMethods;
+                return elementsByOtherMethods;
             }
-*/
+
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
@@ -770,7 +772,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
-    @SuppressWarnings("unused")
+
 	private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
