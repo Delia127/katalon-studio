@@ -23,6 +23,7 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
 import com.kms.katalon.core.util.internal.JsonUtil;
 
@@ -526,7 +527,13 @@ public class RunConfiguration {
     }
     
     public static Boolean getAutoApplyNeighborXpaths(){
-    	return (Boolean) getExecutionGeneralProperties().get(AUTO_APPLY_NEIGHBOR_XPATHS);
+    	try {
+			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.plugin.smart_xpath", true).
+					getBoolean("SmartXPathEnabled", false);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+    	return false;
     }
     
     public static RunningMode getRunningMode() {

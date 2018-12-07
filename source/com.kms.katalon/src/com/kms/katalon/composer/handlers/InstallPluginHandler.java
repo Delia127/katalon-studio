@@ -13,6 +13,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.osgi.framework.BundleException;
 
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.PluginProjectEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
+
 @SuppressWarnings("restriction")
 public class InstallPluginHandler {
 
@@ -45,6 +49,15 @@ public class InstallPluginHandler {
                     });
 
             pluginPath = filePath;
+            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+            if(project != null){
+                PluginProjectEntity currentPluginProjectEntity = new PluginProjectEntity();
+                currentPluginProjectEntity.setFileLocation(project.getLocation());
+                currentPluginProjectEntity.setFolderLocation(project.getFolderLocation());
+                currentPluginProjectEntity.setID(project.getId());
+                currentPluginProjectEntity.setName(project.getName());
+                eventBroker.send("KATALON_PLUGIN/CURRENT_PROJECT_CHANGED", currentPluginProjectEntity);
+            }
         }
     }
 

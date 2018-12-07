@@ -687,6 +687,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             WebDriver webDriver = DriverFactory.getWebDriver();
             
             Boolean smartXPathsEnabled = RunConfiguration.getAutoApplyNeighborXpaths();
+            System.out.println(smartXPathsEnabled);
                  
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();

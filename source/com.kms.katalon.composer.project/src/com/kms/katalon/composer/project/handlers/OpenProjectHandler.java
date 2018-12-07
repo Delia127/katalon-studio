@@ -28,6 +28,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import com.katalon.platform.api.model.Entity;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -35,6 +36,7 @@ import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.PluginProjectEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.tracking.service.Trackings;
@@ -166,7 +168,13 @@ public class OpenProjectHandler {
 
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
-
+                    TimeUnit.SECONDS.sleep(1);
+                    PluginProjectEntity currentPluginProjectEntity = new PluginProjectEntity();
+                    currentPluginProjectEntity.setFileLocation(project.getLocation());
+                    currentPluginProjectEntity.setFolderLocation(project.getFolderLocation());
+                    currentPluginProjectEntity.setID(project.getId());
+                    currentPluginProjectEntity.setName(project.getName());
+                    eventBrokerService.send("KATALON_PLUGIN/CURRENT_PROJECT_CHANGED", currentPluginProjectEntity);
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {
