@@ -91,6 +91,7 @@ pipeline {
                     script {
                         String tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
                         writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
+                        writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_commit.txt", text: "${GIT_COMMIT}")
                         // copy builds, require https://wiki.jenkins.io/display/JENKINS/File+Operations+Plugin
                         fileOperations([
                                 fileCopyOperation(
@@ -114,7 +115,13 @@ pipeline {
     }
 
     post {
-        always {
+        changed {
+            emailext  body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n",
+                recipientProviders: [brokenBuildSuspects(), developers()],
+                subject: "Build $BUILD_NUMBER - " + currentBuild.currentResult + " ($JOB_NAME)",
+                attachLog: true
+        }      
+        success {
             mail(
                     from: 'build-ci@katalon.com',
                     replyTo: 'build-ci@katalon.com',

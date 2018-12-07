@@ -36,7 +36,8 @@ Require-Bundle: org.eclipse.jface,
  com.kms.katalon.composer.resources,
  com.kms.katalon.tracking,
  com.kms.katalon.composer.util,
- com.kms.katalon.core
+ com.kms.katalon.core,
+ com.katalon.platform
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"

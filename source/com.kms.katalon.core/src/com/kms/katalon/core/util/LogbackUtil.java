@@ -15,7 +15,7 @@ public class LogbackUtil {
 
     public static File getLogbackConfigFile() throws IOException {
         Path path;
-        if (isConsoleMode()) {
+        if (isConsoleMode() || isMacOs()) {
             path =  new Path("/resources/logback/logback-console.xml");
         } else {
             path =  new Path("/resources/logback/logback.xml");
@@ -27,5 +27,9 @@ public class LogbackUtil {
     
     private static boolean isConsoleMode() {
         return ApplicationRunningMode.get() == RunningMode.CONSOLE;
+    }
+    
+    private static boolean isMacOs() {
+        return System.getProperty("os.name").toLowerCase().contains("mac");
     }
 }

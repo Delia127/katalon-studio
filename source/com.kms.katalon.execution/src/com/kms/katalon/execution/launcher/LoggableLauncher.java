@@ -30,6 +30,8 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
     private int logDepth;
 
     private LogLevel currentTestCaseResult;
+    
+    protected boolean loggingFinished = false;
 
     public LoggableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
@@ -62,12 +64,6 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                 case START:
                     startRecords.push(record);
                     logDepth++;
-                    if (isStartTestCaseLog(record)) {
-                    	String name = record.getProperties().get("name");
-                    	ExecutionEntityResult result = new ExecutionEntityResult();
-                    	result.setName(name);
-                    	notifyProccess(LauncherEvent.UPDATE_RECORD, executedEntity, result);
-                    }
                     break;
                 case END:
                     if (isLogUnderTestCaseMainLevel(runConfig, logDepth) && isStartTestCaseLog(startRecords.peek())) {
@@ -93,16 +89,15 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                     	result.setName(name);
                     	result.setTestStatusValue(statusValue);
                     	notifyProccess(LauncherEvent.UPDATE_RECORD, executedEntity, result);
-                    	
-                    	
+
                         currentTestCaseResult = LogLevel.NOT_RUN;
-                        
                     }
                     logDepth--;
                     startRecords.pop();
 
                     if (logDepth == 0) {
                         watchdog.stop();
+                        loggingFinished = true;
                     }
                     break;
                 default:

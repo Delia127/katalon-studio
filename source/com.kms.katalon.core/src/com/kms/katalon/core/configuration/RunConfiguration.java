@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -33,6 +34,8 @@ import com.kms.katalon.core.util.internal.JsonUtil;
  */
 @SuppressWarnings("unchecked")
 public class RunConfiguration {
+	
+	public static final String OVERRIDING_GLOBAL_VARIABLES = "overridingGlobalVariables";
 
     public static final String REPORT_FOLDER_PATH_PROPERTY = "reportFolder";
 
@@ -101,13 +104,13 @@ public class RunConfiguration {
     
     private static String settingFilePath;
 
-    private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>() {
+    private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>(){
         @Override
         protected Map<String, Object> initialValue() {
             return new HashMap<String, Object>();
         }
     };
-
+    
     private static final ThreadLocal<String> localAppiumDriverStores = new ThreadLocal<String>() {
         @Override
         protected String initialValue() {
@@ -538,5 +541,21 @@ public class RunConfiguration {
     
     public static RunningMode getRunningMode() {
         return RunningMode.valueOf(getStringProperty(RUNNING_MODE));
+    }
+    
+    private static Map<String, Object> getOverridingParameters(){
+    	Map<String, Object> overridingParameters = (Map<String, Object>) getProperty(OVERRIDING_GLOBAL_VARIABLES);
+    	if(overridingParameters == null){
+    		return new HashMap<String, Object>();
+    	}
+    	return overridingParameters;
+    }
+    
+    public static String getOverridingGlobalVariable(String globalVariableName){
+    	Object object = getOverridingParameters().get(globalVariableName);
+    	if(object != null){
+    		return String.valueOf(object);
+    	}
+    	return null;
     }
 }

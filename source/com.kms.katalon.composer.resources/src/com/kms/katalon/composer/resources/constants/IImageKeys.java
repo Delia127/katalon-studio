@@ -417,6 +417,8 @@ public interface IImageKeys {
     public static final String FOLDER_FEATURE_16 = "entity/folder_feature_16.png"; //$NON-NLS-1$
     
     public static final String FOLDER_SOURCE_16 = "entity/folder_source_16.png"; //$NON-NLS-1$
+    
+    public static final String FILTERING_TEST_SUITE_16 = "entity/filtering_test_suite_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar

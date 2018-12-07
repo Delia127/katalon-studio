@@ -54,7 +54,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.impl.util.MenuUtils;
@@ -144,16 +143,16 @@ public class TestSuitePartTestCaseView {
     private SashForm sashForm;
 
     private Composite compositeTableButtons;
-    
+
     private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
-    
-    private AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
+
+    private AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+            ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
     /* package */ TestSuitePartTestCaseView(TestSuitePart testSuitePart) {
         this.testSuitePart = testSuitePart;
         this.dataAndVariableView = new TestSuitePartDataBindingView(this);
     }
-    
 
     /* package *//**
                   * @wbp.parser.entryPoint
@@ -174,10 +173,7 @@ public class TestSuitePartTestCaseView {
         compositeTablePart.setContent(sashForm);
         compositeTablePart.setExpandHorizontal(true);
         compositeTablePart.setExpandVertical(true);
-        compositeTablePart.setBackgroundMode(SWT.INHERIT_DEFAULT); // inherit
-                                                                   // background
-                                                                   // color from
-                                                                   // its parent
+        compositeTablePart.setBackgroundMode(SWT.INHERIT_DEFAULT);
         return compositeTablePart;
     }
 
@@ -493,12 +489,10 @@ public class TestSuitePartTestCaseView {
         try {
             Shell shell = new Shell(compositeTableSearch.getShell());
             shell.setSize(0, 0);
-            List<String> searchTags = Arrays.asList(TestCaseTreeEntity.SEARCH_TAGS);
 
             Point pt = compositeTableSearch.toDisplay(1, 1);
             Point location = new Point(pt.x + compositeTableSearch.getBounds().width, pt.y);
-            AdvancedSearchDialog dialog = new AdvancedSearchDialog(shell,
-                    searchTags.toArray(new String[searchTags.size()]), txtSearch.getText(), location);
+            AdvancedSearchDialog dialog = new AdvancedSearchDialog(shell, txtSearch.getText(), location);
             // set position for dialog
             if (dialog.open() == Dialog.OK) {
                 txtSearch.setText(dialog.getOutput());
@@ -555,7 +549,7 @@ public class TestSuitePartTestCaseView {
         Composite kaComposite = new Composite(compositeTableButtons, SWT.NONE);
         kaComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
         kaComposite.setLayout(new GridLayout(1, false));
-        
+
         btnViewHistory = new Button(kaComposite, SWT.NONE);
         btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
         btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
@@ -563,13 +557,13 @@ public class TestSuitePartTestCaseView {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                	if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null){
-                		 Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(), 
-                                 testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
-                	} else {
-                		Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
-                	}
-                	Trackings.trackOpenKAIntegration("testSuite");
+                    if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null) {
+                        Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
+                                testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                    } else {
+                        Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
+                    }
+                    Trackings.trackOpenKAIntegration("testSuite");
                 } catch (IOException | GeneralSecurityException e1) {
                     LoggerSingleton.logError(e1);
                 }
@@ -627,14 +621,13 @@ public class TestSuitePartTestCaseView {
             testCaseTableViewer.setSelection(selection);
         }
     }
-    
-    private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo){
+
+    private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
         String result = "";
-        result = ComposerTestcaseMessageConstants.KA_HOMEPAGE+ "teamId=" + team.getId() +
-                "&projectId=" + project.getId() + "&type=TEST_SUITE" + "&path=" + UrlEncoder.encode(path) +
-                "&token=" + tokenInfo;
+        result = ComposerTestcaseMessageConstants.KA_HOMEPAGE + "teamId=" + team.getId() + "&projectId="
+                + project.getId() + "&type=TEST_SUITE" + "&path=" + UrlEncoder.encode(path) + "&token=" + tokenInfo;
         return result;
-        
+
     }
 
     public TestSuiteTestCaseLink getSelectedTestCaseLink() {
@@ -668,6 +661,12 @@ public class TestSuitePartTestCaseView {
 
     /* package */void openAddTestCaseDialog() {
         testCaseTableViewer.addNewItem();
+    }
+
+    public void addNewTestCase(String idTestSuite, TestCaseEntity testCase) throws Exception {
+        if (idTestSuite.equals(getTestSuite().getId())) {
+            testCaseTableViewer.addTestCase(testCase);
+        }
     }
 
     private void createOpenTestCaseMenu() {

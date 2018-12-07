@@ -489,8 +489,7 @@ public class ExplorerPart {
                 Point location = new Point(pt.x + searchComposite.getBounds().width, pt.y);
                 AdvancedSearchDialog dialog;
                 if (selectionIndex > 0) {
-                    ITreeEntity treeEntity = treeEntities.get(selectionIndex - 1);
-                    dialog = new AdvancedSearchDialog(shell, treeEntity.getSearchTags(), txtInput.getText(), location);
+                    dialog = new AdvancedSearchDialog(shell, txtInput.getText(), location);
                 } else {
                     for (ITreeEntity treeEntity : treeEntities) {
                         if (treeEntity.getSearchTags() == null) {
@@ -503,8 +502,7 @@ public class ExplorerPart {
                             }
                         }
                     }
-                    dialog = new AdvancedSearchDialog(shell, searchTags.toArray(new String[searchTags.size()]),
-                            txtInput.getText(), location);
+                    dialog = new AdvancedSearchDialog(shell, txtInput.getText(), location);
                 }
                 // set position for dialog
                 if (dialog.open() == Window.OK) {

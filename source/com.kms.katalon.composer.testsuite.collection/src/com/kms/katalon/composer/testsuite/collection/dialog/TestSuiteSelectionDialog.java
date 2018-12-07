@@ -26,65 +26,65 @@ import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
 
 public class TestSuiteSelectionDialog extends TreeEntitySelectionDialog {
 
-    private List<Object> checkedItems;
+	private List<Object> checkedItems;
 
-    public TestSuiteSelectionDialog(Shell parent, IEntityLabelProvider labelProvider,
-            ITreeContentProvider contentProvider, AbstractEntityViewerFilter entityViewerFilter) {
-        super(parent, labelProvider, contentProvider, entityViewerFilter);
-        setTitle(StringConstants.DIA_TITLE_TEST_SUITE_BROWSER);
-        setAllowMultiple(false);
-        setDoubleClickSelects(false);
-        checkedItems = new ArrayList<>();
-    }
+	public TestSuiteSelectionDialog(Shell parent, IEntityLabelProvider labelProvider,
+			ITreeContentProvider contentProvider, AbstractEntityViewerFilter entityViewerFilter) {
+		super(parent, labelProvider, contentProvider, entityViewerFilter);
+		setTitle(StringConstants.DIA_TITLE_TEST_SUITE_BROWSER);
+		setAllowMultiple(false);
+		setDoubleClickSelects(false);
+		checkedItems = new ArrayList<>();
+	}
 
-    @Override
-    public TreeViewer createTreeViewer(Composite parent) {
-        final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
-        treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+	@Override
+	public TreeViewer createTreeViewer(Composite parent) {
+		final ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) super.createTreeViewer(parent);
+		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (e.detail != SWT.CHECK) {
-                    return;
-                }
-                TreeItem item = (TreeItem) e.item;
-                treeViewer.getTree().setSelection(item);
-                onStateChangedTreeItem(item.getData(), item.getChecked());
-            }
-        });
-        return treeViewer;
-    }
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (e.detail != SWT.CHECK) {
+					return;
+				}
+				TreeItem item = (TreeItem) e.item;
+				treeViewer.getTree().setSelection(item);
+				onStateChangedTreeItem(item.getData(), item.getChecked());
+			}
+		});
+		return treeViewer;
+	}
 
-    @Override
-    protected TreeViewer doCreateTreeViewer(Composite parent, int style) {
-        return new ContainerCheckedTreeViewer(new Tree(parent, SWT.CHECK | style));
-    }
+	@Override
+	protected TreeViewer doCreateTreeViewer(Composite parent, int style) {
+		return new ContainerCheckedTreeViewer(new Tree(parent, SWT.CHECK | style));
+	}
 
-    private void onStateChangedTreeItem(Object element, boolean isChecked) {
-        if (element instanceof TestSuiteTreeEntity) {
-            if (isChecked) {
-                checkedItems.add(element);
-            } else {
-                checkedItems.remove(element);
-            }
-            return;
-        }
-        if (element instanceof FolderTreeEntity) {
-            try {
-                for (Object childElement : TreeEntityUtil.getChildren((FolderTreeEntity) element)) {
-                    onStateChangedTreeItem(childElement, isChecked);
-                }
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
-        }
-    }
+	private void onStateChangedTreeItem(Object element, boolean isChecked) {
+		if (element instanceof TestSuiteTreeEntity) {
+			if (isChecked) {
+				checkedItems.add(element);
+			} else {
+				checkedItems.remove(element);
+			}
+			return;
+		}
+		if (element instanceof FolderTreeEntity) {
+			try {
+				for (Object childElement : TreeEntityUtil.getChildren((FolderTreeEntity) element)) {
+					onStateChangedTreeItem(childElement, isChecked);
+				}
+			} catch (Exception e) {
+				LoggerSingleton.logError(e);
+			}
+		}
+	}
 
-    @Override
-    protected void computeResult() {
-        ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
-        List<Object> grayedItems = Arrays.asList(treeViewer.getGrayedElements());
-        checkedItems.removeAll(grayedItems);
-        setResult(checkedItems);
-    }
+	@Override
+	protected void computeResult() {
+		ContainerCheckedTreeViewer treeViewer = (ContainerCheckedTreeViewer) getTreeViewer();
+		List<Object> grayedItems = Arrays.asList(treeViewer.getGrayedElements());
+		checkedItems.removeAll(grayedItems);
+		setResult(checkedItems);
+	}
 }

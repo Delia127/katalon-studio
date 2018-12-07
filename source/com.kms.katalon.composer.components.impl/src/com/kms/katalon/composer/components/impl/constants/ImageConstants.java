@@ -53,6 +53,8 @@ public class ImageConstants {
 
     // TestSuiteTreeEntity
     public static final Image IMG_16_TEST_SUITE = ImageManager.getImage(IImageKeys.TEST_SUITE_16);
+    
+    public static final Image IMG_16_FILTERING_TEST_SUITE = ImageManager.getImage(IImageKeys.FILTERING_TEST_SUITE_16);
 
     // TestSuiteCollectionTreeEntity
     public static final Image IMG_16_TEST_SUITE_COLLECTION = ImageManager.getImage(IImageKeys.TEST_SUITE_COLLECTION_16);

@@ -42,4 +42,8 @@ public interface ITreeEntity extends Serializable {
 	public void loadAllDescentdantEntities() throws Exception;
 	
     public List<TooltipPropertyDescription> getTooltipDescriptions();
+    
+    default com.katalon.platform.api.model.Entity toPlatformEntity() {
+        return null;
+    }
 }
