@@ -531,12 +531,15 @@ public class RunConfiguration {
     }
     
     public static Boolean getAutoApplyNeighborXpaths(){
-    	try {
-			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.plugin.smart_xpath", true).
-					getBoolean("SmartXPathEnabled", false);
-		} catch (IOException e) {
-			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
-		}
+    	if(getProperty("com.katalon.katalon-studio-smart-xpath") != null){
+        	try {
+        		System.out.println("Should print");
+    			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.plugin.smart_xpath", true).
+    					getBoolean("SmartXPathEnabled", false);
+    		} catch (IOException e) {
+    			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
+    		}
+    	}
     	return false;
     }
     

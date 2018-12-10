@@ -11,6 +11,9 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
+import com.katalon.platform.api.Application;
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -172,7 +175,18 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         
         propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
         
+        initializePluginPresence("com.katalon.katalon-studio-smart-xpath", propertyMap);
+        
         return propertyMap;
+    }
+    
+    private boolean initializePluginPresence(String pluginID, Map<String, Object> propertyMap){
+		Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(pluginID);
+		if (plugin != null) {
+			propertyMap.put(pluginID, plugin);
+			return true;
+		}
+		return false;
     }
     
     private String getLogbackConfigFileLocation() {
