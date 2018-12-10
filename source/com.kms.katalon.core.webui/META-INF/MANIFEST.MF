@@ -26,6 +26,5 @@ Export-Package: com.kms.katalon.core.webui.common,
 Bundle-ClassPath: .,
  resources/lib/repackaged-guava-19.0.jar,
  resources/lib/repackaged-sikuli-api-1.0.2-standalone.jar
-Import-Package: org.eclipse.jface.preference,
- org.eclipse.ui.preferences
+
 

@@ -14,9 +14,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.osgi.framework.BundleException;
 
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.project.PluginProjectEntity;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.constants.GlobalStringConstants;
 
 @SuppressWarnings("restriction")
