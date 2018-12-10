@@ -43,13 +43,9 @@ public class EventConstants {
 
 	public static final String PROJECT_RESTORE_SESSION_COMPLETED = "PROJECT/RESTORE_SESSION_COMPLETED";
 
-<<<<<<< HEAD
 	public static final String PROJECT_SETTINGS = "PROJECT/SETTINGS";
-=======
-    public static final String PROJECT_INDEX = "PROJECT/INDEX";
     
     public static final String PROJECT_SETTINGS_PAGE = "PROJECT/SETTINGS_PAGE";
->>>>>>> origin/staging-5.9.3
 
 	public static final String PROJECT_INDEX = "PROJECT/INDEX";
 
@@ -351,15 +347,6 @@ public class EventConstants {
 	// Git Events
 	public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";
 
-	public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
-
-	// Api Quick Start Dialog
-	public static final String API_QUICK_START_DIALOG_OPEN = "API/OPEN_QUICK_START_DIALOG";
-
-<<<<<<< HEAD
-	// Web Service Execution Events
-	public static final String WEBSERVICE_EXECUTE = "WEBSERVICE/EXECUTE";
-=======
     public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
     
     // Api Quick Start Dialog
@@ -370,5 +357,4 @@ public class EventConstants {
     
     // Web Sevice Method Events
     public static final String UPDATE_WEBSERVICE_METHODS = "WEBSERVICE/UPDATE_METHODS";
->>>>>>> origin/staging-5.9.3
 };
