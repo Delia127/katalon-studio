@@ -21,6 +21,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.network.ProxyInformation;
@@ -534,7 +535,7 @@ public class RunConfiguration {
 			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.plugin.smart_xpath", true).
 					getBoolean("SmartXPathEnabled", false);
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
 		}
     	return false;
     }

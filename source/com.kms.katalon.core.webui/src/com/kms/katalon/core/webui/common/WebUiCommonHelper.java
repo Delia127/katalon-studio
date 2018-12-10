@@ -753,7 +753,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
-            if(testObject.getSelectorMethod() == SelectorMethod.XPATH && smartXPathsEnabled == true){
+            if(testObject.getSelectorMethod() == SelectorMethod.XPATH && smartXPathsEnabled){
                 List<WebElement> elementsByOtherMethods = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
                 return elementsByOtherMethods;
             }

@@ -49,15 +49,6 @@ public class InstallPluginHandler {
             MessageDialog.openInformation(Display.getCurrent().getActiveShell(), GlobalStringConstants.INFO,
                     "Plugin installed sucessfully");
             pluginPath = filePath;
-            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-            if(project != null){
-                PluginProjectEntity currentPluginProjectEntity = new PluginProjectEntity();
-                currentPluginProjectEntity.setFileLocation(project.getLocation());
-                currentPluginProjectEntity.setFolderLocation(project.getFolderLocation());
-                currentPluginProjectEntity.setID(project.getId());
-                currentPluginProjectEntity.setName(project.getName());
-                eventBroker.send("KATALON_PLUGIN/CURRENT_PROJECT_CHANGED", currentPluginProjectEntity);
-            }
         }
     }
 
