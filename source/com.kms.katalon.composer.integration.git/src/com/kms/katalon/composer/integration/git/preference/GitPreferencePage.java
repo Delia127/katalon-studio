@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.integration.git.preference;
 
-import org.eclipse.egit.core.project.GitProjectData;
 import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.UIPreferences;
 import org.eclipse.egit.ui.internal.UIText;
@@ -58,11 +57,6 @@ public class GitPreferencePage extends FieldEditorPreferencePageWithHelp {
 
     @Override
     public boolean performOk() {
-        if (gitEnableFieldEditor.getBooleanValue()) {
-            GitProjectData.attachToWorkspace();
-        } else {
-            GitProjectData.detachFromWorkspace();
-        }
         if (remoteTimeoutFieldEditor != null) {
             Activator.getDefault().getPreferenceStore().setValue(UIPreferences.REMOTE_CONNECTION_TIMEOUT,
                     remoteTimeoutFieldEditor.getIntValue());

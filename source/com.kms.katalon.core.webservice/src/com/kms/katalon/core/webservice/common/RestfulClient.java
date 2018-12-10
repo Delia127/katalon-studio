@@ -21,6 +21,7 @@ import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
@@ -33,13 +34,11 @@ public class RestfulClient extends BasicRequestor {
     private static final String DEFAULT_USER_AGENT = GlobalStringConstants.APP_NAME;
 
     private static final String HTTP_USER_AGENT = RequestHeaderConstants.USER_AGENT;
-
-    private static final String GET = RequestHeaderConstants.GET;
-
-    private static final String DELETE = RequestHeaderConstants.DELETE;
     
-    private static final String PATCH = RequestHeaderConstants.PATCH;
-
+    private static final String[] BODY_UNSUPPORTED_METHODS = new String[] {
+        RequestHeaderConstants.GET, RequestHeaderConstants.HEAD
+    };
+    
     public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
         super(projectDir, proxyInfomation);
     }
@@ -47,20 +46,11 @@ public class RestfulClient extends BasicRequestor {
     @Override
     public ResponseObject send(RequestObject request) throws Exception {
         ResponseObject responseObject;
-        if (GET.equalsIgnoreCase(request.getRestRequestMethod())) {
-            responseObject = sendGetRequest(request);
-        } else if (DELETE.equalsIgnoreCase(request.getRestRequestMethod())) {
-            responseObject = sendDeleteRequest(request);
-        } else if (PATCH.equalsIgnoreCase(request.getRestRequestMethod())){
-            responseObject = sendPatchRequest(request);
-        } else {
-            // POST, PUT are technically the same
-            responseObject = sendPostRequest(request);
-        }
+        responseObject = sendRequest(request);
         return responseObject;
     }
 
-    private ResponseObject sendGetRequest(RequestObject request) throws Exception {
+    private ResponseObject sendRequest(RequestObject request) throws Exception {
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
             SSLContext sc = SSLContext.getInstance(SSL);
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
@@ -75,68 +65,15 @@ public class RestfulClient extends BasicRequestor {
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
             ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
-        httpConnection.setRequestMethod(request.getRestRequestMethod());
+        
+        String requestMethod = request.getRestRequestMethod();
+        setRequestMethod(httpConnection, request.getRestRequestMethod());
 
-        // Default if not set
-        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
-        setHttpConnectionHeaders(httpConnection, request);
-
-        return response(httpConnection);
-    }
-
-    private ResponseObject sendPostRequest(RequestObject request) throws Exception {
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            SSLContext sc = SSLContext.getInstance(SSL);
-            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        }
-
-        // If there are some parameters, they should be append after the Service URL
-        processRequestParams(request);
-
-        URL url = new URL(request.getRestUrl());
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
-        }
-        httpConnection.setRequestMethod(request.getRestRequestMethod());
-
-        // Default if not set
-        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
-        setHttpConnectionHeaders(httpConnection, request);
-        httpConnection.setDoOutput(true);
-
-        // Send post request
-        OutputStream os = httpConnection.getOutputStream();
-        request.getBodyContent().writeTo(os);
-        os.flush();
-        os.close();
-
-        return response(httpConnection);
-    }
-
-    private ResponseObject sendDeleteRequest(RequestObject request) throws Exception {
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            SSLContext sc = SSLContext.getInstance(SSL);
-            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        }
-
-        // If there are some parameters, they should be append after the Service URL
-        processRequestParams(request);
-
-        URL url = new URL(request.getRestUrl());
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
-        }
-
-        httpConnection.setRequestMethod(request.getRestRequestMethod());
         // Default if not set
         httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
         setHttpConnectionHeaders(httpConnection, request);
         
-        if (request.getBodyContent() != null) {
+        if (isBodySupported(requestMethod) && request.getBodyContent() != null) {
             httpConnection.setDoOutput(true);
             
             // Send post request
@@ -145,47 +82,19 @@ public class RestfulClient extends BasicRequestor {
             os.flush();
             os.close();
         }
-        
-        return response(httpConnection);
-    }
-    
-    private ResponseObject sendPatchRequest(RequestObject request) throws Exception {
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            SSLContext sc = SSLContext.getInstance(SSL);
-            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        }
-
-        // If there are some parameters, they should be append after the Service URL
-        processRequestParams(request);
-
-        URL url = new URL(request.getRestUrl());
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
-        }
-        
-        trySetUnsupportedRequestMethod(httpConnection, request.getRestRequestMethod());
-
-        // Default if not set
-        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
-        setHttpConnectionHeaders(httpConnection, request);
-        httpConnection.setDoOutput(true);
-
-        // Send post request
-        OutputStream os = httpConnection.getOutputStream();
-        request.getBodyContent().writeTo(os);
-        os.flush();
-        os.close();
 
         return response(httpConnection);
     }
     
+    private boolean isBodySupported(String requestMethod) {
+        return RestRequestMethodHelper.isBodySupported(requestMethod);
+    }
+
     /**
      * HttpURLConnection will throw ProtocolException when setting a request method which is not 
      * GET, POST, HEAD, OPTIONS, PUT, DELETE, or TRACE. Use this workaround for unsupported methods.
      */
-    private static void trySetUnsupportedRequestMethod(HttpURLConnection connection, String method) 
+    private static void setRequestMethod(HttpURLConnection connection, String method) 
             throws ProtocolException {
         try {
             connection.setRequestMethod(method);

@@ -26,6 +26,16 @@ public class ImageConstants {
     public static final String WS_POST_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_POST_METHOD_16);
 
     public static final String WS_PUT_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_PUT_METHOD_16);
+    
+    public static final String WS_CONNECT_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_CONNECT_METHOD_16);
+    
+    public static final String WS_HEAD_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_HEAD_METHOD_16);
+    
+    public static final String WS_OPTIONS_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_OPTIONS_METHOD_16);
+    
+    public static final String WS_TRACE_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_TRACE_METHOD_16);
+    
+    public static final String WS_CUSTOM_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_CUSTOM_METHOD_16);
 
     public static final String WS_SOAP_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_SOAP_METHOD_16);
 
@@ -59,7 +69,7 @@ public class ImageConstants {
     public static final Image IMG_WS_PUT_METHOD_16 = ImageManager.getImage(IImageKeys.WS_PUT_METHOD_16);
 
     public static final Image IMG_WS_PATCH_METHOD_16 = ImageManager.getImage(IImageKeys.WS_PATCH_METHOD_16);
-
+    
     public static final Image IMG_WS_SOAP_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP_METHOD_16);
 
     public static final Image IMG_WS_SOAP12_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP12_METHOD_16);
@@ -68,6 +78,16 @@ public class ImageConstants {
 
     public static final Image IMG_WS_SOAP_POST_METHOD_16 = ImageManager.getImage(IImageKeys.WS_SOAP_POST_METHOD_16);
 
+    public static final Image IMG_WS_CONNECT_METHOD_16 = ImageManager.getImage(IImageKeys.WS_CONNECT_METHOD_16);
+    
+    public static final Image IMG_WS_HEAD_METHOD_16 = ImageManager.getImage(IImageKeys.WS_HEAD_METHOD_16);
+    
+    public static final Image IMG_WS_OPTIONS_METHOD_16 = ImageManager.getImage(IImageKeys.WS_OPTIONS_METHOD_16);
+    
+    public static final Image IMG_WS_TRACE_METHOD_16 = ImageManager.getImage(IImageKeys.WS_TRACE_METHOD_16);
+    
+    public static final Image IMG_WS_CUSTOM_METHOD_16 = ImageManager.getImage(IImageKeys.WS_CUSTOM_METHOD_16);
+    
     public static final Image IMG_16_SAVE = ImageManager.getImage(IImageKeys.SAVE_16);
     
     public static final Image IMG_24_SAVE = ImageManager.getImage(IImageKeys.SAVE_24);
