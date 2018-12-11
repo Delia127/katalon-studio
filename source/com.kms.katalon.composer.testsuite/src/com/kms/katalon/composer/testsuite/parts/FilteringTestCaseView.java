@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testsuite.parts;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,10 +69,6 @@ public class FilteringTestCaseView {
 
     private Composite container;
 
-    private CLabel lblSearch;
-
-    private boolean isSearching = false;
-
     private CTableViewer testCaseTableViewer;
 
     private Button btnPreview;
@@ -80,12 +77,14 @@ public class FilteringTestCaseView {
 
     private Button btnViewHistory;
 
+    private CLabel lblFilter;
+
+    private Label lblSummary;
+
     private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
 
     private AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
             ProjectController.getInstance().getCurrentProject().getFolderLocation());
-
-    private CLabel lblFilter;
 
     public FilteringTestCaseView(ParentTestSuiteCompositePart parentPart) {
         this.parentPart = parentPart;
@@ -112,7 +111,20 @@ public class FilteringTestCaseView {
 
         Composite cpsTestCasePreview = new Composite(container, SWT.NONE);
         cpsTestCasePreview.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        createTestCaseFilteredPreviewTable(cpsTestCasePreview);
+        GridLayout glTestCasePreview = new GridLayout();
+        glTestCasePreview.marginWidth = 0;
+        glTestCasePreview.marginHeight = 0;
+        cpsTestCasePreview.setLayout(glTestCasePreview);
+
+        Composite cpsTestCaseSummary = new Composite(cpsTestCasePreview, SWT.NONE);
+        cpsTestCaseSummary.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        cpsTestCaseSummary.setLayout(new FillLayout());
+
+        lblSummary = new Label(cpsTestCaseSummary, SWT.NONE);
+
+        Composite cpsTestCaseTalbe = new Composite(cpsTestCasePreview, SWT.NONE);
+        cpsTestCaseTalbe.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        createTestCaseFilteredPreviewTable(cpsTestCaseTalbe);
 
         return container;
     }
@@ -198,26 +210,14 @@ public class FilteringTestCaseView {
         btnPreview.setText("Preview");
     }
 
-//    private void updateStatusSearchLabel() {
-//        if (isSearching) {
-//            lblSearch.setImage(ImageConstants.IMG_16_CLOSE_SEARCH);
-//            lblSearch.setToolTipText(StringConstants.PA_IMAGE_TIP_CLOSE_SEARCH);
-//        } else {
-//            lblSearch.setImage(ImageConstants.IMG_16_SEARCH);
-//            lblSearch.setToolTipText(StringConstants.PA_IMAGE_TIP_SEARCH);
-//        }
-//    }
-
     public void layout() {
 
     }
 
     public void beforeSaving() {
-        ((FilteringTestSuiteEntity) parentPart.getTestSuiteClone()).setFilteringText(txtSearch.getText().trim());
     }
 
     public void afterSaving() {
-
     }
 
     public void initExpandedState() {
@@ -227,6 +227,10 @@ public class FilteringTestCaseView {
     public void loadInput() {
         FilteringTestSuiteEntity testSuite = (FilteringTestSuiteEntity) parentPart.getTestSuiteClone();
         txtSearch.setText(StringUtils.defaultString(testSuite.getFilteringText()));
+
+        testCaseTableViewer.getTable().setVisible(false);
+        lblSummary.setText("Type a query in search box then press Preview to preview the result.");
+        lblSummary.getParent().getParent().layout(true, true);
     }
 
     public void registerControlModifyListeners() {
@@ -323,10 +327,29 @@ public class FilteringTestCaseView {
                 }
             }).collect(Collectors.toList());
 
-            testCaseTableViewer.setInput(FilterController.getInstance().filter(testCaseEntities, txtSearch.getText()));
-        } catch (IOException ex) {
+            List<TestCaseEntity> filteredTestCases = FilterController.getInstance().filter(testCaseEntities,
+                    txtSearch.getText());
+            testCaseTableViewer.setInput(filteredTestCases);
 
+            setInputForPreviewComposite(filteredTestCases);
+        } catch (IOException ex) {
+            LoggerSingleton.logError(ex);
+            testCaseTableViewer.getTable().setVisible(false);
+            lblSummary.setText("No test case found");
+            lblSummary.getParent().getParent().layout(true, true);
         }
+    }
+
+    private void setInputForPreviewComposite(List<TestCaseEntity> filteredTestCases) {
+        if (filteredTestCases.isEmpty()) {
+            testCaseTableViewer.getTable().setVisible(false);
+            lblSummary.setText("No test case found");
+        } else {
+            testCaseTableViewer.getTable().setVisible(true);
+            lblSummary.setText(String.format("Test cases found: %d", filteredTestCases.size()));
+        }
+
+        lblSummary.getParent().getParent().layout(true, true);
     }
 
     public Control getComponent() {

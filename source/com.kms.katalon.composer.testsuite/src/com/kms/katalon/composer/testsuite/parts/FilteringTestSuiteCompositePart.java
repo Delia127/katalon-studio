@@ -207,7 +207,7 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
     private void loadTestSuite() {
         childTestSuiteMainPart.loadTestSuite(testSuite);
         childTestSuiteIntegrationPart.loadInput();
-        
+
         setDirty(false);
     }
 
@@ -317,9 +317,7 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
                 return;
             }
 
-            updateTestSuitePart(originalTestSuite);
-
-            afterSaving();
+            setDirty(false);
         } catch (Exception e) {
             // revert to original test suite
             TestSuiteEntityUtil.copyTestSuiteProperties(temp, originalTestSuite);
@@ -363,15 +361,13 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
             testSuiteScriptPart.setLabel(ComposerTestsuiteMessageConstants.PA_TAB_SCRIPT);
             partStack.getChildren().add(CHILD_TESTSUITE_SCRIPT_PART_INDEX, testSuiteScriptPart);
             partService.activate(testSuiteScriptPart);
-            
+
             CTabItem testSuiteScriptItem = tabFolder.getItem(CHILD_TESTSUITE_SCRIPT_PART_INDEX);
             testSuiteScriptItem.setText(ComposerTestsuiteMessageConstants.PA_TAB_SCRIPT);
             testSuiteScriptItem.setImage(ImageConstants.IMG_16_SCRIPT);
             testSuiteScriptItem.setShowClose(false);
 
-            
-            this.scriptPart = new TestSuiteScriptPart(this,
-                    (CompatibilityEditor) testSuiteScriptPart.getObject());
+            this.scriptPart = new TestSuiteScriptPart(this, (CompatibilityEditor) testSuiteScriptPart.getObject());
             this.scriptPart.initEditorAction();
         } catch (CoreException | DALException ignored) {}
     }
@@ -384,7 +380,8 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
                 if (object != null && object instanceof ITreeEntity) {
                     if (object instanceof TestSuiteTreeEntity) {
                         TestSuiteTreeEntity testSuiteTreeEntity = (TestSuiteTreeEntity) object;
-                        FilteringTestSuiteEntity testSuite = (FilteringTestSuiteEntity) (testSuiteTreeEntity).getObject();
+                        FilteringTestSuiteEntity testSuite = (FilteringTestSuiteEntity) (testSuiteTreeEntity)
+                                .getObject();
                         if (testSuite != null && testSuite.getId().equals(originalTestSuite.getId())) {
                             if (TestSuiteController.getInstance().getTestSuite(testSuite.getId()) != null) {
                                 if (dirty.isDirty()) {
@@ -416,7 +413,9 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
 
                 if (elementId.equalsIgnoreCase(compositePart.getElementId())) {
                     FilteringTestSuiteEntity testSuite = (FilteringTestSuiteEntity) ((Object[]) object)[1];
-                    updateTestSuitePart(testSuite);
+                    if (!testSuite.equals(getOriginalTestSuite())) {
+                        updateTestSuitePart(testSuite);
+                    }
                 }
             }
         }
@@ -480,13 +479,13 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
-//        MPart part = EventUtil.getPart(event);
-//        if (part == null || !StringUtils.startsWith(part.getElementId(),
-//                EntityPartUtil.getTestSuiteCompositePartId(originalTestSuite.getId()))) {
-//            return;
-//        }
-//
-//        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalTestSuite);
+        // MPart part = EventUtil.getPart(event);
+        // if (part == null || !StringUtils.startsWith(part.getElementId(),
+        // EntityPartUtil.getTestSuiteCompositePartId(originalTestSuite.getId()))) {
+        // return;
+        // }
+        //
+        // EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalTestSuite);
     }
 
     @Override
