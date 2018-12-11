@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testsuite.parts;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -215,6 +216,7 @@ public class FilteringTestCaseView {
     }
 
     public void beforeSaving() {
+        ((FilteringTestSuiteEntity) parentPart.getTestSuiteClone()).setFilteringText(txtSearch.getText());
     }
 
     public void afterSaving() {
@@ -316,20 +318,22 @@ public class FilteringTestCaseView {
 
     private void showPreviewTestCases() {
         try {
-            EntityIndexingUtil indexer = EntityIndexingUtil
-                    .getInstance(ProjectController.getInstance().getCurrentProject());
-            List<String> testCaseIds = indexer.getIndexedEntityIds("tc");
-            List<TestCaseEntity> testCaseEntities = testCaseIds.stream().map(id -> {
-                try {
-                    return TestCaseController.getInstance().getTestCaseByDisplayId(id);
-                } catch (Exception e1) {
-                    return null;
-                }
-            }).collect(Collectors.toList());
+            List<TestCaseEntity> filteredTestCases = Collections.emptyList();
+            if (!txtSearch.getText().isEmpty()) {
+                EntityIndexingUtil indexer = EntityIndexingUtil
+                        .getInstance(ProjectController.getInstance().getCurrentProject());
+                List<String> testCaseIds = indexer.getIndexedEntityIds("tc");
+                List<TestCaseEntity> testCaseEntities = testCaseIds.stream().map(id -> {
+                    try {
+                        return TestCaseController.getInstance().getTestCaseByDisplayId(id);
+                    } catch (Exception e1) {
+                        return null;
+                    }
+                }).collect(Collectors.toList());
 
-            List<TestCaseEntity> filteredTestCases = FilterController.getInstance().filter(testCaseEntities,
-                    txtSearch.getText());
-            testCaseTableViewer.setInput(filteredTestCases);
+                filteredTestCases = FilterController.getInstance().filter(testCaseEntities, txtSearch.getText());
+                testCaseTableViewer.setInput(filteredTestCases);
+            }
 
             setInputForPreviewComposite(filteredTestCases);
         } catch (IOException ex) {
