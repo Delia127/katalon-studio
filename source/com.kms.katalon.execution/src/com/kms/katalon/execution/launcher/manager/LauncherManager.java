@@ -21,12 +21,12 @@ public class LauncherManager {
     private static LauncherManager _instance;
     private List<ILauncher> runningLaunchers;
     private List<ILauncher> waitingLaunchers;
-    private List<ILauncher> teminatedLaunchers;
+    private List<ILauncher> terminatedLaunchers;
 
     protected LauncherManager() {
         runningLaunchers = new ArrayList<ILauncher>();
         waitingLaunchers = new ArrayList<ILauncher>();
-        teminatedLaunchers = new ArrayList<ILauncher>();
+        terminatedLaunchers = new ArrayList<ILauncher>();
     }
 
     public static LauncherManager getInstance() {
@@ -64,21 +64,34 @@ public class LauncherManager {
     }
 
     private void addLauncherToTerminatedList(ILauncher launcher) {
-        teminatedLaunchers.add(0, launcher);
+    	removeAllTerminatedBut(5);
+        terminatedLaunchers.add(0, launcher);
     }
 
     public void removeAllTerminated() {
-        for (ILauncher launcher : teminatedLaunchers) {
+        for (ILauncher launcher : terminatedLaunchers) {
             launcher.clean();
         }
-        teminatedLaunchers.clear();
+        terminatedLaunchers.clear();
+    }
+    
+    public void removeAllTerminatedBut(int n){
+    	if(terminatedLaunchers.size() < n - 1){
+    		return;
+    	}
+    	
+        for (int i = terminatedLaunchers.size() - 1; i >= n - 1; i--) {
+        	terminatedLaunchers.get(i).clean();
+        	terminatedLaunchers.remove(i);
+        }
+       
     }
     
     public List<ILauncher> getAllLaunchers() {
         List<ILauncher> launchers = new ArrayList<ILauncher>();
         launchers.addAll(runningLaunchers);
         launchers.addAll(waitingLaunchers);
-        launchers.addAll(teminatedLaunchers);
+        launchers.addAll(terminatedLaunchers);
         return launchers;
     }
     
@@ -116,7 +129,7 @@ public class LauncherManager {
     }
 
     public boolean isAnyLauncherTerminated() {
-        return teminatedLaunchers.size() != 0;
+        return terminatedLaunchers.size() != 0;
     }
 
     // Let all the launcher run parallel for now

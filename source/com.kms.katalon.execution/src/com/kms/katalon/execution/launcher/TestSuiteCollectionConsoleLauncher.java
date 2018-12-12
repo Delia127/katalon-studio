@@ -91,7 +91,9 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             IRunConfiguration runConfig = RunConfigurationCollector.getInstance()
                     .getRunConfiguration(configDescription.getRunConfigurationId(), projectDir, configDescription);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
-            runConfig.build(testSuiteEntity, new TestSuiteExecutedEntity(testSuiteEntity));
+            TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuiteEntity);
+            executedEntity.prepareTestCases();
+            runConfig.build(testSuiteEntity, executedEntity);
             SubConsoleLauncher launcher = new SubConsoleLauncher(launcherManager, runConfig, configDescription);
             reportCollection.getReportItemDescriptions()
                     .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configDescription));

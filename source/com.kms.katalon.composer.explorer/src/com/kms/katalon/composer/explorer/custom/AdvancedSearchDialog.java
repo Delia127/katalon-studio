@@ -22,8 +22,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.katalon.platform.api.extension.filter.impl.InternalFilterAction;
-import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
@@ -55,7 +53,7 @@ public class AdvancedSearchDialog extends Dialog {
         this.txtInput = txtInput;
         textMap = new LinkedHashMap<String, Text>();
         this.location = location;
-        this.searchTags = FilterController.getInstance().getAllKeywords().toArray(new String[0]);
+        this.searchTags = FilterController.getInstance().getDefaultKeywords().toArray(new String[0]);
     }
 
     @SuppressWarnings("restriction")

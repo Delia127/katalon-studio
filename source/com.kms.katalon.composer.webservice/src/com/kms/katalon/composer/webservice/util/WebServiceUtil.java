@@ -7,6 +7,10 @@ import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PUT_METH
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP12;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PATCH_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.CONNECT_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.HEAD_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.OPTIONS_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.TRACE_METHOD;
 
 import org.eclipse.swt.graphics.Image;
 
@@ -28,9 +32,17 @@ public class WebServiceUtil {
                     return ImageConstants.WS_DELETE_METHOD_16;
                 case PATCH_METHOD:
                     return ImageConstants.WS_PATCH_METHOD_16;
-                // New rest web service request.
+                case CONNECT_METHOD:
+                    return ImageConstants.WS_CONNECT_METHOD_16;
+                case HEAD_METHOD:
+                    return ImageConstants.WS_HEAD_METHOD_16;
+                case OPTIONS_METHOD:
+                    return ImageConstants.WS_OPTIONS_METHOD_16;
+                case TRACE_METHOD:
+                    return ImageConstants.WS_TRACE_METHOD_16;
+                // New rest web service request.X
                 default:
-                    return ImageConstants.WS_GET_METHOD_16;
+                    return ImageConstants.WS_CUSTOM_METHOD_16;
             }
         } 
         if (serviceType.equals(WebServiceRequestEntity.SERVICE_TYPES[0])) {
@@ -64,9 +76,16 @@ public class WebServiceUtil {
                     return ImageConstants.IMG_WS_DELETE_METHOD_16;
                 case PATCH_METHOD:
                     return ImageConstants.IMG_WS_PATCH_METHOD_16;
-                // New rest web service request.
+                case CONNECT_METHOD:
+                    return ImageConstants.IMG_WS_CONNECT_METHOD_16;
+                case HEAD_METHOD:
+                    return ImageConstants.IMG_WS_HEAD_METHOD_16;
+                case OPTIONS_METHOD:
+                    return ImageConstants.IMG_WS_OPTIONS_METHOD_16;
+                case TRACE_METHOD:
+                    return ImageConstants.IMG_WS_TRACE_METHOD_16;
                 default:
-                    return ImageConstants.IMG_WS_GET_METHOD_16;
+                    return ImageConstants.IMG_WS_CUSTOM_METHOD_16;
             }
         } 
         if (serviceType.equals(WebServiceRequestEntity.SERVICE_TYPES[0])) {
