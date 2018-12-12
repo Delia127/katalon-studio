@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -533,7 +532,6 @@ public class RunConfiguration {
     public static Boolean getAutoApplyNeighborXpaths(){
     	if(getProperty("com.katalon.katalon-studio-smart-xpath") != null){
         	try {
-        		System.out.println("Should print");
     			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.plugin.smart_xpath", true).
     					getBoolean("SmartXPathEnabled", false);
     		} catch (IOException e) {

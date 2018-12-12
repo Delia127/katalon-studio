@@ -183,7 +183,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private boolean initializePluginPresence(String pluginID, Map<String, Object> propertyMap){
 		Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(pluginID);
 		if (plugin != null) {
-			propertyMap.put(pluginID, plugin);
+			propertyMap.put(pluginID, true);
 			return true;
 		}
 		return false;
