@@ -128,6 +128,8 @@ public class ExecutionMessageConstants extends NLS {
     
     // TestSuiteLauncherOptionParser
     public static String CONSOLE_MSG_PROFILE_NOT_FOUND;
+    
+    public static String LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE;
 
     static {
         // initialize resource bundle

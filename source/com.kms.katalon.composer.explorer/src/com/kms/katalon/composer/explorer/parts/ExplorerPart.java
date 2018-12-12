@@ -519,6 +519,9 @@ public class ExplorerPart {
     }
 
     private void updateStatusSearchLabel() {
+        if (lblSearch == null) {
+            return;
+        }
         if (isSearching) {
             lblSearch.setImage(ImageConstants.IMG_16_CLOSE_SEARCH);
             lblSearch.setToolTipText(IMAGE_CLOSE_SEARCH_TOOLTIP);
