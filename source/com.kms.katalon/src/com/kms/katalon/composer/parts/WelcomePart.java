@@ -138,7 +138,9 @@ public class WelcomePart {
     
     @PreDestroy
     public void onPartClosed() {
-        startPageContent.onPartClosed();
+        if (startPageContent != null) {
+            startPageContent.onPartClosed();
+        }
     }
 
 }
