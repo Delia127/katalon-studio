@@ -188,7 +188,7 @@ public class RestServicePart extends WebServicePart {
 
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
                                 projectDir, ProxyPreferences.getProxyInformation(),
-                                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
+                                Collections.<String, Object>unmodifiableMap(evaluatedVariables), false);
 
                         if (monitor.isCanceled()) {
                             return;

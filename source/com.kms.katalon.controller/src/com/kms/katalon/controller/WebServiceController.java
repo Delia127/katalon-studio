@@ -102,9 +102,9 @@ public class WebServiceController extends EntityController {
     }
 
     public ResponseObject sendRequest(WebServiceRequestEntity entity, String projectDir,
-            ProxyInformation proxyInformation, Map<String, Object> variables) throws Exception {
+            ProxyInformation proxyInformation, Map<String, Object> variables, boolean calledFromKeyword) throws Exception {
         RequestObject requestObject = getRequestObject(entity, projectDir, variables);
-        return ServiceRequestFactory.getInstance(requestObject, projectDir, proxyInformation).send(requestObject);
+        return ServiceRequestFactory.getInstance(requestObject, projectDir, proxyInformation, calledFromKeyword).send(requestObject);
     }
 
     public List<RequestHistoryEntity> getRequestHistories() {
