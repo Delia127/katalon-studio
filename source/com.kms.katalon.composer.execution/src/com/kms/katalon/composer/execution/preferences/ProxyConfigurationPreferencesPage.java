@@ -45,6 +45,8 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
     private Combo cboProxyOption;
 
     private Combo cboProxyServerType;
+    
+    private Button chkoUseMobBrowserProxy;
 
     private Button chkRequireAuthentication;
 
@@ -197,6 +199,13 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
         txtPass = new Text(authenticateGroup, SWT.BORDER | SWT.PASSWORD);
         GridData gdPass = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtPass.setLayoutData(gdPass);
+        
+        // Create a horizontal separator
+        Label separator = new Label(area, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        
+        chkoUseMobBrowserProxy = new Button(area, SWT.CHECK);
+        chkoUseMobBrowserProxy.setText(MessageConstants.LBL_USE_MOB_BROWSER_PROXY);
 
         initialize();
 
@@ -206,6 +215,8 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
     private void selectNoProxyOption() {
         cboProxyServerType.deselectAll();
         cboProxyServerType.setEnabled(false);
+        chkRequireAuthentication.setEnabled(false);
+        chkRequireAuthentication.setSelection(false);
         txtPort.setText("");
         txtPort.setEnabled(false);
         txtAddress.setText("");
@@ -224,6 +235,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
 
     private void selectManualConfigProxyOption() {
         cboProxyServerType.setEnabled(true);
+        chkoUseMobBrowserProxy.setEnabled(true);
         txtPort.setEnabled(true);
         txtAddress.setEnabled(true);
         chkRequireAuthentication.setEnabled(true);
@@ -246,6 +258,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
             cboProxyOption.setText(proxyInfo.getProxyOption());
         }
         cboProxyServerType.setText(proxyInfo.getProxyServerType());
+        chkoUseMobBrowserProxy.setSelection(proxyInfo.getUseMobBroserProxy());
         txtAddress.setText(proxyInfo.getProxyServerAddress());
         txtPort.setText(proxyInfo.getProxyServerPort() > 0 ? proxyInfo.getProxyServerPort() + "" : "");
         txtUsername.setText(proxyInfo.getUsername());
@@ -281,6 +294,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePageWithHelp {
                 ? String.valueOf(ProxyPreferenceDefaultValueInitializer.PROXY_SERVER_PORT_DEFAULT_VALUE) : portValue);
         proxyInfo.setUsername(txtUsername.getText());
         proxyInfo.setPassword(txtPass.getText());
+        proxyInfo.setUseMobBrowserProxy(chkoUseMobBrowserProxy.getSelection());
         try {
             ProxyPreferences.saveProxyInformation(proxyInfo);
             return true;

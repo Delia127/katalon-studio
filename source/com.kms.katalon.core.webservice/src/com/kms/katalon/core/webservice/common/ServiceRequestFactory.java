@@ -8,10 +8,15 @@ import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 public class ServiceRequestFactory {
 
     public static Requestor getInstance(RequestObject request) {
-        return getInstance(request, RunConfiguration.getProjectDir(), RunConfiguration.getProxyInformation());
+        return getInstance(request, RunConfiguration.getProjectDir(), RunConfiguration.getProxyInformation(), true);
     }
 
-    public static Requestor getInstance(RequestObject request, String projectDir, ProxyInformation proxyInformation) {
+    public static Requestor getInstance(RequestObject request, String projectDir, 
+    		ProxyInformation proxyInformation, boolean calledFromKeyword) {
+    	// Overwrite useMobBrowserProxy if it's from WebServicePart/SoapServicePart
+    	if(!calledFromKeyword){
+    		proxyInformation.setUseMobBrowserProxy(false);
+    	}
         if (RequestHeaderConstants.SOAP.equalsIgnoreCase(request.getServiceType())) {
             return new SoapClient(projectDir, proxyInformation);
         } else {
