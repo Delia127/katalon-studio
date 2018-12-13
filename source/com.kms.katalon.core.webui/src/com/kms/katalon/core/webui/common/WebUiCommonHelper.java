@@ -685,9 +685,10 @@ public class WebUiCommonHelper extends KeywordHelper {
         boolean isSwitchToParentFrame = false;
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
-            
+            /*
+             * Smart XPath's enabled - only support in commercial
             Boolean smartXPathsEnabled = RunConfiguration.getAutoApplyNeighborXpaths();
-                 
+            */     
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
             By defaultLocator = null;
@@ -754,11 +755,13 @@ public class WebUiCommonHelper extends KeywordHelper {
 
             // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-            
-            List<WebElement> elementsByOtherMethods = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
-            if(smartXPathsEnabled == true)
-            	return elementsByOtherMethods;
-
+/*            // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
+            if(testObject.getSelectorMethod() == SelectorMethod.XPATH){
+                List<WebElement> elementsByOtherMethods = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
+                if(smartXPathsEnabled == true)
+                	return elementsByOtherMethods;
+            }
+*/
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
@@ -773,7 +776,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
-    private static List<WebElement> findWebElementsByOtherMethods(
+    @SuppressWarnings("unused")
+	private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
     		TestObject testObject,

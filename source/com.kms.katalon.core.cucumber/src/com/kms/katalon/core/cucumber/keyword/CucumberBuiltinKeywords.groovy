@@ -15,6 +15,7 @@ import com.kms.katalon.core.keyword.BuiltinKeywords;
 import com.kms.katalon.core.keyword.internal.KeywordMain;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.model.RunningMode
 import com.kms.katalon.core.util.internal.PathUtil
 
 import cucumber.api.cli.Main;
@@ -48,6 +49,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
             }
             String reportDir = RunConfiguration.getReportFolder() + "/cucumber_report/" + System.currentTimeMillis()
             String projectDir = RunConfiguration.getProjectDir()
+            RunningMode runningMode = RunConfiguration.getRunningMode()
 
             logger.logInfo(
                 MessageFormat.format("Starting run keyword runFeatureFile: ''{0}'' and extract report to folder: ''{1}''...",
@@ -68,6 +70,9 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 "--plugin",
                 CucumberReporter.class.getName()
             ]
+            if (runningMode == RunningMode.CONSOLE) {
+                argv = argv + ["--monochrome"]
+            }
             boolean runSuccess = Main.run(argv, CucumberBuiltinKeywords.class.getClassLoader()) == 0;
             CucumberRunnerResultImpl cucumberResult = new CucumberRunnerResultImpl(
                 runSuccess ? 'passed' : 'failed', reportDir)
@@ -117,7 +122,8 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 throw new IllegalArgumentException("folderRelativePath param must not be null")
             }
             String reportDir = RunConfiguration.getReportFolder() + "/cucumber_report/" + System.currentTimeMillis()
-            String projectDir = RunConfiguration.getProjectDir();
+            String projectDir = RunConfiguration.getProjectDir()
+            RunningMode runningMode = RunConfiguration.getRunningMode()
             logger.logInfo(
                 MessageFormat.format("Starting run keyword runFeatureFolder: ''{0}'' and extract report to folder: ''{1}''...",
                     folderRelativePath, reportDir))
@@ -135,6 +141,9 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                 "--plugin",
                 "junit:"+ reportDir + "/cucumber.xml"
             ]
+            if (runningMode == RunningMode.CONSOLE) {
+                argv = argv + ["--monochrome"]
+            }
 
             boolean runSuccess = Main.run(argv, CucumberBuiltinKeywords.class.getClassLoader()) == 0;
             CucumberRunnerResultImpl cucumberResult = new CucumberRunnerResultImpl(

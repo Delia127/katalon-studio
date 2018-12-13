@@ -180,6 +180,7 @@ import com.kms.katalon.core.webservice.common.PrivateKeyReader;
 import com.kms.katalon.core.webservice.common.ScriptSnippet;
 import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
@@ -469,7 +470,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         insertVerificationScript(0, importBuilder.toString());
         // Insert Import <=> content changed <=> ScriptEditorPart marked dirty <=> Save All icon enabled
         // Since this "content changed" is irrelevant to the users, ix to the above problem
-        scriptEditorPart.setDirty(false);
+//        scriptEditorPart.setDirty(false);
+        GroovyEditorUtil.saveEditor(scriptEditorPart);
     }
 
     private void insertVerificationScript(int offset, String script) {
@@ -500,8 +502,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     protected void createAPIControls(Composite parent) {
-        String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
-        wsApiControl = new WebServiceAPIControl(parent, isSOAP(), isDraft(), endPoint);
+//        String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
+        wsApiControl = new WebServiceAPIControl(parent, originalWsObject);
         wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -2080,7 +2082,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected boolean isBodySupported() {
         String requestMethod = wsApiControl.getRequestMethod();
-        return !(WebServiceRequestEntity.GET_METHOD.equalsIgnoreCase(requestMethod));
+        return RestRequestMethodHelper.isBodySupported(requestMethod);
     }
 
     protected boolean isSOAP() {

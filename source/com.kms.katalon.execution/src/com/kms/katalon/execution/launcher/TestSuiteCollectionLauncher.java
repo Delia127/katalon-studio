@@ -59,6 +59,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     private void addListenerForChildren(List<? extends ReportableLauncher> subLaunchers) {
         for (ReportableLauncher childLauncher : subLaunchers) {
             childLauncher.addListener(this);
+            childLauncher.setParentLauncher(this);
         }
     }
 
@@ -117,9 +118,11 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     @Override
     public void setStatus(LauncherStatus status) {
     	super.setStatus(status);
-    	ExecutionEntityResult executionResult = new ExecutionEntityResult();
-    	executionResult.setName(executedEntity.getSourceName());
-    	notifyProccess(status, executedEntity, executionResult);
+    	if (LauncherStatus.DONE == status || LauncherStatus.TERMINATED == status) {
+    		ExecutionEntityResult executionResult = new ExecutionEntityResult();
+    		executionResult.setEnd(true);
+    		notifyProccess(status, executedEntity, executionResult);
+    	}
     }
 
     @Override
@@ -195,6 +198,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         }
         this.subLaunchers.add(subReportableLauncher);
         subReportableLauncher.addListener(this);
+        subReportableLauncher.setParentLauncher(this);
 
         ILauncherResult subLauncherResult = subLauncher.getResult();
         LauncherResult newResult = new LauncherResult(

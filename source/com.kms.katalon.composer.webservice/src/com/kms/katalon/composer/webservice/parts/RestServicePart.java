@@ -16,6 +16,7 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -25,6 +26,8 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,6 +37,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 
@@ -52,6 +56,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -62,6 +67,8 @@ import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestServicePart extends WebServicePart {
+    
+    private static final String DUMMY_PROTOCOL = "http://";
 
     protected HttpBodyEditorComposite requestBodyEditor;
 
@@ -76,6 +83,8 @@ public class RestServicePart extends WebServicePart {
     private ModifyListener requestURLModifyListener;
 
     private boolean allowEditParamsTable = true;
+    
+    private boolean useDummyProtocolForUrl = false;
 
     @Override
     protected void createAPIControls(Composite parent) {
@@ -105,6 +114,29 @@ public class RestServicePart extends WebServicePart {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 setTabBodyContentBasedOnRequestMethod();
+            }
+        });
+        
+        wsApiControl.addRequestMethodModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                setTabBodyContentBasedOnRequestMethod();
+            }
+        });
+        
+        wsApiControl.addRequestMethodFocusListener(new FocusListener() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (StringUtils.isBlank(wsApiControl.getRequestMethod())) {
+                    wsApiControl.setRequestMethodSelection(0);
+                }
             }
         });
     }
@@ -247,6 +279,18 @@ public class RestServicePart extends WebServicePart {
     
     private List<WebElementPropertyEntity> extractRestParameters(String url) throws MalformedURLException {
         List<WebElementPropertyEntity> paramEntities;
+        
+        //Fix for KAT-3862, prepend the URL with a dummy protocol
+        //in case its host is parameterized, which causes a protocol is 
+        //missing and URLBuilder cannot parse it
+        if (isHostParameterized(url)) {
+            url = StringUtils.prependIfMissing(url, DUMMY_PROTOCOL);
+            useDummyProtocolForUrl = true;
+        } else {
+            useDummyProtocolForUrl = false;
+        }
+        
+        
         urlBuilder = new URLBuilder(url);
         List<NameValuePair> params = urlBuilder.getQueryParams();
         paramEntities = params.stream().map(param -> new WebElementPropertyEntity(param.getName(), param.getValue()))
@@ -254,9 +298,14 @@ public class RestServicePart extends WebServicePart {
 
         return paramEntities;
     }
+    
+    private boolean isHostParameterized(String url) {
+        return url.startsWith("${");
+    }
 
     @Override
     protected void createParamsComposite(Composite parent) {
+        createCustomizeApiMethodsLink(parent);
         ExpandableComposite paramsExpandableComposite = new ExpandableComposite(parent, StringConstants.PA_LBL_PARAMS,
                 1, true);
         Composite paramsComposite = paramsExpandableComposite.createControl();
@@ -288,6 +337,18 @@ public class RestServicePart extends WebServicePart {
             }
         });
     }
+    
+    private void createCustomizeApiMethodsLink(Composite parent) {
+        Link lnkCustomizeApiMethods = new Link(parent, SWT.NONE);
+        lnkCustomizeApiMethods.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
+        lnkCustomizeApiMethods.setText(StringConstants.LINK_CUSTOMIZE_API_METHODS);
+        lnkCustomizeApiMethods.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE,StringConstants.WEBSERVICE_METHOD_SETTING_PAGE);
+            }
+        });
+    }
 
     @Override
     protected void deleteSelectedParams() {
@@ -311,10 +372,12 @@ public class RestServicePart extends WebServicePart {
 
     private void updateRequestUrlWithNewParams(List<WebElementPropertyEntity> paramProperties) {
         List<NameValuePair> params = toNameValuePair(paramProperties);
-        urlBuilder = new URLBuilder();
         urlBuilder.setParameters(params);
         try {
             String newUrl = urlBuilder.build().toString();
+            if (useDummyProtocolForUrl) {
+                newUrl = StringUtils.removeStart(newUrl, DUMMY_PROTOCOL);
+            }
             Text text = wsApiControl.getRequestURLControl();
             text.removeModifyListener(requestURLModifyListener);
             text.setText(newUrl);
@@ -411,7 +474,7 @@ public class RestServicePart extends WebServicePart {
     }
 
     private boolean isBodySupported(String requestMethod) {
-        return !("GET".equals(requestMethod));
+        return RestRequestMethodHelper.isBodySupported(requestMethod);
     }
 
     @Override
@@ -426,7 +489,7 @@ public class RestServicePart extends WebServicePart {
 
         String restRequestMethod = clone.getRestRequestMethod();
         int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
-        wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
+        wsApiControl.getRequestMethodControl();
 
         tempPropList = new ArrayList<WebElementPropertyEntity>(clone.getHttpHeaderProperties());
         httpHeaders.clear();

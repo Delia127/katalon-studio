@@ -13,6 +13,7 @@ import org.eclipse.ui.console.TextConsole;
 import org.eclipse.ui.ide.IDE;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class HarLinkyConsolePatternMatchListenerDelegate implements IPatternMatchListenerDelegate {
     
@@ -60,6 +61,7 @@ public class HarLinkyConsolePatternMatchListenerDelegate implements IPatternMatc
 
             @Override
             public void linkActivated() {
+                Trackings.trackClickHarLink();
                 IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
                 try
                 {

@@ -37,6 +37,7 @@ import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.webui.util.WebDriverCleanerUtil;
+import com.kms.katalon.util.QTestUtil;
 
 public class CheckForUpdatesHandler implements UpdateComponent {
 
@@ -71,6 +72,10 @@ public class CheckForUpdatesHandler implements UpdateComponent {
     }
 
     public void checkForUpdate(boolean silenceMode) {
+        if (QTestUtil.isQTestEdition()) {
+            return;
+        }
+        
         CheckForUpdatesJob job = new CheckForUpdatesJob(silenceMode);
         job.setUser(!silenceMode);
         job.addJobChangeListener(new JobChangeAdapter() {

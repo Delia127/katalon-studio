@@ -90,6 +90,16 @@ public class ImageConstants {
     
     public static final Image IMG_16_WS_PATCH_METHOD = ImageManager.getImage(IImageKeys.WS_PATCH_METHOD_16);
     
+    public static final Image IMG_16_WS_CONNECT_METHOD = ImageManager.getImage(IImageKeys.WS_CONNECT_METHOD_16);
+    
+    public static final Image IMG_16_WS_CUSTOM_METHOD = ImageManager.getImage(IImageKeys.WS_CUSTOM_METHOD_16);
+    
+    public static final Image IMG_16_WS_HEAD_METHOD = ImageManager.getImage(IImageKeys.WS_HEAD_METHOD_16);
+    
+    public static final Image IMG_16_WS_OPTIONS_METHOD = ImageManager.getImage(IImageKeys.WS_OPTIONS_METHOD_16);
+    
+    public static final Image IMG_16_WS_TRACE_METHOD = ImageManager.getImage(IImageKeys.WS_TRACE_METHOD_16);
+    
     public static final Image IMG_16_WS_SOAP_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP_METHOD_16);
     
     public static final Image IMG_16_WS_SOAP12_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP12_METHOD_16);

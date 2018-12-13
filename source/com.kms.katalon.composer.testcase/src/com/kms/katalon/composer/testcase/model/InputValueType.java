@@ -74,13 +74,13 @@ public enum InputValueType implements InputValueEditorProvider {
         return true;
     }
     
-    // Use this when testCasePart's information cannot be retrieved otherwise
+    // Use this to pass testCasePart's information (specifically about TestCaseVariable) to the editor
     public CellEditor getCellEditorForValue(Composite parent, Object astObject, ITestCasePart testCasePart){
     	switch(this){
     		case Variable:
     			return AstValueUtil.getCellEditorForVariableExpression(parent, (VariableExpressionWrapper) astObject, testCasePart);
 			default:
-				return null;
+				return getCellEditorForValue(parent, astObject);
     	}
     }
     

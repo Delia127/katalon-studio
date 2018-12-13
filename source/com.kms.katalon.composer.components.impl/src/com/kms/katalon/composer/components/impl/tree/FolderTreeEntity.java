@@ -6,7 +6,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
@@ -15,6 +16,7 @@ import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -61,6 +63,7 @@ public class FolderTreeEntity extends AbstractTreeEntity {
             childrenEntities.addAll(Arrays.asList(TreeEntityUtil.getChildren(this)));
         }
 
+        //KAT-3311
         childrenEntities.sort(new Comparator<ITreeEntity>() {
             @Override
             public int compare(ITreeEntity nodeA, ITreeEntity nodeB) {
@@ -70,8 +73,9 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                         ReportEntity reportB = (ReportEntity) nodeB.getObject();
                         return reportA.getDateCreated().after(reportB.getDateCreated()) ? 1 : -1;
                     }
-                    return nodeA.getText().compareTo(nodeB.getText());
+                    return StringUtils.compareIgnoreCase(nodeA.getText(), nodeB.getText());
                 } catch (Exception e) {
+                    LoggerSingleton.logError(e);
                     return 0;
                 }
             }

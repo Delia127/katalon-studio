@@ -365,6 +365,16 @@ public interface IImageKeys {
     public static final String WS_PATCH_METHOD_16 = "entity/ws_patch_16.png"; //$NON-NLS-1$
 
     public static final String WS_DELETE_METHOD_16 = "entity/ws_delete_16.png"; //$NON-NLS-1$
+    
+    public static final String WS_CONNECT_METHOD_16 = "entity/ws_connect_16.png";
+    
+    public static final String WS_CUSTOM_METHOD_16 = "entity/ws_custom_16.png";
+    
+    public static final String WS_HEAD_METHOD_16 = "entity/ws_head_16.png";
+    
+    public static final String WS_OPTIONS_METHOD_16 = "entity/ws_options_16.png";
+    
+    public static final String WS_TRACE_METHOD_16 = "entity/ws_trace_16.png";
 
     public static final String WS_SOAP_METHOD_16 = "entity/ws_soap_method_16.png"; //$NON-NLS-1$
 
@@ -704,4 +714,7 @@ public interface IImageKeys {
     public static final String IMPORT_WSDL = "api_quickstart/import_wsdl.png"; //$NON-NLS-1$
     
     public static final String API_QUICKSTART_BACKGROUND_LEFT = "api_quickstart/bg_left_part.png"; //$NON-NLS-1$
+    
+    // In App Survey
+    public static final String STAR = "highlight_24.png";
 }

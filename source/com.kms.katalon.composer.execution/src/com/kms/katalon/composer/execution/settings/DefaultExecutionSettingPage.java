@@ -37,7 +37,9 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
     private static final String LBL_DEFAULT_EXECUTION = ExecutionMessageConstants.LBL_DEFAULT_EXECUTION;
     
-    private static final String LBL_APPLY_NEIGHBOR_XPATHS = ExecutionMessageConstants.LBL_APPLY_NEIGHBOR_XPATHS;
+    // Smart XPath-related functionality - supported only in commercial version
+    @SuppressWarnings("unused")
+	private static final String LBL_APPLY_NEIGHBOR_XPATHS = ExecutionMessageConstants.LBL_APPLY_NEIGHBOR_XPATHS;
 
     public static final short TIMEOUT_MIN_VALUE = 0;
 
@@ -53,7 +55,8 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
     private Text txtDefaultElementTimeout;
 
-    private Button chckApplyNeighborXpaths, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
+    @SuppressWarnings("unused")
+	private Button chckApplyNeighborXpaths, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
 
     private IRunConfigurationContributor[] runConfigs;
 
@@ -97,13 +100,16 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         gdTxtDefaultElementTimeout.widthHint = INPUT_WIDTH;
         txtDefaultElementTimeout.setLayoutData(gdTxtDefaultElementTimeout);
         
-        Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
-        lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
-        lblApplyNeighborXpaths.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        /*
+         * 	// Smart XPath-related functionality - supported only in commercial version
+         * 	Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
+	        lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
+	        lblApplyNeighborXpaths.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+	        
+	        chckApplyNeighborXpaths= new Button(comp, SWT.CHECK);
+	        chckApplyNeighborXpaths.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+         */
         
-        chckApplyNeighborXpaths= new Button(comp, SWT.CHECK);
-        chckApplyNeighborXpaths.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-
         Group grpAfterExecuting = new Group(container, SWT.NONE);
         grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);
         GridLayout glGrpAfterExecuting = new GridLayout();
@@ -203,7 +209,9 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
             cbDefaultBrowser.select(selectedIndex);
         }
 
-        chckApplyNeighborXpaths.setSelection(store.isAutoApplyNeighborXpathsEnabled());
+        // Smart XPath-related functionality - supported only in commercial version
+        // chckApplyNeighborXpaths.setSelection(store.isAutoApplyNeighborXpathsEnabled());
+        
         txtDefaultElementTimeout.setText(Integer.toString(store.getElementTimeout()));
         chckOpenReport.setSelection(store.isPostExecOpenReport());
         chckQuitDriversTestCase.setSelection(store.isPostTestCaseExecQuitDriver());
@@ -215,7 +223,8 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         if (container == null) {
             return;
         }
-        String selectedExecutionConfiguration = ExecutionDefaultSettingStore.EXECUTION_DEFAULT_CONFIGURATION;
+        String selectedExecutionConfiguration = ExecutionDefaultSettingStore.getStore()
+                .getDefaultExecutionConfiguration();
         runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
         if (runConfigs.length > 0) {
             List<String> runConfigIds = Arrays.stream(runConfigs)
@@ -247,9 +256,9 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
                 store.setExecutionConfiguration(selectedExecutionConfiguration);
             }
             
-            if (chckApplyNeighborXpaths != null) {
+            /*if (chckApplyNeighborXpaths != null) {
             	store.setApplyNeighborXpathsEnabled(chckApplyNeighborXpaths.getSelection());
-            }
+            }*/
             
             if (txtDefaultElementTimeout != null) {
                 store.setElementTimeout(Integer.parseInt(txtDefaultElementTimeout.getText()));

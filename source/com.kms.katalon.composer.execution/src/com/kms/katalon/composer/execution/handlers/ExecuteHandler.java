@@ -43,83 +43,28 @@ public class ExecuteHandler extends AbstractExecutionHandler {
 
     @Inject
     private IContributionFactory contributionFactory;
-
-    @Inject
-    private IEventBroker eventBroker;
-
-    private MHandledToolItem runToolItem;
-
-    private MHandledToolItem debugToolItem;
-    
-    private MMenu runMenu;
-    
-    private MMenu debugMenu;
     
     @Override
     protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException {
         return null;
     }
-
-    @PostConstruct
-    public void init() {
-        runToolItem = (MHandledToolItem) modelService.find(IdConstants.RUN_TOOL_ITEM_ID, application);
-        debugToolItem = (MHandledToolItem) modelService.find(IdConstants.DEBUG_TOOL_ITEM_ID, application);
-        runMenu = runToolItem.getMenu();
-        debugMenu = debugToolItem.getMenu();
-        eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventServiceAdapter() {
-
-            @Override
-            public void handleEvent(Event event) {
-                ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                if (currentProject.getType() == ProjectType.WEBSERVICE) {
-                    runToolItem.setMenu(null);
-                    debugToolItem.setMenu(null);
-                } else {
-                	runToolItem.setMenu(runMenu);
-                	debugToolItem.setMenu(debugMenu);
-                }
-            }
-        });
-    }
     
     @Execute
-    public void execute(ParameterizedCommand command) {
+    public void execute(MHandledToolItem toolItem) {
         try {
-            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-            LaunchMode launchMode = getLaunchMode(command);
-            if (currentProject.getType() == ProjectType.WEBSERVICE) {
-                executeWebService(launchMode);
-            } else {
-                IRunConfigurationContributor defaultRunContributor = ExecutionUtil.getDefaultExecutionConfiguration();
-                if (defaultRunContributor == null) {
-                    return;
-                }
-                ExecutionHandledMenuItem defaultMenuItem = findDefaultMenuItem(launchMode);
-                if (defaultMenuItem == null) {
-                    return;
-                }
-                handlerService.executeHandler(defaultMenuItem.getParameterizedCommandFromMenuItem(commandService));
+            IRunConfigurationContributor defaultRunContributor = ExecutionUtil.getDefaultExecutionConfiguration();
+            if (defaultRunContributor == null) {
+                return;
             }
+            ExecutionHandledMenuItem defaultMenuItem = findDefaultMenuItem(toolItem.getMenu());
+            if (defaultMenuItem == null) {
+                return;
+            }
+            handlerService.executeHandler(defaultMenuItem.getParameterizedCommandFromMenuItem(commandService));
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, MessageFormat
                     .format(StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_TEST_SCRIPT_ROOT_CAUSE, e.getMessage()));
             LoggerSingleton.logError(e);
-        }
-    }
-    
-    private void executeWebService(LaunchMode launchMode) {
-        EventBusSingleton.getInstance().getEventBus().post(
-                new ExecutionEvent(EventConstants.WEBSERVICE_EXECUTE, launchMode));
-    }
-    
-    private ExecutionHandledMenuItem findDefaultMenuItem(LaunchMode launchMode) {
-        switch (launchMode) {
-            case RUN:
-                return findDefaultMenuItem(runMenu);
-            case DEBUG:
-                return findDefaultMenuItem(debugMenu);
-            default:
-                return null;
         }
     }
 

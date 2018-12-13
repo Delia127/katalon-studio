@@ -63,7 +63,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         
         statistics.setProjectId(project.getUUID());
         
-        countTestCases();
+        countTestCasesAndJiraIntegratedTestCases();
         
         countTestSteps();
         
@@ -108,13 +108,24 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         return statistics;
     }
     
-    private void countTestCases() throws Exception {
-        String testCaseFolderPath = folderController.getTestCaseRoot(project).getLocation();
-        File testCaseFolder = new File(testCaseFolderPath);
-        File[] testCaseFiles = listFiles(testCaseFolder, TestCaseEntity.getTestCaseFileExtension());
-        int testCaseCount = testCaseFiles.length;
+    private void countTestCasesAndJiraIntegratedTestCases() throws Exception {
+        int testCaseCount = 0;
+        int jiraIntegratedTestCaseCount = 0;
+        
+        FolderEntity testCaseFolder = folderController.getTestCaseRoot(project);
+        List<Object> entities = folderController.getAllDescentdantEntities(testCaseFolder);
+        for (Object entity : entities) {
+            if (entity instanceof TestCaseEntity) {
+                testCaseCount++;
+                TestCaseEntity testCase = (TestCaseEntity) entity;
+                if (testCase.getIntegratedEntity("JIRA") != null) {
+                    jiraIntegratedTestCaseCount++;
+                }
+            }
+        }
         statistics.setTestCaseCount(testCaseCount);
-    }
+        statistics.setJiraIntegratedTestCaseCount(jiraIntegratedTestCaseCount);
+    } 
     
     private void countTestSteps() throws IOException {
         int callTestCaseTestStepCount = 0;
@@ -338,7 +349,8 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     
     private String getWebLocatorConfig() throws IOException {
         WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-        return store.getCapturedTestObjectSelectorMethod().toString();
+        String ret =  store.getCapturedTestObjectSelectorMethod().toString();
+        return ret;
     }
     
     private boolean isKatalonAnalyticsIntegrated() throws IOException {

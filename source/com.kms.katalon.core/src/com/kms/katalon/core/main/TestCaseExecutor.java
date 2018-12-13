@@ -211,19 +211,26 @@ public class TestCaseExecutor {
             if (testCaseContext.isMainTestCase()) {
                 eventManager.publicEvent(ExecutionListenerEvent.BEFORE_TEST_CASE, new Object[] { testCaseContext });
             }
+            
+            // By this point, @BeforeTestCase annotated method has already been called
+            if(testCaseContext.isSkipped() == false){
+                testCaseResult = invokeTestSuiteMethod(SetupTestCase.class.getName(), StringConstants.LOG_SETUP_ACTION,
+                        false, testCaseResult);
+                if (ErrorCollector.getCollector().containsErrors()) {
+                    logger.logError(testCaseResult.getMessage());
+                    return testCaseResult;
+                }
 
-            testCaseResult = invokeTestSuiteMethod(SetupTestCase.class.getName(), StringConstants.LOG_SETUP_ACTION,
-                    false, testCaseResult);
-            if (ErrorCollector.getCollector().containsErrors()) {
-                logger.logError(testCaseResult.getMessage());
-                return testCaseResult;
-            }
+                accessMainPhase();
 
-            accessMainPhase();
-
-            invokeTestSuiteMethod(TearDownTestCase.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true,
-                    testCaseResult);
-
+                invokeTestSuiteMethod(TearDownTestCase.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true,
+                        testCaseResult);
+        	} else {
+        		 TestStatus testStatus = new TestStatus();
+        		 testStatus.setStatusValue(TestStatusValue.SKIPPED);
+        		 testStatus.setStackTrace(StringConstants.TEST_CASE_SKIPPED);
+        		 testCaseResult.setTestStatus(testStatus);
+        	}
             return testCaseResult;
         } finally {
             testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());

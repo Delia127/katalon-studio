@@ -7,6 +7,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.constants.ExecutionDefaultSettingConstants;
 
 public class ExecutionDefaultSettingStore extends BundleSettingStore {
@@ -19,7 +20,9 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
 
     public static final int EXECUTION_DEFAULT_TIMEOUT_VALUE = 30;
 
-    public static final String EXECUTION_DEFAULT_CONFIGURATION = "Firefox";
+    public static final String EXECUTION_DEFAULT_CONFIGURATION_FOR_GENERIC_PROJECT = "Firefox";
+    
+    public static final String EXECUTION_DEFAULT_CONFIGURATION_FOR_WEBSERVICE_PROJECT = "Web Service";
     
     public static final Boolean DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED = false;
 
@@ -37,20 +40,25 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     }
 
     public String getExecutionConfiguration() {
+        String executionDefaultConfiguration = getDefaultExecutionConfiguration();
         try {
             return getString(ExecutionDefaultSettingConstants.EXECUTION_DEFAULT_CONFIGURATION,
-                    EXECUTION_DEFAULT_CONFIGURATION);
+                    executionDefaultConfiguration);
         } catch (IOException e) {
-            return EXECUTION_DEFAULT_CONFIGURATION;
+            return executionDefaultConfiguration;
         }
+    }
+    
+    public String getDefaultExecutionConfiguration() {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        String executionDefaultConfiguration = project.getType() == ProjectType.WEBSERVICE ?
+                EXECUTION_DEFAULT_CONFIGURATION_FOR_WEBSERVICE_PROJECT :
+                    EXECUTION_DEFAULT_CONFIGURATION_FOR_GENERIC_PROJECT;
+        return executionDefaultConfiguration;
     }
 
     public void setExecutionConfiguration(String config) throws IOException {
         setProperty(ExecutionDefaultSettingConstants.EXECUTION_DEFAULT_CONFIGURATION, config);
-    }
-
-    public void setDefaultExecutionConfiguration() throws IOException {
-        setProperty(ExecutionDefaultSettingConstants.EXECUTION_DEFAULT_CONFIGURATION, EXECUTION_DEFAULT_CONFIGURATION);
     }
 
     public int getElementTimeout() {

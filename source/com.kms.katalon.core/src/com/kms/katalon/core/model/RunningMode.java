@@ -1,4 +1,4 @@
-package com.kms.katalon.application;
+package com.kms.katalon.core.model;
 
 public enum RunningMode {
     GUI("gui"),

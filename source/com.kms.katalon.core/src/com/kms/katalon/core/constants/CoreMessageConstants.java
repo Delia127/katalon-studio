@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class CoreMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.core.constants.coreMessages";
 
+	public static String TEST_CASE_SKIPPED;
+
     public static String MAIN_LOG_ERROR_UNKNOWN_PROP_OF_TEST_CASE;
 
     public static String MAIN_LOG_PASSED_METHOD_COMPLETED;

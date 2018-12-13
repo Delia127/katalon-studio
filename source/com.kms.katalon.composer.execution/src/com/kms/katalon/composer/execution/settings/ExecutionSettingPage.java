@@ -40,7 +40,9 @@ import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 public class ExecutionSettingPage extends PreferencePageWithHelp {
     private static final String LBL_DEFAULT_EXECUTION = ExecutionMessageConstants.LBL_DEFAULT_EXECUTION;
     
-    private static final String LBL_APPLY_NEIGHBOR_XPATHS = ExecutionMessageConstants.LBL_APPLY_NEIGHBOR_XPATHS;
+    // Smart XPath-related functionality - supported only in commercial version
+    @SuppressWarnings("unused")
+	private static final String LBL_APPLY_NEIGHBOR_XPATHS = ExecutionMessageConstants.LBL_APPLY_NEIGHBOR_XPATHS;
 
     public static final short TIMEOUT_MIN_VALUE = 0;
 
@@ -58,7 +60,8 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
 
     private Text txtDefaultElementTimeout, txtDefaultPageLoadTimeout, txtActionDelay, txtDefaultIEHangTimeout;
 
-    private Button chckApplyNeighborXpaths, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
+    @SuppressWarnings("unused")
+	private Button chckApplyNeighborXpaths, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
     
     private Button radioNotUsePageLoadTimeout, radioUsePageLoadTimeout, chckIgnorePageLoadTimeoutException;
 
@@ -125,15 +128,16 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         gdTxtDefaultElementTimeout.widthHint = INPUT_WIDTH;
         txtDefaultElementTimeout.setLayoutData(gdTxtDefaultElementTimeout);
         
-        Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
-        lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
-        GridData gdLblApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblApplyNeighborXpaths.setLayoutData(gdLblApplyNeighborXpaths);
-        
-        chckApplyNeighborXpaths= new Button(comp, SWT.CHECK);
-        GridData gdChckApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        chckApplyNeighborXpaths.setLayoutData(gdChckApplyNeighborXpaths);
-
+        /* 	// Smart XPath's related functionality - only supported in commercial ver
+         * 	Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
+	        lblApplyNeighborXpaths.setText(LBL_APPLY_NEIGHBOR_XPATHS);
+	        GridData gdLblApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+	        lblApplyNeighborXpaths.setLayoutData(gdLblApplyNeighborXpaths);
+	        
+	        chckApplyNeighborXpaths= new Button(comp, SWT.CHECK);
+	        GridData gdChckApplyNeighborXpaths = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+	        chckApplyNeighborXpaths.setLayoutData(gdChckApplyNeighborXpaths);
+         */
         Group grpAfterExecuting = new Group(parent, SWT.NONE);
         grpAfterExecuting.setText(StringConstants.PREF_GRP_POST_EXECUTION_OPTIONS);
         GridLayout glGrpAfterExecuting = new GridLayout();
@@ -296,7 +300,11 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             cbDefaultBrowser.select(selectedIndex);
         }
         txtDefaultElementTimeout.setText(Integer.toString(defaultSettingStore.getElementTimeout()));
-        chckApplyNeighborXpaths.setSelection(defaultSettingStore.isAutoApplyNeighborXpathsEnabled());
+        
+		/*		
+		 * Smart XPath-related functionality - only supported in commercialized version        
+		   chckApplyNeighborXpaths.setSelection(defaultSettingStore.isAutoApplyNeighborXpathsEnabled());        
+		*/
         chckOpenReport.setSelection(defaultSettingStore.isPostExecOpenReport());
         chckQuitDriversTestCase.setSelection(defaultSettingStore.isPostTestCaseExecQuitDriver());
         chckQuitDriversTestSuite.setSelection(defaultSettingStore.isPostTestSuiteExecQuitDriver());
@@ -317,7 +325,8 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         if (container == null) {
             return;
         }
-        String selectedExecutionConfiguration = ExecutionDefaultSettingStore.EXECUTION_DEFAULT_CONFIGURATION;
+        String selectedExecutionConfiguration = ExecutionDefaultSettingStore.getStore()
+                .getDefaultExecutionConfiguration();
         runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
         if (runConfigs.length > 0) {
             List<String> runConfigIds = Arrays.stream(runConfigs)
@@ -370,9 +379,10 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
                 defaultSettingStore.setExecutionConfiguration(selectedExecutionConfiguration);
             }
             
+            /* 
             if (chckApplyNeighborXpaths != null) {
                 defaultSettingStore.setApplyNeighborXpathsEnabled(chckApplyNeighborXpaths.getSelection());
-            }
+            }*/
             
             if (txtDefaultElementTimeout != null) {
                 defaultSettingStore.setElementTimeout(Integer.parseInt(txtDefaultElementTimeout.getText()));
