@@ -596,6 +596,9 @@ public class WelcomeRightPart extends Composite implements EventHandler {
 
             List<Composite> composites = new ArrayList<>();
             UISynchronizeService.syncExec(() -> {
+                if (samplesContent == null || samplesContent.isDisposed()) {
+                    return;
+                }
                 samplesContent.setRedraw(false);
                 if (sampleProjects.size() <= 0) {
                     addDefaultSampleProjects(holder);
@@ -924,5 +927,9 @@ public class WelcomeRightPart extends Composite implements EventHandler {
             default:
                 break;
         }
+    }
+
+    public void onPartClosed() {
+        eventBroker.unsubscribe(this);
     }
 }

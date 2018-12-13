@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.parts;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -133,6 +134,11 @@ public class WelcomePart {
     @Focus
     public void setFocus() {
         mainComposite.forceFocus();
+    }
+    
+    @PreDestroy
+    public void onPartClosed() {
+        startPageContent.onPartClosed();
     }
 
 }
