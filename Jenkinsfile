@@ -53,7 +53,7 @@ pipeline {
                  // generate katalon builds   
                     script {
                         dir("source") {
-                            if (BRANCH_NAME ==~ /^[release]+/) {
+                            if (BRANCH_NAME ==~ /^[release]+/ || BRANCH_NAME == 'staging-plugin') {
                                 sh ''' mvn clean verify -P prod '''
                             } else {                      
                                 sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
