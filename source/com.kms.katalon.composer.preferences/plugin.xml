@@ -16,4 +16,12 @@
             name="Integration">
       </page>
    </extension>
+   <extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+      <page
+            class="com.kms.katalon.composer.preferences.plugin.PluginPage"
+            id="com.kms.katalon.composer.preferences.plugin"
+            name="Plugin">
+      </page>
+   </extension>
 </plugin>

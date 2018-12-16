@@ -412,6 +412,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String KA_HOMEPAGE_NOTOKEN;
     
+    public static String DIALOG_TITLE_TEST_CASE_FOLDER_SELECTION;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);
