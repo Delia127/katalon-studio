@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -57,6 +58,8 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage implements QTe
 
     private Composite composite;
 
+    private ScrolledComposite scrolledComposite;
+
     public ProjectChoosingWizardPage() {
         fServerUrl = "";
     }
@@ -76,7 +79,10 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage implements QTe
      */
     @Override
     public void createStepArea(Composite parent) {
-        composite = new Composite(parent, SWT.NONE);
+        scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+
+        composite = new Composite(scrolledComposite, SWT.NONE);
+
         composite.setLayout(new GridLayout(1, false));
 
         Label lblHeader = new Label(composite, SWT.NONE);
@@ -102,8 +108,21 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage implements QTe
         grpQtestProjects.setText(StringConstants.WZ_P_PROJECT_LIST);
         grpQtestProjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         grpQtestProjects.setLayout(new GridLayout(1, false));
+
+        scrolledComposite.setContent(composite);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.addListener(SWT.Resize, event -> {
+            scrolledComposite.setMinSize(grpQtestProjects.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        });
+      
+        
+        
+    
     }
 
+
+    
     private void updateProjectRadioButtons() {
         if (qTestProjects == null) {
             return;

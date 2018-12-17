@@ -109,7 +109,7 @@ public class SetupWizardDialog extends SimpleWizardDialog {
         // initialize the dialog units
         initializeDialogUnits(composite);
         // create the dialog area and button bar
-        dialogArea = createDialogArea(composite);
+       dialogArea = createDialogArea(composite);
 
         return composite;
     }
