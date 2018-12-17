@@ -51,7 +51,7 @@ pipeline {
                     script {
                         dir("source") {
                             if (BRANCH_NAME ==~ /^[release]+/) {
-                                sh ''' mvn clean verify -P prod '''
+                                sh ''' mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod '''
                             } else {                      
                                 sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
                             }
@@ -67,16 +67,18 @@ pipeline {
             }
             steps {
                 // Execute codesign command to package .DMG file for macOS
-                sh '''  cd "${WORKSPACE}/⁨source⁩/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64⁩"
-                        codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
-                        sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" ''' 
-                fileOperations([
-                        fileCopyOperation(
-                            excludes: '',
-                            includes: '*.dmg',
-                            flattenFiles: true,
-                            targetLocation: "${env.tmpDir}")
-                    ])
+                dir ("source⁩/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64") {
+                    sh ''' codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
+                           sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" ''' 
+                    fileOperations([
+                            fileCopyOperation(
+                                excludes: '',
+                                includes: '*.dmg',
+                                flattenFiles: true,
+                                targetLocation: "${env.tmpDir}")
+                        ])
+                }
+                
                 dir("source/com.kms.katalon.product/target/products")
                     {
                         fileOperations([
