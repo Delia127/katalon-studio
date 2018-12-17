@@ -17,6 +17,8 @@ import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 public class EntityViewerFilter extends AbstractEntityViewerFilter {
     private String searchString;
     private EntityProvider entityProvider;
+    
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "tag", "comment", "description", "folder", "source name" };
 
     public EntityViewerFilter(EntityProvider entityProvider) {
         this.entityProvider = entityProvider;
@@ -94,7 +96,7 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
 
                 if (entity.getText().toLowerCase().contains(contentString)) return true;
 
-                Map<String, String> tagMap = parseSearchedString(entity.getSearchTags(), contentString);
+                Map<String, String> tagMap = parseSearchedString(SEARCH_TAGS, contentString);
                 if (tagMap != null && !tagMap.isEmpty()) {
                     for (Entry<String, String> entry : tagMap.entrySet()) {
                         String entityValue = entity.getPropertyValue(entry.getKey());

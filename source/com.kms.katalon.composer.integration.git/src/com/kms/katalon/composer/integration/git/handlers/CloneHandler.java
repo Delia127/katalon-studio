@@ -43,8 +43,8 @@ public class CloneHandler {
 
     @Execute
     public void execute(Shell parentShell) {
-        EPartService partService = context.getActive(PartServiceImpl.class);
-        PartServiceSingleton.getInstance().setPartService(partService);
+//        EPartService partService = context.getActive(PartServiceImpl.class);
+//        PartServiceSingleton.getInstance().setPartService(partService);
         WizardDialog dlg = new WizardDialog(parentShell, new CustomGitCloneWizard());
         dlg.open();
     }

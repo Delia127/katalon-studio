@@ -26,6 +26,11 @@ public abstract class HyperLinkColumnLabelProvider<T> extends MouseCursorColumnL
     protected boolean shouldShowCursor(ViewerCell cell, Point currentMouseLocation) {
         Rectangle rect = cell.getTextBounds();
         rect.width = cell.getText().length() * charWidth;
+        Rectangle cellBounds = cell.getBounds();
+        if (!cellBounds.contains(new Point(rect.x, rect.y))) {
+            rect.x = cellBounds.x;
+            rect.y = cellBounds.y;
+        }
         return rect.contains(currentMouseLocation);
     }
 

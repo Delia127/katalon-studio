@@ -5,6 +5,10 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerWebserviceMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
 
+    public static String PA_ERROR_MSG_UNABLE_TO_SAVE_PART;
+    
+    public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
+    
 	public static String EXC_INVALID_SWAGGER_FILE;
 
 	public static String EXC_INVALID_WSDL_FILE;
@@ -30,6 +34,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PA_LBL_VERIFICATION;
     
     public static String PA_LBL_VARIABLE;
+    
+    public static String PA_LBL_VARIABLE_EDITOR;
 
     public static String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
 
@@ -91,6 +97,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String BTN_SEND_TEST_REQUEST;
 
+    public static String BTN_SAVE_DRAFT_REQUEST;
+    
     public static String BTN_LOAD_FROM_OPERATION;
 
     public static String PART_MSG_CANNOT_FORMAT_THE_XML_CONTENT;
@@ -178,7 +186,6 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String MSG_SPECIFIED_FILE_NOT_EXIST_WARN;
 
     // TextBodyEditor
-    public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
     
     public static String PARAM_TABLE_MENU_ITEM_ADD;
     
@@ -199,6 +206,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String HIDE_SNIPPETS;
             
     public static String SHOW_SNIPPETS;
+    
+    public static String HOW_TO_ADD_JSON_AND_XML_PATH_TO_VERIFICATION_SCRIPT;
     
     public static String MENU_ITEM_TEST_REQUEST_AND_VERIFY;
     
@@ -221,6 +230,26 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String QUICKSTART_IMPORT_SWAGGER_FROM_FILE_OR_URL;
     
     public static String QUICKSTART_IMPORT_WSDL_FROM_FILE_OR_URL;
+    
+    public static String LINK_CUSTOMIZE_API_METHODS;
+
+    public static String METHOD_TABLE_COL_METHOD;
+
+    public static String METHOD_TABLE_COL_TYPE;
+
+    public static String METHOD_TABLE_COL_DESCRIPTION;
+    
+    public static String DiaEditWSMethod_LBL_METHOD;
+    
+    public static String DiaEditWSMethod_LBL_DESCRIPTION;
+    
+    public static String DiaEditWSMethod_MSG_EMPTY_METHOD_NAME;
+    
+    public static String DiaEditWSMethod_MSG_DUPLICATED_METHOD_NAME;
+    
+    public static String DiaEditWSMethod_TITLE_ADD_NEW;
+    
+    public static String DiaEditWSMethod_TITLE_EDIT;
     
     static {
         // initialize resource bundle

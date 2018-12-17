@@ -25,4 +25,14 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_KWmdUJLbEeeOZ-Irq_5cmQ" featurename="addons" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="application:Addon" xmi:id="_MA8fQJLbEeeOZ-Irq_5cmQ" elementId="com.kms.katalon.composer.mobile.addon" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.addon.ComposerMobileAddon"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="__OY7MMz5Eeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="before:com.kms.katalon.composer.execution.menu.customcapabilities">
+    <elements xsi:type="menu:MenuSeparator" xmi:id="_tQYoEMz6Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.menuseparator.0"/>
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_zZJWEMz6Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.android" label="Android" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.menu.AndroidExecutionDynamicContribution"/>
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_zxGjEMz6Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.ios" label="iOS" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.menu.IosExecutionDynamicContribution"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_qQ3RAMz8Eeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="before:com.kms.katalon.composer.execution.menu.customcapabilities.debug">
+    <elements xsi:type="menu:MenuSeparator" xmi:id="_-O20AMz9Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.menuseparator.0"/>
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_-vSAgMz9Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.android" label="Android" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.menu.AndroidDebugExecutionDynamicContribution"/>
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="__EpMgMz9Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.ios.debug" label="iOS" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.menu.IosDebugExecutionDynamicContribution"/>
+  </fragments>
 </fragment:ModelFragments>

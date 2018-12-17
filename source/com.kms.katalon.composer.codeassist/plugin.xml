@@ -30,15 +30,6 @@
             label="Katalon Information Hover">
       </hover>
    </extension>
-   <extension
-         id="model"
-         point="org.eclipse.e4.workbench.model">
-      <processor
-            apply="always"
-            beforefragment="false"
-            class="com.kms.katalon.composer.codeassist.processor.GroovyTemplateProcessor">
-      </processor>
-   </extension>
    <extension point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
          id="com.kms.katalon.proposal"
          name="Katalon Proposals">

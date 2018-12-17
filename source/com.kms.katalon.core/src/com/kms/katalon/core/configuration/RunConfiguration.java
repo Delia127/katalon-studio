@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -21,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -31,6 +33,8 @@ import com.kms.katalon.core.util.internal.JsonUtil;
  */
 @SuppressWarnings("unchecked")
 public class RunConfiguration {
+	
+	public static final String OVERRIDING_GLOBAL_VARIABLES = "overridingGlobalVariables";
 
     public static final String REPORT_FOLDER_PATH_PROPERTY = "reportFolder";
 
@@ -87,19 +91,25 @@ public class RunConfiguration {
     public static final String TERMINATE_DRIVER_AFTER_TEST_SUITE = "terminateDriverAfterTestSuite";
 
     public static final String EXECUTION_PROFILE_PROPERTY = "executionProfile";
+    
+    public static final String LOGBACK_CONFIG_FILE_LOCATION = "logbackConfigFileLocation";
+    
+    public static final String RUNNING_MODE = "runningMode";
 
     // This property is available for record - playback mode only. 
     public static final String RECORD_CAPTURED_OBJECTS_FILE = "recordCapturedObjectsCache";
-
+    
+    public static final String AUTO_APPLY_NEIGHBOR_XPATHS = "autoApplyNeighborXpaths";
+    
     private static String settingFilePath;
 
-    private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
+    private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>(){
         @Override
         protected Map<String, Object> initialValue() {
             return new HashMap<String, Object>();
         }
     };
-
+    
     private static final ThreadLocal<String> localAppiumDriverStores = new ThreadLocal<String>() {
         @Override
         protected String initialValue() {
@@ -200,6 +210,9 @@ public class RunConfiguration {
     }
 
     public static int getIntProperty(String propertyKey, Map<String, Object> jsonObjProperties) {
+        if (jsonObjProperties == null) {
+            return 0;
+        }
         Number doubleValue = (Number) jsonObjProperties.get(propertyKey);
 
         return doubleValue.intValue();
@@ -402,6 +415,10 @@ public class RunConfiguration {
         return (Map<String, Object>) getExecutionProperties().get(EXECUTION_GENERAL_PROPERTY);
     }
 
+    public static String getLogbackConfigFileLocation() {
+        return getStringProperty(LOGBACK_CONFIG_FILE_LOCATION);
+    }
+    
     public static Object[] getStoredDrivers() {
         return localDriverStorage.get().toArray();
     }
@@ -509,5 +526,29 @@ public class RunConfiguration {
     
     public static String getCapturedObjectsCacheFile() {
         return getStringProperty(RECORD_CAPTURED_OBJECTS_FILE);
+    }
+    
+    public static Boolean getAutoApplyNeighborXpaths(){
+    	return (Boolean) getExecutionGeneralProperties().get(AUTO_APPLY_NEIGHBOR_XPATHS);
+    }
+    
+    public static RunningMode getRunningMode() {
+        return RunningMode.valueOf(getStringProperty(RUNNING_MODE));
+    }
+    
+    private static Map<String, Object> getOverridingParameters(){
+    	Map<String, Object> overridingParameters = (Map<String, Object>) getProperty(OVERRIDING_GLOBAL_VARIABLES);
+    	if(overridingParameters == null){
+    		return new HashMap<String, Object>();
+    	}
+    	return overridingParameters;
+    }
+    
+    public static String getOverridingGlobalVariable(String globalVariableName){
+    	Object object = getOverridingParameters().get(globalVariableName);
+    	if(object != null){
+    		return String.valueOf(object);
+    	}
+    	return null;
     }
 }

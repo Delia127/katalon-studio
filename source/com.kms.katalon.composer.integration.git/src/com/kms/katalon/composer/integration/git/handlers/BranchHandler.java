@@ -32,8 +32,8 @@ public class BranchHandler extends AbstractGitProjectHandler {
     
     @Override
     public void execute() {
-        EPartService partService = context.getActive(PartServiceImpl.class);
-        PartServiceSingleton.getInstance().setPartService(partService);
+//        EPartService partService = context.getActive(PartServiceImpl.class);
+//        PartServiceSingleton.getInstance().setPartService(partService);
         super.execute();
     }
 		

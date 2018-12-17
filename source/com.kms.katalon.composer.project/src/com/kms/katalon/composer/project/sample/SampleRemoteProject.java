@@ -2,8 +2,6 @@ package com.kms.katalon.composer.project.sample;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class SampleRemoteProject extends SampleProject {
 
     private String sourceUrl;

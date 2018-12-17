@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
-import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -73,6 +73,8 @@ public class WSRequestPartUI {
     private MPart bodyPart;
 
     private MPart variablePart;
+    
+    private MPart variableEditorPart;
 
     private MCompositePart verificationPart;
 
@@ -190,7 +192,7 @@ public class WSRequestPartUI {
         String scriptEditorPartId = getScriptEditorPartId(requestObject);
         IFile tempScriptFile = createTempScriptFile(requestObject);
         tempScriptFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
-        scriptEditorPart = GroovyEditorUtil.createEditorPart(tempScriptFile, partService);
+        scriptEditorPart = editor.createEditorPart(tempScriptFile, partService);
         scriptEditorPart.setElementId(scriptEditorPartId);
         verificationPartSashContainer.getChildren().add(scriptEditorPart);
 
@@ -214,7 +216,16 @@ public class WSRequestPartUI {
         variablePart.setCloseable(false);
         variablePart.getTags().add(IPresentationEngine.NO_MOVE);
         bottomLeftPartStack.getChildren().add(variablePart);
-
+        
+        String variableEditorPartID = getVariableEditorPartID(requestObject);
+        variableEditorPart = modelService.createModelElement(MPart.class);
+        variableEditorPart.setElementId(variableEditorPartID);
+        variableEditorPart.setContributionURI(CHILD_PART_OBJECT_URI);
+        variableEditorPart.setLabel(StringConstants.PA_LBL_VARIABLE_EDITOR);
+        variableEditorPart.setCloseable(false);
+        variableEditorPart.getTags().add(IPresentationEngine.NO_MOVE);
+        bottomLeftPartStack.getChildren().add(variableEditorPart);
+        
         String responsePartId = getResponsePartId(requestObject);
         responsePart = modelService.createModelElement(MPart.class);
         responsePart.setElementId(responsePartId);
@@ -231,6 +242,7 @@ public class WSRequestPartUI {
         partService.activate(scriptEditorPart);
         partService.activate(snippetPart);
         partService.activate(variablePart);
+        partService.activate(variableEditorPart);
         // partService.activate(verificationToolbarPart);
 
         tabFolder = (CTabFolder) bottomLeftPartStack.getWidget();
@@ -379,6 +391,10 @@ public class WSRequestPartUI {
         return getBottomLeftPartStackId(requestObject) + ".variable";
     }
 
+    private String getVariableEditorPartID(WebServiceRequestEntity requestObject) {
+        return getBottomLeftPartStackId(requestObject) + ".variableEditor";
+    }
+
     private String getVerificationPartId(WebServiceRequestEntity requestObject) {
         return getBottomLeftPartStackId(requestObject) + ".verification";
     }
@@ -426,6 +442,10 @@ public class WSRequestPartUI {
     public MPart getVariablePart() {
         return variablePart;
     }
+    
+    public MPart getVariableEditorPart(){
+        return variableEditorPart;
+    }
 
     public MCompositePart getVerificationPart() {
         return verificationPart;
@@ -461,6 +481,10 @@ public class WSRequestPartUI {
 
     public Composite getVariablePartComposite() {
         return getPartComposite(variablePart);
+    }
+    
+    public Composite getVariableEditorPartComposite() {
+        return getPartComposite(variableEditorPart);
     }
 
     public Composite getVerificationPartComposite() {
@@ -507,4 +531,17 @@ public class WSRequestPartUI {
     public CTabItem getVerificationTab() {
         return tabFolder.getItem(3);
     }
+
+    public CTabItem getVariableTab() {
+        return tabFolder.getItem(4);
+    }
+    
+    public CTabItem getVariableEditorTab(){
+        return tabFolder.getItem(5);
+    }
+    
+    public void setSelectedTab(CTabItem tabItem) {
+        tabFolder.setSelection(tabItem);
+    }
+
 }

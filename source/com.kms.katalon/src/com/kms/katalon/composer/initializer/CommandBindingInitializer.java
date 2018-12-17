@@ -1,6 +1,9 @@
 package com.kms.katalon.composer.initializer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -58,10 +61,11 @@ public class CommandBindingInitializer extends WorkbenchUtilizer implements Appl
         }
     }
 
-    private void saveActiveBinding(BindingService bindingService) {
+
+	private void saveActiveBinding(BindingService bindingService) {
         try {
             bindingService.savePreferences(bindingService.getActiveScheme(),
-                    bindingService.getActiveBindings().toArray(new Binding[0]));
+                   bindingService.getActiveBindings().toArray(new Binding[0]));
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -82,6 +86,22 @@ public class CommandBindingInitializer extends WorkbenchUtilizer implements Appl
     }
 
     private void activeExplorerCommands(BindingService bindingService) {
+    	
+    	// Since user-defined bindings won't be considered active 
+    	// Manually save them into active bindings
+    	ArrayList<Binding> bindingsTobeSaved = new ArrayList<Binding>(bindingService.getActiveBindings());
+    	Arrays.stream(bindingService.getBindings())
+    	.filter(a -> a.getParameterizedCommand() != null && a.getType() == 1)
+    	.forEach(a -> bindingsTobeSaved.add(a));
+    	
+    	try {
+			bindingService.savePreferences(bindingService.getActiveScheme(), 
+					bindingsTobeSaved.toArray(new Binding[0]));
+		} catch (IOException e) {
+            LoggerSingleton.logError(e);
+		}
+    	
+    	// Then remove conflicting commands (with Explorer/Editor) 
         for (TextEditorCommand command : TextEditorCommand.values()) {
             try {
                 activeKeyBindingForExplorerCommand(bindingService, command);

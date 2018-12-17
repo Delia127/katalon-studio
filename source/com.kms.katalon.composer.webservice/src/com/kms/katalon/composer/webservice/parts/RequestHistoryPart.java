@@ -36,31 +36,24 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.handlers.IRequestHistoryListener;
 import com.kms.katalon.composer.webservice.handlers.OpenWebServiceRequestObjectHandler;
 import com.kms.katalon.composer.webservice.handlers.RequestHistoryHandler;
+import com.kms.katalon.composer.webservice.handlers.SaveDraftRequestHandler;
 import com.kms.katalon.composer.webservice.parts.tree.IRequestHistoryItem;
 import com.kms.katalon.composer.webservice.parts.tree.RequestDateTreeItem;
 import com.kms.katalon.composer.webservice.parts.tree.RequestHistoryStyleCellProvider;
 import com.kms.katalon.composer.webservice.parts.tree.RequestHistoryTreeItem;
-import com.kms.katalon.composer.webservice.view.NewHistoryRequestDialog;
-import com.kms.katalon.composer.webservice.view.NewHistoryRequestDialog.NewHistoryRequestResult;
-import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.FolderController;
-import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.DateTimes;
@@ -88,6 +81,8 @@ public class RequestHistoryPart implements IRequestHistoryListener {
         requestHistoryHandler = context.get(RequestHistoryHandler.class);
         createControl(parent);
         registerEventBroker();
+        
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REQUEST_HISTORY);
     }
 
     private void registerEventBroker() {
@@ -209,7 +204,6 @@ public class RequestHistoryPart implements IRequestHistoryListener {
         imgBtnSave.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Trackings.trackClickSavingDraftRequest();
                 ITreeSelection structuredSelection = treeViewer.getStructuredSelection();
                 if (structuredSelection == null || structuredSelection.isEmpty() || structuredSelection.size() != 1
                         || !(structuredSelection.getFirstElement() instanceof RequestHistoryTreeItem)) {
@@ -217,37 +211,8 @@ public class RequestHistoryPart implements IRequestHistoryListener {
                 }
                 RequestHistoryTreeItem selectedTreeItem = (RequestHistoryTreeItem) structuredSelection
                         .getFirstElement();
-                NewHistoryRequestDialog dialog = new NewHistoryRequestDialog(imgBtnSave.getDisplay().getActiveShell(),
-                        selectedTreeItem.getRequestHistoryEntity());
-                if (dialog.open() != NewHistoryRequestDialog.OK) {
-                    return;
-                }
-
-                try {
-                    NewHistoryRequestResult result = dialog.getResult();
-
-                    WebServiceRequestEntity entity = JsonUtil.fromJson(JsonUtil.toJson(selectedTreeItem
-                            .getRequestHistoryEntity().getRequest().clone()), WebServiceRequestEntity.class);
-                    entity.setName(result.getName());
-                    entity.setParentFolder(result.getParentFolder());
-                    entity.setDescription(result.getDescription());
-                    ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                    entity.setProject(currentProject);
-
-                    entity = (WebServiceRequestEntity) ObjectRepositoryController.getInstance()
-                            .saveNewTestObject(entity);
-                    
-                    Trackings.trackSaveDraftRequest();
-                    
-                    WebElementTreeEntity treeEntity = new WebElementTreeEntity(entity,
-                            TreeEntityUtil.createSelectedTreeEntityHierachy(entity.getParentFolder(),
-                                    FolderController.getInstance().getObjectRepositoryRoot(currentProject)));
-                    eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, treeEntity);
-                    eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, entity);
-                } catch (Exception ex) {
-                    MultiStatusErrorDialog.showErrorDialog("Unable to save this request", ex.getMessage(),
-                            ExceptionsUtil.getStackTraceForThrowable(ex));
-                }
+                SaveDraftRequestHandler.saveDraftRequest(imgBtnSave.getDisplay().getActiveShell(),
+                        selectedTreeItem.getRequestHistoryEntity().getRequest());
             }
         });
 

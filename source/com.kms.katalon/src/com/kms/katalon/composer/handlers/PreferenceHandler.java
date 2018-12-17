@@ -10,8 +10,6 @@ import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.ui.internal.ide.dialogs.IDEWorkbenchPreferencePage;
-
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;

@@ -2,6 +2,7 @@ package com.kms.katalon.composer.integration.cucumber.dialog;
 
 import java.util.List;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -15,8 +16,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.EntityNameController;
 import com.kms.katalon.entity.file.FileEntity;
@@ -162,5 +165,19 @@ public class NewFeatureEntityDialog extends CustomTitleAreaDialog {
         chckGenerateSampleContent.setText("Generate sample Feature template");
 
         return container;
+    }
+    
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        ((GridLayout) parent.getLayout()).numColumns++;
+        Composite helpComposite = new Composite(parent, SWT.NONE);
+        helpComposite.setLayout(new GridLayout(1, false));
+        helpComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
+        new HelpComposite(helpComposite, DocumentationMessageConstants.CUCUMBER_FEATURE_FILE);
+        
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
+                true);
+        createButton(parent, IDialogConstants.CANCEL_ID,
+                IDialogConstants.CANCEL_LABEL, false);
     }
 }

@@ -2,7 +2,6 @@ package com.kms.katalon.composer.project.dialog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,10 +21,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -58,11 +53,9 @@ import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
-import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewProjectDialog extends TitleAreaDialog {
@@ -374,6 +367,8 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     private boolean validateProjectFolderLocation() {
+    	
+    	
         String projectLocation = getProjectLocationInput();
         if (StringUtils.isBlank(projectLocation)) {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK);
@@ -398,6 +393,18 @@ public class NewProjectDialog extends TitleAreaDialog {
         if (!folderLocation.canWrite()) {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE);
             return false;
+        }
+        
+        try{
+        	 String katalonFolderAbsolutePath = new File(Platform.getInstallLocation().getURL().getFile()).getAbsolutePath();
+             String locFileAbsolutePath = new File(projectLocation).getAbsolutePath();
+             if(locFileAbsolutePath.startsWith(katalonFolderAbsolutePath)){
+             	setErrorMessage(StringConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER);
+             	return false;
+             }
+        } catch (Exception e){
+        	LoggerSingleton.logError(e);
+        	return false;
         }
         return true;
     }
@@ -447,7 +454,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     @Override
     protected void okPressed() {
-        okButtonClicked = true;
+    	okButtonClicked = true;
         
         name = txtProjectName.getText();
         loc = getProjectLocationInput();
@@ -465,11 +472,9 @@ public class NewProjectDialog extends TitleAreaDialog {
         } else {
             handleCreatingBlankProject();
         }
-
-        setDefaultSelectorMethod();
-
         super.okPressed();
     }
+
 
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();
@@ -487,22 +492,6 @@ public class NewProjectDialog extends TitleAreaDialog {
                 new Object[] { sampleRemoteProject, projectEntity, false });
     }
 
-    /*
-     * This method exists from 5.7 onward - it will explicitly assign a default SelectorMethod of XPATH
-     * to newly created BLANK projects so that we can load default SelectorMethod for old and new projects appropriately
-     */
-    private void setDefaultSelectorMethod() {
-        WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
-
-        if (store != null) {
-            try {
-                store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }
 
     private void handleCreatingSampleBuiltInProject(SampleLocalProject sampleBuiltInProject) {
         try {
@@ -522,7 +511,7 @@ public class NewProjectDialog extends TitleAreaDialog {
             }
             updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
-            Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID());
+            Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID(), projectType);
 
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
             
@@ -550,7 +539,7 @@ public class NewProjectDialog extends TitleAreaDialog {
             updateProjectType(newProject, projectType);
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
 
-            Trackings.trackCreatingProject();
+            Trackings.trackCreatingProject(newProject.getUUID(), projectType);
 
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
             

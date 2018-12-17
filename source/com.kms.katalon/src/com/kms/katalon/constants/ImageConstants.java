@@ -49,11 +49,11 @@ public class ImageConstants {
     
     public static final Image IMG_SCREEN_SHOT_MOBILE_LOG_VIEWER = ImageManager.getImage(IImageKeys.SCREEN_SHOT_MOBILE_LOG_VIEWER);
     
-    public static final Image IMG_SCREEN_SHOT_CREATE_WEB_SERVICE_REQUEST = ImageManager.getImage(IImageKeys.SCREEN_SHOT_CREATE_WEB_SERVICE_REQUEST);
+    public static final Image IMG_SCREEN_SHOT_USE_DRAFT_REQUEST = ImageManager.getImage(IImageKeys.SCREEN_SHOT_USE_DRAFT_REQUEST);
     
-    public static final Image IMG_SCREEN_SHOT_TEST_WEB_SERVICE_REQUEST = ImageManager.getImage(IImageKeys.SCREEN_SHOT_TEST_WEB_SERVICE_REQUEST);
+    public static final Image IMG_SCREEN_SHOT_SAVE_DRAFT_REQUEST = ImageManager.getImage(IImageKeys.SCREEN_SHOT_SAVE_DRAFT_REQUEST);
     
-    public static final Image IMG_SCREEN_SHOT_ADD_WEB_SERVICE_KEYWORD = ImageManager.getImage(IImageKeys.SCREEN_SHOT_ADD_WEB_SERVICE_KEYWORD);
+    public static final Image IMG_SCREEN_SHOT_ADD_REQUEST_TO_TEST_CASE = ImageManager.getImage(IImageKeys.SCREEN_SHOT_ADD_REQUEST_TO_TEST_CASE);
     
     public static final Image IMG_SCREEN_SHOT_API_LOG_VIEWER = ImageManager.getImage(IImageKeys.SCREEN_SHOT_API_LOG_VIEWER);
     

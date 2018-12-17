@@ -14,6 +14,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ShowUserFeedbackDialogHandler {
 
@@ -37,6 +38,7 @@ public class ShowUserFeedbackDialogHandler {
                 if (numberOfAppCloses >= APP_CLOSES_LIMIT && shouldShowFeedbackDialog) {
                     UserFeedbackDialog feedbackDialog = new UserFeedbackDialog(Display.getCurrent().getActiveShell());
                     feedbackDialog.setBlockOnOpen(true);
+                    Trackings.trackOpenTwitterDialog();
                     feedbackDialog.open();
                 }
 

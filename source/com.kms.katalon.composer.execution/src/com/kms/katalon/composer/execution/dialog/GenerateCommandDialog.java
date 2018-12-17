@@ -94,6 +94,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         CONSOLE_COMMAND, PROPERTIES_FILE
     };
 
+    private static final String KATALON_EXECUTABLE_LINUX = "./katalon --args";
+
     private static final String KATALON_EXECUTABLE_WIN32 = "katalon";
 
     private static final String KATALON_EXECUTABLE_MACOS = "./Katalon\\ Studio.app/Contents/MacOS/katalon --args";
@@ -807,10 +809,12 @@ public class GenerateCommandDialog extends AbstractDialog {
             case Platform.OS_MACOSX:
                 commandBuilder.append(KATALON_EXECUTABLE_MACOS);
                 break;
-
-            default:
+                
+            case Platform.OS_WIN32:
                 commandBuilder.append(KATALON_EXECUTABLE_WIN32);
                 break;
+            default:
+                commandBuilder.append(KATALON_EXECUTABLE_LINUX);
         }
 
         commandBuilder.append(" -noSplash ");

@@ -1,26 +1,55 @@
 package com.kms.katalon.composer.webservice.view;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.webservice.common.WebServiceMethod;
+import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public class WebServiceAPIControl extends Composite {
+public class WebServiceAPIControl extends Composite implements EventHandler {
 
     //private static final int DEFAULT_HEIGHT = 20;
 
@@ -47,11 +76,34 @@ public class WebServiceAPIControl extends Composite {
     private MenuItem mniAddRequestToNewTestCase;
     
     private MenuItem mniAddRequestToExistingTestCase;
-
-    public WebServiceAPIControl(Composite parent, boolean isSOAP, boolean isDraft, String url) {
+    
+    private ToolItem btnSaveDraft;
+    
+    private WebServiceRequestEntity originalWsObject;
+    
+    private WebServiceSettingStore store;
+    
+    private IEventBroker eventBroker;
+    
+    public WebServiceAPIControl(Composite parent, WebServiceRequestEntity requestEntity) {
         super(parent, SWT.NONE);
+        eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+        originalWsObject = requestEntity;
+        store = getWebServiceSettingStore();
+        boolean isSOAP = isSOAP();
+        boolean isDraft = isDraft();
+        String url = isSOAP ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
         createControl(url, isDraft);
         setInput(isSOAP);
+        eventBroker.subscribe(EventConstants.UPDATE_WEBSERVICE_METHODS, this);
+    }
+    
+    private boolean isSOAP() {
+        return WebServiceRequestEntity.SOAP.equals(originalWsObject.getServiceType());
+    }
+    
+    private boolean isDraft() {
+        return originalWsObject instanceof DraftWebServiceRequestEntity;
     }
 
     private void createControl(String url, boolean isDraft) {
@@ -62,12 +114,13 @@ public class WebServiceAPIControl extends Composite {
         setLayout(gridLayout);
         setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        cbRequestMethod = new CCombo(this, SWT.BORDER | SWT.READ_ONLY);
+        cbRequestMethod = new CCombo(this, SWT.BORDER);
         cbRequestMethod.setBackground(ColorUtil.getWhiteBackgroundColor());
         GridData gdRequestMethod = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gdRequestMethod.widthHint = 100;
         gdRequestMethod.heightHint = 22;
         cbRequestMethod.setLayoutData(gdRequestMethod);
+        cbRequestMethod.setEditable(true);
 
         txtRequestURL = new Text(this, SWT.BORDER);
         GridData gdRequestURL = new GridData(SWT.FILL, SWT.CENTER, true, true);
@@ -106,9 +159,22 @@ public class WebServiceAPIControl extends Composite {
             btnAddRequestToTestCase.setData(menuAddRequestToTestCase);
         }
         
+        if (isDraft) {
+            btnSaveDraft = new ToolItem(toolbar, SWT.PUSH);
+            btnSaveDraft.setImage(ImageConstants.IMG_24_SAVE);
+            btnSaveDraft.setToolTipText(ComposerWebserviceMessageConstants.BTN_SAVE_DRAFT_REQUEST);
+        }
+        
         toolbar.setLayoutData(new GridData(SWT.CENTER, SWT.RIGHT, false, true));
 
         // gdBtnSend.widthHint = 100;
+    }
+    
+    public void addRequestMethodFocusListener(FocusListener focusListener) {
+        if (focusListener == null) {
+            return;
+        }
+        cbRequestMethod.addFocusListener(focusListener);
     }
     
     public void addRequestMethodModifyListener(ModifyListener modifyListener) {
@@ -166,11 +232,42 @@ public class WebServiceAPIControl extends Composite {
         }
         mniAddRequestToExistingTestCase.addSelectionListener(selectionListener);
     }
+    
+    public void addSaveDraftSelectionListener(SelectionListener selectionListener) {
+        if (selectionListener == null) {
+            return;
+        }
+        btnSaveDraft.addSelectionListener(selectionListener);
+    }
 
     private void setInput(boolean isSOAP) {
         cbRequestMethod.setItems(
-                isSOAP ? WebServiceRequestEntity.SOAP_REQUEST_METHODS : WebServiceRequestEntity.REST_REQUEST_METHODS);
+                isSOAP ? WebServiceRequestEntity.SOAP_REQUEST_METHODS : getRestRequestMethods());
         cbRequestMethod.select(DEFAULT_REQUEST_METHOD_SELECTION_INDEX);
+        if (!isSOAP) {
+            cbRequestMethod.setEditable(true);
+            cbRequestMethod.setText(originalWsObject.getRestRequestMethod()); // need to set here because we support
+                                                                              // custom methods for REST request
+        }
+    }
+    
+    private String[] getRestRequestMethods() {
+        List<WebServiceMethod> methods;
+        try {
+            methods = store.getWebServiceMethods();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            methods = store.getDefaultWebServiceMethods();
+        }
+        
+        return methods.stream()
+            .map(WebServiceMethod::getName)
+            .toArray(value -> new String[value]);
+    }
+    
+    private WebServiceSettingStore getWebServiceSettingStore() {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        return WebServiceSettingStore.create(project.getFolderLocation());
     }
 
     public void setRequestMethodSelection(int index) {
@@ -233,5 +330,15 @@ public class WebServiceAPIControl extends Composite {
     
     public Menu getAddRequestToTestCaseMenu() {
         return menuAddRequestToTestCase;
+    }
+
+    @Override
+    public void handleEvent(org.osgi.service.event.Event event) {
+        if (EventConstants.UPDATE_WEBSERVICE_METHODS.equals(event.getTopic())) {
+            if (!isSOAP()) {
+                //reset methods with updated ones
+                cbRequestMethod.setItems(getRestRequestMethods());
+            }
+        }
     }
 }

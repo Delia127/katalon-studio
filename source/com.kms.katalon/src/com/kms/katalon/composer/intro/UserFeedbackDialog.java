@@ -2,10 +2,7 @@ package com.kms.katalon.composer.intro;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
-
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
@@ -31,6 +28,7 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class UserFeedbackDialog extends Dialog {
 
@@ -105,6 +103,7 @@ public class UserFeedbackDialog extends Dialog {
     }
 
     private void handleOkPressed() {
+        Trackings.trackUserResponseForTwitterDialog("ok");
         Program.launch(getTwitterUrl());
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_SHOW_USER_FEEDBACK_DIALOG_ON_APP_CLOSE, false);
         close();
@@ -117,6 +116,7 @@ public class UserFeedbackDialog extends Dialog {
     }
 
     private void handleCancelPressed() {
+        Trackings.trackUserResponseForTwitterDialog("later");
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_SHOW_USER_FEEDBACK_DIALOG_ON_APP_CLOSE,
                 shouldShowDialogAgain);
         close();

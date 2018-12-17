@@ -3,16 +3,19 @@ package com.kms.katalon.util;
 import java.util.Random;
 
 import org.eclipse.core.commands.common.CommandException;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.activation.ActivationService;
+import com.kms.katalon.activation.ActivationServiceConsumer;
 import com.kms.katalon.activation.dialog.ActivationDialogV2;
 import com.kms.katalon.activation.dialog.ActivationOfflineDialogV2;
 import com.kms.katalon.activation.dialog.SignupDialog;
-import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
-import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
+import com.kms.katalon.composer.intro.QuickStartDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
@@ -28,19 +31,26 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     public static boolean checkActivation() {
-        if (isActivated()) {
-            return true;
+        boolean isActivated = isActivated();
+        if (!isActivated) {
+            // Send anonymous info for the first time using
+            Trackings.trackOpenFirstTime();
         }
-        // Send anonymous info for the first time using
-        // Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
-        // UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.GUI)));
-        Trackings.trackOpenFirstTime();
-
-        if (!checkActivationDialog()) {
-            return false;
+        ActivationService activationService = ActivationServiceConsumer.getServiceInstance();
+        if (activationService != null) {
+            boolean activated = activationService.checkActivation(Display.getCurrent().getActiveShell());
+            if (!activated) {
+                return false;
+            }
+        } else {
+            if (!isActivated && !checkActivationDialog()) {
+                return false;
+            }
         }
-        showFunctionsIntroductionForTheFirstTime();
 
+        if (!isActivated) {
+            showFunctionsIntroductionForTheFirstTime();
+        }
         return true;
     }
 
@@ -91,13 +101,27 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     private static void showFunctionsIntroductionForTheFirstTime() {
 //        FunctionsIntroductionDialog dialog = new FunctionsIntroductionDialog(null);
 //        dialog.open();
-        FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
-        finishDialog.open();
-        try {
-            new CommandCaller().call(CommandId.PROJECT_ADD);
-        } catch (CommandException e) {
-            LogUtil.logError(e);
+//        FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
+//        finishDialog.open();
+        QuickStartDialog dialog = new QuickStartDialog(null);
+        
+        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
+        if(dialog.open() == Dialog.CANCEL) {
+        	try {
+				new CommandCaller().call(CommandId.PROJECT_OPEN);
+			} catch (CommandException e) {
+				 LogUtil.logError(e);
+			}
+        }else {
+            
+            try {
+                new CommandCaller().call(CommandId.PROJECT_ADD);
+            } catch (CommandException e) {
+                LogUtil.logError(e);
+            }
+            
         }
+        
 //        if (finishDialog.open() == Dialog.OK) {
 //            try {
 //                new CommandCaller().call(CommandId.PROJECT_ADD);

@@ -15,7 +15,7 @@ public interface IImageKeys {
 
     public static final String INTRO_SCREEN_6 = "intro/screen6.png"; //$NON-NLS-1$
     
-    public static final String INTRO_SCREEN_WELCOME = "intro/welcome_screen.png"; //$NON-NLS-1$
+    public static final String INTRO_SCREEN_WELCOME = "intro/welcome_screen_BG.png"; //$NON-NLS-1$
     // End Intro
 
     // Welcome
@@ -51,11 +51,11 @@ public interface IImageKeys {
     
     public static final String SCREEN_SHOT_MOBILE_LOG_VIEWER = "welcome/Mobile-View-execution-log.png"; //$NON-NLS-1$
     
-    public static final String SCREEN_SHOT_CREATE_WEB_SERVICE_REQUEST = "welcome/API-Create-a-web-service-request.png"; //$NON-NLS-1$
+    public static final String SCREEN_SHOT_USE_DRAFT_REQUEST = "welcome/API-use-draft-request.png"; //$NON-NLS-1$
     
-    public static final String SCREEN_SHOT_TEST_WEB_SERVICE_REQUEST = "welcome/API-Test-the-Web-Service-Request.png"; //$NON-NLS-1$
+    public static final String SCREEN_SHOT_SAVE_DRAFT_REQUEST = "welcome/API-save-draft-request.png"; //$NON-NLS-1$
     
-    public static final String SCREEN_SHOT_ADD_WEB_SERVICE_KEYWORD = "welcome/API-Add-a-web-service-keyword.png"; //$NON-NLS-1$
+    public static final String SCREEN_SHOT_ADD_REQUEST_TO_TEST_CASE = "welcome/API-add-request-to-test-case.png"; //$NON-NLS-1$
     
     public static final String SCREEN_SHOT_API_LOG_VIEWER = "welcome/API-view-the-execution-log.png"; //$NON-NLS-1$
     
@@ -365,6 +365,16 @@ public interface IImageKeys {
     public static final String WS_PATCH_METHOD_16 = "entity/ws_patch_16.png"; //$NON-NLS-1$
 
     public static final String WS_DELETE_METHOD_16 = "entity/ws_delete_16.png"; //$NON-NLS-1$
+    
+    public static final String WS_CONNECT_METHOD_16 = "entity/ws_connect_16.png";
+    
+    public static final String WS_CUSTOM_METHOD_16 = "entity/ws_custom_16.png";
+    
+    public static final String WS_HEAD_METHOD_16 = "entity/ws_head_16.png";
+    
+    public static final String WS_OPTIONS_METHOD_16 = "entity/ws_options_16.png";
+    
+    public static final String WS_TRACE_METHOD_16 = "entity/ws_trace_16.png";
 
     public static final String WS_SOAP_METHOD_16 = "entity/ws_soap_method_16.png"; //$NON-NLS-1$
 
@@ -409,6 +419,10 @@ public interface IImageKeys {
     public static final String PROFILE_ENTITY_16 = "entity/entity_global_variable_16.png"; //$NON-NLS-1$
 
     public static final String FEATURE_16 = "entity/feature_16.png"; //$NON-NLS-1$
+    
+    public static final String CONFIG_16 = "entity/config_16.png"; //$NON-NLS-1$
+
+    public static final String GROOVY_16 = "entity/groovy_16.png"; //$NON-NLS-1$
 
     public static final String FOLDER_FEATURE_16 = "entity/folder_feature_16.png"; //$NON-NLS-1$
     
@@ -687,5 +701,20 @@ public interface IImageKeys {
 
     // History Request
     public static final String HISTORY_REQUEST_16 = "history_request_16.png";
-
+    
+    // Api Quick Start
+    public static final String API_QUICKSTART_BACKGROUND = "api_quickstart/bg.png"; //$NON-NLS-1$
+    
+    public static final String NEW_DRAFT_REST_REQUEST = "api_quickstart/new_draft_rest.png";  //$NON-NLS-1$
+    
+    public static final String NEW_DRAFT_SOAP_REQUEST = "api_quickstart/new_draft_soap.png"; //$NON-NLS-1$
+    
+    public static final String IMPORT_SWAGGER = "api_quickstart/import_swagger.png"; //$NON-NLS-1$
+    
+    public static final String IMPORT_WSDL = "api_quickstart/import_wsdl.png"; //$NON-NLS-1$
+    
+    public static final String API_QUICKSTART_BACKGROUND_LEFT = "api_quickstart/bg_left_part.png"; //$NON-NLS-1$
+    
+    // In App Survey
+    public static final String STAR = "highlight_24.png";
 }

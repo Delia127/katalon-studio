@@ -27,7 +27,7 @@ public class FunctionsIntroductionDialogSizeCalculator {
                 return monitor;
             }
         }
-        return null;
+        return monitors.length > 0 ? monitors[0] : null;
     }
 
     public Point getBestSize() {

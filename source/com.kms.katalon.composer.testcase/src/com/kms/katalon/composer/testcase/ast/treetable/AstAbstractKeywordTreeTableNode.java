@@ -26,6 +26,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStateme
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.controller.KeywordController;
@@ -42,6 +43,8 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
     protected ExpressionStatementWrapper parentStatement;
 
     protected BinaryExpressionWrapper binaryExpression;
+    
+    private ITestCasePart testCasePart;
 
     public AstAbstractKeywordTreeTableNode(ExpressionStatementWrapper methodCallStatement,
             AstTreeTableNode parentNode) {
@@ -152,7 +155,9 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
 
     @Override
     public CellEditor getCellEditorForTestObject(Composite parent) {
-        return new TestObjectCellEditor(parent, getTestObjectText(), true);
+        TestObjectCellEditor cellEditor = new TestObjectCellEditor(parent, getTestObjectText(), true);
+        cellEditor.setTestCasePart(getTestCasePart());
+        return cellEditor;
     }
 
     @Override
@@ -235,6 +240,16 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
             return createNewOuput(outputString);
         }
         return changeExistingOutput(outputString);
+    }
+    
+    @Override
+    public void setTestCasePart(ITestCasePart testCasePart) {
+        this.testCasePart = testCasePart;
+    }
+    
+    @Override
+    public ITestCasePart getTestCasePart() {
+        return testCasePart;
     }
 
     private boolean changeExistingOutput(String outputString) {

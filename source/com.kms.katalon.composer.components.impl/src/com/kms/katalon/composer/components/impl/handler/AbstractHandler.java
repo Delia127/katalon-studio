@@ -24,8 +24,6 @@ public abstract class AbstractHandler extends WorkbenchUtilizer implements IHand
     @Inject
     protected ESelectionService selectionService;
 
-    @Inject
-    protected EPartService partService;
 
     private ExecutionEvent executionEvent;
 
@@ -36,10 +34,6 @@ public abstract class AbstractHandler extends WorkbenchUtilizer implements IHand
 
         if (selectionService == null) {
             selectionService = SelectionServiceSingleton.getInstance().getSelectionService();
-        }
-
-        if (partService == null) {
-            partService = PartServiceSingleton.getInstance().getPartService();
         }
     }
 
@@ -93,4 +87,9 @@ public abstract class AbstractHandler extends WorkbenchUtilizer implements IHand
     private void setExecutionEvent(ExecutionEvent executionEvent) {
         this.executionEvent = executionEvent;
     }
+
+    protected EPartService getPartService() {
+        return PartServiceSingleton.getInstance().getPartService();
+    }
+    
 }

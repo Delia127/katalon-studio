@@ -58,4 +58,17 @@ public class ExecutionProfileEntity extends FileEntity {
     public void setDefaultProfile(boolean defaultProfile) {
         this.defaultProfile = defaultProfile;
     }
+    
+        
+    public boolean compareByVariables(ExecutionProfileEntity entity){
+    	List<GlobalVariableEntity> entityVariables = entity.getGlobalVariableEntities();
+    	List<GlobalVariableEntity> variables = getGlobalVariableEntities();
+    	if(entityVariables.size() != variables.size()) return false;
+    	for(int i = 0; i < entityVariables.size(); i++){
+    		if(!entityVariables.get(i).equals(variables.get(i))) {
+    			return false;
+    		}
+    	}
+    	return true;
+    }
 }

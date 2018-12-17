@@ -12,7 +12,6 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.search.constants.ImageConstants;
 import com.kms.katalon.composer.search.constants.StringConstants;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;

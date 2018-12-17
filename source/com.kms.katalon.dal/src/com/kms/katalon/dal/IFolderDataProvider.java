@@ -45,6 +45,10 @@ public interface IFolderDataProvider {
 
     public FolderEntity getIncludeRoot(ProjectEntity project) throws DALException;
 
+    public FolderEntity getFeatureRoot(ProjectEntity project) throws DALException;
+    
+    public FolderEntity getGroovyScriptRoot(ProjectEntity project) throws DALException;
+    
     public void refreshFolder(FolderEntity folder) throws Exception;
 
     /*

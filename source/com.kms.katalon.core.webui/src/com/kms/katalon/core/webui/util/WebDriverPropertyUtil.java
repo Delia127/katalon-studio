@@ -19,6 +19,9 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.selenium.firefox.CFirefoxProfile;
 
 public class WebDriverPropertyUtil {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(WebDriverPropertyUtil.class);
+    
     public static final String DISABLE_EXTENSIONS = "--disable-extensions";
     public static final String CHROME_SWITCHES = "chrome.switches";
     public static final String CHROME_NO_SANDBOX = "--no-sandbox";
@@ -71,7 +74,7 @@ public class WebDriverPropertyUtil {
             DesiredCapabilities desireCapabilities, boolean isLog) {
         for (Entry<String, Object> property : propertyMap.entrySet()) {
             if (isLog) {
-                KeywordLogger.getInstance().logInfo(
+                logger.logInfo(
                         MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, property.getKey(),
                                 property.getValue()));
             }
@@ -88,7 +91,7 @@ public class WebDriverPropertyUtil {
                 processFirefoxPreferencesSetting(firefoxProfile, (Map<?, ?>) property.getValue());
             } else {
                 desireCapabilities.setCapability(property.getKey(), property.getValue());
-                KeywordLogger.getInstance().logInfo(
+                logger.logInfo(
                         MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, property.getKey(),
                                 property.getValue()));
             }
@@ -104,7 +107,7 @@ public class WebDriverPropertyUtil {
             }
             String entryKey = (String) entry.getKey();
             if (setFirefoxPreferenceValue(firefoxProfile, entryKey, entry.getValue())) {
-                KeywordLogger.getInstance().logInfo(
+                logger.logInfo(
                         MessageFormat.format(StringConstants.KW_LOG_FIREFOX_PROPERTY_SETTING, entryKey,
                                 entry.getValue()));
             }
@@ -144,7 +147,7 @@ public class WebDriverPropertyUtil {
             } else {
                 desireCapabilities.setCapability(driverProperty.getKey(), driverProperty.getValue());
             }
-            KeywordLogger.getInstance().logInfo(
+            logger.logInfo(
                     MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, driverProperty.getKey(),
                             driverProperty.getValue()));
         }
@@ -182,6 +185,26 @@ public class WebDriverPropertyUtil {
             argsEntry = new ArrayList<>();
         }
         argsEntry.addAll(Arrays.asList(args));
+        if (isRunningInDocker()) {
+            argsEntry.add(CHROME_NO_SANDBOX);
+        }
+        chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argsEntry);
+        caps.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+    }
+    
+    public static void removeArgumentsForChrome(DesiredCapabilities caps, String... args) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> chromeOptions = (Map<String, Object>) caps.getCapability(ChromeOptions.CAPABILITY);
+        if (chromeOptions == null) {
+            chromeOptions= new HashMap<>();
+        }
+        
+        @SuppressWarnings("unchecked")
+        List<String> argsEntry = (List<String>) chromeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY);
+        if (argsEntry == null) {
+            argsEntry = new ArrayList<>();
+        }
+        argsEntry.removeAll(Arrays.asList(args));
         if (isRunningInDocker()) {
             argsEntry.add(CHROME_NO_SANDBOX);
         }

@@ -2,6 +2,8 @@ package com.kms.katalon.composer.testcase.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
@@ -51,7 +53,10 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.RangeExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.variable.VariableEntity;
 
 /**
  * Utility class to handle changing value for ast nodes
@@ -174,17 +179,29 @@ public class AstValueUtil {
     public static CellEditor getCellEditorForBooleanConstantExpression(Composite parent) {
         return new BooleanConstantComboBoxCellEditor(parent);
     }
-
+    
+    // Use this when testCasePart's information cannot be retrieved otherwise
+    public static CellEditor getCellEditorForVariableExpression(Composite parent,
+            VariableExpressionWrapper variableExpressionWrapper, ITestCasePart variablesPart) {
+        List<String> variableStringList = Optional.ofNullable(variablesPart)
+                .map(ITestCasePart::getTestCase)
+                .map(TestCaseEntity::getVariables)
+                .orElse(new ArrayList<>())
+                .stream()
+                .map(VariableEntity::getName)
+                .collect(Collectors.toList());
+        return new VariableComboBoxCellEditor(parent, variableStringList);
+    }
+    
     public static CellEditor getCellEditorForVariableExpression(Composite parent,
             VariableExpressionWrapper variableExpressionWrapper) {
-        List<String> variableStringList = new ArrayList<String>();
-        ScriptNodeWrapper scriptClass = variableExpressionWrapper.getScriptClass();
-        if (scriptClass != null) {
-            for (FieldNodeWrapper field : scriptClass.getFields()) {
-                variableStringList.add(field.getName());
-            }
-            return new VariableComboBoxCellEditor(parent, variableStringList);
-        }
+    	List<String> variableStringList = new ArrayList<>();
+    	ScriptNodeWrapper scriptClass = variableExpressionWrapper.getScriptClass();
+    	if(scriptClass != null){
+    		for(FieldNodeWrapper field: scriptClass.getFields()){
+    			variableStringList.add(field.getName());
+    		}
+    	}
         return new VariableComboBoxCellEditor(parent, variableStringList);
     }
 
@@ -225,8 +242,9 @@ public class AstValueUtil {
         }
         return null;
     }
-    
-    public static CellEditor getCellEditorForEncryptedText(Composite parent, ConstantExpressionWrapper constantExpressionWrapper) {
+
+    public static CellEditor getCellEditorForEncryptedText(Composite parent,
+            ConstantExpressionWrapper constantExpressionWrapper) {
         return new EncryptedTextDialogCellEditor(parent, constantExpressionWrapper);
     }
 

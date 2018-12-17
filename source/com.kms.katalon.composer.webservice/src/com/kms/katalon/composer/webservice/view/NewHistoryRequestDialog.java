@@ -37,7 +37,6 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
-import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 
 public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
 
@@ -60,16 +59,16 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
     private FolderEntity parentFolder;
 
     private Composite container;
-
-    private RequestHistoryEntity requestHistory;
     
     private NewHistoryRequestResult result;
     
+    private WebServiceRequestEntity draftRequest;
+    
     private List<FileEntity> sibblingEntities;
 
-    public NewHistoryRequestDialog(Shell parentShell, RequestHistoryEntity requestHistory) {
+    public NewHistoryRequestDialog(Shell parentShell, WebServiceRequestEntity draftRequest) {
         super(parentShell);
-        this.requestHistory = requestHistory;
+        this.draftRequest = draftRequest;
     }
 
     @Override
@@ -134,7 +133,7 @@ public class NewHistoryRequestDialog extends CustomTitleAreaDialog {
             
             txtParentFolder.setText(parentFolder.getIdForDisplay());
 
-            WebServiceRequestEntity request = requestHistory.getRequest();
+            WebServiceRequestEntity request = draftRequest;
             String serviceType = request.getServiceType();
             // Fix KAT-3704
             txtRequestType.setText(WebServiceRequestEntity.RESTFUL.equals(serviceType)

@@ -5,12 +5,10 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.eclipse.e4.core.services.log.Logger;
 import org.openqa.selenium.WebDriverException;
 import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
 import com.kms.katalon.objectspy.util.FileUtil;
@@ -19,7 +17,6 @@ import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 
-@SuppressWarnings("restriction")
 public class RecordSession extends InspectSession {
     public static final String RECORDER_ADDON_NAME = "Recorder";
 
@@ -30,21 +27,17 @@ public class RecordSession extends InspectSession {
             + "AppData" + File.separator + "Local" + File.separator + "KMS" + File.separator + "qAutomate"
             + File.separator + RECORDER_ADDON_NAME;
 
-    public RecordSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, ProjectEntity currentProject,
-            Logger logger) throws Exception {
-        super(server, webUiDriverType, currentProject, logger);
+    public RecordSession(HTMLElementCaptureServer server, IDriverConnector driverConnector) throws Exception {
+        super(server, driverConnector);
     }
-
-    public RecordSession(HTMLElementRecorderServer server, WebUIDriverType webUiDriverType,
-            ProjectEntity currentProject, Logger logger, String startUrl) {
-        super(server, webUiDriverType, currentProject, logger, startUrl);
+    
+    public RecordSession(HTMLElementRecorderServer server, IDriverConnector driverConnector, String startUrl) {
+        super(server, driverConnector, startUrl);
     }
 
     protected String getChromeExtensionPath() {
-        //return CHROME_EXTENSION_RELATIVE_PATH;
     	return CHROME_EXTENSION_RELATIVE_PATH;
-    }   
-    
+    }     
     
     @Override
     protected File getChromeExtensionFile() throws IOException {

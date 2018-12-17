@@ -28,9 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.GsonBuilder;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.TestSuiteXMLLogParser;
 import com.kms.katalon.core.logging.XMLLoggerParser;
@@ -141,7 +138,7 @@ public class ReportUtil {
 
         writeSimpleHTMLReport(suiteLogEntity, logFolder);
 
-        writeJsonReport(suiteLogEntity, logFolder);
+//        writeJsonReport(suiteLogEntity, logFolder);
 
         writeJUnitReport(suiteLogEntity, logFolder);
     }
@@ -152,6 +149,8 @@ public class ReportUtil {
             writeJUnitReport(testSuiteLogRecord, new File(logFolder));
         }
     }
+    
+    
 
     public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
             throws JAXBException, IOException {
@@ -241,26 +240,26 @@ public class ReportUtil {
         marshaller.marshal(tss, new File(logFolder, "JUnit_Report.xml"));
     }
 
-    public static void writeJsonReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
-        List<String> excludedFieldNames = Arrays.asList(suiteLogEntity.getJsonExcludedFields());
-        ExclusionStrategy excludeFields = new ExclusionStrategy() {
-
-            @Override
-            public boolean shouldSkipField(FieldAttributes paramFieldAttributes) {
-                return excludedFieldNames.size() == 0 ? false
-                        : excludedFieldNames.contains(paramFieldAttributes.getName());
-            }
-
-            @Override
-            public boolean shouldSkipClass(Class<?> paramClass) {
-                return false;
-            }
-        };
-        String json = new GsonBuilder().addSerializationExclusionStrategy(excludeFields)
-                .create()
-                .toJson(suiteLogEntity);
-        FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json, StringConstants.DF_CHARSET);
-    }
+//    public static void writeJsonReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
+//        List<String> excludedFieldNames = Arrays.asList(suiteLogEntity.getJsonExcludedFields());
+//        ExclusionStrategy excludeFields = new ExclusionStrategy() {
+//
+//            @Override
+//            public boolean shouldSkipField(FieldAttributes paramFieldAttributes) {
+//                return excludedFieldNames.size() == 0 ? false
+//                        : excludedFieldNames.contains(paramFieldAttributes.getName());
+//            }
+//
+//            @Override
+//            public boolean shouldSkipClass(Class<?> paramClass) {
+//                return false;
+//            }
+//        };
+//        String json = new GsonBuilder().addSerializationExclusionStrategy(excludeFields)
+//                .create()
+//                .toJson(suiteLogEntity);
+//        FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json, StringConstants.DF_CHARSET);
+//    }
 
     public static void writeTSCollectionHTMLReport(String reportTitle, String tsReportsJson, File destDir)
             throws IOException, URISyntaxException {
@@ -308,6 +307,11 @@ public class ReportUtil {
 
         FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + reportDirLocationHashCode + ".html"),
                 htmlSb.toString(), StringConstants.DF_CHARSET);
+    }
+    
+    public static void writeExecutionUUIDToFile(String UUID, File logFolder) throws IOException, URISyntaxException {
+        FileUtils.writeStringToFile(new File(logFolder, "execution.uuid"),
+        		UUID, StringConstants.DF_CHARSET);
     }
 
     public static void writeCSVReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {

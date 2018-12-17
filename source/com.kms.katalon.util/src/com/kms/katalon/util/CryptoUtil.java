@@ -44,6 +44,10 @@ public final class CryptoUtil {
         return create(DF_ALGORITHM, data, DF_SALT.getBytes(), DF_SECRET_KEY);
     }
 
+    public static CrytoInfo getDefault(String salt, String data) {
+        return create(DF_ALGORITHM, data, salt.getBytes(), DF_SECRET_KEY);
+    }
+
     public static CrytoInfo create(String algorithm, String data, byte[] salt, String privateKey) {
         CrytoInfo cryptoInfo = new CrytoInfo();
         cryptoInfo.algorithm = algorithm;

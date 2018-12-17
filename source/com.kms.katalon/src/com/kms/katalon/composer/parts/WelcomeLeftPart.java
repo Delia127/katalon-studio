@@ -1,8 +1,5 @@
 package com.kms.katalon.composer.parts;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.MessageFormat;
 
 import org.eclipse.swt.SWT;
@@ -24,8 +21,6 @@ import org.eclipse.swt.widgets.Link;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.impl.util.DesktopUtils;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
@@ -160,11 +155,7 @@ public class WelcomeLeftPart extends Composite {
     }
 
     private void openURL(String url) {
-        try {
-            DesktopUtils.openUri(new URL(url).toURI());
-        } catch (IOException | URISyntaxException ex) {
-            LoggerSingleton.logError(ex);
-        }
+       Program.launch(url);
     }
 
     @Override

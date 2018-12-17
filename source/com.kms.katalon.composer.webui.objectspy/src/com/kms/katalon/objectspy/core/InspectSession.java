@@ -13,20 +13,18 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.firefox.GeckoDriverService;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -42,11 +40,9 @@ import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.util.ExecutionUtil;
-import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.exception.BrowserNotSupportedException;
 import com.kms.katalon.objectspy.exception.ExtensionNotFoundException;
@@ -58,10 +54,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 import com.kms.katalon.selenium.driver.CFirefoxDriver;
 
-@SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    private static final String FIREFOX_ADDON_UUID = "{932b2318-b453-4947-8d43-92ac9dcef9bf}";
-
     private static final String HTTP = "http";
 
     private static final String ABOUT_BLANK = "about:blank";
@@ -110,42 +103,35 @@ public class InspectSession implements Runnable {
 
     protected HTMLElementCaptureServer server;
 
-    protected ProjectEntity currentProject;
-
     private String startUrl;
 
     private boolean driverStarted = false;
     
-
-    public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
-            ProjectEntity currentProject, Logger logger) {
+    private IDriverConnector driverConnector;
+    
+    public InspectSession(HTMLElementCaptureServer server, IDriverConnector driverConnector, String startUrl) {
         this.server = server;
-        this.webUiDriverType = webUiDriverType;
-        this.currentProject = currentProject;
-        isRunFlag = true;
-    }
-
-    public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
-            ProjectEntity currentProject, Logger logger, String startUrl) {
-        this(server, webUiDriverType, currentProject, logger);
+        this.driverConnector = driverConnector;
+        this.webUiDriverType = (WebUIDriverType) driverConnector.getDriverType();
         this.startUrl = startUrl;
+        isRunFlag = true;  
+    }
+    
+    public InspectSession(HTMLElementCaptureServer server, IDriverConnector driverConnector) {
+        this(server, driverConnector, null);
     }
 
-    protected void setUp(WebUIDriverType webUIDriverType, ProjectEntity currentProject)
-            throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
-        projectDir = currentProject.getFolderLocation();
-
-        IDriverConnector webUIDriverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType,
-                projectDir);
+    protected void setUp() throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
         DefaultExecutionSetting executionSetting = new DefaultExecutionSetting();
         executionSetting.setTimeout(ExecutionUtil.getDefaultImplicitTimeout());
 
+
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
-        driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, webUIDriverConnector);
+        driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, driverConnector);
 
         RunConfiguration
                 .setExecutionSetting(ExecutionUtil.getExecutionProperties(executionSetting, driverConnectors, null));
-        options = createDriverOptions(webUIDriverType);
+        options = createDriverOptions(webUiDriverType);
 
         if (webUiDriverType == WebUIDriverType.IE_DRIVER) {
             setupIE();
@@ -155,7 +141,7 @@ public class InspectSession implements Runnable {
     @Override
     public void run() {
         try {
-            setUp(webUiDriverType, currentProject);
+            setUp();
         } catch (IOException | ExtensionNotFoundException | BrowserNotSupportedException e) {
             LoggerSingleton.logError(e);
             showErrorMessageDialog(e.getMessage());
@@ -184,7 +170,7 @@ public class InspectSession implements Runnable {
         try {
             Thread.sleep(5);
 
-            driver = DriverFactory.openWebDriver(webUiDriverType, projectDir, options);
+            driver = DriverFactory.openWebDriver(webUiDriverType, options);
             driverStarted = true;
             if (webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
                 // Fix KAT-3652: Cannot Record/Spy with Firefox latest version (v.62.0)
@@ -209,6 +195,18 @@ public class InspectSession implements Runnable {
                 }
             }
 
+            if (webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
+                CFirefoxDriver firefoxDriver = (CFirefoxDriver) driver;
+                URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
+                CloseableHttpClient client = HttpClientBuilder.create().build();
+                HttpPost httpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/" + 
+                        ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
+                httpPost.setEntity(new StringEntity(String.format("{\"path\": \"%s\"}",
+                    getFirefoxAddonFile().getAbsolutePath())));
+                CloseableHttpResponse response = client.execute(httpPost);
+
+                handleForFirefoxAddon();
+            }
             while (isRunFlag) {
                 try {
                     Thread.sleep(1000L);
@@ -260,28 +258,22 @@ public class InspectSession implements Runnable {
     }
 
     protected Object createDriverOptions(WebUIDriverType driverType)
-            throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
-        if (driverType == WebUIDriverType.CHROME_DRIVER) {
-            return createChromDriverOptions();
+            throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {  
+        DesiredCapabilities capabilities = WebDriverPropertyUtil.toDesireCapabilities(
+                RunConfiguration.getDriverPreferencesProperties(DriverFactory.WEB_UI_DRIVER_PROPERTY), driverType);
+        switch(driverType) {
+            case CHROME_DRIVER: 
+                return createChromDriverOptions(capabilities);
+            case IE_DRIVER: 
+                return createIEDesiredCapabilities(capabilities);
+            default: 
+                return capabilities;
         }
-        if (driverType == WebUIDriverType.FIREFOX_DRIVER) {
-            try {
-                System.setProperty("webdriver.gecko.driver", DriverFactory.getGeckoDriverPath());
-            return GeckoDriverService.createDefaultService();
-            }catch (Exception e) {
-                return null;
-            }
-        }
-        if (driverType == WebUIDriverType.IE_DRIVER) {
-            return createIEDesiredCapabilities();
-        }
-        return null;
     }
 
-    private DesiredCapabilities createIEDesiredCapabilities() {
-        DesiredCapabilities desiredCapabilities = DesiredCapabilities.internetExplorer();
-        desiredCapabilities.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, ABOUT_BLANK);
-        return desiredCapabilities;
+    private DesiredCapabilities createIEDesiredCapabilities(DesiredCapabilities capabilities) {
+        capabilities.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, ABOUT_BLANK);
+        return capabilities;
     }
 
     protected FirefoxProfile createFireFoxProfile() throws IOException {
@@ -290,17 +282,17 @@ public class InspectSession implements Runnable {
         return firefoxProfile;
     }
 
-    protected DesiredCapabilities createChromDriverOptions() throws IOException, ExtensionNotFoundException {
+    protected DesiredCapabilities createChromDriverOptions(DesiredCapabilities capabilities) throws IOException, ExtensionNotFoundException {
         File chromeExtensionFolder = getChromeExtensionFile();
         if (chromeExtensionFolder == null || !chromeExtensionFolder.isDirectory() || !chromeExtensionFolder.exists()) {
             throw new ExtensionNotFoundException(getChromeExtensionPath(), WebUIDriverType.CHROME_DRIVER);
         }
         generateVariableInitFileForChrome(chromeExtensionFolder);
-        ChromeOptions options = new ChromeOptions();
+        WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, 
+                WebDriverPropertyUtil.DISABLE_EXTENSIONS);
         //TODO - Thanh: investigate why getAbsolutePath() suddenly stops working
-        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+        WebDriverPropertyUtil.addArgumentsForChrome(capabilities, 
+                LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
         return capabilities;
     }
 
@@ -339,7 +331,7 @@ public class InspectSession implements Runnable {
         }
         return null;
     }
-    
+
     protected File getFirefoxAddonFile() throws IOException {
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {

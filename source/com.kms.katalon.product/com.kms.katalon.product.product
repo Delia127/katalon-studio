@@ -9,8 +9,6 @@
    <launcherArgs>
       <programArgs>-data config
       </programArgs>
-      <programArgsLin>-noSplash
-      </programArgsLin>
       <programArgsMac>-vm ../../Contents/Eclipse/jre/Contents/Home/jre/lib/jli/libjli.dylib
       </programArgsMac>
       <vmArgs>-Xms256m

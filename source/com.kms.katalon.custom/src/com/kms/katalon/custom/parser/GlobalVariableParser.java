@@ -43,7 +43,7 @@ public class GlobalVariableParser {
         File internalGlobalVariableFile = new File(internalPackageFolder, GLOBAL_VARIABLE_FILE_NAME);
 
         generateGlobalVariableFile(executionProfiles, internalGlobalVariableFile);
-        libFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
+        libFolder.getFolder(INTERNAL_PACKAGE_NAME).refreshLocal(IResource.DEPTH_INFINITE, null);
     }
 
     private void generateGlobalVariableFile(List<ExecutionProfileEntity> globalVariables, File globalVariableFile)

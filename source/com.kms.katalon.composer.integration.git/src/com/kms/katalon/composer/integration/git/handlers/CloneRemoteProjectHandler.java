@@ -59,6 +59,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
+import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.tracking.service.Trackings;
 
 
@@ -203,10 +204,11 @@ public class CloneRemoteProjectHandler {
         try {
             shouldHandleProjectOpenAfterClone = true;
             
-            ProjectEntity project = updateProjectType(projectFile);
+            ProjectEntity project = updateProject(projectFile);
             
-            Trackings.trackCreatingSampleProject(sample.getName(), project.getUUID());
-            
+            Trackings.trackCreatingSampleProject(sample.getName(), project.getUUID(), projectType);
+            EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.PROJECT_CREATED,
+            		project);
             OpenProjectHandler.doOpenProject(null, projectFile.getAbsolutePath(),
 
                     UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),
@@ -226,8 +228,9 @@ public class CloneRemoteProjectHandler {
         return;
     }
 
-    private ProjectEntity updateProjectType(File projectFile) throws Exception {
+    private ProjectEntity updateProject(File projectFile) throws Exception {
         ProjectEntity project = ProjectController.getInstance().getProject(projectFile.getAbsolutePath());
+        project.setUUID(Util.generateGuid());
         project.setType(projectType);
         project.setFolderLocation(destinationFolder.getAbsolutePath());
         ProjectController.getInstance().updateProject(project);

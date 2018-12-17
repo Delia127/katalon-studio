@@ -107,6 +107,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DATABASE_SETTING_PAGE_ID = "com.kms.katalon.composer.testdata.settings.database";
 
     public static final String NETWORK_SETTING_PAGE_ID = "com.kms.katalon.composer.webservice.network";
+    
+    public static final String DESIRED_CAPABILITIES_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.desiredcapabilities";
 
     // UpdateProjectHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ = ComposerProjectMessageConstants.HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ;
@@ -174,4 +176,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String SAMPLE_WEB_SERVICE_PROJECT = ComposerProjectMessageConstants.SAMPLE_WEB_SERVICE_PROJECT;
     
     public static final String BLANK_PROJECT = ComposerProjectMessageConstants.BLANK_PROJECT;
+
+	public static final String CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER = ComposerProjectMessageConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER;
 }

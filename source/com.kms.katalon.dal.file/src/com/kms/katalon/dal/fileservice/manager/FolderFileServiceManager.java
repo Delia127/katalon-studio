@@ -61,6 +61,7 @@ public class FolderFileServiceManager {
             initRootFolder(FileServiceConstant.getSourceFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getGroovyScriptFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getFeatureFolderLocation(projectFolderLocation));
+            initRootFolder(FileServiceConstant.getConfigFolderLocation(projectFolderLocation));
         }
     }
 
@@ -205,6 +206,26 @@ public class FolderFileServiceManager {
         } catch (Exception e) {
             throw new DALException(e);
         }
+    }
+    
+    public static FolderEntity getGroovyScriptRoot(ProjectEntity project) throws DALException {
+    	if (project == null) {
+    		return null;
+    	}
+    	 try {
+             FolderEntity folder = getFolder(
+                     FileServiceConstant.getGroovyScriptFolderLocation(project.getFolderLocation()));
+
+             if (folder == null) {
+                 return null;
+             }
+
+             folder.setFolderType(FolderType.INCLUDE);
+             folder.setProject(project);
+             return folder;
+         } catch (Exception e) {
+             throw new DALException(e);
+         }
     }
 
     /**

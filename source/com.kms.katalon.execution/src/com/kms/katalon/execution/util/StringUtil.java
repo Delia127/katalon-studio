@@ -1,9 +1,13 @@
 package com.kms.katalon.execution.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.util.collections.Pair;
 
 public class StringUtil {
     public static String wrap(String longString, int lineWidth) {

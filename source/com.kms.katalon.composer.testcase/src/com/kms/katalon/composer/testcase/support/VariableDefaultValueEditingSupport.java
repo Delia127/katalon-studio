@@ -11,18 +11,25 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.composer.testcase.parts.TableActionOperator;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class VariableDefaultValueEditingSupport extends EditingSupport {
     private TableActionOperator variablesPart;
-
+    
     private ExpressionWrapper expression;
+    
+    private ITestCasePart testCasePart;
 
     public VariableDefaultValueEditingSupport(ColumnViewer viewer, TableActionOperator variablesPart) {
+        this(viewer, variablesPart, null);
+    }
+    public VariableDefaultValueEditingSupport(ColumnViewer viewer, TableActionOperator variablesPart, ITestCasePart testCasePart) {
         super(viewer);
         this.variablesPart = variablesPart;
+        this.testCasePart = testCasePart;
     }
 
     @Override
@@ -33,8 +40,7 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
         }
         InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
         if (inputValueType != null) {
-        	inputValueType.changeValue(expression, StringUtils.EMPTY);
-            return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression);
+            return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression, testCasePart);
         }
         return null;
     }

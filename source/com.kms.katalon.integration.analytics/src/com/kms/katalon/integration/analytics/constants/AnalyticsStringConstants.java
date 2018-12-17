@@ -30,6 +30,8 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_API_KATALON_TEST_REPORTS = "/api/v1/katalon-test-reports";
     
+    public static final String ANALYTICS_API_KATALON_TEST_RUN_RESULT = "/api/v1/katalon/test-reports/update-result";
+    
     public static final String ANALYTICS_API_UPLOAD_URL = "/api/v1/files/upload-url";
     
     public static final String ANALYTICS_STOREAGE = "s3";
@@ -41,4 +43,8 @@ public class AnalyticsStringConstants {
     public static final String ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(avi|mov))$)";
     
     public static final String ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(png|jpg))$)";
+    
+    public static final String ANALYTICS_HAR_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(har))$)";
+    
+    public static final String ANALYTICS_UUID_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(uuid))$)";
 }

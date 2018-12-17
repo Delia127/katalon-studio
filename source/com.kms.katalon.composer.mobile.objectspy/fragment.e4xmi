@@ -18,4 +18,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6VKX4FI0EeaxXsYWeu9vzg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="after:com.kms.katalon.composer.objectrepository.dynamicmenucontribution.addToObjectSpy">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_NwOpcFI1EeaxXsYWeu9vzg" elementId="com.kms.katalon.composer.mobile.objectspy.dynamicmenucontribution.menu" contributionURI="bundleclass://com.kms.katalon.composer.mobile.objectspy/com.kms.katalon.composer.mobile.objectspy.menu.MobileObjectSpyMenuContribution"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_gQYlcMxKEeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.spy" positionInList="after:katalon.composer.objectrepository.handledmenuitem.spyweb">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_o_KTcMxKEeis-d8dVdcONw" elementId="com.kms.katalon.composer.mobile.objectspy.handledmenuitem.spymobile" label="Spy Mobile" iconURI="" command="_zzwRcAOcEeWw1uW0NQbOIw"/>
+  </fragments>
 </fragment:ModelFragments>

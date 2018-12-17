@@ -11,6 +11,9 @@ import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.Platform;
 
 public class PlatformUtil {
+    private static final String BROWSE_NAME_GOOGLE_CHROME_ON_LINUX = "google-chrome-stable";
+
+    private static final String BROWSER_NAME_FIREFOX_ON_LINUX = "firefox";
 
     private final static String OS = System.getProperty("os.name").toLowerCase();
 
@@ -48,14 +51,40 @@ public class PlatformUtil {
         if (isMacOS()) {
             return isBrowserInstalledOnMac(BROWSER_NAME_FIREFOX);
         }
-        return isBrowserInstalledOnWindows(BROWSER_NAME_FIREFOX);
+        if (isWindowsOS()) {
+            return isBrowserInstalledOnWindows(BROWSER_NAME_FIREFOX);
+        }
+        if (isLinux()) {
+            return isBrowserInstalledOnLinux(BROWSER_NAME_FIREFOX_ON_LINUX);
+        }
+        return false;
     }
 
     public static boolean isChromeInstalled() {
         if (isMacOS()) {
             return isBrowserInstalledOnMac(BROWSER_NAME_GOOGLE_CHROME);
         }
-        return isBrowserInstalledOnWindows(BROWSER_NAME_GOOGLE_CHROME);
+        if (isWindowsOS()) {
+            return isBrowserInstalledOnWindows(BROWSER_NAME_GOOGLE_CHROME);
+        }
+        if (isLinux()) {
+            return isBrowserInstalledOnLinux(BROWSE_NAME_GOOGLE_CHROME_ON_LINUX);
+        }
+        return false;
+    }
+
+    public static boolean isBrowserInstalledOnLinux(String browserName) {
+        try {
+            Process process = Runtime.getRuntime()
+                    .exec("which " + browserName);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            Optional<String> output = stdInput.lines()
+                    .findFirst();
+            return output.isPresent();
+        } catch (Exception e) {
+            // swallow the exception
+            return false;
+        }
     }
 
     public static boolean isSafariInstalled() {

@@ -45,12 +45,12 @@ public class TestCaseInjectionManagerAddon implements EventHandler {
         ContextInjectionFactory.make(EvaluateIntegrationContributionViewHandler.class, context);
 
         TransferTypeCollection.getInstance().addTreeEntityTransferType(TreeEntityTransfer.getInstance());
-        eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
+        eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, this);
     }
 
     @Override
     public void handleEvent(Event event) {
-        if (event.getTopic().equals(EventConstants.WORKSPACE_CREATED)) {
+        if (event.getTopic().equals(EventConstants.ACTIVATION_CHECKED)) {
             partService.showPart("com.kms.katalon.composer.testcase.part.keywordsBrowser", PartState.CREATE);
         }
     }

@@ -26,7 +26,8 @@ Export-Package: com.kms.katalon.entity;uses:="com.kms.katalon.entity.folder,com.
  com.kms.katalon.entity.testsuite;uses:="com.kms.katalon.entity.folder,com.kms.katalon.entity.file",
  com.kms.katalon.entity.util,
  com.kms.katalon.entity.variable,
- com.kms.katalon.entity.webservice
+ com.kms.katalon.entity.webservice,
+ com.kms.katalon.entity.wrapper
 Require-Bundle: org.apache.commons.lang;bundle-version="2.6.0",
  net.lingala.zip4j;bundle-version="1.2.5",
  org.eclipse.persistence.eclipselink;bundle-version="2.5.0",

@@ -38,7 +38,8 @@ public class NewVariableOperation extends AbstractOperation {
         if (newVariable == null) {
             return Status.CANCEL_STATUS;
         }
-        variableList.add(newVariable);
+        
+        variableList.add(newVariable);        
         tableViewer.refresh();
         tableViewer.setSelection(new StructuredSelection(newVariable));
         testCaseVariablePart.setDirty(true);

@@ -14,13 +14,13 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
-import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
@@ -197,7 +197,7 @@ public class QTestIntegrationReportTestCaseView extends TestCaseLogDetailsIntegr
 
             URL url = QTestIntegrationReportManager.getTestLogURL(projectDir, qTestProject, qTestRun, qTestCaseLog);
 
-            DesktopUtils.openUri(url.toURI());
+            Program.launch(url.toString());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

@@ -67,6 +67,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MENU_ITEM_NEW_BROWSERS = ObjectspyMessageConstants.MENU_ITEM_NEW_BROWSERS;
 
     public static final String MENU_ITEM_ACTIVE_BROWSERS = ObjectspyMessageConstants.MENU_ITEM_ACTIVE_BROWSERS;
+    
+    public static final String MENU_ITEM_CUSTOM_BROWSERS = ObjectspyMessageConstants.MENU_ITEM_CUSTOM_BROWSERS;
 
     public static final String HAND_ACTIVE_BROWSERS_DIA_TITLE = ObjectspyMessageConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE;
 

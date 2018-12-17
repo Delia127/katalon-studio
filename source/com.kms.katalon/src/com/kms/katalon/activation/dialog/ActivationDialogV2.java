@@ -260,7 +260,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     @Override
     public String getDialogTitle() {
-        return MessageConstants.DIALOG_TITLE;
+        return MessageConstants.DIA_TITLE_KS_ACTIVATION;
     }
 
     @Override

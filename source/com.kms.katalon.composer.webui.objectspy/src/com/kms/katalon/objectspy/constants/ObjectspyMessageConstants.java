@@ -54,6 +54,8 @@ public class ObjectspyMessageConstants extends NLS {
     public static String MENU_ITEM_NEW_BROWSERS;
 
     public static String MENU_ITEM_ACTIVE_BROWSERS;
+    
+    public static String MENU_ITEM_CUSTOM_BROWSERS;
 
     public static String MSG_DLG_INIT_OBJECT_SPY;
 
@@ -175,7 +177,9 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String WARN_MSG_OBJECT_PROPERTY_NAME_IS_EXISTED;
 
-    public static String LBL_DLG_SELECTOR_EDITOR;
+    public static String LBL_DLG_SELECTOR_EDITOR1;
+    
+    public static String LBL_DLG_SELECTOR_EDITOR2;
 
     public static String DIA_MSG_FOUND_X_ELEMENTS_USING_Y_SELECTOR;
 

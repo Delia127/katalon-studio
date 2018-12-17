@@ -137,4 +137,14 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
     public FolderEntity getIncludeRoot(ProjectEntity project) throws DALException {
         return FolderFileServiceManager.getSourceRoot(project);
     }
+
+	@Override
+	public FolderEntity getFeatureRoot(ProjectEntity project) throws DALException {
+		return FolderFileServiceManager.getFeatureRoot(project);
+	}
+
+	@Override
+	public FolderEntity getGroovyScriptRoot(ProjectEntity project) throws DALException {
+		return FolderFileServiceManager.getGroovyScriptRoot(project);
+	}
 }

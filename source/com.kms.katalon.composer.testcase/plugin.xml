@@ -52,5 +52,15 @@
 	    </dynamic>
 	  </menuContribution>
 	</extension>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="com.kms.katalon.composer.testcase.editors.extensions.TestObjectsHyperlinkDetector"
+            id="com.kms.katalon.composer.testcase.hyperlinkDetector1"
+            name="ObjectRepository"
+            targetId="org.eclipse.ui.DefaultTextEditor">
+      </hyperlinkDetector>
+   </extension>
    
 </plugin>

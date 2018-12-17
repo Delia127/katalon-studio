@@ -38,6 +38,8 @@ public class CDropdownBox extends Composite {
     private CLabel arrowLabel;
 
     private int selectionIndex = -1;
+    
+    private boolean selectionEventDisabled = false;
 
     private String[] items;
 
@@ -144,12 +146,22 @@ public class CDropdownBox extends Composite {
                 event.doit = false;
                 dropDown(false);
                 break;
+            case SWT.Hide:
+                if (Platform.OS_LINUX.equals(Platform.getOS())) {
+                    dropDown(false);
+//                    Event e = new Event();
+//                    e.time = event.time;
+//                    e.stateMask = event.stateMask;
+//                    e.type = SWT.Selection;
+                    //tableEvent(e);
+                }
+                break;
         }
     }
 
     public void createPopup() {
         popup = new Shell(getShell(), SWT.NO_TRIM | SWT.ON_TOP);
-        int[] popupEvents = { SWT.Close, SWT.Paint };
+        int[] popupEvents = { SWT.Close, SWT.Paint, SWT.Hide };
         for (int i = 0; i < popupEvents.length; i++)
             popup.addListener(popupEvents[i], listener);
 
@@ -184,15 +196,16 @@ public class CDropdownBox extends Composite {
     private void tableEvent(Event event) {
         switch (event.type) {
             case SWT.Selection:
-                selectionIndex = table.getSelectionIndex();
-                refreshLabel();
-                dropDown(false);
-                Event e = new Event();
-                e.time = event.time;
-                e.stateMask = event.stateMask;
-                e.doit = event.doit;
-                notifyListeners(SWT.Selection, e);
-                event.doit = e.doit;
+                if (!selectionEventDisabled) {
+                    selectionIndex = table.getSelectionIndex();
+                    refreshLabel();
+                    Event e = new Event();
+                    e.time = event.time;
+                    e.stateMask = event.stateMask;
+                    e.doit = event.doit;
+                    notifyListeners(SWT.Selection, e);
+                    event.doit = e.doit;
+                }
                 break;
             case SWT.FocusIn:
                 break;
@@ -243,6 +256,7 @@ public class CDropdownBox extends Composite {
                 }
                 tableItem.setText(1, items[i]);
             }
+            table.setSelection(selectionIndex >= 0 ? selectionIndex : 0);
             // imageColumn.pack();
             labelColumn.pack();
         } catch (Exception e) {
@@ -255,6 +269,7 @@ public class CDropdownBox extends Composite {
         if (!drop) {
             popup.setVisible(false);
         } else {
+            selectionEventDisabled = true;
             updateTableItems();
             Point tableSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
             // Remove extra row-column space
@@ -263,15 +278,16 @@ public class CDropdownBox extends Composite {
             }
             tableSize.y -= IMG_16_CHECK.getBounds().height;
             // Set table bounds
-            table.setBounds(1, 1, tableSize.x + 2, tableSize.y + 2);
+            table.setBounds(1, 1, tableSize.x + 8, tableSize.y + 6);
 
             Point comboSize = getSize();
             Display display = getDisplay();
             Rectangle parentRect = display.map(getParent(), null, getBounds());
-            popup.setBounds(parentRect.x - 1, comboSize.y + parentRect.y + 1, tableSize.x + 4, tableSize.y + 4);
+            popup.setBounds(parentRect.x - 1, comboSize.y + parentRect.y + 1, tableSize.x + 10, tableSize.y + 8);
             popup.setVisible(true);
 
             table.setFocus();
+            selectionEventDisabled = false;
         }
     }
 

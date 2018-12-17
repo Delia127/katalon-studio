@@ -297,7 +297,6 @@
       <import plugin="javax.annotation" version="1.2.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jetty.io" version="8.1.16" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.mobile"/>
-      <import plugin="com.kms.katalon.integration.qtest" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.report"/>
       <import plugin="org.junit" version="4.12.0" match="compatible"/>
       <import plugin="com.kms.katalon.dal.file"/>
@@ -911,13 +910,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.qas.qtest.sdk-java"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.kms.katalon.constant"
          download-size="0"
          install-size="0"
@@ -1403,13 +1395,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.xml.apis"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.kms.katalon.composer.execution"
          download-size="0"
          install-size="0"
@@ -1585,13 +1570,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.kms.katalon.composer.integration.qtest"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.qualifier"
-         unpack="false"/>
-
-   <plugin
          id="org.codehaus.groovy.eclipse.compilerResolver"
          download-size="0"
          install-size="0"
@@ -1646,6 +1624,13 @@
          install-size="0"
          version="1.0.0.qualifier"
          unpack="false"/>
+         
+ 	<plugin
+         id="com.kms.katalon.netlightbody"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
 
    <plugin
          id="com.kms.katalon.execution.webui"
@@ -1677,13 +1662,6 @@
 
    <plugin
          id="com.kms.katalon.composer.search"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.integration.qtest"
          download-size="0"
          install-size="0"
          version="1.0.0.qualifier"
@@ -2330,6 +2308,13 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+         
+	<plugin
+	     id="com.kms.katalon.ansiconsole"
+	     download-size="0"
+	     install-size="0"
+	     version="0.0.0"
+	     unpack="false"/>
 
    <plugin
          id="org.greenrobot.eventbus"
@@ -2464,7 +2449,7 @@
          version="1.0.0.qualifier"
          unpack="false"/>
 
-  <plugin       
+   <plugin
          id="io.swagger.annotations"
          download-size="0"
          install-size="0"
@@ -2522,6 +2507,97 @@
 
    <plugin
          id="io.swagger.parser-v2-converter"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.dataformat.jackson-dataformat-xml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.codehaus.mojo.animal-sniffer-annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+	<plugin
+         id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.errorprone.error_prone_annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+	<plugin
+         id="com.fasterxml.woodstox.woodstox-core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.j2objc.annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.qos.logback.classic"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.qos.logback.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="slf4j.api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+	<plugin
+         id="stax2-api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.fusesource.jansi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+	<plugin
+         id="com.kms.katalon.composer.integration.qtest.activation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="xml-apis"
          download-size="0"
          install-size="0"
          version="0.0.0"

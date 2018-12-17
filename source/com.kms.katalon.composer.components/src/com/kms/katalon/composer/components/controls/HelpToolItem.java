@@ -1,19 +1,14 @@
 package com.kms.katalon.composer.components.controls;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.constants.ComposerComponentsMessageConstants;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.tracking.service.Trackings;
@@ -44,15 +39,8 @@ public class HelpToolItem extends ToolItem {
     }
 
     protected void openBrowserToLink(String url) {
-        if (!Desktop.isDesktopSupported()) {
-            return;
-        }
-        try {
-            Desktop.getDesktop().browse(new URI(url));
-            Trackings.trackOpenHelp(url);
-        } catch (IOException | URISyntaxException exception) {
-            LoggerSingleton.logError(exception);
-        }
+        Program.launch(url);
+        Trackings.trackOpenHelp(url);
     }
 
     private String getDocumentationUrl() {

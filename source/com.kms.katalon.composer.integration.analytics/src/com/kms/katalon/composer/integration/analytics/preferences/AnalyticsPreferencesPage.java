@@ -77,7 +77,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private AnalyticsSettingStore analyticsSettingStore;
 
-    private Button chckShowPassword, chckEncrypt;
+    private Button chckEncrypt;
 
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
@@ -147,10 +147,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         txtPassword = new Text(passwordComposite, SWT.BORDER);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        chckShowPassword = new Button(passwordComposite, SWT.CHECK);
-        chckShowPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        chckShowPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SHOW_PASSWORD);
 
         chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
         chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, true, 2, 1));
@@ -375,12 +371,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     private void maskPasswordField() {
-        if (chckShowPassword.getSelection()) {
-            // show password
-            txtPassword.setEchoChar('\0');
-        } else {
-            txtPassword.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
-        }
+        txtPassword.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
     }
 
     private void changeEnabled() {
@@ -398,7 +389,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
         chckEncrypt.setEnabled(isAnalyticsIntegrated);
         chckEncrypt.setSelection(isAnalyticsIntegrated);
-        chckShowPassword.setEnabled(isAnalyticsIntegrated);
     }
 
     private boolean isIntegratedSuccessfully() {
@@ -535,13 +525,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         }
                     }
                 }
-            }
-        });
-
-        chckShowPassword.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                maskPasswordField();
             }
         });
 

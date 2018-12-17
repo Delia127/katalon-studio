@@ -327,5 +327,4 @@ public class RequestObject extends TestObject implements HttpMessage {
     public void setVariables(Map<String, Object> variables) {
         this.variables = variables;
     }
-
 }

@@ -7,9 +7,7 @@ Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0",
- javax.inject;version="1.0.0",
- org.eclipse.e4.core.di.annotations,
- org.osgi.service.event
+ javax.inject;version="1.0.0"
 Require-Bundle: com.kms.katalon.composer.explorer,
  org.eclipse.e4.ui.workbench,
  org.eclipse.e4.ui.model.workbench,
@@ -65,11 +63,23 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.codehaus.groovy,
  com.kms.katalon.composer.execution,
  com.kms.katalon.preferences,
- com.kms.katalon.entity;bundle-version="1.0.0",
- io.swagger.core;bundle-version="2.0.0",
- io.swagger.models;bundle-version="2.0.0",
- io.swagger.parser-v2;bundle-version="2.0.0",
+ com.kms.katalon.entity,
+ io.swagger.core,
+ io.swagger.models,
+ io.swagger.parser-v2,
+ com.fasterxml.jackson.core.jackson-annotations,
+ com.fasterxml.jackson.core.jackson-core,
+ com.fasterxml.jackson.core.jackson-databind,
  org.greenrobot.eventbus,
- io.swagger.annotations;bundle-version="2.0.0"
-Export-Package: com.kms.katalon.composer.webservice.parser,
- com.kms.katalon.composer.webservice.util
+ io.swagger.annotations,
+ com.fasterxml.jackson.dataformat.jackson-dataformat-xml,
+ com.fasterxml.jackson.module.jackson-module-jaxb-annotations,
+ com.fasterxml.woodstox.woodstox-core,
+ stax2-api,
+ org.eclipse.osgi.services,
+ com.kms.katalon.ansiconsole
+Export-Package: com.kms.katalon.composer.webservice.constants,
+ com.kms.katalon.composer.webservice.util,
+ com.kms.katalon.composer.webservice.editor,
+ com.kms.katalon.composer.webservice.parser
+ 

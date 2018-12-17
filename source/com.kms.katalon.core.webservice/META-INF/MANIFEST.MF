@@ -18,10 +18,14 @@ Require-Bundle: org.codehaus.groovy,
  org.dom4j,
  com.google.gson,
  org.apache.commons.lang3,
- org.apache.httpcomponents.httpclient
+ org.apache.httpcomponents.httpclient,
+ org.slf4j.api,
+ slf4j.api,
+ com.kms.katalon.netlightbody
 Export-Package: com.kms.katalon.core.webservice.common,
  com.kms.katalon.core.webservice.constants,
  com.kms.katalon.core.webservice.contribution,
+ com.kms.katalon.core.webservice.helper,
  com.kms.katalon.core.webservice.keyword,
  com.kms.katalon.core.webservice.setting,
  com.kms.katalon.core.webservice.support

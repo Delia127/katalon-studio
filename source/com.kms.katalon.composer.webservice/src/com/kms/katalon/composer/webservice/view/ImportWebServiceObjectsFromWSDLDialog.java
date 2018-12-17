@@ -1,7 +1,10 @@
 package com.kms.katalon.composer.webservice.view;
 
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import javax.wsdl.WSDLException;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -22,6 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.parser.WSDLParserUtil;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -38,21 +42,16 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
         Trackings.trackOpenImportingWsdl();
     }
    
-    private void createSoapWebServiceRequestEntities() throws Exception{
-    	soapWebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP, directory);  
-    	if(soapWebServiceRequestEntities == null){
-    		throw new Exception();
-    	}
+    private void createSoapWebServiceRequestEntities() throws InvocationTargetException, InterruptedException, WSDLException{
+    	soapWebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP, directory); 
     }
     
-    private void createSoap12WebServiceRequestEntities() throws Exception{
-    	soap12WebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP12, directory);  
-    	if(soap12WebServiceRequestEntities == null){
-    		throw new Exception();
-    	}
+    private void createSoap12WebServiceRequestEntities() throws InvocationTargetException, InterruptedException, WSDLException{
+    	soap12WebServiceRequestEntities = WSDLParserUtil.newWSTestObjectsFromWSDL(WebServiceRequestEntity.SOAP12, directory); 
+    	
     }
     
-    private void createWebServiceRequestEntities() throws Exception{
+    private void createWebServiceRequestEntities() throws InvocationTargetException, InterruptedException, WSDLException{
     	createSoapWebServiceRequestEntities();
     	createSoap12WebServiceRequestEntities();
     }
@@ -68,16 +67,41 @@ public class ImportWebServiceObjectsFromWSDLDialog  extends CustomTitleAreaDialo
     	}
     }
 
-    @Override
+	@SuppressWarnings("static-access")
+	@Override
     protected void okPressed() {
     	Button ok = getButton(IDialogConstants.OK_ID);
     	boolean closeTheDialog = true;
     	try{
         	createWebServiceRequestEntities();
-    	} catch(Exception e){
+    	} catch(Exception ex){
     		closeTheDialog = false;
     		setMessage(StringConstants.EXC_INVALID_WSDL_FILE, IMessageProvider.ERROR);
+
+
+    		if(ex instanceof WSDLException){
+    			LoggerSingleton.getInstance().logError("Method getOperationNamesByRequestMethod has thrown WSDLException: " + ex.getCause());
+    		}
+    		if(ex instanceof InterruptedException){
+    			LoggerSingleton.getInstance().logError("Method generateInputSOAPMessageText in runnable thread was interrupted:" + ex.getCause());
+    		}
+    		if(ex instanceof InvocationTargetException){
+    			 Throwable cause = ex.getCause();
+    		        if(cause == null) {
+    		            throw new IllegalStateException(
+    		            		  "Got InvocationTargetException, but the cause is null.", ex);
+    		        } else if(cause instanceof RuntimeException) {
+    		            throw (RuntimeException) cause;
+    		        } else if(cause instanceof Exception) {
+    		        	LoggerSingleton.getInstance().logError("Invocation failed with cause: " + cause);
+    		        } else {
+    		        	LoggerSingleton.getInstance().logError("Invocation failed with error: " + cause);
+
+    		        }
+    		}
+
     		ok.setEnabled(false);
+
     	} finally {
     		if(closeTheDialog == true){
     	        super.okPressed();

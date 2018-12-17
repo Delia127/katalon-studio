@@ -29,6 +29,7 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
+import com.kms.katalon.core.util.BrowserMobProxyManager;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
@@ -84,6 +85,15 @@ public abstract class BasicRequestor implements Requestor {
     }
 
     public Proxy getProxy() throws WebServiceException {
+        Proxy systemProxy = getSystemProxy();
+        if(proxyInformation.getUseMobBroserProxy()){
+        	Proxy proxy = BrowserMobProxyManager.getWebServiceProxy(systemProxy);
+            return proxy;
+        }
+        return systemProxy;
+    }
+
+    private Proxy getSystemProxy() throws WebServiceException {
         if (proxyInformation == null) {
             return Proxy.NO_PROXY;
         }

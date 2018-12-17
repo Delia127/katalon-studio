@@ -7,7 +7,6 @@ import org.eclipse.swt.widgets.Menu;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.variable.VariableEntity;
 
 public interface ITestCasePart extends IVariablePart {
 

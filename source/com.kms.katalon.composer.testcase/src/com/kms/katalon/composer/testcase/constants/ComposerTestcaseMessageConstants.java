@@ -6,6 +6,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.testcase.constants.composerTestcaseMessages";
 
     public static String BTN_TESTCASEHISTORY;
+    
+    public static String BTN_ADDTESTSUITE;
 
     public static String KEYWORD_TOOLITEM_TIP_TEXT;
 
@@ -46,6 +48,12 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String CONS_MENU_CONTEXT_CALL_TEST_CASE;
 
     public static String CONS_MENU_CONTEXT_METHOD;
+    
+    public static String CONS_MENU_CONTEXT_ADD_TO_TEST_SUITE;
+    public static String CONS_MENU_CONTEXT_ADD_TO_AN_EXISTING_TEST_SUITE;
+    public static String CONS_MENU_CONTEXT_ADD_TO_A_NEW_TEST_SUITE;
+    
+    public static String DIA_TITLE_TEST_SUITE_BROWSER;
 
     public static String DIA_TITLE_BINARY_INPUT;
 
@@ -160,6 +168,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String PA_TAB_SCRIPT;
 
     public static String PA_TAB_VARIABLE;
+    
+    public static String PA_TAB_VARIABLE_EDITOR;
 
     public static String PA_TAB_INTEGRATION;
 
@@ -406,7 +416,10 @@ public class ComposerTestcaseMessageConstants extends NLS {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);
     }
-
+    
+    // Test object hyperlink detector
+    public static String WARN_TEST_OBEJCT_NOT_FOUND;
+    
     private ComposerTestcaseMessageConstants() {
     }
 }

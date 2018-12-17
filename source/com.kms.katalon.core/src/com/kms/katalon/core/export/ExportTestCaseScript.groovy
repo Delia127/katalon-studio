@@ -21,6 +21,9 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil
 
 @CompileStatic
 public abstract class ExportTestCaseScript {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(ExportTestCaseScript.class);
+    
 	protected ExportTestCaseScript() {}
 	protected abstract run()
 
@@ -56,7 +59,7 @@ public abstract class ExportTestCaseScript {
 
 		List<Throwable> parentErrors = ErrorCollector.getCollector().getCoppiedErrors();
 		Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
-		KeywordLogger.getInstance().startTest(testCaseId, null, keywordStack)
+		logger.startTest(testCaseId, null, keywordStack)
 		try {
 			beforeRunMethods = ExportTestCaseHelper.findAllMethodForClassWithAnotation(exportScriptClass, SetUp);
 			afterRunMethods = ExportTestCaseHelper.findAllMethodForClassWithAnotation(exportScriptClass, TearDown);
@@ -79,7 +82,7 @@ public abstract class ExportTestCaseScript {
 						"Start running tear down methods for passed test case");
 				internallyRunMethods(testCaseId, afterRunMethods, newScriptClassInstance,
 						"Start running tear down methods for test case");
-				KeywordLogger.getInstance().logPassed(testCaseId);
+				logger.logPassed(testCaseId);
 			}
 		} catch (Throwable t) {
 			ErrorCollector.getCollector().addError(t);
@@ -92,7 +95,7 @@ public abstract class ExportTestCaseScript {
 			// Log the first error, not the current caught error
 		} finally {
 			ErrorCollector.getCollector().getErrors().addAll(0, parentErrors);
-			KeywordLogger.getInstance().endTest(testCaseId, null)
+			logger.endTest(testCaseId, null)
 		}
 		return testResult
 	}
@@ -101,7 +104,7 @@ public abstract class ExportTestCaseScript {
 	private static void endAllUnfinishedKeywords(Stack<KeywordStackElement> keywordStack) {
 		while (!keywordStack.isEmpty()) {
 			KeywordStackElement keywordStackElement = keywordStack.pop();
-			KeywordLogger.getInstance().endKeyword(keywordStackElement.getKeywordName(), null, keywordStackElement.getNestedLevel());
+			logger.endKeyword(keywordStackElement.getKeywordName(), null, keywordStackElement.getNestedLevel());
 		}
 	}
 
@@ -122,11 +125,11 @@ public abstract class ExportTestCaseScript {
 	@CompileStatic
 	private static TestStatusValue getResultByError(Throwable t, String testCaseId) {
 		if (t.getClass().getName().equals(StepFailedException.class.getName()) || t instanceof AssertionError) {
-			KeywordLogger.getInstance().logMessage(LogLevel.FAILED,
+			logger.logMessage(LogLevel.FAILED,
 					testCaseId + " FAILED because (of) " + ExceptionsUtil.getMessageForThrowable(t), t);
 			return TestStatusValue.FAILED;
 		} else {
-			KeywordLogger.getInstance().logMessage(LogLevel.ERROR,
+			logger.logMessage(LogLevel.ERROR,
 					testCaseId + " has ERROR(s) because (of) " + ExceptionsUtil.getMessageForThrowable(t), t);
 			return TestStatusValue.ERROR;
 		}
@@ -135,9 +138,8 @@ public abstract class ExportTestCaseScript {
 	@CompileStatic
 	private static void internallyRunMethods(String testCaseId, List<Method> methodList, def newScriptClassInstance,
 			String startMessage) {
-		KeywordLogger logger = KeywordLogger.getInstance()
 		if (methodList != null && methodList.size() > 0) {
-			logger.logInfo(startMessage);
+			logger.logDebug(startMessage);
 			for (Method method : methodList) {
                 Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
                 logger.startKeyword(method.getName(), null, keywordStack);

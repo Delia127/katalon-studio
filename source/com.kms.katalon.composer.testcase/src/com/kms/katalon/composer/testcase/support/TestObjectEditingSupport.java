@@ -34,7 +34,9 @@ public class TestObjectEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        return ((IAstObjectEditableNode) element).getCellEditorForTestObject(treeViewer.getTree());
+        IAstObjectEditableNode editableNode = (IAstObjectEditableNode) element;
+        editableNode.setTestCasePart(parentTestCasePart);
+        return editableNode.getCellEditorForTestObject(treeViewer.getTree());
     }
 
     @Override

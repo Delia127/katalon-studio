@@ -1,8 +1,5 @@
 package com.kms.katalon.activation.dialog;
 
-import java.awt.Desktop;
-import java.net.URI;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
@@ -16,6 +13,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -70,7 +68,7 @@ public class ActivationOfflineDialog extends Dialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(StringConstants.LINK_ACTIVATION_LINK));
+                    Program.launch(StringConstants.LINK_ACTIVATION_LINK);
                 } catch (Exception ex) {
                     LogUtil.logError(ex);
                 }

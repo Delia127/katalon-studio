@@ -6,11 +6,15 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Bundle-Localization: plugin
-Export-Package: com.kms.katalon.composer.components,
+Export-Package: com.kms.katalon.about.dialog,
+ com.kms.katalon.activation,
+ com.kms.katalon.activation.dialog,
+ com.kms.katalon.composer.components,
  com.kms.katalon.composer.handlers,
  com.kms.katalon.composer.parts,
  com.kms.katalon.constants,
- com.kms.katalon.core.application
+ com.kms.katalon.core.application,
+ com.kms.katalon.util
 Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.constant,
  org.eclipse.e4.ui.workbench,
@@ -68,11 +72,15 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.core.appium,
  com.kms.katalon.util,
  org.greenrobot.eventbus,
- com.kms.katalon.tracking
+ com.kms.katalon.tracking,
+ org.eclipse.ui.console,
+ org.eclipse.e4.core.commands
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: 
  javax.annotation,
  javax.inject;version="1.0.0",
+ org.assertj.core.util;version="3.10.0",
  org.eclipse.e4.core.services.log,
  org.eclipse.emf.common.util
+Service-Component: OSGI-INF/component.xml

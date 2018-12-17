@@ -69,6 +69,8 @@ public class MobileExecutionUtil {
         switch (Platform.getOS()) {
             case Platform.OS_MACOSX:
                 return "/usr/local/lib/node_modules/appium";
+            case Platform.OS_LINUX:
+            	return "/usr/lib/node_modules/appium/";
             case Platform.OS_WIN32:
                 return System.getProperty("user.home") + "\\AppData\\Roaming\\npm\\node_modules\\appium";
             default:

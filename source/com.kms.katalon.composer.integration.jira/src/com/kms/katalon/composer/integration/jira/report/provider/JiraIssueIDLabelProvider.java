@@ -7,9 +7,9 @@ import java.security.GeneralSecurityException;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.program.Program;
 
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
-import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.jira.JiraUIComponent;
 import com.kms.katalon.integration.jira.entity.JiraIssue;
@@ -24,7 +24,7 @@ public class JiraIssueIDLabelProvider extends HyperLinkColumnLabelProvider<JiraI
     protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
         JiraIssue jiraIssue = (JiraIssue) cell.getElement();
         try {
-            DesktopUtils.openUri(getHTMLLink(jiraIssue));
+            Program.launch(getHTMLLink(jiraIssue).toURL().toString());
         } catch (IOException | URISyntaxException | GeneralSecurityException ex) {
             LoggerSingleton.logError(ex);
         }

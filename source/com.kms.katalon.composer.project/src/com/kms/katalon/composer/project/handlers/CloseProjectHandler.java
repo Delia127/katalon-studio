@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.project.handlers;
 
+import java.util.Collections;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -9,10 +11,12 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
@@ -20,6 +24,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -46,7 +51,7 @@ public class CloseProjectHandler {
             @Override
             public void handleEvent(Event event) {
                 eventBroker.send(EventConstants.PROJECT_SAVE_SESSION, null);
-                closeCurrentProject(partService, modelService, application, eventBroker);
+                execute(Display.getCurrent().getActiveShell());
             }
 
         });
@@ -77,10 +82,9 @@ public class CloseProjectHandler {
     @Execute
     public void execute(Shell shell) {
         if (partService.saveAll(true)) {
-            LauncherManager.getInstance().removeAllTerminated();
             closeProject(partService, eventBroker, ProjectController.getInstance().getCurrentProject());
 
-            eventBroker.send(EventConstants.EXPLORER_RELOAD_DATA, null);
+            eventBroker.send(EventConstants.EXPLORER_RELOAD_INPUT, Collections.emptyList());
             eventBroker.send(EventConstants.GLOBAL_VARIABLE_REFRESH, null);
             eventBroker.post(EventConstants.CONSOLE_LOG_RESET, null);
 
@@ -95,10 +99,16 @@ public class CloseProjectHandler {
 
             // open welcome page
             partService.activate((MPart) modelService.find(IdConstants.WELCOME_PART_ID, application));
+            
+            //update window title
+            MWindow win = (MWindow) modelService.find(IdConstants.MAIN_WINDOW_ID, application);
+            win.setLabel(GlobalStringConstants.APP_NAME);
         }
     }
 
     private static void closeProject(EPartService partService, IEventBroker eventBroker, ProjectEntity project) {
+
+        LauncherManager.getInstance().removeAllTerminated();
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
         // Find and close all opened editor parts which is managed by PartService
         for (MPart p : partService.getParts()) {

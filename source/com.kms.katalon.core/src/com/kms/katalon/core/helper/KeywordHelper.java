@@ -14,6 +14,9 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.TestObject;
 
 public class KeywordHelper {
+    
+    private static final KeywordLogger logger = KeywordLogger.getInstance(KeywordHelper.class);
+    
 	public static boolean match(String value1, String value2, boolean isRegex) {
 		if (isRegex) {
 			Pattern p = Pattern.compile(value2, Pattern.DOTALL);
@@ -25,17 +28,17 @@ public class KeywordHelper {
 	
 
 	public static void checkTestObjectParameter(TestObject testObject) throws IllegalArgumentException {
-		KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_OBJ);
+	    logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_OBJ);
 		if (testObject == null) {
 			throw new IllegalArgumentException(StringConstants.COMM_EXC_OBJ_IS_NULL);
 		}
 	}
 
 	public static int checkTimeout(int timeout) throws IllegalArgumentException {
-		KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TIMEOUT);
+	    logger.logDebug(StringConstants.COMM_LOG_INFO_CHECKING_TIMEOUT);
 		if (timeout <= 0) {
 			int defaultPageLoadTimeout = RunConfiguration.getTimeOut();
-			KeywordLogger.getInstance().logWarning(
+			logger.logWarning(
 					MessageFormat.format(StringConstants.COMM_LOG_WARNING_INVALID_TIMEOUT, timeout, defaultPageLoadTimeout));
 			return defaultPageLoadTimeout;
 		}
@@ -78,8 +81,7 @@ public class KeywordHelper {
 	}
 
 	public static Integer[] indexRangeToArray(String range) {
-		KeywordLogger logger = KeywordLogger.getInstance();
-		logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY, range));
+	    logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY, range));
 		List<Integer> ints = new ArrayList<Integer>();
 		try {
 			if (range.indexOf("-") != -1) {
@@ -99,7 +101,7 @@ public class KeywordHelper {
 			throw new IllegalArgumentException(MessageFormat.format(StringConstants.COMM_EXC_INVALID_RANGE, range, e.getMessage()));
 		}
 		Integer[] integerArray = ints.toArray(new Integer[] {});
-		logger.logInfo(MessageFormat.format(StringConstants.COMM_LOG_INFO_RANGE_PARAM_IS_CONVERTED_TO_INDEX_ARRAY, range, integerArrayToString(integerArray)));
+		logger.logDebug(MessageFormat.format(StringConstants.COMM_LOG_INFO_RANGE_PARAM_IS_CONVERTED_TO_INDEX_ARRAY, range, integerArrayToString(integerArray)));
 		return ints.toArray(new Integer[] {});
 	}
 }

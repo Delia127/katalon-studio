@@ -50,4 +50,9 @@ public class ProfileRootTreeEntity extends FolderTreeEntity {
     public Image getImage() throws Exception {
         return ImageConstants.IMG_16_PROFILE_FOLDER_ENTITY;
     }
+    
+    @Override
+    public Image getEntryImage() throws Exception {
+        return getImage();
+    }
 }

@@ -8,6 +8,7 @@ import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.constant.TrackEvents;
 import com.kms.katalon.tracking.model.ProjectStatistics;
@@ -129,13 +130,17 @@ public class Trackings {
         trackUserAction(action);
     }
     
-    public static void trackCreatingProject() {
-        trackUserAction("newProject");
+    public static void trackCreatingProject(String newProjectId, ProjectType newProjectType) {
+        trackUserAction("newProject", "newProjectId", newProjectId, "newProjectType", newProjectType.toString());
     }
     
-    public static void trackCreatingSampleProject(String sampleProjectType, String newProjectId) {
+    public static void trackCreatingSampleProject(String sampleProjectType, String newProjectId,
+            ProjectType newProjectType) {
         trackUserAction(
-                "newProject", "sampleProjectType", sampleProjectType, "newProjectId", newProjectId);
+                "newProject",
+                "sampleProjectType", sampleProjectType, 
+                "newProjectId", newProjectId,
+                "newProjectType", newProjectType.toString());
     }
     
     public static void trackCreatingSampleProject(String sampleProjectType) {
@@ -282,6 +287,38 @@ public class Trackings {
     
     public static void trackAddRequestToTestCase(boolean addToNewTestCase) {
         trackUserAction("addRequestToTestCase", "addType", addToNewTestCase ? "new" : "existing");
+    }
+    
+    public static void trackOpenTwitterDialog() {
+        trackUserAction("openTwitterDialog");
+    }
+    
+    public static void trackUserResponseForTwitterDialog(String option) {
+        trackUserAction("responseTwitterDialog", "type", option);
+    }
+    
+    public static void trackOpenLinkedJiraIssuesDialog() {
+        trackUserAction("openLinkedJiraIssuesDialog");
+    }
+    
+    public static void trackClickCreateNewJiraIssue() {
+        trackUserAction("clickCreateNewJiraIssue");
+    }
+    
+    public static void trackClickCreateJiraSubIssue() {
+        trackUserAction("clickCreateSubJiraIssue");
+    }
+    
+    public static void trackClickLinkToExistingJiraIssue() {
+        trackUserAction("clickLinkToExistingJiraIssue");
+    }
+    
+    public static void trackClickHarLink() {
+        trackUserAction("clickHarLink");
+    }
+
+    public static void trackInAppSurveyRatingAndIdea(int numberOfStars, String userIdea) {
+    	trackUserAction("katalonStudioSurvey", "star", numberOfStars, "content", userIdea);
     }
     
     private static void trackUserAction(String actionName, Object... properties) {

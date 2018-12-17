@@ -113,6 +113,7 @@ import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.controls.ToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
+import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
@@ -123,15 +124,16 @@ import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
-import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
@@ -148,14 +150,17 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.IVariablePart;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
+import com.kms.katalon.composer.testcase.parts.TestCaseVariableEditorPart;
+import com.kms.katalon.composer.testcase.parts.TestCaseVariableEditorView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableViewEvent;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
-import com.kms.katalon.composer.webservice.components.MirrorEditor;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.handlers.SaveDraftRequestHandler;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
@@ -175,6 +180,7 @@ import com.kms.katalon.core.webservice.common.PrivateKeyReader;
 import com.kms.katalon.core.webservice.common.ScriptSnippet;
 import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
@@ -187,7 +193,9 @@ import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 
-public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent {
+import mnita.ansiconsole.participants.AnsiConsoleStyleListener;
+
+public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent, VerificationScriptEventHandler {
 
     protected static final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(WebServicePart.class).getSymbolicName();
 
@@ -264,7 +272,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
 
     private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
-            InputValueType.Boolean, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.List, InputValueType.Map };
 
     @Inject
@@ -322,6 +330,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected CTabItem tabBody;
 
     protected CTabItem tabVerification;
+    
+    protected CTabItem tabVariable;
+    
+    protected CTabItem tabVariableEditor;
 
     protected Composite responseComposite;
 
@@ -362,13 +374,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected Composite parent;
 
-    protected Text txtVerificationLog;
+    protected StyledText txtVerificationLog;
 
     private MPart scriptEditorPart;
 
     private WSRequestPartUI ui;
 
     protected TestCaseVariableView variableView;
+    
+    protected TestCaseVariableEditorView variableEditorView;
 
     public WebServiceRequestEntity getOriginalWsObject() {
         return originalWsObject;
@@ -383,14 +397,17 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected Label lblVerificationResultStatus;
 
     private Composite verificationResultComposite;
+    
+    private boolean invalidScheme = false;
 
+    private boolean variableTab = true;
+    
     @PostConstruct
     public void createComposite(Composite parent, MCompositePart part) {
         this.mPart = part;
         new HelpToolBarForMPart(part, DocumentationMessageConstants.TEST_OBJECT_WEB_SERVICES);
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
         this.parent = parent;
-
         verificationScriptSnippets = VerificationScriptSnippetFactory.getSnippets();
         verificationScriptImport = VerificationScriptSnippetFactory.getCommonScriptSnippet();
     }
@@ -403,9 +420,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         this.ui = wsRequestPartUI;
 
         new ToolBarForVerificationPart(ui.getVerificationPart());
+        
+        new HelpToolBarForMPart(ui.getVariablePart(), DocumentationMessageConstants.WEB_SERVICE_VARIABLES);
+        
+        new HelpToolBarForMPart(ui.getAuthorizationPart(), DocumentationMessageConstants.WEB_SERVICE_AUTHORIZATION);
 
         scriptEditorPart = ui.getScriptEditorPart();
-        verificationScriptEditor = (GroovyEditor) GroovyEditorUtil.getEditor(scriptEditorPart);
+        verificationScriptEditor = (GroovyEditor) editor.getEditor(scriptEditorPart);
         if (StringUtils.isBlank(originalWsObject.getVerificationScript())) {
             insertImportsForVerificationScript();
         }
@@ -418,11 +439,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         createParamsComposite(apiControlsPartInnerComposite);
 
+        createVariableComposite();
+        
+        createVariableEditorComposite();
+        
         createTabsComposite();
 
         createSnippetComposite();
-
-        createVariableComposite();
 
         Composite responsePartComposite = ui.getResponsePartComposite();
         Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
@@ -444,13 +467,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     private void insertImportsForVerificationScript() {
         StringBuilder importBuilder = new StringBuilder().append(verificationScriptImport.getScript()).append("\n");
-
         insertVerificationScript(0, importBuilder.toString());
+        // Insert Import <=> content changed <=> ScriptEditorPart marked dirty <=> Save All icon enabled
+        // Since this "content changed" is irrelevant to the users, ix to the above problem
+//        scriptEditorPart.setDirty(false);
+        GroovyEditorUtil.saveEditor(scriptEditorPart);
     }
 
     private void insertVerificationScript(int offset, String script) {
         try {
-            GroovyEditorUtil.insertScript(verificationScriptEditor, offset, script);
+            editor.insertScript(verificationScriptEditor, offset, script);
         } catch (MalformedTreeException e) {
             LoggerSingleton.logError(e);
         } catch (BadLocationException e) {
@@ -476,8 +502,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     protected void createAPIControls(Composite parent) {
-        String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
-        wsApiControl = new WebServiceAPIControl(parent, isSOAP(), isDraft(), endPoint);
+//        String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
+        wsApiControl = new WebServiceAPIControl(parent, originalWsObject);
         wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -485,7 +511,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 if (requestBody != null && !isSOAP()) {
                     tabBody.getControl().setEnabled(isBodySupported());
                 }
-                setDirty();
+                setDirty(true);
             }
         });
 
@@ -496,14 +522,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 if (!isSOAP()) {
                     tabBody.getControl().setEnabled(isBodySupported());
                 }
-                setDirty();
+                setDirty(true);
             }
         });
 
         wsApiControl.addRequestURLModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                setDirty();
+                setDirty(true);
             }
         });
 
@@ -588,6 +614,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 }
             });
         }
+        
+        if (isDraft()) {
+            wsApiControl.addSaveDraftSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    SaveDraftRequestHandler.saveDraftRequest(Display.getCurrent().getActiveShell(), getOriginalWsObject());
+                }
+            });
+        }
     }
 
     private void addSendRequestStatementToNewTestCase() throws Exception {
@@ -623,7 +658,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
         dialog.setAllowMultiple(false);
         dialog.setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
-
+        
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject != null) {
             FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
@@ -747,7 +782,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     protected void createTabsComposite() {
-        CTabFolder tabFolder = ui.getTabFolder();
+        final CTabFolder tabFolder = ui.getTabFolder();
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         styleEngine.setId(tabFolder.getParent(), "DefaultCTabFolder");
         // styleEngine.setId(parent, "DefaultCTabFolder");
@@ -755,7 +790,37 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         addTabAuthorization(tabFolder);
         addTabHeaders(tabFolder);
         addTabBody(tabFolder);
-        // addTabVerification(tabFolder);
+        addTabVariable(tabFolder);
+        addTabVariableEditor(tabFolder);
+        
+        
+        tabFolder.addSelectionListener(new SelectionAdapter() {
+            @SuppressWarnings("unused")
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                if (tabFolder == null) {                            
+                    return;
+                }
+                
+                if (tabFolder.getSelectionIndex() == 4) {
+                    variableTab = true;
+                    if(dirtyable.isDirty())
+                        updateVariableManualView();
+                    return;
+                }
+
+                if (tabFolder.getSelectionIndex() == 5) {
+                    variableTab = false;
+                    if(dirtyable.isDirty())
+                        updateVariableScriptView();
+                    return;
+                }
+            }
+
+        });
+        tabFolder.layout();
+        // Initialize editor's content
+        updateVariableScriptView();
 
         tabFolder.setSelection(0);
     }
@@ -787,10 +852,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         List<VariableEntity> variables = originalWsObject.getVariables();
         variableView.addVariable(variables.toArray(new VariableEntity[variables.size()]));
     }
+    
+    private void createVariableEditorComposite() {
+        Composite variableEditorPartComposite = ui.getVariableEditorPartComposite();
+        
+        variableEditorView = new TestCaseVariableEditorView(this, variableEditorPartComposite);
+    }
 
     @Override
     public void setDirty(boolean isDirty) {
-        this.setDirty();
+    	dirtyable.setDirty(isDirty);
     }
 
     @Override
@@ -872,12 +943,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             lblSnippet.setBottomMargin(5);
             lblSnippet.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
             lblSnippet.addListener(SWT.MouseDown, e -> {
-                IEditorInput editorInput = verificationScriptEditor.getEditorInput();
-                IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
-
-                StringBuilder scriptBuilder = new StringBuilder("\n").append(snippet.getScript()).append("\n");
-
-                insertVerificationScript(document.getLength(), scriptBuilder.toString());
+                insertScript("\n");
+                insertScript(snippet.getScript());
             });
         }
         snippetLblColor.dispose();
@@ -1117,7 +1184,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 String authType = ccbAuthType.getText();
                 if (tblHeaders.deleteRowByColumnValue(0, HTTP_HEADER_AUTHORIZATION)) {
                     tblHeaders.refresh();
-                    setDirty();
+                    setDirty(true);
                 }
 
                 if (BASIC_AUTH.equals(authType)) {
@@ -1176,7 +1243,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected void addTabVerification(CTabFolder parent) {
         tabVerification = ui.getVerificationTab();
     }
-
+    
+    protected void addTabVariable(CTabFolder parent){
+        tabVariable = ui.getVariableTab();
+    }
+    
+    protected void addTabVariableEditor(CTabFolder parent){
+        tabVariableEditor = ui.getVariableEditorTab();
+    }
+    
     protected void createResponseComposite(Composite parent) {
 
         responseComposite = new Composite(parent, SWT.NONE);
@@ -1266,11 +1341,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         lblVerificationResultStatus = new Label(resultStatusComposite, SWT.NONE);
         lblVerificationResultStatus.setForeground(ColorUtil.getTextWhiteColor());
 
-        txtVerificationLog = new Text(verificationResultComposite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        txtVerificationLog = new StyledText(verificationResultComposite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
         txtVerificationLog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         txtVerificationLog.setEditable(false);
         txtVerificationLog.setBackground(ColorUtil.getWhiteBackgroundColor());
         txtVerificationLog.setFont(FONT_CONSOLAS_10);
+        txtVerificationLog.addLineStyleListener(new AnsiConsoleStyleListener());
     }
 
     private void createResponseStatusComposite() {
@@ -1606,7 +1682,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 .addDocumentListener(new IDocumentListener() {
                     @Override
                     public void documentChanged(DocumentEvent event) {
-                        GroovyEditorUtil.showProblems(verificationScriptEditor);
+                        editor.showProblems(verificationScriptEditor);
                         WebServicePart.this.dirtyable.setDirty(true);
                     }
 
@@ -1715,6 +1791,18 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             }
         }
     }
+    
+    @Override
+    public void insertScript(String script) {
+        IEditorInput editorInput = verificationScriptEditor.getEditorInput();
+        IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
+        
+        insertVerificationScript(document.getLength(), "\n");
+
+        insertVerificationScript(document.getLength(), script);
+
+        ui.setSelectedTab(ui.getVerificationTab());
+    }
 
     private void setVerificationResultStatus(TestStatusValue value) {
         lblVerificationResultStatus.setText(value.toString());
@@ -1748,6 +1836,20 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Persist
     public void save() {
         try {
+            // If VariableView is switched from VariableEditorView
+            // then they are already in sync. If user only interact on VariableView so far 
+            // then update VariableEditorView (vice versa)
+            if(variableTab == true){
+                updateVariableScriptView();
+            }else{
+                updateVariableManualView();
+            }
+            
+            if (invalidScheme == true) {
+                MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                        StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
+                return;
+            }
             saveVariables();
             saveVerificationScript();
             preSaving();
@@ -1767,6 +1869,24 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
     }
 
+    private void updateVariableManualView() {
+        try {
+            variableView.setVariablesFromScriptContent(variableEditorView.getScriptContent());
+            setInvalidScheme(false);
+        } catch (Exception e) {
+            setInvalidScheme(true);
+        }
+    }
+
+    private void updateVariableScriptView() {
+        try {
+            variableEditorView.setScriptContentFrom(variableView.getVariableEntityWrapper());
+            setInvalidScheme(false);
+        } catch (Exception e) {
+            setInvalidScheme(true);
+        }
+    }
+
     private void saveVariables() {
         VariableEntity[] variables = variableView.getVariables();
         originalWsObject.setVariables(Arrays.asList(variables));
@@ -1779,7 +1899,11 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             String script = document.get();
             originalWsObject.setVerificationScript(script);
         }
-        GroovyEditorUtil.saveEditor(scriptEditorPart);
+        editor.saveEditor(scriptEditorPart);
+    }
+    
+    private void setInvalidScheme(boolean value){
+        invalidScheme = value;
     }
 
     public WebServiceRequestEntity getWSRequestObject() {
@@ -1835,7 +1959,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     public void onClose() {
         deleteTempScriptFile();
         try {
-            GroovyEditorUtil.clearEditorProblems(verificationScriptEditor);
+            editor.clearEditorProblems(verificationScriptEditor);
         } catch (CoreException e) {
             LoggerSingleton.logError(e);
         }
@@ -1958,16 +2082,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected boolean isBodySupported() {
         String requestMethod = wsApiControl.getRequestMethod();
-        return !(WebServiceRequestEntity.GET_METHOD.equalsIgnoreCase(requestMethod));
+        return RestRequestMethodHelper.isBodySupported(requestMethod);
     }
 
     protected boolean isSOAP() {
         return WebServiceRequestEntity.SOAP.equals(originalWsObject.getServiceType());
     }
 
-    protected void setDirty() {
-        dirtyable.setDirty(true);
-    }
 
     protected String getPrettyHeaders(ResponseObject reponseObject) {
         StringBuilder sb = new StringBuilder();
@@ -2004,14 +2125,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected abstract void updatePartImage();
 
-    public void updateDirty(boolean dirty) {
-        dirtyable.setDirty(dirty);
-    }
-
     @Override
     public List<MPart> getChildParts() {
         return Arrays.asList(ui.getApiControlsPart(), ui.getHeadersPart(), ui.getAuthorizationPart(), ui.getBodyPart(),
-                ui.getScriptEditorPart(), ui.getSnippetPart(), ui.getResponsePart(), ui.getVariablePart());
+                ui.getScriptEditorPart(), ui.getSnippetPart(), ui.getResponsePart(), ui.getVariablePart(), ui.getVariableEditorPart());
     }
 
     private class ToolBarForVerificationPart extends ToolBarForMPart {

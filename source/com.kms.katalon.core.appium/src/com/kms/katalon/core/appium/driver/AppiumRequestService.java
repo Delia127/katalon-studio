@@ -3,8 +3,6 @@ package com.kms.katalon.core.appium.driver;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-import javax.xml.bind.JAXBElement.GlobalScope;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -18,9 +16,10 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
 
 public class AppiumRequestService {
+    
     private static final String APPIUM_URL_STATUS_PATH = "/status";
 
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    private final KeywordLogger logger = KeywordLogger.getInstance(this.getClass());
 
     private String appiumServerUrl;
 

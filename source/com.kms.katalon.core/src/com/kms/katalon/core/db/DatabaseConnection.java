@@ -18,7 +18,7 @@ import com.kms.katalon.core.testdata.TestDataInfo;
  */
 public class DatabaseConnection {
     
-    private static KeywordLogger logger = KeywordLogger.getInstance();
+    private final KeywordLogger logger = KeywordLogger.getInstance(DatabaseConnection.class);
     
     private static final String PASSWORD_PROPERTY = "password";
 

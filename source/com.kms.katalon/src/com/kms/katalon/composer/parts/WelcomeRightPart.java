@@ -46,6 +46,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
@@ -61,14 +63,16 @@ import com.kms.katalon.composer.project.sample.SampleProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 
-public class WelcomeRightPart extends Composite {
+public class WelcomeRightPart extends Composite implements EventHandler {
 
 //    private static final Color BACKGROUND_COLOR = ColorUtil.getCompositeBackgroundColor();
     private static final Color BACKGROUND_COLOR = ColorUtil.getColor("#FAFAFA");
@@ -181,6 +185,8 @@ public class WelcomeRightPart extends Composite {
         stackLayout = new StackLayout();
         createControls();
         postConstruct();
+        
+        eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
     }
 
     public void reloadRecentProjects() {
@@ -339,7 +345,16 @@ public class WelcomeRightPart extends Composite {
         
         registerListenersForTestingTypeTabs();
         
-        handleSelectingTestingTypeTab(tabWebUi);
+        setDefaultTestingTypeTabByProjectType();
+    }
+    
+    private void setDefaultTestingTypeTabByProjectType() {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        if (project != null && project.getType() == ProjectType.WEBSERVICE) {
+            handleSelectingTestingTypeTab(tabApi);
+        } else {
+            handleSelectingTestingTypeTab(tabWebUi);
+        }
     }
     
     private void createTestingTypeTabHeader() {
@@ -509,33 +524,24 @@ public class WelcomeRightPart extends Composite {
     
     private Composite createApiTabContent(Composite parent) {
         Composite content = new Composite(parent, SWT.NONE);
-        content.setLayout(new GridLayout());
-        content.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, true));
+        content.setLayout(new GridLayout(1, false));
+        content.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
 
         createIntroLink(content, StringConstants.PA_URL_GETTING_STARTED);
 
         Composite main = new Composite(content, SWT.NONE);
-        main.setLayout(new GridLayout(2, false));
-        main.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        main.setLayout(new GridLayout(1, false));
+        main.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
         
-        Composite contentLeft = new Composite(main, SWT.NONE);
-        contentLeft.setLayout(new GridLayout());
-        contentLeft.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
-        
-        addGettingStartedStep(contentLeft, ImageConstants.IMG_STEP_1, MessageConstants.URL_CREATE_WEB_SERVICE_REQUEST,
-                ImageConstants.IMG_SCREEN_SHOT_CREATE_WEB_SERVICE_REQUEST);
-        addGettingStartedStep(contentLeft, ImageConstants.IMG_STEP_2, MessageConstants.URL_TEST_WEB_SERVICE_REQUEST,
-                ImageConstants.IMG_SCREEN_SHOT_TEST_WEB_SERVICE_REQUEST);
-        
-        Composite contentRight = new Composite(main, SWT.NONE);
-        contentRight.setLayout(new GridLayout());
-        contentRight.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
-        
-        addGettingStartedStep(contentRight, ImageConstants.IMG_STEP_3, MessageConstants.URL_ADD_WEB_SERVICE_KEYWORD,
-                ImageConstants.IMG_SCREEN_SHOT_ADD_WEB_SERVICE_KEYWORD);
-        addGettingStartedStep(contentRight, ImageConstants.IMG_STEP_4, MessageConstants.URL_API_EXECUTE_TEST_CASE,
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_1, MessageConstants.URL_USE_DRAFT_REQUEST,
+                ImageConstants.IMG_SCREEN_SHOT_USE_DRAFT_REQUEST);
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_2, MessageConstants.URL_SAVE_DRAFT_REQUEST,
+                ImageConstants.IMG_SCREEN_SHOT_SAVE_DRAFT_REQUEST);
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_3, MessageConstants.URL_USE_WEB_SERVICE_IN_TEST_CASE,
+                ImageConstants.IMG_SCREEN_SHOT_ADD_REQUEST_TO_TEST_CASE);
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_4, MessageConstants.URL_API_EXECUTE_TEST_CASE,
                 ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RUN);
-        addGettingStartedStep(contentRight, ImageConstants.IMG_STEP_5, MessageConstants.URL_COMMON_STEP_VIEW_LOGGER,
+        addGettingStartedStep(main, ImageConstants.IMG_STEP_5, MessageConstants.URL_COMMON_STEP_VIEW_LOGGER,
                 ImageConstants.IMG_SCREEN_SHOT_API_LOG_VIEWER);
 
         return content;
@@ -590,6 +596,9 @@ public class WelcomeRightPart extends Composite {
 
             List<Composite> composites = new ArrayList<>();
             UISynchronizeService.syncExec(() -> {
+                if (samplesContent == null || samplesContent.isDisposed()) {
+                    return;
+                }
                 samplesContent.setRedraw(false);
                 if (sampleProjects.size() <= 0) {
                     addDefaultSampleProjects(holder);
@@ -868,10 +877,12 @@ public class WelcomeRightPart extends Composite {
         glTextComposite.marginBottom = 5;
         textComposite.setLayout(glTextComposite);
 
-        Text lblText = new Text(textComposite, SWT.WRAP | SWT.CENTER);
+        Text lblText = new Text(textComposite, SWT.WRAP | SWT.CENTER | SWT.READ_ONLY);
         lblText.setText(label);
         lblText.setToolTipText(tooltip);
         lblText.setForeground(TEXT_COLOR);
+        lblText.setBackground(textComposite.getBackground());
+        lblText.setCursor(CURSOR_HAND);
         ControlUtils.setFontStyle(lblText, SWT.NORMAL, FONT_SIZE_MEDIUM);
         GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gridData.heightHint = 2 * lblText.getLineHeight();
@@ -907,4 +918,18 @@ public class WelcomeRightPart extends Composite {
         // Disable the check that prevents subclassing of SWT components
     }
 
+    @Override
+    public void handleEvent(Event event) {
+        switch (event.getTopic()) {
+            case EventConstants.PROJECT_OPENED:
+                setDefaultTestingTypeTabByProjectType();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void onPartClosed() {
+        eventBroker.unsubscribe(this);
+    }
 }

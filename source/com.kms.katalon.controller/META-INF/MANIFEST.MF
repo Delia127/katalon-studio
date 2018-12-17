@@ -26,6 +26,7 @@ Require-Bundle: com.kms.katalon.constant,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
  org.javalite.common,
- com.kms.katalon.core.webservice
+ com.kms.katalon.core.webservice,
+ com.kms.katalon.logging
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

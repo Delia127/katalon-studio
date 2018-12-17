@@ -12,6 +12,7 @@ import java.util.List;
 import javax.xml.bind.UnmarshalException;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.persistence.exceptions.JAXBException;
 
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
@@ -22,6 +23,7 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -476,5 +478,13 @@ public class EntityFileServiceManager {
 
         return EntityService.getInstance().saveEntity(entity);
     }
+
+	public static String toXmlString(Object entity) throws Exception {
+		return EntityService.getInstance().toXmlString(entity);
+	}
+
+	public static <T> T toEntity(String xmlString, Class<T> clazz) throws Exception{
+		return EntityService.getInstance().toEntity(xmlString, clazz);
+	}
 
 }

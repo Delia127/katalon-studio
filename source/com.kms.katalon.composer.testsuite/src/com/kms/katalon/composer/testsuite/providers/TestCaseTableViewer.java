@@ -33,24 +33,24 @@ import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestCaseTableViewer extends TableViewer implements ITableViewerActions {
 
-    private List<String> testCasesPKs;
+	private List<String> testCasesPKs;
 
-    private List<TestSuiteTestCaseLink> data;
+	private List<TestSuiteTestCaseLink> data;
 
-    private boolean isRunAll;
+	private boolean isRunAll;
 
-    private TestSuitePartTestCaseView parentView;
+	private TestSuitePartTestCaseView parentView;
 
-    private String searchedString;
+	private String searchedString;
 
-    public TestCaseTableViewer(Composite parent, int style, TestSuitePartTestCaseView parentView) {
-        super(parent, style);
-        testCasesPKs = new ArrayList<String>();
-        data = new ArrayList<TestSuiteTestCaseLink>();
-        this.parentView = parentView;
-        searchedString = StringUtils.EMPTY;
-        ColumnViewerUtil.setTableActivation(this);
-    }
+	public TestCaseTableViewer(Composite parent, int style, TestSuitePartTestCaseView parentView) {
+		super(parent, style);
+		testCasesPKs = new ArrayList<String>();
+		data = new ArrayList<TestSuiteTestCaseLink>();
+		this.parentView = parentView;
+		searchedString = StringUtils.EMPTY;
+		ColumnViewerUtil.setTableActivation(this);
+	}
 
     public void setInput(List<TestSuiteTestCaseLink> data) throws Exception {
         this.data.clear();
@@ -83,11 +83,7 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
     }
 
     public void addTestCase(TestCaseEntity testCase) throws Exception {
-        // check testCase is in list or not
-        if (testCasesPKs.contains(testCase.getId())) {
-            return;
-        }
-
+        
         TestSuiteTestCaseLink link = createNewTestSuiteTestCaseLink(testCase);
 
         testCasesPKs.add(testCase.getId());

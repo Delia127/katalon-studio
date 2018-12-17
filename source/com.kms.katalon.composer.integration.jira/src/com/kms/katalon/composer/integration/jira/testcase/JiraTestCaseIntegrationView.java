@@ -11,13 +11,13 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.jira.JiraUIComponent;
@@ -98,7 +98,7 @@ public class JiraTestCaseIntegrationView extends AbstractTestCaseIntegrationView
             @Override
             public void mouseDown(MouseEvent e) {
                 try {
-                    DesktopUtils.openUri(getHTMLLink(jiraIssue));
+                    Program.launch(getHTMLLink(jiraIssue).toURL().toString());
                 } catch (IOException | URISyntaxException | GeneralSecurityException ex) {
                     LoggerSingleton.logError(ex);
                 }

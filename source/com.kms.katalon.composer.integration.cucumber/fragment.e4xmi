@@ -13,4 +13,10 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_NLppkJCcEeiATa7fYel7oA" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_SSQXAJCcEeiATa7fYel7oA" elementId="com.kms.katalon.composer.integration.cucumber.dynamicmenucontribution.new" contributionURI="bundleclass://com.kms.katalon.composer.integration.cucumber/com.kms.katalon.composer.integration.cucumber.menu.NewFeatureMenuContribution"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_buXXYMt8EeimBYiTy30Fdg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.new.menu">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_h1u-QMt8EeimBYiTy30Fdg" elementId="com.kms.katalon.composer.integration.cucumber.handledmenuitem.newFeatureFile" label="BDD Feature File" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/feature_16.png" command="_20sQoJCFEeiATa7fYel7oA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_RuupMMuiEei1Mp3q_oBPVg" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ZwtioMuiEei1Mp3q_oBPVg" elementId="com.kms.katalon.menu.submenu.new.bddfeature" label="BDD Feature File" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/feature_16.png" command="_20sQoJCFEeiATa7fYel7oA"/>
+  </fragments>
 </fragment:ModelFragments>

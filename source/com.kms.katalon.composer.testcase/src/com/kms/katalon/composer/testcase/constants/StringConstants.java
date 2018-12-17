@@ -74,6 +74,9 @@ public class StringConstants extends GlobalStringConstants {
 
     // CaseBuilderDialog
     public static final String DIA_TITLE_CASE_INPUT = ComposerTestcaseMessageConstants.DIA_TITLE_CASE_INPUT;
+    
+    //TestSuiteBrowser
+    public static final String DIA_TITLE_TEST_SUITE_BROWSER = ComposerTestcaseMessageConstants.DIA_TITLE_TEST_SUITE_BROWSER;
 
     // CatchInputBuilderDialog
     public static final String DIA_TITLE_CATCH_INPUT = ComposerTestcaseMessageConstants.DIA_TITLE_CATCH_INPUT;
@@ -218,6 +221,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TAB_SCRIPT = ComposerTestcaseMessageConstants.PA_TAB_SCRIPT;
 
     public static final String PA_TAB_VARIABLE = ComposerTestcaseMessageConstants.PA_TAB_VARIABLE;
+    
+    public static final String PA_TAB_VARIABLE_EDITOR = ComposerTestcaseMessageConstants.PA_TAB_VARIABLE_EDITOR;
 
     public static final String PA_TAB_INTEGRATION = ComposerTestcaseMessageConstants.PA_TAB_INTEGRATION;
 
@@ -484,4 +489,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BTN_UPLOAD = ComposerTestcaseMessageConstants.BTN_UPLOAD;
     public static final String LBL_SELECTION_INFORMATION = ComposerTestcaseMessageConstants.LBL_SELECTION_INFORMATION;
     public static final String SELECTION_DIALOG_TITLE = ComposerTestcaseMessageConstants.SELECTION_DIALOG_TITLE;
+    
+//   Add to Test Suite
+    public static final String CONS_MENU_CONTEXT_ADD_TO_TEST_SUITE = ComposerTestcaseMessageConstants.CONS_MENU_CONTEXT_ADD_TO_TEST_SUITE;
+    public static final String CONS_MENU_CONTEXT_ADD_TO_AN_EXISTING_TEST_SUITE = ComposerTestcaseMessageConstants.CONS_MENU_CONTEXT_ADD_TO_AN_EXISTING_TEST_SUITE;
+    public static final String CONS_MENU_CONTEXT_ADD_TO_A_NEW_TEST_SUITE = ComposerTestcaseMessageConstants.CONS_MENU_CONTEXT_ADD_TO_A_NEW_TEST_SUITE;
+
 }

@@ -7,6 +7,9 @@
     <elements xsi:type="commands:Command" xmi:id="_qdiNIMCdEei3UJMY56xxGA" elementId="com.kms.katalon.composer.webservice.command.quickstart" commandName="Quick Start"/>
     <elements xsi:type="commands:Command" xmi:id="_ZF6pwMCMEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.command.newRestRequest" commandName="New REST Request"/>
     <elements xsi:type="commands:Command" xmi:id="_mokWcMCMEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.command.newSoapRequest" commandName="New SOAP Request"/>
+    <elements xsi:type="commands:Command" xmi:id="_REaKMOiIEei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.command.execution" commandName="Web Service Execution">
+      <parameters xmi:id="_tIZZYOiIEei2Q7mM03p58A" elementId="com.kms.katalon.composer.execution.runMode" name="Run Mode"/>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8gBDELD_EeSrwsGaXHfzzg" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_FFTWgLEDEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.NewWebServiceRequestObjectHandler" command="_zzY_QLEBEeSrwsGaXHfzzg"/>
@@ -15,6 +18,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_uHTwMMCdEei3UJMY56xxGA" elementId="com.kms.katalon.composer.webservice.handler.quickstart" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.OpenApiQuickStartHandler" command="_qdiNIMCdEei3UJMY56xxGA"/>
     <elements xsi:type="commands:Handler" xmi:id="_Ut-jsMCNEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handler.newRestRequest" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.NewRestRequestHandler" command="_ZF6pwMCMEeilOqZQeGeZMA"/>
     <elements xsi:type="commands:Handler" xmi:id="_z81zcMCNEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handler.newSoapRequest" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.NewSoapRequestHandler" command="_mokWcMCMEeilOqZQeGeZMA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_1ewnYOiIEei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.handler.execution" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.handlers.WebServiceExecutionHandler" command="_REaKMOiIEei2Q7mM03p58A"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_O9aygLEAEeSrwsGaXHfzzg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_ivOzULEEEeSrwsGaXHfzzg" elementId="com.kms.katalon.composer.webservice.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.menu.NewWebServiceRequestObjectPopupMenuContribution"/>
@@ -42,5 +46,33 @@
     <elements xsi:type="menu:ToolBarSeparator" xmi:id="_BrYucMCLEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.toolbarseparator.0"/>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_Gns3cMCLEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newSoapRequest" label="New draft SOAP Request" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/create_new_request_soap_32x24.png" tooltip="New draft SOAP Request" command="_mokWcMCMEeilOqZQeGeZMA"/>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_JNVc8MCLEeilOqZQeGeZMA" elementId="com.kms.katalon.composer.webservice.handledtoolitem.importWSDL" label="Import WSDL from File/URL" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/import_soap_32x24.png" tooltip="Import WSDL from File/URL" command="_yCTLsL1TEeiPK8Af4AU-RQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VCTZ4Mw-Eeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.action" positionInList="index:0">
+    <elements xsi:type="menu:Menu" xmi:id="_EJZtoMw_Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.webservice.menu.apiwebservice" label="API/Web Service">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_JcxEsMw_Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.webservice.handledmenuitem.openrest" label="Open Rest" command="_ZF6pwMCMEeilOqZQeGeZMA"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_KSLCsMw_Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.webservice.handledmenuitem.opensoap" label="Open SOAP" command="_mokWcMCMEeilOqZQeGeZMA"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_YjCgQMw_Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.webservice.handledmenuitem.importswaggerfromfileurl" label="Import Swagger" command="_bvRngLdeEeiB4sxFenOLSA"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_dY74MMw_Eeis-d8dVdcONw" elementId="com.kms.katalon.composer.webservice.handledmenuitem.importwsdlfromfileurl" label="Import WSDL" command="_yCTLsL1TEeiPK8Af4AU-RQ"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="__fiQIOiFEei2Q7mM03p58A" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:0">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_txLGEOiHEei2Q7mM03p58A" elementId="com.kms.katalon.composer.execution.menu.run.webservice" label="Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
+      <parameters xmi:id="_HdZhwOiKEei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_KMfFkOiHEei2Q7mM03p58A" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:0">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_5tj_kOiHEei2Q7mM03p58A" elementId="com.kms.katalon.composer.execution.menu.debug.webservice" label="Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
+      <parameters xmi:id="_N_8BsOiKEei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_xK1FgOizEei2Q7mM03p58A" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="index:0">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_4IATAOizEei2Q7mM03p58A" elementId="com.kms.katalon.menu.run.webservice" label="Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
+      <parameters xmi:id="_9irzAOizEei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_5VK0QOi0Eei2Q7mM03p58A" featurename="children" parentElementId="com.kms.katalon.menu.debug" positionInList="index:0">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_-p9usOi0Eei2Q7mM03p58A" elementId="com.kms.katalon.menu.debug.webservice" label="Web Service" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/webservice_16.png" command="_REaKMOiIEei2Q7mM03p58A">
+      <parameters xmi:id="_NRexsOi1Eei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
+    </elements>
   </fragments>
 </fragment:ModelFragments>

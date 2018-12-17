@@ -16,9 +16,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.impl.constants.TextContentType;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.constants.TextContentType;
+import com.kms.katalon.composer.webservice.parts.VerificationScriptEventHandler;
 import com.kms.katalon.composer.webservice.response.body.RawEditor;
 import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditor;
 import com.kms.katalon.core.testobject.ResponseObject;
@@ -49,7 +50,7 @@ public class SoapResponseBodyEditorsComposite extends Composite {
         PRETTY, RAW
     };
 
-    public SoapResponseBodyEditorsComposite(Composite parent, int style) {
+    public SoapResponseBodyEditorsComposite(Composite parent, int style, VerificationScriptEventHandler eventHandler) {
 
         super(parent, style);
         setLayout(new GridLayout());
@@ -74,6 +75,7 @@ public class SoapResponseBodyEditorsComposite extends Composite {
 
         SoapPrettyEditor mirrorEditor = new SoapPrettyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put(SoapEditorMode.PRETTY, mirrorEditor);
+        mirrorEditor.addHandler(eventHandler);
 
         // Raw Mode
         rawRadio = new Button(tbBodyType, SWT.RADIO);
@@ -94,7 +96,8 @@ public class SoapResponseBodyEditorsComposite extends Composite {
         try {
             this.responseObject = new ResponseObject();
             this.responseObject.setResponseText(responseOb.getResponseText());
-
+            this.responseObject.setBodyContent(responseObject.getBodyContent());
+            this.responseObject.setContentType(responseOb.getContentType());
             this.selectedEditorMode = SoapEditorMode.PRETTY;
 
             // Mark radio is selected.
