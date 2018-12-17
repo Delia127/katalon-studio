@@ -49,7 +49,7 @@ pipeline {
 
                  // Generate katalon builds   
                     script {
-                        dir("${WORKSPACE}/source") {
+                        dir("source") {
                             if (BRANCH_NAME ==~ /^[release]+/) {
                                 sh ''' mvn clean verify -P prod '''
                             } else {                      
@@ -67,7 +67,7 @@ pipeline {
             }
             steps {
                 // Execute codesign command to package .DMG file for macOS
-                dir ("⁨${WORKSPACE}/source⁩/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64⁩")
+                dir ("⁨source⁩/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64⁩")
                 { sh ''' codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
                         sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" ''' 
                         fileOperations([
@@ -78,7 +78,7 @@ pipeline {
                                         targetLocation: "${env.tmpDir}")
                           ])
                 }
-                dir("${WORKSPACE}/source/com.kms.katalon.product/target/products")
+                dir("source/com.kms.katalon.product/target/products")
                     {
                         fileOperations([
                             fileCopyOperation(
@@ -108,7 +108,7 @@ pipeline {
                 expression { !(BRANCH_NAME ==~ /^[release]+/) }
             }
             steps {
-                dir("${WORKSPACE}/source/com.kms.katalon.product.qtest_edition/target/products") {
+                dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
                         writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
                         writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_commit.txt", text: "${GIT_COMMIT}")
