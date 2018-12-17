@@ -77,9 +77,8 @@ public class ExecuteHandler extends AbstractExecutionHandler {
     public void execute(ParameterizedCommand command) {
         try {
             LaunchMode launchMode = getLaunchMode(command);
-            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
             IRunConfigurationContributor defaultRunContributor = ExecutionUtil.getDefaultExecutionConfiguration();
-            if (project.getType() != ProjectType.WEBSERVICE && defaultRunContributor == null) {
+            if (defaultRunContributor == null) {
                 return;
             }
             MMenu menu = getMenu(launchMode);
