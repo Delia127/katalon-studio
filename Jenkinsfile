@@ -9,8 +9,9 @@ pipeline {
         maven 'default'
     }
     
-    String tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
-    
+    environment {
+        tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
+    }
     stages {
         stage('Prepare') {
             steps {
@@ -74,7 +75,7 @@ pipeline {
                                         excludes: '',
                                         includes: '*.dmg',
                                         flattenFiles: true,
-                                        targetLocation: "${tmpDir}")
+                                        targetLocation: "${env.tmpDir}")
                           ])
                 }
                 dir("source/com.kms.katalon.product/target/products")
@@ -84,7 +85,7 @@ pipeline {
                                         excludes: '',
                                         includes: '*.zip, *.tar.gz',
                                         flattenFiles: true,
-                                        targetLocation: "${tmpDir}")
+                                        targetLocation: "${env.tmpDir}")
                         ])
                     }   
                 }
@@ -109,15 +110,15 @@ pipeline {
             steps {
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
-                        writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
-                        writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_commit.txt", text: "${GIT_COMMIT}")
+                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
+                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_commit.txt", text: "${GIT_COMMIT}")
                         // copy builds, require https://wiki.jenkins.io/display/JENKINS/File+Operations+Plugin
                         fileOperations([
                                 fileCopyOperation(
                                         excludes: '',
                                         includes: '*.zip, *.tar.gz, *.dmg',
                                         flattenFiles: true,
-                                        targetLocation: "${tmpDir}")
+                                        targetLocation: "${env.tmpDir}")
                         ])
                     }
                 }
