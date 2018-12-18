@@ -609,15 +609,6 @@ public class QTestIntegrationTestSuiteManager {
                 QTestRelease release = new QTestRelease();
                 release.setId(testReleaseJsonObject.getLong(QTestEntity.ID_FIELD));
                 release.setName(testReleaseJsonObject.getString(QTestEntity.NAME_FIELD));
-                String endDate = testReleaseJsonObject.getString("end_date");
-                try {
-                    if (DateUtil.parseDate(endDate).before(new Date())) {
-                        continue;
-                    }
-                } catch (ParseException e) {
-                    LogUtil.logError(e);
-                }
-
                 release.setCycles((getCycles(qTestProject, release, credential)));
                 qTestReleases.add(release);
             }
