@@ -66,8 +66,8 @@ pipeline {
                 expression { BRANCH_NAME ==~ /^[release]+/ }
             }
             steps {
-                // Execute codesign command to package .DMG file for macOS
-                    sh 'cd $WORKSPACE⁩/source/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64'
+                    // Execute codesign command to package .DMG file for macOS
+                    sh 'cd \\"${WORKSPACE}⁩/source/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64\\" '
                     sh ''' codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
                            sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" ''' 
                     fileOperations([
