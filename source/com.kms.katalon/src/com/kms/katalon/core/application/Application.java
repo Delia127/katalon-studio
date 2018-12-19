@@ -48,6 +48,10 @@ public class Application implements IApplication {
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;
         }
+        
+        if (!activateInternalPlatformBundle()) {
+            return IApplication.EXIT_OK;
+        }
 
         preRunInit();
         final Map<?, ?> args = context.getArguments();
@@ -183,4 +187,12 @@ public class Application implements IApplication {
             return false;
         }
     }
+    
+    private boolean activateInternalPlatformBundle() {
+        try {
+            Platform.getBundle("com.kms.katalon.platform.internal").start();
+            return true;
+        } catch (BundleException ex) {
+            return false;
+        }    }
 }
