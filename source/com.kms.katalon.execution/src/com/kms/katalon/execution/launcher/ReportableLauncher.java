@@ -18,11 +18,11 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
-import com.katalon.platform.api.extension.execution.ExecutionEvent;
-import com.katalon.platform.api.extension.execution.TestCaseExecutionContext;
-import com.katalon.platform.api.extension.execution.impl.TestCaseExecutionContextImpl;
-import com.katalon.platform.api.extension.execution.impl.TestSuiteExecutionContextImpl;
-import com.katalon.platform.api.extension.execution.impl.TestSuiteExecutionEvent;
+import com.katalon.platform.api.event.ExecutionEvent;
+import com.katalon.platform.api.execution.TestCaseExecutionContext;
+import com.katalon.platform.internal.execution.TestCaseExecutionContextImpl;
+import com.katalon.platform.internal.execution.TestSuiteExecutionContextImpl;
+import com.katalon.platform.internal.execution.TestSuiteExecutionEvent;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.ProjectController;
