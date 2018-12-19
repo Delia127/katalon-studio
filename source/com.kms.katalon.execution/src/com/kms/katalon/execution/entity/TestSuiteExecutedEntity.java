@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import com.katalon.platform.api.PlatformException;
+import com.katalon.platform.api.exception.PlatformException;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.impl.util.EntityIndexingUtil;
 import com.kms.katalon.constants.IdConstants;
