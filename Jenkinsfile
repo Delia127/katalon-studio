@@ -62,9 +62,6 @@ pipeline {
         }
         
         stage('Package .DMG file') {
-            when {
-                expression { BRANCH_NAME ==~ /^[release]+/ }
-            }
             steps {
                     // Execute codesign command to package .DMG file for macOS
                     sh 'cd source/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64/'
