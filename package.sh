@@ -108,10 +108,10 @@ echo "Process MacOS package ... Done"
 #sudo mount_smbfs //katabuild:[katalon2018]@192.168.35.52/share/build $KATABUILD2
 #sudo rsync -vaE --progress $DISTRIBUTION_FOLDER/ $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
-cp -Rf "Katalon_Studio_Linux_64-$1-$TIMESTAMP.tar.gz" $KATABUILD/
-cp -Rf "Katalon_Studio_Windows_32-$1-$TIMESTAMP.zip" $KATABUILD/
-cp -Rf "Katalon_Studio_Windows_64-$1-$TIMESTAMP.zip" $KATABUILD/
-cp -Rf "Katalon_Studio-MacOS-$1-$TIMESTAMP.dmg" $KATABUILD/
+#cp -Rf "Katalon_Studio_Linux_64-$1-$TIMESTAMP.tar.gz" $KATABUILD/
+#cp -Rf "Katalon_Studio_Windows_32-$1-$TIMESTAMP.zip" $KATABUILD/
+#cp -Rf "Katalon_Studio_Windows_64-$1-$TIMESTAMP.zip" $KATABUILD/
+#cp -Rf "Katalon_Studio-MacOS-$1-$TIMESTAMP.dmg" $KATABUILD/
 #sudo cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD2/
 
 # Clean up old files from shared public folder
