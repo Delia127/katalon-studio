@@ -286,7 +286,7 @@
                                     <id>com.auth0:java-jwt:3.4.0</id>
                                 </artifact>
                                 <artifact>
-                                    <id>com.katalon:com.katalon.platform:1.0.0</id>
+                                    <id>com.katalon:com.katalon.platform:${platform.version}</id>
                                     <transitive>false</transitive>
                                 </artifact>
 							</artifacts>
