@@ -9,6 +9,9 @@ pipeline {
         maven 'default'
     }
     
+    environment {
+        tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
+    }
     stages {
         stage('Prepare') {
             steps {
@@ -48,7 +51,7 @@ pipeline {
                     script {
                         dir("source") {
                             if (BRANCH_NAME ==~ /^[release]+/) {
-                                sh ''' mvn clean verify -P prod '''
+                                sh ''' mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod '''
                             } else {                      
                                 sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
                             }
@@ -59,25 +62,31 @@ pipeline {
         }
         
         stage('Package .DMG file') {
-            when {
-                expression { BRANCH_NAME ==~ /^[release]+/ }
-            }
             steps {
-                // Execute codesign command to package .DMG file for macOS
-                dir ("source/com.kms.katalon.product/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
-                { sh ''' codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
-                    sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" '''        
+                    // Execute codesign command to package .DMG file for macOS
+                    sh ''' cd source/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64
+                           codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
+                           sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" ''' 
+                    fileOperations([
+                            fileCopyOperation(
+                                excludes: '',
+                                includes: '*.dmg',
+                                flattenFiles: true,
+                                targetLocation: "${env.tmpDir}")
+                        ])
+                
+                dir("source/com.kms.katalon.product/target/products") {
                         fileOperations([
                             fileCopyOperation(
-                                    excludes: '',
-                                    includes: '*.dmg',
-                                    flattenFiles: true,
-                                    targetLocation: "source/com.kms.katalon.product.qtest_edition/target/products")
-                    ])
-                }
-            }
-        }
-/*        
+                                        excludes: '',
+                                        includes: '*.zip, *.tar.gz',
+                                        flattenFiles: true,
+                                        targetLocation: "${env.tmpDir}")
+                            ])
+                     }   
+                 }
+             }
+        /*        
         stage ('Testing') {
             steps {
                 dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
@@ -89,21 +98,23 @@ pipeline {
             }
         }
 */              
-        stage('Copy builds') {
+        stage('Copying builds') {
             // Copy generated builds and changelogs to shared folder on server
+            when {
+                expression { !(BRANCH_NAME ==~ /^[release]+/) }
+            }
             steps {
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
-                        String tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
-                        writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
-                        writeFile(encoding: 'UTF-8', file: "${tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_commit.txt", text: "${GIT_COMMIT}")
+                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
+                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_commit.txt", text: "${GIT_COMMIT}")
                         // copy builds, require https://wiki.jenkins.io/display/JENKINS/File+Operations+Plugin
                         fileOperations([
                                 fileCopyOperation(
                                         excludes: '',
                                         includes: '*.zip, *.tar.gz, *.dmg',
                                         flattenFiles: true,
-                                        targetLocation: "${tmpDir}")
+                                        targetLocation: "${env.tmpDir}")
                         ])
                     }
                 }
