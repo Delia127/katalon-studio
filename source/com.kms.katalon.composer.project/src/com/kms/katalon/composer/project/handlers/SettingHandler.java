@@ -205,25 +205,25 @@ public class SettingHandler {
         }
 
         try {
-            IPreferenceNode executionSettings = null;
+            IPreferenceNode desiredCapabilitiesSettings = null;
             for (IPreferenceNode node : pm.getRootSubNodes()) {
-                if (StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID.equals(node.getId())) {
-                    executionSettings = node;
+                if (StringConstants.DESIRED_CAPABILITIES_SETTING_PAGE_ID.equals(node.getId())) {
+                    desiredCapabilitiesSettings = node;
                     break;
                 }
             }
-            if (executionSettings == null) {
-                throw new MissingProjectSettingPageException(StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID);
+            if (desiredCapabilitiesSettings == null) {
+                throw new MissingProjectSettingPageException(StringConstants.DESIRED_CAPABILITIES_SETTING_PAGE_ID);
             }
 
-            IPreferenceNode defaultExecutionSettings = executionSettings
-                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-            if (defaultExecutionSettings == null) {
-                throw new MissingProjectSettingPageException(
-                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
-            }
+//            IPreferenceNode defaultExecutionSettings = desiredCapabilitiesSettings
+//                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
+//            if (defaultExecutionSettings == null) {
+//                throw new MissingProjectSettingPageException(
+//                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
+//            }
 
-            IPreferenceNode mobileNode = defaultExecutionSettings
+            IPreferenceNode mobileNode = desiredCapabilitiesSettings
                     .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
             if (mobileNode == null) {
                 throw new MissingProjectSettingPageException(
