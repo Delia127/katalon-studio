@@ -3,6 +3,7 @@ package com.kms.katalon.integration.qtest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestCycle;
+import com.kms.katalon.integration.qtest.entity.QTestDate;
 import com.kms.katalon.integration.qtest.entity.QTestEntity;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestRelease;
@@ -46,6 +48,7 @@ import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestSuiteParent;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
+import com.kms.katalon.integration.qtest.exception.QTestAPIConnectionException;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
@@ -62,6 +65,8 @@ import com.kms.katalon.logging.LogUtil;
 public class QTestIntegrationTestSuiteManager {
 
     private static final String PARENT_PROPERTY_PREFIX = "parent.";
+
+    private static QTestDate QDate;
 
     private QTestIntegrationTestSuiteManager() {
         // Disable default constructor
@@ -427,12 +432,37 @@ public class QTestIntegrationTestSuiteManager {
      * @throws QTestException
      * thrown if system cannot send request or the response is invalid JSON format.
      */
+    public static long checkRootTest(QTestSuiteParent parent) {
+        if (parent.equals(null))
+            return -1;
+        if (parent.getTypeName().equals("Release")) {
+            return parent.getId();
+        } else {
+            return checkRootTest(parent.getParent());
+        }
+    }
+
+    public static QTestDate getReleaseDate(Long id, IQTestCredential credentials, QTestProject qTestProject)
+            throws QTestException {
+        String url = QTestIntegrationProjectManager.getProjectAPIPrefix(credentials, qTestProject) + "/releases/" + id;
+
+        String result = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credentials.getToken());
+        try {
+            JsonObject resultJsonObject = new JsonObject(result);
+
+            QTestDate qTestDate = new QTestDate(DateUtil.parseDate(resultJsonObject.getString("start_date")),
+            DateUtil.parseDate(resultJsonObject.getString("end_date")));
+            return qTestDate;
+        } catch (JsonException | ParseException e) {
+            throw new QTestInvalidFormatException(e.getMessage());
+        }
+    }
+
     public static QTestSuite uploadTestSuite(IQTestCredential credentials, String name, String description,
             QTestSuiteParent parent, QTestProject qTestProject) throws QTestException {
 
         String token = credentials.getToken().getAccessTokenHeader();
         String serverUrl = credentials.getServerUrl();
-
         if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
@@ -446,6 +476,10 @@ public class QTestIntegrationTestSuiteManager {
 
         JsonArray reponseJsonArray = getTestSuiteFieldJsonArray(qTestProject, credentials);
 
+        Long id = checkRootTest(parent);
+
+        QTestDate date = getReleaseDate(id, credentials, qTestProject);
+
         for (int index = 0; index < reponseJsonArray.length(); index++) {
             try {
                 JsonObject fieldJsonObject = reponseJsonArray.getJsonObject(index);
@@ -458,12 +492,13 @@ public class QTestIntegrationTestSuiteManager {
 
                 if (fieldJsonObject.has("label") && "Planned Start Date".equals(fieldJsonObject.getString("label"))) {
                     fieldValues.add(new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
-                            DateUtil.formatDate(new Date())));
+                            DateUtil.formatDate(date.getStartDate())));
+
                 }
 
                 if (fieldJsonObject.has("label") && "Planned End Date".equals(fieldJsonObject.getString("label"))) {
                     fieldValues.add(new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
-                            DateUtil.formatDate(new Date())));
+                            DateUtil.formatDate(date.getEndDate())));
                 }
             } catch (JsonException e) {
                 throw QTestInvalidFormatException.createInvalidJsonFormatException(reponseJsonArray.toString());
