@@ -22,6 +22,8 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
     private String searchString;
 
     private EntityProvider entityProvider;
+    
+    public static final String[] SEARCH_TAGS = new String[] { "id", "name", "tag", "comment", "description", "folder", "source name" };
 
     public EntityViewerFilter(EntityProvider entityProvider) {
         this.entityProvider = entityProvider;
@@ -108,6 +110,7 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                 Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), contentString);
 
                 if (tagMap != null && !tagMap.isEmpty() && entity.getObject() instanceof FileEntity) {
+
                     for (Entry<String, String> entry : tagMap.entrySet()) {
                         String keyword = entry.getKey();
                         if (folderController.getDefaultKeywords().contains(keyword)) {

@@ -14,20 +14,14 @@ pipeline {
             steps {
                 script {
                     // Terminate running builds of the same job
-                    abortPreviousBuilds()          
+                    abortPreviousBuilds()
+                    sh '''chmod -R 777 ${WORKSPACE}'''
                 }
             }
         }
-
-        stage('Set permissions to source') {
-            steps {
-                // Set r+w permissions to source folder
-                sh '''chmod -R 777 ${WORKSPACE}'''
-            }
-        }
-
+        
         stage('Building') {
-                // start maven commands to get dependencies
+                // Start maven commands to get dependencies
             steps {
                 retry(1) {
                     sh 'ulimit -c unlimited'
@@ -50,7 +44,7 @@ pipeline {
                         done
                     '''
 
-                 // generate katalon builds   
+                 // Generate katalon builds   
                     script {
                         dir("source") {
                             if (BRANCH_NAME ==~ /^[release]+/ || BRANCH_NAME == 'staging-plugin') {
@@ -70,7 +64,7 @@ pipeline {
             }
             steps {
                 // Execute codesign command to package .DMG file for macOS
-                dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
+                dir ("source/com.kms.katalon.product/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
                 { sh ''' codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
                     sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" '''        
                         fileOperations([
@@ -83,9 +77,20 @@ pipeline {
                 }
             }
         }
-              
-        stage('Copy builds') {
-            // copy generated builds and changelogs to shared folder on server
+/*        
+        stage ('Testing') {
+            steps {
+                dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
+                {
+                    sh 'curl -O https://github.com/katalon-studio/katalon-keyword-tests/archive/master.zip'
+                    sh 'unzip master.zip'
+                    sh './Katalon\\ Studio.app/Contents/MacOS/katalon -noSplash  -runMode=console -projectPath="katalon-keyword-tests/katalon-keyword-tests.prj" -retry=0 -testSuiteCollectionPath="Test Suites/All Tests -browserType=Chrome (headless)"'
+                }
+            }
+        }
+*/              
+        stage('Copying builds') {
+            // Copy generated builds and changelogs to shared folder on server
             steps {
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {

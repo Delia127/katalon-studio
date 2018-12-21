@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.common.CommandException;
@@ -598,7 +596,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
 
             List<Composite> composites = new ArrayList<>();
             UISynchronizeService.syncExec(() -> {
-                if (samplesContent.isDisposed()) {
+                if (samplesContent == null || samplesContent.isDisposed()) {
                     return;
                 }
                 samplesContent.setRedraw(false);
@@ -930,10 +928,10 @@ public class WelcomeRightPart extends Composite implements EventHandler {
                 break;
         }
     }
-    
-    @PreDestroy
-    public void onPreDestroy() {
+
+    public void onPartClosed() {
         eventBroker.unsubscribe(this);
+
         
         if (thread != null && thread.isAlive()) {
             thread.interrupt();

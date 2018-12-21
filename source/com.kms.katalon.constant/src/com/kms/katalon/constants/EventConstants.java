@@ -44,10 +44,17 @@ public class EventConstants {
 	public static final String PROJECT_RESTORE_SESSION_COMPLETED = "PROJECT/RESTORE_SESSION_COMPLETED";
 
 	public static final String PROJECT_SETTINGS = "PROJECT/SETTINGS";
+<<<<<<< HEAD
     
     public static final String PROJECT_SETTINGS_PAGE = "PROJECT/SETTINGS_PAGE";
 
 	public static final String PROJECT_INDEX = "PROJECT/INDEX";
+=======
+
+    public static final String PROJECT_INDEX = "PROJECT/INDEX";
+    
+    public static final String PROJECT_SETTINGS_PAGE = "PROJECT/SETTINGS_PAGE";
+>>>>>>> origin/staging-5.10
 
 	// Eclipse Events
 	public static final String ECLIPSE_EDITOR_CLOSED = "EDITORS_CLOSED";
@@ -347,10 +354,13 @@ public class EventConstants {
 	// Git Events
 	public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";
 
+<<<<<<< HEAD
+=======
+	// Api Quick Start Dialog
+	public static final String API_QUICK_START_DIALOG_OPEN = "API/OPEN_QUICK_START_DIALOG";
+
+>>>>>>> origin/staging-5.10
     public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
-    
-    // Api Quick Start Dialog
-    public static final String API_QUICK_START_DIALOG_OPEN = "API/OPEN_QUICK_START_DIALOG";
     
     // Web Service Execution Events
     public static final String WEBSERVICE_EXECUTE = "WEBSERVICE/EXECUTE";
