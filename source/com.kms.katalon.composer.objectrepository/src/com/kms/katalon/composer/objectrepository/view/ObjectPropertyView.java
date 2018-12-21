@@ -122,9 +122,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private static final String LBL_SELECTION_METHOD = ObjectspyMessageConstants.DIA_LBL_OBJECT_SELECTION_METHOD;
 
-	private static final String LBL_SELECTOR_EDITOR1 = ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR1;
-	
-	private static final String LBL_SELECTOR_EDITOR2 = ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR2;
+	private static final String LBL_SELECTOR_EDITOR = ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR;
 
 	private static final String HK_ADD = "M1+N";
 
@@ -181,8 +179,6 @@ public class ObjectPropertyView implements EventHandler {
 
 	private StyledText txtSelectorEditor;
 
-	private Label lblSelectorEditor;
-	
 	private Button radioAttributes, radioXpath, radioCss;
 
 	private Listener layoutParentObjectCompositeListener = new Listener() {
@@ -575,8 +571,10 @@ public class ObjectPropertyView implements EventHandler {
 		layout.marginWidth = 0;
 		c.setLayout(layout);
 
-		lblSelectorEditor = new Label(c, SWT.NONE);
+		Label lblSelectorEditor = new Label(c, SWT.NONE);
+		lblSelectorEditor.setText(LBL_SELECTOR_EDITOR);
 		lblSelectorEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
 		txtSelectorEditor = new StyledText(c, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gdSelectorEditor.heightHint = 100;
@@ -1105,9 +1103,6 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void refreshLocatorMethod() {
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
-
-		lblSelectorEditor.setText(selectorMethod == WebElementSelectorMethod.XPATH
-				? LBL_SELECTOR_EDITOR2 : LBL_SELECTOR_EDITOR1);
 		radioAttributes.setSelection(selectorMethod == WebElementSelectorMethod.BASIC);
 		radioCss.setSelection(selectorMethod == WebElementSelectorMethod.CSS);
 		radioXpath.setSelection(selectorMethod == WebElementSelectorMethod.XPATH);

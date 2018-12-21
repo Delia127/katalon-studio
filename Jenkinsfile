@@ -89,7 +89,7 @@ pipeline {
             }
         }
 */              
-        stage('Copying builds') {
+        stage('Copy builds') {
             // Copy generated builds and changelogs to shared folder on server
             steps {
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
