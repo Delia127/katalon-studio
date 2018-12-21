@@ -316,11 +316,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }    
     
     private void startBrowser(boolean isInstant) {
-        if (!BrowserUtil.isBrowserInstalled(getSelectedBrowserType())) {
-            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
-                    ComposerWebuiRecorderMessageConstants.DIA_MSG_CANNOT_START_BROWSER);
-            return;
-        }
         try {    	
             if (getSelectedBrowserType() == WebUIDriverType.IE_DRIVER) {
             	isUsingIE = true;
