@@ -36,7 +36,7 @@ import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.project.PluginProjectEntity;
+import com.kms.katalon.controller.entity.PluginProjectEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.tracking.service.Trackings;
