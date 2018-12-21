@@ -58,31 +58,31 @@ pipeline {
             }
         }
         
-        stage('Package .DMG file') {
-            steps {
-                    // Execute codesign command to package .DMG file for macOS
-                    sh ''' cd source/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64
-                           codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
-                           sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" ''' 
-                    fileOperations([
-                            fileCopyOperation(
-                                excludes: '',
-                                includes: '*.dmg',
-                                flattenFiles: true,
-                                targetLocation: "${env.tmpDir}")
-                        ])
+        // stage('Package .DMG file') {
+        //     steps {
+        //             // Execute codesign command to package .DMG file for macOS
+        //             sh ''' cd source/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64
+        //                    codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
+        //                    sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" ''' 
+        //             fileOperations([
+        //                     fileCopyOperation(
+        //                         excludes: '',
+        //                         includes: '*.dmg',
+        //                         flattenFiles: true,
+        //                         targetLocation: "${env.tmpDir}")
+        //                 ])
                 
-                dir("source/com.kms.katalon.product/target/products") {
-                        fileOperations([
-                            fileCopyOperation(
-                                        excludes: '',
-                                        includes: '*.zip, *.tar.gz',
-                                        flattenFiles: true,
-                                        targetLocation: "${env.tmpDir}")
-                            ])
-                     }   
-                 }
-             }
+        //         dir("source/com.kms.katalon.product/target/products") {
+        //                 fileOperations([
+        //                     fileCopyOperation(
+        //                                 excludes: '',
+        //                                 includes: '*.zip, *.tar.gz',
+        //                                 flattenFiles: true,
+        //                                 targetLocation: "${env.tmpDir}")
+        //                     ])
+        //              }   
+        //          }
+        //      }
         /*        
         stage ('Testing') {
             steps {
