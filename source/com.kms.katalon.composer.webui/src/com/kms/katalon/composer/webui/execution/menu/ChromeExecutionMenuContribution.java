@@ -27,5 +27,4 @@ public class ChromeExecutionMenuContribution extends AbstractExecutionMenuContri
     protected String getMenuLabel() {
         return ComposerWebuiMessageConstants.LBL_CHROME_EXECUTION_MENU_ITEM;
     }
-
 }
