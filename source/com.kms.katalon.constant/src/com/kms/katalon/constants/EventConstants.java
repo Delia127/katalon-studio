@@ -357,4 +357,11 @@ public class EventConstants {
     
     // Web Sevice Method Events
     public static final String UPDATE_WEBSERVICE_METHODS = "WEBSERVICE/UPDATE_METHODS";
+    
+    // Plugin events
+    public static final String RELOAD_PLUGINS = "PLUGIN/RELOAD_PLUGINS";
+    
+    public static final String MANAGE_PLUGINS = "PLUGIN/MANAGE_PLUGINS";
+    
+    public static final String SEARCH_PLUGINS = "PLUGIN/SEARCH_PLUGINS";
 };

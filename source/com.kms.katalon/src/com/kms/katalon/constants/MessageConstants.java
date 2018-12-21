@@ -369,6 +369,28 @@ public class MessageConstants extends NLS {
     
     //UserFeedbackDialog
     public static String UserFeedbackDialog_MSG_USER_TWEET;
+    
+    //KStoreCredentialsDialog
+    public static String KStoreCredentialsDialog_DIA_TITLE;
+    
+    public static String KStoreCredentialsDialog_LBL_USERNAME;
+    
+    public static String KStoreCredentialsDialog_LBL_PASSWORD;
+    
+    public static String KStoreCredentialsDialog_INVALID_ACCOUNT_ERROR;
+    
+    //ReloadPluginsResultDialog
+    public static String ReloadPluginsResultDialog_COL_PLUGIN;
+
+    public static String ReloadPluginsResultDialog_COL_STATUS;
+
+    public static String ReloadPluginsResultDialog_DIA_TITLE;
+
+    public static String ReloadPluginsResultDialog_LBL_PLUGIN_DETAILS;
+
+    public static String ReloadPluginsResultDialog_STATUS_INSTALLED;
+
+    public static String ReloadPluginsResultDialog_STATUS_UNINSTALLED;
 
     static {
         // initialize resource bundle
