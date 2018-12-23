@@ -51,7 +51,6 @@ public class GlobalVariable {
         <% executionProfiles.each { %>
         allVariables.put(\
 '<%= it.getName() %>', \
-<% if (!it.isDefaultProfile()) { %>allVariables['default'] + <% } %>\
 [<% it.getGlobalVariableEntities().eachWithIndex { v, i -> %>\
 <% if (i>0) { %>, <% } %>'<%=v.getName()%>' : <%=v.getInitValue()%><% } %>\
 <% if (it.getGlobalVariableEntities().isEmpty()) {%>:<% } %>\

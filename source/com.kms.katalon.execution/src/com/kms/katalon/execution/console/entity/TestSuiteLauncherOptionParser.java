@@ -109,6 +109,8 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             runConfig.setExecutionProfile(executionProfile);
             runConfig.setOverridingGlobalVariables(super.getOverridingGlobalVariables());
             runConfig.build(testSuite, executedEntity);
+            GlobalVariableController.getInstance().
+            generateGlobalVariableLibFileWithSpecificProfile(project, executionProfile, null);
             return new ConsoleLauncher(manager, runConfig);
         } catch (Exception e) {
             throw new ExecutionException(e);
