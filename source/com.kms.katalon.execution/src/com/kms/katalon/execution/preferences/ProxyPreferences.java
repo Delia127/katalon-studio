@@ -30,6 +30,7 @@ public class ProxyPreferences {
         proxyInfo.setProxyServerPort(store.getInt(ProxyPreferenceConstants.PROXY_SERVER_PORT));
         proxyInfo.setUsername(store.getString(ProxyPreferenceConstants.PROXY_USERNAME));
         proxyInfo.setPassword(store.getString(ProxyPreferenceConstants.PROXY_PASSWORD));
+        proxyInfo.setDisableMobBrowserProxy(store.getBoolean(ProxyPreferenceConstants.DISABLE_MOB_BROWSER_PROXY));
         return proxyInfo;
     }
 
@@ -42,7 +43,7 @@ public class ProxyPreferences {
         store.setValue(ProxyPreferenceConstants.PROXY_USERNAME, proxyInfo.getUsername());
         store.setValue(ProxyPreferenceConstants.PROXY_PASSWORD, proxyInfo.getPassword());
         store.setValue(ProxyPreferenceConstants.PROXY_PREFERENCE_SET, true);
-
+        store.setValue(ProxyPreferenceConstants.DISABLE_MOB_BROWSER_PROXY, proxyInfo.getDisableMobBroserProxy());
         ((ScopedPreferenceStore) store).save();
     }
 

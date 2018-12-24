@@ -86,6 +86,9 @@ public abstract class BasicRequestor implements Requestor {
 
     public Proxy getProxy() throws WebServiceException {
         Proxy systemProxy = getSystemProxy();
+        if(proxyInformation.getDisableMobBroserProxy()){
+            return systemProxy;
+        }
         Proxy proxy = BrowserMobProxyManager.getWebServiceProxy(systemProxy);
         return proxy;
     }
