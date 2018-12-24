@@ -9,9 +9,6 @@ pipeline {
         maven 'default'
     }
     
-    environment {
-        tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
-    }
     stages {
         stage('Prepare') {
             steps {
@@ -51,7 +48,7 @@ pipeline {
                     script {
                         dir("source") {
                             if (BRANCH_NAME ==~ /^[release]+/) {
-                                sh ''' mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod '''
+                                sh ''' mvn clean verify -P prod '''
                             } else {                      
                                 sh ''' mvn -pl \\!com.kms.katalon.product clean verify -P dev '''
                             }
@@ -66,30 +63,21 @@ pipeline {
                 expression { BRANCH_NAME ==~ /^[release]+/ }
             }
             steps {
-                    // Execute codesign command to package .DMG file for macOS
-                    sh ''' cd source/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64
-                           codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
-                           sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" ''' 
-                    fileOperations([
-                            fileCopyOperation(
-                                excludes: '',
-                                includes: '*.dmg',
-                                flattenFiles: true,
-                                targetLocation: "${env.tmpDir}")
-                        ])
-                
-                dir("source/com.kms.katalon.product/target/products") {
+                // Execute codesign command to package .DMG file for macOS
+                dir ("source/com.kms.katalon.product/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
+                { sh ''' codesign --verbose --force --deep --sign "80166EC5AD274586C44BD6EE7A59F016E1AB00E4" --timestamp=none "Katalon Studio.app" 
+                    sudo /usr/local/bin/dropdmg --config-name "Katalon Studio" "Katalon Studio.app" '''        
                         fileOperations([
                             fileCopyOperation(
-                                        excludes: '',
-                                        includes: '*.zip, *.tar.gz',
-                                        flattenFiles: true,
-                                        targetLocation: "${env.tmpDir}")
-                            ])
-                     }   
-                 }
-             }
-        /*        
+                                    excludes: '',
+                                    includes: '*.dmg',
+                                    flattenFiles: true,
+                                    targetLocation: "source/com.kms.katalon.product.qtest_edition/target/products")
+                    ])
+                }
+            }
+        }
+/*        
         stage ('Testing') {
             steps {
                 dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
@@ -103,9 +91,6 @@ pipeline {
 */              
         stage('Copying builds') {
             // Copy generated builds and changelogs to shared folder on server
-            when {
-                expression { !(BRANCH_NAME ==~ /^[release]+/) }
-            }
             steps {
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
@@ -129,7 +114,7 @@ pipeline {
                                         excludes: '',
                                         includes: '*.zip, *.tar.gz, *.dmg',
                                         flattenFiles: true,
-                                        targetLocation: "${env.tmpDir}")
+                                        targetLocation: "${tmpDir}")
                         ])
                     }
                 }
