@@ -2,6 +2,7 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -68,6 +69,25 @@ public class GlobalVariableController extends EntityController {
             }
         }
     }
+    
+    public void generateGlobalVariableLibFileWithSpecificProfile(ProjectEntity project, ExecutionProfileEntity profile, IProgressMonitor monitor) throws Exception {
+        try {
+            if (monitor != null) {
+                String taskName = "Generating global variables...";
+                monitor.beginTask(taskName, 1);
+            }
+
+			IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
+			GlobalVariableParser.getInstance().generateGlobalVariableLibFile(libFolder,
+					Arrays.asList(new ExecutionProfileEntity[] { profile }));
+			waitForGlobalVariableClassFileAvailable(project);
+        } finally {
+            if (monitor != null) {
+                monitor.done();
+            }
+        }
+    }
+
 
     private void waitForGlobalVariableClassFileAvailable(ProjectEntity project) throws InterruptedException {
         File globalVariableClassFile = new File(project.getFolderLocation(), "bin/lib/internal/GlobalVariable.class");
