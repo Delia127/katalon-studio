@@ -225,6 +225,15 @@ public class WebElementUtils {
         el.setUsefulNeighborText(usefulNeighborText);
         el.setSelectorMethod(selectorMethod);
         
+        // New TestObject will always have a NoneEmpty SelectorCollection
+        switch(selectorMethod){
+	        case XPATH:
+	        	el.setSelectorValue(selectorMethod, xpaths.get(0).getValue());
+	        	break;
+	        default:
+	        	break;
+        }
+        
         return el;
     }
 
