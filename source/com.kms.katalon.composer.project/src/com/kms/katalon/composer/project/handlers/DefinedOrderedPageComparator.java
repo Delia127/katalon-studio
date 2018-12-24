@@ -27,7 +27,7 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
         predefinedOrder.add(StringConstants.TEMPLATE_SETTING_PAGE_ID);
         
         predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID);
-//        predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
+        predefinedOrder.add(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
             
         predefinedOrder.add(StringConstants.INTEGRATION_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.KATALON_ANALYTICS_SETTING_PAGE_ID);
