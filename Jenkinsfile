@@ -62,6 +62,9 @@ pipeline {
         }
         
         stage('Package .DMG file') {
+            when {
+                expression { BRANCH_NAME ==~ /^[release]+/ }
+            }
             steps {
                     // Execute codesign command to package .DMG file for macOS
                     sh ''' cd source/⁨com.kms.katalon.product⁩/⁨target⁩/⁨products⁩/⁨com.kms.katalon.product.product⁩/macosx⁩/⁨cocoa⁩/x86_64
@@ -106,8 +109,20 @@ pipeline {
             steps {
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
-                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_changeLogs.txt", text: getChangeString())
-                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/${BRANCH_NAME}_${BUILD_TIMESTAMP}_commit.txt", text: "${GIT_COMMIT}")
+                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
+                        writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
+                        // copy builds, require https://wiki.jenkins.io/display/JENKINS/File+Operations+Plugin
+                        fileOperations([
+                                fileCopyOperation(
+                                        excludes: '',
+                                        includes: '*.zip, *.tar.gz, *.dmg',
+                                        flattenFiles: true,
+                                        targetLocation: "${env.tmpDir}")
+                        ])
+                    }
+                }
+                dir("source/com.kms.katalon.product/target/products") {
+                    script {
                         // copy builds, require https://wiki.jenkins.io/display/JENKINS/File+Operations+Plugin
                         fileOperations([
                                 fileCopyOperation(
