@@ -456,7 +456,7 @@ public class QTestIntegrationTestSuiteManager {
                     break;
                 }
 
-                if (fieldJsonObject.has("label") && "Planned Start Date".equals(fieldJsonObject.getString("label"))) {
+             /*   if (fieldJsonObject.has("label") && "Planned Start Date".equals(fieldJsonObject.getString("label"))) {
                     fieldValues.add(new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
                             DateUtil.formatDate(new Date())));
                 }
@@ -464,7 +464,7 @@ public class QTestIntegrationTestSuiteManager {
                 if (fieldJsonObject.has("label") && "Planned End Date".equals(fieldJsonObject.getString("label"))) {
                     fieldValues.add(new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
                             DateUtil.formatDate(new Date())));
-                }
+                }*/
             } catch (JsonException e) {
                 throw QTestInvalidFormatException.createInvalidJsonFormatException(reponseJsonArray.toString());
             }
