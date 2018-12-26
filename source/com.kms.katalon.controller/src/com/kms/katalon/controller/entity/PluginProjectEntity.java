@@ -1,9 +1,8 @@
 package com.kms.katalon.controller.entity;
 
+import com.katalon.platform.api.model.Entity;
 
-import com.katalon.platform.api.model.ProjectEntity;
-
-public class PluginProjectEntity implements ProjectEntity {
+public class PluginProjectEntity implements Entity {
 	private String fileLocation;
 	private String folderLocation;
 	private String id;
