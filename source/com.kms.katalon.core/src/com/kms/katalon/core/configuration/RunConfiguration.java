@@ -532,7 +532,7 @@ public class RunConfiguration {
     public static Boolean getAutoApplyNeighborXpaths(){
     	if(getProperty("com.katalon.katalon-studio-smart-xpath") != null){
         	try {
-    			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.plugin.smart_xpath", true).
+    			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.katalon-studio-smart-xpath", false).
     					getBoolean("SmartXPathEnabled", false);
     		} catch (IOException e) {
     			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());

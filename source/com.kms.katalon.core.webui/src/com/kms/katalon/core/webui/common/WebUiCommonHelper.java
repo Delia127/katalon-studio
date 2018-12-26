@@ -826,8 +826,8 @@ public class WebUiCommonHelper extends KeywordHelper {
                 		testObject.getObjectId(), thisXPath.getValue()));
                 elementsFoundBeforeNeighborXPaths = elementsFoundByThisXPath;
 
-				String jsAutoHealingPath = RunConfiguration.getProjectDir() 
-						+ "/smart_xpath/waiting-for-approval.json";
+				String jsAutoHealingPath = RunConfiguration.getProjectDir()
+						+ "/Reports/smart_xpath/waiting-for-approval.json";
 				org.json.JSONObject jsonObject = buildJsBrokenTestObjectFromTestObject(testObject, thisXPath.getValue());
 				writeJsonObjectToFile(jsonObject, jsAutoHealingPath);
     			break;
