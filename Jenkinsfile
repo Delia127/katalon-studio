@@ -16,7 +16,7 @@ pipeline {
                     // Terminate running builds of the same job
                     abortPreviousBuilds()
                     sh '''chmod -R 777 ${WORKSPACE}'''
-                    build job: 'katalon-studio-platform'
+                    if (BRANCH_NAME == 'staging-plugin') {  build job: 'katalon-studio-platform' }
                 }
             }
         }
