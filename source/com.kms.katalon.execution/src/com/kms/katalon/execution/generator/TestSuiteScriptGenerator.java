@@ -79,7 +79,7 @@ public class TestSuiteScriptGenerator {
                 testCaseLink.setTestCaseId(testCaseId);
                 testCaseLink.setIsRun(true);
             } else {
-                getTestCaseLink(testCaseId, lstTestCaseRun);
+                testCaseLink = getTestCaseLink(testCaseId, lstTestCaseRun);
             }
 
             if (testCaseLink == null) {

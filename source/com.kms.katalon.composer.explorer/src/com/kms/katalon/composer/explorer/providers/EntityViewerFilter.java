@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.explorer.providers;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,13 +10,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.katalon.platform.api.extension.filter.impl.InternalFilterAction;
-import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.impl.providers.AbstractEntityViewerFilter;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 import com.kms.katalon.controller.FilterController;
+import com.kms.katalon.entity.file.FileEntity;
 
 public class EntityViewerFilter extends AbstractEntityViewerFilter {
 
@@ -25,11 +23,8 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
 
     private EntityProvider entityProvider;
 
-    private InternalFilterAction filterAction;
-
     public EntityViewerFilter(EntityProvider entityProvider) {
         this.entityProvider = entityProvider;
-        this.filterAction = ApplicationManager.getInstance().getActionService().getAction(InternalFilterAction.class);
     }
 
     public void setSearchString(String searchString) {
@@ -80,7 +75,6 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
      * is a instance of ITreeEntity
      * @return
      */
-    @SuppressWarnings("restriction")
     private boolean searchElement(Object element) {
         try {
             ITreeEntity entity = ((ITreeEntity) element);
@@ -109,38 +103,24 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                     return true;
                 }
 
-                List<String> keywordList = FilterController.getInstance().getAllKeywords();
+                FilterController folderController = FilterController.getInstance();
+                List<String> keywordList = folderController.getDefaultKeywords();
                 Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), contentString);
 
-                if (tagMap != null && !tagMap.isEmpty()) {
+                if (tagMap != null && !tagMap.isEmpty() && entity.getObject() instanceof FileEntity) {
+                    FileEntity fileEntity = (FileEntity) entity.getObject();
                     for (Entry<String, String> entry : tagMap.entrySet()) {
                         String keyword = entry.getKey();
-                        if (FilterController.getInstance().getDefaultKeywords().contains(keyword)) {
-                            String entityValue = entity.getPropertyValue(keyword);
-                            if (entityValue == null
-                                    || !entityValue.toLowerCase().contains(entry.getValue().toLowerCase())) {
-                                return false;
-                            }
+                        if (folderController.getDefaultKeywords().contains(keyword) 
+                                && !folderController.compare(fileEntity, keyword, entry.getValue())) {
+                            return false;
                         }
-                    }
-                    if (filterAction.hasFilters()
-                            && !(filterAction.filter(entity.toPlatformEntity(), tagMap, searchString))) {
-                        return false;
                     }
                     return true;
                 }
-
-                if (entity.getSearchTags() != null) {
-                    for (String tag : entity.getSearchTags()) {
-                        String entityValue = entity.getPropertyValue(tag);
-                        if (entityValue != null && entityValue.toLowerCase().contains(contentString)) {
-                            return true;
-                        }
-                    }
-                }
             }
         } catch (Exception e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+            LoggerSingleton.logError(e);
         }
         return false;
     }

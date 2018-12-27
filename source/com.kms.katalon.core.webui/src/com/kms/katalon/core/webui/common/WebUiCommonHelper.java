@@ -1,6 +1,8 @@
 package com.kms.katalon.core.webui.common;
 
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.text.MessageFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -685,14 +687,11 @@ public class WebUiCommonHelper extends KeywordHelper {
         boolean isSwitchToParentFrame = false;
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
-            /*
-             * Smart XPath's enabled - only support in commercial
             Boolean smartXPathsEnabled = RunConfiguration.getAutoApplyNeighborXpaths();
-            */     
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
-            By defaultLocator = null;
-            String cssLocator = null;
+            By defaultLocator = null;	
+            String cssLocator = null;	
             String locatorString = null;
             final TestObject parentObject = testObject.getParentObject();
             WebElement shadowRootElement = null;
@@ -755,13 +754,12 @@ public class WebUiCommonHelper extends KeywordHelper {
 
             // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-/*            // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
-            if(testObject.getSelectorMethod() == SelectorMethod.XPATH){
+            // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
+            if(testObject.getSelectorMethod() == SelectorMethod.XPATH && smartXPathsEnabled){
                 List<WebElement> elementsByOtherMethods = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
-                if(smartXPathsEnabled == true)
-                	return elementsByOtherMethods;
+                return elementsByOtherMethods;
             }
-*/
+
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
@@ -776,7 +774,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
-    @SuppressWarnings("unused")
+
 	private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
@@ -817,7 +815,8 @@ public class WebUiCommonHelper extends KeywordHelper {
     	if(workingNeighborXPath.isPresent()){
     		firstNeighborXPathIndex = allXPaths.indexOf(workingNeighborXPath.get());
     	}
-		for(int i = 0; i < firstNeighborXPathIndex; i++){
+    	
+		for(int i = 0; i <= firstNeighborXPathIndex; i++){
 			TestObjectXpath thisXPath = allXPaths.get(i);
 	   		By byThisXPath =  By.xpath(thisXPath.getValue());
     		List<WebElement> elementsFoundByThisXPath = webDriver.findElements(byThisXPath);
@@ -826,6 +825,11 @@ public class WebUiCommonHelper extends KeywordHelper {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS, 
                 		testObject.getObjectId(), thisXPath.getValue()));
                 elementsFoundBeforeNeighborXPaths = elementsFoundByThisXPath;
+
+				String jsAutoHealingPath = RunConfiguration.getProjectDir()
+						+ "/Reports/smart_xpath/waiting-for-approval.json";
+				org.json.JSONObject jsonObject = buildJsBrokenTestObjectFromTestObject(testObject, thisXPath.getValue());
+				writeJsonObjectToFile(jsonObject, jsAutoHealingPath);
     			break;
     		}
 		}
@@ -849,8 +853,43 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     	return Collections.emptyList();    	
     }
-
-
+    
+    // Assume a JSON file with a JSON object containing at least a JSON array, this method
+    // appends @arg1 to @arg2 by replacing "]}" with "@arg1]}"
+    // Note that if the array is initially empty then ",@arg1" will be written in between,
+    // thus at any given time [0] will be a null object
+	public static void writeJsonObjectToFile(org.json.JSONObject jsonObject, String filePath) {
+		try {
+			RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "rw");
+			// Set cursor to the position of "]"
+			long pos = randomAccessFile.length();
+			while (randomAccessFile.length() > 0) {
+				pos--;
+				randomAccessFile.seek(pos);
+				if (randomAccessFile.readByte() == ']') {
+					randomAccessFile.seek(pos);
+					break;
+				}
+			}
+			randomAccessFile.writeBytes("\n," + jsonObject + "\n]" + "\n}");
+			randomAccessFile.close();
+		} catch (IOException e) {
+			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
+		}
+	}
+	
+	private static org.json.JSONObject buildJsBrokenTestObjectFromTestObject(TestObject testObject, 
+			String newXPath) {
+		String oldXPath = testObject.getSelectorCollection().get(testObject.getSelectorMethod());
+		String testObjectId = testObject.getObjectId();
+		org.json.JSONObject testObjectInNeedOfAutoHealing = new org.json.JSONObject();
+		testObjectInNeedOfAutoHealing.put("testObjectId", testObjectId);
+		testObjectInNeedOfAutoHealing.put("brokenXPath", oldXPath);
+		testObjectInNeedOfAutoHealing.put("proposedXPath", newXPath);
+		testObjectInNeedOfAutoHealing.put("approved", false);
+		return testObjectInNeedOfAutoHealing;
+	}
+    
     @SuppressWarnings("unused")
 	private static List<WebElement> findWebElementsUsingHeuristicMethod(
             WebDriver webDriver, 

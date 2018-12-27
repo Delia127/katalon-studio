@@ -10,7 +10,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import com.katalon.platform.api.exception.PlatformException;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.impl.util.EntityIndexingUtil;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FilterController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
@@ -27,6 +30,7 @@ import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
+import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.util.MailUtil;
 
@@ -69,10 +73,15 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         rerunSetting.setRerunFailedTestCaseOnly(testSuite.isRerunFailedTestCasesOnly());
     }
 
-    public void prepareTestCases() throws IOException, Exception {
+    public void prepareTestCases() throws Exception {
         TestSuiteEntity testSuite = (TestSuiteEntity) getEntity();
         List<IExecutedEntity> executedItems;
         if (testSuite instanceof FilteringTestSuiteEntity) {
+            if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
+                throw new PlatformException(
+                        MessageFormat.format(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE,
+                                testSuite.getIdForDisplay(), IdConstants.PLUGIN_TAGS));
+            }
             executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite);
         } else {
             executedItems = loadTestCases(testSuite);

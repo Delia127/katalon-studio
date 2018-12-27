@@ -72,9 +72,9 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                     if (nodeA instanceof ReportTreeEntity && nodeB instanceof ReportTreeEntity) {
                         ReportEntity reportA = (ReportEntity) nodeA.getObject();
                         ReportEntity reportB = (ReportEntity) nodeB.getObject();
-                        Date dateCreatedOfA = reportA.getDateCreated() != null ? reportA.getDateCreated() : new Date();
-                        Date dateCreatedOfB = reportB.getDateCreated() != null ? reportB.getDateCreated() : new Date();
-                        return dateCreatedOfA.compareTo(dateCreatedOfB);
+                        Date dateCreatedA = reportA.getDateCreated() != null ? reportA.getDateCreated() : new Date();
+                        Date dateCreatedB = reportB.getDateCreated() != null ? reportB.getDateCreated() : new Date();
+                        return dateCreatedA.after(dateCreatedB) ? 1 : -1;
                     }
                     return StringUtils.compareIgnoreCase(nodeA.getText(), nodeB.getText());
                 } catch (Exception e) {

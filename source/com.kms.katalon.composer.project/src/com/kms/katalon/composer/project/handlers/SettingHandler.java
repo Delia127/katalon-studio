@@ -57,7 +57,7 @@ public class SettingHandler {
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, PreferencesRegistry preferencesRegistry) {
         openSettingsDialogToPage(shell, preferencesRegistry, null);
     }
-    
+
     @Inject
     @Optional
     public void openSettingsPage(@UIEventTopic(EventConstants.PROJECT_SETTINGS_PAGE) Object eventData) {
@@ -69,19 +69,19 @@ public class SettingHandler {
                 eclipseContext);
 
         String pageId = (String) eventData;
-        
+
         openSettingsDialogToPage(Display.getCurrent().getActiveShell(), preferencesRegistry, pageId);
     }
-    
+
     private void openSettingsDialogToPage(Shell shell, PreferencesRegistry preferencesRegistry, String pageId) {
         PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP);
 
         hideIOSPageOnNoneMacOS(pm);
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
-            
+
             private Composite helpComposite;
-            
+
             @Override
             protected TreeViewer createTreeViewer(Composite parent) {
                 TreeViewer treeViewer = super.createTreeViewer(parent);
@@ -111,7 +111,7 @@ public class SettingHandler {
             protected Point getInitialSize() {
                 return new Point(900, 600);
             }
-            
+
             @Override
             protected boolean showPage(IPreferenceNode node) {
                 boolean success = super.showPage(node);
@@ -121,7 +121,7 @@ public class SettingHandler {
                 }
                 return success;
             }
-            
+
             private void showHelpButtonForPage(IPreferencePage page) {
                 Control[] helpCompositeChildren = helpComposite.getChildren();
                 if (helpCompositeChildren.length > 0) {
@@ -140,9 +140,9 @@ public class SettingHandler {
                 } else {
                     helpComposite.setVisible(false);
                 }
-                
+
             }
-            
+
             private void createAndShowHelpButton(Composite helpComposite, String documentationUrl) {
                 new HelpCompositeForDialog(helpComposite, documentationUrl) {
 
@@ -164,7 +164,7 @@ public class SettingHandler {
                 helpComposite.setVisible(true);
                 helpComposite.getParent().layout(true, true);
             }
-            
+
             @Override
             protected void createButtonsForButtonBar(Composite parent) {
                 ((GridLayout) parent.getLayout()).numColumns++;

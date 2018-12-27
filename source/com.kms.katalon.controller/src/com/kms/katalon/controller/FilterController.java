@@ -11,17 +11,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.katalon.platform.api.extension.filter.impl.InternalFilterAction;
-import com.katalon.platform.api.service.ApplicationManager;
+import org.apache.commons.lang.ObjectUtils;
+
 import com.kms.katalon.entity.file.FileEntity;
 
 public class FilterController {
 
-    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("id", "name", "tag", "comment", "description");
+    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("id", "name", "tag", "comment", "description",
+            "folder");
 
     private static FilterController instance;
-
-    private InternalFilterAction filterAction;
 
     public static FilterController getInstance() {
         if (instance == null) {
@@ -30,62 +29,26 @@ public class FilterController {
         return instance;
     }
 
-    private FilterController() {
-        this.filterAction = ApplicationManager.getInstance().getActionService().getAction(InternalFilterAction.class);
-    }
-    
     public List<String> getDefaultKeywords() {
         return DEFAULT_KEYWORDS;
-    }
-    
-    public List<String> getPluginKeywords() {
-        if (filterAction.hasFilters()) {
-            return filterAction.getFilterAdapters()
-                    .entrySet()
-                    .stream()
-                    .map(e -> e.getValue().getKeywordName())
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
-    }
-    
-    public List<String> getAllKeywords() {
-        List<String> keywords = new ArrayList<>();
-        keywords.addAll(DEFAULT_KEYWORDS);
-        keywords.addAll(getPluginKeywords());
-        return keywords;
     }
 
     public boolean isMatched(FileEntity fileEntity, String filteringText) {
         String trimmedText = filteringText.trim();
         List<String> keywordList = new ArrayList<>();
         keywordList.addAll(DEFAULT_KEYWORDS);
-        if (filterAction.hasFilters()) {
-            keywordList.addAll(new ArrayList<>(filterAction.getFilterAdapters()
-                    .entrySet()
-                    .stream()
-                    .map(e -> e.getValue().getKeywordName())
-                    .collect(Collectors.toList())));
-        }
         Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), trimmedText);
 
         if (!tagMap.isEmpty()) {
             for (Entry<String, String> entry : tagMap.entrySet()) {
                 String keyword = entry.getKey();
-                if (DEFAULT_KEYWORDS.contains(keyword)) {
-                    String entityValue = getPropertyValue(fileEntity, keyword);
-                    if (entityValue == null || !entityValue.toLowerCase().contains(entry.getValue().toLowerCase())) {
-                        return false;
-                    }
+                if (DEFAULT_KEYWORDS.contains(keyword) && !compare(fileEntity, keyword, entry.getValue())) {
+                    return false;
                 }
-            }
-            if (filterAction.hasFilters()
-                    && !(filterAction.filter(toPlatformEntity(fileEntity), tagMap, filteringText))) {
-                return false;
             }
             return true;
         }
-        return fileEntity.getName().toLowerCase().contains(filteringText.toLowerCase());
+        return false;
     }
 
     public <T extends FileEntity> List<T> filter(List<T> entities, String filteringText) {
@@ -117,31 +80,6 @@ public class FilterController {
 
     }
 
-    public com.katalon.platform.api.model.Entity toPlatformEntity(FileEntity fileEntity) {
-        return new com.katalon.platform.api.model.Entity() {
-
-            @Override
-            public String getName() {
-                return fileEntity.getName();
-            }
-
-            @Override
-            public String getId() {
-                return fileEntity.getIdForDisplay();
-            }
-
-            @Override
-            public String getFolderLocation() {
-                return fileEntity.getParentFolder() != null ? fileEntity.getParentFolder().getLocation() : null;
-            }
-
-            @Override
-            public String getFileLocation() {
-                return fileEntity.getLocation();
-            }
-        };
-    }
-
     public String getPropertyValue(FileEntity fileEntity, String keyword) {
         switch (keyword) {
             case "id":
@@ -152,8 +90,31 @@ public class FilterController {
                 return fileEntity.getTag();
             case "description":
                 return fileEntity.getDescription();
+            case "folder":
+                return fileEntity.getParentFolder() != null ? fileEntity.getParentFolder().getIdForDisplay() : "";
             default:
                 return "";
+        }
+    }
+    
+    public boolean compare(FileEntity fileEntity, String keyword, String text) {
+        if (fileEntity == null || keyword == null || text == null) {
+            return false;
+        }
+        switch (keyword) {
+            case "id":
+                return ObjectUtils.equals(fileEntity.getIdForDisplay(), text);
+            case "name":
+                return ObjectUtils.equals(fileEntity.getName(), text);
+            case "tag":
+                return ObjectUtils.equals(fileEntity.getTag(), text);
+            case "description":
+                return ObjectUtils.equals(fileEntity.getDescription(), text);
+            case "folder":
+                String folderId = fileEntity.getParentFolder() != null ? fileEntity.getParentFolder().getIdForDisplay() : "";
+                return folderId.equals(text) || folderId.startsWith(text + "/");
+            default:
+                return false;
         }
     }
 }
