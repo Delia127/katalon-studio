@@ -47,6 +47,10 @@ public class AdvancedSearchDialog extends Dialog {
     private String txtInput;
 
     private Point location;
+    
+    public AdvancedSearchDialog(Shell parentShell, String txtInput) {
+        this(parentShell, txtInput, null);
+    }
 
     public AdvancedSearchDialog(Shell parentShell, String txtInput, Point location) {
         super(parentShell);
@@ -154,8 +158,7 @@ public class AdvancedSearchDialog extends Dialog {
 
     @Override
     public Point getInitialLocation(Point initialSize) {
-        return new Point(this.location.x, this.location.y);
-
+        return this.location != null ? this.location : super.getInitialLocation(initialSize);
     }
 
 }
