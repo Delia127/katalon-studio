@@ -45,8 +45,9 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                 LoggerSingleton.getInstance().getLogger().error(e);
             }
 
-            if (returnValue)
+            if (returnValue) {
                 return true;
+            }
             ITreeEntity entity = ((ITreeEntity) element);
             try {
                 if (searchString.startsWith(ExplorerPart.KEYWORD_SEARCH_ALL)

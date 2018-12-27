@@ -12,13 +12,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.entity.file.FileEntity;
 
 public class FilterController {
 
-    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("id", "name", "tag", "comment", "description",
-            "folder");
+    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("id", "name", "tag", "comment", "description");
 
     private static FilterController instance;
 
@@ -103,16 +103,14 @@ public class FilterController {
         }
         switch (keyword) {
             case "id":
-                return ObjectUtils.equals(fileEntity.getIdForDisplay(), text);
+                return ObjectUtils.equals(fileEntity.getIdForDisplay(), text) ||
+                        fileEntity.getIdForDisplay().startsWith(text + "/");
             case "name":
-                return ObjectUtils.equals(fileEntity.getName(), text);
+                return StringUtils.containsIgnoreCase(fileEntity.getName(), text);
             case "tag":
-                return ObjectUtils.equals(fileEntity.getTag(), text);
+                return StringUtils.containsIgnoreCase(fileEntity.getTag(), text);
             case "description":
-                return ObjectUtils.equals(fileEntity.getDescription(), text);
-            case "folder":
-                String folderId = fileEntity.getParentFolder() != null ? fileEntity.getParentFolder().getIdForDisplay() : "";
-                return folderId.equals(text) || folderId.startsWith(text + "/");
+                return StringUtils.containsIgnoreCase(fileEntity.getDescription(), text);
             default:
                 return false;
         }
