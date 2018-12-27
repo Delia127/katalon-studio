@@ -9,6 +9,10 @@ pipeline {
         maven 'default'
     }
     
+    environment {
+        tmpDir = "/Users/katalon/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
+    }
+    
     stages {
         stage('Prepare') {
             steps {
@@ -114,7 +118,7 @@ pipeline {
                                         excludes: '',
                                         includes: '*.zip, *.tar.gz, *.dmg',
                                         flattenFiles: true,
-                                        targetLocation: "${tmpDir}")
+                                        targetLocation: "${env.tmpDir}")
                         ])
                     }
                 }
