@@ -61,7 +61,7 @@ pipeline {
                 }
             }
         }
-        
+/*        
         stage('Package .DMG file') {
             when {
                 expression { BRANCH_NAME ==~ /^[release]+/ }
@@ -81,7 +81,7 @@ pipeline {
                 }
             }
         }
-/*        
+       
         stage ('Testing') {
             steps {
                 dir ("source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64")
