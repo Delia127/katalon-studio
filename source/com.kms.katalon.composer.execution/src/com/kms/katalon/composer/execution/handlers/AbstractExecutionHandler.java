@@ -59,6 +59,7 @@ import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.SystemFileEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
@@ -70,6 +71,9 @@ import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.tracking.service.Trackings;
+
+
+
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionHandler {
@@ -357,6 +361,8 @@ public abstract class AbstractExecutionHandler {
                         launcherManager.addLauncher(launcher);
 
                         trackTestSuiteExecution(launchMode, runConfig);
+                        trackEmailAfterExecution(testSuiteExecutedEntity.getEmailSettings().getEmailConfig().isSendEmailTestFailedOnly());
+                        
 
                         monitor.worked(1);
 
@@ -400,6 +406,11 @@ public abstract class AbstractExecutionHandler {
 
     private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig) {
         Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString(), runConfig.getName());
+    }
+    
+    private void trackEmailAfterExecution(boolean testFailedOnly )
+    {   
+        Trackings.trackEmailAfterExecute(testFailedOnly);
     }
 
     /**

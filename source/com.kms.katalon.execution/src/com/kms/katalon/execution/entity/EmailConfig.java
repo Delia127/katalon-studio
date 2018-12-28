@@ -31,6 +31,8 @@ public class EmailConfig {
 
     private String htmlMessage = "";
 
+
+
     private String cc = "";
 
     private String bcc = "";

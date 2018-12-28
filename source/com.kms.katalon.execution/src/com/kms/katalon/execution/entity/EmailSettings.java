@@ -11,6 +11,7 @@ import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.execution.util.MailUtil;
 
 public class EmailSettings implements ConsoleOptionContributor {
+ 
     public final static String SEND_EMAIL_OPTION = "sendMail";
 
     private static ConsoleOption<String> sendEmailConsoleOption = new StringConsoleOption() {
@@ -32,6 +33,10 @@ public class EmailSettings implements ConsoleOptionContributor {
         if (emailConfig == null) {
             emailConfig = MailUtil.getDefaultEmailConfig(project);
         }
+        return emailConfig;
+    }
+    
+    public EmailConfig getEmailConfig() {
         return emailConfig;
     }
 
