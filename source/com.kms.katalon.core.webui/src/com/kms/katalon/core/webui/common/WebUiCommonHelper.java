@@ -811,7 +811,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     			.findFirst();
     	
     	// Use Neighbor as the stop condition if exists, otherwise just loop through all XPaths
-    	int firstNeighborXPathIndex = allXPaths.size();
+    	int firstNeighborXPathIndex = allXPaths.size() - 1;
     	if(workingNeighborXPath.isPresent()){
     		firstNeighborXPathIndex = allXPaths.indexOf(workingNeighborXPath.get());
     	}
