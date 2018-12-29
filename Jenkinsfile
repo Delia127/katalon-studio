@@ -52,13 +52,13 @@ pipeline {
 
                     script {
                         dir("source") {
-						    // Generate Katalon builds   
+			// Generate Katalon builds   
                             if (BRANCH_NAME ==~ /^[release]+/) {
                                 sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
                             } else {                      
                                 sh 'mvn -pl \\!com.kms.katalon.product clean verify -P dev'
                             }
-                            // Generate API docs
+                        // Generate API docs
                             sh "cd com.kms.katalon.apidocs && mvn clean verify && cp -R 'target/resources/apidocs' ${env.tmpDir}"
                         }
                     }
