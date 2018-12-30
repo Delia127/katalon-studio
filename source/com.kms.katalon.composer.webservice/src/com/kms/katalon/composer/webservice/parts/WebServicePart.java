@@ -2,8 +2,10 @@ package com.kms.katalon.composer.webservice.parts;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,6 +28,7 @@ import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -44,6 +47,7 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.DocumentEvent;
@@ -105,6 +109,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.json.JSONObject;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -112,6 +117,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.controls.ToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
+import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -133,7 +139,6 @@ import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
-import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
@@ -150,7 +155,6 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.IVariablePart;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
-import com.kms.katalon.composer.testcase.parts.TestCaseVariableEditorPart;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableEditorView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableViewEvent;
@@ -159,10 +163,12 @@ import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
+import com.kms.katalon.composer.webservice.constants.OAuthConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.handlers.SaveDraftRequestHandler;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
+import com.kms.katalon.composer.webservice.util.ExcelHelper;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
 import com.kms.katalon.composer.webservice.view.WSRequestPartUI;
 import com.kms.katalon.composer.webservice.view.WebServiceAPIControl;
@@ -173,9 +179,12 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.testobject.ResponseObject;
+import com.kms.katalon.core.testobject.UrlEncodedBodyParameter;
 import com.kms.katalon.core.util.internal.Base64;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webservice.common.PrivateKeyReader;
 import com.kms.katalon.core.webservice.common.ScriptSnippet;
 import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
@@ -188,6 +197,8 @@ import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
+import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.tracking.service.Trackings;
@@ -233,6 +244,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected static final String AUTHORIZATION_TYPE = RequestHeaderConstants.AUTHORIZATION_TYPE;
 
+    private static final String AUTHORIZATION_HEADER = ComposerWebserviceMessageConstants.AUTHORIZATION_HEADER;
+      
     private static final String BASIC_AUTH = ComposerWebserviceMessageConstants.BASIC_AUTH;
 
     private static final String NO_AUTH = ComposerWebserviceMessageConstants.NO_AUTH;
@@ -241,12 +254,36 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     private static final String TOOLTIP_CONSUMER_SECRET = ComposerWebserviceMessageConstants.PA_TOOLTIP_CONSUMER_SECRET;
 
+	public static final String PA_TOOLTIP_CALLBACK_URL = ComposerWebserviceMessageConstants.PA_TOOLTIP_CALLBACK_URL;
+
+	public static final String PA_TOOLTIP_AUTH_URL = ComposerWebserviceMessageConstants.PA_TOOLTIP_AUTH_URL;
+	
+	public static final String PA_TOOLTIP_ACCESS_TOKEN_URL = ComposerWebserviceMessageConstants.PA_TOOLTIP_ACCESS_TOKEN_URL;
+	
+	public static final String PA_TOOLTIP_SCOPE = ComposerWebserviceMessageConstants.PA_TOOLTIP_SCOPE;
+	
+	public static final String PA_TOOLTIP_STATE = ComposerWebserviceMessageConstants.PA_TOOLTIP_STATE;
+    
     private static final String TXT_IMPORT_CONSUMER_SECRET_FROM_FILE = ComposerWebserviceMessageConstants.PA_TXT_IMPORT_CONSUMER_SECRET_FROM_FILE;
 
     private static final String TOOLTIP_IMPORT_CONSUMER_SECRET_FROM_FILE = ComposerWebserviceMessageConstants.PA_TOOLTIP_IMPORT_CONSUMER_SECRET_FROM_FILE;
 
     private static final String WARNING_UNSUPORTED_PRIVATE_KEY_FILE = ComposerWebserviceMessageConstants.PA_WARNING_UNSUPORTED_PRIVATE_KEY_FILE;
-
+    
+	public static final String LBL_GRANT_TYPE = ComposerWebserviceMessageConstants.PA_LBL_GRANT_TYPE;
+	
+	public static final String LBL_CALLBACK_URL = ComposerWebserviceMessageConstants.PA_LBL_CALLBACK_URL;
+	
+	public static final String LBL_AUTH_URL = ComposerWebserviceMessageConstants.PA_LBL_AUTH_URL;
+	
+	public static final String LBL_ACCESS_TOKEN_URL = ComposerWebserviceMessageConstants.PA_LBL_ACCESS_TOKEN_URL;
+	
+	public static final String LBL_SCOPE = ComposerWebserviceMessageConstants.PA_LBL_SCOPE;
+	
+	public static final String LBL_STATE = ComposerWebserviceMessageConstants.PA_LBL_STATE;
+    
+	private static final String LBL_TOKEN_NAME = ComposerWebserviceMessageConstants.PA_LBL_TOKEN_NAME;
+    
     private static final String LBL_CONSUMER_KEY = ComposerWebserviceMessageConstants.PA_LBL_CONSUMER_KEY;
 
     private static final String LBL_CONSUMER_SECRET = ComposerWebserviceMessageConstants.PA_LBL_CONSUMER_SECRET;
@@ -256,6 +293,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private static final String LBL_TOKEN_SECRET = ComposerWebserviceMessageConstants.PA_LBL_TOKEN_SECRET;
 
     private static final String LBL_REALM = ComposerWebserviceMessageConstants.PA_LBL_REALM;
+    
+	private static final String LBL_REQUEST_TOKEN = ComposerWebserviceMessageConstants.PA_REQUEST_TOKEN; 
+
+	private static final String LBL_ACCESS_TOKEN = ComposerWebserviceMessageConstants.PA_ACCESS_TOKEN; 
+
+	private static final String LBL_REFRESH_TOKEN = ComposerWebserviceMessageConstants.PA_REFRESH_TOKEN; 
+
+	private static final String LBL_TOKEN_TYPE = ComposerWebserviceMessageConstants.PA_TOKEN_TYPE; 
 
     private static final String TXT_MSG_OPTIONAL = ComposerWebserviceMessageConstants.PA_TXT_MSG_OPTIONAL;
 
@@ -271,10 +316,22 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
 
+	private static final String OAUTH_2_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_2_0;
+	
     private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.List, InputValueType.Map };
 
+	private static final String PASSWORD_CREDENTIALS = RequestHeaderConstants.SIGNATURE_METHOD_PASSWORD_CREDENTIALS;
+	
+	private static final String REFRESH_TOKEN = RequestHeaderConstants.REFRESH_TOKEN;
+	
+	private static final String AUTHORIZATION_CODE = RequestHeaderConstants.SIGNATURE_METHOD_AUTHORIZTION_CODE;
+
+	private static final String IMPLICIT = RequestHeaderConstants.SIGNATURE_METHOD_IMPLICIT;
+
+	private static final String CLIENT_CREDENTIALS = RequestHeaderConstants.SIGNATURE_METHOD_CLIENT_CREDENTIALS;
+    
     @Inject
     private ESelectionService selectionService;
 
@@ -303,9 +360,11 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected Composite userComposite;
 
-    protected Composite oauthComposite;
+    protected Composite oauth1Composite;
 
     protected Composite updateHeaderComposite;
+    
+    protected Composite oauth2Composite;
 
     protected ParameterTable tblParams;
 
@@ -352,12 +411,32 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected Text txtTokenSecret;
 
     protected Text txtSignatureMethod;
+    
+    protected Text txtAccessToken;
+    
+    protected Text txtRefreshToken;
+    
+    protected Text txtTokenType;
 
     protected Text txtRealm;
+	
+	private Text txtTokenName;
+
+	private Text txtCallbackUrl;
+
+	private Text txtAuthUrl;
+
+	private Text txtAccessTokenUrl;
+	
+	private Text txtState;
 
     protected CCombo ccbOAuth1SignatureMethod;
+    
+    protected CCombo ccbOAuth2SignatureMethod;
 
     protected List<WebElementPropertyEntity> oauth1Headers = new ArrayList<WebElementPropertyEntity>();
+    
+    protected List<WebElementPropertyEntity> oauth2Headers = new ArrayList<WebElementPropertyEntity>();
 
     protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
 
@@ -401,6 +480,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private boolean invalidScheme = false;
 
     private boolean variableTab = true;
+
     
     @PostConstruct
     public void createComposite(Composite parent, MCompositePart part) {
@@ -988,13 +1068,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         ccbAuthType.add(NO_AUTH);
         ccbAuthType.add(BASIC_AUTH);
         ccbAuthType.add(OAUTH_1_0);
-
+        ccbAuthType.add(OAUTH_2_0);
+        
         userComposite = new Composite(formComposite, SWT.NONE);
-        oauthComposite = new Composite(formComposite, SWT.NONE);
+        oauth1Composite = new Composite(formComposite, SWT.NONE);
         updateHeaderComposite = new Composite(formComposite, SWT.NONE);
+        oauth2Composite = new Composite(formComposite, SWT.NONE);
 
         createBasicAuthInput(userComposite);
-        createOAuth1Input(oauthComposite);
+        createOAuth1Input(oauth1Composite);
+        createOAuth2Input(oauth2Composite);
         createUpdateHeaderButton(updateHeaderComposite);
 
         ccbAuthType.addSelectionListener(new SelectionAdapter() {
@@ -1008,8 +1091,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         ccbAuthType.select(0);
         renderAuthenticationUI(ccbAuthType.getText());
     }
-
-    /**
+    
+	/**
      * @param composite
      * Composite with GridData layout
      * @param isVisible
@@ -1143,7 +1226,177 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         txtTokenSecret = addAuthInput(LBL_TOKEN_SECRET, txtTokenSecret, parent, null);
         txtRealm = addAuthInput(LBL_REALM, txtRealm, parent, TXT_MSG_OPTIONAL);
     }
+    
 
+
+	private void createOAuth2Input(Composite parent) {
+		GridLayout glParent = new GridLayout(2, false);
+		glParent.marginWidth = 0;
+		glParent.marginHeight = 0;
+		parent.setLayout(glParent);
+		GridData gdParent = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+		gdParent.heightHint  = 200;
+		parent.setLayoutData(gdParent);
+
+		ScrolledComposite scrollableComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+	    scrollableComposite.setLayout(new GridLayout(2, false));
+	    scrollableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	    
+	    Composite contentComposite = new Composite(scrollableComposite, SWT.NONE);
+	    GridLayout glContent = new GridLayout(2, false);
+	    glContent.marginWidth = 0;
+	    glContent.marginHeight = 0;
+		contentComposite.setLayout(glContent);
+		GridData gdComposite = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+		contentComposite.setLayoutData(gdComposite);
+		
+		String[] auth02Signatures = new String[] { PASSWORD_CREDENTIALS, AUTHORIZATION_CODE, IMPLICIT,
+				CLIENT_CREDENTIALS, REFRESH_TOKEN };	
+
+		ccbOAuth2SignatureMethod = addAuthComboBox("Grant Type", ccbOAuth2SignatureMethod, contentComposite,
+				auth02Signatures);
+
+		txtTokenName = addAuthInput(LBL_TOKEN_NAME, txtTokenName, contentComposite, null);
+
+		txtUsername = addAuthInput(ComposerWebserviceMessageConstants.LBL_USERNAME, txtUsername, contentComposite, null);
+
+		txtPassword = addAuthInput(ComposerWebserviceMessageConstants.LBL_PASSWORD, txtPassword, contentComposite, null);
+
+		txtCallbackUrl = addAuthInput(LBL_CALLBACK_URL, txtCallbackUrl, contentComposite, null);
+
+		txtAuthUrl = addAuthInput(LBL_AUTH_URL, txtAuthUrl, contentComposite, null);
+
+		txtAccessTokenUrl = addAuthInput(LBL_ACCESS_TOKEN_URL, txtAccessTokenUrl, contentComposite, null);
+
+		txtState = addAuthInput(LBL_STATE, txtState, contentComposite, null);
+
+		txtConsumerKey = addAuthInput(LBL_CONSUMER_KEY, txtConsumerKey, contentComposite, null);
+
+		txtConsumerSecret = addAuthInput(LBL_CONSUMER_SECRET, txtConsumerSecret, contentComposite, null);
+
+		txtAccessToken = addAuthInput(LBL_ACCESS_TOKEN, txtAccessToken, contentComposite, null);
+
+		txtRefreshToken = addAuthInput(LBL_REFRESH_TOKEN, txtRefreshToken, contentComposite, null);
+
+		txtTokenType = addAuthInput(LBL_TOKEN_TYPE, txtTokenType, contentComposite, null);
+
+		Button btnLoadAuthData = new Button(contentComposite, SWT.FLAT);
+		btnLoadAuthData.setText("Load data from Excel");
+		btnLoadAuthData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog dialog = new FileDialog(btnLoadAuthData.getShell());
+				String path = dialog.open();
+				if (path == null) {
+					return;
+				}
+				Map<String, String> variableMap = ExcelHelper.readFrom(path);
+				loadAuthDataIntoInputs(variableMap);
+			}
+		});
+
+		Button btnRequestToken = new Button(contentComposite, SWT.FLAT);
+		btnRequestToken.setText(LBL_REQUEST_TOKEN);
+		btnRequestToken.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					getOAuth2AccessToken();
+				} catch (UnsupportedOperationException | IOException e1) {
+					LoggerSingleton.logError(e1);
+				}
+			}
+		});
+		
+	    scrollableComposite.setContent(contentComposite);
+	    scrollableComposite.setExpandHorizontal(true);
+	    scrollableComposite.setExpandVertical(true);
+	    scrollableComposite.setMinSize(contentComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+	}
+	
+	private void loadAuthDataIntoInputs(Map<String, String> variableMap) {
+		txtUsername.setText(variableMap.getOrDefault(OAuthConstants.USERNAME, StringUtils.EMPTY));
+		txtPassword.setText(variableMap.getOrDefault(OAuthConstants.PASSWORD, StringUtils.EMPTY));
+		txtAccessTokenUrl.setText(variableMap.getOrDefault(OAuthConstants.ACCESS_TOKEN_URL, StringUtils.EMPTY));
+		txtConsumerKey.setText(variableMap.getOrDefault(OAuthConstants.CLIENT_ID, StringUtils.EMPTY));
+		txtConsumerSecret.setText(variableMap.getOrDefault(OAuthConstants.CLIENT_SECRET, StringUtils.EMPTY));
+	}
+
+	protected void getOAuth2AccessToken() throws UnsupportedOperationException, IOException {
+		WebServiceRequestEntity wsObj = new WebServiceRequestEntity();
+		wsObj.setServiceType("RESTful");
+		wsObj.setRestRequestMethod("POST");
+		wsObj.setRestUrl(txtAccessTokenUrl.getText());
+		wsObj.setHttpHeaderProperties(
+				Arrays.asList(new WebElementPropertyEntity("Content-Type", "application/x-www-form-urlencoded")));
+		ParameterizedBodyContent<UrlEncodedBodyParameter> parameters = new ParameterizedBodyContent<UrlEncodedBodyParameter>();
+		parameters.setContentType("application/x-www-form-urlencoded");
+		parameters.setCharset("UTF-8");
+
+		switch (ccbOAuth2SignatureMethod.getText()) {
+		case PASSWORD_CREDENTIALS:
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuthConstants.CLIENT_ID, txtConsumerKey.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuthConstants.CLIENT_SECRET, txtConsumerSecret.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuthConstants.GRANT_TYPE, "password"));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuthConstants.USERNAME, txtUsername.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuthConstants.PASSWORD, txtPassword.getText()));
+			break;
+		case REFRESH_TOKEN:
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuthConstants.CLIENT_ID, txtConsumerKey.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuthConstants.CLIENT_SECRET, txtConsumerSecret.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuthConstants.GRANT_TYPE, "refresh_token"));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuthConstants.REFRESH_TOKEN, txtRefreshToken.getText()));
+			break;
+		case AUTHORIZATION_CODE:			
+			break;
+		case IMPLICIT:
+			break;
+		case CLIENT_CREDENTIALS:
+			break;
+		default:
+			break;
+		}
+		wsObj.setHttpBodyType("x-www-form-urlencoded");
+		wsObj.setHttpBodyContent(JsonUtil.toJson(parameters));
+
+		ProgressMonitorDialogWithThread progress = new ProgressMonitorDialogWithThread(
+				Display.getCurrent().getActiveShell());
+		progress.setOpenOnRun(true);
+		try {
+			progress.run(true, true, new IRunnableWithProgress() {
+
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					try {
+						monitor.beginTask("Authenticating ...", IProgressMonitor.UNKNOWN);
+						ResponseObject responseObject = WebServiceController.getInstance().sendRequest(wsObj,
+								ProjectController.getInstance().getCurrentProject().getFolderLocation(),
+								ProxyPreferences.getProxyInformation(),
+								Collections.<String, Object>unmodifiableMap(Collections.emptyMap()), false);
+						String bodyContent = responseObject.getResponseText();
+						Display.getDefault().asyncExec(new Runnable() {
+							@Override
+							public void run() {
+								if (!bodyContent.isEmpty()) {
+									JSONObject jsonObj = new JSONObject(bodyContent);
+									txtAccessToken.setText(jsonObj.optString(OAuthConstants.ACCESS_TOKEN));
+									txtRefreshToken.setText(jsonObj.optString(OAuthConstants.REFRESH_TOKEN));
+									txtTokenType.setText(jsonObj.optString(OAuthConstants.TOKEN_TYPE));
+								}
+							}
+						});
+					} catch (Exception e) {
+						throw new InvocationTargetException(e);
+					} finally {
+						monitor.done();
+					}
+				}
+			});
+		} catch (InvocationTargetException | InterruptedException e) {
+			LoggerSingleton.logError(e);
+		}
+	}
+	
     private Text addAuthInput(String label, Text txtField, Composite parent, String placeholder) {
         Label lbl = new Label(parent, SWT.NONE);
         lbl.setText(label);
@@ -1160,6 +1413,22 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             txtField.setToolTipText(placeholder);
         }
         return txtField;
+    }
+    
+    private CCombo addAuthComboBox(String label, CCombo ccbox, Composite parent, String[] values){
+        Label lbl = new Label(parent, SWT.NONE);
+        lbl.setText(label);
+        GridData gdLbl = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdLbl.widthHint = AUTH_LBL_WIDTH;
+        lbl.setLayoutData(gdLbl);
+
+        ccbox = new CCombo(parent, SWT.FLAT | SWT.READ_ONLY | SWT.BORDER);
+        GridData gdTxt = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gdTxt.widthHint = AUTH_FIELD_WIDTH;
+        ccbox.setLayoutData(gdTxt);
+        for(String str : values) ccbox.add(str);
+        ccbox.select(0);
+		return ccbox;
     }
 
     private void createUpdateHeaderButton(Composite parent) {
@@ -1198,9 +1467,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                             txtTokenSecret.getText(), ccbOAuth1SignatureMethod.getText(), txtRealm.getText());
                     return;
                 }
-
+                if (OAUTH_2_0.equals(authType)) {
+                    createOAuth2Headers(txtAccessToken.getText(), txtConsumerKey.getText());
+                    return;
+                }
+                
                 // No authorization
                 removeOAuth1Headers();
+                removeOAuth2Headers();
                 tblHeaders.refresh();
             }
         });
@@ -2032,7 +2306,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             }
         });
     }
-
+    
     protected void createOAuth1Headers(String consumerKey, String consumerSecretOrPrivateKey, String token,
             String tokenSecret, String signatureMethod, String realm) {
         removeOAuth1Headers();
@@ -2052,11 +2326,24 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
         tblHeaders.addRows(oauth1Headers);
     }
+    
+    protected void createOAuth2Headers(String accessToken, String clientId){
+    	removeOAuth2Headers();
+    	oauth2Headers.add(new WebElementPropertyEntity(AUTHORIZATION_HEADER, "Bearer " + accessToken));
+    	oauth2Headers.add(new WebElementPropertyEntity(AUTHORIZATION_HEADER, "Client-ID " + clientId));
+    	tblHeaders.addRows(oauth2Headers);
+    }
 
     protected void removeOAuth1Headers() {
         tblHeaders.deleteRows(oauth1Headers);
         oauth1Headers.clear();
     }
+    
+    protected void removeOAuth2Headers() {
+        tblHeaders.deleteRows(oauth2Headers);
+        oauth2Headers.clear();
+    }
+    
 
     protected void populateBasicAuthFromHeader() {
         java.util.Optional<WebElementPropertyEntity> authHeader = tblHeaders.getInput()
@@ -2104,7 +2391,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected void renderAuthenticationUI(String authType) {
         setCompositeVisible(userComposite, BASIC_AUTH.equals(authType));
-        setCompositeVisible(oauthComposite, OAUTH_1_0.equals(authType));
+        setCompositeVisible(oauth1Composite, OAUTH_1_0.equals(authType));
+        setCompositeVisible(oauth2Composite, OAUTH_2_0.equals(authType));
         if (StringUtils.isBlank(authType)) {
             ccbAuthType.select(0);
         }
@@ -2122,7 +2410,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
         mPart.setIconURI(imageURL);
     }
-
+    
     protected abstract void updatePartImage();
 
     @Override

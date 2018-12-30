@@ -3,7 +3,41 @@ package com.kms.katalon.composer.webservice.constants;
 import org.eclipse.osgi.util.NLS;
 
 public class ComposerWebserviceMessageConstants extends NLS {
-    private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
+	private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
+
+	public static String AUTHORIZATION_HEADER;
+
+	public static String PA_ACCESS_TOKEN;
+
+	public static String PA_REFRESH_TOKEN;
+
+	public static String PA_TOKEN_TYPE;
+
+	public static String PA_REQUEST_TOKEN;
+
+	public static String PA_LBL_GRANT_TYPE;
+	
+	public static String PA_LBL_CALLBACK_URL;
+	
+	public static String PA_LBL_AUTH_URL;
+	
+	public static String PA_LBL_ACCESS_TOKEN_URL;
+	
+	public static String PA_LBL_SCOPE;
+	
+	public static String PA_LBL_STATE;
+
+	public static String PA_LBL_TOKEN_NAME;
+
+	public static String PA_TOOLTIP_CALLBACK_URL;
+
+	public static String PA_TOOLTIP_AUTH_URL;
+	
+	public static String PA_TOOLTIP_ACCESS_TOKEN_URL;
+	
+	public static String PA_TOOLTIP_SCOPE;
+	
+	public static String PA_TOOLTIP_STATE;
 
     public static String PA_ERROR_MSG_UNABLE_TO_SAVE_PART;
     
