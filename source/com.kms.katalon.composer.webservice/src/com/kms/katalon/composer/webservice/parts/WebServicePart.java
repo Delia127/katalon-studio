@@ -1323,7 +1323,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 				try {
 					
 					if(!ccbOAuth2SignatureMethod.getText().equals(PASSWORD_CREDENTIALS) 
-							&& !ccbOAuth2SignatureMethod.getText().equals(CLIENT_CREDENTIALS)){
+							&& !ccbOAuth2SignatureMethod.getText().equals(CLIENT_CREDENTIALS)
+							&& !ccbOAuth2SignatureMethod.getText().equals(REFRESH_TOKEN)){
+						
 						String urlToGetAuthorizationCode = constructUrlToGetAuthorizationCode();
 						Oauth2AuthorizationRetrievalDialog oAuth2AuthorizationRetrievalDialog = 
 								new Oauth2AuthorizationRetrievalDialog(Display.getCurrent().getActiveShell(), 
