@@ -34,6 +34,10 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     private DefaultRerunSetting rerunSetting;
 
+    public EmailSettings getEmailSettings() {
+        return emailSettings;
+    }
+
     private EmailSettings emailSettings;
 
     public TestSuiteExecutedEntity() {
