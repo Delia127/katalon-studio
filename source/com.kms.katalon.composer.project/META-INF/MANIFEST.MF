@@ -40,7 +40,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.integration.analytics,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
- com.katalon.platform
+ com.katalon.platform,
+ com.kms.katalon.platform.internal
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.execution.webui.setting,
  javax.annotation;version="1.2.0"

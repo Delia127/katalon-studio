@@ -15,8 +15,9 @@ Require-Bundle: com.katalon.platform,
  org.eclipse.e4.core.services,
  com.kms.katalon.constant,
  org.eclipse.swt,
- com.kms.katalon.composer.testcase,
  org.eclipse.jface,
- org.eclipse.osgi
+ org.eclipse.osgi,
+ com.kms.katalon.core
 Bundle-Activator: com.kms.katalon.platform.internal.Activator
 Bundle-ActivationPolicy: lazy
+Export-Package: com.kms.katalon.platform.internal.entity

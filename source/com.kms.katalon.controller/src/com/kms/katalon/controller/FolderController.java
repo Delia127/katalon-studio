@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.file.FileEntity;
@@ -146,12 +147,16 @@ public class FolderController extends EntityController implements Serializable {
         return getDataProviderSetting().getFolderDataProvider().getFolder(folderValue);
     }
 
-    public FolderEntity getFolderByDisplayId(ProjectEntity projectEntity, String folderDisplayId) throws Exception {
+    public FolderEntity getFolderByDisplayId(ProjectEntity projectEntity, String folderDisplayId) throws ControllerException {
         if (folderDisplayId == null || folderDisplayId.isEmpty())
             return null;
         String folderId = projectEntity.getFolderLocation() + File.separator
                 + folderDisplayId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
-        return getDataProviderSetting().getFolderDataProvider().getFolder(folderId);
+        try {
+            return getDataProviderSetting().getFolderDataProvider().getFolder(folderId);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public List<String> getSibblingFolderNames(FolderEntity folder) throws Exception {
@@ -219,8 +224,12 @@ public class FolderController extends EntityController implements Serializable {
         }
     }
 
-    public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception {
-        return getDataProviderSetting().getFolderDataProvider().getAvailableFolderName(parentFolder, name);
+    public String getAvailableFolderName(FolderEntity parentFolder, String name) throws ControllerException {
+        try {
+            return getDataProviderSetting().getFolderDataProvider().getAvailableFolderName(parentFolder, name);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
