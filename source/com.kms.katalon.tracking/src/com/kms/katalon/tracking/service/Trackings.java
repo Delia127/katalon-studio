@@ -93,20 +93,16 @@ public class Trackings {
         trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType);
     }
 
-    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType) {
-        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType);
-    }
-
-    public static void trackEmailAfterExecute(boolean testFailedOnly) {
+    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType,boolean testFailedOnly) {
         String email_options = "email_options";
         if (testFailedOnly == true) {
-            trackUserAction("EmailOptions", email_options, "failed_test_case");
+            trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType,email_options, "failed_test_case");
         } else {
-            trackUserAction("EmailOptions", email_options, "all_test_case");
+            trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType, email_options, "all_test_case");
         }
-
+     
     }
-
+    
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType) {
         trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType);
     }
