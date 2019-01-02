@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testsuite.parts;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -187,7 +186,7 @@ public class FilteringTestCaseView {
         compositeTableSearch.setLayout(glCompositeTableSearch);
 
         txtSearch = new Text(compositeTableSearch, SWT.NONE);
-        txtSearch.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
+        txtSearch.setMessage("Enter filter criteria");
         GridData gdTxtInput = new GridData(GridData.FILL_HORIZONTAL);
         gdTxtInput.grabExcessVerticalSpace = true;
         gdTxtInput.verticalAlignment = SWT.CENTER;
@@ -233,6 +232,8 @@ public class FilteringTestCaseView {
         testCaseTableViewer.getTable().setVisible(false);
         lblSummary.setText("Type a query in search box then press Preview to preview the result.");
         lblSummary.getParent().getParent().layout(true, true);
+        
+        showPreviewTestCases();
     }
 
     public void registerControlModifyListeners() {
@@ -332,8 +333,9 @@ public class FilteringTestCaseView {
                 }).collect(Collectors.toList());
 
                 filteredTestCases = FilterController.getInstance().filter(testCaseEntities, txtSearch.getText());
-                testCaseTableViewer.setInput(filteredTestCases);
             }
+
+            testCaseTableViewer.setInput(filteredTestCases);
 
             setInputForPreviewComposite(filteredTestCases);
         } catch (IOException ex) {

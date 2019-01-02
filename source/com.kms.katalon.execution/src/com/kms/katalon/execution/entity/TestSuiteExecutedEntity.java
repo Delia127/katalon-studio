@@ -78,9 +78,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         List<IExecutedEntity> executedItems;
         if (testSuite instanceof FilteringTestSuiteEntity) {
             if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
-                throw new PlatformException(
-                        MessageFormat.format(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE,
-                                testSuite.getIdForDisplay(), IdConstants.PLUGIN_TAGS));
+                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
             }
             executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite);
         } else {

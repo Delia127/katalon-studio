@@ -328,6 +328,14 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
 
     private void updateTestSuitePart(FilteringTestSuiteEntity testSuite) {
         // update mpart
+        updateLabel(testSuite);
+
+        loadTestSuite();
+
+        setDirty(false);
+    }
+
+    private void updateLabel(FilteringTestSuiteEntity testSuite) {
         int index = tabFolder.getSelectionIndex();
         String newElementId = EntityPartUtil.getTestSuiteCompositePartId(testSuite.getId());
         if (!newElementId.equals(compositePart.getElementId())) {
@@ -345,8 +353,6 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
         }
         tabFolder.setSelection(index);
         changeOriginalTestSuite(testSuite);
-        setDirty(false);
-        loadTestSuite();
     }
 
     private void renewTestSuiteScriptPart(TestSuiteEntity testSuite, String newElementId, MPartStack partStack) {
@@ -409,14 +415,15 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
         } else if (event.getTopic().equals(EventConstants.TEST_SUITE_UPDATED)) {
             Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
             if (object != null && object instanceof Object[]) {
-                String elementId = EntityPartUtil.getTestSuiteCompositePartId((String) ((Object[]) object)[0]);
+                Object[] objects = (Object[]) object;
+                String elementId = EntityPartUtil.getTestSuiteCompositePartId((String) objects[0]);
 
-                if (elementId.equalsIgnoreCase(compositePart.getElementId())) {
-                    FilteringTestSuiteEntity testSuite = (FilteringTestSuiteEntity) ((Object[]) object)[1];
-                    if (!testSuite.equals(getOriginalTestSuite())) {
-                        updateTestSuitePart(testSuite);
-                    }
+                if (!elementId.equalsIgnoreCase(compositePart.getElementId())) {
+                    return;
                 }
+
+                FilteringTestSuiteEntity newTestSuite = (FilteringTestSuiteEntity) objects[1];
+                updateLabel(newTestSuite);
             }
         }
     }
