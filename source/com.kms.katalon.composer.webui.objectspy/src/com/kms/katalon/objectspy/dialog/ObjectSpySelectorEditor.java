@@ -52,7 +52,7 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
 
         Label lblSelectorEditor = new Label(composite, SWT.NONE);
         lblSelectorEditor.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        lblSelectorEditor.setText(ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR1);
+        lblSelectorEditor.setText(ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR);
         ControlUtils.setFontToBeBold(lblSelectorEditor);
 
         txtSelector = new StyledText(composite, SWT.BORDER | SWT.WRAP | SWT.VERTICAL);        
