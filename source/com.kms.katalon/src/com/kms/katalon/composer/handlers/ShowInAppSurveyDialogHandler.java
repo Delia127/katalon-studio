@@ -34,7 +34,7 @@ public class ShowInAppSurveyDialogHandler {
 				boolean shouldShowInAppSurveyDialog = prefStore
 						.getBoolean(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE);
 
-				if (shouldShowInAppSurveyDialog == true) {
+				if (shouldShowInAppSurveyDialog) {
 					InAppSurveyDialog inAppSurveyDialog = new InAppSurveyDialog(Display.getCurrent().getActiveShell());
 					inAppSurveyDialog.setBlockOnOpen(true);
 					inAppSurveyDialog.open();

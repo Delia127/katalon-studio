@@ -15,5 +15,5 @@ public interface ProxyPreferenceConstants {
     
     public static final String PROXY_PREFERENCE_SET = "proxy.preferences.set";
 
-	public static final String USE_MOB_BROWSER_PROXY = "proxy.preferences.useMobRowserProxy";
+	public static final String DISABLE_MOB_BROWSER_PROXY = "proxy.preferences.disableMobRowserProxy";
 }

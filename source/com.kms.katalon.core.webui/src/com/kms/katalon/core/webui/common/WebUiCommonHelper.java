@@ -480,7 +480,11 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static void focusOnBrowser() throws WebDriverException, StepFailedException {
         ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("window.focus()");
     }
-
+    
+    /*
+     * Build a locator based on its SelectorCollection and SelectorMethod
+     * Update SelectorCollection if previously empty
+     */
     public static By buildLocator(TestObject to) {
         SelectorMethod selectorMethod = to.getSelectorMethod();
         switch (selectorMethod) {
@@ -494,7 +498,11 @@ public class WebUiCommonHelper extends KeywordHelper {
             case CSS:
                 return By.cssSelector(to.getSelectorCollection().get(selectorMethod));
             case XPATH:
-                return By.xpath(to.getSelectorCollection().get(selectorMethod));
+            	// Update SelectorCollection of old TestObject for compatibility
+            	if(to.getSelectorCollection().isEmpty()){
+            		to.setSelectorValue(selectorMethod, to.getXpaths().get(0).getValue());
+            	}
+            	return By.xpath(to.getSelectorCollection().get(selectorMethod));
             default:
                 return null;
         }
@@ -506,7 +514,11 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static By buildUnionXpath(TestObject to) {
         return buildXpath(to, XPathBuilder.AggregationType.UNION, to.getProperties());
     }
-
+    
+    /*
+     * Get a TestObject's selector value based on its SelectorCollection and SelectorMethod
+     * Update SelectorCollection if previously empty
+     */
     public static String getSelectorValue(TestObject to) {
         SelectorMethod selectorMethod = to.getSelectorMethod();
         switch (selectorMethod) {
@@ -519,11 +531,11 @@ public class WebUiCommonHelper extends KeywordHelper {
                 return xpathBuilder.build(); 
             case XPATH:
             	String ret =  to.getSelectorCollection().get(selectorMethod);
-            	if(ret == null || ret.isEmpty()){	
+            	if(ret == null){
             		if(to.getXpaths() != null && !to.getXpaths().isEmpty()){
                 		ret = to.getXpaths().get(0).getValue();
-            		}else{
-            			ret = StringUtils.EMPTY;
+                    	// Update SelectorCollection of old TestObject for compatibility
+                		to.setSelectorValue(selectorMethod, ret);
             		}
             	}
             	return ret;

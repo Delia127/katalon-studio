@@ -76,9 +76,14 @@ pipeline {
                 }
             }
         }
+<<<<<<< HEAD
         */
         
         stage('Copying builds') {
+=======
+*/              
+        stage('Copy builds') {
+>>>>>>> origin/staging-5.10.1
             // Copy generated builds and changelogs to shared folder on server
             steps {
                 dir("source/com.kms.katalon.product/target/products") {
