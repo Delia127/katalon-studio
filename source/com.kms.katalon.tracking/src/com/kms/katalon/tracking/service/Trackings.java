@@ -17,7 +17,6 @@ import com.kms.katalon.tracking.osgi.service.IProjectStatisticsCollector;
 import com.kms.katalon.tracking.osgi.service.ServiceConsumer;
 
 public class Trackings {
-
     private static TrackingService trackingService = new TrackingService();
 
     public static void trackOpenApplication(boolean isAnonymous, String runningMode) {
@@ -32,27 +31,23 @@ public class Trackings {
         trackUsageData(project, false, "gui", "openProject");
         trackOpenObject("project");
     }
-
+    
     private static void trackUsageData(ProjectEntity project, boolean isAnonymous, String runningMode,
             String triggeredBy) {
-
         if (project == null) {
             return;
         }
 
         try {
             JsonObject statisticsObject = collectProjectStatistics(project);
-
             JsonObject properties = new JsonObject();
             properties.addProperty("triggeredBy", triggeredBy);
             properties.addProperty("runningMode", runningMode);
             JsonUtil.mergeJsonObject(statisticsObject, properties);
-
             TrackInfo trackInfo = TrackInfo.create()
                     .eventName(TrackEvents.KATALON_STUDIO_TRACK)
                     .anonymous(isAnonymous)
                     .properties(properties);
-
             trackingService.track(trackInfo);
         } catch (Exception e) {
             LogUtil.logError(e);
@@ -61,17 +56,16 @@ public class Trackings {
 
     private static JsonObject collectProjectStatistics(ProjectEntity project) throws Exception {
         IProjectStatisticsCollector collector = ServiceConsumer.getProjectStatisticsCollector();
-
         ProjectStatistics statistics = collector.collect(project);
-
         JsonObject statisticsObject = JsonUtil.toJsonObject(statistics);
-
         return statisticsObject;
     }
 
     public static void trackOpenFirstTime() {
-        TrackInfo trackInfo = TrackInfo.create().eventName(TrackEvents.KATALON_OPEN_FIRST_TIME).anonymous(true);
-
+        TrackInfo trackInfo = TrackInfo
+                .create()
+                .eventName(TrackEvents.KATALON_OPEN_FIRST_TIME)
+                .anonymous(true);
         trackingService.track(trackInfo);
     }
 
@@ -79,12 +73,14 @@ public class Trackings {
         trackUserAction("spy", "type", type);
     }
 
-    public static void trackWebRecord(WebUIDriverType browserType, boolean useActiveBrowser,
-            SelectorMethod webLocatorConfig) {
-        trackUserAction("record", "type", "web", "browserType", browserType.toString(), "active", useActiveBrowser,
+    public static void trackWebRecord(WebUIDriverType browserType, boolean useActiveBrowser,SelectorMethod webLocatorConfig) {
+        trackUserAction("record", 
+                "type", "web",
+                "browserType", browserType.toString(),
+                "active", useActiveBrowser,
                 "webLocatorConfig", webLocatorConfig.toString());
     }
-
+    
     public static void trackRecord(String type) {
         trackUserAction("record", "type", type);
     }
@@ -335,12 +331,10 @@ public class Trackings {
 
     private static JsonObject createJsonObject(Object... properties) {
         JsonObject jsonObject = new JsonObject();
-
         if (properties != null) {
             for (int i = 0; i < properties.length - 1; i += 2) {
                 String key = (String) properties[i];
                 Object value = properties[i + 1];
-
                 if (value instanceof Character) {
                     jsonObject.addProperty(key, (Character) value);
                 } else if (value instanceof String) {
