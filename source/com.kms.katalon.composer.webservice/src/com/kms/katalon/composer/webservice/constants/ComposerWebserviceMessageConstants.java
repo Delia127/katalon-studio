@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerWebserviceMessageConstants extends NLS {
 	private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
 
+	public static String PA_AUTHORIZATION_CODE;
+
 	public static String AUTHORIZATION_HEADER;
 
 	public static String PA_ACCESS_TOKEN;
@@ -26,8 +28,6 @@ public class ComposerWebserviceMessageConstants extends NLS {
 	public static String PA_LBL_SCOPE;
 	
 	public static String PA_LBL_STATE;
-
-	public static String PA_LBL_TOKEN_NAME;
 
 	public static String PA_TOOLTIP_CALLBACK_URL;
 

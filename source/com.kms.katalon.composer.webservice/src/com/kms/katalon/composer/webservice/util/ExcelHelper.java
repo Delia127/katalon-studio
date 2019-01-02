@@ -16,25 +16,17 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 
 public class ExcelHelper {
 	/*
-	 * This method ASSUMES that the excel file has 2 columns,
-	 * the first column will be parsed as key, the second column as value
+	 * This method ASSUMES that the excel file has at least 2 columns (key - value)
 	 */
 	public static Map<String, String> readFrom(String filePath) {
 		Map<String, String> map = new HashMap<>();
 		try {
 			FileInputStream file = new FileInputStream(new File(filePath));
-
-			// Create Workbook instance holding reference to .xlsx file
 			XSSFWorkbook workbook = new XSSFWorkbook(file);
-
-			// Get first/desired sheet from the workbook
 			XSSFSheet sheet = workbook.getSheetAt(0);
-
-			// Iterate through each rows one by one
 			Iterator<Row> rowIterator = sheet.iterator();
 			while (rowIterator.hasNext()) {
 				Row row = rowIterator.next();
-				// For each row, iterate through all the columns
 				Iterator<Cell> cellIterator = row.cellIterator();
 				int i = 0;
 				String key = "";
@@ -52,8 +44,8 @@ public class ExcelHelper {
 			}
 			file.close();
 		} catch (Exception e) {
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), 
-					"Error", "Not a valid excel file!");
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
+					"Not an excel file or of expected format (two columns: key - value)");
 			LoggerSingleton.logError(e);
 		}
 		return map;
