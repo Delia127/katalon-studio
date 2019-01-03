@@ -21,12 +21,4 @@ public class FilteringTestSuiteEntity extends TestSuiteEntity {
         newTestSuite.setTestSuiteGuid(Util.generateGuid());
         return newTestSuite;
     }
-    
-    @Override
-    public boolean equals(Object that) {
-        if (!super.equals(that)) {
-            return false;
-        }
-        return getFilteringText().equals(((FilteringTestSuiteEntity) that).getFilteringText());
-    }
 }

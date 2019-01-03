@@ -1,8 +1,7 @@
 package com.kms.katalon.core.webui.common;
 
 import java.awt.Rectangle;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -29,7 +28,8 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
@@ -41,6 +41,8 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.TestObjectXpath;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webui.common.XPathBuilder.PropertyType;
+import com.kms.katalon.core.webui.common.internal.BrokenTestObject;
+import com.kms.katalon.core.webui.common.internal.BrokenTestObjects;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
@@ -828,9 +830,13 @@ public class WebUiCommonHelper extends KeywordHelper {
 
 				String jsAutoHealingPath = RunConfiguration.getProjectDir()
 						+ "/Reports/smart_xpath/waiting-for-approval.json";
-				org.json.JSONObject jsonObject = buildJsBrokenTestObjectFromTestObject(testObject, thisXPath.getValue());
-				writeJsonObjectToFile(jsonObject, jsAutoHealingPath);
-    			break;
+				BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, thisXPath.getValue());
+				BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
+    			if(existingBrokenTestObjects != null){
+    				existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
+        			writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
+    			}
+				break;
     		}
 		}
 		
@@ -854,40 +860,41 @@ public class WebUiCommonHelper extends KeywordHelper {
     	return Collections.emptyList();    	
     }
     
-    // Assume a JSON file with a JSON object containing at least a JSON array, this method
-    // appends @arg1 to @arg2 by replacing "]}" with "@arg1]}"
-    // Note that if the array is initially empty then ",@arg1" will be written in between,
-    // thus at any given time [0] will be a null object
-	public static void writeJsonObjectToFile(org.json.JSONObject jsonObject, String filePath) {
-		try {
-			RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "rw");
-			// Set cursor to the position of "]"
-			long pos = randomAccessFile.length();
-			while (randomAccessFile.length() > 0) {
-				pos--;
-				randomAccessFile.seek(pos);
-				if (randomAccessFile.readByte() == ']') {
-					randomAccessFile.seek(pos);
-					break;
-				}
+    private static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, String filePath){
+    	try {
+			ObjectMapper mapper = new ObjectMapper();
+			File file = new File(filePath);
+			if (file.exists()) {
+				mapper.enable(SerializationFeature.INDENT_OUTPUT);
+				mapper.writeValue(file, brokenTestObjects);
 			}
-			randomAccessFile.writeBytes("\n," + jsonObject + "\n]" + "\n}");
-			randomAccessFile.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
 		}
+    }
+    
+	private static BrokenTestObjects readExistingBrokenTestObjects(String filePath) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			File file = new File(filePath);
+			if (file.exists()) {
+				return mapper.readValue(file, BrokenTestObjects.class);
+			}
+		} catch (Exception e) {
+			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
+		}
+		return null;
 	}
 	
-	private static org.json.JSONObject buildJsBrokenTestObjectFromTestObject(TestObject testObject, 
+	private static BrokenTestObject buildBrokenTestObject(TestObject testObject, 
 			String newXPath) {
 		String oldXPath = testObject.getSelectorCollection().get(testObject.getSelectorMethod());
-		String testObjectId = testObject.getObjectId();
-		org.json.JSONObject testObjectInNeedOfAutoHealing = new org.json.JSONObject();
-		testObjectInNeedOfAutoHealing.put("testObjectId", testObjectId);
-		testObjectInNeedOfAutoHealing.put("brokenXPath", oldXPath);
-		testObjectInNeedOfAutoHealing.put("proposedXPath", newXPath);
-		testObjectInNeedOfAutoHealing.put("approved", false);
-		return testObjectInNeedOfAutoHealing;
+		BrokenTestObject brokenTestObject = new BrokenTestObject();
+		brokenTestObject.setTestObjectId(testObject.getObjectId());
+		brokenTestObject.setApproved(false);
+		brokenTestObject.setBrokenXPath(oldXPath);
+		brokenTestObject.setProposedXPath(newXPath);
+		return brokenTestObject;
 	}
     
     @SuppressWarnings("unused")
