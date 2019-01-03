@@ -125,9 +125,7 @@ public class TestSuiteEntity extends IntegratedFileEntity {
         }
         TestSuiteEntity ts = (TestSuiteEntity) that;
         EqualsBuilder equalsBuilder = new EqualsBuilder();
-        equalsBuilder
-                .append(this.getName(), ts.getName())
-                .append(this.getDateCreated(), ts.getDateCreated())
+        equalsBuilder.append(this.getDateCreated(), ts.getDateCreated())
                 .append(this.getDateModified(), ts.getDateModified())
                 .append(this.isPageLoadTimeoutDefault(), ts.isPageLoadTimeoutDefault())
                 .append(this.getMailRecipient(), ts.getMailRecipient())

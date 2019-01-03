@@ -126,9 +126,6 @@ public abstract class Entity extends ClonableObject implements IEntity {
 
     @Override
     public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
         if (!(object instanceof Entity)) {
             return false;
         }
