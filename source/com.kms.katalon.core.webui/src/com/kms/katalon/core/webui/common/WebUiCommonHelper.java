@@ -860,8 +860,8 @@ public class WebUiCommonHelper extends KeywordHelper {
     	return Collections.emptyList();    	
     }
     
-    private static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, String filePath){
-    	try {
+	private static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, String filePath) {
+		try {
 			ObjectMapper mapper = new ObjectMapper();
 			File file = new File(filePath);
 			if (file.exists()) {
@@ -871,8 +871,8 @@ public class WebUiCommonHelper extends KeywordHelper {
 		} catch (Exception e) {
 			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
 		}
-    }
-    
+	}
+
 	private static BrokenTestObjects readExistingBrokenTestObjects(String filePath) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
