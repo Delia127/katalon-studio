@@ -122,5 +122,4 @@ public class TestCaseControllerImpl implements com.katalon.platform.api.controll
             throw new ResourceException(ExceptionUtils.getMessage(e));
         }
     }
-
 }
