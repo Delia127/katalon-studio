@@ -30,6 +30,8 @@ public class PluginPreferenceStore {
     
     private static final String KATALON_STORE_TOKEN = "kStoreToken";
     
+    private static final String RELOAD_PLUGINS_BEFORE = "reloadPluginsBefore";
+    
     private static final ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(
             PluginPreferenceStore.class);
     
@@ -109,5 +111,13 @@ public class PluginPreferenceStore {
     public void setToken(KStoreToken token) throws IOException {
         store.setValue(KATALON_STORE_TOKEN, JsonUtil.toJson(token));
         store.save();
+    }
+    
+    public boolean hasReloadedPluginsBefore() {
+        return store.getBoolean(RELOAD_PLUGINS_BEFORE);
+    }
+    
+    public void markFirstTimeReloadPlugins() {
+        store.setValue(RELOAD_PLUGINS_BEFORE, true);
     }
 }

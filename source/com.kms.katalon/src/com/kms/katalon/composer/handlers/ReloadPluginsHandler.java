@@ -26,6 +26,7 @@ import com.kms.katalon.plugin.models.KStoreAccount;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.service.PluginService;
+import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
 public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
@@ -34,13 +35,19 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     private boolean isReloading = false;
 
+    private PluginPreferenceStore store;
+    
+    
     @PostConstruct
     public void registerEventListener() {
+        store = new PluginPreferenceStore();
         //auto reload on startup
         eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, new EventServiceAdapter() {
             @Override
             public void handleEvent(Event event) {
-                reloadPlugins(true);
+                if (store.hasReloadedPluginsBefore()) {
+                    reloadPlugins(true);
+                }
             }
         });
     }
@@ -76,6 +83,10 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                         List<ResultItem> result = PluginService.getInstance().reloadPlugins(accounts[0], monitor);
                         if (!silenceMode) {
                             UISynchronizeService.syncExec(() -> openResultDialog(result));
+                        }
+                        
+                        if (!store.hasReloadedPluginsBefore()) {
+                            store.markFirstTimeReloadPlugins();
                         }
                     }
                 } catch (InterruptedException e) {
