@@ -17,7 +17,9 @@ Require-Bundle: org.codehaus.groovy,
  com.google.guava,
  com.kms.katalon.util,
  org.junit;bundle-version="4.12.0",
- org.json
+ org.json,
+ com.fasterxml.jackson.core.jackson-core;bundle-version="2.9.6",
+ com.fasterxml.jackson.core.jackson-databind;bundle-version="2.9.1"
 Export-Package: com.kms.katalon.core.webui.common,
  com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
@@ -27,7 +29,5 @@ Export-Package: com.kms.katalon.core.webui.common,
 Bundle-ClassPath: .,
  resources/lib/repackaged-guava-19.0.jar,
  resources/lib/repackaged-sikuli-api-1.0.2-standalone.jar
-Import-Package: com.fasterxml.jackson.core;version="2.9.6",
- com.fasterxml.jackson.databind;version="2.9.1"
 
 
