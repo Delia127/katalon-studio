@@ -1,7 +1,9 @@
 package com.kms.katalon.core.webui.common;
 
 import java.awt.Rectangle;
-import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -28,8 +30,9 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
@@ -832,9 +835,11 @@ public class WebUiCommonHelper extends KeywordHelper {
 						+ "/Reports/smart_xpath/waiting-for-approval.json";
 				BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, thisXPath.getValue());
 				BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
-    			if(existingBrokenTestObjects != null){
+    			System.out.println(existingBrokenTestObjects.getBrokenTestObjects().size());
+				if(existingBrokenTestObjects != null){
     				existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
-        			writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
+    				System.out.println(existingBrokenTestObjects.getBrokenTestObjects().size());
+    				writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
     			}
 				break;
     		}
@@ -862,12 +867,11 @@ public class WebUiCommonHelper extends KeywordHelper {
     
 	private static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, String filePath) {
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			File file = new File(filePath);
-			if (file.exists()) {
-				mapper.enable(SerializationFeature.INDENT_OUTPUT);
-				mapper.writeValue(file, brokenTestObjects);
-			}
+			Writer writer = new FileWriter(filePath);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			gson.toJson(brokenTestObjects, writer);
+			writer.flush();
+			writer.close();
 		} catch (Exception e) {
 			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
 		}
@@ -875,11 +879,9 @@ public class WebUiCommonHelper extends KeywordHelper {
 
 	private static BrokenTestObjects readExistingBrokenTestObjects(String filePath) {
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			File file = new File(filePath);
-			if (file.exists()) {
-				return mapper.readValue(file, BrokenTestObjects.class);
-			}
+			Gson gson = new Gson();
+			JsonReader reader = new JsonReader(new FileReader(filePath));
+			return gson.fromJson(reader, BrokenTestObjects.class);
 		} catch (Exception e) {
 			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
 		}
