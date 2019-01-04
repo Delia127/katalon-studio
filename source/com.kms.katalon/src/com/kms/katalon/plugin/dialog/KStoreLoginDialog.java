@@ -35,6 +35,8 @@ public class KStoreLoginDialog extends Dialog {
     private String token;
 
     private Label lblError;
+    
+    private Button btnOk;
 
     public KStoreLoginDialog(Shell parentShell) {
         super(parentShell);
@@ -64,10 +66,18 @@ public class KStoreLoginDialog extends Dialog {
         Label lblEmpty = new Label(body, SWT.NONE);
 
         lblError = new Label(body, SWT.NONE);
-        lblError.setForeground(Display.getCurrent().getSystemColor(SWT.ERROR));
+        lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 
         registerControlListeners();
         return super.createDialogArea(parent);
+    }
+    
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        super.createButtonsForButtonBar(parent);
+        
+        btnOk = getButton(IDialogConstants.OK_ID);
+        btnOk.setEnabled(false); //initially disable button OK
     }
 
     private void registerControlListeners() {
@@ -91,7 +101,6 @@ public class KStoreLoginDialog extends Dialog {
     }
 
     private void validate() {
-        Button btnOk = getButton(IDialogConstants.OK_ID);
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             btnOk.setEnabled(false);
         } else {
@@ -116,6 +125,7 @@ public class KStoreLoginDialog extends Dialog {
         account.setUsername(username);
         account.setPassword(password);
         try {
+            btnOk.setEnabled(false);
             KStoreRestClient restClient = new KStoreRestClient(account);
             AuthenticationResult authenticateResult = restClient.authenticate();
             if (authenticateResult.isAuthenticated()) {
@@ -126,6 +136,8 @@ public class KStoreLoginDialog extends Dialog {
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
+        } finally {
+            btnOk.setEnabled(true);
         }
     }
 
@@ -155,5 +167,6 @@ public class KStoreLoginDialog extends Dialog {
         } else {
             lblError.setText(StringUtils.EMPTY);
         }
+        lblError.getParent().layout();
     }
 }
