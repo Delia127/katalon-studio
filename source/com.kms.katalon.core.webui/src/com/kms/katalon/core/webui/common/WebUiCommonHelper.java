@@ -835,10 +835,8 @@ public class WebUiCommonHelper extends KeywordHelper {
 						+ "/Reports/smart_xpath/waiting-for-approval.json";
 				BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, thisXPath.getValue());
 				BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
-    			System.out.println(existingBrokenTestObjects.getBrokenTestObjects().size());
 				if(existingBrokenTestObjects != null){
     				existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
-    				System.out.println(existingBrokenTestObjects.getBrokenTestObjects().size());
     				writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
     			}
 				break;
