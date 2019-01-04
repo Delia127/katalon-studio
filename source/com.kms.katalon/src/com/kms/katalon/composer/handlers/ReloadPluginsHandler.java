@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 
@@ -21,6 +22,7 @@ import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.plugin.dialog.ReloadPluginsResultDialog;
 import com.kms.katalon.plugin.models.KStoreAccount;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
@@ -122,7 +124,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
     }
 
     private void openResultDialog(List<ResultItem> result) {
-        ReloadPluginsResultDialog dialog = new ReloadPluginsResultDialog(Display.getCurrent().getActiveShell(), result);
-        dialog.open();
+        if (result.size() > 0) {
+            ReloadPluginsResultDialog dialog = new ReloadPluginsResultDialog(Display.getCurrent().getActiveShell(), result);
+            dialog.open();
+        } else {
+            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
+                    StringConstants.HAND_INFO_NO_PLUGINS_FOUND);
+        }
     }
 }

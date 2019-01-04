@@ -140,4 +140,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ReloadPluginsResultDialog_STATUS_INSTALLED = MessageConstants.ReloadPluginsResultDialog_STATUS_INSTALLED;
 
     public static final String ReloadPluginsResultDialog_STATUS_UNINSTALLED = MessageConstants.ReloadPluginsResultDialog_STATUS_UNINSTALLED;
+
+    public static final String HAND_INFO_NO_PLUGINS_FOUND = MessageConstants.HAND_INFO_NO_PLUGINS_FOUND;
 }
