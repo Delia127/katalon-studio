@@ -72,7 +72,7 @@ public class ReloadPluginsResultDialog extends Dialog {
         TableViewerColumn cvStatus = new TableViewerColumn(tvDetails, SWT.LEFT);
         TableColumn cStatus = cvStatus.getColumn();
         cStatus.setText(StringConstants.ReloadPluginsResultDialog_COL_STATUS);
-        cStatus.setWidth(50);
+        cStatus.setWidth(100);
         cvStatus.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -114,7 +114,8 @@ public class ReloadPluginsResultDialog extends Dialog {
     
     @Override
     protected Point getInitialSize() {
-        return new Point(300, 200);
+        Point initialSize = super.getInitialSize();
+        return new Point(Math.max(500, initialSize.x), Math.max(300, initialSize.y));
     }
     
     
