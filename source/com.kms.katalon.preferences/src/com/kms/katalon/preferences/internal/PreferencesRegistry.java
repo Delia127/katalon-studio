@@ -11,9 +11,11 @@ import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPre
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -36,6 +38,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
+import com.kms.katalon.preferences.PreferenceNodeDescription;
 import com.kms.katalon.preferences.constants.StringConstants;
 
 @SuppressWarnings("restriction")
@@ -77,111 +80,94 @@ public class PreferencesRegistry {
     private Map<String, Object> psProviders;
 
     public PreferenceManager getPreferenceManager(String perferencePage) {
+        return getPreferenceManager(perferencePage, Collections.emptyMap());
+    }
 
-        // Remember of the unbounded nodes to order parent pages.
-        // Map<category, list of children> (all nodes except root nodes)
-        Map<String, Collection<IPreferenceNode>> childrenNodes = new HashMap<String, Collection<IPreferenceNode>>();
-
-        if (pm != null) return pm;
+    public PreferenceManager getPreferenceManager(String perferencePage,
+            Map<String, List<PreferenceNodeDescription>> additional) {
+        if (pm != null) {
+            return pm;
+        }
+        Map<String, List<PreferenceNodeDescription>> nodeDescriptionLookup = new HashMap<>();
+        nodeDescriptionLookup.putAll(additional);
 
         pm = new PreferenceManager();
         IContributionFactory factory = context.get(IContributionFactory.class);
 
         for (IConfigurationElement elmt : registry.getConfigurationElementsFor(perferencePage)) {
             String bundleId = elmt.getNamespaceIdentifier();
+            String prefPageClassname = elmt.getAttribute(ATTR_CLASS);
+            String category = elmt.getAttribute(ATTR_CATEGORY) != null ? elmt.getAttribute(ATTR_CATEGORY) : "";
+            String nodeId = elmt.getAttribute(ATTR_ID);
+            String nodeName = elmt.getAttribute(ATTR_NAME);
             if (!elmt.getName().equals(ELMT_PAGE)) {
                 logger.warn(StringConstants.INL_LOG_WARN_UNEXPECTED_ELEMENT_X, elmt.getName());
                 continue;
-            } else if (isEmpty(elmt.getAttribute(ATTR_ID)) || isEmpty(elmt.getAttribute(ATTR_NAME))) {
+            } else if (isEmpty(nodeId) || isEmpty(nodeName)) {
                 logger.warn(StringConstants.INL_LOG_WARN_MISSING_ID_AND_OR_NAME, bundleId);
                 continue;
             }
-            PreferenceNode pn = null;
-            if (elmt.getAttribute(ATTR_CLASS) != null) {
-                PreferencePage page = null;
-                try {
-                    String prefPageURI = getClassURI(bundleId, elmt.getAttribute(ATTR_CLASS));
-                    Object object = factory.create(prefPageURI, context);
-                    if (!(object instanceof PreferencePage)) {
-                        logger.error(MessageFormat.format(StringConstants.INL_LOG_ERROR_EXPECTED_INSTANCE_OF_PREF_PAGE,
-                                elmt.getAttribute(ATTR_CLASS)));
-                        continue;
-                    }
-                    page = (PreferencePage) object;
-                    if (page.getPreferenceStore() == null) {
-                        setPreferenceStore(bundleId, page);
-                    }
 
-                } catch (ClassNotFoundException e) {
-                    logger.error(e);
-                    continue;
-                }
-                ContextInjectionFactory.inject(page, context);
-                if ((page.getTitle() == null || page.getTitle().isEmpty()) && elmt.getAttribute(ATTR_NAME) != null) {
-                    page.setTitle(elmt.getAttribute(ATTR_NAME));
-                }
-
-                pn = new PreferenceNode(elmt.getAttribute(ATTR_ID), page);
+            PreferenceNodeDescription nodeDesc = new PreferenceNodeDescriptionImpl(bundleId, nodeId, nodeName, category,
+                    prefPageClassname);
+            if (nodeDescriptionLookup.containsKey(category)) {
+                List<PreferenceNodeDescription> children = new ArrayList<>(nodeDescriptionLookup.get(category));
+                children.add(nodeDesc);
+                nodeDescriptionLookup.put(category, children);
             } else {
-                pn = new PreferenceNode(elmt.getAttribute(ATTR_ID), new EmptyPreferencePage(
-                        elmt.getAttribute(ATTR_NAME)));
-            }
-
-            // Issue 2 : Fix bug on order (see :
-            // https://github.com/opcoach/e4Preferences/issues/2)
-            // Add only pages at root level and remember of child pages for
-            // categories
-            String category = elmt.getAttribute(ATTR_CATEGORY);
-            if (isEmpty(category)) {
-                pm.addToRoot(pn);
-            } else {
-                /*
-                 * IPreferenceNode parent = findNode(pm, category); if (parent == null) { // No parent found, but may be
-                 * the extension has not been read yet. So remember of it unboundedNodes.put(pn, category); } else {
-                 * parent.add(pn); }
-                 */
-                // Check if this category is already registered.
-                Collection<IPreferenceNode> children = childrenNodes.get(category);
-                if (children == null) {
-                    children = new ArrayList<IPreferenceNode>();
-                    childrenNodes.put(category, children);
-                }
-                children.add(pn);
+                nodeDescriptionLookup.put(category, Arrays.asList(nodeDesc));
             }
         }
 
-        // Must now bind pages that has not been added in nodes (depends on the
-        // preference page read order)
-        // Iterate on all possible categories
-        Collection<String> categoriesDone = new ArrayList<String>();
+        for (String cat : Collections.unmodifiableSet(nodeDescriptionLookup.keySet())) {
+            IPreferenceNode parent = findNode(pm, cat);
+            if (parent == null && !cat.isEmpty()) {
+                continue;
+            }
+            for (PreferenceNodeDescription pnDesc : nodeDescriptionLookup.get(cat)) {
+                IPreferenceNode pn = null;
+                if (pnDesc.getPreferencePageClassName().isEmpty()) {
+                    pn = new PreferenceNode(pnDesc.getNodeId(), new EmptyPreferencePage(pnDesc.getNodeName()));
+                } else {
+                    PreferencePage page = null;
+                    try {
+                        String prefPageURI = getClassURI(pnDesc.getBundleId(), pnDesc.getPreferencePageClassName());
+                        Object object = factory.create(prefPageURI, context);
+                        if (!(object instanceof PreferencePage)) {
+                            logger.error(MessageFormat.format(
+                                    StringConstants.INL_LOG_ERROR_EXPECTED_INSTANCE_OF_PREF_PAGE,
+                                    pnDesc.getPreferencePageClassName()));
+                            continue;
+                        }
+                        page = (PreferencePage) object;
+                        if (page.getPreferenceStore() == null) {
+                            setPreferenceStore(pnDesc.getBundleId(), page);
+                        }
 
-        while (!childrenNodes.isEmpty()) {
-            for (String cat : Collections.unmodifiableSet(childrenNodes.keySet())) {
-                // Is this category already in preference manager ? If not add
-                // it later...
-                IPreferenceNode parent = findNode(pm, cat);
-                if (parent != null) {
-                    // Can add the list of children to this parent page...
-                    for (IPreferenceNode pn : childrenNodes.get(cat)) {
-                        parent.add(pn);
+                    } catch (ClassNotFoundException e) {
+                        logger.error(e);
+                        continue;
                     }
-                    // Ok This parent page is done. Can remove it from map
-                    // outside of this loop
-                    categoriesDone.add(cat);
+                    ContextInjectionFactory.inject(page, context);
+                    if ((page.getTitle() == null || page.getTitle().isEmpty()) && pnDesc.getNodeName() != null) {
+                        page.setTitle(pnDesc.getNodeName());
+                    }
+
+                    pn = new PreferenceNode(pnDesc.getNodeId(), page);
+                }
+                if (parent != null) {
+                    parent.add(pn);
+                } else {
+                    pm.addToRoot(pn);
                 }
             }
-
-            for (String keyToRemove : categoriesDone)
-                childrenNodes.remove(keyToRemove);
-            categoriesDone.clear();
-
         }
 
         return pm;
     }
 
     private void setPreferenceStore(String bundleId, PreferencePage page) {
-        
+
         // Affect preference store to this page if this is a
         // PreferencePage, else, must manage it internally
         // Set the issue#1 on github :
@@ -194,10 +180,12 @@ public class PreferencesRegistry {
         // Get the preference store according to policy.
         Object data = psProviders.get(bundleId);
         if (data != null) {
-            if (data instanceof IPreferenceStore) store = (IPreferenceStore) data;
-            else if (data instanceof IPreferenceStoreProvider) store = ((IPreferenceStoreProvider) data)
-                    .getPreferenceStore();
-            else if (data instanceof String) store = (IPreferenceStore) context.get((String) data);
+            if (data instanceof IPreferenceStore)
+                store = (IPreferenceStore) data;
+            else if (data instanceof IPreferenceStoreProvider)
+                store = ((IPreferenceStoreProvider) data).getPreferenceStore();
+            else if (data instanceof String)
+                store = (IPreferenceStore) context.get((String) data);
 
         } else {
             // Default behavior : create a preference store for this bundle and
@@ -206,7 +194,8 @@ public class PreferencesRegistry {
             psProviders.put(bundleId, store);
         }
 
-        if (store != null) page.setPreferenceStore(store);
+        if (store != null)
+            page.setPreferenceStore(store);
         else {
             logger.warn(MessageFormat.format(StringConstants.INL_LOG_WARN_CANNOT_SET_PREF_STORE_FOR_PAGE,
                     page.getTitle(), bundleId));
@@ -234,8 +223,8 @@ public class PreferencesRegistry {
                 String classname = elmt.getAttribute(ATTR_CLASS);
                 String objectId = elmt.getAttribute(ATTR_ID_IN_WBCONTEXT);
 
-                if ((isEmpty(classname) && isEmpty(objectId))
-                        || (((classname != null) && classname.length() > 0) && ((objectId != null) && objectId.length() > 0))) {
+                if ((isEmpty(classname) && isEmpty(objectId)) || (((classname != null) && classname.length() > 0)
+                        && ((objectId != null) && objectId.length() > 0))) {
                     logger.warn(MessageFormat.format(StringConstants.INL_LOG_WARN_IN_EXT_ONLY_1_OR_2_ATTR_MUST_BE_SET,
                             PREF_STORE_PROVIDER, declaringBundle));
                     continue;

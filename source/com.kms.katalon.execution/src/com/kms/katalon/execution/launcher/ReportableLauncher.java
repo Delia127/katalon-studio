@@ -73,8 +73,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
-        
-        fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_FINISHED_EVENT);
 
         try {
             setStatus(LauncherStatus.PREPARE_REPORT);
@@ -95,6 +93,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         waitForLoggingFinished();
+
+        fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_FINISHED_EVENT);
         
         if (needToRerun()) {
             Rerunable rerun = (Rerunable) getExecutedEntity();

@@ -4,9 +4,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.katalon.platform.api.exception.PlatformException;
 import com.katalon.platform.api.model.FolderEntity;
-import com.katalon.platform.api.ui.DialogHelper;
+import com.katalon.platform.api.ui.DialogService;
 
-public class DialogHelperImpl implements DialogHelper {
+public class DialogHelperImpl implements DialogService {
 
     @Override
     public FolderEntity showTestCaseFolderSelectionDialog(Shell parentShell, String dialogTitle)

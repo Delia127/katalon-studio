@@ -48,7 +48,7 @@ public class Application implements IApplication {
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;
         }
-        
+
         if (!activateInternalPlatformBundle()) {
             return IApplication.EXIT_OK;
         }
@@ -116,11 +116,6 @@ public class Application implements IApplication {
     private int internalRunGUI() {
         Display display = PlatformUI.createDisplay();
         try {
-//            if (Platform.OS_LINUX.equals(Platform.getOS())) {
-//                LinuxNotSupportedDialog dialog = new LinuxNotSupportedDialog(display.getActiveShell());
-//                dialog.open();
-//                return PlatformUI.RETURN_OK;
-//            }
             return PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
         } catch (Exception e) {
             LogUtil.logError(e);
@@ -187,12 +182,13 @@ public class Application implements IApplication {
             return false;
         }
     }
-    
+
     private boolean activateInternalPlatformBundle() {
         try {
             Platform.getBundle("com.kms.katalon.platform.internal").start();
             return true;
         } catch (BundleException ex) {
             return false;
-        }    }
+        }
+    }
 }

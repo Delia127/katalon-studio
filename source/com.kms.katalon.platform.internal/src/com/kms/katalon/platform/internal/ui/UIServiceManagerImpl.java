@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.katalon.platform.api.service.UIServiceManager;
-import com.katalon.platform.api.ui.DialogHelper;
+import com.katalon.platform.api.ui.DialogService;
 import com.katalon.platform.api.ui.UIService;
 
 public class UIServiceManagerImpl implements UIServiceManager {
@@ -12,7 +12,7 @@ public class UIServiceManagerImpl implements UIServiceManager {
 
     {
         lookup = new HashMap<>();
-        lookup.put(DialogHelper.class.getName(), new DialogHelperImpl());
+        lookup.put(DialogService.class.getName(), new DialogHelperImpl());
     }
 
     @SuppressWarnings("unchecked")

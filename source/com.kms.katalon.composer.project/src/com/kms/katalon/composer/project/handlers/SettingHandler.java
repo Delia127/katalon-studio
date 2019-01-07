@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.project.handlers;
 
+import java.util.Collections;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -74,7 +76,8 @@ public class SettingHandler {
     }
 
     private void openSettingsDialogToPage(Shell shell, PreferencesRegistry preferencesRegistry, String pageId) {
-        PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP);
+        PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP,
+                Collections.emptyMap());
 
         hideIOSPageOnNoneMacOS(pm);
 

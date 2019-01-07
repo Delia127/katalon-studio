@@ -8,16 +8,17 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: com.katalon.platform,
  com.kms.katalon.composer.components,
  com.kms.katalon.controller,
- com.kms.katalon.composer.components.impl,
  com.kms.katalon.entity,
  org.apache.commons.lang3,
- com.kms.katalon.composer.util,
  org.eclipse.e4.core.services,
  com.kms.katalon.constant,
- org.eclipse.swt,
  org.eclipse.jface,
- org.eclipse.osgi,
- com.kms.katalon.core
-Bundle-Activator: com.kms.katalon.platform.internal.Activator
+ com.kms.katalon.core,
+ org.eclipse.ui.workbench,
+ org.eclipse.core.runtime,
+ org.eclipse.e4.core.contexts,
+ org.eclipse.osgi.services
+Bundle-Activator: com.kms.katalon.platform.internal.InternalPlatformPlugin
 Bundle-ActivationPolicy: lazy
-Export-Package: com.kms.katalon.platform.internal.entity
+Export-Package: com.kms.katalon.platform.internal,
+ com.kms.katalon.platform.internal.entity
