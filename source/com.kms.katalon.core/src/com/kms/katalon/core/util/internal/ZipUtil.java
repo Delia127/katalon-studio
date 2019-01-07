@@ -5,14 +5,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 public class ZipUtil {
+    
     public static void extract(File file, File destFolder) throws IOException {
         ZipFile zipFile = new ZipFile(file);
         try {
@@ -65,5 +70,26 @@ public class ZipUtil {
         } finally {
             zipFile.close();
         }
+    }
+    
+    public static Path compress(List<Path> files, Path zipfile) throws IOException {
+        OutputStream zipFileOutputStream = null;
+        ZipOutputStream zipOutputStream = null;
+        try {
+            zipFileOutputStream = Files.newOutputStream(zipfile);
+            zipOutputStream = new ZipOutputStream(zipFileOutputStream);
+            for (Path file : files) {
+                InputStream fileInputStream = Files.newInputStream(file);
+                ZipEntry zipEntry = new ZipEntry(file.toFile().getName());
+                zipOutputStream.putNextEntry(zipEntry);
+     
+                IOUtils.copy(fileInputStream, zipOutputStream);
+                IOUtils.closeQuietly(fileInputStream);
+            }
+        } finally {
+            zipOutputStream.close();
+            zipFileOutputStream.close();
+        }
+        return zipfile;
     }
 }

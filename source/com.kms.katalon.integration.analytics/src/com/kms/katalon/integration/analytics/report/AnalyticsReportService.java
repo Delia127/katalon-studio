@@ -6,12 +6,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
@@ -105,12 +106,18 @@ public class AnalyticsReportService implements AnalyticsComponent {
             addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachScreenshot(), AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
             addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachLog(), AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
             addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachCapturedVideos(), AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_HAR_FILE_EXTENSION_PATTERN));
+            addToList(files, scanHarFiles(path));
             addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
         } catch (IOException e) {
             LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
         }
         return files;
+    }
+    
+    private List<Path> scanHarFiles(String path) throws IOException {
+        List<Path> harFiles = scanFilesWithFilter(path, true,  AnalyticsStringConstants.ANALYTICS_HAR_FILE_EXTENSION_PATTERN);
+        Path zipFile =  FileUtils.createTemporaryFile(path + "katalon-analitics-tmp", "hars-", ".zip");
+        return Arrays.asList(ZipUtil.compress(harFiles, zipFile));
     }
     
     private void addToList(List<Path> files, List<Path> other) {
