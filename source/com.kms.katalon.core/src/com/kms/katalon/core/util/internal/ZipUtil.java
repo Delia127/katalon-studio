@@ -87,8 +87,12 @@ public class ZipUtil {
                 IOUtils.closeQuietly(fileInputStream);
             }
         } finally {
-            zipOutputStream.close();
-            zipFileOutputStream.close();
+            if (zipFileOutputStream != null) {
+                zipFileOutputStream.close();
+            }
+            if (zipOutputStream != null) {
+                zipOutputStream.close();
+            }
         }
         return zipfile;
     }
