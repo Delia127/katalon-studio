@@ -23,7 +23,7 @@ public abstract class AbstractTestCaseIntegrationView {
 		TestCaseIntegrationPart integrationPart = (TestCaseIntegrationPart) mpart.getObject();
 		integrationPart.setDirty(dirty);
 	}
-	
+
 	public boolean isDirty() {
 		TestCaseIntegrationPart integrationPart = (TestCaseIntegrationPart) mpart.getObject();
 		

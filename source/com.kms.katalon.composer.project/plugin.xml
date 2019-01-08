@@ -19,7 +19,7 @@
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
             class="com.kms.katalon.composer.project.preference.PluginPreferencePage"
-            id="com.kms.katalon.composer.project.preference.plugin"
+            id="com.kms.katalon.composer.project.preference.pluginPreferencePage"
             name="Plugins">
       </page>
    </extension>

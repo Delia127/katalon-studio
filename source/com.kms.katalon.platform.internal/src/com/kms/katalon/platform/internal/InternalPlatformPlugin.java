@@ -1,5 +1,8 @@
 package com.kms.katalon.platform.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -13,12 +16,17 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.platform.internal.event.ProjectEventPublisher;
 
 public class InternalPlatformPlugin implements BundleActivator {
+
+    private List<InternalPlatformService> platformServices = new ArrayList<>();
 
     @Override
     public void start(BundleContext context) throws Exception {
         activatePlatform(context);
+
+        platformServices.forEach(service -> service.onPostConstruct());
     }
 
     private void activatePlatform(BundleContext context) throws BundleException {
@@ -30,11 +38,9 @@ public class InternalPlatformPlugin implements BundleActivator {
         IEventBroker eventBroker = modelContext.get(IEventBroker.class);
 
         PlatformServiceProvider platformServiceProvider = PlatformServiceProvider.getInstance();
-        eventBroker.post("KATALON_PLATFORM/CONTROLLER_MANAGER_ADDED",
-                platformServiceProvider.getControllerManager());
+        eventBroker.post("KATALON_PLUGIN/CONTROLLER_MANAGER_ADDED", platformServiceProvider.getControllerManager());
 
-        eventBroker.post("KATALON_PLATFORM/UISERVICE_MANAGER_ADDED",
-                platformServiceProvider.getUiServiceManager());
+        eventBroker.post("KATALON_PLUGIN/UISERVICE_MANAGER_ADDED", platformServiceProvider.getUiServiceManager());
         eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, new EventHandler() {
 
             @Override
@@ -42,11 +48,13 @@ public class InternalPlatformPlugin implements BundleActivator {
                 IEclipseContext eclipseContext = PlatformUI.getWorkbench().getService(IEclipseContext.class);
                 bundle.getBundleContext().registerService(IEclipseContext.class, eclipseContext, null);
             }
-            
         });
+
+        platformServices.add(new ProjectEventPublisher(eventBroker));
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        platformServices.forEach(service -> service.onPreDestroy());
     }
 }

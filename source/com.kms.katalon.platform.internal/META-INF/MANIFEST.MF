@@ -17,8 +17,10 @@ Require-Bundle: com.katalon.platform,
  org.eclipse.ui.workbench,
  org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,
- org.eclipse.osgi.services
+ org.eclipse.osgi.services,
+ com.kms.katalon.composer.components.impl,
+ com.kms.katalon.composer.explorer,
+ com.kms.katalon.composer.util,
+ org.eclipse.jdt.core
 Bundle-Activator: com.kms.katalon.platform.internal.InternalPlatformPlugin
 Bundle-ActivationPolicy: lazy
-Export-Package: com.kms.katalon.platform.internal,
- com.kms.katalon.platform.internal.entity

@@ -14,8 +14,10 @@ import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
+import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.platform.internal.entity.TestCaseEntityImpl;
 
 public class TestCaseControllerImpl implements com.katalon.platform.api.controller.TestCaseController {
@@ -62,6 +64,7 @@ public class TestCaseControllerImpl implements com.katalon.platform.api.controll
                 throw new ResourceException("Folder not found");
             }
             TestCaseEntity testCase = new TestCaseEntity();
+            testCase.setTestCaseGuid(Util.generateGuid());
             testCase.setName(newDescription.getName());
             testCase.setDescription(newDescription.getDescription());
             testCase.setComment(newDescription.getComment());
@@ -95,6 +98,7 @@ public class TestCaseControllerImpl implements com.katalon.platform.api.controll
             IntegratedEntity newIntegrated = new IntegratedEntity();
             newIntegrated.setProductName(integrationName);
             newIntegrated.setProperties(integration.getProperties());
+            newIntegrated.setType(IntegratedType.TESTCASE);
 
             testCaseEntity.updateIntegratedEntity(newIntegrated);
 

@@ -7,7 +7,7 @@ import com.katalon.platform.api.model.Integration;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuiteEntityImpl implements com.katalon.platform.api.model.TestSuiteEntity {
-    
+
     private final TestSuiteEntity source;
 
     public TestSuiteEntityImpl(TestSuiteEntity source) {
@@ -16,7 +16,10 @@ public class TestSuiteEntityImpl implements com.katalon.platform.api.model.TestS
 
     @Override
     public List<Integration> getIntegrations() {
-        return source.getIntegratedEntities().stream().map(i -> new IntegrationImpl(i)).collect(Collectors.toList());
+        return source.getIntegratedEntities()
+                .stream()
+                .map(i -> new IntegrationImpl(i))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -27,5 +30,15 @@ public class TestSuiteEntityImpl implements com.katalon.platform.api.model.TestS
     @Override
     public String getParentFolderId() {
         return source.getParentFolder().getIdForDisplay();
+    }
+
+    @Override
+    public Integration getIntegration(String integrationName) {
+        return source.getIntegratedEntities()
+                .stream()
+                .filter(i -> i.getProductName().equals(integrationName))
+                .map(i -> new IntegrationImpl(i))
+                .findFirst()
+                .orElseGet(null);
     }
 }

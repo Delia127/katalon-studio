@@ -56,8 +56,12 @@ public class FolderController extends EntityController implements Serializable {
      * @param parentFolder : test case folder
      * @return Returns list of test case entity
      */
-    public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception {
-        return getDataProviderSetting().getFolderDataProvider().getTestCaseChildren(parentFolder);
+    public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws ControllerException {
+        try {
+            return getDataProviderSetting().getFolderDataProvider().getTestCaseChildren(parentFolder);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public List<Object> getAllDescentdantEntities(FolderEntity folder) throws Exception {
@@ -86,8 +90,12 @@ public class FolderController extends EntityController implements Serializable {
         return getDataProviderSetting().getFolderDataProvider().getTestSuiteRoot(project);
     }
 
-    public FolderEntity getTestCaseRoot(ProjectEntity project) throws Exception {
-        return getDataProviderSetting().getFolderDataProvider().getTestCaseRoot(project);
+    public FolderEntity getTestCaseRoot(ProjectEntity project) throws ControllerException {
+        try {
+            return getDataProviderSetting().getFolderDataProvider().getTestCaseRoot(project);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public FolderEntity getTestDataRoot(ProjectEntity project) throws Exception {
@@ -118,9 +126,13 @@ public class FolderController extends EntityController implements Serializable {
         getDataProviderSetting().getFolderDataProvider().deleteFolder(folder);
     }
 
-    public FolderEntity addNewFolder(FolderEntity parentFolder, String folderName) throws Exception {
+    public FolderEntity addNewFolder(FolderEntity parentFolder, String folderName) throws ControllerException {
         if (parentFolder != null) {
-            return getDataProviderSetting().getFolderDataProvider().addNewFolder(parentFolder, folderName);
+            try {
+                return getDataProviderSetting().getFolderDataProvider().addNewFolder(parentFolder, folderName);
+            } catch (Exception e) {
+                throw new ControllerException(e);
+            }
         }
         return null;
     }

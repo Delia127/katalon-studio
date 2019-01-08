@@ -1624,8 +1624,8 @@
          install-size="0"
          version="1.0.0.qualifier"
          unpack="false"/>
-         
- 	<plugin
+
+   <plugin
          id="com.kms.katalon.netlightbody"
          download-size="0"
          install-size="0"
@@ -2308,20 +2308,20 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
-	<plugin
-	     id="com.kms.katalon.ansiconsole"
-	     download-size="0"
-	     install-size="0"
-	     version="0.0.0"
-	     unpack="false"/>
-	     
- 	<plugin
-	     id="com.kms.katalon.platform.internal"
-	     download-size="0"
-	     install-size="0"
-	     version="0.0.0"
-	     unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.ansiconsole"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.platform.internal"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.greenrobot.eventbus"
@@ -2533,7 +2533,7 @@
          version="0.0.0"
          unpack="false"/>
 
-	<plugin
+   <plugin
          id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"
          download-size="0"
          install-size="0"
@@ -2547,7 +2547,7 @@
          version="0.0.0"
          unpack="false"/>
 
-	<plugin
+   <plugin
          id="com.fasterxml.woodstox.woodstox-core"
          download-size="0"
          install-size="0"
@@ -2582,7 +2582,7 @@
          version="0.0.0"
          unpack="false"/>
 
-	<plugin
+   <plugin
          id="stax2-api"
          download-size="0"
          install-size="0"
@@ -2596,7 +2596,7 @@
          version="0.0.0"
          unpack="false"/>
 
-	<plugin
+   <plugin
          id="com.kms.katalon.composer.integration.qtest.activation"
          download-size="0"
          install-size="0"
@@ -2612,6 +2612,13 @@
 
    <plugin
          id="xml-apis"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.commons-text"
          download-size="0"
          install-size="0"
          version="0.0.0"
