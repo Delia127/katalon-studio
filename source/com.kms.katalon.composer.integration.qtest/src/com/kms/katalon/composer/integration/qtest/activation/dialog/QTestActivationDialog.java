@@ -268,7 +268,7 @@ public class QTestActivationDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(500, super.getInitialSize().y + 20);
+        return new Point(500, super.getInitialSize().y + 50);
     }
     
     @Override
