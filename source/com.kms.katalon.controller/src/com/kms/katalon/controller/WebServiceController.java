@@ -2,8 +2,11 @@ package com.kms.katalon.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -38,7 +41,7 @@ public class WebServiceController extends EntityController {
         return (WebServiceController) _instance;
     }
 
-    private RequestObject getRequestObject(WebServiceRequestEntity entity, String projectDir,
+    public static RequestObject getRequestObject(WebServiceRequestEntity entity, String projectDir,
             Map<String, Object> variables) {
         RequestObject requestObject = new RequestObject(entity.getId());
         String serviceType = entity.getServiceType();
@@ -110,4 +113,15 @@ public class WebServiceController extends EntityController {
     public List<RequestHistoryEntity> getRequestHistories() {
         return Collections.emptyList();
     }
+	
+	public static String extractParamFromRestUrl(String key, String restUrl) {
+		// matches {key=value}
+		String pattern = "(" + key + ")\\=([^&]+)";
+		Pattern r = Pattern.compile(pattern);
+		Matcher m = r.matcher(restUrl);
+		if (m.find()) {
+			return m.group(0).split("=")[1];
+		}
+		return StringUtils.EMPTY;
+	}
 }

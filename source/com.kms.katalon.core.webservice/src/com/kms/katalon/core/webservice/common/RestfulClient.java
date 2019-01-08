@@ -132,7 +132,7 @@ public class RestfulClient extends BasicRequestor {
         }
     }
 
-    private static void processRequestParams(RequestObject request) throws MalformedURLException {
+    public static void processRequestParams(RequestObject request) throws MalformedURLException {
         StringBuilder paramString = new StringBuilder();
         for (TestObjectProperty property : request.getRestParameters()) {
             if (StringUtils.isEmpty(property.getName())) {

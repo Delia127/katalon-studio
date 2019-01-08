@@ -327,7 +327,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             if (isInstant) {
                 startInstantSession();
                 invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
-            } else {            	
+            } else {
                 startServer();
                 startRecordSession();
                 invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
