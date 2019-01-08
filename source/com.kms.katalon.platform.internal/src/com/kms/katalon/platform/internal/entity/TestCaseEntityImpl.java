@@ -63,12 +63,16 @@ public class TestCaseEntityImpl implements com.katalon.platform.api.model.TestCa
 
     @Override
     public Integration getIntegration(String integrationName) {
+        if (StringUtils.isEmpty(integrationName)) {
+            return null;
+        }
         return source.getIntegratedEntities()
                 .stream()
-                .filter(i -> i.getProductName().equals(integrationName))
-                .map(i -> new IntegrationImpl(i))
+                .filter(i -> {
+                    return i.getProductName() != null && i.getProductName().equals(integrationName);
+                }).map(i -> new IntegrationImpl(i))
                 .findFirst()
-                .orElseGet(null);
+                .orElse(null);
     }
 
     @Override
