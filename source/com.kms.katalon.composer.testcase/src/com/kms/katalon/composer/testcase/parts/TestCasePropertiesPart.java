@@ -2,33 +2,48 @@ package com.kms.katalon.composer.testcase.parts;
 
 import static org.apache.commons.lang.StringUtils.join;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.util.CssUtil;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.dialogs.ManageTestCaseTagDialog;
+import com.kms.katalon.composer.testcase.dialogs.TestCaseTagSelectionDialog;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class TestCasePropertiesPart extends CPart {
+    
+    private static final char TAGS_DELIMITER = ',';
 
     @Inject
     private EPartService partService;
@@ -52,6 +67,10 @@ public class TestCasePropertiesPart extends CPart {
     private Text txtDescription;
 
     private Text txtComment;
+    
+    private Button btnSelectTags;
+    
+    private Button btnManageTags;
 
     private boolean isInputLoaded;
 
@@ -112,7 +131,17 @@ public class TestCasePropertiesPart extends CPart {
         createLabel(StringConstants.TAG, left, SWT.CENTER);
         txtTag = new Text(left, SWT.BORDER);
         txtTag.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
+        
+        createLabel(StringUtils.EMPTY, left, SWT.CENTER);
+        
+        Composite tagComposite = new Composite(left, SWT.NONE);
+        tagComposite.setLayout(new GridLayout(2, false));
+        tagComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false));
+        btnSelectTags = new Button(tagComposite, SWT.NONE);
+        btnSelectTags.setText("Select tags");
+        btnManageTags = new Button(tagComposite, SWT.NONE);
+        btnManageTags.setText("Manage tags");
+        
         createLabel(StringConstants.DESCRIPTION, left, SWT.TOP);
         txtDescription = new Text(left, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         GridData gdDesc = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -162,6 +191,7 @@ public class TestCasePropertiesPart extends CPart {
                 setDirty(true);
             }
         });
+        
         txtDescription.addModifyListener(new ModifyListener() {
 
             @Override
@@ -171,6 +201,50 @@ public class TestCasePropertiesPart extends CPart {
                 setDirty(true);
             }
         });
+        
+        btnSelectTags.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Set<String> tags = parseTags(txtTag.getText());
+                TestCaseTagSelectionDialog dialog = new TestCaseTagSelectionDialog(
+                        Display.getCurrent().getActiveShell(), tags);
+                if (dialog.open() == Dialog.OK) {
+                    Set<String> selectedTags = dialog.getSelectedTags();
+                    tags.addAll(selectedTags);
+                    String tagsString = joinTags(tags);
+                    txtTag.setText(tagsString);
+                }
+            }
+        });
+        
+        btnManageTags.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                ManageTestCaseTagDialog dialog = new ManageTestCaseTagDialog(Display.getCurrent().getActiveShell());
+                dialog.open();
+            }
+        });
+    }
+    
+    private Set<String> parseTags(String tagsString) {
+        if (StringUtils.isBlank(tagsString)) {
+            return new HashSet<>();
+        }
+        Set<String> tags = new LinkedHashSet<>();
+        String[] arrTags = StringUtils.split(tagsString, TAGS_DELIMITER);
+        if (arrTags != null) {
+            for (String tag : arrTags) {
+                tags.add(tag);
+            }
+        }
+        return tags;
+    }
+    
+    private String joinTags(Set<String> tags) {
+        if (tags == null) {
+            return StringUtils.EMPTY;
+        }
+        return StringUtils.join(tags, TAGS_DELIMITER);
     }
 
     public void loadInput() {
