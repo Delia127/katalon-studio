@@ -456,7 +456,7 @@ public class QTestIntegrationTestSuiteManager {
                     break;
                 }
 
-                if (fieldJsonObject.has("label") && "Planned Start Date".equals(fieldJsonObject.getString("label"))) {
+             /*   if (fieldJsonObject.has("label") && "Planned Start Date".equals(fieldJsonObject.getString("label"))) {
                     fieldValues.add(new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
                             DateUtil.formatDate(new Date())));
                 }
@@ -464,7 +464,7 @@ public class QTestIntegrationTestSuiteManager {
                 if (fieldJsonObject.has("label") && "Planned End Date".equals(fieldJsonObject.getString("label"))) {
                     fieldValues.add(new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
                             DateUtil.formatDate(new Date())));
-                }
+                }*/
             } catch (JsonException e) {
                 throw QTestInvalidFormatException.createInvalidJsonFormatException(reponseJsonArray.toString());
             }
@@ -609,15 +609,6 @@ public class QTestIntegrationTestSuiteManager {
                 QTestRelease release = new QTestRelease();
                 release.setId(testReleaseJsonObject.getLong(QTestEntity.ID_FIELD));
                 release.setName(testReleaseJsonObject.getString(QTestEntity.NAME_FIELD));
-                String endDate = testReleaseJsonObject.getString("end_date");
-                try {
-                    if (DateUtil.parseDate(endDate).before(new Date())) {
-                        continue;
-                    }
-                } catch (ParseException e) {
-                    LogUtil.logError(e);
-                }
-
                 release.setCycles((getCycles(qTestProject, release, credential)));
                 qTestReleases.add(release);
             }

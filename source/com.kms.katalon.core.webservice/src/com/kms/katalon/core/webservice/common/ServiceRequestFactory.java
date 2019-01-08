@@ -15,7 +15,7 @@ public class ServiceRequestFactory {
     		ProxyInformation proxyInformation, boolean calledFromKeyword) {
     	// Overwrite useMobBrowserProxy if it's from WebServicePart/SoapServicePart
     	if(!calledFromKeyword){
-    		proxyInformation.setUseMobBrowserProxy(false);
+    		proxyInformation.setDisableMobBrowserProxy(true);
     	}
         if (RequestHeaderConstants.SOAP.equalsIgnoreCase(request.getServiceType())) {
             return new SoapClient(projectDir, proxyInformation);
