@@ -394,6 +394,8 @@ public class ComposerIntegrationQtestMessageConstants extends NLS {
     public static String DIA_MSG_ONLINE_ACTIVATION_LICENSE_NOT_FOUND;
 
     public static String DIA_MSG_ONLINE_ACTIVATION_INTERNAL_SERVER_ERROR;
+    
+    public static String DIA_MSG_USER_GUIDE;
 
     // QTestActivationSuccessDialog
     public static String DIA_TITLE_LICENSE_INFORMATION;
