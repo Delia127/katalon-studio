@@ -115,12 +115,12 @@ pipeline {
             }
         }
         
-        stage('Package .DMG file') {
-            steps {
-                    // Execute codesign command to package .DMG file for macOS
-                    sh "./package.sh ${env.tmpDir}"
-            }
-        }
+        // stage('Package .DMG file') {
+        //     steps {
+        //             // Execute codesign command to package .DMG file for macOS
+        //             sh "./package.sh ${env.tmpDir}"
+        //     }
+        // }
 
         stage ('Success') {
             steps {
