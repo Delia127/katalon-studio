@@ -289,6 +289,10 @@
                                     <id>com.katalon:com.katalon.platform:${platform.version}</id>
                                     <transitive>false</transitive>
                                 </artifact>
+                                <artifact>
+                                    <id>org.apache.commons:commons-text:1.6</id>
+                                    <transitive>false</transitive>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>

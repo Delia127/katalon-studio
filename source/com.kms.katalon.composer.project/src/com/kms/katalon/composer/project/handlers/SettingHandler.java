@@ -1,5 +1,11 @@
 package com.kms.katalon.composer.project.handlers;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -29,6 +35,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
+import com.katalon.platform.api.Extension;
+import com.katalon.platform.api.extension.PluginPreferencePage;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -40,10 +49,13 @@ import com.kms.katalon.composer.project.exception.MissingProjectSettingPageExcep
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.preferences.PreferenceNodeDescription;
+import com.kms.katalon.preferences.internal.PreferenceNodeDescriptionImpl;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;
 
 public class SettingHandler {
 
+    private static final String PARENT_PLUGIN_PREFERENCE_PAGE_ID = "com.kms.katalon.composer.project.preference.pluginPreferencePage";
     @Inject
     private IEclipseContext eclipseContext;
 
@@ -73,8 +85,35 @@ public class SettingHandler {
         openSettingsDialogToPage(Display.getCurrent().getActiveShell(), preferencesRegistry, pageId);
     }
 
+    private Map<String, List<PreferenceNodeDescription>> getPluginPreferences() {
+        Collection<Extension> extensions = ApplicationManager.getInstance()
+                .getExtensionManager()
+                .getExtensions(PluginPreferencePage.EXTENSION_POINT_ID);
+        List<PreferenceNodeDescription> pluginNodes = extensions.stream()
+                .map(e -> getPreferenceNodeDescription(e))
+                .filter(node -> node != null)
+                .collect(Collectors.toList());
+        Map<String, List<PreferenceNodeDescription>> pluginPreferences = new HashMap<>();
+        pluginPreferences.put(PARENT_PLUGIN_PREFERENCE_PAGE_ID, pluginNodes);
+        return pluginPreferences;
+    }
+
+    private PreferenceNodeDescription getPreferenceNodeDescription(Extension e) {
+        if (e.getImplementationClass() instanceof PluginPreferencePage) {
+            PluginPreferencePage pluginPreferencePage = (PluginPreferencePage) e.getImplementationClass();
+            String bundleId = e.getPluginId();
+            String nodeId = pluginPreferencePage.getPageId();
+            String nodeName = pluginPreferencePage.getName();
+            String parentNodeId = PARENT_PLUGIN_PREFERENCE_PAGE_ID;
+            return new PreferenceNodeDescriptionImpl(bundleId, nodeId, nodeName, parentNodeId,
+                    pluginPreferencePage.getPreferencePageClass().getName());
+        }
+        return null;
+    }
+
     private void openSettingsDialogToPage(Shell shell, PreferencesRegistry preferencesRegistry, String pageId) {
-        PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP);
+        PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP,
+                getPluginPreferences());
 
         hideIOSPageOnNoneMacOS(pm);
 
