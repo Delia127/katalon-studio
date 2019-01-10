@@ -61,9 +61,12 @@ public class InAppSurveyDialog extends Dialog {
             {
                 int numberOfStarsSelected = star.getSelection();
                 numberOfStars = numberOfStarsSelected;
-                if(numberOfStarsSelected != 0){
-                	getButton(Dialog.OK).setEnabled(true);
-                }
+				if (numberOfStarsSelected != 0 && !txtUserIdea.getText().isEmpty()) {
+					getButton(Dialog.OK).setEnabled(true);
+				} else {
+					getButton(Dialog.OK).setEnabled(false);
+				}
+                
                 if(numberOfStarsSelected >= 0 && numberOfStarsSelected <= 2){
                 	lblUserIdea.setText("We're sorry :(. What didn't you like about Katalon Studio?");  
                 }else if(numberOfStarsSelected <=4 ){
@@ -117,6 +120,18 @@ public class InAppSurveyDialog extends Dialog {
         lblUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         txtUserIdea = new Text(userIdeaComposite, SWT.BORDER);
         txtUserIdea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        txtUserIdea.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				userIdea = txtUserIdea.getText();
+				if(star.getSelection() != 0 && !txtUserIdea.getText().isEmpty()){
+					getButton(Dialog.OK).setEnabled(true);
+				}else{
+					getButton(Dialog.OK).setEnabled(false);
+				}
+			}
+		});
+        
         return container;
 	}
     

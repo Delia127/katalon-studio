@@ -13,7 +13,7 @@ public class ProxyInformation {
 
     private String proxyServerAddress;
     
-    private boolean useMobBrowserProxy;
+    private boolean disableMobBrowserProxy;
     
     private int proxyServerPort;
 
@@ -87,11 +87,11 @@ public class ProxyInformation {
                 + "}";
     }
 
-	public void setUseMobBrowserProxy(boolean boolean1) {
-		this.useMobBrowserProxy = boolean1;
+	public void setDisableMobBrowserProxy(boolean boolean1) {
+		this.disableMobBrowserProxy = boolean1;
 	}
 	
-	public boolean getUseMobBroserProxy(){
-		return useMobBrowserProxy;
+	public boolean getDisableMobBroserProxy(){
+		return disableMobBrowserProxy;
 	}
 }

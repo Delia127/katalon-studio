@@ -39,19 +39,21 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
@@ -166,6 +168,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         }
     };
 
+    private Spinner spnMaxConcurrentThread;
+
     @PostConstruct
     public void initialize(Composite parent, MPart mpart) {
         this.mpart = mpart;
@@ -208,13 +212,24 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tableViewer.setInput(cloneTestSuite.getTestSuiteRunConfigurations());
         updateExecutionInfoInput();
         updateRunColumn();
+        
+        mpart.setDirty(false);
     }
 
     private void updateExecutionInfoInput() {
-        if (cloneTestSuite.getExecutionMode() == ExecutionMode.PARALLEL) {
+        setStatusForRadioExecutionMode(cloneTestSuite.getExecutionMode());
+        spnMaxConcurrentThread.setSelection(cloneTestSuite.getMaxConcurrentInstances());
+    }
+    
+    private void setStatusForRadioExecutionMode(ExecutionMode mode) {
+        if (mode == ExecutionMode.PARALLEL) {
             btnParallel.setSelection(true);
+            btnSequential.setSelection(false);
+            spnMaxConcurrentThread.setEnabled(true);
         } else {
             btnSequential.setSelection(true);
+            btnParallel.setSelection(false);
+            spnMaxConcurrentThread.setEnabled(false);
         }
     }
 
@@ -247,11 +262,13 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             public void widgetSelected(SelectionEvent e) {
                 if (e.getSource() == btnSequential && cloneTestSuite.getExecutionMode() != ExecutionMode.SEQUENTIAL) {
                     cloneTestSuite.setExecutionMode(ExecutionMode.SEQUENTIAL);
+                    setStatusForRadioExecutionMode(cloneTestSuite.getExecutionMode());
                     markDirty();
                     return;
                 }
                 if (e.getSource() == btnParallel && cloneTestSuite.getExecutionMode() != ExecutionMode.PARALLEL) {
                     cloneTestSuite.setExecutionMode(ExecutionMode.PARALLEL);
+                    setStatusForRadioExecutionMode(cloneTestSuite.getExecutionMode());
                     markDirty();
                 }
             }
@@ -259,6 +276,15 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
         btnSequential.addSelectionListener(selectionListener);
         btnParallel.addSelectionListener(selectionListener);
+        
+        spnMaxConcurrentThread.addModifyListener(new ModifyListener() {
+            
+            @Override
+            public void modifyText(ModifyEvent e) {
+                cloneTestSuite.setMaxConcurrentInstances(spnMaxConcurrentThread.getSelection());
+                markDirty();
+            }
+        });
     }
 
     private void createControls(Composite parent) {
@@ -299,7 +325,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         lblExecutionInformation.setText(ComposerTestsuiteCollectionMessageConstants.LBL_EXECUTION_INFO);
 
         compositeExecutionInformation = new Composite(compositeExecution, SWT.NONE);
-        GridLayout glCompositeInformationDetails = new GridLayout(3, true);
+        GridLayout glCompositeInformationDetails = new GridLayout(1, true);
         glCompositeInformationDetails.marginLeft = 45;
         glCompositeInformationDetails.horizontalSpacing = 40;
         compositeExecutionInformation.setLayout(glCompositeInformationDetails);
@@ -314,22 +340,44 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         compositeTestSuiteCollectionExecutionMode.setLayout(glCompositeTestSuiteCollectionExecutionMode);
 
         Label lblTestSuiteCollectionExecutionMode = new Label(compositeTestSuiteCollectionExecutionMode, SWT.NONE);
-        GridData gdLblTestSuiteCollectionExecutionMode = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        GridData gdLblTestSuiteCollectionExecutionMode = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
         gdLblTestSuiteCollectionExecutionMode.widthHint = 100;
+        gdLblTestSuiteCollectionExecutionMode.verticalIndent = 5;
         lblTestSuiteCollectionExecutionMode.setLayoutData(gdLblTestSuiteCollectionExecutionMode);
         lblTestSuiteCollectionExecutionMode
                 .setText(ComposerTestsuiteCollectionMessageConstants.LBL_TEST_SUTE_COLLECTION_EXECUTION_MODE);
 
-        Composite compositeExecutionRadioGroup = new Composite(compositeTestSuiteCollectionExecutionMode, SWT.NULL);
-        compositeExecutionRadioGroup.setLayout(new RowLayout());
+        Composite compositeExecutionRadioGroup = new Composite(compositeTestSuiteCollectionExecutionMode, SWT.NONE);
+        compositeExecutionRadioGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        compositeExecutionRadioGroup.setLayout(new GridLayout());
 
         btnSequential = new Button(compositeExecutionRadioGroup, SWT.RADIO);
         btnSequential.setText(
                 ComposerTestsuiteCollectionMessageConstants.BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_SEQUENTIAL);
+        btnSequential.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 
-        btnParallel = new Button(compositeExecutionRadioGroup, SWT.RADIO);
+        Composite cpstParallel = new Composite(compositeExecutionRadioGroup, SWT.NONE);
+        GridLayout glParallel = new GridLayout(3, false);
+        glParallel.marginWidth = 0;
+        glParallel.marginHeight = 0;
+        cpstParallel.setLayout(glParallel);
+        cpstParallel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        btnParallel = new Button(cpstParallel, SWT.RADIO);
         btnParallel
                 .setText(ComposerTestsuiteCollectionMessageConstants.BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_PARALLEL);
+        Label lblMaxConcurrentThread = new Label(cpstParallel, SWT.NONE);
+        lblMaxConcurrentThread.setText("Max concurrent instances: ");
+        GridData gdLblMaxInstances = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdLblMaxInstances.horizontalIndent = 20;
+        lblMaxConcurrentThread.setLayoutData(gdLblMaxInstances);
+
+        spnMaxConcurrentThread = new Spinner(cpstParallel, SWT.BORDER);
+        spnMaxConcurrentThread.setMinimum(TestSuiteCollectionEntity.MIN_CONCURRENT_INSTANCES);
+        spnMaxConcurrentThread.setMaximum(TestSuiteCollectionEntity.MAX_CONCURRENT_INSTANCES);
+
+        GridData gdTxtConcurrentThread = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdTxtConcurrentThread.widthHint = 70;
+        spnMaxConcurrentThread.setLayoutData(gdTxtConcurrentThread);
     }
 
     private void layoutExecutionInfo() {

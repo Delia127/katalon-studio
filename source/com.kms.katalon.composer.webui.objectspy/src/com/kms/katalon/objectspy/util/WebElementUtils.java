@@ -225,9 +225,7 @@ public class WebElementUtils {
         el.setUsefulNeighborText(usefulNeighborText);
         el.setSelectorMethod(selectorMethod);
         
-        // SelectorCollection wil contain default selector value for each selector method
-        // however the default selector value for BASIC mode is computed by its attributes
-        // and CSS has no default selector value
+        // New TestObject will always have a NoneEmpty SelectorCollection
         switch(selectorMethod){
 	        case XPATH:
 	        	el.setSelectorValue(selectorMethod, xpaths.get(0).getValue());

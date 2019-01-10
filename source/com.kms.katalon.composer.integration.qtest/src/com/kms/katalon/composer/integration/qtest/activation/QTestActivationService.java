@@ -53,6 +53,8 @@ public class QTestActivationService implements ActivationService {
             }
         }
     }
+        
+    
 
     @Override
     public void openAboutDialog(Shell activeShell) {

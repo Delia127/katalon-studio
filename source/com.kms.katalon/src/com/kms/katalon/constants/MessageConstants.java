@@ -392,6 +392,8 @@ public class MessageConstants extends NLS {
 
     public static String ReloadPluginsResultDialog_STATUS_UNINSTALLED;
 
+	public static String LBL_DISABLE_MOB_BROWSER_PROXY;
+
 	public static String LBL_USE_MOB_BROWSER_PROXY;
 	
 	public static String HAND_INFO_NO_PLUGINS_FOUND;

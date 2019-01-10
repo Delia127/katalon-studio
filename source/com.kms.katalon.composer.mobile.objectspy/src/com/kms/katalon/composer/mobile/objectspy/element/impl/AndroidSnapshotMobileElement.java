@@ -168,9 +168,12 @@ public class AndroidSnapshotMobileElement extends RenderedTreeSnapshotMobileElem
             if (guiName.contains("\n")) {
                 guiName = guiName.replace("\n", "");
             }
-            setName(guiName);
+        } else {
+            guiName = xmlElement.getTagName();
+            guiName += instance;
         }
-
+        setName(guiName);
+        
         htmlMobileElementProps.put(AndroidProperties.XPATH, makeXpath());
     }
 

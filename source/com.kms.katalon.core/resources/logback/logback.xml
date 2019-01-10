@@ -19,6 +19,9 @@
   <!-- generated CustomKeywords file -->
   <logger name="CustomKeywords" level="debug" />
   
+  <!-- built-in keywords -->
+  <logger name="com.kms.katalon.core.keyword.builtin.CommentKeyword" level="info" />
+  
   <root level="error">
     <appender-ref ref="STDOUT" />
   </root>
