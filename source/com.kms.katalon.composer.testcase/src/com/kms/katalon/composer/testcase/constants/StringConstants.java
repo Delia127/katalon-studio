@@ -494,5 +494,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String CONS_MENU_CONTEXT_ADD_TO_TEST_SUITE = ComposerTestcaseMessageConstants.CONS_MENU_CONTEXT_ADD_TO_TEST_SUITE;
     public static final String CONS_MENU_CONTEXT_ADD_TO_AN_EXISTING_TEST_SUITE = ComposerTestcaseMessageConstants.CONS_MENU_CONTEXT_ADD_TO_AN_EXISTING_TEST_SUITE;
     public static final String CONS_MENU_CONTEXT_ADD_TO_A_NEW_TEST_SUITE = ComposerTestcaseMessageConstants.CONS_MENU_CONTEXT_ADD_TO_A_NEW_TEST_SUITE;
-
 }

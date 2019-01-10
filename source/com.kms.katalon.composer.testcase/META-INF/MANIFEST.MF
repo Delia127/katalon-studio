@@ -82,3 +82,4 @@ Export-Package: com.kms.katalon.composer.testcase.actions,
  com.kms.katalon.composer.testcase.util,
  com.kms.katalon.composer.testcase.views
 Bundle-ClassPath: .
+Import-Package: com.katalon.platform.api.model

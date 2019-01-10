@@ -1,218 +1,307 @@
 package com.kms.katalon.composer.testcase.dialogs;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.TestCaseSettingStore;
 import com.kms.katalon.entity.project.ProjectEntity;
 
+@SuppressWarnings("unchecked")
 public class ManageTestCaseTagDialog extends Dialog {
-    
-    private Set<String> tags;
-    
-    private TableViewer tagTable;
 
-    private ToolItem tiAddTag;
+    public static final int APPEND_TAGS = 1001;
 
-    private ToolItem tiRemoveTag;
+    private TestCaseSettingStore store;
 
-    private ToolItem tiEditTag;
-    
-    private TestCaseSettingStore store = getStore();
+    private TableViewer tagTableViewer;
 
-    public ManageTestCaseTagDialog(Shell parentShell) {
+    private List<TagTableViewerItem> tagItems;
+
+    private Set<String> currentTestCaseTags;
+
+    private Set<String> appendedTags;
+
+    private Text txtSearch;
+
+    private Button btnAppendTags;
+
+    private Button btnClose;
+
+    public ManageTestCaseTagDialog(Shell parentShell, Set<String> currentTestCaseTags) {
         super(parentShell);
-        loadTags();
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        store = new TestCaseSettingStore(project.getFolderLocation());
+        this.currentTestCaseTags = currentTestCaseTags;
+        initializeTagInput();
+    }
+
+    private void initializeTagInput() {
+        try {
+            Set<String> allTagsInProject = store.getTestCaseTags();
+            Set<String> tags = new HashSet<>();
+            tags.addAll(allTagsInProject);
+            tags.addAll(currentTestCaseTags);
+            tagItems = tags.stream().map(tag -> {
+                TagTableViewerItem item = new TagTableViewerItem();
+                item.setName(tag);
+                if (currentTestCaseTags.contains(tag)) {
+                    item.setSelected(true);
+                    item.setEditable(false);
+                } else {
+                    item.setSelected(false);
+                    item.setEditable(true);
+                }
+                return item;
+            }).sorted((item1, item2) -> StringUtils.compareIgnoreCase(item1.getName(), item2.getName()))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            tagItems = new ArrayList<>();
+        }
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite body = new Composite(parent, SWT.NONE);
-        GridData gdBody = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gdBody.widthHint = 400;
-        gdBody.heightHint = 500;
-        body.setLayoutData(gdBody);
         body.setLayout(new GridLayout(1, false));
-      
-        createToolBar(body);
-        createTagTable(body);
-        
-        return super.createDialogArea(parent);
-    }
-    
-    private void createToolBar(Composite parent) {
-        Composite toolbarComposite = new Composite(parent, SWT.NONE);
-        toolbarComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-        toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-       
-        ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
-        
-        tiAddTag = new ToolItem(toolBar, SWT.NONE);
-        tiAddTag.setText("Add");
-        tiAddTag.setImage(ImageConstants.IMG_16_ADD);
-        tiAddTag.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                addTag();
-            }
-        });
-        
-        tiRemoveTag = new ToolItem(toolBar, SWT.NONE);
-        tiRemoveTag.setText("Remove");
-        tiRemoveTag.setImage(ImageConstants.IMG_16_REMOVE);
-        tiRemoveTag.setEnabled(false);
-        tiRemoveTag.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                removeSelectedTag();
-            }
-        });
+        GridData gdBody = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gdBody.widthHint = 300;
+        gdBody.heightHint = 350;
+        body.setLayoutData(gdBody);
 
-        tiEditTag = new ToolItem(toolBar, SWT.NONE);
-        tiEditTag.setText("Edit");
-        tiEditTag.setEnabled(false);
-        tiEditTag.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                editSelectedTag();
-            }
-        });
-    }
-    
-    private void createTagTable(Composite parent) {
-        Composite tableComposite = new Composite(parent, SWT.NONE);
-        tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        tableComposite.setLayout(new FillLayout());
-        
-        tagTable = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
-        Table table = tagTable.getTable();
-        table.setHeaderVisible(true);
-        table.setLinesVisible(true);
-        
-        TableViewerColumn tvcTag = new TableViewerColumn(tagTable, SWT.NONE);
-        TableColumn tcTag = tvcTag.getColumn();
-        tcTag.setWidth(500);
-        tcTag.setText("Tag");
-        tvcTag.setLabelProvider(new ColumnLabelProvider() {
+        txtSearch = new Text(body, SWT.BORDER);
+        txtSearch.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        txtSearch.setMessage(ComposerTestcaseMessageConstants.ManageTestCaseTagDialog_SEARCH_MSG);
+
+        Composite tableComposite = new Composite(body, SWT.NONE);
+        tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        tagTableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        tagTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        Table tagTable = tagTableViewer.getTable();
+        tagTable.setHeaderVisible(true);
+        tagTable.setLinesVisible(true);
+        ColumnViewerUtil.setTableActivation(tagTableViewer);
+
+        TableViewerColumn tableViewerColumnTagName = new TableViewerColumn(tagTableViewer, SWT.LEFT);
+        TableColumn tableColumnTagName = tableViewerColumnTagName.getColumn();
+        tableColumnTagName.setText(ComposerTestcaseMessageConstants.ManageTestCaseTagDialog_TAG_TABLE_COL_TAG);
+        tableViewerColumnTagName.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                if (element != null) {
-                    return (String) element;
-                } else {
-                    return "";
-                }
+                TagTableViewerItem item = (TagTableViewerItem) element;
+                return item.getName();
             }
         });
-        
-        tagTable.addSelectionChangedListener(new ISelectionChangedListener() {
+
+        TableViewerColumn tableViewerColumnIsSelected = new TableViewerColumn(tagTableViewer, SWT.LEFT);
+        TableColumn tableColumnIsSelected = tableViewerColumnIsSelected.getColumn();
+        tableColumnIsSelected.setText(ComposerTestcaseMessageConstants.ManageTestCaseTagDialog_TAG_TABLE_COL_SELECTED);
+        tableViewerColumnIsSelected.setLabelProvider(new TagSelectionColumnLabelProvider());
+        tableViewerColumnIsSelected.setEditingSupport(new TagSelectionColumnEditingSupport(tagTableViewer));
+
+        TableColumnLayout tableLayout = new TableColumnLayout();
+        tableLayout.setColumnData(tableColumnTagName, new ColumnWeightData(70, 20));
+        tableLayout.setColumnData(tableColumnIsSelected, new ColumnWeightData(30, 10));
+        tableComposite.setLayout(tableLayout);
+
+        tagTableViewer.setInput(tagItems);
+
+        Composite buttonComposite = new Composite(body, SWT.NONE);
+        buttonComposite.setLayout(new GridLayout(2, false));
+        buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false));
+
+        btnClose = new Button(buttonComposite, SWT.NONE);
+        btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+        btnClose.setText(IDialogConstants.CLOSE_LABEL);
+
+        btnAppendTags = new Button(buttonComposite, SWT.NONE);
+        btnAppendTags.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+        btnAppendTags.setText(ComposerTestcaseMessageConstants.ManageTestCaseTagDialog_BTN_APPEND_TAGS);
+
+        registerControlEventListeners();
+
+        return body;
+    }
+
+    private void registerControlEventListeners() {
+        txtSearch.addModifyListener(new ModifyListener() {
             @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                boolean isAnyTagSelected = isAnyTagSelected();
-                tiEditTag.setEnabled(isAnyTagSelected);
-                tiRemoveTag.setEnabled(isAnyTagSelected);
+            public void modifyText(ModifyEvent e) {
+                handleSearchTags();
             }
-            
         });
-        tagTable.setContentProvider(new ArrayContentProvider());
-        tagTable.setInput(tags);
-        tagTable.refresh();
-    }
-    
-    private boolean isAnyTagSelected() {
-        StructuredSelection selection = (StructuredSelection) tagTable.getSelection();
-        return selection != null && selection.getFirstElement() != null;
+
+        btnAppendTags.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                handleAppendTags();
+            };
+        });
+
+        btnClose.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                cancelPressed();
+            };
+        });
     }
 
-    private void editSelectedTag() {
-        String selectedTag = (String) tagTable.getStructuredSelection().toArray()[0];
-        AddNewTestCaseTagDialog dialog = new AddNewTestCaseTagDialog(Display.getCurrent().getActiveShell(), tags);
-        if (dialog.open() == Dialog.OK) {
-            String newTagName = dialog.getTagName();
-            Set<String> newTags = new LinkedHashSet<>();
-            tags.stream().forEach(tag -> {
-               if (tag.equals(selectedTag)) {
-                   newTags.add(newTagName);
-               } else {
-                   newTags.add(tag);
-               }
-            });
-            tags = newTags;
-            tagTable.setInput(tags);
-            tagTable.refresh();
+    private void handleSearchTags() {
+        String searchText = txtSearch.getText().trim();
+        if (!StringUtils.isBlank(searchText)) {
+            List<TagTableViewerItem> matchedItems = tagItems.stream()
+                    .filter(item -> item.getName().toLowerCase().contains(searchText.toLowerCase()))
+                    .collect(Collectors.toList());
+            tagTableViewer.setInput(matchedItems);
+        } else {
+            tagTableViewer.setInput(tagItems);
         }
+        tagTableViewer.refresh();
     }
 
-    private void removeSelectedTag() {
-        String selectedTag = (String) tagTable.getStructuredSelection().toArray()[0];
-        tags.remove(selectedTag);
-        tagTable.refresh();
+    private void handleAppendTags() {
+        List<TagTableViewerItem> tagItems = (List<TagTableViewerItem>) tagTableViewer.getInput();
+        appendedTags = tagItems.stream()
+                .filter(tagItem -> tagItem.isSelected() && !currentTestCaseTags.contains(tagItem.getName()))
+                .map(tagItem -> tagItem.getName()).collect(Collectors.toSet());
+        setReturnCode(APPEND_TAGS);
+        ManageTestCaseTagDialog.this.close();
     }
 
-    private void addTag() {
-        AddNewTestCaseTagDialog dialog = new AddNewTestCaseTagDialog(Display.getCurrent().getActiveShell(), tags);
-        if (dialog.open() == Dialog.OK) {
-            String newTagName = dialog.getTagName();
-            tags.add(newTagName);
-            tagTable.refresh();
-        }
-    }
-    
-    private void loadTags() {
-        try {
-            tags = store.getTestCaseTags();
-        } catch (IOException e) {
-            tags = new LinkedHashSet<>();
-            LoggerSingleton.logError(e);
-        }
-    }
-    
-    @Override
-    protected void okPressed() {
-        try {
-            store.setTestCaseTags(tags);
-        } catch (GeneralSecurityException | IOException e) {
-            LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, "Failed to save test case tags", e.getClass().getSimpleName());
-        }
-        super.okPressed();
-    }
-    
-    private TestCaseSettingStore getStore() {
-        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        return new TestCaseSettingStore(project.getFolderLocation());
-    }
-    
     @Override
     protected boolean isResizable() {
         return true;
+    }
+
+    @Override
+    protected Control createButtonBar(Composite parent) {
+        return parent;
+    }
+
+    @Override
+    protected void configureShell(Shell shell) {
+        super.configureShell(shell);
+        shell.setText(ComposerTestcaseMessageConstants.ManageTestCaseTagDialog_DIA_TITLE);
+    }
+
+    public Set<String> getAppendedTags() {
+        return appendedTags;
+    }
+
+    private class TagSelectionColumnLabelProvider extends StyledCellLabelProvider {
+        @Override
+        protected void paint(Event event, Object element) {
+            GC gc = event.gc;
+            TagTableViewerItem tagItem = (TagTableViewerItem) element;
+            if (tagItem.isSelected()) {
+                gc.drawImage(ImageConstants.IMG_16_CHECKBOX_CHECKED, event.getBounds().x + 5, event.getBounds().y);
+            } else {
+                gc.drawImage(ImageConstants.IMG_16_CHECKBOX_UNCHECKED, event.getBounds().x + 5, event.getBounds().y);
+            }
+        }
+    }
+
+    private class TagSelectionColumnEditingSupport extends EditingSupport {
+        private TableViewer viewer;
+        private CheckboxCellEditor editor;
+
+        public TagSelectionColumnEditingSupport(TableViewer viewer) {
+            super(viewer);
+            this.viewer = viewer;
+            editor = new CheckboxCellEditor(this.viewer.getTable());
+        }
+
+        @Override
+        protected CellEditor getCellEditor(Object element) {
+            return editor;
+        }
+
+        @Override
+        protected boolean canEdit(Object element) {
+            return ((TagTableViewerItem) element).isEditable();
+        }
+
+        @Override
+        protected Object getValue(Object element) {
+            return ((TagTableViewerItem) element).isSelected();
+        }
+
+        @Override
+        protected void setValue(Object element, Object value) {
+            ((TagTableViewerItem) element).setSelected((boolean) value);
+            viewer.refresh(element);
+        }
+    }
+
+    private class TagTableViewerItem {
+        private String name;
+
+        private boolean isSelected;
+
+        private boolean isEditable;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public boolean isSelected() {
+            return isSelected;
+        }
+
+        public void setSelected(boolean isSelected) {
+            this.isSelected = isSelected;
+        }
+
+        public boolean isEditable() {
+            return isEditable;
+        }
+
+        public void setEditable(boolean isEditable) {
+            this.isEditable = isEditable;
+        }
     }
 }

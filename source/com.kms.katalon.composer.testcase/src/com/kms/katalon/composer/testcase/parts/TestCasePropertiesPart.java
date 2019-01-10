@@ -2,9 +2,6 @@ package com.kms.katalon.composer.testcase.parts;
 
 import static org.apache.commons.lang.StringUtils.join;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -19,7 +16,6 @@ import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
@@ -36,14 +32,13 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.util.CssUtil;
 import com.kms.katalon.composer.parts.CPart;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.dialogs.ManageTestCaseTagDialog;
-import com.kms.katalon.composer.testcase.dialogs.TestCaseTagSelectionDialog;
+import com.kms.katalon.composer.testcase.util.TestCaseTagUtil;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class TestCasePropertiesPart extends CPart {
-    
-    private static final char TAGS_DELIMITER = ',';
 
     @Inject
     private EPartService partService;
@@ -67,8 +62,6 @@ public class TestCasePropertiesPart extends CPart {
     private Text txtDescription;
 
     private Text txtComment;
-    
-    private Button btnSelectTags;
     
     private Button btnManageTags;
 
@@ -137,10 +130,8 @@ public class TestCasePropertiesPart extends CPart {
         Composite tagComposite = new Composite(left, SWT.NONE);
         tagComposite.setLayout(new GridLayout(2, false));
         tagComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false));
-        btnSelectTags = new Button(tagComposite, SWT.NONE);
-        btnSelectTags.setText("Select tags");
         btnManageTags = new Button(tagComposite, SWT.NONE);
-        btnManageTags.setText("Manage tags");
+        btnManageTags.setText(ComposerTestcaseMessageConstants.TestCasePropertiesPart_BTN_MANAGE_TAGS);
         
         createLabel(StringConstants.DESCRIPTION, left, SWT.TOP);
         txtDescription = new Text(left, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
@@ -202,49 +193,21 @@ public class TestCasePropertiesPart extends CPart {
             }
         });
         
-        btnSelectTags.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Set<String> tags = parseTags(txtTag.getText());
-                TestCaseTagSelectionDialog dialog = new TestCaseTagSelectionDialog(
-                        Display.getCurrent().getActiveShell(), tags);
-                if (dialog.open() == Dialog.OK) {
-                    Set<String> selectedTags = dialog.getSelectedTags();
-                    tags.addAll(selectedTags);
-                    String tagsString = joinTags(tags);
-                    txtTag.setText(tagsString);
-                }
-            }
-        });
-        
         btnManageTags.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                ManageTestCaseTagDialog dialog = new ManageTestCaseTagDialog(Display.getCurrent().getActiveShell());
-                dialog.open();
+                Set<String> currentTags = TestCaseTagUtil.splitTags(txtTag.getText());
+                ManageTestCaseTagDialog dialog = new ManageTestCaseTagDialog(Display.getCurrent().getActiveShell(),
+                        currentTags);
+                if (dialog.open() == ManageTestCaseTagDialog.APPEND_TAGS) {
+                    Set<String> appendedTags = dialog.getAppendedTags();
+                    String appendedTagString = TestCaseTagUtil.joinTags(appendedTags);
+                    if (!StringUtils.isBlank(appendedTagString)) {
+                        txtTag.setText(txtTag.getText() + TestCaseTagUtil.getTagSeparator() + appendedTagString);
+                    }
+                }
             }
         });
-    }
-    
-    private Set<String> parseTags(String tagsString) {
-        if (StringUtils.isBlank(tagsString)) {
-            return new HashSet<>();
-        }
-        Set<String> tags = new LinkedHashSet<>();
-        String[] arrTags = StringUtils.split(tagsString, TAGS_DELIMITER);
-        if (arrTags != null) {
-            for (String tag : arrTags) {
-                tags.add(tag);
-            }
-        }
-        return tags;
-    }
-    
-    private String joinTags(Set<String> tags) {
-        if (tags == null) {
-            return StringUtils.EMPTY;
-        }
-        return StringUtils.join(tags, TAGS_DELIMITER);
     }
 
     public void loadInput() {

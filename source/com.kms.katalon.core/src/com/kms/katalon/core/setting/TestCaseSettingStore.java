@@ -16,6 +16,8 @@ public class TestCaseSettingStore extends BundleSettingStore {
     
     private static final char TAGS_DELIMITER = ',';
     
+    private static final String HAS_COLLECTED_TAGS_FROM_ALL_TEST_CASES = "hasCollectedTagsFromAllTestCases";
+    
     public TestCaseSettingStore(String projectDir) {
         super(projectDir, STORE_ID, false);
     }
@@ -29,7 +31,7 @@ public class TestCaseSettingStore extends BundleSettingStore {
         return tags;
     }
     
-    public void setTestCaseTags(Set<String> tags) throws GeneralSecurityException, IOException {
+    public void saveTestCaseTags(Set<String> tags) throws GeneralSecurityException, IOException {
         String tagsString = joinTags(tags);
         setStringProperty(TAG_PROPERTY, tagsString, false);
     }
@@ -55,4 +57,11 @@ public class TestCaseSettingStore extends BundleSettingStore {
         return StringUtils.join(tags, TAGS_DELIMITER);
     }
 
+    public void markCollectTagsFromAllTestCases() throws IOException {
+        setProperty(HAS_COLLECTED_TAGS_FROM_ALL_TEST_CASES, true);
+    }
+    
+    public boolean hasCollectedTagsFromAllTestCases() throws IOException {
+        return getBoolean(HAS_COLLECTED_TAGS_FROM_ALL_TEST_CASES, false);
+    }
 }
