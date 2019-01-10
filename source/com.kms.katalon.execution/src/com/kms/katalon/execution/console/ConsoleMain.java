@@ -12,11 +12,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.osgi.framework.BundleContext;
 
+import com.katalon.platform.api.service.ApplicationManager;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
@@ -29,10 +37,10 @@ import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.execution.util.ConsoleAdapter;
 import com.kms.katalon.logging.LogUtil;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 import joptsimple.OptionSpecBuilder;
 
 public class ConsoleMain {
@@ -96,6 +104,10 @@ public class ConsoleMain {
             acceptConsoleOptionList(parser, 
             		new OverridingParametersConsoleOptionContributor(project).getConsoleOptionList());
             
+            registerPlugins(project);
+            
+            acceptPluginConsoleOptionList(parser, IdConstants.PLUGIN_TAGS_2);
+
             // Parse all arguments before execute
             options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
             
@@ -115,6 +127,23 @@ public class ConsoleMain {
         } finally {
             LauncherManager.getInstance().removeAllTerminated();
         }
+    }
+    
+	private static void acceptPluginConsoleOptionList(OptionParser parser, String pluginId) {
+		acceptConsoleOptionList(parser, ConsoleAdapter.adaptToStringConsoleOptions(ApplicationManager.getInstance()
+				.getConsoleManager().getRegisteredConsoleOption(pluginId).getPluginConsoleOptionList()));
+	}
+
+	private static void registerPlugins(ProjectEntity project) throws InterruptedException {
+		String filePath = "C://Users//thanhto//katalon_plugin//katalon-tags-plugin//target//tags-plugin-1.0-SNAPSHOT.jar";
+		BundleContext bundleContext = Platform.getBundle("com.katalon.platform").getBundleContext();
+		if (StringUtils.isNotEmpty(filePath)) {
+			String fileUri = new File(filePath).toURI().toString();
+			IEclipseContext context = EclipseContextFactory.getServiceContext(bundleContext);
+			IEventBroker eventBroker = context.get(IEventBroker.class);
+			eventBroker.send("KATALON_PLUGIN/INSTALL", new Object[] { bundleContext, fileUri });
+            TimeUnit.SECONDS.sleep(1);
+		}
     }
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,
@@ -202,7 +231,7 @@ public class ConsoleMain {
         return StringUtils.isNotBlank(fileLocation) && new File(fileLocation).exists();
     }
 
-    private static void acceptConsoleOptionList(OptionParser parser, List<ConsoleOption<?>> consoleOptionList) {
+    private static void acceptConsoleOptionList(OptionParser parser, List<? extends ConsoleOption<?>> consoleOptionList) {
         for (ConsoleOption<?> consoleOption : consoleOptionList) {
             OptionSpecBuilder optionSpecBuilder = parser.accepts(consoleOption.getOption());
             if (consoleOption.hasArgument()) {

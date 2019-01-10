@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -19,7 +18,6 @@ import com.kms.katalon.execution.console.entity.TestSuiteCollectionLauncherOptio
 import com.kms.katalon.execution.console.entity.TestSuiteLauncherOptionParser;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
-import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -60,14 +58,11 @@ public class ConsoleExecutor {
         
         LauncherOptionParser launcherOption = new LauncherOptionSelector().getSelectedOption(optionSet);
         
-        launcherOption.collectOverridingParameters(projectEntity);
-        
         for (ConsoleOption<?> consoleOption : launcherOption.getConsoleOptionList()) {
             if (optionSet.has(consoleOption.getOption())) {
                 launcherOption.setArgumentValue(consoleOption,
                         String.valueOf(optionSet.valueOf(consoleOption.getOption())));
-                launcherOption.setOverridingArgumentValue(consoleOption,
-						String.valueOf(optionSet.valueOf(consoleOption.getOption())));
+                System.out.println(consoleOption.getOption() + " : " + consoleOption.getValue());
             }
         }
 
