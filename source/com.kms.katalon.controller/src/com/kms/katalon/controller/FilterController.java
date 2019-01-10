@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -111,8 +114,36 @@ public class FilterController {
                 return StringUtils.containsIgnoreCase(fileEntity.getTag(), text);
             case "description":
                 return StringUtils.containsIgnoreCase(fileEntity.getDescription(), text);
+            case "tags":
+                return containsTags(fileEntity, text);
             default:
                 return false;
         }
+    }
+    
+    private boolean containsTags(FileEntity fileEntity, String searchTagValues) {
+        if (StringUtils.isBlank(searchTagValues)) {
+            return false;
+        }
+        
+        String entityTagValues = fileEntity.getTag();
+        if (StringUtils.isBlank(entityTagValues)) {
+            return false;
+        }
+        
+        String[] searchTagArray = StringUtils.split(searchTagValues, ',');
+        Set<String> searchTags = Arrays.asList(searchTagArray).stream()
+                .filter(tag -> !StringUtils.isBlank(tag))
+                .map(tag -> tag.trim().toLowerCase())
+                .collect(Collectors.toSet());
+        
+        String[] entityTagArray = StringUtils.split(entityTagValues, ',');
+        Set<String> entityTags = Arrays.asList(entityTagArray).stream()
+                .filter(tag -> !StringUtils.isBlank(tag))
+                .map(tag -> tag.trim().toLowerCase())
+                .collect(Collectors.toSet());
+        
+        boolean result = entityTags.containsAll(searchTags);
+        return result;
     }
 }
