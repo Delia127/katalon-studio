@@ -364,4 +364,9 @@ public class EventConstants {
     public static final String MANAGE_PLUGINS = "PLUGIN/MANAGE_PLUGINS";
 
     public static final String SEARCH_PLUGINS = "PLUGIN/SEARCH_PLUGINS";
+
+    public static final String JIRA_PLUGIN_INSTALLED = "PLUGIN/JIRA_INSTALLED";
+
+    public static final String JIRA_PLUGIN_UNINSTALLED = "PLUGIN/JIRA_UNINSTALLED";
+
 };
