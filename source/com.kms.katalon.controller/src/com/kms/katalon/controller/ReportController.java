@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
@@ -68,7 +69,8 @@ public class ReportController extends EntityController {
     }
 
     public File getLogFile(TestCaseEntity testCase, String reportFolderName) throws Exception {
-        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getTemporaryLogDirectory(testCase);
+        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider()
+                .getTemporaryLogDirectory(testCase);
         File testCaseReportFolderAtRuntime = new File(testCaseRootLogFolder, reportFolderName);
 
         return new File(testCaseReportFolderAtRuntime, LOG_FILE_NAME);
@@ -82,7 +84,8 @@ public class ReportController extends EntityController {
     }
 
     public File getExecutionSettingFile(TestCaseEntity testCase, String reportFolderName) throws Exception {
-        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getTemporaryLogDirectory(testCase);
+        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider()
+                .getTemporaryLogDirectory(testCase);
         File testCaseReportFolderAtRuntime = new File(testCaseRootLogFolder, reportFolderName);
 
         return new File(testCaseReportFolderAtRuntime, EXECUTION_SETTING_FILE_NAME);
@@ -126,11 +129,11 @@ public class ReportController extends EntityController {
         }
         return lastRunReport;
     }
-    
+
     private Date parseReportDateFromName(String reportName) throws ParseException {
         return dateFormat.parse(reportName);
     }
-    
+
     public Date getReportDate(ReportEntity report) throws Exception {
         return parseReportDateFromName(report.getName());
     }
@@ -144,13 +147,21 @@ public class ReportController extends EntityController {
     }
 
     public ReportEntity getReportEntityByDisplayId(String reportDisplayId, ProjectEntity projectEntity)
-            throws Exception {
-        String reportPk = projectEntity.getFolderLocation() + File.separator + reportDisplayId;
-        return getDataProviderSetting().getReportDataProvider().getReportEntity(reportPk);
+            throws ControllerException {
+        try {
+            String reportPk = projectEntity.getFolderLocation() + File.separator + reportDisplayId;
+            return getDataProviderSetting().getReportDataProvider().getReportEntity(reportPk);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
-    public ReportEntity updateReport(ReportEntity report) throws Exception {
-        return getDataProviderSetting().getReportDataProvider().updateReport(report);
+    public ReportEntity updateReport(ReportEntity report) throws ControllerException {
+        try {
+            return getDataProviderSetting().getReportDataProvider().updateReport(report);
+        } catch (Exception e) {
+            throw new ControllerException(e.getMessage());
+        }
     }
 
     public TestSuiteEntity getTestSuiteByReport(ReportEntity report) throws Exception {

@@ -18,8 +18,9 @@ public class QTestIntegrationReportTestCaseViewBuilder implements ReportTestCase
     }
 
     @Override
-    public TestCaseIntegrationColumn getTestCaseIntegrationColumn(ReportEntity reportEntity) {
-        return new QTestIntegrationReportTestCaseColumnView(reportEntity);
+    public TestCaseIntegrationColumn getTestCaseIntegrationColumn(ReportEntity reportEntity,
+            TestSuiteLogRecord testSuiteLogRecord) {
+        return new QTestIntegrationReportTestCaseColumnView(reportEntity, testSuiteLogRecord);
     }
 
     @Override
@@ -33,7 +34,13 @@ public class QTestIntegrationReportTestCaseViewBuilder implements ReportTestCase
     }
 
     @Override
-    public TestLogIntegrationColumn getTestLogIntegrationColumn(ReportEntity report) {
+    public TestLogIntegrationColumn getTestLogIntegrationColumn(ReportEntity report,
+            TestSuiteLogRecord testSuiteLogRecord) {
         return null;
+    }
+
+    @Override
+    public String getName() {
+        return "qTest";
     }
 }

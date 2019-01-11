@@ -45,18 +45,25 @@ import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 
 public class QTestIntegrationReportTestCaseView extends TestCaseLogDetailsIntegrationView {
     private StyledText txtTestLogId;
+
     private StyledText txtTestCaseRunAlias;
+
     private StyledText txtAttachment;
 
     private TestSuiteLogRecord testSuiteLogRecord;
+
     private QTestTestCase qTestCase;
+
     private QTestSuite qTestSuite;
+
     private QTestRun qTestRun;
+
     private TestCaseLogRecord testCaseLogRecord;
+
     private QTestLog qTestCaseLog;
 
     public QTestIntegrationReportTestCaseView(ReportEntity reportEntity, TestSuiteLogRecord testSuiteLogRecord) {
-        super(reportEntity);
+        super(reportEntity, testSuiteLogRecord);
         this.testSuiteLogRecord = testSuiteLogRecord;
     }
 
@@ -133,8 +140,8 @@ public class QTestIntegrationReportTestCaseView extends TestCaseLogDetailsIntegr
 
             if (qTestReport != null && testCaseLogRecord != null) {
 
-                qTestCaseLog = qTestReport.getTestLogMap().get(
-                        QTestIntegrationUtil.getTestCaseLogIndex(testCaseLogRecord, reportEntity));
+                qTestCaseLog = qTestReport.getTestLogMap()
+                        .get(QTestIntegrationUtil.getTestCaseLogIndex(testCaseLogRecord, reportEntity));
                 if (qTestCaseLog != null) {
                     txtTestLogId.setText(Long.toString(qTestCaseLog.getId()));
                     registerTxtQTestIdClickListener();
@@ -192,8 +199,9 @@ public class QTestIntegrationReportTestCaseView extends TestCaseLogDetailsIntegr
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
             String projectDir = projectEntity.getFolderLocation();
 
-            QTestProject qTestProject = QTestIntegrationUtil.getTestSuiteRepo(
-                    QTestIntegrationUtil.getTestSuiteEntity(testSuiteLogRecord), projectEntity).getQTestProject();
+            QTestProject qTestProject = QTestIntegrationUtil
+                    .getTestSuiteRepo(QTestIntegrationUtil.getTestSuiteEntity(testSuiteLogRecord), projectEntity)
+                    .getQTestProject();
 
             URL url = QTestIntegrationReportManager.getTestLogURL(projectDir, qTestProject, qTestRun, qTestCaseLog);
 
@@ -285,7 +293,8 @@ public class QTestIntegrationReportTestCaseView extends TestCaseLogDetailsIntegr
         }
     }
 
-    private void performDisintegrateTestCaseLogs(MenuItem menuItem, List<TestCaseLogRecord> testCasesCanBeDisintegrated) {
+    private void performDisintegrateTestCaseLogs(MenuItem menuItem,
+            List<TestCaseLogRecord> testCasesCanBeDisintegrated) {
         List<ReportTestCaseLogPair> testCaseLogPairs = new ArrayList<ReportTestCaseLogPair>();
         ReportTestCaseLogPair pair = new ReportTestCaseLogPair(reportEntity, testCasesCanBeDisintegrated);
         testCaseLogPairs.add(pair);
@@ -299,5 +308,4 @@ public class QTestIntegrationReportTestCaseView extends TestCaseLogDetailsIntegr
         QTestUploadReportHandler.performUploadTestCaseLogs(testCaseLogPairs, menuItem.getDisplay().getActiveShell());
     }
 
-    
 }

@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.kms.katalon.controller;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.controller,
- com.kms.katalon.controller.entity
+ com.kms.katalon.controller.exception
 Require-Bundle: com.kms.katalon.constant,
  com.kms.katalon.entity,
  com.kms.katalon.preferences,
