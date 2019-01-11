@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -17,6 +15,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.file.FileEntity;
 
 public class FilterController {
@@ -33,7 +34,16 @@ public class FilterController {
     }
 
     public List<String> getDefaultKeywords() {
-        return DEFAULT_KEYWORDS;
+        List<String> keywords = new ArrayList<>();
+        keywords.addAll(DEFAULT_KEYWORDS);
+        if (isVirtualTestSuitePluginInstalled()) {
+            keywords.add(getAdvancedTagKeyword());
+        }
+        return keywords;
+    }
+    
+    public String getAdvancedTagKeyword() {
+        return "tags";
     }
 
     public boolean isMatched(FileEntity fileEntity, String filteringText) {
@@ -115,13 +125,18 @@ public class FilterController {
             case "description":
                 return StringUtils.containsIgnoreCase(fileEntity.getDescription(), text);
             case "tags":
-                return containsTags(fileEntity, text);
+                return entityHasTags(fileEntity, text);
             default:
                 return false;
         }
     }
     
-    private boolean containsTags(FileEntity fileEntity, String searchTagValues) {
+    private boolean isVirtualTestSuitePluginInstalled() {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_VIRTUAL_TEST_SUITE);
+        return plugin != null;
+    }
+    
+    private boolean entityHasTags(FileEntity fileEntity, String searchTagValues) {
         if (StringUtils.isBlank(searchTagValues)) {
             return false;
         }
@@ -131,19 +146,16 @@ public class FilterController {
             return false;
         }
         
-        String[] searchTagArray = StringUtils.split(searchTagValues, ',');
-        Set<String> searchTags = Arrays.asList(searchTagArray).stream()
-                .filter(tag -> !StringUtils.isBlank(tag))
-                .map(tag -> tag.trim().toLowerCase())
+        EntityTagController tagController = EntityTagController.getInstance();
+        
+        Set<String> searchTags = tagController.parse(searchTagValues).stream()
+                .map(tag -> tag.toLowerCase())
                 .collect(Collectors.toSet());
         
-        String[] entityTagArray = StringUtils.split(entityTagValues, ',');
-        Set<String> entityTags = Arrays.asList(entityTagArray).stream()
-                .filter(tag -> !StringUtils.isBlank(tag))
-                .map(tag -> tag.trim().toLowerCase())
+        Set<String> entityTags = tagController.parse(entityTagValues).stream()
+                .map(tag -> tag.toLowerCase())
                 .collect(Collectors.toSet());
         
-        boolean result = entityTags.containsAll(searchTags);
-        return result;
+        return entityTags.containsAll(searchTags);
     }
 }

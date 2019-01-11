@@ -22,10 +22,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FilterController;
 
 public class AdvancedSearchDialog extends Dialog {
@@ -70,40 +73,37 @@ public class AdvancedSearchDialog extends Dialog {
             if (searchTags != null) {
                 properties = EntityViewerFilter.parseSearchedString(searchTags, txtInput);
                 for (final String tag : searchTags) {
-                    addSearchPropertyControl(container, tag, tag);
+                    Label tagLabel = new Label(container, SWT.NONE);
+                    tagLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+                    if (FilterController.getInstance().getAdvancedTagKeyword().equals(tag)) {
+                        tagLabel.setText("Advanced Tags");
+                    } else {
+                        tagLabel.setText(StringUtils.capitalize(tag));
+                    }
+                    
+                    Text tagValue = new Text(container, SWT.BORDER);
+                    tagValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+                    textMap.put(tag, tagValue);
+                    tagValue.addModifyListener(new ModifyListener() {
+
+                        @Override
+                        public void modifyText(ModifyEvent e) {
+                            properties.put(tag, ((Text) e.getSource()).getText());
+                        }
+
+                    });
                 }
+                refreshControls();
             }
         } catch (Exception e) {
             LoggerSingleton.getInstance().getLogger().error(e);
         }
-        
-        addSearchPropertyControl(container, "tags", "Advanced Tags");
-        
-        refreshControls();
 
         // Build the separator line
         Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         return container;
-    }
-    
-    private void addSearchPropertyControl(Composite parent, String searchTag, String tagLabelName) {
-        Label tagLabel = new Label(parent, SWT.NONE);
-        tagLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-        tagLabel.setText(StringUtils.capitalize(tagLabelName));
-        
-        Text tagValue = new Text(parent, SWT.BORDER);
-        tagValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        textMap.put(searchTag, tagValue);
-        tagValue.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                properties.put(searchTag, ((Text) e.getSource()).getText());
-            }
-
-        });
     }
 
     @Override

@@ -48,7 +48,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 @SuppressWarnings("unchecked")
 public class ManageTestCaseTagDialog extends Dialog {
 
-    public static final int APPEND_TAGS = 1001;
+    public static final int CM_APPEND_TAGS = 1001;
 
     private TestCaseSettingStore store;
 
@@ -77,12 +77,12 @@ public class ManageTestCaseTagDialog extends Dialog {
     private void initializeTagInput() {
         try {
             Set<String> allTagsInProject = store.getTestCaseTags();
-            Set<String> tags = new HashSet<>();
-            tags.addAll(allTagsInProject);
-            tags.addAll(currentTestCaseTags);
-            tagItems = tags.stream().map(tag -> {
+            Set<String> inputTags = new HashSet<>();
+            inputTags.addAll(allTagsInProject);
+            inputTags.addAll(currentTestCaseTags);
+            tagItems = inputTags.stream().map(tag -> {
                 TagTableViewerItem item = new TagTableViewerItem();
-                item.setName(tag);
+                item.setTagName(tag);
                 if (currentTestCaseTags.contains(tag)) {
                     item.setSelected(true);
                     item.setEditable(false);
@@ -91,8 +91,9 @@ public class ManageTestCaseTagDialog extends Dialog {
                     item.setEditable(true);
                 }
                 return item;
-            }).sorted((item1, item2) -> StringUtils.compareIgnoreCase(item1.getName(), item2.getName()))
-                    .collect(Collectors.toList());
+            })
+            .sorted((item1, item2) -> StringUtils.compareIgnoreCase(item1.getTagName(), item2.getTagName()))
+            .collect(Collectors.toList());
         } catch (IOException e) {
             LoggerSingleton.logError(e);
             tagItems = new ArrayList<>();
@@ -129,7 +130,7 @@ public class ManageTestCaseTagDialog extends Dialog {
             @Override
             public String getText(Object element) {
                 TagTableViewerItem item = (TagTableViewerItem) element;
-                return item.getName();
+                return item.getTagName();
             }
         });
 
@@ -190,7 +191,7 @@ public class ManageTestCaseTagDialog extends Dialog {
         String searchText = txtSearch.getText().trim();
         if (!StringUtils.isBlank(searchText)) {
             List<TagTableViewerItem> matchedItems = tagItems.stream()
-                    .filter(item -> item.getName().toLowerCase().contains(searchText.toLowerCase()))
+                    .filter(item -> item.getTagName().toLowerCase().contains(searchText.toLowerCase()))
                     .collect(Collectors.toList());
             tagTableViewer.setInput(matchedItems);
         } else {
@@ -202,10 +203,10 @@ public class ManageTestCaseTagDialog extends Dialog {
     private void handleAppendTags() {
         List<TagTableViewerItem> tagItems = (List<TagTableViewerItem>) tagTableViewer.getInput();
         appendedTags = tagItems.stream()
-                .filter(tagItem -> tagItem.isSelected() && !currentTestCaseTags.contains(tagItem.getName()))
-                .map(tagItem -> tagItem.getName()).collect(Collectors.toSet());
-        setReturnCode(APPEND_TAGS);
-        ManageTestCaseTagDialog.this.close();
+                .filter(tagItem -> tagItem.isSelected() && !currentTestCaseTags.contains(tagItem.getTagName()))
+                .map(tagItem -> tagItem.getTagName()).collect(Collectors.toSet());
+        setReturnCode(CM_APPEND_TAGS);
+        close();
     }
 
     @Override
@@ -274,18 +275,18 @@ public class ManageTestCaseTagDialog extends Dialog {
     }
 
     private class TagTableViewerItem {
-        private String name;
+        private String tagName;
 
         private boolean isSelected;
 
         private boolean isEditable;
 
-        public String getName() {
-            return name;
+        public String getTagName() {
+            return tagName;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setTagName(String name) {
+            this.tagName = name;
         }
 
         public boolean isSelected() {

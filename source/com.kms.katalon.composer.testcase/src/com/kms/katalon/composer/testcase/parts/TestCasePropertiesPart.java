@@ -30,12 +30,15 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.util.CssUtil;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.dialogs.ManageTestCaseTagDialog;
-import com.kms.katalon.composer.testcase.util.TestCaseTagUtil;
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.EntityTagController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class TestCasePropertiesPart extends CPart {
@@ -125,13 +128,13 @@ public class TestCasePropertiesPart extends CPart {
         txtTag = new Text(left, SWT.BORDER);
         txtTag.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         
-        createLabel(StringUtils.EMPTY, left, SWT.CENTER);
-        
-        Composite tagComposite = new Composite(left, SWT.NONE);
-        tagComposite.setLayout(new GridLayout(2, false));
-        tagComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false));
-        btnManageTags = new Button(tagComposite, SWT.NONE);
-        btnManageTags.setText(ComposerTestcaseMessageConstants.TestCasePropertiesPart_BTN_MANAGE_TAGS);
+        if (isVirtualTestSuitePluginInstalled()) {
+            Composite tagComposite = new Composite(left, SWT.NONE);
+            tagComposite.setLayout(new GridLayout());
+            tagComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 2, 1));
+            btnManageTags = new Button(tagComposite, SWT.NONE);
+            btnManageTags.setText(ComposerTestcaseMessageConstants.TestCasePropertiesPart_BTN_MANAGE_TAGS);
+        }
         
         createLabel(StringConstants.DESCRIPTION, left, SWT.TOP);
         txtDescription = new Text(left, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
@@ -193,21 +196,30 @@ public class TestCasePropertiesPart extends CPart {
             }
         });
         
-        btnManageTags.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Set<String> currentTags = TestCaseTagUtil.splitTags(txtTag.getText());
-                ManageTestCaseTagDialog dialog = new ManageTestCaseTagDialog(Display.getCurrent().getActiveShell(),
-                        currentTags);
-                if (dialog.open() == ManageTestCaseTagDialog.APPEND_TAGS) {
-                    Set<String> appendedTags = dialog.getAppendedTags();
-                    String appendedTagString = TestCaseTagUtil.joinTags(appendedTags);
-                    if (!StringUtils.isBlank(appendedTagString)) {
-                        txtTag.setText(txtTag.getText() + TestCaseTagUtil.getTagSeparator() + appendedTagString);
+        if (isVirtualTestSuitePluginInstalled()) {
+            btnManageTags.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    EntityTagController tagController = EntityTagController.getInstance();
+                    Set<String> testCaseTags = tagController.parse(txtTag.getText());
+                    ManageTestCaseTagDialog dialog = new ManageTestCaseTagDialog(Display.getCurrent().getActiveShell(),
+                            testCaseTags);
+                    if (dialog.open() == ManageTestCaseTagDialog.CM_APPEND_TAGS) {
+                        Set<String> newTags = dialog.getAppendedTags();
+                        String newTagValues = tagController.joinTags(newTags);
+                        if (!StringUtils.isBlank(newTagValues)) {
+                            String updatedTagValues = txtTag.getText() + tagController.getTagSeparator() + newTagValues;
+                            txtTag.setText(updatedTagValues);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+    }
+    
+    private boolean isVirtualTestSuitePluginInstalled() {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_VIRTUAL_TEST_SUITE);
+        return plugin != null;
     }
 
     public void loadInput() {
