@@ -36,7 +36,7 @@ public class FilterController {
     public List<String> getDefaultKeywords() {
         List<String> keywords = new ArrayList<>();
         keywords.addAll(DEFAULT_KEYWORDS);
-        if (isVirtualTestSuitePluginInstalled()) {
+        if (isAdvancedTagPluginInstalled()) {
             keywords.add(getAdvancedTagKeyword());
         }
         return keywords;
@@ -131,8 +131,8 @@ public class FilterController {
         }
     }
     
-    private boolean isVirtualTestSuitePluginInstalled() {
-        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_VIRTUAL_TEST_SUITE);
+    private boolean isAdvancedTagPluginInstalled() {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_ADVANCED_TAGS);
         return plugin != null;
     }
     

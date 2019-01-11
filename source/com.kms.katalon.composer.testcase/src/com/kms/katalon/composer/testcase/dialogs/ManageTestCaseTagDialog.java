@@ -41,8 +41,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
+import com.kms.katalon.composer.testcase.preferences.TestCaseSettingStore;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.setting.TestCaseSettingStore;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 @SuppressWarnings("unchecked")

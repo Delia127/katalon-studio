@@ -128,7 +128,7 @@ public class TestCasePropertiesPart extends CPart {
         txtTag = new Text(left, SWT.BORDER);
         txtTag.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         
-        if (isVirtualTestSuitePluginInstalled()) {
+        if (isAdvancedTagPluginInstalled()) {
             Composite tagComposite = new Composite(left, SWT.NONE);
             tagComposite.setLayout(new GridLayout());
             tagComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 2, 1));
@@ -196,7 +196,7 @@ public class TestCasePropertiesPart extends CPart {
             }
         });
         
-        if (isVirtualTestSuitePluginInstalled()) {
+        if (isAdvancedTagPluginInstalled()) {
             btnManageTags.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
@@ -217,8 +217,8 @@ public class TestCasePropertiesPart extends CPart {
         }
     }
     
-    private boolean isVirtualTestSuitePluginInstalled() {
-        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_VIRTUAL_TEST_SUITE);
+    private boolean isAdvancedTagPluginInstalled() {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_ADVANCED_TAGS);
         return plugin != null;
     }
 

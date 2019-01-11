@@ -12,10 +12,10 @@ import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.preferences.TestCaseSettingStore;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.EntityTagController;
-import com.kms.katalon.core.setting.TestCaseSettingStore;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 

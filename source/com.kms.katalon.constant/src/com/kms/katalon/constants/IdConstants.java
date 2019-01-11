@@ -208,7 +208,7 @@ public interface IdConstants {
     
     public static final String PLUGIN_TAGS = "com.katalon.katalon-studio-tags-plugin";
     
-    public static final String PLUGIN_VIRTUAL_TEST_SUITE = "com.katalon.katalon-studio-virtual-test-suite";
+    public static final String PLUGIN_ADVANCED_TAGS = "com.katalon.tags-plugin";
 
     // Groovy
     public static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
