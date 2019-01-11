@@ -423,6 +423,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String ManageTestCaseTagDialog_DIA_TITLE;
     
     public static String TestCasePropertiesPart_BTN_MANAGE_TAGS;
+
+    public static String DIALOG_TITLE_TEST_CASE_FOLDER_SELECTION;
     
     static {
         // initialize resource bundle

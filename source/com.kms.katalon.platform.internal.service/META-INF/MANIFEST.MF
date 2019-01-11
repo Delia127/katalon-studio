@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Platform Service Implementation
+Bundle-SymbolicName: com.kms.katalon.platform.internal.service
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Katalon LLC
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

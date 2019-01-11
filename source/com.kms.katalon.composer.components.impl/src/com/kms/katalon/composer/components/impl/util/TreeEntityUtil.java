@@ -2,7 +2,6 @@ package com.kms.katalon.composer.components.impl.util;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -105,6 +104,17 @@ public class TreeEntityUtil {
             }
         }
         return treeEntities.toArray(new ITreeEntity[0]);
+    }
+    
+    public static FolderTreeEntity getFolderTreeEntity(FolderEntity folderEntity) {
+        if (folderEntity == null) {
+            return null;
+        }
+        if (folderEntity.getParentFolder() == null) {
+            return new FolderTreeEntity(folderEntity, null);
+        }
+        return new FolderTreeEntity(folderEntity,
+                getFolderTreeEntity(folderEntity.getParentFolder()));
     }
 
     public static FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity,

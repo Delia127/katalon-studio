@@ -35,8 +35,8 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
     }
 
     @Override
-    public String getReportLocation() {
-        return builder.reportLocation;
+    public String getReportId() {
+        return builder.reportId;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
 
         private long endTime;
 
-        private String reportLocation;
+        private String reportId;
 
         private List<TestCaseExecutionContext> testCaseContexts = new ArrayList<>();
 
@@ -80,12 +80,12 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
             this.endTime = endTime;
             return this;
         }
-        
-        public Builder withReportLocation(String reportLocation) {
-            this.reportLocation = reportLocation;
+
+        public Builder withReportId(String reportId) {
+            this.reportId = reportId;
             return this;
         }
-        
+
         public Builder withTestCaseContext(List<TestCaseExecutionContext> testCaseContexts) {
             this.testCaseContexts = testCaseContexts;
             return this;

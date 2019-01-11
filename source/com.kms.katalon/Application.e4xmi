@@ -38,6 +38,7 @@
               <children xsi:type="advanced:Placeholder" xmi:id="_g82UADqeEeWympSUeHeJlA" elementId="org.eclipse.search.ui.views.SearchView" toBeRendered="false" visible="false" ref="_zqfPgP3wEeS6qc67Kbzx-g">
                 <tags>NoClose</tags>
               </children>
+              <children xsi:type="advanced:Placeholder" xmi:id="_gMDv8BPkEem7dOioj5kUcw" elementId="com.kms.katalon.placeholder.eventLog" ref="_BortMBPkEem7dOioj5kUcw"/>
             </children>
           </children>
         </children>
@@ -142,6 +143,11 @@
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_zqfPgP3wEeS6qc67Kbzx-g" elementId="org.eclipse.search.ui.views.SearchView" visible="false" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Search" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/search_16.png" closeable="true">
       <toolbar xmi:id="_2gfMQP3wEeS6qc67Kbzx-g" elementId="com.kms.katalon.toolbar.1"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_BortMBPkEem7dOioj5kUcw" elementId="com.kms.katalon.part.eventLog" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.parts.EventLogPart" label="Event Log" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png">
+      <toolbar xmi:id="_qt3TEBPqEem7dOioj5kUcw" elementId="com.kms.katalon.toolbar.0">
+        <children xsi:type="menu:DirectToolItem" xmi:id="_r821wBPqEem7dOioj5kUcw" elementId="com.kms.katalon.eventLog.clearLog" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/clear_16.png" tooltip="Clear logs" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.parts.ClearLogHandler"/>
+      </toolbar>
     </sharedElements>
     <trimBars xmi:id="_hQQH9RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">

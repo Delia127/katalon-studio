@@ -3,6 +3,7 @@ package com.kms.katalon.composer.integration.jira.report;
 import java.io.IOException;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.integration.jira.JiraUIComponent;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
 import com.kms.katalon.composer.report.parts.integration.TestCaseIntegrationColumn;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
@@ -10,19 +11,18 @@ import com.kms.katalon.composer.report.parts.integration.TestLogIntegrationColum
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 
-public class JiraReportIntegrationBuilder implements ReportTestCaseIntegrationViewBuilder {
+public class JiraReportIntegrationBuilder implements ReportTestCaseIntegrationViewBuilder, JiraUIComponent {
 
     @Override
     public TestCaseLogDetailsIntegrationView getIntegrationDetails(ReportEntity report,
             TestSuiteLogRecord testSuiteLogRecord) {
-        return new JiraReportTestLogView(report);
+        return new JiraReportTestLogView(report, testSuiteLogRecord);
     }
 
     @Override
-    public TestCaseIntegrationColumn getTestCaseIntegrationColumn(ReportEntity report) {
-        return new JiraReportTestCaseColumn(report);
+    public TestCaseIntegrationColumn getTestCaseIntegrationColumn(ReportEntity report, TestSuiteLogRecord suiteRecord) {
+        return new JiraReportTestCaseColumn(report, suiteRecord);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class JiraReportIntegrationBuilder implements ReportTestCaseIntegrationVi
     @Override
     public boolean isIntegrationEnabled(ProjectEntity project) {
         try {
-            return new JiraIntegrationSettingStore(project.getFolderLocation()).isIntegrationEnabled();
+            return !isJiraPluginEnabled() && getSettingStore().isIntegrationEnabled();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
             return false;
@@ -41,8 +41,14 @@ public class JiraReportIntegrationBuilder implements ReportTestCaseIntegrationVi
     }
 
     @Override
-    public TestLogIntegrationColumn getTestLogIntegrationColumn(ReportEntity report) {
-        return new JiraReportTestLogColumn(report);
+    public TestLogIntegrationColumn getTestLogIntegrationColumn(ReportEntity report,
+            TestSuiteLogRecord testSuiteRecord) {
+        return new JiraReportTestLogColumn(report, testSuiteRecord);
+    }
+
+    @Override
+    public String getName() {
+        return "JIRA";
     }
 
 }
