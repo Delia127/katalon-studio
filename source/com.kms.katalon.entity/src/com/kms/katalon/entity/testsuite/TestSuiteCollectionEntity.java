@@ -17,9 +17,17 @@ public class TestSuiteCollectionEntity extends FileEntity {
 
     public static final String FILE_EXTENSION = ".ts";
 
+    public static final int DF_CONCURRENT_INSTANCES = 8;
+    
+    public static final int MIN_CONCURRENT_INSTANCES = 1;
+
+    public static final int MAX_CONCURRENT_INSTANCES = 1000;
+
     private List<TestSuiteRunConfiguration> testSuiteRunConfigurations;
     
     private ExecutionMode executionMode;
+    
+    private int maxConcurrentInstances = DF_CONCURRENT_INSTANCES;
 
     public List<TestSuiteRunConfiguration> getTestSuiteRunConfigurations() {
         if (testSuiteRunConfigurations == null) {
@@ -70,6 +78,7 @@ public class TestSuiteCollectionEntity extends FileEntity {
         }
         this.setTestSuiteRunConfigurations(runConfigs);
         this.setExecutionMode(src.getExecutionMode());
+        this.setMaxConcurrentInstances(src.getMaxConcurrentInstances());
     }
 
     @Override
@@ -131,5 +140,13 @@ public class TestSuiteCollectionEntity extends FileEntity {
 
     public boolean isEmpty() {
         return testSuiteRunConfigurations.isEmpty();
+    }
+
+    public int getMaxConcurrentInstances() {
+        return maxConcurrentInstances;
+    }
+
+    public void setMaxConcurrentInstances(int maxConcurrentInstances) {
+        this.maxConcurrentInstances = maxConcurrentInstances;
     }
 }

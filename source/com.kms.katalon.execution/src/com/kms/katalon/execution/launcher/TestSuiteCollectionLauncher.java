@@ -163,7 +163,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     public class TestSuiteCollectionLauncherManager extends LauncherManager {
         protected boolean isLauncherReadyToRun(ILauncher launcher) {
             if (executionMode == ExecutionMode.PARALLEL) {
-                return getRunningLaunchers().size() <= MAX_NUMBER_INSTANCES_IN_PARALLEL_MODE;
+                return getRunningLaunchers().size() < executedEntity.getEntity().getMaxConcurrentInstances();
             }
             return getRunningLaunchers().isEmpty();
         }
