@@ -356,4 +356,9 @@ public class EventConstants {
     
     // Web Sevice Method Events
     public static final String UPDATE_WEBSERVICE_METHODS = "WEBSERVICE/UPDATE_METHODS";
+
+    // JIRA PLUGINS
+    public static final String JIRA_PLUGIN_INSTALLED = "PLUGIN/JIRA_INSTALLED";
+    
+    public static final String JIRA_PLUGIN_UNINSTALLED = "PLUGIN/JIRA_UNINSTALLED";
 };

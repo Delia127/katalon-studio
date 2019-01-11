@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -15,8 +16,12 @@ import org.osgi.framework.BundleException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.report.platform.PlatformReportIntegrationViewBuilder;
+import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationPlatformBuilder;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.platform.internal.event.ProjectEventPublisher;
+import com.kms.katalon.platform.internal.report.ReportIntegrationPlatformBuilderImpl;
+import com.kms.katalon.platform.internal.testcase.TestCaseIntegrationPlatformBuilderImpl;
 
 public class InternalPlatformPlugin implements BundleActivator {
 
@@ -46,7 +51,18 @@ public class InternalPlatformPlugin implements BundleActivator {
             @Override
             public void handleEvent(Event event) {
                 IEclipseContext eclipseContext = PlatformUI.getWorkbench().getService(IEclipseContext.class);
-                bundle.getBundleContext().registerService(IEclipseContext.class, eclipseContext, null);
+                BundleContext bundleContext = bundle.getBundleContext();
+                bundleContext.registerService(IEclipseContext.class, eclipseContext, null);
+
+                TestCaseIntegrationPlatformBuilder testCaseIntegrationViewBuilder = ContextInjectionFactory
+                        .make(TestCaseIntegrationPlatformBuilderImpl.class, eclipseContext);
+                bundleContext.registerService(TestCaseIntegrationPlatformBuilder.class, testCaseIntegrationViewBuilder,
+                        null);
+                
+                PlatformReportIntegrationViewBuilder reportIntegrationViewBuilder = ContextInjectionFactory
+                        .make(ReportIntegrationPlatformBuilderImpl.class, eclipseContext);
+                bundleContext.registerService(PlatformReportIntegrationViewBuilder.class, reportIntegrationViewBuilder,
+                        null);
             }
         });
 

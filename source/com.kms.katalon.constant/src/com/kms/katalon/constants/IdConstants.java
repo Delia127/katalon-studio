@@ -29,6 +29,9 @@ public interface IdConstants {
     public static final String QUIT_COMMAND_ID = "com.kms.katalon.composer.quit";
 
     // Toolbar
+    
+    public static final String MAIN_TOOLBAR_ID = "com.kms.katalon.composer.toolbar"; 
+
     public static final String RUN_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.run";
 
     public static final String DEBUG_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.debug";
@@ -297,4 +300,7 @@ public interface IdConstants {
     public static final String COMPOSER_PARTSTACK_LEFT_OUTLINE_ID = "com.kms.katalon.partstack.left.outline";
 
     public static final String COMPOSER_REQUEST_HISTORY_PART_ID = "com.kms.katalon.composer.webservice.part.requestHistory";
+    
+    // Jira Plugin
+    public static final String JIRA_PLUGIN_ID = "com.katalon.katalon-studio-jira-plugin";
 }
