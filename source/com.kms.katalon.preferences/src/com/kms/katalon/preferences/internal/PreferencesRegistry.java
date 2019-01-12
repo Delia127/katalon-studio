@@ -118,49 +118,59 @@ public class PreferencesRegistry {
                 nodeDescriptionLookup.put(category, Arrays.asList(nodeDesc));
             }
         }
+        
 
-        for (String cat : Collections.unmodifiableSet(nodeDescriptionLookup.keySet())) {
-            IPreferenceNode parent = findNode(pm, cat);
-            if (parent == null && !cat.isEmpty()) {
-                continue;
-            }
-            for (PreferenceNodeDescription pnDesc : nodeDescriptionLookup.get(cat)) {
-                IPreferenceNode pn = null;
-                if (pnDesc.getPreferencePageClassName().isEmpty()) {
-                    pn = new PreferenceNode(pnDesc.getNodeId(), new EmptyPreferencePage(pnDesc.getNodeName()));
-                } else {
-                    PreferencePage page = null;
-                    try {
-                        String prefPageURI = getClassURI(pnDesc.getBundleId(), pnDesc.getPreferencePageClassName());
-                        Object object = factory.create(prefPageURI, context);
-                        if (!(object instanceof PreferencePage)) {
-                            logger.error(MessageFormat.format(
-                                    StringConstants.INL_LOG_ERROR_EXPECTED_INSTANCE_OF_PREF_PAGE,
-                                    pnDesc.getPreferencePageClassName()));
+        Collection<String> categoriesDone = new ArrayList<String>();
+        while (!nodeDescriptionLookup.isEmpty()) {
+            for (String cat : Collections.unmodifiableSet(nodeDescriptionLookup.keySet())) {
+                IPreferenceNode parent = findNode(pm, cat);
+                if (parent == null && !cat.isEmpty()) {
+                    continue;
+                }
+                for (PreferenceNodeDescription pnDesc : nodeDescriptionLookup.get(cat)) {
+                    IPreferenceNode pn = null;
+                    if (pnDesc.getPreferencePageClassName().isEmpty()) {
+                        pn = new PreferenceNode(pnDesc.getNodeId(), new EmptyPreferencePage(pnDesc.getNodeName()));
+                    } else {
+                        PreferencePage page = null;
+                        try {
+                            String prefPageURI = getClassURI(pnDesc.getBundleId(), pnDesc.getPreferencePageClassName());
+                            Object object = factory.create(prefPageURI, context);
+                            if (!(object instanceof PreferencePage)) {
+                                logger.error(MessageFormat.format(
+                                        StringConstants.INL_LOG_ERROR_EXPECTED_INSTANCE_OF_PREF_PAGE,
+                                        pnDesc.getPreferencePageClassName()));
+                                continue;
+                            }
+                            page = (PreferencePage) object;
+                            if (page.getPreferenceStore() == null) {
+                                setPreferenceStore(pnDesc.getBundleId(), page);
+                            }
+
+                        } catch (ClassNotFoundException e) {
+                            logger.error(e);
                             continue;
                         }
-                        page = (PreferencePage) object;
-                        if (page.getPreferenceStore() == null) {
-                            setPreferenceStore(pnDesc.getBundleId(), page);
+                        ContextInjectionFactory.inject(page, context);
+                        if ((page.getTitle() == null || page.getTitle().isEmpty()) && pnDesc.getNodeName() != null) {
+                            page.setTitle(pnDesc.getNodeName());
                         }
 
-                    } catch (ClassNotFoundException e) {
-                        logger.error(e);
-                        continue;
+                        pn = new PreferenceNode(pnDesc.getNodeId(), page);
                     }
-                    ContextInjectionFactory.inject(page, context);
-                    if ((page.getTitle() == null || page.getTitle().isEmpty()) && pnDesc.getNodeName() != null) {
-                        page.setTitle(pnDesc.getNodeName());
+                    if (parent != null) {
+                        parent.add(pn);
+                    } else {
+                        pm.addToRoot(pn);
                     }
-
-                    pn = new PreferenceNode(pnDesc.getNodeId(), page);
                 }
-                if (parent != null) {
-                    parent.add(pn);
-                } else {
-                    pm.addToRoot(pn);
-                }
+                categoriesDone.add(cat);
             }
+            
+            for (String keyToRemove : categoriesDone) {
+                nodeDescriptionLookup.remove(keyToRemove);
+            }
+            categoriesDone.clear();
         }
 
         return pm;

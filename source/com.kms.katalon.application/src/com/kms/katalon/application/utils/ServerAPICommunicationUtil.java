@@ -58,7 +58,6 @@ public class ServerAPICommunicationUtil {
             connection = createConnection(method, endpoint, ApplicationProxyUtil.getProxy());
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             String result = sendAndReceiveData(connection, data);
-            LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
             int statusCode = connection.getResponseCode();
             if (statusCode == 403 || statusCode == 502 || statusCode == 503) {
                 throw new RequestException("Request failed with status code: " + statusCode);
@@ -82,7 +81,6 @@ public class ServerAPICommunicationUtil {
             connection = createConnection(method, endpoint, ApplicationProxyUtil.getRetryProxy());
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             String result = sendAndReceiveData(connection, data);
-            LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
             int statusCode = connection.getResponseCode();
             if (statusCode == 403 || statusCode == 502 || statusCode == 503) {
                 throw new RequestException("Request failed with status code: " + statusCode);
@@ -113,7 +111,6 @@ public class ServerAPICommunicationUtil {
         try {
             connection = createConnection(method, getAPIUrl() + function, ApplicationProxyUtil.getProxy());
             String result = sendAndReceiveData(connection, jsonData);
-            LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
             return result;
         } catch (Exception ex) {
             LogUtil.logError(ex);
@@ -138,7 +135,6 @@ public class ServerAPICommunicationUtil {
             LogUtil.logError(e);
             throw e;
         } catch (URISyntaxException e) {
-            LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED);
             LogUtil.logError(e);
             return StringUtils.EMPTY;
         } finally {

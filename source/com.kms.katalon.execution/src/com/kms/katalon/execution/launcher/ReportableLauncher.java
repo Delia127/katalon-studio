@@ -63,7 +63,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
-    
+
     @Override
     protected void preExecutionComplete() {
         if (getStatus() == LauncherStatus.TERMINATED) {
@@ -95,7 +95,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         waitForLoggingFinished();
 
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_FINISHED_EVENT);
-        
+
         if (needToRerun()) {
             Rerunable rerun = (Rerunable) getExecutedEntity();
 
@@ -125,8 +125,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     private boolean needToRerun() {
-        if (getResult().getNumErrors() + getResult().getNumFailures() > 0 
-                && getExecutedEntity() instanceof Rerunable) {
+        if (getResult().getNumErrors() + getResult().getNumFailures() > 0 && getExecutedEntity() instanceof Rerunable) {
             Rerunable rerun = (Rerunable) getExecutedEntity();
 
             return rerun.getRemainingRerunTimes() > 0;
@@ -134,7 +133,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             return false;
         }
     }
-    
+
     private void waitForLoggingFinished() {
         try {
             long startTime = System.currentTimeMillis();
@@ -142,7 +141,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 Thread.sleep(200);
             }
         } catch (Exception ignored) {
-            
+
         }
     }
 
@@ -201,8 +200,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_UUID);
             ReportUtil.writeExecutionUUIDToFile(this.getExecutionUUID(), reportFolder);
 
-//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
-//            ReportUtil.writeJsonReport(suiteLog, reportFolder);
+            // setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
+            // ReportUtil.writeJsonReport(suiteLog, reportFolder);
 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
             ReportUtil.writeJUnitReport(suiteLog, reportFolder);
@@ -413,11 +412,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         IExecutedEntity executedEntity = getExecutedEntity();
         if (executedEntity instanceof TestSuiteExecutedEntity) {
             TestSuiteExecutedEntity testSuiteEx = (TestSuiteExecutedEntity) executedEntity;
-            
+
             List<TestCaseExecutionContext> testCaseContexts = new ArrayList<>();
             for (TestStatus testStatus : getResult().getStatuses()) {
-                testCaseContexts.add(
-                        TestCaseExecutionContextImpl.Builder.create("", "")
+                testCaseContexts.add(TestCaseExecutionContextImpl.Builder.create("", "")
                         .withTestCaseStatus(testStatus.getStatusValue().name())
                         .withMessage(testStatus.getStackTrace())
                         .build());
@@ -425,7 +423,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteExecutionContextImpl executionContext = TestSuiteExecutionContextImpl.Builder
                     .create(getId(), testSuiteEx.getSourceId())
-                    .withReportLocation(getRunConfig().getExecutionSetting().getFolderPath())
+                    .withReportId(reportEntity.getIdForDisplay())
                     .withTestCaseContext(testCaseContexts)
                     .build();
             TestSuiteExecutionEvent eventObject = new TestSuiteExecutionEvent(eventName, executionContext);

@@ -7,11 +7,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
+import com.kms.katalon.composer.report.platform.PlatformReportIntegrationViewBuilder;
 
 public class ReportComposerIntegrationFactory {
     private static ReportComposerIntegrationFactory _instance;
 
     private Map<String, ReportTestCaseIntegrationViewBuilder> testCaseIntegrationViewMap;
+
+    private PlatformReportIntegrationViewBuilder platformViewerBuilder;
 
     public Map<String, ReportTestCaseIntegrationViewBuilder> getIntegrationViewMap() {
         return testCaseIntegrationViewMap;
@@ -39,11 +42,15 @@ public class ReportComposerIntegrationFactory {
                 .entrySet()) {
             builders.add(builderEntry.getValue());
         }
-        builders.sort((left, right) -> left.getPreferredOrder() - right.getPreferredOrder());
+        if (platformViewerBuilder != null) {
+            builders.addAll(platformViewerBuilder.getIntegrationViews());
+        }
+
+        builders.sort((left, right) -> left.getName().compareToIgnoreCase(right.getName()));
         return builders;
     }
 
-    public int getPreferredOrder(String productName) {
-        return getIntegrationViewMap().get(productName).getPreferredOrder();
+    public void addPlatformViewerBuilder(PlatformReportIntegrationViewBuilder platformViewerBuilder) {
+        this.platformViewerBuilder = platformViewerBuilder;
     }
 }
