@@ -106,8 +106,6 @@ public class ConsoleMain {
             
             registerPlugins(project);
             
-            acceptPluginConsoleOptionList(parser, IdConstants.PLUGIN_TAGS_2);
-
             // Parse all arguments before execute
             options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
             
@@ -129,11 +127,6 @@ public class ConsoleMain {
         }
     }
     
-	private static void acceptPluginConsoleOptionList(OptionParser parser, String pluginId) {
-		acceptConsoleOptionList(parser, ConsoleAdapter.adaptToStringConsoleOptions(ApplicationManager.getInstance()
-				.getConsoleManager().getRegisteredConsoleOption(pluginId).getPluginConsoleOptionList()));
-	}
-
 	private static void registerPlugins(ProjectEntity project) throws InterruptedException {
 		String filePath = "C://Users//thanhto//katalon_plugin//katalon-tags-plugin//target//tags-plugin-1.0-SNAPSHOT.jar";
 		BundleContext bundleContext = Platform.getBundle("com.katalon.platform").getBundleContext();

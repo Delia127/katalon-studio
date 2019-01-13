@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
-import com.katalon.platform.internal.api.PluginInstaller;
+import com.katalon.platform.api.PluginInstaller;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;

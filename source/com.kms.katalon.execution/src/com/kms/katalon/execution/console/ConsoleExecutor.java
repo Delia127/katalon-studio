@@ -31,7 +31,12 @@ public class ConsoleExecutor {
 
     public ConsoleExecutor() {
         launcherOptions = Arrays.asList(new TestSuiteLauncherOptionParser(),
-                new TestSuiteCollectionLauncherOptionParser());
+                new TestSuiteCollectionLauncherOptionParser(),
+                LauncherOptionParserFactory.getInstance()
+                .getBuilders()
+                .stream()
+                .map(a -> a.getPluginLauncherOptionParser()));
+        
         optionalOptions = ConsoleOptionCollector.getInstance().getOptionContributors();
     }
 

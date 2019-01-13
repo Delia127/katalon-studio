@@ -16,9 +16,11 @@ import org.osgi.framework.BundleException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.katalon.platform.internal.console.LauncherOptionParserPlatformBuilderImpl;
 import com.kms.katalon.composer.report.platform.PlatformReportIntegrationViewBuilder;
 import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationPlatformBuilder;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.execution.platform.PlatformLauncherOptionParserBuilder;
 import com.kms.katalon.platform.internal.event.ProjectEventPublisher;
 import com.kms.katalon.platform.internal.report.ReportIntegrationPlatformBuilderImpl;
 import com.kms.katalon.platform.internal.testcase.TestCaseIntegrationPlatformBuilderImpl;
@@ -62,6 +64,11 @@ public class InternalPlatformPlugin implements BundleActivator {
                 PlatformReportIntegrationViewBuilder reportIntegrationViewBuilder = ContextInjectionFactory
                         .make(ReportIntegrationPlatformBuilderImpl.class, eclipseContext);
                 bundleContext.registerService(PlatformReportIntegrationViewBuilder.class, reportIntegrationViewBuilder,
+                        null);
+                
+                PlatformLauncherOptionParserBuilder laucherOptionParserBuilder = ContextInjectionFactory
+                        .make(LauncherOptionParserPlatformBuilderImpl.class, eclipseContext);
+                bundleContext.registerService(PlatformLauncherOptionParserBuilder.class, laucherOptionParserBuilder,
                         null);
             }
         });

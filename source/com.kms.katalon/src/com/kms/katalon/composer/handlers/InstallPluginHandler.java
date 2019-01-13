@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
-import com.katalon.platform.internal.api.PluginInstaller;
+import com.katalon.platform.api.PluginInstaller;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -56,7 +56,7 @@ public class InstallPluginHandler {
                         new File(filePath).toURI().toString());
                 if (bundle != null && bundle.getSymbolicName().equals(IdConstants.JIRA_PLUGIN_ID)) {
                     eventBroker.post(EventConstants.JIRA_PLUGIN_INSTALLED, null);
-                }
+                }	
 
                 MessageDialog.openInformation(activeShell, GlobalStringConstants.INFO, "Plugin installed sucessfully");
                 pluginPath = filePath;
