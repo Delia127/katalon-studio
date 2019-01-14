@@ -30,14 +30,14 @@ public class ConsoleExecutor {
     private List<ConsoleOptionContributor> optionalOptions;
 
     public ConsoleExecutor() {
-        launcherOptions = Arrays.asList(new TestSuiteLauncherOptionParser(),
-                new TestSuiteCollectionLauncherOptionParser(),
-                LauncherOptionParserFactory.getInstance()
-                .getBuilders()
-                .stream()
-                .map(a -> a.getPluginLauncherOptionParser()));
-        
+        launcherOptions = new ArrayList<>();
+        launcherOptions.addAll(Arrays.asList(new TestSuiteLauncherOptionParser(),
+                new TestSuiteCollectionLauncherOptionParser()));
         optionalOptions = ConsoleOptionCollector.getInstance().getOptionContributors();
+    }
+    
+    public void addAndPrioritizeLauncherOptionParser(List<LauncherOptionParser> consoleOptionParser){
+    	launcherOptions.addAll(0, consoleOptionParser);
     }
 
     public List<ConsoleOption<?>> getAllConsoleOptions() {
@@ -62,12 +62,11 @@ public class ConsoleExecutor {
         setValueForOptionalOptions(optionalOptions, optionSet);
         
         LauncherOptionParser launcherOption = new LauncherOptionSelector().getSelectedOption(optionSet);
-        
+                
         for (ConsoleOption<?> consoleOption : launcherOption.getConsoleOptionList()) {
             if (optionSet.has(consoleOption.getOption())) {
                 launcherOption.setArgumentValue(consoleOption,
                         String.valueOf(optionSet.valueOf(consoleOption.getOption())));
-                System.out.println(consoleOption.getOption() + " : " + consoleOption.getValue());
             }
         }
 
@@ -169,6 +168,7 @@ public class ConsoleExecutor {
                 if (!consoleOption.isRequired()) {
                     continue;
                 }
+                
                 if (optionSet.has(consoleOption.getOption())) {
                     anyRequiesExisted = true;
                     continue;

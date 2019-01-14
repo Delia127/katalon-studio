@@ -33,7 +33,7 @@ public class InternalPlatformPlugin implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         activatePlatform(context);
 
-        platformServices.forEach(service -> service.onPostConstruct());
+        platformServices.forEach(service -> service.onPostConstruct());      
     }
 
     private void activatePlatform(BundleContext context) throws BundleException {
@@ -65,15 +65,17 @@ public class InternalPlatformPlugin implements BundleActivator {
                         .make(ReportIntegrationPlatformBuilderImpl.class, eclipseContext);
                 bundleContext.registerService(PlatformReportIntegrationViewBuilder.class, reportIntegrationViewBuilder,
                         null);
-                
-                PlatformLauncherOptionParserBuilder laucherOptionParserBuilder = ContextInjectionFactory
-                        .make(LauncherOptionParserPlatformBuilderImpl.class, eclipseContext);
-                bundleContext.registerService(PlatformLauncherOptionParserBuilder.class, laucherOptionParserBuilder,
-                        null);
             }
         });
+        
+        IEclipseContext eclipseContext = EclipseContextFactory.getServiceContext(bundle.getBundleContext());
+        BundleContext bundleContext = bundle.getBundleContext();
+        PlatformLauncherOptionParserBuilder laucherOptionParserBuilder = ContextInjectionFactory
+                .make(LauncherOptionParserPlatformBuilderImpl.class, eclipseContext);
+        bundleContext.registerService(PlatformLauncherOptionParserBuilder.class, laucherOptionParserBuilder,
+                null);
 
-        platformServices.add(new ProjectEventPublisher(eventBroker));
+        platformServices.add(new ProjectEventPublisher(eventBroker));        
     }
 
     @Override

@@ -60,7 +60,7 @@ public class ConsoleAdapter {
 
 			@Override
 			public String getDefaultArgumentValue() {
-				return "";
+				return pluginConsoleOption.getDefaultArgumentValue();
 			}
 
 			@Override
@@ -76,7 +76,7 @@ public class ConsoleAdapter {
 
 			@Override
 			public boolean hasArgument() {
-				return true;
+				return pluginConsoleOption.hasArgument();
 			}
 
 			@Override

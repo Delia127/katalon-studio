@@ -11,20 +11,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
 
-import com.katalon.platform.api.service.ApplicationManager;
-import com.kms.katalon.constants.IdConstants;
+import com.katalon.platform.api.PluginInstaller;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
@@ -37,7 +34,6 @@ import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
-import com.kms.katalon.execution.util.ConsoleAdapter;
 import com.kms.katalon.logging.LogUtil;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -53,6 +49,8 @@ public class ConsoleMain {
     public static final String PROJECT_PK_OPTION = "projectPath";
 
     public final static String TESTSUITE_ID_OPTION = "testSuitePath";
+    
+    public final static String INSTALL_PLUGIN_OPTION = "installPlugin";
 
     public final static String TESTSUITE_COLLECTION_ID_OPTION = "testSuiteCollectionPath";
 
@@ -61,7 +59,7 @@ public class ConsoleMain {
     public static final int DEFAULT_SHOW_PROGRESS_DELAY = 15;
 
     public final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
-
+    
     private ConsoleMain() {
         // hide constructor
     }
@@ -80,7 +78,15 @@ public class ConsoleMain {
         	List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
-
+           
+            // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
+            if(options.has(INSTALL_PLUGIN_OPTION)){
+            	installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));            
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+    				.map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
+            
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
@@ -104,8 +110,6 @@ public class ConsoleMain {
             acceptConsoleOptionList(parser, 
             		new OverridingParametersConsoleOptionContributor(project).getConsoleOptionList());
             
-            registerPlugins(project);
-            
             // Parse all arguments before execute
             options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
             
@@ -127,17 +131,16 @@ public class ConsoleMain {
         }
     }
     
-	private static void registerPlugins(ProjectEntity project) throws InterruptedException {
-		String filePath = "C://Users//thanhto//katalon_plugin//katalon-tags-plugin//target//tags-plugin-1.0-SNAPSHOT.jar";
-		BundleContext bundleContext = Platform.getBundle("com.katalon.platform").getBundleContext();
-		if (StringUtils.isNotEmpty(filePath)) {
-			String fileUri = new File(filePath).toURI().toString();
-			IEclipseContext context = EclipseContextFactory.getServiceContext(bundleContext);
-			IEventBroker eventBroker = context.get(IEventBroker.class);
-			eventBroker.send("KATALON_PLUGIN/INSTALL", new Object[] { bundleContext, fileUri });
-            TimeUnit.SECONDS.sleep(1);
+	private static void installPlugin(String filePath) throws InterruptedException, BundleException {
+		BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
+		ServiceReference<PluginInstaller> serviceReference = context
+                .getServiceReference(PluginInstaller.class);
+		PluginInstaller pluginInstaller = context.getService(serviceReference);
+		if (!filePath.equals("")) {
+			pluginInstaller.installPlugin(context, new File(filePath).toURI().toString());
 		}
     }
+    
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,
             Map<String, String> consoleOptionValueMap) {

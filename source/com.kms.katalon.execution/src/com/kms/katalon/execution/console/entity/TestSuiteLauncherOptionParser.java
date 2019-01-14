@@ -71,6 +71,18 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             return ExecutionProfileEntity.DF_PROFILE_NAME;
         }
     };
+    
+	protected StringConsoleOption installPluginOption = new StringConsoleOption() {
+
+		@Override
+		public String getOption() {
+			return ConsoleMain.INSTALL_PLUGIN_OPTION;
+		}
+
+		public boolean isRequired() {
+			return false;
+		}
+	};
 
     
     @Override
@@ -79,6 +91,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(testSuitePathOption);
         allOptions.add(browserTypeOption);
         allOptions.add(executionProfileOption);
+        allOptions.add(installPluginOption);
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
 		if (currentProject != null && overridingOptions.isEmpty()) {
 			overridingOptions = new OverridingParametersConsoleOptionContributor(currentProject).getConsoleOptionList();
@@ -91,7 +104,9 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
 		super.setArgumentValue(consoleOption, argumentValue);
 		if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
-				|| consoleOption == executionProfileOption) {
+				|| consoleOption == executionProfileOption
+				|| consoleOption == installPluginOption
+				|| overridingOptions.contains(consoleOption)) {
 			consoleOption.setValue(argumentValue);
 		}
     }
