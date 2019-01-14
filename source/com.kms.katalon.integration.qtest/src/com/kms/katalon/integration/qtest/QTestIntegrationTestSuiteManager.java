@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.qas.api.internal.util.json.JsonArray;
@@ -31,6 +32,9 @@ import org.qas.qtest.api.services.execution.model.ListTestSuiteRequest;
 import org.qas.qtest.api.services.execution.model.TestRun;
 import org.qas.qtest.api.services.execution.model.TestSuite;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -151,7 +155,7 @@ public class QTestIntegrationTestSuiteManager {
         StringBuilder testRunMapStringBuilder = new StringBuilder(
                 new JsonObject(qTestSuite.getProperties()).toString());
 
-        return testRunMapStringBuilder.toString().replace("\"", "'").replace("},", "},\n");
+        return testRunMapStringBuilder.toString().replace("},", "},\n");
     }
 
     /**
@@ -194,9 +198,9 @@ public class QTestIntegrationTestSuiteManager {
 
             for (Entry<String, String> entry : properties.entrySet()) {
                 String value = entry.getValue();
-
-                JsonObject qTestSuiteJsonObject = new JsonObject(value.replace("'", "\"").replace("},\n", "},"));
-
+                
+                JsonObject qTestSuiteJsonObject = new JsonObject(value.replace("},\n", "},"));
+                
                 QTestSuite qTestSuite = new QTestSuite();
                 qTestSuite.setName(qTestSuiteJsonObject.getString(QTestEntity.NAME_FIELD));
                 qTestSuite.setId(qTestSuiteJsonObject.getLong(QTestEntity.ID_FIELD));
@@ -456,7 +460,7 @@ public class QTestIntegrationTestSuiteManager {
                     break;
                 }
 
-                if (fieldJsonObject.has("label") && "Planned Start Date".equals(fieldJsonObject.getString("label"))) {
+             /*   if (fieldJsonObject.has("label") && "Planned Start Date".equals(fieldJsonObject.getString("label"))) {
                     fieldValues.add(new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
                             DateUtil.formatDate(new Date())));
                 }
@@ -464,7 +468,7 @@ public class QTestIntegrationTestSuiteManager {
                 if (fieldJsonObject.has("label") && "Planned End Date".equals(fieldJsonObject.getString("label"))) {
                     fieldValues.add(new FieldValue(fieldJsonObject.getLong(QTestEntity.ID_FIELD),
                             DateUtil.formatDate(new Date())));
-                }
+                }*/
             } catch (JsonException e) {
                 throw QTestInvalidFormatException.createInvalidJsonFormatException(reponseJsonArray.toString());
             }
@@ -609,15 +613,6 @@ public class QTestIntegrationTestSuiteManager {
                 QTestRelease release = new QTestRelease();
                 release.setId(testReleaseJsonObject.getLong(QTestEntity.ID_FIELD));
                 release.setName(testReleaseJsonObject.getString(QTestEntity.NAME_FIELD));
-                String endDate = testReleaseJsonObject.getString("end_date");
-                try {
-                    if (DateUtil.parseDate(endDate).before(new Date())) {
-                        continue;
-                    }
-                } catch (ParseException e) {
-                    LogUtil.logError(e);
-                }
-
                 release.setCycles((getCycles(qTestProject, release, credential)));
                 qTestReleases.add(release);
             }

@@ -370,7 +370,7 @@ public class MessageConstants extends NLS {
     //UserFeedbackDialog
     public static String UserFeedbackDialog_MSG_USER_TWEET;
 
-	public static String LBL_USE_MOB_BROWSER_PROXY;
+	public static String LBL_DISABLE_MOB_BROWSER_PROXY;
 
     static {
         // initialize resource bundle
