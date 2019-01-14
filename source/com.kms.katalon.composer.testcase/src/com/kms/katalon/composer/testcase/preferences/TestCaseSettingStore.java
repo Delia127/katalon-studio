@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.kms.katalon.controller.EntityTagController;
 import com.kms.katalon.core.setting.BundleSettingStore;
+import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class TestCaseSettingStore extends BundleSettingStore {
 
@@ -24,13 +24,13 @@ public class TestCaseSettingStore extends BundleSettingStore {
         String tagsString = getString(TAG_PROPERTY, StringUtils.EMPTY);
         Set<String> tags = new HashSet<>();
         if (!StringUtils.isBlank(tagsString)) {
-            tags = EntityTagController.getInstance().parse(tagsString);
+            tags = EntityTagUtil.parse(tagsString);
         }
         return tags;
     }
     
     public void saveTestCaseTags(Set<String> tags) throws GeneralSecurityException, IOException {
-        String tagsString = EntityTagController.getInstance().joinTags(tags);
+        String tagsString = EntityTagUtil.joinTags(tags);
         setStringProperty(TAG_PROPERTY, tagsString, false);
     }
 }

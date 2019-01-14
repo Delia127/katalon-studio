@@ -19,6 +19,7 @@ import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class FilterController {
 
@@ -146,13 +147,11 @@ public class FilterController {
             return false;
         }
         
-        EntityTagController tagController = EntityTagController.getInstance();
-        
-        Set<String> searchTags = tagController.parse(searchTagValues).stream()
+        Set<String> searchTags = EntityTagUtil.parse(searchTagValues).stream()
                 .map(tag -> tag.toLowerCase())
                 .collect(Collectors.toSet());
         
-        Set<String> entityTags = tagController.parse(entityTagValues).stream()
+        Set<String> entityTags = EntityTagUtil.parse(entityTagValues).stream()
                 .map(tag -> tag.toLowerCase())
                 .collect(Collectors.toSet());
         

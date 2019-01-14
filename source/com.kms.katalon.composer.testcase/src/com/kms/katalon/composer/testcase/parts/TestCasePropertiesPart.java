@@ -38,8 +38,8 @@ import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConsta
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.dialogs.ManageTestCaseTagDialog;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.EntityTagController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class TestCasePropertiesPart extends CPart {
 
@@ -200,15 +200,14 @@ public class TestCasePropertiesPart extends CPart {
             btnManageTags.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    EntityTagController tagController = EntityTagController.getInstance();
-                    Set<String> testCaseTags = tagController.parse(txtTag.getText());
+                    Set<String> testCaseTags = EntityTagUtil.parse(txtTag.getText());
                     ManageTestCaseTagDialog dialog = new ManageTestCaseTagDialog(Display.getCurrent().getActiveShell(),
                             testCaseTags);
                     if (dialog.open() == ManageTestCaseTagDialog.CM_APPEND_TAGS) {
                         Set<String> newTags = dialog.getAppendedTags();
-                        String newTagValues = tagController.joinTags(newTags);
+                        String newTagValues = EntityTagUtil.joinTags(newTags);
                         if (!StringUtils.isBlank(newTagValues)) {
-                            String updatedTagValues = txtTag.getText() + tagController.getTagSeparator() + newTagValues;
+                            String updatedTagValues = txtTag.getText() + EntityTagUtil.getTagSeparator() + newTagValues;
                             txtTag.setText(updatedTagValues);
                         }
                     }

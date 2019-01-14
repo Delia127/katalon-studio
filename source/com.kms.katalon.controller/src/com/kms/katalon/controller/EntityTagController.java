@@ -4,15 +4,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class EntityTagController {
-
-    private static final char TAG_SEPARATOR = ',';
     
     private static EntityTagController instance;
     
@@ -40,28 +37,6 @@ public class EntityTagController {
 
     public Set<String> collectTestCaseTags(TestCaseEntity testCase) {
         String tagValues = testCase.getTag();
-        return parse(tagValues);
-    }
-
-    public String joinTags(Set<String> tags) {
-        String tagValues = StringUtils.join(tags, TAG_SEPARATOR);
-        return tagValues;
-    }
-
-    public Set<String> parse(String tagValues) {
-        Set<String> parseResult = new HashSet<>();
-        String[] tagArray = StringUtils.split(tagValues, TAG_SEPARATOR);
-        if (tagArray != null) {
-            for (String tag : tagArray) {
-                if (!StringUtils.isBlank(tag)) {
-                    parseResult.add(tag.trim());
-                }
-            }
-        }
-        return parseResult;
-    }
-    
-    public char getTagSeparator() {
-        return TAG_SEPARATOR;
+        return EntityTagUtil.parse(tagValues);
     }
 }
