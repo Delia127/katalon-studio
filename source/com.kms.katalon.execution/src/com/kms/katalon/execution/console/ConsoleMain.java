@@ -21,7 +21,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
-import com.katalon.platform.api.PluginInstaller;
+import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
@@ -227,7 +227,7 @@ public class ConsoleMain {
         return StringUtils.isNotBlank(fileLocation) && new File(fileLocation).exists();
     }
 
-    private static void acceptConsoleOptionList(OptionParser parser, List<? extends ConsoleOption<?>> consoleOptionList) {
+    private static void acceptConsoleOptionList(OptionParser parser, List<ConsoleOption<?>> consoleOptionList) {
         for (ConsoleOption<?> consoleOption : consoleOptionList) {
             OptionSpecBuilder optionSpecBuilder = parser.accepts(consoleOption.getOption());
             if (consoleOption.hasArgument()) {
