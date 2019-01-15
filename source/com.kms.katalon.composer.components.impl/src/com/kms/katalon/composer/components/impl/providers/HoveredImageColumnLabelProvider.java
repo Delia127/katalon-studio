@@ -56,6 +56,9 @@ public abstract class HoveredImageColumnLabelProvider<T> extends MouseCursorColu
         @Override
         public void mouseMove(MouseEvent e) {
             ColumnViewer viewer = getViewer();
+            if (viewer == null) {
+                return;
+            }
             Point currentMouseLocation = new Point(e.x, e.y);
             ViewerCell cell = viewer.getCell(currentMouseLocation);
             try {

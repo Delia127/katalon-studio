@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -42,6 +44,7 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
@@ -193,6 +196,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
 
     private MenuItem uploadMenuItem;
+
+    private List<TableViewerColumn> testCaseIntergrationColumn;
+
+    private TableColumnLayout tclCompositeTestCaseTableDetails;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -440,7 +447,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             }
         });
     }
-    
+
     public void updateReportAndInput(ReportEntity report) {
 
         this.report = report;
@@ -454,14 +461,15 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     setTestSuiteLogRecord(LogRecordLookup.getInstance().getTestSuiteLogRecord(report, monitor));
+
+                    UISynchronizeService.syncExec(() -> updateInput());
                 }
             });
-            updateInput();
         } catch (InvocationTargetException | InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
     }
 
     public void updateInput() {
@@ -534,7 +542,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 if (integrationDetails != null) {
                     integratingCompositeMap.put(builder.getName(), integrationDetails);
                 }
+
             }
+
+            createIntegrationColumns();
 
             createTestCaseTableContextMenuByIntegrationViews();
 
@@ -966,7 +977,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         Composite compositeTestCaseTableDetails = new Composite(compositeTestCaseTable, SWT.NONE);
         compositeTestCaseTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        TableColumnLayout tclCompositeTestCaseTableDetails = new TableColumnLayout();
+        tclCompositeTestCaseTableDetails = new TableColumnLayout();
         compositeTestCaseTableDetails.setLayout(tclCompositeTestCaseTableDetails);
 
         testCaseTableViewer = new ReportTestCaseTableViewer(compositeTestCaseTableDetails,
@@ -994,8 +1005,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         tableViewerColumnVideo.setLabelProvider(new HyperlinkTestCaseVideoLabelProvider(this));
         tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCVideo, new ColumnWeightData(0, 50));
 
-        createIntegrationColumns(tclCompositeTestCaseTableDetails);
-
         testCaseTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         testCaseTableViewer.getTable().setToolTipText("");
         ColumnViewerToolTipSupport.enableFor(testCaseTableViewer);
@@ -1009,7 +1018,23 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         testCaseTableViewer.addFilter(testCaseTableFilter);
     }
 
-    private void createIntegrationColumns(TableColumnLayout tableLayout) {
+    private void createIntegrationColumns() {
+        if (testCaseIntergrationColumn != null && !testCaseIntergrationColumn.isEmpty()) {
+            testCaseIntergrationColumn.stream().forEach(viewerColumn -> {
+                viewerColumn.setLabelProvider(new CellLabelProvider() {
+
+                    @Override
+                    public void update(ViewerCell cell) {
+
+                    }
+                });
+                viewerColumn.getColumn().dispose();
+            });
+
+            testCaseTableViewer.refresh();
+        }
+
+        testCaseIntergrationColumn = new ArrayList<>();
         for (ReportTestCaseIntegrationViewBuilder builder : ReportComposerIntegrationFactory.getInstance()
                 .getSortedBuilder()) {
             if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
@@ -1018,8 +1043,13 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             TableViewerColumn viewerColumn = (TableViewerColumn) builder
                     .getTestCaseIntegrationColumn(report, testSuiteLogRecord)
                     .createIntegrationColumn(testCaseTableViewer, testCaseTableViewer.getTable().getColumnCount());
-            tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(0, 32));
+            tclCompositeTestCaseTableDetails.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(0, 32));
+
+            testCaseIntergrationColumn.add(viewerColumn);
         }
+
+        testCaseTableViewer.getTable().getParent().layout(true, true);
+        testCaseTableViewer.refresh();
     }
 
     private void createCompositeTestCaseTable(Composite sashFormSummary) {

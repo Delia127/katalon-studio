@@ -194,8 +194,8 @@ public class ReportController extends EntityController {
                 parentReportFolder.getProject());
     }
 
-    public void reloadReport(ReportEntity report, Entity entity) throws Exception {
-        entity = report = getReportEntity(entity.getId());
+    public ReportEntity reloadReport(ReportEntity report, Entity entity) throws Exception {
+        return getReportEntity(entity.getId());
     }
 
     public ReportCollectionEntity newReportCollection(ProjectEntity projectEntity, TestSuiteCollectionEntity entity,

@@ -34,6 +34,10 @@ public class EmailSettings implements ConsoleOptionContributor {
         }
         return emailConfig;
     }
+    
+    public EmailConfig getEmailConfig() {
+        return emailConfig;
+    }
 
     public void setEmailConfig(EmailConfig emailConfig) {
         this.emailConfig = emailConfig;
