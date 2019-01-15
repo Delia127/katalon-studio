@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -14,7 +15,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class FilterController {
 
@@ -30,7 +35,16 @@ public class FilterController {
     }
 
     public List<String> getDefaultKeywords() {
-        return DEFAULT_KEYWORDS;
+        List<String> keywords = new ArrayList<>();
+        keywords.addAll(DEFAULT_KEYWORDS);
+        if (isAdvancedTagPluginInstalled()) {
+            keywords.add(getAdvancedTagKeyword());
+        }
+        return keywords;
+    }
+    
+    public String getAdvancedTagKeyword() {
+        return "tags";
     }
 
     public boolean isMatched(FileEntity fileEntity, String filteringText) {
@@ -111,8 +125,36 @@ public class FilterController {
                 return StringUtils.containsIgnoreCase(fileEntity.getTag(), text);
             case "description":
                 return StringUtils.containsIgnoreCase(fileEntity.getDescription(), text);
+            case "tags":
+                return entityHasTags(fileEntity, text);
             default:
                 return false;
         }
+    }
+    
+    private boolean isAdvancedTagPluginInstalled() {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_ADVANCED_TAGS);
+        return plugin != null;
+    }
+    
+    private boolean entityHasTags(FileEntity fileEntity, String searchTagValues) {
+        if (StringUtils.isBlank(searchTagValues)) {
+            return false;
+        }
+        
+        String entityTagValues = fileEntity.getTag();
+        if (StringUtils.isBlank(entityTagValues)) {
+            return false;
+        }
+        
+        Set<String> searchTags = EntityTagUtil.parse(searchTagValues).stream()
+                .map(tag -> tag.toLowerCase())
+                .collect(Collectors.toSet());
+        
+        Set<String> entityTags = EntityTagUtil.parse(entityTagValues).stream()
+                .map(tag -> tag.toLowerCase())
+                .collect(Collectors.toSet());
+        
+        return entityTags.containsAll(searchTags);
     }
 }

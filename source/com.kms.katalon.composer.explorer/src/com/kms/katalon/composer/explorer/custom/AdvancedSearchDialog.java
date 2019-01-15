@@ -22,10 +22,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FilterController;
 
 public class AdvancedSearchDialog extends Dialog {
@@ -72,8 +75,12 @@ public class AdvancedSearchDialog extends Dialog {
                 for (final String tag : searchTags) {
                     Label tagLabel = new Label(container, SWT.NONE);
                     tagLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-                    tagLabel.setText(StringUtils.capitalize(tag));
-
+                    if (FilterController.getInstance().getAdvancedTagKeyword().equals(tag)) {
+                        tagLabel.setText("Advanced Tags");
+                    } else {
+                        tagLabel.setText(StringUtils.capitalize(tag));
+                    }
+                    
                     Text tagValue = new Text(container, SWT.BORDER);
                     tagValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
                     textMap.put(tag, tagValue);
