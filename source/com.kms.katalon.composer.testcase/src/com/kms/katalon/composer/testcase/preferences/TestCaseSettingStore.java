@@ -12,7 +12,7 @@ import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class TestCaseSettingStore extends BundleSettingStore {
 
-    private static final String STORE_ID = "com.kms.katalon.testcase";
+    private static final String STORE_ID = "com.kms.katalon.composer.testcase";
     
     private static final String TAG_PROPERTY = "testCaseTag";
     
