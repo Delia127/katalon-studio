@@ -18,7 +18,6 @@ public class ReportEntityImpl implements com.katalon.platform.api.model.ReportEn
 
     @Override
     public String getId() {
-        // TODO Auto-generated method stub
         return source.getIdForDisplay();
     }
 
@@ -29,7 +28,7 @@ public class ReportEntityImpl implements com.katalon.platform.api.model.ReportEn
 
     @Override
     public String getFolderLocation() {
-        return source.getParentFolder().getLocation();
+        return source.getLocation();
     }
 
     @Override
