@@ -87,7 +87,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             }
             executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite, StringUtils.EMPTY);
         } else {
-            executedItems = loadTestCases(testSuite);
+            executedItems = loadTestCases(testSuite, StringUtils.EMPTY);
         }
         setTestCaseExecutedEntities(executedItems);
     }
@@ -101,7 +101,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             }
             executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite, testSuiteQuery);
         } else {
-            executedItems = loadTestCases(testSuite);
+            executedItems = loadTestCases(testSuite, testSuiteQuery);
         }
         setTestCaseExecutedEntities(executedItems);
     }
@@ -138,8 +138,15 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
      * 
      * @param testSuite
      */
-    private List<IExecutedEntity> loadTestCases(TestSuiteEntity testSuite) throws Exception {
-        String projectDir = testSuite.getProject().getFolderLocation();
+    private List<IExecutedEntity> loadTestCases(TestSuiteEntity testSuite, String testSuiteQuery) throws Exception {
+
+    	if(testSuiteQuery.equals(StringUtils.EMPTY)){
+    		if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
+                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
+            }
+    	}
+    	
+    	String projectDir = testSuite.getProject().getFolderLocation();
 
         testDataMap.clear();
 
@@ -152,6 +159,10 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             if (testCase == null) {
                 throw new IllegalArgumentException(MessageFormat.format(StringConstants.UTIL_EXC_TEST_CASE_X_NOT_FOUND,
                         testCaseLink.getTestCaseId()));
+            }
+            
+            if(!FilterController.getInstance().isMatched(testCase, testSuiteQuery)){
+            	continue;
             }
 
             TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCase);
