@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
@@ -124,10 +125,6 @@ public class FilterController {
                 return ObjectUtils.equals(fileEntity.getTag(), text);
             case "description":
                 return ObjectUtils.equals(fileEntity.getDescription(), text);
-            case "folder":
-                String folderId = fileEntity.getParentFolder() != null ? fileEntity.getParentFolder().getIdForDisplay() : "";
-                return folderId.equals(text) || folderId.startsWith(text + "/");
-                return StringUtils.containsIgnoreCase(fileEntity.getDescription(), text);
             case "tags":
                 return entityHasTags(fileEntity, text);
             default:

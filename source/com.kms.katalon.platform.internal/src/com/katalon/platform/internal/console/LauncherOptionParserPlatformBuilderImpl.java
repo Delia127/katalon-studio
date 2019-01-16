@@ -43,10 +43,12 @@ public class LauncherOptionParserPlatformBuilderImpl implements PlatformLauncher
 					return (a.getImplementationClass() instanceof LauncherOptionParserDescription);
 				}).map(b -> (LauncherOptionParserDescription) b.getImplementationClass()).collect(Collectors.toList());
 
-		if(launcherOptionParserDescriptions != null && !launcherOptionParserDescriptions.isEmpty())
-			return new PluginTestSuiteLauncherOptionParser(launcherOptionParserDescriptions);
-		else
+		if(launcherOptionParserDescriptions != null && !launcherOptionParserDescriptions.isEmpty()){
+			return new PluginTestSuiteLauncherOptionParser(launcherOptionParserDescriptions);	
+		}
+		else{
 			return new TestSuiteLauncherOptionParser();
+		}
 	}
 	
 	public class PluginTestSuiteLauncherOptionParser extends TestSuiteLauncherOptionParser {
