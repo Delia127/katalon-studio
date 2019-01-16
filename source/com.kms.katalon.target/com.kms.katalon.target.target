@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<<<<<<< HEAD
-<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="467">
-=======
-<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="466">
->>>>>>> staging-plugin
+<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="470">
 <locations>
 <location path="${eclipse_home}" type="Directory"/>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
