@@ -52,7 +52,7 @@ pipeline {
 
                     script {
                         dir("source") {
-			    // Generate Katalon builds   
+			// Generate Katalon builds   
                             if (BRANCH_NAME ==~ /^[release]+/) {
                                 sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
                             } else {                      
@@ -115,12 +115,12 @@ pipeline {
             }
         }
         
-        // stage('Package .DMG file') {
-        //     steps {
-        //             // Execute codesign command to package .DMG file for macOS
-        //             sh "./package.sh ${env.tmpDir}"
-        //     }
-        // }
+        stage('Package .DMG file') {
+            steps {
+                    // Execute codesign command to package .DMG file for macOS
+                    sh "./package.sh ${env.tmpDir}"
+            }
+        }
 
         stage ('Success') {
             steps {

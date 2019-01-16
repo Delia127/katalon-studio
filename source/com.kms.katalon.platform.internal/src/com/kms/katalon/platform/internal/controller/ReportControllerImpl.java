@@ -4,7 +4,9 @@ import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.model.Integration;
 import com.katalon.platform.api.model.ProjectEntity;
 import com.katalon.platform.api.report.TestSuiteRecord;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.exception.ControllerException;
@@ -47,11 +49,13 @@ public class ReportControllerImpl implements com.katalon.platform.api.controller
 
             ReportEntity updatedEntity = ReportController.getInstance().updateReport(reportEntity);
 
+            EventBrokerSingleton.getInstance().getEventBroker()
+            .post(EventConstants.REPORT_UPDATED, new Object[] { reportEntity.getId(), updatedEntity });
+
             return new ReportEntityImpl(updatedEntity);
         } catch (ControllerException e) {
             throw new ResourceException(e.getMessage());
         }
-
     }
 
     @Override

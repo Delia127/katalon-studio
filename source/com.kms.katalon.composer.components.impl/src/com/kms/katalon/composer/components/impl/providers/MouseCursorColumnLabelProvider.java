@@ -54,7 +54,11 @@ public abstract class MouseCursorColumnLabelProvider <T> extends TypeCheckedStyl
                 return;
             }
             Point currentMouseLocation = new Point(e.x, e.y);
-            ViewerCell cell = getViewer().getCell(currentMouseLocation);
+            ColumnViewer viewer = getViewer();
+            if (viewer == null) {
+                return;
+            }
+            ViewerCell cell = viewer.getCell(currentMouseLocation);
             if (isPlacedMouseHover(cell) && shouldShowCursor(cell, currentMouseLocation)) {
                 handleMouseDown(e, cell);
             }
@@ -71,6 +75,9 @@ public abstract class MouseCursorColumnLabelProvider <T> extends TypeCheckedStyl
         @Override
         public void mouseMove(MouseEvent e) {
             ColumnViewer viewer = getViewer();
+            if (viewer == null) {
+                return;
+            }
             Point currentMouseLocation = new Point(e.x, e.y);
             ViewerCell cell = viewer.getCell(currentMouseLocation);
             Control table = getControl(viewer);

@@ -423,7 +423,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteExecutionContextImpl executionContext = TestSuiteExecutionContextImpl.Builder
                     .create(getId(), testSuiteEx.getSourceId())
-                    .withReportId(reportEntity.getIdForDisplay())
+                    .withReportId(getReportEntity().getIdForDisplay())
                     .withTestCaseContext(testCaseContexts)
                     .build();
             TestSuiteExecutionEvent eventObject = new TestSuiteExecutionEvent(eventName, executionContext);

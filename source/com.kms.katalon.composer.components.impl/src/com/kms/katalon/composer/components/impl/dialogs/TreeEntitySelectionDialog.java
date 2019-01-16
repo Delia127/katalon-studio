@@ -13,8 +13,10 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -118,8 +120,20 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
         return treeViewer;
     }
 
+    @Override
+    protected Control createContents(Composite parent) {
+        try {
+            return super.createContents(parent);
+        } finally {
+            updateOKButtonStatus();
+        }
+    }
+
     private void updateOKButtonStatus() {
-        getButton(OK).setEnabled(treeViewer.getStructuredSelection().size() > 0);
+        Button btnOk = getButton(OK);
+        if (btnOk != null && !btnOk.isDisposed()) {
+            btnOk.setEnabled(treeViewer.getStructuredSelection().size() > 0);
+        }
     }
 
     @Override
