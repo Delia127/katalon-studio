@@ -56,7 +56,7 @@ public class InstallPluginHandler {
                         new File(filePath).toURI().toString());
                 if (bundle != null && bundle.getSymbolicName().equals(IdConstants.JIRA_PLUGIN_ID)) {
                     eventBroker.post(EventConstants.JIRA_PLUGIN_INSTALLED, null);
-                }
+                }	
 
                 MessageDialog.openInformation(activeShell, GlobalStringConstants.INFO, "Plugin installed sucessfully");
                 pluginPath = filePath;

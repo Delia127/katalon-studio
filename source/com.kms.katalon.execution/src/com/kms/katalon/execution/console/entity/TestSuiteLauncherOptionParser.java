@@ -1,10 +1,14 @@
 package com.kms.katalon.execution.console.entity;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.controller.GlobalVariableController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -25,7 +29,11 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParser {
     private static final String EXECUTION_PROFILE_OPTION = "executionProfile";
     
-    private StringConsoleOption testSuitePathOption = new StringConsoleOption() {
+    private static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
+
+    private List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
+    
+    protected StringConsoleOption testSuitePathOption = new StringConsoleOption() {
     	
         @Override
         public String getOption() {
@@ -37,7 +45,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         }
     };
 
-    private StringConsoleOption browserTypeOption = new StringConsoleOption() {
+    protected StringConsoleOption browserTypeOption = new StringConsoleOption() {
         @Override
         public String getOption() {
             return ConsoleMain.BROWSER_TYPE_OPTION;
@@ -48,7 +56,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         }
     };
 
-    private StringConsoleOption executionProfileOption = new StringConsoleOption() {
+    protected StringConsoleOption executionProfileOption = new StringConsoleOption() {
 		@Override
 		public String getOption() {
 			return EXECUTION_PROFILE_OPTION;
@@ -63,6 +71,18 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             return ExecutionProfileEntity.DF_PROFILE_NAME;
         }
     };
+    
+	protected StringConsoleOption installPluginOption = new StringConsoleOption() {
+
+		@Override
+		public String getOption() {
+			return ConsoleMain.INSTALL_PLUGIN_OPTION;
+		}
+
+		public boolean isRequired() {
+			return false;
+		}
+	};
 
     
     @Override
@@ -71,16 +91,23 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(testSuitePathOption);
         allOptions.add(browserTypeOption);
         allOptions.add(executionProfileOption);
+        allOptions.add(installPluginOption);
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+		if (currentProject != null && overridingOptions.isEmpty()) {
+			overridingOptions = new OverridingParametersConsoleOptionContributor(currentProject).getConsoleOptionList();
+		}
+		allOptions.addAll(overridingOptions);
         return allOptions;
     }
 
-    @Override
+	@Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
 		super.setArgumentValue(consoleOption, argumentValue);
 		if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
-				|| consoleOption == executionProfileOption) {
+				|| consoleOption == executionProfileOption
+				|| consoleOption == installPluginOption
+				|| overridingOptions.contains(consoleOption)) {
 			consoleOption.setValue(argumentValue);
-			return;
 		}
     }
     
@@ -108,7 +135,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
                         MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
             }
             runConfig.setExecutionProfile(executionProfile);
-            runConfig.setOverridingGlobalVariables(super.getOverridingGlobalVariables());
+            runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
             runConfig.build(testSuite, executedEntity);
             GlobalVariableController.getInstance().
             generateGlobalVariableLibFileWithSpecificProfile(project, executionProfile, null);
@@ -118,7 +145,20 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         }
     }
 
-    private IRunConfiguration createRunConfiguration(ProjectEntity projectEntity, TestSuiteEntity testSuite,
+	protected Map<String, Object> getOverridingGlobalVariables(){
+    	Map<String, Object> overridingGlobalVariables = new HashMap<>();
+		overridingOptions.forEach(a -> {
+			if (a.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX) 
+					&& a.getValue() != null) {
+				overridingGlobalVariables.put(a.getOption().
+						replace(OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
+						String.valueOf(a.getValue()));
+			}
+		});
+    	return overridingGlobalVariables;
+    }
+
+    protected IRunConfiguration createRunConfiguration(ProjectEntity projectEntity, TestSuiteEntity testSuite,
             String browserType) throws ExecutionException, InvalidConsoleArgumentException {
         IRunConfiguration runConfig = RunConfigurationCollector.getInstance().getRunConfiguration(browserType,
                 projectEntity.getFolderLocation());
@@ -130,7 +170,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         return runConfig;
     }
 
-    private static TestSuiteEntity getTestSuite(ProjectEntity projectEntity, String testSuiteID)
+    protected static TestSuiteEntity getTestSuite(ProjectEntity projectEntity, String testSuiteID)
             throws InvalidConsoleArgumentException {
         try {
             TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteID,
@@ -145,6 +185,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             throw throwInvalidTestSuiteIdException(testSuiteID);
         }
     }
+
 
     private static InvalidConsoleArgumentException throwInvalidTestSuiteIdException(String testSuiteID) {
         return new InvalidConsoleArgumentException(
