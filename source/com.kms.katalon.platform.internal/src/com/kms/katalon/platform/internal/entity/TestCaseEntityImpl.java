@@ -94,4 +94,5 @@ public class TestCaseEntityImpl implements com.katalon.platform.api.model.TestCa
 	public String getTags() {
 		return source.getTag();
 	}
+
 }
