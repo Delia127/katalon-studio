@@ -74,6 +74,10 @@ public class TestSuiteScriptGenerator {
             String testCaseId = testCaseExecuted.getSourceId();
             TestSuiteTestCaseLink testCaseLink = getTestCaseLink(testCaseId, lstTestCaseRun);
             
+            // KAT-4017, removing a test case so the next iteration we will consider
+            // the next (possibly duplicate) test cases
+            lstTestCaseRun.remove(testCaseLink);
+            
             if (testCaseLink == null) {
                 throw new IllegalArgumentException("Test case: '" + testCaseId + "' not found");
             }
