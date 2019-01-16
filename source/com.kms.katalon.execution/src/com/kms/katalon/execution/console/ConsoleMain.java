@@ -136,7 +136,9 @@ public class ConsoleMain {
                 .filter(method -> method.getName().equals("reload"))
                 .findAny()
                 .orElse(null);
-        reloadMethod.invoke(handler, apiKey);
+        if (reloadMethod != null) {
+            reloadMethod.invoke(handler, apiKey);
+        }
     }
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,
