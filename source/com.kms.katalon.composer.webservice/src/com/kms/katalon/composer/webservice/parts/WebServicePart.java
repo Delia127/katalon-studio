@@ -16,8 +16,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -1443,7 +1441,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 		WebServiceRequestEntity wsObj = new WebServiceRequestEntity();
 		wsObj.setServiceType("RESTful");
 		wsObj.setRestRequestMethod("POST");
-		wsObj.setRestUrl(txtAccessTokenUrl.getText());
+		wsObj.setRestUrl(StringUtils.trim(txtAccessTokenUrl.getText()));
 		wsObj.setHttpHeaderProperties(
 				Arrays.asList(new WebElementPropertyEntity("Content-Type", "application/x-www-form-urlencoded")));
 		ParameterizedBodyContent<UrlEncodedBodyParameter> parameters = new ParameterizedBodyContent<UrlEncodedBodyParameter>();
@@ -1453,36 +1451,36 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
 		switch (ccbOAuth2SignatureMethod.getText()) {
 		case PASSWORD_CREDENTIALS:
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, txtConsumerKey.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, StringUtils.trim(txtConsumerKey.getText())));
 			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, txtConsumerSecret.getText()));
+					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, StringUtils.trim(txtConsumerSecret.getText())));
 			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "password"));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.USERNAME, txtUsername.getText()));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.PASSWORD, txtPassword.getText()));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.STATE, txtPassword.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.USERNAME, StringUtils.trim(txtUsername.getText())));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.PASSWORD, StringUtils.trim(txtPassword.getText())));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.STATE, StringUtils.trim(txtPassword.getText())));
 			break;
 		case REFRESH_TOKEN:
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, txtConsumerKey.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, StringUtils.trim(txtConsumerKey.getText())));
 			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, txtConsumerSecret.getText()));
+					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, StringUtils.trim(txtConsumerSecret.getText())));
 			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "refresh_token"));
 			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.REFRESH_TOKEN, txtRefreshToken.getText()));
+					new UrlEncodedBodyParameter(OAuth2Constants.REFRESH_TOKEN, StringUtils.trim(txtRefreshToken.getText())));
 			break;
 		case AUTHORIZATION_CODE:
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, txtConsumerKey.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, StringUtils.trim(txtConsumerKey.getText())));
 			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, txtConsumerSecret.getText()));
+					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, StringUtils.trim(txtConsumerSecret.getText())));
 			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "authorization_code"));
 			parameters
-					.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.REDIRECT_URI, txtCallbackUrl.getText()));
+					.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.REDIRECT_URI, StringUtils.trim(txtCallbackUrl.getText())));
 			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.AUTHORIZATION_CODE, txtAuthorizationCode.getText()));
+					new UrlEncodedBodyParameter(OAuth2Constants.AUTHORIZATION_CODE, StringUtils.trim(txtAuthorizationCode.getText())));
 			break;
 		case CLIENT_CREDENTIALS:
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, txtConsumerKey.getText()));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, StringUtils.trim(txtConsumerKey.getText())));
 			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, txtConsumerSecret.getText()));
+					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, StringUtils.trim(txtConsumerSecret.getText())));
 			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "client_credentials"));
 			break;
 		default:
@@ -1622,7 +1620,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                     return;
                 }
                 if (OAUTH_2_0.equals(authType)) {
-                    createOAuth2Headers(txtAccessToken.getText(), txtConsumerKey.getText());
+                    createOAuth2Headers(txtAccessToken.getText());
                     return;
                 }
                 
@@ -2481,10 +2479,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         tblHeaders.addRows(oauth1Headers);
     }
     
-    protected void createOAuth2Headers(String accessToken, String clientId){
+    protected void createOAuth2Headers(String accessToken){
     	removeOAuth2Headers();
     	oauth2Headers.add(new WebElementPropertyEntity(AUTHORIZATION_HEADER, "Bearer " + accessToken));
-    	oauth2Headers.add(new WebElementPropertyEntity(AUTHORIZATION_HEADER, "Client-ID " + clientId));
     	tblHeaders.addRows(oauth2Headers);
     }
 
