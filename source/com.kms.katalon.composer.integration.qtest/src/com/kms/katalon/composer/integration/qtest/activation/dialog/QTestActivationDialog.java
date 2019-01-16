@@ -16,6 +16,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -118,9 +119,21 @@ public class QTestActivationDialog extends Dialog {
         lblPassword.setText(ComposerIntegrationQtestMessageConstants.DIA_LBL_QTEST_CODE);
 
         txtActivationCode = new Text(container, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-        GridData gdActivationCode = new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1);
+        GridData gdActivationCode = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gdActivationCode.heightHint = txtActivationCode.getLineHeight() * 5;
         txtActivationCode.setLayoutData(gdActivationCode);
+        
+
+        Link linkUserGuide = new Link(container, SWT.WRAP);
+        linkUserGuide.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 2, 1));
+        linkUserGuide.setText(ComposerIntegrationQtestMessageConstants.DIA_MSG_USER_GUIDE);
+        linkUserGuide.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
+        
         return container;
     }
 
@@ -255,7 +268,12 @@ public class QTestActivationDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(500, super.getInitialSize().y);
+        return new Point(500, super.getInitialSize().y + 50);
+    }
+    
+    @Override
+    protected boolean isResizable() {
+        return true;
     }
 
 }

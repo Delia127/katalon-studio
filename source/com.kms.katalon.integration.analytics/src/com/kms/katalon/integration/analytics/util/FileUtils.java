@@ -8,6 +8,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.kms.katalon.controller.ProjectController;
 
 public class FileUtils {
 
@@ -88,6 +91,20 @@ public class FileUtils {
             xmlContentBuilder.append(l);
         });
         return xmlContentBuilder;
+    }
+    
+    public static Path createTemporaryFile(String prefix, String suffix) throws IOException {
+        return createTemporaryFile(ProjectController.getInstance().getTempDir(), prefix, suffix);
+    }
+    
+    public static Path createTemporaryFile(String tempFolderPath, String prefix, String suffix) throws IOException {
+        Path tempFolder = Paths.get(tempFolderPath);
+        if (Files.notExists(tempFolder)) {
+            Files.createDirectories(tempFolder);
+        }
+        Path file = Files.createTempFile(tempFolder, prefix, suffix);
+        Files.deleteIfExists(file);
+        return file;
     }
 
 }

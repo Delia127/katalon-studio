@@ -52,7 +52,7 @@ pipeline {
 
                     script {
                         dir("source") {
-			    // Generate Katalon builds   
+			// Generate Katalon builds   
                             if (BRANCH_NAME ==~ /^[release]+/) {
                                 sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
                             } else {                      

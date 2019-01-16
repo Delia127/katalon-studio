@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="460">
+
+<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="466">
 <locations>
 <location path="${eclipse_home}" type="Directory"/>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -17,6 +18,7 @@
 <unit id="commons-logging" version="1.1.1"/>
 <unit id="io.cucumber.tag-expressions" version="1.1.1"/>
 <unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.1"/>
+<unit id="org.apache.commons.commons-text" version="1.6.0"/>
 <unit id="jackson-core-asl" version="1.9.13"/>
 <unit id="wsdl4j" version="1.6.2"/>
 <unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml" version="2.9.6"/>
@@ -101,6 +103,7 @@
 <unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
 <unit id="org.hibernate.core" version="4.3.6.Final"/>
 <unit id="com.auth0.java-jwt" version="3.4.0"/>
+<unit id="org.jboss.logging.jboss-logging" version="3.1.3.GA"/>
 <unit id="org.eclipse.jetty.util" version="9.3.9.v20160517"/>
 <unit id="javax.servlet-api" version="3.1.0"/>
 <unit id="org.eclipse.jetty.server" version="9.3.9.v20160517"/>
@@ -122,7 +125,7 @@
 <unit id="org.apache.commons.beanutils" version="1.9.2"/>
 <unit id="org.apache.commons.codec" version="1.7.0"/>
 <unit id="dom4j" version="1.6.1"/>
-<unit id="com.katalon.platform" version="1.0.2"/>
+<unit id="com.katalon.platform" version="1.0.5"/>
 <unit id="org.apache.xmlbeans" version="2.6.0"/>
 <unit id="org.apache.commons.digester" version="1.8.1"/>
 <unit id="org.apache.commons.email" version="1.4.0"/>
@@ -142,6 +145,7 @@
 <unit id="javax.activation" version="1.1.0"/>
 <unit id="org.apache.aries.util" version="1.0.0"/>
 <unit id="org.everit.osgi.bundles.javax.sql" version="4.1.0"/>
+<unit id="org.eclipse.jetty.http" version="9.3.9.v20160517"/>
 <unit id="javax.websocket-api" version="1.1.0"/>
 <unit id="org.eclipse.jetty.jndi" version="9.3.9.v20160517"/>
 <unit id="org.apache.lucene.core" version="6.3.0"/>
@@ -200,8 +204,8 @@
 <plugin id="com.gradleware.tooling.utils"/>
 <plugin id="com.ibm.icu"/>
 <plugin id="com.ibm.icu.source"/>
-<plugin id="com.jcraft.jsch" version="0.1.54.v20170116-1932"/>
 <plugin id="com.jcraft.jsch" version="0.1.53.v201508180515"/>
+<plugin id="com.jcraft.jsch" version="0.1.54.v20170116-1932"/>
 <plugin id="com.jcraft.jsch.source"/>
 <plugin id="com.katalon.platform"/>
 <plugin id="com.microsoft.sqlserver.sqljdbc4"/>
@@ -283,6 +287,7 @@
 <plugin id="org.apache.commons.cli"/>
 <plugin id="org.apache.commons.codec" version="1.7.0"/>
 <plugin id="org.apache.commons.collections"/>
+<plugin id="org.apache.commons.commons-text"/>
 <plugin id="org.apache.commons.compress"/>
 <plugin id="org.apache.commons.dbutils"/>
 <plugin id="org.apache.commons.digester"/>
@@ -293,8 +298,8 @@
 <plugin id="org.apache.commons.jxpath.source"/>
 <plugin id="org.apache.commons.lang" version="2.6"/>
 <plugin id="org.apache.commons.lang3" version="3.6.0"/>
-<plugin id="org.apache.commons.logging" version="1.2.0"/>
 <plugin id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
+<plugin id="org.apache.commons.logging" version="1.2.0"/>
 <plugin id="org.apache.commons.logging.source"/>
 <plugin id="org.apache.commons.math"/>
 <plugin id="org.apache.commons.pool"/>
@@ -342,8 +347,8 @@
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
@@ -626,8 +631,8 @@
 <plugin id="org.eclipse.jdt.debug"/>
 <plugin id="org.eclipse.jdt.debug.ui"/>
 <plugin id="org.eclipse.jdt.doc.user"/>
-<plugin id="org.eclipse.jdt.groovy.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.groovy.core" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.eclipse.jdt.groovy.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.junit"/>
 <plugin id="org.eclipse.jdt.junit.core"/>
 <plugin id="org.eclipse.jdt.junit.runtime"/>
@@ -1089,13 +1094,13 @@
 <plugin id="org.jboss.logging.jboss-logging-annotations"/>
 <plugin id="org.jboss.spec.javax.transaction.jboss-transaction-api_1.2_spec"/>
 <plugin id="org.json"/>
-<plugin id="org.jsoup" version="1.7.2.v201411291515"/>
 <plugin id="org.jsoup" version="1.7.2"/>
+<plugin id="org.jsoup" version="1.7.2.v201411291515"/>
 <plugin id="org.junit" version="4.12.0"/>
 <plugin id="org.kohsuke.args4j"/>
 <plugin id="org.mozilla.javascript"/>
-<plugin id="org.objectweb.asm" version="5.0.1"/>
 <plugin id="org.objectweb.asm" version="5.0.1.v201404251740"/>
+<plugin id="org.objectweb.asm" version="5.0.1"/>
 <plugin id="org.objectweb.asm.all.debug"/>
 <plugin id="org.objectweb.asm.commons"/>
 <plugin id="org.objectweb.asm.tree" version="5.0.1.v201404251740"/>

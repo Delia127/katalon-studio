@@ -12,9 +12,15 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
+import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.constants.IdConstants;
 
 @SuppressWarnings("restriction")
 public class InstallPluginHandler {
@@ -28,6 +34,9 @@ public class InstallPluginHandler {
     @Inject
     private IEventBroker eventBroker;
 
+    @Inject
+    private PluginInstaller pluginInstaller;
+
     @CanExecute
     public boolean canExecute() {
         return StringUtils.isEmpty(pluginPath);
@@ -35,17 +44,26 @@ public class InstallPluginHandler {
 
     @Execute
     public void loadPlugin() throws BundleException {
-        FileDialog dialog = new FileDialog(Display.getCurrent().getActiveShell());
+        Shell activeShell = Display.getCurrent().getActiveShell();
+        FileDialog dialog = new FileDialog(activeShell);
         dialog.setFilterNames(FILTER_NAMES);
         dialog.setFilterExtensions(FILTER_EXTS);
 
         String filePath = dialog.open();
         if (StringUtils.isNotEmpty(filePath)) {
-            eventBroker.send("KATALON_PLUGIN/INSTALL", new Object[] { InternalPlatform.getDefault().getBundleContext(),
-                    new File(filePath).toURI().toString() });
-            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), GlobalStringConstants.INFO,
-                    "Plugin installed sucessfully");
-            pluginPath = filePath;
+            try {
+                Bundle bundle = pluginInstaller.installPlugin(InternalPlatform.getDefault().getBundleContext(),
+                        new File(filePath).toURI().toString());
+                if (bundle != null && bundle.getSymbolicName().equals(IdConstants.JIRA_PLUGIN_ID)) {
+                    eventBroker.post(EventConstants.JIRA_PLUGIN_INSTALLED, null);
+                }	
+
+                MessageDialog.openInformation(activeShell, GlobalStringConstants.INFO, "Plugin installed sucessfully");
+                pluginPath = filePath;
+            } catch (BundleException e) {
+                MessageDialog.openError(activeShell, GlobalStringConstants.ERROR, "Unable to install plugin");
+                LoggerSingleton.logError(e);
+            }
         }
     }
 

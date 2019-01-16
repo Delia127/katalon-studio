@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.plugin.models.KStoreAccount;
+import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 import com.kms.katalon.plugin.service.KStoreRestClient.AuthenticationResult;
 
@@ -121,12 +121,12 @@ public class KStoreLoginDialog extends Dialog {
 
     @Override
     protected void okPressed() {
-        KStoreAccount account = new KStoreAccount();
-        account.setUsername(username);
-        account.setPassword(password);
+        KStoreUsernamePasswordCredentials credentials = new KStoreUsernamePasswordCredentials();
+        credentials.setUsername(username);
+        credentials.setPassword(password);
         try {
             btnOk.setEnabled(false);
-            KStoreRestClient restClient = new KStoreRestClient(account);
+            KStoreRestClient restClient = new KStoreRestClient(credentials);
             AuthenticationResult authenticateResult = restClient.authenticate();
             if (authenticateResult.isAuthenticated()) {
                 token = authenticateResult.getToken();

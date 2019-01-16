@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.file.FileEntity;
@@ -55,8 +56,12 @@ public class FolderController extends EntityController implements Serializable {
      * @param parentFolder : test case folder
      * @return Returns list of test case entity
      */
-    public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception {
-        return getDataProviderSetting().getFolderDataProvider().getTestCaseChildren(parentFolder);
+    public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws ControllerException {
+        try {
+            return getDataProviderSetting().getFolderDataProvider().getTestCaseChildren(parentFolder);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public List<Object> getAllDescentdantEntities(FolderEntity folder) throws Exception {
@@ -85,8 +90,12 @@ public class FolderController extends EntityController implements Serializable {
         return getDataProviderSetting().getFolderDataProvider().getTestSuiteRoot(project);
     }
 
-    public FolderEntity getTestCaseRoot(ProjectEntity project) throws Exception {
-        return getDataProviderSetting().getFolderDataProvider().getTestCaseRoot(project);
+    public FolderEntity getTestCaseRoot(ProjectEntity project) throws ControllerException {
+        try {
+            return getDataProviderSetting().getFolderDataProvider().getTestCaseRoot(project);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public FolderEntity getTestDataRoot(ProjectEntity project) throws Exception {
@@ -117,9 +126,13 @@ public class FolderController extends EntityController implements Serializable {
         getDataProviderSetting().getFolderDataProvider().deleteFolder(folder);
     }
 
-    public FolderEntity addNewFolder(FolderEntity parentFolder, String folderName) throws Exception {
+    public FolderEntity addNewFolder(FolderEntity parentFolder, String folderName) throws ControllerException {
         if (parentFolder != null) {
-            return getDataProviderSetting().getFolderDataProvider().addNewFolder(parentFolder, folderName);
+            try {
+                return getDataProviderSetting().getFolderDataProvider().addNewFolder(parentFolder, folderName);
+            } catch (Exception e) {
+                throw new ControllerException(e);
+            }
         }
         return null;
     }
@@ -146,12 +159,16 @@ public class FolderController extends EntityController implements Serializable {
         return getDataProviderSetting().getFolderDataProvider().getFolder(folderValue);
     }
 
-    public FolderEntity getFolderByDisplayId(ProjectEntity projectEntity, String folderDisplayId) throws Exception {
+    public FolderEntity getFolderByDisplayId(ProjectEntity projectEntity, String folderDisplayId) throws ControllerException {
         if (folderDisplayId == null || folderDisplayId.isEmpty())
             return null;
         String folderId = projectEntity.getFolderLocation() + File.separator
                 + folderDisplayId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
-        return getDataProviderSetting().getFolderDataProvider().getFolder(folderId);
+        try {
+            return getDataProviderSetting().getFolderDataProvider().getFolder(folderId);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public List<String> getSibblingFolderNames(FolderEntity folder) throws Exception {
@@ -219,8 +236,12 @@ public class FolderController extends EntityController implements Serializable {
         }
     }
 
-    public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception {
-        return getDataProviderSetting().getFolderDataProvider().getAvailableFolderName(parentFolder, name);
+    public String getAvailableFolderName(FolderEntity parentFolder, String name) throws ControllerException {
+        try {
+            return getDataProviderSetting().getFolderDataProvider().getAvailableFolderName(parentFolder, name);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public FolderEntity getProfileRoot(ProjectEntity project) throws DALException {

@@ -16,6 +16,8 @@ public class SystemLogger extends PrintStream {
 
     private boolean locked;
 
+    private PrintStream writer;
+
     SystemLogger(OutputStream os, LogMode defaultMode) {
         super(os, true);
         logMode = defaultMode;
@@ -61,18 +63,26 @@ public class SystemLogger extends PrintStream {
             switch (logMode) {
                 case CONSOLE:
                     super.write(buf, off, len);
+
                     break;
                 case LOG:
                     File logFile = getLogFile();
                     FileUtils.writeByteArrayToFile(logFile, ArrayUtils.subarray(buf, off, len), true);
                     break;
             }
-        } catch (IOException e) {
-            super.write(buf, off, len);
+        } catch (IOException ignored) {}
+        finally {
+            if (writer != null) {
+                writer.write(buf, off, len);
+            }
         }
     }
 
     private File getLogFile() {
         return Platform.getLogFileLocation().toFile();
+    }
+
+    public void addWriter(PrintStream printStream) {
+        this.writer = printStream;
     }
 }

@@ -8,6 +8,7 @@ import static com.kms.katalon.groovy.util.GroovyUtil.getScriptPackageRelativePat
 import static com.kms.katalon.groovy.util.GroovyUtil.getTestCaseScriptFolder;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -83,6 +84,14 @@ public class GroovyGuiUtil {
             return;
         }
         FileUtils.writeStringToFile(unit.getResource().getLocation().toFile(), content, java.nio.charset.Charset.forName("UTF-8"));
+    }
+    
+    public static void addContentToTestCase(TestCaseEntity testCase, InputStream content) throws Exception {
+        ICompilationUnit unit = getOrCreateGroovyScriptForTestCase(testCase);
+        if (unit == null) {
+            return;
+        }
+        FileUtils.copyInputStreamToFile(content, unit.getResource().getLocation().toFile());
     }
 
     public static URLClassLoader getProjectClasLoader(ProjectEntity projectEntity) throws MalformedURLException,

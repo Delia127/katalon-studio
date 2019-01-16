@@ -52,7 +52,7 @@ public class TestCaseMain {
 
         // Load GlobalVariable class
 //        loadGlobalVariableClass(classLoader);
-//        loadInternalGlobalVariableClass(classLoader);
+        loadInternalGlobalVariableClass(classLoader);
         loadCustomKeywordsClass(classLoader);
 
         eventManager = ExecutionEventManager.getInstance();

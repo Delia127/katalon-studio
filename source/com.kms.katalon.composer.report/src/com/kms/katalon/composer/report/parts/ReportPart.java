@@ -4,13 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -19,6 +18,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -31,6 +31,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -43,6 +44,7 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
@@ -140,7 +142,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
     private static AnalyticsTokenInfo tokenInfo;
 
-
     @Inject
     private IEventBroker eventBroker;
 
@@ -172,7 +173,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private ReportPartTestLogView testLogView;
 
     // Fields
-    private TreeMap<String, TestCaseLogDetailsIntegrationView> integratingCompositeMap;
+    private Map<String, TestCaseLogDetailsIntegrationView> integratingCompositeMap;
 
     private int selectedTestCaseRecordIndex;
 
@@ -195,6 +196,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
 
     private MenuItem uploadMenuItem;
+
+    private List<TableViewerColumn> testCaseIntergrationColumn;
+
+    private TableColumnLayout tclCompositeTestCaseTableDetails;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -277,13 +282,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @PostConstruct
     public void init(Composite parent, ReportEntity report, MPart part) {
         this.report = report;
+        setTestSuiteLogRecord(LogRecordLookup.getInstance().getTestSuiteLogRecord(report, new NullProgressMonitor()));
         testLogView = new ReportPartTestLogView(this);
         isSearching = false;
         registerListeners();
         new HelpToolBarForMPart(part, DocumentationMessageConstants.REPORT_TEST_SUITE);
         createControls(parent);
         registerControlModifyListeners();
-        updateInput(report);
+        updateInput();
         setPartLabel(report.getDisplayName());
     }
 
@@ -442,21 +448,32 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         });
     }
 
-    public void updateInput(ReportEntity report) {
+    public void updateReportAndInput(ReportEntity report) {
+
+        this.report = report;
+
+        if (report == null) {
+            return;
+        }
+
         try {
-            this.report = report;
-
-            if (report == null) {
-                return;
-            }
-
             new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     setTestSuiteLogRecord(LogRecordLookup.getInstance().getTestSuiteLogRecord(report, monitor));
+
+                    UISynchronizeService.syncExec(() -> updateInput());
                 }
             });
+        } catch (InvocationTargetException | InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
+    }
+
+    public void updateInput() {
+        try {
             if (testSuiteLogRecord == null) {
                 closeThisPart();
                 return;
@@ -513,30 +530,22 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             txtRunTime.setText(styleStringElapsed.getString());
             txtRunTime.setStyleRanges(styleStringElapsed.getStyleRanges());
 
-            integratingCompositeMap = new TreeMap<String, TestCaseLogDetailsIntegrationView>(new Comparator<String>() {
-                @Override
-                public int compare(String productA, String productB) {
-                    return reportIntegrationFactory().getPreferredOrder(productA)
-                            - reportIntegrationFactory().getPreferredOrder(productB);
-                }
+            integratingCompositeMap = new HashMap<String, TestCaseLogDetailsIntegrationView>();
 
-                private ReportComposerIntegrationFactory reportIntegrationFactory() {
-                    return ReportComposerIntegrationFactory.getInstance();
-                }
-            });
-
-            for (Entry<String, ReportTestCaseIntegrationViewBuilder> builderEntry : ReportComposerIntegrationFactory
-                    .getInstance().getIntegrationViewMap().entrySet()) {
-                ReportTestCaseIntegrationViewBuilder builder = builderEntry.getValue();
+            for (ReportTestCaseIntegrationViewBuilder builder : ReportComposerIntegrationFactory.getInstance()
+                    .getSortedBuilder()) {
                 if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
                     continue;
                 }
                 TestCaseLogDetailsIntegrationView integrationDetails = builder.getIntegrationDetails(report,
                         testSuiteLogRecord);
                 if (integrationDetails != null) {
-                    integratingCompositeMap.put(builderEntry.getKey(), integrationDetails);
+                    integratingCompositeMap.put(builder.getName(), integrationDetails);
                 }
+
             }
+
+            createIntegrationColumns();
 
             createTestCaseTableContextMenuByIntegrationViews();
 
@@ -566,6 +575,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
     private void setTestSuiteLogRecord(TestSuiteLogRecord logRecord) {
         this.testSuiteLogRecord = logRecord;
+    }
+
+    public TestSuiteLogRecord getTestSuiteLogRecord() {
+        return this.testSuiteLogRecord;
     }
 
     public ILogRecord getSelectedTestCaseLogRecord() {
@@ -651,14 +664,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         ScopedPreferenceStore preferenceStore = getPreferenceStore();
-//
-//        try {
-//            analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
-//            preferenceEmail = CryptoUtil.decode(CryptoUtil
-//                    .getDefault(preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL)));
-//        } catch (IOException | GeneralSecurityException e2) {
-//            LoggerSingleton.logError(e2);
-//        }
+        //
+        // try {
+        // analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+        // preferenceEmail = CryptoUtil.decode(CryptoUtil
+        // .getDefault(preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL)));
+        // } catch (IOException | GeneralSecurityException e2) {
+        // LoggerSingleton.logError(e2);
+        // }
 
         btnUploadToAnalytics = new ToolItem(toolBar, SWT.DROP_DOWN);
         btnUploadToAnalytics.setText(ComposerReportMessageConstants.BTN_KATALON_ANALYTICS);
@@ -681,8 +694,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                     String preferenceEmail = null;
                     try {
                         analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
-                        preferenceEmail = CryptoUtil.decode(CryptoUtil
-                                .getDefault(preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL)));
+                        preferenceEmail = CryptoUtil.decode(CryptoUtil.getDefault(
+                                preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL)));
                     } catch (IOException | GeneralSecurityException e2) {
                         LoggerSingleton.logError(e2);
                     }
@@ -964,7 +977,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         Composite compositeTestCaseTableDetails = new Composite(compositeTestCaseTable, SWT.NONE);
         compositeTestCaseTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        TableColumnLayout tclCompositeTestCaseTableDetails = new TableColumnLayout();
+        tclCompositeTestCaseTableDetails = new TableColumnLayout();
         compositeTestCaseTableDetails.setLayout(tclCompositeTestCaseTableDetails);
 
         testCaseTableViewer = new ReportTestCaseTableViewer(compositeTestCaseTableDetails,
@@ -992,8 +1005,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         tableViewerColumnVideo.setLabelProvider(new HyperlinkTestCaseVideoLabelProvider(this));
         tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCVideo, new ColumnWeightData(0, 50));
 
-        createIntegrationColumns(tclCompositeTestCaseTableDetails);
-
         testCaseTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         testCaseTableViewer.getTable().setToolTipText("");
         ColumnViewerToolTipSupport.enableFor(testCaseTableViewer);
@@ -1007,16 +1018,38 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         testCaseTableViewer.addFilter(testCaseTableFilter);
     }
 
-    private void createIntegrationColumns(TableColumnLayout tableLayout) {
+    private void createIntegrationColumns() {
+        if (testCaseIntergrationColumn != null && !testCaseIntergrationColumn.isEmpty()) {
+            testCaseIntergrationColumn.stream().forEach(viewerColumn -> {
+                viewerColumn.setLabelProvider(new CellLabelProvider() {
+
+                    @Override
+                    public void update(ViewerCell cell) {
+
+                    }
+                });
+                viewerColumn.getColumn().dispose();
+            });
+
+            testCaseTableViewer.refresh();
+        }
+
+        testCaseIntergrationColumn = new ArrayList<>();
         for (ReportTestCaseIntegrationViewBuilder builder : ReportComposerIntegrationFactory.getInstance()
                 .getSortedBuilder()) {
             if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
                 continue;
             }
-            TableViewerColumn viewerColumn = (TableViewerColumn) builder.getTestCaseIntegrationColumn(report)
+            TableViewerColumn viewerColumn = (TableViewerColumn) builder
+                    .getTestCaseIntegrationColumn(report, testSuiteLogRecord)
                     .createIntegrationColumn(testCaseTableViewer, testCaseTableViewer.getTable().getColumnCount());
-            tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(0, 32));
+            tclCompositeTestCaseTableDetails.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(0, 32));
+
+            testCaseIntergrationColumn.add(viewerColumn);
         }
+
+        testCaseTableViewer.getTable().getParent().layout(true, true);
+        testCaseTableViewer.refresh();
     }
 
     private void createCompositeTestCaseTable(Composite sashFormSummary) {
@@ -1371,7 +1404,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
                 if (updatedReportId.equals(report.getId())) {
                     prepareBeforeReloading();
-                    updateInput((ReportEntity) objects[1]);
+                    updateReportAndInput((ReportEntity) objects[1]);
                     prepareAfterReloading();
                 }
             } catch (Exception e) {

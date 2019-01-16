@@ -397,6 +397,10 @@ public class MessageConstants extends NLS {
 	public static String LBL_USE_MOB_BROWSER_PROXY;
 	
 	public static String HAND_INFO_NO_PLUGINS_FOUND;
+	
+	public static String MSG_PLUGIN_HAS_BEEN_INSTALLED;
+	
+	public static String MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
 
     static {
         // initialize resource bundle
