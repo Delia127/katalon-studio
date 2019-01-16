@@ -3,13 +3,13 @@ package com.kms.katalon.core.main;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.slf4j.LoggerFactory;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
@@ -17,14 +17,16 @@ import com.kms.katalon.core.context.internal.ExecutionEventManager;
 import com.kms.katalon.core.context.internal.ExecutionListenerEvent;
 import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.context.internal.InternalTestSuiteContext;
+import com.kms.katalon.core.exception.KatalonRuntimeException;
+import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.util.ContextInitializer;
+import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
+import groovy.util.Node;
+import groovy.util.NodeList;
+import groovy.util.XmlParser;
 
 public class TestCaseMain {
 
@@ -46,13 +48,13 @@ public class TestCaseMain {
      */
     public static void beforeStart() throws IOException {
         LogbackConfigurator.init();
-        
+
         GroovyClassLoader classLoader = new GroovyClassLoader(TestCaseMain.class.getClassLoader());
         engine = ScriptEngine.getDefault(classLoader);
 
         // Load GlobalVariable class
-//        loadGlobalVariableClass(classLoader);
-//        loadInternalGlobalVariableClass(classLoader);
+        // loadGlobalVariableClass(classLoader);
+        // loadInternalGlobalVariableClass(classLoader);
         loadCustomKeywordsClass(classLoader);
 
         eventManager = ExecutionEventManager.getInstance();
@@ -75,18 +77,20 @@ public class TestCaseMain {
             }
         }
     }
-    
+
     private static void loadInternalGlobalVariableClass(GroovyClassLoader cl) {
         try {
             cl.loadClass(StringConstants.INTERNAL_GLOBAL_VARIABLE_CLASS_NAME);
         } catch (ClassNotFoundException ex) {
             try {
-                cl.parseClass(new File(RunConfiguration.getProjectDir(), StringConstants.INTERNAL_GLOBAL_VARIABLE_FILE_NAME));
+                cl.parseClass(
+                        new File(RunConfiguration.getProjectDir(), StringConstants.INTERNAL_GLOBAL_VARIABLE_FILE_NAME));
             } catch (CompilationFailedException | IOException ignored) {
 
             }
         }
     }
+
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
         return runTestCase(testCaseId, testCaseBinding, flowControl, true, true);
@@ -105,7 +109,7 @@ public class TestCaseMain {
         return new TestCaseExecutor(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp)
                 .execute(flowControl);
     }
-    
+
     public static TestResult runWSVerificationScript(String verificationScript, FailureHandling flowControl,
             boolean doCleanUp) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
@@ -160,6 +164,34 @@ public class TestCaseMain {
         testSuiteContext.setTestSuiteId(testSuiteId);
 
         eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_SUITE, new Object[] { testSuiteContext });
+    }
+
+    public static Map<String, Object> getGlobalVariables(String profileName) {
+        try {
+            Map<String, Object> selectedVariables = new HashMap<>();
+            Node rootNode = new XmlParser()
+                    .parse(new File(RunConfiguration.getProjectDir(), "Profiles/" + profileName + ".glbl"));
+            NodeList variableNodes = (NodeList) rootNode.get("GlobalVariableEntity");
+            for (int index = 0; index < variableNodes.size(); index++) {
+                Node globalVariableNode = (Node) variableNodes.get(index);
+                String variableName = ((Node) ((NodeList) globalVariableNode.get("name")).get(0)).text();
+                String defaultValue = ((Node) ((NodeList) globalVariableNode.get("initValue")).get(0)).text();
+                try {
+                    selectedVariables.put(variableName, engine.runScriptWithoutLogging(defaultValue, new Binding()));
+                } catch (Exception e) {
+                    KatalonRuntimeException runtimeException = new KatalonRuntimeException(String.format(
+                            "Could not evaluate default value for variable: %s of profile: %s. Details: %s",
+                            variableName, profileName, e.getMessage()), e);
+                    ErrorCollector.getCollector().addError(runtimeException);
+                }
+            }
+            return selectedVariables;
+        } catch (Exception ex) {
+            KatalonRuntimeException runtimeException = new KatalonRuntimeException(
+                    String.format("Could not evaluate variable of profile: %s. Details: %s", profileName, ex), ex);
+            ErrorCollector.getCollector().addError(runtimeException);
+            return Collections.emptyMap();
+        }
     }
 
     public static ScriptEngine getScriptEngine() {
