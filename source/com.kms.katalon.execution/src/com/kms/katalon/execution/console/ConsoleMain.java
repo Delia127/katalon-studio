@@ -12,14 +12,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
 
+import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
@@ -48,6 +52,8 @@ public class ConsoleMain {
     public static final String PROJECT_PK_OPTION = "projectPath";
 
     public final static String TESTSUITE_ID_OPTION = "testSuitePath";
+    
+    public final static String INSTALL_PLUGIN_OPTION = "installPlugin";
 
     public final static String TESTSUITE_COLLECTION_ID_OPTION = "testSuiteCollectionPath";
 
@@ -81,6 +87,17 @@ public class ConsoleMain {
             if (options.has(KATALON_STORE_API_KEY_OPTION)) {
                 String apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
                 reloadPlugins(apiKeyValue);
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
+           
+            // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
+            if(options.has(INSTALL_PLUGIN_OPTION)){
+            	installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));            
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+    				.map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
             
             if (options.has(PROPERTIES_FILE_OPTION)) {
@@ -139,6 +156,16 @@ public class ConsoleMain {
         if (reloadMethod != null) {
             reloadMethod.invoke(handler, apiKey);
         }
+    }
+
+	private static void installPlugin(String filePath) throws InterruptedException, BundleException {
+		BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
+		ServiceReference<PluginInstaller> serviceReference = context
+                .getServiceReference(PluginInstaller.class);
+		PluginInstaller pluginInstaller = context.getService(serviceReference);
+		if (!filePath.equals("")) {
+			pluginInstaller.installPlugin(context, new File(filePath).toURI().toString());
+		}
     }
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,

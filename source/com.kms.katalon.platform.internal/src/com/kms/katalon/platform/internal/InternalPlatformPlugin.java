@@ -16,9 +16,11 @@ import org.osgi.framework.BundleException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.katalon.platform.internal.console.LauncherOptionParserPlatformBuilderImpl;
 import com.kms.katalon.composer.report.platform.PlatformReportIntegrationViewBuilder;
 import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationPlatformBuilder;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.execution.platform.PlatformLauncherOptionParserBuilder;
 import com.kms.katalon.platform.internal.event.ProjectEventPublisher;
 import com.kms.katalon.platform.internal.report.ReportIntegrationPlatformBuilderImpl;
 import com.kms.katalon.platform.internal.testcase.TestCaseIntegrationPlatformBuilderImpl;
@@ -31,7 +33,7 @@ public class InternalPlatformPlugin implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         activatePlatform(context);
 
-        platformServices.forEach(service -> service.onPostConstruct());
+        platformServices.forEach(service -> service.onPostConstruct());      
     }
 
     private void activatePlatform(BundleContext context) throws BundleException {
@@ -65,8 +67,15 @@ public class InternalPlatformPlugin implements BundleActivator {
                         null);
             }
         });
+        
+        IEclipseContext eclipseContext = EclipseContextFactory.getServiceContext(bundle.getBundleContext());
+        BundleContext bundleContext = bundle.getBundleContext();
+        PlatformLauncherOptionParserBuilder laucherOptionParserBuilder = ContextInjectionFactory
+                .make(LauncherOptionParserPlatformBuilderImpl.class, eclipseContext);
+        bundleContext.registerService(PlatformLauncherOptionParserBuilder.class, laucherOptionParserBuilder,
+                null);
 
-        platformServices.add(new ProjectEventPublisher(eventBroker));
+        platformServices.add(new ProjectEventPublisher(eventBroker));        
     }
 
     @Override

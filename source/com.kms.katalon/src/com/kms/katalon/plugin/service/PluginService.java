@@ -111,23 +111,20 @@ public class PluginService {
                     throw new InterruptedException();
                 }
                 String pluginPath = getPluginFolderLocation(plugin);
-                try {
-                    if (!isPluginDownloaded(plugin)) {
-                        File download = downloadAndExtractPlugin(plugin, credentials);
-                        if (download != null) {
-                            pluginPath = download.getAbsolutePath();
-                            savePluginLocation(plugin, pluginPath);
-                        }
+                if (!isPluginDownloaded(plugin)) {
+                    File download = downloadAndExtractPlugin(plugin, credentials);
+                    if (download != null) {
+                        pluginPath = download.getAbsolutePath();
+                        savePluginLocation(plugin, pluginPath);
                     }
-                    platformInstall(pluginPath);
-    
-                    ResultItem item = new ResultItem();
-                    item.setPlugin(plugin);
-                    item.markPluginInstalled(true);
-                    results.add(item);
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
                 }
+                platformInstall(pluginPath);
+
+                ResultItem item = new ResultItem();
+                item.setPlugin(plugin);
+                item.markPluginInstalled(true);
+                results.add(item);
+                
                 installWork++;
                 markWork(installWork, totalInstallWork, installPluginMonitor);
             }

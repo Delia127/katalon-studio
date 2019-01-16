@@ -23,7 +23,8 @@ import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class FilterController {
 
-    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("id", "name", "tag", "comment", "description");
+    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("id", "name", "tag", "comment", "description",
+            "folder");
 
     private static FilterController instance;
 
@@ -117,14 +118,13 @@ public class FilterController {
         }
         switch (keyword) {
             case "id":
-                return ObjectUtils.equals(fileEntity.getIdForDisplay(), text) ||
-                        fileEntity.getIdForDisplay().startsWith(text + "/");
+                return ObjectUtils.equals(fileEntity.getIdForDisplay(), text);
             case "name":
-                return StringUtils.containsIgnoreCase(fileEntity.getName(), text);
+                return ObjectUtils.equals(fileEntity.getName(), text);
             case "tag":
-                return StringUtils.containsIgnoreCase(fileEntity.getTag(), text);
+                return ObjectUtils.equals(fileEntity.getTag(), text);
             case "description":
-                return StringUtils.containsIgnoreCase(fileEntity.getDescription(), text);
+                return ObjectUtils.equals(fileEntity.getDescription(), text);
             case "tags":
                 return entityHasTags(fileEntity, text);
             default:

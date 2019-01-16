@@ -90,8 +90,9 @@ public class TestCaseEntityImpl implements com.katalon.platform.api.model.TestCa
         }
     }
 
-    @Override
-    public String getTags() {
-        return source.getTag();
-    }
+	@Override
+	public String getTags() {
+		return source.getTag();
+	}
+
 }
