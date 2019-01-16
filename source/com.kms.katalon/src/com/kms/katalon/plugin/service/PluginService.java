@@ -14,17 +14,20 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
+import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.entity.util.ZipManager;
-import com.kms.katalon.plugin.models.KStoreAccount;
 import com.kms.katalon.plugin.models.KStoreClientException;
+import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResultItem;
@@ -52,7 +55,7 @@ public class PluginService {
         return instance;
     }
 
-    public List<ResultItem> reloadPlugins(KStoreAccount account, IProgressMonitor monitor)
+    public List<ResultItem> reloadPlugins(KStoreCredentials credentials, IProgressMonitor monitor)
             throws ReloadPluginsException, InterruptedException {
         
         try {
@@ -64,7 +67,7 @@ public class PluginService {
             SubMonitor fetchDataMonitor = subMonitor.split(30, SubMonitor.SUPPRESS_NONE);
             fetchDataMonitor.beginTask("Fetching latest plugin info from Katalon Store...", 100);
     
-            List<KStorePlugin> latestPlugins = fetchLatestPlugins(account);
+            List<KStorePlugin> latestPlugins = fetchLatestPlugins(credentials);
     
             fetchDataMonitor.done();
     
@@ -87,7 +90,7 @@ public class PluginService {
     
                 ResultItem item = new ResultItem();
                 item.setPlugin(plugin);
-                item.setInstalled(false);
+                item.markPluginInstalled(false);
                 results.add(item);
     
                 uninstallWork++;
@@ -108,23 +111,20 @@ public class PluginService {
                     throw new InterruptedException();
                 }
                 String pluginPath = getPluginFolderLocation(plugin);
-                try {
-                    if (!isPluginDownloaded(plugin)) {
-                        File download = downloadAndExtractPlugin(plugin, account);
-                        if (download != null) {
-                            pluginPath = download.getAbsolutePath();
-                            savePluginLocation(plugin, pluginPath);
-                        }
+                if (!isPluginDownloaded(plugin)) {
+                    File download = downloadAndExtractPlugin(plugin, credentials);
+                    if (download != null) {
+                        pluginPath = download.getAbsolutePath();
+                        savePluginLocation(plugin, pluginPath);
                     }
-                    platformInstall(pluginPath);
-    
-                    ResultItem item = new ResultItem();
-                    item.setPlugin(plugin);
-                    item.setInstalled(true);
-                    results.add(item);
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
                 }
+                platformInstall(pluginPath);
+
+                ResultItem item = new ResultItem();
+                item.setPlugin(plugin);
+                item.markPluginInstalled(true);
+                results.add(item);
+                
                 installWork++;
                 markWork(installWork, totalInstallWork, installPluginMonitor);
             }
@@ -149,16 +149,16 @@ public class PluginService {
         FileUtils.cleanDirectory(downloadDir);
     }
 
-    public boolean checkForPluginUpdates(KStoreAccount account, IProgressMonitor monitor) throws KStoreClientException {
+    public boolean checkForPluginUpdates(KStoreCredentials credentials, IProgressMonitor monitor) throws KStoreClientException {
         List<KStorePlugin> localPlugins = pluginPrefStore.getInstalledPlugins();
-        List<KStorePlugin> latestPlugins = fetchLatestPlugins(account);
+        List<KStorePlugin> latestPlugins = fetchLatestPlugins(credentials);
         List<KStorePlugin> uninstalledPlugins = getUninstalledPlugins(localPlugins, latestPlugins);
         List<KStorePlugin> newInstalledPlugins = getNewInstalledPlugins(localPlugins, latestPlugins);
         return CollectionUtils.isNotEmpty(uninstalledPlugins) || CollectionUtils.isNotEmpty(newInstalledPlugins);
     }
 
-    private List<KStorePlugin> fetchLatestPlugins(KStoreAccount account) throws KStoreClientException {
-        KStoreRestClient restClient = new KStoreRestClient(account);
+    private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientException {
+        KStoreRestClient restClient = new KStoreRestClient(credentials);
         List<KStorePlugin> latestPlugins = restClient.getLatestPlugins();
         return latestPlugins;
     }
@@ -183,22 +183,28 @@ public class PluginService {
         return pluginMap;
     }
 
-    private void platformInstall(String pluginPath) {
+    private void platformInstall(String pluginPath) throws BundleException {
         BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
         String bundlePath = new File(pluginPath).toURI().toString();
         Bundle existingBundle = bundleContext.getBundle(bundlePath);
         if (existingBundle == null) {
-            eventBroker.send("KATALON_PLUGIN/INSTALL", new Object[] { bundleContext, bundlePath });
+            getPluginInstaller().installPlugin(bundleContext, bundlePath);
         }
     }
 
-    private void platformUninstall(String pluginPath) {
+    private void platformUninstall(String pluginPath) throws BundleException {
         BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
         String bundlePath = new File(pluginPath).toURI().toString();
         Bundle existingBundle = bundleContext.getBundle(bundlePath);
         if (existingBundle != null) {
-            eventBroker.send("KATALON_PLUGIN/UNINSTALL", new Object[] { bundleContext, bundlePath });
+            getPluginInstaller().uninstallPlugin(bundleContext, bundlePath);
         }
+    }
+    
+    private PluginInstaller getPluginInstaller() {
+        BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
+        PluginInstaller pluginInstaller = context.getService(context.getServiceReference(PluginInstaller.class));
+        return pluginInstaller;
     }
 
     private boolean isPluginDownloaded(KStorePlugin plugin) {
@@ -219,7 +225,7 @@ public class PluginService {
         monitor.worked(subwork);
     }
 
-    private File downloadAndExtractPlugin(KStorePlugin plugin, KStoreAccount account) throws Exception {
+    private File downloadAndExtractPlugin(KStorePlugin plugin, KStoreCredentials credentials) throws Exception {
 
         File downloadDir = getPluginDownloadDir();
         downloadDir.mkdirs();
@@ -228,7 +234,7 @@ public class PluginService {
         File downloadFile = getPluginDownloadFileInfo(plugin);
         downloadFile.createNewFile();
 
-        KStoreRestClient restClient = getRestClient(account);
+        KStoreRestClient restClient = getRestClient(credentials);
         restClient.downloadPlugin(plugin.getProduct().getId(), downloadFile);
 
         File installDir = getPluginInstallDir();
@@ -244,8 +250,8 @@ public class PluginService {
         return jar;
     }
 
-    private KStoreRestClient getRestClient(KStoreAccount account) {
-        KStoreRestClient restClient = new KStoreRestClient(account);
+    private KStoreRestClient getRestClient(KStoreCredentials credentials) {
+        KStoreRestClient restClient = new KStoreRestClient(credentials);
         return restClient;
     }
 

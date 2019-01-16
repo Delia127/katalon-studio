@@ -77,7 +77,7 @@ public class ReloadPluginsResultDialog extends Dialog {
             @Override
             public String getText(Object element) {
                 ResultItem item = (ResultItem) element;
-                if (item.isInstalled()) {
+                if (item.isPluginInstalled()) {
                     return StringConstants.ReloadPluginsResultDialog_STATUS_INSTALLED;
                 } else {
                     return StringConstants.ReloadPluginsResultDialog_STATUS_UNINSTALLED;
