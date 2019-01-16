@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
-import com.kms.katalon.plugin.models.KStoreAccount;
+import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 import com.kms.katalon.plugin.util.KStoreTokenService;
 
@@ -17,25 +17,25 @@ public abstract class RequireAuthorizationHandler {
 
     private static PluginPreferenceStore store = new PluginPreferenceStore();
 
-    public KStoreAccount getAccount() throws KStoreClientAuthException {
+    public KStoreUsernamePasswordCredentials getUsernamePasswordCredentials() throws KStoreClientAuthException {
         try {
-            KStoreAccount account = store.getKStoreAccount();
-            if (account == null) {
+            KStoreUsernamePasswordCredentials credentials = store.getKStoreUsernamePasswordCredentials();
+            if (credentials == null) {
                 Shell shell = Display.getCurrent().getActiveShell();
                 KStoreLoginDialog dialog = new KStoreLoginDialog(shell);
                 if (dialog.open() == Dialog.OK) {
-                    account = new KStoreAccount();
+                    credentials = new KStoreUsernamePasswordCredentials();
                     String username = dialog.getUsername();
                     String password = dialog.getPassword();
-                    account.setUsername(username);
-                    account.setPassword(password);
-                    store.setKStoreAccount(account);
+                    credentials.setUsername(username);
+                    credentials.setPassword(password);
+                    store.setKStoreUsernamePasswordCredentials(credentials);
 
                     String token = dialog.getToken();
                     KStoreTokenService.getInstance().createNewToken(token);
                 }
             }
-            return account;
+            return credentials;
         } catch (IOException | GeneralSecurityException e) {
             throw new KStoreClientAuthException(e);
         }

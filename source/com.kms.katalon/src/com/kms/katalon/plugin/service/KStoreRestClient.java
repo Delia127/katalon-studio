@@ -30,7 +30,7 @@ import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.plugin.models.KStoreAccount;
+import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreToken;
@@ -38,16 +38,16 @@ import com.kms.katalon.plugin.util.KStoreTokenService;
 
 public class KStoreRestClient {
     
-    private KStoreAccount account;
+    private KStoreCredentials credentials;
     
-    public KStoreRestClient(KStoreAccount account) {
-        this.account = account;
+    public KStoreRestClient(KStoreCredentials credentials) {
+        this.credentials = credentials;
     }
     
     public List<KStorePlugin> getLatestPlugins() throws KStoreClientException {
         AtomicReference<List<KStorePlugin>> plugins = new AtomicReference<>();
         try {
-            executeGetRequest(getPluginsAPIUrl(), account, response -> {
+            executeGetRequest(getPluginsAPIUrl(), credentials, response -> {
                 try {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
@@ -79,7 +79,7 @@ public class KStoreRestClient {
     
     public void downloadPlugin(long productId, File downloadFile) throws KStoreClientException {
         try {
-            executeGetRequest(getPluginDownloadAPIUrl(productId), account, response -> {
+            executeGetRequest(getPluginDownloadAPIUrl(productId), credentials, response -> {
                 try {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
@@ -103,9 +103,9 @@ public class KStoreRestClient {
     public AuthenticationResult authenticate() throws KStoreClientException {
         try {
             HttpPost post = new HttpPost(getAuthenticateAPIUrl());
-            addAuthenticationHeaders(account, post);
+            addAuthenticationHeaders(credentials, post);
             
-            String content = JsonUtil.toJson(account);
+            String content = JsonUtil.toJson(credentials);
             StringEntity requestEntity = new StringEntity(content);
             post.setEntity(requestEntity);
             post.setHeader("Accept", "application/json");
@@ -182,7 +182,7 @@ public class KStoreRestClient {
     
     private void executeGetRequest(
             String url,
-            KStoreAccount credentials,
+            KStoreCredentials credentials,
             OnRequestSuccessHandler requestSuccessHandler) 
                     throws URISyntaxException, IOException, GeneralSecurityException, KStoreClientException {
         
@@ -210,9 +210,9 @@ public class KStoreRestClient {
         return HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation()).getClientBuilder().build();
     }
     
-    private void addAuthenticationHeaders(KStoreAccount credentials, HttpRequestBase request) {
-        request.addHeader("username", credentials.getUsername());
-        request.addHeader("password", credentials.getPassword());
+    private void addAuthenticationHeaders(KStoreCredentials credentials, HttpRequestBase request) {
+        credentials.getAuthHeaders().entrySet().stream()
+            .forEach(entry -> request.addHeader(entry.getKey(), entry.getValue()));
     }
     
     private String getSearchPluginUrl(String token) {
@@ -241,6 +241,7 @@ public class KStoreRestClient {
     
     private String getKatalonStoreUrl() {
         return "https://store-staging.katalon.com";
+//        return "http://localhost:3000";
     }
     
     private interface OnRequestSuccessHandler {

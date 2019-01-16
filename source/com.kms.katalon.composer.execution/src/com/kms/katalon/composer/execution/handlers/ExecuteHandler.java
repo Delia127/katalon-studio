@@ -3,38 +3,25 @@ package com.kms.katalon.composer.execution.handlers;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.contributions.IContributionFactory;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MDynamicMenuContribution;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.service.event.Event;
 
-import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.menu.AbstractExecutionMenuContribution;
 import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
 import com.kms.katalon.composer.execution.menu.ExistingExecutionHandledMenuItem;
-import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.event.EventBusSingleton;
-import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.event.ExecutionEvent;
-import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
 @SuppressWarnings("restriction")

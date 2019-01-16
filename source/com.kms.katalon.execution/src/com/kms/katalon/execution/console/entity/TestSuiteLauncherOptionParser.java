@@ -63,6 +63,17 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             return ExecutionProfileEntity.DF_PROFILE_NAME;
         }
     };
+    
+    private StringConsoleOption katalonStoreApiKeyOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_STORE_API_KEY_OPTION;
+        };
+        
+        public boolean isRequired() {
+            return false;
+        };
+    };
 
     
     @Override
@@ -71,6 +82,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(testSuitePathOption);
         allOptions.add(browserTypeOption);
         allOptions.add(executionProfileOption);
+        allOptions.add(katalonStoreApiKeyOption);
         return allOptions;
     }
 

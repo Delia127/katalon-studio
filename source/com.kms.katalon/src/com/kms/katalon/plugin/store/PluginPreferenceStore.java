@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.plugin.models.KStoreAccount;
+import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreToken;
 import com.kms.katalon.plugin.util.PluginHelper;
@@ -26,7 +26,7 @@ public class PluginPreferenceStore {
     
     private static final String PLUGIN_LOCATIONS = "pluginLocations";
     
-    private static final String KATALON_STORE_ACCOUNT = "kStoreAccount";
+    private static final String KATALON_STORE_CREDENTIALS = "kStoreCredentials";
     
     private static final String KATALON_STORE_TOKEN = "kStoreToken";
     
@@ -83,20 +83,20 @@ public class PluginPreferenceStore {
         return locationMap;
     }
     
-    public KStoreAccount getKStoreAccount() throws GeneralSecurityException, IOException {
-        String encryptedAccountJson = store.getString(KATALON_STORE_ACCOUNT);
-        if (encryptedAccountJson == null) {
+    public KStoreUsernamePasswordCredentials getKStoreUsernamePasswordCredentials() throws GeneralSecurityException, IOException {
+        String encryptedCredentialsJson = store.getString(KATALON_STORE_CREDENTIALS);
+        if (encryptedCredentialsJson == null) {
             return null;
         }
-        String accountJson = CryptoUtil.decode(CryptoUtil.getDefault(encryptedAccountJson));
-        KStoreAccount account = JsonUtil.fromJson(accountJson, KStoreAccount.class);
-        return account;
+        String credentialsJson = CryptoUtil.decode(CryptoUtil.getDefault(encryptedCredentialsJson));
+        KStoreUsernamePasswordCredentials credentials = JsonUtil.fromJson(credentialsJson, KStoreUsernamePasswordCredentials.class);
+        return credentials;
     }
     
-    public void setKStoreAccount(KStoreAccount account) throws GeneralSecurityException, IOException {
-        String accountJson = JsonUtil.toJson(account);
-        String encryptedAccountJson = CryptoUtil.encode(CryptoUtil.getDefault(accountJson));
-        store.setValue(KATALON_STORE_ACCOUNT, encryptedAccountJson);
+    public void setKStoreUsernamePasswordCredentials(KStoreUsernamePasswordCredentials credentials) throws GeneralSecurityException, IOException {
+        String credentialsJson = JsonUtil.toJson(credentials);
+        String encryptedCredentialsJson = CryptoUtil.encode(CryptoUtil.getDefault(credentialsJson));
+        store.setValue(KATALON_STORE_CREDENTIALS, encryptedCredentialsJson);
         store.save();
     }
     

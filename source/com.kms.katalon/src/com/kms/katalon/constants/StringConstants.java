@@ -142,4 +142,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ReloadPluginsResultDialog_STATUS_UNINSTALLED = MessageConstants.ReloadPluginsResultDialog_STATUS_UNINSTALLED;
 
     public static final String HAND_INFO_NO_PLUGINS_FOUND = MessageConstants.HAND_INFO_NO_PLUGINS_FOUND;
+    
+    public static final String MSG_PLUGIN_HAS_BEEN_INSTALLED = MessageConstants.MSG_PLUGIN_HAS_BEEN_INSTALLED;
+    
+    public static final String MSG_PLUGIN_HAS_BEEN_UNINSTALLED = MessageConstants.MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
 }

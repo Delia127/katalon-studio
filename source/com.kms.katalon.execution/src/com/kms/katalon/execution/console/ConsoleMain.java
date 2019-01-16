@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +17,8 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -30,9 +33,9 @@ import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.logging.LogUtil;
+
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 import joptsimple.OptionSpecBuilder;
 
 public class ConsoleMain {
@@ -53,6 +56,8 @@ public class ConsoleMain {
     public static final int DEFAULT_SHOW_PROGRESS_DELAY = 15;
 
     public final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
+    
+    public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
 
     private ConsoleMain() {
         // hide constructor
@@ -73,6 +78,11 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
+            if (options.has(KATALON_STORE_API_KEY_OPTION)) {
+                String apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
+                reloadPlugins(apiKeyValue);
+            }
+            
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
@@ -115,6 +125,18 @@ public class ConsoleMain {
         } finally {
             LauncherManager.getInstance().removeAllTerminated();
         }
+    }
+    
+    private static void reloadPlugins(String apiKey) throws Exception {
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
+        Class<?> reloadPluginsHandlerClass = katalonBundle
+                .loadClass("com.kms.katalon.composer.handlers.ConsoleModeReloadPluginsHandler");
+        Object handler = reloadPluginsHandlerClass.newInstance();
+        Method reloadMethod = Arrays.asList(reloadPluginsHandlerClass.getMethods()).stream()
+                .filter(method -> method.getName().equals("reload"))
+                .findAny()
+                .orElse(null);
+        reloadMethod.invoke(handler, apiKey);
     }
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,
