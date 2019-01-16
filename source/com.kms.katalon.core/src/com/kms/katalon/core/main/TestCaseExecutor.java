@@ -217,6 +217,7 @@ public class TestCaseExecutor {
                 testCaseResult = invokeTestSuiteMethod(SetupTestCase.class.getName(), StringConstants.LOG_SETUP_ACTION,
                         false, testCaseResult);
                 if (ErrorCollector.getCollector().containsErrors()) {
+                    testCaseResult.setMessage(ExceptionsUtil.getStackTraceForThrowable(ErrorCollector.getCollector().getFirstError()));
                     logger.logError(testCaseResult.getMessage());
                     return testCaseResult;
                 }

@@ -25,17 +25,13 @@ class GlobalVariableTemplate {
 ${PACKAGE_STRING}
 
 import com.kms.katalon.core.configuration.RunConfiguration
-import com.kms.katalon.core.main.ScriptEngine
 import com.kms.katalon.core.main.TestCaseMain
-import com.kms.katalon.core.logging.KeywordLogger
 
 
 /**
  * This class is generated automatically by Katalon Studio and should not be modified or deleted.
  */
 public class GlobalVariable {
-    private static KeywordLogger logger = KeywordLogger.getInstance(TestCaseMain.class)
-
     <% globalVariables.each { entry -> %> 
     /**
      * <p><%= GlobalVariableTemplate.escapeHtmlForJavadoc(entry.value.getDescription()) %></p>
@@ -44,32 +40,12 @@ public class GlobalVariable {
     <% } %> 
 
     static {
-        String profileName = RunConfiguration.getExecutionProfile()
-        try {
-            def selectedVariables = [:]
-    
-            ScriptEngine sce = TestCaseMain.getScriptEngine()
-            def variables = new XmlParser().parse(new File(RunConfiguration.getProjectDir(), "Profiles/" + profileName + ".glbl"))
-            for (globalVariable in variables.GlobalVariableEntity) {
-                String variableName = globalVariable.name.text()
-                String defaultValue = globalVariable.initValue.text()
-                try {
-                    selectedVariables.put(variableName, sce.runScriptWithoutLogging(defaultValue, new Binding()))
-                } catch (Exception e) {
-                    logger.logError(String.format(
-                        "Could not evaluate default value of variable: %s in profile: %s. Details: %s", variableName, profileName, e.getMessage()))
-                }
-            }
-    		
-            selectedVariables += RunConfiguration.getOverridingParameters()
-    
-            <% globalVariables.each { entry -> %>\
+        def selectedVariables = TestCaseMain.getGlobalVariables(RunConfiguration.getExecutionProfile())
+        selectedVariables += RunConfiguration.getOverridingParameters()
+
+        <% globalVariables.each { entry -> %>\
 <%=entry.value.getName()%> = selectedVariables["<%=entry.value.getName()%>"]
-            <% } %>
-        } catch (Exception e) {
-            logger.logError(String.format(
-                        "Could not evaluate variables in profile: %s. Details: %s", profileName, e.getMessage()))
-        }
+        <% } %>
     }
 }
 """
