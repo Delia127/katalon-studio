@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
@@ -196,7 +197,7 @@ public class PluginService {
     }
 
     private void platformUninstall(String pluginPath) throws BundleException {
-        BundleContext bundleContext = Platform.getBundle("com.katalon.platform").getBundleContext();
+        BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
         String bundlePath = new File(pluginPath).toURI().toString();
         Bundle existingBundle = bundleContext.getBundle(bundlePath);
         if (existingBundle != null) {
@@ -208,7 +209,7 @@ public class PluginService {
     }
     
     private PluginInstaller getPluginInstaller() {
-        BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
+        BundleContext context = InternalPlatform.getDefault().getBundleContext();
         PluginInstaller pluginInstaller = context.getService(context.getServiceReference(PluginInstaller.class));
         return pluginInstaller;
     }
