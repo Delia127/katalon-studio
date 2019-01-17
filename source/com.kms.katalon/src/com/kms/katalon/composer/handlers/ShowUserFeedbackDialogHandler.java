@@ -18,7 +18,7 @@ import com.kms.katalon.tracking.service.Trackings;
 
 public class ShowUserFeedbackDialogHandler {
 
-    private static final int APP_CLOSES_LIMIT = 4;
+    private static final int APP_CLOSES_LIMIT = 1;
 
     @Inject
     private IEventBroker eventBroker;
