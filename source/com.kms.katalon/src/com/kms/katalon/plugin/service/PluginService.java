@@ -23,8 +23,9 @@ import org.osgi.framework.BundleException;
 
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.util.ZipManager;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreCredentials;
@@ -184,11 +185,14 @@ public class PluginService {
     }
 
     private void platformInstall(String pluginPath) throws BundleException {
-        BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
+        BundleContext bundleContext = Platform.getBundle("com.katalon.platform").getBundleContext();
         String bundlePath = new File(pluginPath).toURI().toString();
         Bundle existingBundle = bundleContext.getBundle(bundlePath);
         if (existingBundle == null) {
-            getPluginInstaller().installPlugin(bundleContext, bundlePath);
+            Bundle bundle = getPluginInstaller().installPlugin(bundleContext, bundlePath);
+            if (bundle != null && bundle.getSymbolicName().equals(IdConstants.JIRA_PLUGIN_ID)) {
+                eventBroker.post(EventConstants.JIRA_PLUGIN_INSTALLED, null);
+            }   
         }
     }
 
@@ -197,12 +201,15 @@ public class PluginService {
         String bundlePath = new File(pluginPath).toURI().toString();
         Bundle existingBundle = bundleContext.getBundle(bundlePath);
         if (existingBundle != null) {
-            getPluginInstaller().uninstallPlugin(bundleContext, bundlePath);
+            Bundle bundle = getPluginInstaller().uninstallPlugin(bundleContext, bundlePath);
+            if (bundle != null && IdConstants.JIRA_PLUGIN_ID.equals(bundle.getSymbolicName())) {
+                eventBroker.post(EventConstants.JIRA_PLUGIN_UNINSTALLED, null);
+            }
         }
     }
     
     private PluginInstaller getPluginInstaller() {
-        BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
+        BundleContext context = InternalPlatform.getDefault().getBundleContext();
         PluginInstaller pluginInstaller = context.getService(context.getServiceReference(PluginInstaller.class));
         return pluginInstaller;
     }
