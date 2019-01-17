@@ -8,11 +8,13 @@ import com.katalon.platform.api.exception.PlatformException;
 import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.model.FolderEntity;
 import com.katalon.platform.api.ui.DialogActionService;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.FolderEntityTreeViewerFilter;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.exception.ControllerException;
@@ -52,12 +54,12 @@ public class DialogServiceImpl implements DialogActionService {
 
     @Override
     public void openApplicationPreferences() {
-
+        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.KATALON_PREFERENCES, null);
     }
 
     @Override
     public void openPluginPreferencePage(String preferenceId) {
-
+        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_SETTINGS_PAGE, preferenceId);
     }
 
 }
