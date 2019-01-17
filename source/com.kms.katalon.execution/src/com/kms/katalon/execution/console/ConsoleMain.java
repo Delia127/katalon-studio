@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
@@ -35,6 +37,7 @@ import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.logging.LogUtil;
+
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
@@ -80,6 +83,14 @@ public class ConsoleMain {
         	List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
+
+            if (options.has(KATALON_STORE_API_KEY_OPTION)) {
+                String apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
+                reloadPlugins(apiKeyValue);
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
            
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if(options.has(INSTALL_PLUGIN_OPTION)){
@@ -133,6 +144,20 @@ public class ConsoleMain {
         }
     }
     
+    private static void reloadPlugins(String apiKey) throws Exception {
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
+        Class<?> reloadPluginsHandlerClass = katalonBundle
+                .loadClass("com.kms.katalon.composer.handlers.ConsoleModeReloadPluginsHandler");
+        Object handler = reloadPluginsHandlerClass.newInstance();
+        Method reloadMethod = Arrays.asList(reloadPluginsHandlerClass.getMethods()).stream()
+                .filter(method -> method.getName().equals("reload"))
+                .findAny()
+                .orElse(null);
+        if (reloadMethod != null) {
+            reloadMethod.invoke(handler, apiKey);
+        }
+    }
+
 	private static void installPlugin(String filePath) throws InterruptedException, BundleException {
 		BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
 		ServiceReference<PluginInstaller> serviceReference = context
@@ -142,7 +167,6 @@ public class ConsoleMain {
 			pluginInstaller.installPlugin(context, new File(filePath).toURI().toString());
 		}
     }
-    
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,
             Map<String, String> consoleOptionValueMap) {

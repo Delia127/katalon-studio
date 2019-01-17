@@ -148,7 +148,7 @@ public class SettingHandler {
 
             @Override
             protected Point getInitialSize() {
-                return new Point(900, 600);
+                return new Point(800, 600);
             }
 
             @Override

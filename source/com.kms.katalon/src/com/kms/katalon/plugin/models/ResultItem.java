@@ -4,7 +4,7 @@ public class ResultItem {
 
     private KStorePlugin plugin;
     
-    private boolean installed;
+    private boolean pluginInstalled;
 
     public KStorePlugin getPlugin() {
         return plugin;
@@ -14,11 +14,11 @@ public class ResultItem {
         this.plugin = plugin;
     }
 
-    public boolean isInstalled() {
-        return installed;
+    public boolean isPluginInstalled() {
+        return pluginInstalled;
     }
 
-    public void setInstalled(boolean installed) {
-        this.installed = installed;
+    public void markPluginInstalled(boolean installed) {
+        this.pluginInstalled = installed;
     }
 }
