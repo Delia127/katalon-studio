@@ -5,7 +5,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.plugin.models.KStoreAccount;
+import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 
 public class ManagePluginsHandler extends RequireAuthorizationHandler {
@@ -18,8 +18,8 @@ public class ManagePluginsHandler extends RequireAuthorizationHandler {
     @Execute
     public void execute() {
         try {
-            KStoreAccount account = getAccount();
-            KStoreRestClient restClient = new KStoreRestClient(account);
+            KStoreUsernamePasswordCredentials credentials = getUsernamePasswordCredentials();
+            KStoreRestClient restClient = new KStoreRestClient(credentials);
             restClient.goToManagePluginsPage();
         } catch (Exception e) {
             LoggerSingleton.logError(e);

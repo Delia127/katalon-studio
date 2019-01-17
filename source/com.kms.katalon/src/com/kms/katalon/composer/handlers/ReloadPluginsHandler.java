@@ -24,7 +24,7 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.plugin.dialog.ReloadPluginsResultDialog;
-import com.kms.katalon.plugin.models.KStoreAccount;
+import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.service.PluginService;
@@ -73,16 +73,16 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    KStoreAccount[] accounts = new KStoreAccount[1];
+                    KStoreUsernamePasswordCredentials[] credentials = new KStoreUsernamePasswordCredentials[1];
                     UISynchronizeService.syncExec(() -> {
                         try {
-                            accounts[0] = getAccount();
+                            credentials[0] = getUsernamePasswordCredentials();
                         } catch (KStoreClientAuthException e) {
                             LoggerSingleton.logError(e);
                         }
                     });
-                    if (accounts[0] != null) {
-                        List<ResultItem> result = PluginService.getInstance().reloadPlugins(accounts[0], monitor);
+                    if (credentials[0] != null) {
+                        List<ResultItem> result = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
                         if (!silenceMode) {
                             UISynchronizeService.syncExec(() -> openResultDialog(result));
                         }
