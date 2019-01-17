@@ -240,8 +240,7 @@ public class KStoreRestClient {
     }
     
     private String getKatalonStoreUrl() {
-//        return "https://store-staging.katalon.com";
-        return "http://localhost:3000";
+        return "https://store-staging.katalon.com";
     }
     
     private interface OnRequestSuccessHandler {
