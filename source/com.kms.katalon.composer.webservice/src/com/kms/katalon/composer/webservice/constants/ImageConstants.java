@@ -100,6 +100,10 @@ public class ImageConstants {
     
     public static final Image NEW_DRAFT_REST_REQUEST = ImageManager.getImage(IImageKeys.NEW_DRAFT_REST_REQUEST);
     
+    public static final Image NEW_DRAFT_REST_WEB_REQUEST = ImageManager.getImage(IImageKeys.NEW_DRAFT_REST_WEB_REQUEST);
+    
+    public static final Image NEW_DRAFT_REST_MOBILE_REQUEST = ImageManager.getImage(IImageKeys.NEW_DRAFT_REST_MOBILE_REQUEST);
+    
     public static final Image NEW_DRAFT_SOAP_REQUEST = ImageManager.getImage(IImageKeys.NEW_DRAFT_SOAP_REQUEST);
     
     public static final Image IMPORT_SWAGGER = ImageManager.getImage(IImageKeys.IMPORT_SWAGGER);
@@ -107,5 +111,9 @@ public class ImageConstants {
     public static final Image IMPORT_WSDL = ImageManager.getImage(IImageKeys.IMPORT_WSDL);
     
     public static final Image API_QUICKSTART_BACKGROUND_LEFT = ImageManager.getImage(IImageKeys.API_QUICKSTART_BACKGROUND_LEFT);
+    
+    public static final Image API_QUICKSTART_BACKGROUND_WEB_LEFT = ImageManager.getImage(IImageKeys.API_QUICKSTART_BACKGROUND_WEB_LEFT);
+    
+    public static final Image API_QUICKSTART_BACKGROUND_MOBILE_LEFT = ImageManager.getImage(IImageKeys.API_QUICKSTART_BACKGROUND_MOBILE_LEFT);
 
 }

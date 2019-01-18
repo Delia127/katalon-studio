@@ -23,6 +23,7 @@ import com.kms.katalon.composer.webservice.view.ApiQuickStartDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
 public class OpenApiQuickStartHandler {
@@ -35,13 +36,12 @@ public class OpenApiQuickStartHandler {
     @PostConstruct
     public void registerEventHandler() {
         eventBroker.subscribe(EventConstants.API_QUICK_START_DIALOG_OPEN, new EventServiceAdapter() {
-
             @Override
             public void handleEvent(Event event) {
-                execute(null);
+              ProjectType projectType= (ProjectType) event.getProperty("org.eclipse.e4.data");
+                execute(null, projectType);
             }
         });
-
     }
 
     @CanExecute
@@ -50,8 +50,7 @@ public class OpenApiQuickStartHandler {
     }
 
     @Execute
-    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects) {
-
+    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects, ProjectType projectType) {
         try {
             ITreeEntity parentTreeEntity;
             parentTreeEntity = findParentTreeEntity(selectedObjects);
@@ -64,7 +63,7 @@ public class OpenApiQuickStartHandler {
             }
 
             ApiQuickStartDialog quickStartDialog = new ApiQuickStartDialog(parentTreeEntity,
-                    Display.getCurrent().getActiveShell());
+                    Display.getCurrent().getActiveShell(), projectType);
             quickStartDialog.open();
 
         } catch (Exception e) {

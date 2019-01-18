@@ -30,11 +30,16 @@ public class ExecutionProfilePartUI {
     private static final String GLOBAL_VARIABLE_EDITOR_PART_URI = BUNDLE_URI_EXECUTION_PROFILE
     		+ GlobalVariableEditorPart.class.getName();
     
+    private static final String GLOBAL_VARIABLE_ADD_PART_URI =BUNDLE_URI_EXECUTION_PROFILE 
+    		+GlobalVariableAddPart.class.getName();
+    
     private MCompositePart executionProfileCompositePart;
     
     private MPart globalVariablePart;
     
     private MPart globalVariableEditorPart;
+    
+    private MPart globalVariableAddPart;
     
     private CTabFolder tabFolder;
     
@@ -101,12 +106,27 @@ public class ExecutionProfilePartUI {
             subPartStack.setSelectedElement(globalVariableEditorPart);
         }
         
+        String PartId = executionProfileCompositePartId + IdConstants.TEST_CASE_EDITOR_PART_ID_SUFFIX_2;
+        globalVariableAddPart= (MPart) modelService.find(PartId, subPartStack);
+        if(globalVariableAddPart==null){
+        	globalVariableAddPart = modelService.createModelElement(MPart.class);
+        	globalVariableAddPart.setElementId(PartId);
+        	globalVariableAddPart.setLabel("Add new Manual view");
+        	globalVariableAddPart.setObject(executionProfileEntity);
+        	globalVariableAddPart.setContributionURI(GLOBAL_VARIABLE_ADD_PART_URI);
+        	globalVariableAddPart.getTags().add(IPresentationEngine.NO_MOVE);
+        	subPartStack.getChildren().add(globalVariableAddPart);
+        	subPartStack.setSelectedElement(globalVariableAddPart);
+        	
+        	
+        }
+        
         stack.setSelectedElement(executionProfileCompositePart);
         
         partService.activate(executionProfileCompositePart);
         partService.activate(globalVariableEditorPart);
         partService.activate(globalVariablePart);
-           
+        partService.activate(globalVariableAddPart);
         tabFolder = (CTabFolder) subPartStack.getWidget();
         
         initComponents();
@@ -135,11 +155,20 @@ public class ExecutionProfilePartUI {
         return tabFolder.getItem(1);
     }
     
+    public CTabItem getGlobalVariableAddTab(){
+		return tabFolder.getItem(2);
+    	
+    }
+    
     public MPart getGlobalVariablePart(){
     	return globalVariablePart;
     }
     
     public MPart getGlobalVariableEditorPart(){
     	return globalVariableEditorPart;
+    }
+    
+    public MPart getGlobalVariableAddPart(){
+    	return globalVariableAddPart;
     }
 }
