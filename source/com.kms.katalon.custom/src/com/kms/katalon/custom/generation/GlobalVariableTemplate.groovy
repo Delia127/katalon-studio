@@ -6,6 +6,7 @@ import java.text.MessageFormat
 import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang.StringUtils
 
+import com.kms.katalon.core.exception.KatalonRuntimeException
 import com.kms.katalon.custom.parser.GlobalVariableParser
 import com.kms.katalon.entity.global.ExecutionProfileEntity
 import com.kms.katalon.entity.global.GlobalVariableEntity
@@ -40,12 +41,16 @@ public class GlobalVariable {
     <% } %> 
 
     static {
-        def selectedVariables = TestCaseMain.getGlobalVariables(RunConfiguration.getExecutionProfile())
-        selectedVariables += RunConfiguration.getOverridingParameters()
-
-        <% globalVariables.each { entry -> %>\
+        try {
+            def selectedVariables = TestCaseMain.getGlobalVariables(RunConfiguration.getExecutionProfile())
+            selectedVariables += RunConfiguration.getOverridingParameters()
+    
+            <% globalVariables.each { entry -> %>\
 <%=entry.value.getName()%> = selectedVariables["<%=entry.value.getName()%>"]
-        <% } %>
+            <% } %>
+        } catch (Exception e) {
+            TestCaseMain.logGlobalVariableError(e)
+        }
     }
 }
 """
