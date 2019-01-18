@@ -3,6 +3,8 @@ package com.kms.katalon.composer.intro;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Random;
+
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
@@ -31,6 +33,12 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class UserFeedbackDialog extends Dialog {
+    
+    private static final String[] TWITTER_REDIRECT_URLS = new String[] {
+        "https://www.katalon.com/love-katalon-1",
+        "https://www.katalon.com/love-katalon-2",
+        "https://www.katalon.com/love-katalon-3"
+    };
 
     private Browser browser;
 
@@ -104,15 +112,15 @@ public class UserFeedbackDialog extends Dialog {
 
     private void handleOkPressed() {
         Trackings.trackUserResponseForTwitterDialog("ok");
-        Program.launch(getTwitterUrl());
+        Program.launch(getTwitterRedirectUrl());
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_SHOW_USER_FEEDBACK_DIALOG_ON_APP_CLOSE, false);
         close();
     }
 
-    private String getTwitterUrl() {
-        return "https://twitter.com/intent/tweet?text="
-                + UrlEncoder.encode(MessageConstants.UserFeedbackDialog_MSG_USER_TWEET) + "&url="
-                + UrlEncoder.encode("https://www.katalon.com");
+    private String getTwitterRedirectUrl() {
+        Random rand = new Random();
+        String url = TWITTER_REDIRECT_URLS[rand.nextInt(TWITTER_REDIRECT_URLS.length)];
+        return url;
     }
 
     private void handleCancelPressed() {
