@@ -45,7 +45,7 @@ public class UninstallPluginHandler {
             if (bundle != null && IdConstants.JIRA_PLUGIN_ID.equals(bundle.getSymbolicName())) {
                 eventBroker.post(EventConstants.JIRA_PLUGIN_UNINSTALLED, null);
             }
-            MessageDialog.openInformation(activeShell, GlobalStringConstants.INFO, "Plugin uninstalled sucessfully");
+            MessageDialog.openInformation(activeShell, GlobalStringConstants.INFO, "Plugin sucessfully uninstalled");
             InstallPluginHandler.resetPluginPath();
         } catch (BundleException e) {
             MessageDialog.openError(activeShell, GlobalStringConstants.ERROR, "Unable to uninstall plugin");
