@@ -87,6 +87,20 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             }
             executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite, StringUtils.EMPTY);
         } else {
+            executedItems = loadTestCases(testSuite);
+        }
+        setTestCaseExecutedEntities(executedItems);
+    }
+    
+    public void prepareTestCasesWithTestSuiteQuery(String testSuiteQuery) throws Exception {
+        TestSuiteEntity testSuite = (TestSuiteEntity) getEntity();
+        List<IExecutedEntity> executedItems;
+        if (testSuite instanceof FilteringTestSuiteEntity) {
+            if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
+                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
+            }
+            executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite, testSuiteQuery);
+        } else {
             executedItems = loadTestCases(testSuite, StringUtils.EMPTY);
         }
         setTestCaseExecutedEntities(executedItems);
