@@ -63,8 +63,8 @@ public class ConsoleMain {
 
     public final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
     
-    public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
-
+    public final static String TESTSUITE_QUERY = "test-suite-query";
+    
     private ConsoleMain() {
         // hide constructor
     }

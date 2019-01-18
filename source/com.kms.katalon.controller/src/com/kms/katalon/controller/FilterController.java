@@ -23,7 +23,10 @@ import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class FilterController {
 
-    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("id", "name", "tag", "comment", "description");
+    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment", "description",
+            "folder");
+    
+    private static final String CONTENT_DELIMITER = ",";
 
     private static FilterController instance;
 
@@ -80,7 +83,7 @@ public class FilterController {
         if (searchTags != null) {
             Map<String, String> tagMap = new HashMap<String, String>();
             for (int i = 0; i < searchTags.length; i++) {
-                String tagRegex = searchTags[i] + "=\\([^\\)]+\\)";
+                String tagRegex = searchTags[i] + "=\\(.*\\)";
                 Matcher m = Pattern.compile(tagRegex).matcher(contentString);
                 while (m.find()) {
                     String tagContent = contentString.substring(m.start() + searchTags[i].length() + 2, m.end() - 1);
@@ -114,6 +117,8 @@ public class FilterController {
             return false;
         }
         switch (keyword) {
+        	case "ids":
+        		return textContainsEntityId(text, fileEntity);
             case "id":
                 return ObjectUtils.equals(fileEntity.getIdForDisplay(), text) ||
                         fileEntity.getIdForDisplay().startsWith(text + "/");
@@ -130,7 +135,16 @@ public class FilterController {
         }
     }
     
-    private boolean isAdvancedTagPluginInstalled() {
+    private boolean textContainsEntityId(String text, FileEntity fileEntity) {
+    	// Allow spaces before and after delimiter
+    	return Arrays.asList(text.split(CONTENT_DELIMITER))
+    			.stream()
+    			.map(a -> a.trim())
+    			.collect(Collectors.toList())
+    			.contains(fileEntity.getIdForDisplay());
+	}
+
+	private boolean isAdvancedTagPluginInstalled() {
         Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_ADVANCED_TAGS);
         return plugin != null;
     }
