@@ -81,6 +81,8 @@ public interface IdConstants {
     public static final String TEST_CASE_SUB_PART_STACK_ID_SUFFIX = ".partStack";
 
     public static final String TEST_CASE_EDITOR_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".editor";
+    
+    public static final String TEST_CASE_EDITOR_PART_ID_SUFFIX_2 = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".editor2";
 
     public static final String TEST_CASE_VARIABLES_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variables";
     

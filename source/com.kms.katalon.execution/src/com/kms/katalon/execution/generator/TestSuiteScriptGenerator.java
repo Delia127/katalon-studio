@@ -70,21 +70,26 @@ public class TestSuiteScriptGenerator {
 
         List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(
                 testSuite);
-        for (IExecutedEntity testCaseExecuted : testSuiteExecuted.getExecutedItems()) {
-            String testCaseId = testCaseExecuted.getSourceId();
+        for (IExecutedEntity testCaseExecuted : testSuiteExecuted.getExecutedItems()) {//*
+            //testCaseExecuted id=null
+            String testCaseId = testCaseExecuted.getSourceId();//*
             TestSuiteTestCaseLink testCaseLink = getTestCaseLink(testCaseId, lstTestCaseRun);
             
             if (testCaseLink == null) {
                 throw new IllegalArgumentException("Test case: '" + testCaseId + "' not found");
             }
             
+
             List<String> testCaseBinding = getTestCaseBindingString(testCaseLink,
                     (TestCaseExecutedEntity) testCaseExecuted);
+            //            testCaseBindings size=2 count =2,testCaseLink size=1, count =1
             testCaseBindings.addAll(testCaseBinding);
+            //count =1
         }
 
         if (syntaxErrorCollector.toString().isEmpty()) {
             return testCaseBindings;
+            //size=3
         } else {
             throw new IllegalArgumentException(syntaxErrorCollector.toString());
         }
@@ -105,8 +110,12 @@ public class TestSuiteScriptGenerator {
         for (int iterationIdx = 0; iterationIdx < testCaseExecutedEntity.getLoopTimes(); iterationIdx++) {
             TestCaseBindingStringBuilder builder = new TestCaseBindingStringBuilder(iterationIdx, testCaseExecutedEntity);
             
+           // List<VariableLink> ls = testCaseLink.getVariableLinks();
             for (VariableLink variableLink : testCaseLink.getVariableLinks()) {
+                //id=null
                 builder.append(variableLink, testSuiteExecuted.getTestDataMap());
+                //varialeBinding =hashmap<K,V>
+                //modcount ,size=0,value=null
             }
             
             if (builder.hasErrors()) {

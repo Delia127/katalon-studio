@@ -170,8 +170,8 @@
 <plugin id="antlr"/>
 <plugin id="atu.testrecorder.screen-recorder"/>
 <plugin id="bcpkix"/>
-<plugin id="ch.qos.logback.classic" version="1.2.3"/>
-<plugin id="ch.qos.logback.core" version="1.2.3"/>
+<plugin id="ch.qos.logback.classic"/>
+<plugin id="ch.qos.logback.core"/>
 <plugin id="ch.qos.logback.slf4j"/>
 <plugin id="classmate"/>
 <plugin id="com.auth0.java-jwt"/>
@@ -256,7 +256,7 @@
 <plugin id="javax.servlet.jsp.source"/>
 <plugin id="javax.servlet.source"/>
 <plugin id="javax.validation.api"/>
-<plugin id="javax.websocket-api" version="1.1.0.201606171313"/>
+<plugin id="javax.websocket-api"/>
 <plugin id="javax.ws.rs"/>
 <plugin id="javax.xml"/>
 <plugin id="javax.xml.jaxp-api"/>
@@ -331,8 +331,8 @@
 <plugin id="org.codehaus.groovy" version="2.3.10.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
@@ -340,10 +340,10 @@
 <plugin id="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201611170128-e46"/>
@@ -479,11 +479,11 @@
 <plugin id="org.eclipse.egit" version="4.4.1.201607150455-r"/>
 <plugin id="org.eclipse.egit.core" version="4.4.1.201607150455-r"/>
 <plugin id="org.eclipse.egit.doc" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.egit.gitflow" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.egit.gitflow.ui" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.egit.mylyn.ui" version="4.4.1.201607150455-r"/>
+<plugin id="org.eclipse.egit.gitflow"/>
+<plugin id="org.eclipse.egit.gitflow.ui"/>
+<plugin id="org.eclipse.egit.mylyn.ui"/>
 <plugin id="org.eclipse.egit.ui" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.egit.ui.smartimport" version="4.4.1.201607150455-r"/>
+<plugin id="org.eclipse.egit.ui.smartimport"/>
 <plugin id="org.eclipse.emf.common"/>
 <plugin id="org.eclipse.emf.common.ui"/>
 <plugin id="org.eclipse.emf.databinding"/>
@@ -613,8 +613,8 @@
 <plugin id="org.eclipse.help.webapp"/>
 <plugin id="org.eclipse.help.webapp.source"/>
 <plugin id="org.eclipse.jdt"/>
-<plugin id="org.eclipse.jdt.annotation" version="1.1.100.v20160418-1457"/>
 <plugin id="org.eclipse.jdt.annotation" version="2.1.0.v20160418-1457"/>
+<plugin id="org.eclipse.jdt.annotation" version="1.1.100.v20160418-1457"/>
 <plugin id="org.eclipse.jdt.apt.core"/>
 <plugin id="org.eclipse.jdt.apt.pluggable.core"/>
 <plugin id="org.eclipse.jdt.apt.ui"/>
@@ -652,7 +652,7 @@
 <plugin id="org.eclipse.jetty.servlet.source"/>
 <plugin id="org.eclipse.jetty.util" version="9.3.9.v20160517"/>
 <plugin id="org.eclipse.jetty.util.source"/>
-<plugin id="org.eclipse.jetty.webapp" version="9.3.9.v20160517"/>
+<plugin id="org.eclipse.jetty.webapp"/>
 <plugin id="org.eclipse.jetty.websocket.api"/>
 <plugin id="org.eclipse.jetty.websocket.client"/>
 <plugin id="org.eclipse.jetty.websocket.common"/>
@@ -660,7 +660,7 @@
 <plugin id="org.eclipse.jetty.websocket.javax.websocket.server"/>
 <plugin id="org.eclipse.jetty.websocket.server"/>
 <plugin id="org.eclipse.jetty.websocket.servlet"/>
-<plugin id="org.eclipse.jetty.xml" version="9.3.9.v20160517"/>
+<plugin id="org.eclipse.jetty.xml"/>
 <plugin id="org.eclipse.jface"/>
 <plugin id="org.eclipse.jface.databinding"/>
 <plugin id="org.eclipse.jface.databinding.source"/>
@@ -669,11 +669,11 @@
 <plugin id="org.eclipse.jface.text.source"/>
 <plugin id="org.eclipse.jgit" version="4.4.1.201607150455-r"/>
 <plugin id="org.eclipse.jgit.archive" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.jgit.http.apache" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.jgit.lfs" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.jgit.lfs.server" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.jgit.pgm" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.jgit.ui" version="4.4.1.201607150455-r"/>
+<plugin id="org.eclipse.jgit.http.apache"/>
+<plugin id="org.eclipse.jgit.lfs"/>
+<plugin id="org.eclipse.jgit.lfs.server"/>
+<plugin id="org.eclipse.jgit.pgm"/>
+<plugin id="org.eclipse.jgit.ui"/>
 <plugin id="org.eclipse.jsch.core"/>
 <plugin id="org.eclipse.jsch.core.source"/>
 <plugin id="org.eclipse.jsch.ui"/>
@@ -1094,8 +1094,8 @@
 <plugin id="org.junit" version="4.12.0"/>
 <plugin id="org.kohsuke.args4j"/>
 <plugin id="org.mozilla.javascript"/>
-<plugin id="org.objectweb.asm" version="5.0.1.v201404251740"/>
 <plugin id="org.objectweb.asm" version="5.0.1"/>
+<plugin id="org.objectweb.asm" version="5.0.1.v201404251740"/>
 <plugin id="org.objectweb.asm.all.debug"/>
 <plugin id="org.objectweb.asm.commons"/>
 <plugin id="org.objectweb.asm.tree" version="5.0.1.v201404251740"/>
