@@ -36,13 +36,18 @@ public class FilterController {
         }
         return instance;
     }
-
-    public List<String> getDefaultKeywords() {
-        List<String> keywords = new ArrayList<>();
+    
+    private List<String> keywords;
+    
+    private FilterController() {
+        keywords = new ArrayList<>();
         keywords.addAll(DEFAULT_KEYWORDS);
         if (isAdvancedTagPluginInstalled()) {
             keywords.add(getAdvancedTagKeyword());
         }
+    }
+
+    public List<String> getDefaultKeywords() {
         return keywords;
     }
     
@@ -53,13 +58,13 @@ public class FilterController {
     public boolean isMatched(FileEntity fileEntity, String filteringText) {
         String trimmedText = filteringText.trim();
         List<String> keywordList = new ArrayList<>();
-        keywordList.addAll(DEFAULT_KEYWORDS);
+        keywordList.addAll(keywords);
         Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), trimmedText);
 
         if (!tagMap.isEmpty()) {
             for (Entry<String, String> entry : tagMap.entrySet()) {
                 String keyword = entry.getKey();
-                if (DEFAULT_KEYWORDS.contains(keyword) && !compare(fileEntity, keyword, entry.getValue())) {
+                if (keywords.contains(keyword) && !compare(fileEntity, keyword, entry.getValue())) {
                     return false;
                 }
             }

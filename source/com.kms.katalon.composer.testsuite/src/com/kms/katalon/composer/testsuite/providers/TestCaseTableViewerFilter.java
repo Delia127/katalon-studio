@@ -1,13 +1,14 @@
 package com.kms.katalon.composer.testsuite.providers;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.controller.FilterController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -32,32 +33,28 @@ public class TestCaseTableViewerFilter extends ViewerFilter {
             TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
             if (testCaseEntity == null) return false;
 
-            Map<String, String> tagMap = EntityViewerFilter.parseSearchedString(TestCaseTreeEntity.SEARCH_TAGS,
+            Map<String, String> tagMap = EntityViewerFilter.parseSearchedString(getSearchTags(),
                     contentString);
             if (tagMap != null && !tagMap.isEmpty()) {
-                for (Entry<String, String> entry : tagMap.entrySet()) {
-                    String entityValue = getEntityValueBySearchTag(entry.getKey(), testCaseEntity).toLowerCase();
-                    if (entityValue != null) {
-                        if (!entityValue.contains(entry.getValue())) {
-                            return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-                return true;
+                return FilterController.getInstance().isMatched(testCaseEntity, contentString);
             }
-
+           
             for (String tag : TestCaseTreeEntity.SEARCH_TAGS) {
                 String entityValue = getEntityValueBySearchTag(tag, testCaseEntity).toLowerCase();
                 if (entityValue != null && entityValue.toLowerCase().contains(contentString)) return true;
             }
+           
 
         } catch (Exception e) {
             return false;
         }
 
         return false;
+    }
+    
+    private String[] getSearchTags() {
+        List<String> searchTags = FilterController.getInstance().getDefaultKeywords();
+        return searchTags.toArray(new String[searchTags.size()]);
     }
 
     private String getEntityValueBySearchTag(String searchTag, TestCaseEntity testCase) throws Exception {
