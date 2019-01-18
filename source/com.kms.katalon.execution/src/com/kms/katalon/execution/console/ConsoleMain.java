@@ -66,7 +66,7 @@ public class ConsoleMain {
     public final static String TESTSUITE_QUERY = "test-suite-query";
   
     public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
-  
+    
     private ConsoleMain() {
         // hide constructor
     }
