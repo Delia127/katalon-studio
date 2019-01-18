@@ -26,6 +26,8 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.entity.util.ZipManager;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreCredentials;
@@ -190,7 +192,9 @@ public class PluginService {
         Bundle existingBundle = bundleContext.getBundle(bundlePath);
         if (existingBundle == null) {
             Bundle bundle = getPluginInstaller().installPlugin(bundleContext, bundlePath);
-            if (bundle != null && bundle.getSymbolicName().equals(IdConstants.JIRA_PLUGIN_ID)) {
+            if (bundle != null
+                    && bundle.getSymbolicName().equals(IdConstants.JIRA_PLUGIN_ID)
+                        && ApplicationRunningMode.get() != RunningMode.CONSOLE) {
                 eventBroker.post(EventConstants.JIRA_PLUGIN_INSTALLED, null);
             }   
         }
@@ -202,7 +206,9 @@ public class PluginService {
         Bundle existingBundle = bundleContext.getBundle(bundlePath);
         if (existingBundle != null) {
             Bundle bundle = getPluginInstaller().uninstallPlugin(bundleContext, bundlePath);
-            if (bundle != null && IdConstants.JIRA_PLUGIN_ID.equals(bundle.getSymbolicName())) {
+            if (bundle != null
+                    && bundle.getSymbolicName().equals(IdConstants.JIRA_PLUGIN_ID)
+                        && ApplicationRunningMode.get() != RunningMode.CONSOLE) {
                 eventBroker.post(EventConstants.JIRA_PLUGIN_UNINSTALLED, null);
             }
         }
