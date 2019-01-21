@@ -140,7 +140,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
      */
     private List<IExecutedEntity> loadTestCases(TestSuiteEntity testSuite, String testSuiteQuery) throws Exception {
 
-    	if(testSuiteQuery.equals(StringUtils.EMPTY)){
+    	if(!testSuiteQuery.equals(StringUtils.EMPTY)){
     		if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
                 throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
             }

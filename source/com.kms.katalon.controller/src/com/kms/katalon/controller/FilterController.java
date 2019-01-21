@@ -57,6 +57,9 @@ public class FilterController {
 
     public boolean isMatched(FileEntity fileEntity, String filteringText) {
         String trimmedText = filteringText.trim();
+        if(trimmedText.equals(StringUtils.EMPTY)){
+        	return true;
+        }        
         List<String> keywordList = new ArrayList<>();
         keywordList.addAll(keywords);
         Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), trimmedText);
