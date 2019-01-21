@@ -91,7 +91,7 @@ public class FilterController {
         if (searchTags != null) {
             Map<String, String> tagMap = new HashMap<String, String>();
             for (int i = 0; i < searchTags.length; i++) {
-                String tagRegex = searchTags[i] + "=\\(.*\\)";
+                String tagRegex = searchTags[i] + "=\\([^\\)]+\\)";
                 Matcher m = Pattern.compile(tagRegex).matcher(contentString);
                 while (m.find()) {
                     String tagContent = contentString.substring(m.start() + searchTags[i].length() + 2, m.end() - 1);
