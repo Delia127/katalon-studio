@@ -428,7 +428,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     .build();
             TestSuiteExecutionEvent eventObject = new TestSuiteExecutionEvent(eventName, executionContext);
             EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
-            return null;
         }
         return null;
     }
