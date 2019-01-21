@@ -55,7 +55,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":cucumber.eclipse.steps.integration.IStepDefinitions"/>
+                  <meta.attribute kind="java" basedOn=":cucumber.eclipse.steps.integration.IStepDefinitionsProvider"/>
                </appinfo>
             </annotation>
          </attribute>
