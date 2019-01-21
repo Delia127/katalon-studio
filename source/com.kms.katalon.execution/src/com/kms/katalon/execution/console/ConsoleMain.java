@@ -96,7 +96,7 @@ public class ConsoleMain {
            
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if(options.has(INSTALL_PLUGIN_OPTION)){
-            	installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));            
+            	installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
     				.map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
