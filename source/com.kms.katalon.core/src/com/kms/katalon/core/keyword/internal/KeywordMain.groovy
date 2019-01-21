@@ -53,7 +53,7 @@ public class KeywordMain {
         try {
             return closure.call();
         } catch (Throwable e) {
-            stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e));
+            stepFailed(errorMessage, flowControl, ExceptionsUtil.getStackTraceForThrowable(e));
         }
     }
 
@@ -62,7 +62,7 @@ public class KeywordMain {
         try {
             return closure.call();
         } catch (Throwable e) {
-            stepFailed(e.getMessage(), flowControl, ExceptionsUtil.getMessageForThrowable(e));
+            stepFailed(e.getMessage(), flowControl, ExceptionsUtil.getStackTraceForThrowable(e));
         }
     }
     
@@ -71,7 +71,7 @@ public class KeywordMain {
         try {
             return (int) closure.call();
         } catch (Throwable e) {
-            stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e));
+            stepFailed(errorMessage, flowControl, ExceptionsUtil.getStackTraceForThrowable(e));
         }
         return -1;
     }

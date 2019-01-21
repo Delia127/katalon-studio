@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -18,6 +19,7 @@ import org.eclipse.swt.graphics.Image;
 
 import cucumber.eclipse.editor.Activator;
 import cucumber.eclipse.editor.contentassist.CucumberContentAssist;
+import cucumber.eclipse.editor.steps.UniversalStepDefinitionsProvider;
 import gherkin.I18n;
 
 public class GherkinKeywordsAssistProcessor implements IContentAssistProcessor {
@@ -26,7 +28,7 @@ public class GherkinKeywordsAssistProcessor implements IContentAssistProcessor {
 	private static final List<String> FEATURE_ELEMENT_KEYWORD_KEYS = Arrays.asList("feature", "background", "scenario", "scenario_outline","examples");
 	private final IContextInformation[] NO_CONTEXTS = {};
 	private ICompletionProposal[] NO_COMPLETIONS = {};
-	public final Image ICON = Activator.getImageDescriptor("icons/feature_16.png").createImage();
+	public final Image ICON = Activator.getImageDescriptor("icons/cukes.gif").createImage();
 	
 	//For content assistance feature By Girija
 	private CucumberContentAssist contentAssist = null;
@@ -51,11 +53,11 @@ public class GherkinKeywordsAssistProcessor implements IContentAssistProcessor {
 			if (lang == null) {
 				lang = "en";
 			}
-
+			IProject project = this.editor.getFile().getProject();
 			I18n i18n = new I18n(lang);
 
 			//Initialize CucumberContentAssist
-			this.contentAssist = new CucumberContentAssist(lang, editor.getStepProvider());
+			this.contentAssist = new CucumberContentAssist(lang, project);
 			List<String> stepKeyWords = contentAssist.getStepKeyWords(i18n);
 			// line of cursor locate,and from begin to cursor.
 			IRegion line = viewer.getDocument().getLineInformationOfOffset(offset);
