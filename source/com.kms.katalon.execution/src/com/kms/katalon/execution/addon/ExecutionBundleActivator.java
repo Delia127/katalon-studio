@@ -3,12 +3,14 @@ package com.kms.katalon.execution.addon;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.execution.console.LauncherOptionParserFactory;
 import com.kms.katalon.execution.handler.EvaluateDriverConnectorContributionsHandler;
 import com.kms.katalon.execution.handler.EvaluateRunConfigurationContributionsHandler;
@@ -33,10 +35,20 @@ public class ExecutionBundleActivator implements BundleActivator {
                     context.removeServiceListener(this);
                 }
             }
-        });        
+        });
+        
+        // Injection into handlers may not have happened at this point in console execution
+        initHandlersIfNotInitialized(eclipseContext);
     }
 
-    @Override
+    private void initHandlersIfNotInitialized(IEclipseContext eclipseContext) {
+        if(EventBrokerSingleton.getInstance().getEventBroker() == null){
+            IEventBroker eventBroker = eclipseContext.get(IEventBroker.class);
+    		EventBrokerSingleton.getInstance().setEventBroker(eventBroker);
+        }
+	}
+
+	@Override
     public void stop(BundleContext context) throws Exception {
         // Do nothing here
     }

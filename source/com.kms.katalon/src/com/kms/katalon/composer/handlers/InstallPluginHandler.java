@@ -58,7 +58,7 @@ public class InstallPluginHandler {
                     eventBroker.post(EventConstants.JIRA_PLUGIN_INSTALLED, null);
                 }	
 
-                MessageDialog.openInformation(activeShell, GlobalStringConstants.INFO, "Plugin installed sucessfully");
+                MessageDialog.openInformation(activeShell, GlobalStringConstants.INFO, "Plugin successfully installed");
                 pluginPath = filePath;
             } catch (BundleException e) {
                 MessageDialog.openError(activeShell, GlobalStringConstants.ERROR, "Unable to install plugin");

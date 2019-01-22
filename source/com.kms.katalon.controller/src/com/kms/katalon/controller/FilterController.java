@@ -23,8 +23,10 @@ import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class FilterController {
 
-    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("id", "name", "tag", "comment", "description",
+    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment", "description",
             "folder");
+    
+    private static final String CONTENT_DELIMITER = ",";
 
     private static FilterController instance;
 
@@ -34,13 +36,18 @@ public class FilterController {
         }
         return instance;
     }
-
-    public List<String> getDefaultKeywords() {
-        List<String> keywords = new ArrayList<>();
+    
+    private List<String> keywords;
+    
+    private FilterController() {
+        keywords = new ArrayList<>();
         keywords.addAll(DEFAULT_KEYWORDS);
         if (isAdvancedTagPluginInstalled()) {
             keywords.add(getAdvancedTagKeyword());
         }
+    }
+
+    public List<String> getDefaultKeywords() {
         return keywords;
     }
     
@@ -50,14 +57,17 @@ public class FilterController {
 
     public boolean isMatched(FileEntity fileEntity, String filteringText) {
         String trimmedText = filteringText.trim();
+        if(trimmedText.equals(StringUtils.EMPTY)){
+        	return true;
+        }        
         List<String> keywordList = new ArrayList<>();
-        keywordList.addAll(DEFAULT_KEYWORDS);
+        keywordList.addAll(keywords);
         Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), trimmedText);
 
         if (!tagMap.isEmpty()) {
             for (Entry<String, String> entry : tagMap.entrySet()) {
                 String keyword = entry.getKey();
-                if (DEFAULT_KEYWORDS.contains(keyword) && !compare(fileEntity, keyword, entry.getValue())) {
+                if (keywords.contains(keyword) && !compare(fileEntity, keyword, entry.getValue())) {
                     return false;
                 }
             }
@@ -105,8 +115,6 @@ public class FilterController {
                 return fileEntity.getTag();
             case "description":
                 return fileEntity.getDescription();
-            case "folder":
-                return fileEntity.getParentFolder() != null ? fileEntity.getParentFolder().getIdForDisplay() : "";
             default:
                 return "";
         }
@@ -117,14 +125,17 @@ public class FilterController {
             return false;
         }
         switch (keyword) {
+        	case "ids":
+        		return textContainsEntityId(text, fileEntity);
             case "id":
-                return ObjectUtils.equals(fileEntity.getIdForDisplay(), text);
+                return ObjectUtils.equals(fileEntity.getIdForDisplay(), text) ||
+                        fileEntity.getIdForDisplay().startsWith(text + "/");
             case "name":
-                return ObjectUtils.equals(fileEntity.getName(), text);
+                return StringUtils.containsIgnoreCase(fileEntity.getName(), text);
             case "tag":
-                return ObjectUtils.equals(fileEntity.getTag(), text);
+                return StringUtils.containsIgnoreCase(fileEntity.getTag(), text);
             case "description":
-                return ObjectUtils.equals(fileEntity.getDescription(), text);
+                return StringUtils.containsIgnoreCase(fileEntity.getDescription(), text);
             case "tags":
                 return entityHasTags(fileEntity, text);
             default:
@@ -132,7 +143,16 @@ public class FilterController {
         }
     }
     
-    private boolean isAdvancedTagPluginInstalled() {
+    private boolean textContainsEntityId(String text, FileEntity fileEntity) {
+    	// Allow spaces before and after delimiter
+    	return Arrays.asList(text.split(CONTENT_DELIMITER))
+    			.stream()
+    			.map(a -> a.trim())
+    			.collect(Collectors.toList())
+    			.contains(fileEntity.getIdForDisplay());
+	}
+
+	private boolean isAdvancedTagPluginInstalled() {
         Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_ADVANCED_TAGS);
         return plugin != null;
     }

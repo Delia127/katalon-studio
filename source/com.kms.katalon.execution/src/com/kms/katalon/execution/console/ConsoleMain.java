@@ -62,7 +62,9 @@ public class ConsoleMain {
     public static final int DEFAULT_SHOW_PROGRESS_DELAY = 15;
 
     public final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
-    
+
+    public final static String TESTSUITE_QUERY = "test-suite-query";
+  
     public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
 
     private ConsoleMain() {
@@ -94,7 +96,7 @@ public class ConsoleMain {
            
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if(options.has(INSTALL_PLUGIN_OPTION)){
-            	installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));            
+            	installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
     				.map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());

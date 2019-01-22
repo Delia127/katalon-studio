@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.katalon.platform.api.exception.PlatformException;
 import com.katalon.platform.api.service.ApplicationManager;
@@ -84,14 +85,28 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
                 throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
             }
-            executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite);
+            executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite, StringUtils.EMPTY);
         } else {
-            executedItems = loadTestCases(testSuite);
+            executedItems = loadTestCases(testSuite, StringUtils.EMPTY);
+        }
+        setTestCaseExecutedEntities(executedItems);
+    }
+    
+    public void prepareTestCasesWithTestSuiteQuery(String testSuiteQuery) throws Exception {
+        TestSuiteEntity testSuite = (TestSuiteEntity) getEntity();
+        List<IExecutedEntity> executedItems;
+        if (testSuite instanceof FilteringTestSuiteEntity) {
+            if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
+                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
+            }
+            executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite, testSuiteQuery);
+        } else {
+            executedItems = loadTestCasesForQuery(testSuite, StringUtils.EMPTY);
         }
         setTestCaseExecutedEntities(executedItems);
     }
 
-    private List<IExecutedEntity> loadTestCasesForFilteringTestSuite(FilteringTestSuiteEntity testSuite)
+    private List<IExecutedEntity> loadTestCasesForFilteringTestSuite(FilteringTestSuiteEntity testSuite, String testSuiteQuery)
             throws IOException {
         List<String> testCaseIds = EntityIndexingUtil.getInstance(ProjectController.getInstance().getCurrentProject())
                 .getIndexedEntityIds("tc");
@@ -103,7 +118,13 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
                 return null;
             }
         }).collect(Collectors.toList());
-        filteredTestCases = FilterController.getInstance().filter(testCaseEntities, testSuite.getFilteringText());
+        
+        if(testSuiteQuery.equals(StringUtils.EMPTY)){
+            filteredTestCases = FilterController.getInstance().filter(testCaseEntities, testSuite.getFilteringText());
+        } else {
+        	filteredTestCases = FilterController.getInstance().filter(testCaseEntities, testSuiteQuery);
+        }
+        
         return filteredTestCases.stream().map(tc -> {
             TestCaseExecutedEntity executedTestCase = new TestCaseExecutedEntity(tc);
             executedTestCase.setLoopTimes(1);
@@ -117,8 +138,53 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
      * 
      * @param testSuite
      */
-    private List<IExecutedEntity> loadTestCases(TestSuiteEntity testSuite) throws Exception {
+    private List<IExecutedEntity> loadTestCases(TestSuiteEntity testSuite, String testSuiteQuery) throws Exception {
+
+    	if(!testSuiteQuery.equals(StringUtils.EMPTY)){
+    		if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
+                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
+            }
+        }
+        
         String projectDir = testSuite.getProject().getFolderLocation();
+
+        testDataMap.clear();
+
+        List<IExecutedEntity> executedItems = new ArrayList<>();
+        for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance()
+                .getTestSuiteTestCaseRun(testSuite)) {
+            TestCaseEntity testCase = TestCaseController.getInstance()
+                    .getTestCaseByDisplayId(testCaseLink.getTestCaseId());
+
+            if (testCase == null) {
+                throw new IllegalArgumentException(MessageFormat.format(StringConstants.UTIL_EXC_TEST_CASE_X_NOT_FOUND,
+                        testCaseLink.getTestCaseId()));
+            }
+            
+            if(!FilterController.getInstance().isMatched(testCase, testSuiteQuery)){
+                continue;
+            }
+
+            TestCaseExecutedEntity testCaseExecutedEntity = new TestCaseExecutedEntity(testCase);
+            testCaseExecutedEntity.setLoopTimes(1);
+
+            prepareTestCaseExecutedEntity(projectDir, testCaseLink, testCaseExecutedEntity);
+            // make sure all TestDataExecutedEntity in testCaseExecutedEntity
+            // has the same rows to prevent NullPointerException
+
+            executedItems.add(testCaseExecutedEntity);
+        }
+        return executedItems;
+    }
+
+    /**
+     * Store a map of test data used in the given test suite into the newly
+     * created TestSuiteExecutedEntity
+     * 
+     * @param testSuite
+     */
+    private List<IExecutedEntity> loadTestCases(TestSuiteEntity testSuite, String testSuiteQuery) throws Exception {
+    	String projectDir = testSuite.getProject().getFolderLocation();
 
         testDataMap.clear();
 

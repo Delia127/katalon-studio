@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
+import com.katalon.platform.api.exception.PlatformException;
+import com.katalon.platform.api.service.ApplicationManager;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -94,6 +97,18 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 			return false;
 		}
 	};
+	
+	protected StringConsoleOption testSuiteQuery = new StringConsoleOption() {
+		
+		@Override
+		public String getOption() {
+			return ConsoleMain.TESTSUITE_QUERY;
+		}
+		
+		public boolean isRequired() {
+			return false;
+		}
+	};
 
     
     @Override
@@ -104,6 +119,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(executionProfileOption);
         allOptions.add(katalonStoreApiKeyOption);
         allOptions.add(installPluginOption);
+        allOptions.add(testSuiteQuery);
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
 		if (currentProject != null && overridingOptions.isEmpty()) {
 			overridingOptions = new OverridingParametersConsoleOptionContributor(currentProject).getConsoleOptionList();
@@ -115,7 +131,12 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 	@Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
 		super.setArgumentValue(consoleOption, argumentValue);
-		if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
+		if(consoleOption == testSuiteQuery){
+			if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
+                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
+            }
+			consoleOption.setValue(argumentValue);
+		} else if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
 				|| consoleOption == executionProfileOption
 				|| consoleOption == installPluginOption
 				|| overridingOptions.contains(consoleOption)) {
@@ -132,7 +153,13 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             executedEntity.setReportLocation(reportableSetting.getReportLocationSetting());
             executedEntity.setEmailConfig(reportableSetting.getEmailConfig(project));
             executedEntity.setRerunSetting(rerunSetting);
-            executedEntity.prepareTestCases();
+            
+            if (testSuiteQuery.getValue() == null || !testSuiteQuery.isRequired()){
+                executedEntity.prepareTestCases();
+            } else {
+            	executedEntity.prepareTestCasesWithTestSuiteQuery(testSuiteQuery.getValue());
+            }
+            
             AbstractRunConfiguration runConfig = (AbstractRunConfiguration) createRunConfiguration(project, testSuite,
                     browserTypeOption.getValue());
             
