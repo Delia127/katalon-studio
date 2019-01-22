@@ -154,7 +154,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             executedEntity.setEmailConfig(reportableSetting.getEmailConfig(project));
             executedEntity.setRerunSetting(rerunSetting);
             
-            if (testSuiteQuery.getValue() == null || !testSuiteQuery.isRequired()){
+            if (testSuiteQuery.getValue() == null){
                 executedEntity.prepareTestCases();
             } else {
             	executedEntity.prepareTestCasesWithTestSuiteQuery(testSuiteQuery.getValue());
