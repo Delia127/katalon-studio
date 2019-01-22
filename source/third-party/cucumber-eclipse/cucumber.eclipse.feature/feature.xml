@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="cucumber.eclipse.feature"
-      label="Cucumber Eclipse"
-      version="1.0.0.qualifier">
+      label="Cucumber Eclipse Feature"
+      version="0.0.23.qualifier">
 
    <description>
       Eclipse plugin for Cucumber

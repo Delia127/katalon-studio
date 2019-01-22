@@ -10,21 +10,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.swt.graphics.Image;
 
-import cucumber.eclipse.editor.steps.UniversalStepDefinitionsProvider;
-import cucumber.eclipse.steps.integration.StepDefinition;
+import cucumber.eclipse.editor.steps.IStepProvider;
+import cucumber.eclipse.steps.integration.Step;
 import gherkin.I18n;
 
 /**
  * @author girija.panda@nokia.com
  * 
- *         Purpose: Supports Content-Assistance of any Feature File for CTRL+
- *         SPACE key Content-Assistance : Keyword-Assistance and
+ *         Purpose: Supports Content-Assistance of any Feature File for <Ctrl>+
+ *         <Space> key Content-Assistance : Keyword-Assistance and
  *         Step-Assistance based on user input 1. Collect all steps from
  *         step-definition-java file 2. Remove junk-words from Keyword List 3.
  *         Populating of Keywords/Steps based on various RegEx pattern
@@ -91,11 +89,11 @@ public class CucumberContentAssist {
 	private CompletionProposal allStepsProposal = null;
 	private CompletionProposal noProposal = null;
 	CompletionProposal matchedStepsProposal = null;
-	private Set<StepDefinition> importedSteps = null;
+	private Set<Step> importedSteps = null;
 
 	// Initialize
-	public CucumberContentAssist(String lang, IProject project) throws CoreException {
-		this.importedSteps = UniversalStepDefinitionsProvider.INSTANCE.getStepDefinitions(project);
+	public CucumberContentAssist(String lang, IStepProvider stepProvider) {
+		this.importedSteps = stepProvider.getStepsInEncompassingProject();
 
 		// System.out.println("CucumberContentAssist:importedSteps:"
 		// +importedSteps);
@@ -128,7 +126,7 @@ public class CucumberContentAssist {
 		if (!importedSteps.isEmpty()) {
 
 			// To Collect All Steps
-			for (StepDefinition step : importedSteps) {
+			for (Step step : importedSteps) {
 
 				// Get Step-Text
 				String stepText = getStepName(step.getText());

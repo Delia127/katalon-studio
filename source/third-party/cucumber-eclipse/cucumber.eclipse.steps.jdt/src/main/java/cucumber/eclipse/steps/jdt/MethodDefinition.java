@@ -21,7 +21,7 @@ import org.eclipse.jdt.core.dom.Type;
  *         name/return-type/body from a source file Specially used to collect
  *         all steps from the java8-Lambda-Expressions used in
  *         methods/constructors of a class
- *@deprecated I think this code is never used
+ *
  */
 
 public class MethodDefinition {
@@ -43,9 +43,9 @@ public class MethodDefinition {
 	}
 
 	/**
-	 * @param methodName method name
-	 * @param returnType return type 
-	 * @param methodBodyList list of statement from the method
+	 * @param methodName
+	 * @param returnType
+	 * @param methodBodyList
 	 */
 	public MethodDefinition(SimpleName methodName, Type returnType, List<Statement> methodBodyList) {
 		super();
@@ -80,7 +80,7 @@ public class MethodDefinition {
 	}
 
 	/**
-	 * @return list of statement
+	 * @return List<Statement>
 	 */
 	public List<Statement> getMethodBodyList() {
 		return methodBodyList;
@@ -88,9 +88,8 @@ public class MethodDefinition {
 
 
 	/**
-	 * @param statement a statement
-	 * @param keywords a set of gherkin keywords
-	 * @return lambda step expression or null
+	 * @param statement
+	 * @return String
 	 */
 	public String getLambdaStep(Statement statement, Set<String> keywords) {
 		if (statement instanceof ExpressionStatement) {
@@ -116,9 +115,9 @@ public class MethodDefinition {
 	}
 
 	/**
-	 * @param method a method declaration
-	 * @param keywords a set of gherkin keywords 
-	 * @return boolean true if the statement is a lambda step definition
+	 * @param method
+	 * @param i18n 
+	 * @return boolean
 	 */
 	public boolean isCukeLambdaExpr(MethodDeclaration method, Set<String> keywords) {
 		@SuppressWarnings("unchecked")
@@ -143,8 +142,8 @@ public class MethodDefinition {
 	/**
 	 * Check if import contains 'cucumber.api.java8'
 	 * 
-	 * @param allimports java imports
-	 * @return true if imports contains java8 cucumber import
+	 * @param IImportDeclaration[]
+	 * @return boolean
 	 */
 	public boolean isJava8CukeAPI(IImportDeclaration[] allimports) {
 		// Check if import contains 'cucumber.api.java8'
