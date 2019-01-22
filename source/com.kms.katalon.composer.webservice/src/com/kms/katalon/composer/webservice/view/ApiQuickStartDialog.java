@@ -114,7 +114,7 @@ public class ApiQuickStartDialog extends Dialog {
             break;
         }
         case MOBILE :{
-            c1.setMinSize(900, 2100);
+            c1.setMinSize(900, 2201);
             break;
         }
            default: {
