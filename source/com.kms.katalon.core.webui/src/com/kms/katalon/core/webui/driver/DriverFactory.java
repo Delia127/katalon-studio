@@ -29,7 +29,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
-import org.openqa.selenium.firefox.ExtensionConnection;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -38,7 +37,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.ie.InternetExplorerOptions;
-import org.openqa.selenium.internal.BuildInfo;
+import org.openqa.selenium.BuildInfo;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.CommandExecutor;
@@ -481,9 +480,6 @@ public class DriverFactory {
         CommandExecutor commandExecutor = remoteWebDriver.getCommandExecutor();
         if (commandExecutor instanceof HttpCommandExecutor) {
             return ((HttpCommandExecutor) commandExecutor).getAddressOfRemoteServer().toString();
-        }
-        if (commandExecutor instanceof ExtensionConnection) {
-            return ((ExtensionConnection) commandExecutor).getAddressOfRemoteServer().toString();
         }
         return StringUtils.EMPTY;
     }
