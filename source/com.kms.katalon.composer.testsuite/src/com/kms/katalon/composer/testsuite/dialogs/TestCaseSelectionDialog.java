@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testsuite.dialogs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -22,6 +23,7 @@ import com.kms.katalon.composer.components.impl.providers.AbstractEntityViewerFi
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -33,6 +35,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 /**
  * Test Case Selection Dialog for Test Suite
@@ -68,8 +71,9 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 		this.tableViewer = tableViewer;
 		setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
 		setAllowMultiple(false);
-		updateTestCaseTreeEntities();
+		
 		setDoubleClickSelects(false);
+		updateTestCaseTreeEntities();
 	}
 
 	/*
@@ -153,10 +157,8 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
      * @throws Exception
      */
     public void updateTestCaseTableViewer() throws Exception {
-        List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
-        List<TestSuiteTestCaseLink> links = tableViewer.getInput();
-
-
+       List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
+       List<TestSuiteTestCaseLink> links = tableViewer.getInput();
 		// add new checked items
 		for (Object object : selectedObjects) {
 			if (!(object instanceof ITreeEntity)) {
@@ -173,6 +175,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 		// finally, update test case tree entity list
 		updateTestCaseTreeEntities();
 	}
+    
 
 	/**
 	 * Add test case folder into test case table viewer
@@ -291,7 +294,9 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 			TestCaseController c = TestCaseController.getInstance();
 			for (String id : ids) {
 				TestCaseEntity tc = c.getTestCase(id);
-				testCaseList.add(TreeEntityUtil.getTestCaseTreeEntity(tc, tc.getProject()));
+				TestCaseTreeEntity tcTree = TreeEntityUtil.getTestCaseTreeEntity(tc, tc.getProject());
+				if (!testCaseList.contains(tcTree))
+					testCaseList.add(tcTree);
 			}
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);
