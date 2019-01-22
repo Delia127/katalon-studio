@@ -26,6 +26,9 @@ public class FilterController {
     private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment", "description",
             "folder");
     
+    private static final List<String> DEFAULT_KEYWORDS_FOR_INPUTS = Arrays.asList("id", "name", "tag", "comment", "description",
+            "folder");
+    
     private static final String CONTENT_DELIMITER = ",";
 
     private static FilterController instance;
@@ -49,6 +52,15 @@ public class FilterController {
 
     public List<String> getDefaultKeywords() {
         return keywords;
+    }
+    
+    public List<String> getDefaultKeywordsForInputs(){
+    	List<String> keywordsForInputs = new ArrayList<>();
+    	keywordsForInputs.addAll(DEFAULT_KEYWORDS_FOR_INPUTS);
+         if (isAdvancedTagPluginInstalled()) {
+        	 keywordsForInputs.add(getAdvancedTagKeyword());
+         }
+         return keywordsForInputs;
     }
     
     public String getAdvancedTagKeyword() {
