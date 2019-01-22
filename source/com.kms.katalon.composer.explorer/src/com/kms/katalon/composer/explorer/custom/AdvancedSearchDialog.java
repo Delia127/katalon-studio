@@ -60,7 +60,7 @@ public class AdvancedSearchDialog extends Dialog {
         this.txtInput = txtInput;
         textMap = new LinkedHashMap<String, Text>();
         this.location = location;
-        this.searchTags = FilterController.getInstance().getDefaultKeywords().toArray(new String[0]);
+        this.searchTags = FilterController.getInstance().getDefaultKeywordsForInputs().toArray(new String[0]);
     }
 
     @SuppressWarnings("restriction")
