@@ -1,20 +1,20 @@
 package cucumber.eclipse.editor.snippet;
 
-import static cucumber.eclipse.editor.util.ExtensionRegistryUtil.*;
+import static cucumber.eclipse.editor.util.ExtensionRegistryUtil.getIntegrationExtensionsOfType;
 
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 
-import cucumber.eclipse.steps.integration.IStepDefinitionGenerator;
+import cucumber.eclipse.steps.integration.IStepGenerator;
 
 public class ExtensionRegistryStepGeneratorProvider implements IStepGeneratorProvider {
 	
-	private final List<IStepDefinitionGenerator> generators = getStepDefinitionGenerator();
+	private final List<IStepGenerator> generators = getIntegrationExtensionsOfType(IStepGenerator.class);
 	
 	@Override
-	public IStepDefinitionGenerator getStepGenerator(IFile targetFile) {
-		for (IStepDefinitionGenerator generator : generators) {
+	public IStepGenerator getStepGenerator(IFile targetFile) {
+		for (IStepGenerator generator : generators) {
 			if (generator.supports(targetFile)) {
 				return generator;
 			}

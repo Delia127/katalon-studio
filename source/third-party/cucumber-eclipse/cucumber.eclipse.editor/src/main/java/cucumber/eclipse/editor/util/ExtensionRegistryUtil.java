@@ -9,21 +9,17 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 import cucumber.eclipse.editor.Activator;
-import cucumber.eclipse.steps.integration.IStepDefinitionsProvider;
-import cucumber.eclipse.steps.integration.IStepDefinitionGenerator;
-import cucumber.eclipse.steps.integration.IStepDefinitionOpener;
 
 public class ExtensionRegistryUtil {
 
 	final static String EXTENSION_POINT_STEPDEFINITIONS_ID = "cucumber.eclipse.steps.integration";
-	final static String EXTENSION_POINT_STEPDEFINITIONS_OPENER = "cucumber.eclipse.editor.step_definition_opener";
 	
-	private static <T> List<T> getIntegrationExtensionsOfType(String extensionPointId, Class<T> clazz) {
+	public static <T> List<T> getIntegrationExtensionsOfType(Class<T> clazz) {
 		List<T> extensions = new ArrayList<T>();
 		
 		IConfigurationElement[] config = Platform
 				.getExtensionRegistry()
-				.getConfigurationElementsFor(extensionPointId);
+				.getConfigurationElementsFor(EXTENSION_POINT_STEPDEFINITIONS_ID);
 		
 		for (IConfigurationElement ce : config) {
 			try {
@@ -42,18 +38,5 @@ public class ExtensionRegistryUtil {
 		}
 		
 		return extensions;
-	}
-	
-	
-	public static List<IStepDefinitionsProvider> getStepDefinitionsProvider() {
-		return getIntegrationExtensionsOfType(EXTENSION_POINT_STEPDEFINITIONS_ID, IStepDefinitionsProvider.class);
-	}
-	
-	public static List<IStepDefinitionGenerator> getStepDefinitionGenerator() {
-		return getIntegrationExtensionsOfType(EXTENSION_POINT_STEPDEFINITIONS_ID, IStepDefinitionGenerator.class);
-	}
-	
-	public static List<IStepDefinitionOpener> getStepDefinitionOpener() {
-		return getIntegrationExtensionsOfType(EXTENSION_POINT_STEPDEFINITIONS_OPENER, IStepDefinitionOpener.class);
 	}
 }

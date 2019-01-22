@@ -211,9 +211,9 @@
 <plugin id="com.sun.el"/>
 <plugin id="com.sun.el.source"/>
 <plugin id="commonj.sdo"/>
-<plugin id="cucumber.eclipse.editor" version="1.0.0.201901210955"/>
-<plugin id="cucumber.eclipse.steps.integration" version="1.0.0.201901210955"/>
-<plugin id="cucumber.eclipse.steps.jdt" version="1.0.0.201901210955"/>
+<plugin id="cucumber.eclipse.editor" version="0.0.23.201901220358"/>
+<plugin id="cucumber.eclipse.steps.integration" version="0.0.23.201901220358"/>
+<plugin id="cucumber.eclipse.steps.jdt" version="0.0.23.201901220358"/>
 <plugin id="io.cucumber.core"/>
 <plugin id="io.cucumber.datatable"/>
 <plugin id="io.cucumber.datatable-dependencies"/>
@@ -288,14 +288,14 @@
 <plugin id="org.apache.commons.dbutils"/>
 <plugin id="org.apache.commons.digester"/>
 <plugin id="org.apache.commons.email"/>
-<plugin id="org.apache.commons.io" version="2.4.0"/>
 <plugin id="org.apache.commons.io" version="2.2.0.v201405211200"/>
+<plugin id="org.apache.commons.io" version="2.4.0"/>
 <plugin id="org.apache.commons.jxpath"/>
 <plugin id="org.apache.commons.jxpath.source"/>
 <plugin id="org.apache.commons.lang" version="2.6"/>
 <plugin id="org.apache.commons.lang3" version="3.6.0"/>
-<plugin id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <plugin id="org.apache.commons.logging" version="1.2.0"/>
+<plugin id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <plugin id="org.apache.commons.logging.source"/>
 <plugin id="org.apache.commons.math"/>
 <plugin id="org.apache.commons.pool"/>
@@ -307,8 +307,8 @@
 <plugin id="org.apache.felix.gogo.shell"/>
 <plugin id="org.apache.felix.gogo.shell.source"/>
 <plugin id="org.apache.httpcomponents.httpclient" version="4.5.1"/>
-<plugin id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
 <plugin id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
+<plugin id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
 <plugin id="org.apache.httpcomponents.httpmime"/>
 <plugin id="org.apache.jasper.glassfish"/>
 <plugin id="org.apache.jasper.glassfish.source"/>
@@ -328,26 +328,26 @@
 <plugin id="org.apache.xmlrpc"/>
 <plugin id="org.assertj.core"/>
 <plugin id="org.beanshell.bsh"/>
-<plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.4.3.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy" version="2.3.10.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201608111517-e46"/>
@@ -622,8 +622,8 @@
 <plugin id="org.eclipse.jdt.apt.ui"/>
 <plugin id="org.eclipse.jdt.compiler.apt"/>
 <plugin id="org.eclipse.jdt.compiler.tool"/>
-<plugin id="org.eclipse.jdt.core" version="3.12.0.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.core" version="3.12.0.xx-201608111517-e46"/>
+<plugin id="org.eclipse.jdt.core" version="3.12.0.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.core.manipulation"/>
 <plugin id="org.eclipse.jdt.debug"/>
 <plugin id="org.eclipse.jdt.debug.ui"/>

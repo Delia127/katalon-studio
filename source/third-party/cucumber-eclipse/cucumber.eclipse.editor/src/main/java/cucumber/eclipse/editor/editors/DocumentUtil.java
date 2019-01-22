@@ -11,8 +11,8 @@ import org.eclipse.jface.text.IRegion;
 
 public class DocumentUtil {
 
-	public static String getDocumentLanguage(IDocument document) {
-		String lang = "en"; // default
+	static String getDocumentLanguage(IDocument document) {
+		String lang = null;
 		try {
 			IRegion lineInfo = document.getLineInformation(0);
 			int length = lineInfo.getLength();

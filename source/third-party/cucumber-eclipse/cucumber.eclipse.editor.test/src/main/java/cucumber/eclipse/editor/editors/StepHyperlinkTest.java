@@ -9,8 +9,7 @@ import org.eclipse.jface.text.Region;
 import org.junit.Before;
 import org.junit.Test;
 
-import cucumber.eclipse.editor.editors.jumpto.StepHyperlink;
-import cucumber.eclipse.steps.integration.StepDefinition;
+import cucumber.eclipse.steps.integration.Step;
 
 public class StepHyperlinkTest {
 
@@ -20,7 +19,7 @@ public class StepHyperlinkTest {
 	@Before
 	public void setUp() {
 		region = new Region(0, 10);
-		StepDefinition step = new StepDefinition();
+		Step step = new Step();
 		step.setText("Given I have a cat");
 		stepHyperlink = new StepHyperlink(region, step);
 	}

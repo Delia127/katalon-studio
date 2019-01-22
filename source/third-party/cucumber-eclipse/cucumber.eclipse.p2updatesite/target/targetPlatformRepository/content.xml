@@ -1,43 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<?metadataRepository version='1.2.0'?>
+<?metadataRepository version='1.1.0'?>
 <repository name='TychoTargetPlatform' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='0.0.1'>
-  <units size='109'>
-    <unit id='cucumber.eclipse.feature.feature.jar' version='1.0.0.201901210955'>
-      <properties size='5'>
-        <property name='org.eclipse.equinox.p2.name' value='Cucumber Eclipse'/>
-        <property name='org.eclipse.equinox.p2.description' value='Eclipse plugin for Cucumber'/>
-        <property name='maven-groupId' value='cucumber.eclipse'/>
-        <property name='maven-artifactId' value='cucumber.eclipse.feature'/>
-        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.jar' version='1.0.0.201901210955'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-        <provided namespace='org.eclipse.update.feature' name='cucumber.eclipse.feature' version='1.0.0.201901210955'/>
-      </provides>
-      <filter>
-        (org.eclipse.update.install.features=true)
-      </filter>
-      <artifacts size='1'>
-        <artifact classifier='org.eclipse.update.feature' id='cucumber.eclipse.feature' version='1.0.0.201901210955'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='zipped'>
-            true
-          </instruction>
-        </instructions>
-      </touchpointData>
-      <licenses size='1'>
-        <license uri='' url=''>
-          The MIT License&#xA;&#xA;Permission is hereby granted, free of charge, to any person obtaining&#xA;a copy of this software and associated documentation files (the&#xA;&quot;Software&quot;), to deal in the Software without restriction, including&#xA;without limitation the rights to use, copy, modify, merge, publish,&#xA;distribute, sublicense, and/or sell copies of the Software, and to&#xA;permit persons to whom the Software is furnished to do so, subject to&#xA;the following conditions:&#xA;&#xA;The above copyright notice and this permission notice shall be&#xA;included in all copies or substantial portions of the Software.&#xA;&#xA;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,&#xA;EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF&#xA;MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND&#xA;NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE&#xA;LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION&#xA;OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION&#xA;WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-        </license>
-      </licenses>
-      <copyright>
-        Copyright (c) 2012,2013 Aslak Hellesøy and contributors
-      </copyright>
-    </unit>
+  <units size='107'>
     <unit id='org.eclipse.equinox.preferences' version='3.5.300.v20150408-1437'>
       <update id='org.eclipse.equinox.preferences' range='[0.0.0,3.5.300.v20150408-1437)' severity='0'/>
       <properties size='8'>
@@ -84,6 +48,64 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='config.a.jre.javase' version='1.7.0' singleton='false'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre.javase' range='1.7.0'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='config.a.jre.javase' version='1.7.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre.javase' range='1.7.0'/>
+      </requires>
+      <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='install'>
+
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='cucumber.eclipse.feature.feature.jar' version='0.0.23.201901220358'>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Cucumber Eclipse Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='Eclipse plugin for Cucumber'/>
+        <property name='maven-groupId' value='cucumber.eclipse'/>
+        <property name='maven-artifactId' value='cucumber.eclipse.feature'/>
+        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.jar' version='0.0.23.201901220358'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='cucumber.eclipse.feature' version='0.0.23.201901220358'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='cucumber.eclipse.feature' version='0.0.23.201901220358'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='' url=''>
+          The MIT License&#xA;&#xA;Permission is hereby granted, free of charge, to any person obtaining&#xA;a copy of this software and associated documentation files (the&#xA;&quot;Software&quot;), to deal in the Software without restriction, including&#xA;without limitation the rights to use, copy, modify, merge, publish,&#xA;distribute, sublicense, and/or sell copies of the Software, and to&#xA;permit persons to whom the Software is furnished to do so, subject to&#xA;the following conditions:&#xA;&#xA;The above copyright notice and this permission notice shall be&#xA;included in all copies or substantial portions of the Software.&#xA;&#xA;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,&#xA;EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF&#xA;MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND&#xA;NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE&#xA;LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION&#xA;OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION&#xA;WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (c) 2012,2013 Aslak Hellesøy and contributors
+      </copyright>
     </unit>
     <unit id='org.w3c.dom.events' version='3.0.0.draft20060413_v201105210656' singleton='false'>
       <update id='org.w3c.dom.events' range='[0.0.0,3.0.0.draft20060413_v201105210656)' severity='0'/>
@@ -438,62 +460,54 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='org.eclipse.swt.gtk.linux.x86_64' version='3.104.2.v20160212-1350'>
-      <update id='org.eclipse.swt.gtk.linux.x86_64' range='[0.0.0,3.104.2.v20160212-1350)' severity='0'/>
-      <properties size='8'>
-        <property name='df_LT.fragmentName' value='Standard Widget Toolkit for GTK'/>
-        <property name='df_LT.providerName' value='Eclipse.org'/>
-        <property name='org.eclipse.equinox.p2.name' value='%fragmentName'/>
-        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
-        <property name='org.eclipse.equinox.p2.bundle.localization' value='fragment'/>
-        <property name='maven-groupId' value='org.eclipse.swt'/>
-        <property name='maven-artifactId' value='org.eclipse.swt.gtk.linux.x86_64'/>
-        <property name='maven-version' value='3.104.2-SNAPSHOT'/>
+    <unit id='cucumber.eclipse.editor' version='0.0.23.201901220358'>
+      <update id='cucumber.eclipse.editor' range='[0.0.0,0.0.23.201901220358)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Cucumber Editor'/>
+        <property name='maven-groupId' value='cucumber.eclipse'/>
+        <property name='maven-artifactId' value='cucumber.eclipse.editor'/>
+        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
       </properties>
-      <provides size='28'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.swt.gtk.linux.x86_64' version='3.104.2.v20160212-1350'/>
-        <provided namespace='osgi.bundle' name='org.eclipse.swt.gtk.linux.x86_64' version='3.104.2.v20160212-1350'/>
-        <provided namespace='java.package' name='org.eclipse.swt' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.accessibility' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.awt' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.browser' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.custom' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.dnd' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.events' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.graphics' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.layout' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.opengl' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.printing' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.program' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.widgets' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.image' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.theme' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.accessibility.gtk' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.cairo' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.cde' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.gnome' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.gtk' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.mozilla' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.opengl.glx' version='0.0.0'/>
+      <provides size='5'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.editor' version='0.0.23.201901220358'/>
+        <provided namespace='osgi.bundle' name='cucumber.eclipse.editor' version='0.0.23.201901220358'/>
+        <provided namespace='java.package' name='cucumber.eclipse.editor' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.eclipse.editor.editors' version='0.0.0'/>
         <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-        <provided namespace='osgi.fragment' name='org.eclipse.swt' version='3.104.2.v20160212-1350'/>
-        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
       </provides>
-      <requires size='1'>
-        <required namespace='osgi.bundle' name='org.eclipse.swt' range='[3.0.0,4.0.0)'/>
+      <requires size='23'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.core' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.launching' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.ui' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.debug.ui' range='3.4.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.variables' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.views' range='3.4.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.text' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.swt' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.equinox.common' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.jdt' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.jobs' range='0.0.0'/>
       </requires>
-      <filter>
-        (&amp;(osgi.arch=x86_64)(osgi.os=linux)(osgi.ws=gtk))
-      </filter>
       <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='org.eclipse.swt.gtk.linux.x86_64' version='3.104.2.v20160212-1350'/>
+        <artifact classifier='osgi.bundle' id='cucumber.eclipse.editor' version='0.0.23.201901220358'/>
       </artifacts>
       <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-SymbolicName: org.eclipse.swt.gtk.linux.x86_64; singleton:=true&#xA;Bundle-Version: 3.104.2.v20160212-1350&#xA;Fragment-Host: org.eclipse.swt; bundle-version=&quot;[3.0.0,4.0.0)&quot;
+            Bundle-SymbolicName: cucumber.eclipse.editor;singleton:=true&#xA;Bundle-Version: 0.0.23.201901220358
           </instruction>
         </instructions>
       </touchpointData>
@@ -526,64 +540,6 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-SymbolicName: org.w3c.dom.svg&#xA;Bundle-Version: 1.1.0.v201011041433
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
-    <unit id='cucumber.eclipse.editor' version='1.0.0.201901210955' generation='2'>
-      <update id='cucumber.eclipse.editor' range='[0.0.0,1.0.0.201901210955)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='Cucumber Editor'/>
-        <property name='maven-groupId' value='cucumber.eclipse'/>
-        <property name='maven-artifactId' value='cucumber.eclipse.editor'/>
-        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
-      </properties>
-      <provides size='6'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.editor' version='1.0.0.201901210955'/>
-        <provided namespace='osgi.bundle' name='cucumber.eclipse.editor' version='1.0.0.201901210955'/>
-        <provided namespace='java.package' name='cucumber.eclipse.editor' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.eclipse.editor.editors' version='0.0.0'/>
-        <provided namespace='osgi.identity' name='cucumber.eclipse.editor' version='1.0.0.201901210955'>
-          <properties size='1'>
-            <property name='type' value='osgi.bundle'/>
-          </properties>
-        </provided>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='24'>
-        <required namespace='osgi.bundle' name='org.eclipse.ui' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.debug.core' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.launching' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.debug.ui' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.debug.ui' range='3.4.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.variables' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.views' range='3.4.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.text' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jface' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.swt' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.equinox.common' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.jdt' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.jobs' range='0.0.0'/>
-        <requiredProperties namespace='osgi.ee' match='(&amp;(osgi.ee=JavaSE)(version=1.8))'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='cucumber.eclipse.editor' version='1.0.0.201901210955'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-SymbolicName: cucumber.eclipse.editor;singleton:=true&#xA;Bundle-Version: 1.0.0.201901210955
           </instruction>
         </instructions>
       </touchpointData>
@@ -1909,28 +1865,6 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='config.a.jre.javase' version='9.0.0' singleton='false'>
-      <hostRequirements size='1'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre.javase' range='9.0.0'/>
-      </hostRequirements>
-      <properties size='1'>
-        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
-      </properties>
-      <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='config.a.jre.javase' version='9.0.0'/>
-      </provides>
-      <requires size='1'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre.javase' range='9.0.0'/>
-      </requires>
-      <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='install'>
-
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
     <unit id='org.eclipse.e4.ui.css.core' version='0.11.0.v20150511-1937'>
       <update id='org.eclipse.e4.ui.css.core' range='[0.0.0,0.11.0.v20150511-1937)' severity='0'/>
       <properties size='8'>
@@ -2336,6 +2270,185 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='a.jre.javase' version='1.7.0' singleton='false'>
+      <provides size='174'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='a.jre.javase' version='1.7.0'/>
+        <provided namespace='java.package' name='javax.accessibility' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.activation' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.activity' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.annotation' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.annotation.processing' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.crypto' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.crypto.interfaces' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.crypto.spec' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.event' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.metadata' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.plugins.bmp' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.plugins.jpeg' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.imageio.stream' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.jws' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.jws.soap' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.lang.model' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.lang.model.element' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.lang.model.type' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.lang.model.util' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.loading' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.modelmbean' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.monitor' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.openmbean' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.relation' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.remote' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.remote.rmi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.management.timer' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming.directory' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming.event' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming.ldap' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.naming.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.net' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.net.ssl' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.print' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.print.attribute' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.print.attribute.standard' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.print.event' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.rmi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.rmi.CORBA' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.rmi.ssl' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.script' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.callback' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.kerberos' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.login' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.auth.x500' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.cert' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.security.sasl' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sound.midi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sound.midi.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sound.sampled' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sound.sampled.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql.rowset' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql.rowset.serial' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql.rowset.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.border' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.colorchooser' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.event' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.filechooser' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf.basic' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf.metal' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf.multi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf.nimbus' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.plaf.synth' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.table' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.text' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.text.html' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.text.html.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.text.rtf' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.tree' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.swing.undo' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.tools' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.transaction' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.transaction.xa' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.bind' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.bind.annotation' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.bind.annotation.adapters' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.bind.attachment' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.bind.helpers' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.bind.util' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.crypto' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.crypto.dom' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.crypto.dsig' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.crypto.dsig.dom' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.crypto.dsig.keyinfo' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.crypto.dsig.spec' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.datatype' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.namespace' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.parsers' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.soap' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.stream' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.stream.events' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.stream.util' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.transform' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.transform.dom' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.transform.sax' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.transform.stax' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.transform.stream' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.validation' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.ws' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.ws.handler' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.ws.handler.soap' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.ws.http' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.ws.soap' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.ws.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.ws.spi.http' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.ws.wsaddressing' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.xml.xpath' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietf.jgss' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA_2_3' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA_2_3.portable' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA.DynAnyPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA.ORBPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA.portable' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CORBA.TypeCodePackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CosNaming' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CosNaming.NamingContextExtPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.CosNaming.NamingContextPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.Dynamic' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.DynamicAny' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.DynamicAny.DynAnyFactoryPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.DynamicAny.DynAnyPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.IOP' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.IOP.CodecFactoryPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.IOP.CodecPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.Messaging' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableInterceptor' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableInterceptor.ORBInitInfoPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.CurrentPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.POAManagerPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.POAPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.portable' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.PortableServer.ServantLocatorPackage' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.SendingContext' version='0.0.0'/>
+        <provided namespace='java.package' name='org.omg.stub.java.rmi' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.bootstrap' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.css' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.events' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.html' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.ls' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.ranges' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.stylesheets' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.traversal' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.views' version='0.0.0'/>
+        <provided namespace='java.package' name='org.w3c.dom.xpath' version='0.0.0'/>
+        <provided namespace='java.package' name='org.xml.sax' version='0.0.0'/>
+        <provided namespace='java.package' name='org.xml.sax.ext' version='0.0.0'/>
+        <provided namespace='java.package' name='org.xml.sax.helpers' version='0.0.0'/>
+        <provided namespace='osgi.ee' name='OSGi/Minimum' version='1.0.0'/>
+        <provided namespace='osgi.ee' name='OSGi/Minimum' version='1.1.0'/>
+        <provided namespace='osgi.ee' name='OSGi/Minimum' version='1.2.0'/>
+        <provided namespace='osgi.ee' name='JRE' version='1.0.0'/>
+        <provided namespace='osgi.ee' name='JRE' version='1.1.0'/>
+        <provided namespace='osgi.ee' name='JavaSE' version='1.0.0'/>
+        <provided namespace='osgi.ee' name='JavaSE' version='1.1.0'/>
+        <provided namespace='osgi.ee' name='JavaSE' version='1.2.0'/>
+        <provided namespace='osgi.ee' name='JavaSE' version='1.3.0'/>
+        <provided namespace='osgi.ee' name='JavaSE' version='1.4.0'/>
+        <provided namespace='osgi.ee' name='JavaSE' version='1.5.0'/>
+        <provided namespace='osgi.ee' name='JavaSE' version='1.6.0'/>
+        <provided namespace='osgi.ee' name='JavaSE' version='1.7.0'/>
+      </provides>
+      <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
+    </unit>
     <unit id='org.eclipse.e4.core.services' version='2.0.0.v20150403-1912'>
       <update id='org.eclipse.e4.core.services' range='[0.0.0,2.0.0.v20150403-1912)' severity='0'/>
       <properties size='8'>
@@ -2576,259 +2689,6 @@
           </instruction>
         </instructions>
       </touchpointData>
-    </unit>
-    <unit id='a.jre.javase' version='9.0.0' singleton='false'>
-      <provides size='248'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='a.jre.javase' version='9.0.0'/>
-        <provided namespace='java.package' name='java.applet' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.color' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.datatransfer' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.desktop' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.dnd' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.event' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.font' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.geom' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.im' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.im.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.image' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.image.renderable' version='0.0.0'/>
-        <provided namespace='java.package' name='java.awt.print' version='0.0.0'/>
-        <provided namespace='java.package' name='java.beans' version='0.0.0'/>
-        <provided namespace='java.package' name='java.beans.beancontext' version='0.0.0'/>
-        <provided namespace='java.package' name='java.io' version='0.0.0'/>
-        <provided namespace='java.package' name='java.lang' version='0.0.0'/>
-        <provided namespace='java.package' name='java.lang.annotation' version='0.0.0'/>
-        <provided namespace='java.package' name='java.lang.instrument' version='0.0.0'/>
-        <provided namespace='java.package' name='java.lang.invoke' version='0.0.0'/>
-        <provided namespace='java.package' name='java.lang.management' version='0.0.0'/>
-        <provided namespace='java.package' name='java.lang.module' version='0.0.0'/>
-        <provided namespace='java.package' name='java.lang.ref' version='0.0.0'/>
-        <provided namespace='java.package' name='java.lang.reflect' version='0.0.0'/>
-        <provided namespace='java.package' name='java.math' version='0.0.0'/>
-        <provided namespace='java.package' name='java.net' version='0.0.0'/>
-        <provided namespace='java.package' name='java.net.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='java.nio' version='0.0.0'/>
-        <provided namespace='java.package' name='java.nio.channels' version='0.0.0'/>
-        <provided namespace='java.package' name='java.nio.channels.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='java.nio.charset' version='0.0.0'/>
-        <provided namespace='java.package' name='java.nio.charset.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='java.nio.file' version='0.0.0'/>
-        <provided namespace='java.package' name='java.nio.file.attribute' version='0.0.0'/>
-        <provided namespace='java.package' name='java.nio.file.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='java.rmi' version='0.0.0'/>
-        <provided namespace='java.package' name='java.rmi.activation' version='0.0.0'/>
-        <provided namespace='java.package' name='java.rmi.dgc' version='0.0.0'/>
-        <provided namespace='java.package' name='java.rmi.registry' version='0.0.0'/>
-        <provided namespace='java.package' name='java.rmi.server' version='0.0.0'/>
-        <provided namespace='java.package' name='java.security' version='0.0.0'/>
-        <provided namespace='java.package' name='java.security.acl' version='0.0.0'/>
-        <provided namespace='java.package' name='java.security.cert' version='0.0.0'/>
-        <provided namespace='java.package' name='java.security.interfaces' version='0.0.0'/>
-        <provided namespace='java.package' name='java.security.spec' version='0.0.0'/>
-        <provided namespace='java.package' name='java.sql' version='0.0.0'/>
-        <provided namespace='java.package' name='java.text' version='0.0.0'/>
-        <provided namespace='java.package' name='java.text.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='java.time' version='0.0.0'/>
-        <provided namespace='java.package' name='java.time.chrono' version='0.0.0'/>
-        <provided namespace='java.package' name='java.time.format' version='0.0.0'/>
-        <provided namespace='java.package' name='java.time.temporal' version='0.0.0'/>
-        <provided namespace='java.package' name='java.time.zone' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.concurrent' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.concurrent.atomic' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.concurrent.locks' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.function' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.jar' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.logging' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.prefs' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.regex' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.stream' version='0.0.0'/>
-        <provided namespace='java.package' name='java.util.zip' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.accessibility' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.activation' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.activity' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.annotation' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.annotation.processing' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.crypto' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.crypto.interfaces' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.crypto.spec' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.imageio' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.imageio.event' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.imageio.metadata' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.imageio.plugins.bmp' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.imageio.plugins.jpeg' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.imageio.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.imageio.stream' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.jws' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.jws.soap' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.lang.model' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.lang.model.element' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.lang.model.type' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.lang.model.util' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.management' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.management.loading' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.management.modelmbean' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.management.monitor' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.management.openmbean' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.management.relation' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.management.remote' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.management.remote.rmi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.management.timer' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.naming' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.naming.directory' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.naming.event' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.naming.ldap' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.naming.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.net' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.net.ssl' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.print' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.print.attribute' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.print.attribute.standard' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.print.event' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.rmi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.rmi.CORBA' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.rmi.ssl' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.script' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.security.auth' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.security.auth.callback' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.security.auth.kerberos' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.security.auth.login' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.security.auth.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.security.auth.x500' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.security.cert' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.security.sasl' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.sound.midi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.sound.midi.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.sound.sampled' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.sound.sampled.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.sql' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.sql.rowset' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.sql.rowset.serial' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.sql.rowset.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.border' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.colorchooser' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.event' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.filechooser' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.plaf' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.plaf.basic' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.plaf.metal' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.plaf.multi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.plaf.nimbus' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.plaf.synth' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.table' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.text' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.text.html' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.text.html.parser' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.text.rtf' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.tree' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.swing.undo' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.tools' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.transaction' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.transaction.xa' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.bind' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.bind.annotation' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.bind.annotation.adapters' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.bind.attachment' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.bind.helpers' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.bind.util' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.crypto' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.crypto.dom' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.crypto.dsig' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.crypto.dsig.dom' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.crypto.dsig.keyinfo' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.crypto.dsig.spec' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.datatype' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.namespace' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.parsers' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.soap' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.stream' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.stream.events' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.stream.util' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.transform' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.transform.dom' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.transform.sax' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.transform.stax' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.transform.stream' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.validation' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.ws' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.ws.handler' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.ws.handler.soap' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.ws.http' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.ws.soap' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.ws.spi' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.ws.spi.http' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.ws.wsaddressing' version='0.0.0'/>
-        <provided namespace='java.package' name='javax.xml.xpath' version='0.0.0'/>
-        <provided namespace='java.package' name='org.ietf.jgss' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CORBA' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CORBA_2_3' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CORBA_2_3.portable' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CORBA.DynAnyPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CORBA.ORBPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CORBA.portable' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CORBA.TypeCodePackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CosNaming' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CosNaming.NamingContextExtPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.CosNaming.NamingContextPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.Dynamic' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.DynamicAny' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.DynamicAny.DynAnyFactoryPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.DynamicAny.DynAnyPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.IOP' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.IOP.CodecFactoryPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.IOP.CodecPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.Messaging' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.PortableInterceptor' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.PortableInterceptor.ORBInitInfoPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.PortableServer' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.PortableServer.CurrentPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.PortableServer.POAManagerPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.PortableServer.POAPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.PortableServer.portable' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.PortableServer.ServantLocatorPackage' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.SendingContext' version='0.0.0'/>
-        <provided namespace='java.package' name='org.omg.stub.java.rmi' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.bootstrap' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.css' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.events' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.html' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.ls' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.ranges' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.stylesheets' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.traversal' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.views' version='0.0.0'/>
-        <provided namespace='java.package' name='org.w3c.dom.xpath' version='0.0.0'/>
-        <provided namespace='java.package' name='org.xml.sax' version='0.0.0'/>
-        <provided namespace='java.package' name='org.xml.sax.ext' version='0.0.0'/>
-        <provided namespace='java.package' name='org.xml.sax.helpers' version='0.0.0'/>
-        <provided namespace='osgi.ee' name='OSGi/Minimum' version='1.0.0'/>
-        <provided namespace='osgi.ee' name='OSGi/Minimum' version='1.1.0'/>
-        <provided namespace='osgi.ee' name='OSGi/Minimum' version='1.2.0'/>
-        <provided namespace='osgi.ee' name='JRE' version='1.0.0'/>
-        <provided namespace='osgi.ee' name='JRE' version='1.1.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='1.0.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='1.1.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='1.2.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='1.3.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='1.4.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='1.5.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='1.6.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='1.7.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='1.8.0'/>
-        <provided namespace='osgi.ee' name='JavaSE' version='9.0.0'/>
-        <provided namespace='osgi.ee' name='JavaSE/compact1' version='1.8.0'/>
-        <provided namespace='osgi.ee' name='JavaSE/compact1' version='9.0.0'/>
-        <provided namespace='osgi.ee' name='JavaSE/compact2' version='1.8.0'/>
-        <provided namespace='osgi.ee' name='JavaSE/compact2' version='9.0.0'/>
-        <provided namespace='osgi.ee' name='JavaSE/compact3' version='1.8.0'/>
-        <provided namespace='osgi.ee' name='JavaSE/compact3' version='9.0.0'/>
-      </provides>
-      <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
     </unit>
     <unit id='org.eclipse.equinox.p2.core' version='2.4.0.v20150527-1706'>
       <update id='org.eclipse.equinox.p2.core' range='[0.0.0,2.4.0.v20150527-1706)' severity='0'/>
@@ -3425,39 +3285,6 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='cucumber.eclipse.feature.feature.group' version='1.0.0.201901210955' singleton='false'>
-      <update id='cucumber.eclipse.feature.feature.group' range='[0.0.0,1.0.0.201901210955)' severity='0'/>
-      <properties size='6'>
-        <property name='org.eclipse.equinox.p2.name' value='Cucumber Eclipse'/>
-        <property name='org.eclipse.equinox.p2.description' value='Eclipse plugin for Cucumber'/>
-        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
-        <property name='maven-groupId' value='cucumber.eclipse'/>
-        <property name='maven-artifactId' value='cucumber.eclipse.feature'/>
-        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
-      </properties>
-      <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.group' version='1.0.0.201901210955'/>
-      </provides>
-      <requires size='4'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.editor' range='[1.0.0.201901210955,1.0.0.201901210955]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.integration' range='[1.0.0.201901210955,1.0.0.201901210955]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.jdt' range='[1.0.0.201901210955,1.0.0.201901210955]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.jar' range='[1.0.0.201901210955,1.0.0.201901210955]'>
-          <filter>
-            (org.eclipse.update.install.features=true)
-          </filter>
-        </required>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
-      <licenses size='1'>
-        <license uri='' url=''>
-          The MIT License&#xA;&#xA;Permission is hereby granted, free of charge, to any person obtaining&#xA;a copy of this software and associated documentation files (the&#xA;&quot;Software&quot;), to deal in the Software without restriction, including&#xA;without limitation the rights to use, copy, modify, merge, publish,&#xA;distribute, sublicense, and/or sell copies of the Software, and to&#xA;permit persons to whom the Software is furnished to do so, subject to&#xA;the following conditions:&#xA;&#xA;The above copyright notice and this permission notice shall be&#xA;included in all copies or substantial portions of the Software.&#xA;&#xA;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,&#xA;EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF&#xA;MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND&#xA;NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE&#xA;LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION&#xA;OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION&#xA;WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-        </license>
-      </licenses>
-      <copyright>
-        Copyright (c) 2012,2013 Aslak Hellesøy and contributors
-      </copyright>
-    </unit>
     <unit id='org.eclipse.e4.ui.model.workbench' version='1.1.100.v20150407-1430'>
       <update id='org.eclipse.e4.ui.model.workbench' range='[0.0.0,1.1.100.v20150407-1430)' severity='0'/>
       <properties size='8'>
@@ -3819,6 +3646,39 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='cucumber.eclipse.feature.feature.group' version='0.0.23.201901220358' singleton='false'>
+      <update id='cucumber.eclipse.feature.feature.group' range='[0.0.0,0.0.23.201901220358)' severity='0'/>
+      <properties size='6'>
+        <property name='org.eclipse.equinox.p2.name' value='Cucumber Eclipse Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='Eclipse plugin for Cucumber'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+        <property name='maven-groupId' value='cucumber.eclipse'/>
+        <property name='maven-artifactId' value='cucumber.eclipse.feature'/>
+        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.group' version='0.0.23.201901220358'/>
+      </provides>
+      <requires size='4'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.editor' range='[0.0.23.201901220358,0.0.23.201901220358]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.integration' range='[0.0.23.201901220358,0.0.23.201901220358]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.jdt' range='[0.0.23.201901220358,0.0.23.201901220358]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.jar' range='[0.0.23.201901220358,0.0.23.201901220358]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='' url=''>
+          The MIT License&#xA;&#xA;Permission is hereby granted, free of charge, to any person obtaining&#xA;a copy of this software and associated documentation files (the&#xA;&quot;Software&quot;), to deal in the Software without restriction, including&#xA;without limitation the rights to use, copy, modify, merge, publish,&#xA;distribute, sublicense, and/or sell copies of the Software, and to&#xA;permit persons to whom the Software is furnished to do so, subject to&#xA;the following conditions:&#xA;&#xA;The above copyright notice and this permission notice shall be&#xA;included in all copies or substantial portions of the Software.&#xA;&#xA;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,&#xA;EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF&#xA;MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND&#xA;NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE&#xA;LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION&#xA;OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION&#xA;WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (c) 2012,2013 Aslak Hellesøy and contributors
+      </copyright>
+    </unit>
     <unit id='org.eclipse.ui.console' version='3.6.100.v20150822-1912'>
       <update id='org.eclipse.ui.console' range='[0.0.0,3.6.100.v20150822-1912)' severity='0'/>
       <properties size='8'>
@@ -3903,51 +3763,6 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-SymbolicName: org.eclipse.core.databinding.observable&#xA;Bundle-Version: 1.5.0.v20150422-0725
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
-    <unit id='cucumber.eclipse.steps.jdt' version='1.0.0.201901210955' generation='2'>
-      <update id='cucumber.eclipse.steps.jdt' range='[0.0.0,1.0.0.201901210955)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='Cucumber Steps via Eclipse JDT'/>
-        <property name='maven-groupId' value='cucumber.eclipse'/>
-        <property name='maven-artifactId' value='cucumber.eclipse.steps.jdt'/>
-        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
-      </properties>
-      <provides size='5'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.jdt' version='1.0.0.201901210955'/>
-        <provided namespace='osgi.bundle' name='cucumber.eclipse.steps.jdt' version='1.0.0.201901210955'/>
-        <provided namespace='java.package' name='cucumber.eclipse.steps.jdt' version='0.0.0'/>
-        <provided namespace='osgi.identity' name='cucumber.eclipse.steps.jdt' version='1.0.0.201901210955'>
-          <properties size='1'>
-            <property name='type' value='osgi.bundle'/>
-          </properties>
-        </provided>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='12'>
-        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.debug.ui' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.debug.ui' range='3.5.0'/>
-        <requiredProperties namespace='osgi.ee' match='(&amp;(osgi.ee=JavaSE)(version=1.8))'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='cucumber.eclipse.steps.jdt' version='1.0.0.201901210955'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-SymbolicName: cucumber.eclipse.steps.jdt;singleton:=true&#xA;Bundle-Version: 1.0.0.201901210955
           </instruction>
         </instructions>
       </touchpointData>
@@ -4140,6 +3955,53 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='cucumber.eclipse.steps.integration' version='0.0.23.201901220358'>
+      <update id='cucumber.eclipse.steps.integration' range='[0.0.0,0.0.23.201901220358)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Cucumber Steps Integration'/>
+        <property name='maven-groupId' value='cucumber.eclipse'/>
+        <property name='maven-artifactId' value='cucumber.eclipse.steps.integration'/>
+        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
+      </properties>
+      <provides size='20'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.integration' version='0.0.23.201901220358'/>
+        <provided namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' version='0.0.23.201901220358'/>
+        <provided namespace='java.package' name='cucumber.eclipse.steps.integration' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.autocomplete' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.formatter' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.io' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.model' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.snippets' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.table' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.xstream' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.formatter' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.formatter.ansi' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.formatter.model' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.lexer' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.util' version='0.0.0'/>
+        <provided namespace='java.package' name='io.cucumber.cucumberexpressions' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='3'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.text' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='cucumber.eclipse.steps.integration' version='0.0.23.201901220358'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: cucumber.eclipse.steps.integration;singleton:=true&#xA;Bundle-Version: 0.0.23.201901220358
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='org.eclipse.equinox.security' version='1.2.100.v20150423-1356'>
       <update id='org.eclipse.equinox.security' range='[0.0.0,1.2.100.v20150423-1356)' severity='0'/>
       <properties size='8'>
@@ -4236,6 +4098,43 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-SymbolicName: org.eclipse.core.expressions; singleton:=true&#xA;Bundle-Version: 3.5.0.v20150421-2214
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='cucumber.eclipse.steps.jdt' version='0.0.23.201901220358'>
+      <update id='cucumber.eclipse.steps.jdt' range='[0.0.0,0.0.23.201901220358)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Cucumber Steps via Eclipse JDT'/>
+        <property name='maven-groupId' value='cucumber.eclipse'/>
+        <property name='maven-artifactId' value='cucumber.eclipse.steps.jdt'/>
+        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.jdt' version='0.0.23.201901220358'/>
+        <provided namespace='osgi.bundle' name='cucumber.eclipse.steps.jdt' version='0.0.23.201901220358'/>
+        <provided namespace='java.package' name='cucumber.eclipse.steps.jdt' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='9'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.5.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='cucumber.eclipse.steps.jdt' version='0.0.23.201901220358'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: cucumber.eclipse.steps.jdt;singleton:=true&#xA;Bundle-Version: 0.0.23.201901220358
           </instruction>
         </instructions>
       </touchpointData>
@@ -4479,64 +4378,6 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-SymbolicName: org.eclipse.swt; singleton:=true&#xA;Bundle-Version: 3.104.2.v20160212-1350
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
-    <unit id='cucumber.eclipse.steps.integration' version='1.0.0.201901210955' generation='2'>
-      <update id='cucumber.eclipse.steps.integration' range='[0.0.0,1.0.0.201901210955)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='Cucumber Steps Integration'/>
-        <property name='maven-groupId' value='cucumber.eclipse'/>
-        <property name='maven-artifactId' value='cucumber.eclipse.steps.integration'/>
-        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
-      </properties>
-      <provides size='25'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.integration' version='1.0.0.201901210955'/>
-        <provided namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' version='1.0.0.201901210955'/>
-        <provided namespace='java.package' name='cucumber.eclipse.steps.integration' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.eclipse.steps.integration.builder' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.eclipse.steps.integration.exception' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.eclipse.steps.integration.filter' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.eclipse.steps.integration.marker' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.autocomplete' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.formatter' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.io' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.model' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.snippets' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.table' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.xstream' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.formatter' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.formatter.ansi' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.formatter.model' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.lexer' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.parser' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.util' version='0.0.0'/>
-        <provided namespace='java.package' name='io.cucumber.cucumberexpressions' version='0.0.0'/>
-        <provided namespace='osgi.identity' name='cucumber.eclipse.steps.integration' version='1.0.0.201901210955'>
-          <properties size='1'>
-            <property name='type' value='osgi.bundle'/>
-          </properties>
-        </provided>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='5'>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.text' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jface' range='3.5.0'/>
-        <requiredProperties namespace='osgi.ee' match='(&amp;(osgi.ee=JavaSE)(version=1.8))'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='cucumber.eclipse.steps.integration' version='1.0.0.201901210955'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-SymbolicName: cucumber.eclipse.steps.integration;singleton:=true&#xA;Bundle-Version: 1.0.0.201901210955
           </instruction>
         </instructions>
       </touchpointData>
@@ -5105,65 +4946,6 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-SymbolicName: org.eclipse.jdt; singleton:=true&#xA;Bundle-Version: 3.11.2.v20160212-1500
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
-    <unit id='org.eclipse.swt.win32.win32.x86' version='3.104.2.v20160212-1350'>
-      <update id='org.eclipse.swt.win32.win32.x86' range='[0.0.0,3.104.2.v20160212-1350)' severity='0'/>
-      <properties size='8'>
-        <property name='df_LT.fragmentName' value='Standard Widget Toolkit for Windows'/>
-        <property name='df_LT.providerName' value='Eclipse.org'/>
-        <property name='org.eclipse.equinox.p2.name' value='%fragmentName'/>
-        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
-        <property name='org.eclipse.equinox.p2.bundle.localization' value='fragment'/>
-        <property name='maven-groupId' value='org.eclipse.swt'/>
-        <property name='maven-artifactId' value='org.eclipse.swt.win32.win32.x86'/>
-        <property name='maven-version' value='3.104.2-SNAPSHOT'/>
-      </properties>
-      <provides size='27'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.swt.win32.win32.x86' version='3.104.2.v20160212-1350'/>
-        <provided namespace='osgi.bundle' name='org.eclipse.swt.win32.win32.x86' version='3.104.2.v20160212-1350'/>
-        <provided namespace='java.package' name='org.eclipse.swt' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.accessibility' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.awt' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.browser' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.custom' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.dnd' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.events' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.graphics' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.layout' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.opengl' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.printing' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.program' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.widgets' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.image' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.theme' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.mozilla' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.ole.win32' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.gdip' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.ole.win32' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.win32' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.opengl.win32' version='0.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-        <provided namespace='osgi.fragment' name='org.eclipse.swt' version='3.104.2.v20160212-1350'/>
-        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
-      </provides>
-      <requires size='1'>
-        <required namespace='osgi.bundle' name='org.eclipse.swt' range='[3.0.0,4.0.0)'/>
-      </requires>
-      <filter>
-        (&amp;(osgi.arch=x86)(osgi.os=win32)(osgi.ws=win32))
-      </filter>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='org.eclipse.swt.win32.win32.x86' version='3.104.2.v20160212-1350'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-SymbolicName: org.eclipse.swt.win32.win32.x86; singleton:=true&#xA;Bundle-Version: 3.104.2.v20160212-1350&#xA;Fragment-Host: org.eclipse.swt; bundle-version=&quot;[3.0.0,4.0.0)&quot;
           </instruction>
         </instructions>
       </touchpointData>

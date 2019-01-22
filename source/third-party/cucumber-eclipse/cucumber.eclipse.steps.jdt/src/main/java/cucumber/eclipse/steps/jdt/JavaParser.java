@@ -52,15 +52,16 @@ public class JavaParser extends AbstractHandler {
 		// For unused import declarations[TBD]
 		astParser.setCompilerOptions(Collections.singletonMap(JavaCore.COMPILER_PB_UNUSED_IMPORT, JavaCore.ERROR));
 		astParser.setSource(iCompilationUnit);
-		astParser.setResolveBindings(false);
+		astParser.setResolveBindings(true);
 		compUnit = (CompilationUnit) astParser.createAST(progressMonitor);
 	}
 
 	/**
 	 * Parse and Collect Method Details From Java file
 	 * 
-	 * @return list of methods declaration of the compilation unit
-	 * @throws JavaModelException if the parser failed to build the Java model
+	 * @param compUnit
+	 * @return List<MethodDeclaration>
+	 * @throws JavaModelException
 	 */
 	public List<MethodDeclaration> getAllMethods() throws JavaModelException {
 		// Visit and parse Methods from CompilationUnit
@@ -69,9 +70,9 @@ public class JavaParser extends AbstractHandler {
 		return visitor.getMethods();
 	}
 
-	/** Return the method body
-	 * @param method a method declaration
-	 * @return method body
+	/**
+	 * @param method
+	 * @return String
 	 */
 	public String getMethodBody(MethodDeclaration method) {
 		this.methodBody = method.getBody().toString();
@@ -80,8 +81,8 @@ public class JavaParser extends AbstractHandler {
 	
 
 	/**
-	 * @param iCompUnit a compilation unit
-	 * @return the class name
+	 * @param iCompUnit
+	 * @return String
 	 */
 	public String getClassName(ICompilationUnit iCompUnit) {
 		this.className = iCompUnit.getResource().getName();
@@ -91,8 +92,8 @@ public class JavaParser extends AbstractHandler {
 	/**
 	 * Get Line-Number of statement
 	 * 
-	 * @param statement a statement
-	 * @return the line number
+	 * @param statement
+	 * @return int
 	 */
 	public int getLineNumber(Statement statement) {
 		return compUnit.getLineNumber(statement.getStartPosition());
@@ -121,65 +122,64 @@ public class JavaParser extends AbstractHandler {
 
 	}
 
-//	/**
-//	 * Get All Unused imports from a java file
-//	 * 
-//	 * @param compUnit
-//	 * @return Set<String>
-//	 * @throws JavaModelException
-//	 * @Deprecated
-//	 */
-//	public Set<String> getUnusedImports(ICompilationUnit icompUnit) throws JavaModelException {
-//
-//		final Set<String> unusedImports = new HashSet<String>();
-//		astRequestor = new ASTRequestor() {
-//			@Override
-//			public void acceptAST(ICompilationUnit sourceUnit, CompilationUnit compiledUnit) {
-//				// Visit all the compiler problems looking for unused imports.
-//				// final Set<String> unusedImports = new HashSet<String>();
-//				IProblem[] problems = compiledUnit.getProblems();
-//				boolean onlyUnusedImportErrors = true;
-//				for (IProblem problem : problems) {
-//					int id = problem.getID();
-//					if (id == IProblem.UnusedImport) {
-//						unusedImports.add(problem.getArguments()[0]);
-//					} else {
-//						// If there are other errors, we can't rely on there
-//						// being unused import errors because they're optional
-//						// and aren't produced when non-optional errors are
-//						// present.
-//						onlyUnusedImportErrors = false;
-//						break;
-//					}
-//				}
-//				// If there are other errors, we need to do our own detailed
-//				// analysis to find unused imports...
-//				if (!onlyUnusedImportErrors) {
-//					// Build up the set up all imported names, ignoring static
-//					// and on-demand imports.
-//					@SuppressWarnings({ "unchecked", "cast" })
-//					List<? extends ImportDeclaration> imports = (List<? extends ImportDeclaration>) compiledUnit
-//							.imports();
-//					for (ImportDeclaration importDeclaration : imports) {
-//						if (!importDeclaration.isStatic() && !importDeclaration.isOnDemand()) {
-//							unusedImports.add(importDeclaration.getName().getFullyQualifiedName());
-//						}
-//					}
-//				}
-//			}
-//
-//		};
-//
-//		// Compile the working copy source, applying the unused import remover.
-//		astParser.createASTs(new ICompilationUnit[] { icompUnit }, new String[0], astRequestor, null);
-//		return unusedImports;
-//	}
+	/**
+	 * Get All Unused imports from a java file
+	 * 
+	 * @param compUnit
+	 * @return Set<String>
+	 * @throws JavaModelException
+	 */
+	public Set<String> getUnusedImports(ICompilationUnit icompUnit) throws JavaModelException {
+
+		final Set<String> unusedImports = new HashSet<String>();
+		astRequestor = new ASTRequestor() {
+			@Override
+			public void acceptAST(ICompilationUnit sourceUnit, CompilationUnit compiledUnit) {
+				// Visit all the compiler problems looking for unused imports.
+				// final Set<String> unusedImports = new HashSet<String>();
+				IProblem[] problems = compiledUnit.getProblems();
+				boolean onlyUnusedImportErrors = true;
+				for (IProblem problem : problems) {
+					int id = problem.getID();
+					if (id == IProblem.UnusedImport) {
+						unusedImports.add(problem.getArguments()[0]);
+					} else {
+						// If there are other errors, we can't rely on there
+						// being unused import errors because they're optional
+						// and aren't produced when non-optional errors are
+						// present.
+						onlyUnusedImportErrors = false;
+						break;
+					}
+				}
+				// If there are other errors, we need to do our own detailed
+				// analysis to find unused imports...
+				if (!onlyUnusedImportErrors) {
+					// Build up the set up all imported names, ignoring static
+					// and on-demand imports.
+					@SuppressWarnings({ "unchecked", "cast" })
+					List<? extends ImportDeclaration> imports = (List<? extends ImportDeclaration>) compiledUnit
+							.imports();
+					for (ImportDeclaration importDeclaration : imports) {
+						if (!importDeclaration.isStatic() && !importDeclaration.isOnDemand()) {
+							unusedImports.add(importDeclaration.getName().getFullyQualifiedName());
+						}
+					}
+				}
+			}
+
+		};
+
+		// Compile the working copy source, applying the unused import remover.
+		astParser.createASTs(new ICompilationUnit[] { icompUnit }, new String[0], astRequestor, null);
+		return unusedImports;
+	}
 
 	/**
 	 * Get Class Names
 	 * 
-	 * @param compUnit a compilation unit
-	 * @return the class name
+	 * @param compUnit
+	 * @return
 	 */
 	public String getClassName(CompilationUnit compUnit) {
 
