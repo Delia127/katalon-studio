@@ -26,8 +26,7 @@ public class FilterController {
     private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment", "description",
             "folder");
     
-    private static final List<String> DEFAULT_KEYWORDS_FOR_INPUTS = Arrays.asList("id", "name", "tag", "comment", "description",
-            "folder");
+    private static final List<String> DEFAULT_KEYWORDS_FOR_INPUTS = Arrays.asList("id", "name", "tag", "comment", "description");
     
     private static final String CONTENT_DELIMITER = ",";
 
