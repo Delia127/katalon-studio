@@ -53,7 +53,7 @@ pipeline {
                     script {
                         dir("source") {
 			// Generate Katalon builds   
-                            if (BRANCH_NAME ==~ /^[release]+/) {
+                            if (BRANCH_NAME ==~ /^release.*$/) {
                                 sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
                             } else {                      
                                 sh 'mvn -pl \\!com.kms.katalon.product clean verify -P dev'
@@ -76,13 +76,13 @@ pipeline {
                 }
             }
         }
-*/              
+	*/              
         stage('Copy builds') {
             // Copy generated builds and changelogs to shared folder on server
             steps {
                 dir("source/com.kms.katalon.product/target/products") {
                     script { 
-                        if (BRANCH_NAME ==~ /^[release]+/) {
+                        if (BRANCH_NAME ==~ /^release.*$/) {
                             sh "cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -96,6 +96,7 @@ pipeline {
 						}
                     }
                 }
+		/*
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
                         if (BRANCH_NAME !=~ /^[release]+/) {
@@ -112,6 +113,7 @@ pipeline {
                         }
                     }
                 }
+		*/
             }
         }
         
