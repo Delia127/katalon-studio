@@ -219,6 +219,9 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 					treeViewer.getTree().setSelection(item);
 					onStageChangedTreeItem(item.getData(), item.getChecked());
 				}
+				else{
+					return;
+				}
 			}
 		});
 		Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
@@ -295,8 +298,12 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 			for (String id : ids) {
 				TestCaseEntity tc = c.getTestCase(id);
 				TestCaseTreeEntity tcTree = TreeEntityUtil.getTestCaseTreeEntity(tc, tc.getProject());
-				if (!testCaseList.contains(tcTree))
+				if (!testCaseList.contains(tcTree))	{
 					testCaseList.add(tcTree);
+					testCaseList.remove(tcTree);
+				}
+			
+					
 			}
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);
