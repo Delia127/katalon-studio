@@ -45,8 +45,6 @@ public class FolderEntity extends IntegratedFileEntity {
         TESTSUITE("Test suite"),
         DATAFILE("Test data"),
         WEBELEMENT("Object"),
-        WEBMELEMENT("Object"),
-        WEBWELEMENT("Object"),
         KEYWORD("Keyword"),
         REPORT("Report"),
         CHECKPOINT("Checkpoint"),
