@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testsuite.dialogs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -23,7 +22,6 @@ import com.kms.katalon.composer.components.impl.providers.AbstractEntityViewerFi
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -35,7 +33,6 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 /**
  * Test Case Selection Dialog for Test Suite
@@ -132,7 +129,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 		}
 		setReturnCode(IDialogConstants.SELECT_TYPES_ID);
 		try {
-			updateTestCaseTableViewer();
+			updateTestCaseTableViewer(); 
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);
 		}
@@ -219,9 +216,6 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 					treeViewer.getTree().setSelection(item);
 					onStageChangedTreeItem(item.getData(), item.getChecked());
 				}
-				else{
-					return;
-				}
 			}
 		});
 		Object[] addedTestCases = getAddedTestCase(tableViewer.getTestCasesPKs());
@@ -297,13 +291,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 			TestCaseController c = TestCaseController.getInstance();
 			for (String id : ids) {
 				TestCaseEntity tc = c.getTestCase(id);
-				TestCaseTreeEntity tcTree = TreeEntityUtil.getTestCaseTreeEntity(tc, tc.getProject());
-				if (!testCaseList.contains(tcTree))	{
-					testCaseList.add(tcTree);
-					testCaseList.remove(tcTree);
-				}
-			
-					
+				TestCaseTreeEntity tcTree = TreeEntityUtil.getTestCaseTreeEntity(tc, tc.getProject());		
 			}
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);
