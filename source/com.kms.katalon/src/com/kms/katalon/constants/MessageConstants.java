@@ -380,17 +380,15 @@ public class MessageConstants extends NLS {
     public static String KStoreCredentialsDialog_INVALID_ACCOUNT_ERROR;
     
     //ReloadPluginsResultDialog
-    public static String ReloadPluginsResultDialog_COL_PLUGIN;
+    public static String KStorePluginsDialog_COL_PLUGIN;
 
-    public static String ReloadPluginsResultDialog_COL_STATUS;
+    public static String KStorePluginsDialog_COL_STATUS;
 
-    public static String ReloadPluginsResultDialog_DIA_TITLE;
+    public static String KStorePluginsDialog_DIA_TITLE;
 
-    public static String ReloadPluginsResultDialog_LBL_PLUGIN_DETAILS;
+    public static String KStorePluginsDialog_STATUS_INSTALLED;
 
-    public static String ReloadPluginsResultDialog_STATUS_INSTALLED;
-
-    public static String ReloadPluginsResultDialog_STATUS_UNINSTALLED;
+    public static String KStorePluginsDialog_STATUS_UNINSTALLED;
 
 	public static String LBL_DISABLE_MOB_BROWSER_PROXY;
 

@@ -23,7 +23,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.plugin.dialog.ReloadPluginsResultDialog;
+import com.kms.katalon.plugin.dialog.KStorePluginsDialog;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.ResultItem;
@@ -125,7 +125,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     private void openResultDialog(List<ResultItem> result) {
         if (result.size() > 0) {
-            ReloadPluginsResultDialog dialog = new ReloadPluginsResultDialog(Display.getCurrent().getActiveShell(), result);
+            KStorePluginsDialog dialog = new KStorePluginsDialog(Display.getCurrent().getActiveShell(), result);
             dialog.open();
         } else {
             MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,

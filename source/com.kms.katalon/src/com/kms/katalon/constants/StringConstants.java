@@ -129,17 +129,15 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStoreLoginDialog_INVALID_ACCOUNT_ERROR = MessageConstants.KStoreCredentialsDialog_INVALID_ACCOUNT_ERROR;
 
     //ReloadPluginsResultDialog
-    public static final String ReloadPluginsResultDialog_COL_PLUGIN = MessageConstants.ReloadPluginsResultDialog_COL_PLUGIN;
+    public static final String KStorePluginsDialog_COL_PLUGIN = MessageConstants.KStorePluginsDialog_COL_PLUGIN;
 
-    public static final String ReloadPluginsResultDialog_COL_STATUS = MessageConstants.ReloadPluginsResultDialog_COL_STATUS;
+    public static final String KStorePluginsDialog_COL_STATUS = MessageConstants.KStorePluginsDialog_COL_STATUS;
 
-    public static final String ReloadPluginsResultDialog_DIA_TITLE = MessageConstants.ReloadPluginsResultDialog_DIA_TITLE;
+    public static final String KStorePluginsDialog_DIA_TITLE = MessageConstants.KStorePluginsDialog_DIA_TITLE;
 
-    public static final String ReloadPluginsResultDialog_LBL_PLUGIN_DETAILS = MessageConstants.ReloadPluginsResultDialog_LBL_PLUGIN_DETAILS;
+    public static final String KStorePluginsDialog_STATUS_INSTALLED = MessageConstants.KStorePluginsDialog_STATUS_INSTALLED;
 
-    public static final String ReloadPluginsResultDialog_STATUS_INSTALLED = MessageConstants.ReloadPluginsResultDialog_STATUS_INSTALLED;
-
-    public static final String ReloadPluginsResultDialog_STATUS_UNINSTALLED = MessageConstants.ReloadPluginsResultDialog_STATUS_UNINSTALLED;
+    public static final String KStorePluginsDialog_STATUS_UNINSTALLED = MessageConstants.KStorePluginsDialog_STATUS_UNINSTALLED;
 
     public static final String HAND_INFO_NO_PLUGINS_FOUND = MessageConstants.HAND_INFO_NO_PLUGINS_FOUND;
     
