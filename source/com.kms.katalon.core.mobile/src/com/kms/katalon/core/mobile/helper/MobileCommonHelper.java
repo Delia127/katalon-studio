@@ -31,7 +31,7 @@ public class MobileCommonHelper {
     public static void swipe(AppiumDriver driver, int startX, int startY, int endX, int endY) {
         TouchAction swipe = new TouchAction(driver).press(startX, startY)
                 .waitAction(Duration.ofMillis(500))
-                .moveTo(endX, endY);
+                .moveTo(endX, endY).release();
         swipe.perform();
     }
 
