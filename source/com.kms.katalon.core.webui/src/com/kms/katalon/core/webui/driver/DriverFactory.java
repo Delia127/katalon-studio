@@ -7,7 +7,9 @@ import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +17,12 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Timeouts;
 import org.openqa.selenium.WebDriverException;
@@ -39,11 +43,17 @@ import org.openqa.selenium.internal.BuildInfo;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.CommandExecutor;
+import org.openqa.selenium.remote.CommandInfo;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
+import org.openqa.selenium.remote.http.HttpClient;
+import org.openqa.selenium.remote.http.HttpClient.Factory;
+import org.openqa.selenium.remote.internal.ApacheHttpClient;
 import org.openqa.selenium.safari.SafariDriver;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
@@ -53,7 +63,10 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
+import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
+import com.kms.katalon.core.network.ProxyServerType;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
@@ -298,16 +311,19 @@ public class DriverFactory {
 
     @SuppressWarnings("rawtypes")
     private static WebDriver createNewRemoteWebDriver(Map<String, Object> driverPreferenceProps,
-            DesiredCapabilities desireCapibilities) throws MalformedURLException {
+            DesiredCapabilities desireCapibilities) throws URISyntaxException, IOException, GeneralSecurityException {
         String remoteWebServerUrl = getRemoteWebDriverServerUrl();
         String remoteWebServerType = getRemoteWebDriverServerType();
         if (remoteWebServerType == null) {
             remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
         }
+        
+        HttpCommandExecutor executor = getExecutorForRemoteDriver(remoteWebServerUrl);
+        
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
                         remoteWebServerUrl, remoteWebServerType));
         if (!remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
-            return new CRemoteWebDriver(new URL(remoteWebServerUrl), desireCapibilities, getActionDelay());
+            return new CRemoteWebDriver(executor, desireCapibilities, getActionDelay());
         }
         Object platformName = desireCapibilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
         if (platformName == null || !(platformName instanceof String)) {
@@ -316,14 +332,35 @@ public class DriverFactory {
                             APPIUM_CAPABILITY_PLATFORM_NAME));
         }
         if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
-            return new SwipeableAndroidDriver(new URL(remoteWebServerUrl), WebDriverPropertyUtil
+            return new SwipeableAndroidDriver(executor, WebDriverPropertyUtil
                     .toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.android(), false));
         } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
-            return new IOSDriver(new URL(remoteWebServerUrl), WebDriverPropertyUtil
+            return new IOSDriver(executor, WebDriverPropertyUtil
                     .toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.iphone(), false));
         }
         throw new StepFailedException(MessageFormat.format(
                 StringConstants.DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER, platformName));
+    }
+    
+    private static HttpCommandExecutor getExecutorForRemoteDriver(String remoteWebServerUrl) 
+            throws URISyntaxException, IOException, GeneralSecurityException {
+        
+        URL url = new URL(remoteWebServerUrl);
+        ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
+        HttpClientBuilder clientBuilder = HttpClientProxyBuilder.create(proxyInfo).getClientBuilder();
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(clientBuilder);
+        HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>() ,
+                url, clientFactory);
+        return executor;
+    }
+    
+    private static Factory getClientFactoryForRemoteDriverExecutor(HttpClientBuilder clientBuilder) {
+        return new Factory() {
+            @Override
+            public HttpClient createClient(URL url) {
+                return new ApacheHttpClient(clientBuilder.build(), url);
+            }
+        };
     }
 
     private static WebDriver createNewRemoteChromeDriver(DesiredCapabilities desireCapibilities)
