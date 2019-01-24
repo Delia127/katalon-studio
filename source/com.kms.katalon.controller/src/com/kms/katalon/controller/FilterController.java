@@ -137,10 +137,9 @@ public class FilterController {
         }
         switch (keyword) {
         	case "ids":
-        		return textContainsEntityId(text, fileEntity);
+        		return textContainsEntityId(text.toLowerCase(), fileEntity);
             case "id":
-                return ObjectUtils.equals(fileEntity.getIdForDisplay(), text) ||
-                        fileEntity.getIdForDisplay().startsWith(text + "/");
+                return StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), text);
             case "name":
                 return StringUtils.containsIgnoreCase(fileEntity.getName(), text);
             case "tag":
@@ -159,8 +158,8 @@ public class FilterController {
     	return Arrays.asList(text.split(CONTENT_DELIMITER))
     			.stream()
     			.map(a -> a.trim())
-    			.collect(Collectors.toList())
-    			.contains(fileEntity.getIdForDisplay());
+    			.filter(a -> StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), a))
+    			.findAny().isPresent();
 	}
 
 	private boolean isAdvancedTagPluginInstalled() {
@@ -170,7 +169,7 @@ public class FilterController {
     
     private boolean entityHasTags(FileEntity fileEntity, String searchTagValues) {
         if (StringUtils.isBlank(searchTagValues)) {
-            return false;
+            return true;
         }
         
         String entityTagValues = fileEntity.getTag();
