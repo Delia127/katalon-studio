@@ -207,7 +207,7 @@ public class TestCasePropertiesPart extends CPart {
                         Set<String> newTags = dialog.getAppendedTags();
                         String newTagValues = EntityTagUtil.joinTags(newTags);
                         if (!StringUtils.isBlank(newTagValues)) {
-                            String updatedTagValues = txtTag.getText() + EntityTagUtil.getTagSeparator() + newTagValues;
+                            String updatedTagValues = EntityTagUtil.appendTags(txtTag.getText(), newTags);
                             txtTag.setText(updatedTagValues);
                         }
                     }
