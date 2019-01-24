@@ -19,8 +19,10 @@ public class SearchPluginsHandler extends RequireAuthorizationHandler {
     public void execute() {
         try {
             KStoreUsernamePasswordCredentials credentials = getUsernamePasswordCredentials();
-            KStoreRestClient client = new KStoreRestClient(credentials);
-            client.goToSearchPluginPage();
+            if (credentials != null) {
+                KStoreRestClient client = new KStoreRestClient(credentials);
+                client.goToSearchPluginPage();
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, "Error", "Cannot open Search Plugins page");

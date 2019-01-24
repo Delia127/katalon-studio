@@ -19,8 +19,10 @@ public class ManagePluginsHandler extends RequireAuthorizationHandler {
     public void execute() {
         try {
             KStoreUsernamePasswordCredentials credentials = getUsernamePasswordCredentials();
-            KStoreRestClient restClient = new KStoreRestClient(credentials);
-            restClient.goToManagePluginsPage();
+            if (credentials != null) {
+                KStoreRestClient restClient = new KStoreRestClient(credentials);
+                restClient.goToManagePluginsPage();
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, "Error", "Cannot open Manage Plugins page");
