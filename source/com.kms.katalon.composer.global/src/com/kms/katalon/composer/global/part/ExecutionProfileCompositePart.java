@@ -81,8 +81,6 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	    
 	    protected GlobalVariableEditorPart globalVariableEditorPart;
 	    
-	    protected GlobalVariableAddPart globalVariableAddPart;
-	    
 	    protected ExecutionProfilePartUI ui;
 	    
 	    private CTabFolder tabFolder;
@@ -130,10 +128,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                    	globalVariableEditorPart = (GlobalVariableEditorPart) partObject;
 	                        continue;
 	                    }
-	                    if(partObject instanceof GlobalVariableAddPart){
-	                    	globalVariableAddPart = (GlobalVariableAddPart) partObject;
-	                    	continue;
-	                    }
+	                   
 	                }
 	            }
 
@@ -181,16 +176,10 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                            variableTab = false;
 	                            return;
                         	}
-	                        if(tabFolder.getSelectionIndex()==2){
-	                        	if(dirty.isDirty())
-	                        		updateVariableAddView();
-	                        	variableTab=false;
-	                        	return;
-	                        }
-	                    }
+	                    
 
 					
-
+						}
 	                });
 	                tabFolder.layout();
 	            }
@@ -218,13 +207,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
             }
         }
         
-    	private void updateVariableAddView() {
-			try{
-				 globalVariableAddPart.setVariablesFromScriptContent(globalVariableEditorPart.getScriptContent());
-			}catch(Exception e){
-				setInvalidScheme(true);
-			}
-		}
+    	
 		private void setInvalidScheme(boolean value){
 		    invalidSchema = value;
 		}
@@ -245,7 +228,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	            else{
 	                updateVariableManualView();
 	                updateVariableScriptView();
-	                updateVariableAddView();
+	              
 	            }
 	            
 	        	if(invalidSchema == true){
@@ -327,6 +310,6 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 
 		@Override
 		public List<MPart> getChildParts() {
-			return Arrays.asList(ui.getGlobalVariablePart(), ui.getGlobalVariableEditorPart(),ui.getGlobalVariableAddPart());
+			return Arrays.asList(ui.getGlobalVariablePart(), ui.getGlobalVariableEditorPart());
 		}
 }

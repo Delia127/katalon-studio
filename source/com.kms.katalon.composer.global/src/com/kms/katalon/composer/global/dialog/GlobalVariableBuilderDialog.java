@@ -403,4 +403,45 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         }
         super.okPressed();
     }
+    private class MultilineTextCellEditor extends TextCellEditor {
+
+        public MultilineTextCellEditor(Composite parent) {
+            super(parent, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
+        }
+
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData data = new LayoutData();
+            data.minimumHeight = 100;
+            data.verticalAlignment = SWT.TOP;
+            return data;
+        }
+    }
+ private class CustomTextCellEditor extends TextCellEditor {
+    	
+        public CustomTextCellEditor(Composite parent) {
+            super(parent);
+        }
+
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData result = super.getLayoutData();
+            result.minimumHeight =10;
+            return result;
+        }
+    }
+ 
+	private class CustomComboBoxCellEditor extends ComboBoxCellEditor {
+
+		public CustomComboBoxCellEditor(Composite parent, String[] items) {
+			super(parent, items);
+		}
+
+		@Override
+		public LayoutData getLayoutData() {
+			LayoutData result = super.getLayoutData();
+			result.minimumHeight = tableViewer.getTable().getItemHeight();
+			return result;
+		}
+	}
 }
