@@ -361,6 +361,8 @@ public class EventConstants {
 
     // Git Events
     public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";
+    
+    public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
 
     // Web Service Execution Events
     public static final String WEBSERVICE_EXECUTE = "WEBSERVICE/EXECUTE";
