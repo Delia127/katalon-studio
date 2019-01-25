@@ -40,7 +40,9 @@ import com.kms.katalon.plugin.util.PluginHelper;
 @SuppressWarnings("restriction")
 public class PluginService {
 
-    private static PluginService instance;
+    private static final String EXCEPTION_UNAUTHORIZED_SINGAL = "Unauthorized";
+
+	private static PluginService instance;
 
     private IEventBroker eventBroker;
 
@@ -142,7 +144,10 @@ public class PluginService {
         } catch (InterruptedException e) {
             throw e;
         } catch (Exception e) {
-            throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins.", e);
+        	if(StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_UNAUTHORIZED_SINGAL)){
+                throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins due to invalid API Key", e);
+        	}
+        	throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins", e);
         }
     }
 
