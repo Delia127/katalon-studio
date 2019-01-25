@@ -23,8 +23,7 @@ import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class FilterController {
 
-    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment", "description",
-            "folder");
+    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment", "description");
     
     private static final List<String> DEFAULT_KEYWORDS_FOR_INPUTS = Arrays.asList("id", "name", "tag", "comment", "description");
     
@@ -139,7 +138,8 @@ public class FilterController {
         	case "ids":
         		return textContainsEntityId(text.toLowerCase(), fileEntity);
             case "id":
-                return StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), text);
+                return StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), text) 
+                		|| StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), text + "/");
             case "name":
                 return StringUtils.containsIgnoreCase(fileEntity.getName(), text);
             case "tag":
@@ -158,7 +158,8 @@ public class FilterController {
     	return Arrays.asList(text.split(CONTENT_DELIMITER))
     			.stream()
     			.map(a -> a.trim())
-    			.filter(a -> StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), a))
+    			.filter(a -> StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), a) 
+                		|| StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), a + "/"))
     			.findAny().isPresent();
 	}
 
