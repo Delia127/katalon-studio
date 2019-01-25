@@ -226,27 +226,29 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);
 
         TableViewerColumn tableViewerColumnDefaultValue = new TableViewerColumn(tableViewer, SWT.NONE);
-        tableViewerColumnDefaultValue.setEditingSupport(new EditingSupport(tableViewer) {
-            private ExpressionWrapper expression;
+		tableViewerColumnDefaultValue.setEditingSupport(new EditingSupport(tableViewer) {
+			private ExpressionWrapper expression;
+
 			@Override
-            protected CellEditor getCellEditor(Object element) {
-                cellEditor = null;
-                expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
-                if (expression == null) {
-                    return null;
-                }
-                
-                InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
-                if (inputValueType != null&&!inputValueType.equals(InputValueType.String)) {
-                    cellEditor = inputValueType.getCellEditorForValue(tableViewer.getTable(), expression);
-                    return cellEditor;
-                    
-                }
-                if(inputValueType.equals(InputValueType.String)&&inputValueType != null){
-                	return new MultilineTextCellEditor(tableViewer.getTable());
-                }
-                return null;
-            }
+			protected CellEditor getCellEditor(Object element) {
+				cellEditor = null;
+				expression = GroovyWrapperParser
+						.parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
+				if (expression == null) {
+					return null;
+				}
+
+				InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
+				if (inputValueType != null && !inputValueType.equals(InputValueType.String)) {
+					cellEditor = inputValueType.getCellEditorForValue(tableViewer.getTable(), expression);
+					return cellEditor;
+
+				}
+				if (inputValueType.equals(InputValueType.String) && inputValueType != null) {
+					return new MultilineTextCellEditor(tableViewer.getTable());
+				}
+				return null;
+			}
 
             @Override
             protected boolean canEdit(Object element) {
