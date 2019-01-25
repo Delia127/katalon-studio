@@ -3,12 +3,9 @@ package com.kms.katalon.composer.webservice.view;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -80,7 +77,7 @@ public class ApiQuickStartDialog extends Dialog {
             createRightPart(body);
             break;
         }
-        case WEB : {
+        case WEBUI : {
             createLeftPart(body);
             break;
         }
@@ -109,7 +106,7 @@ public class ApiQuickStartDialog extends Dialog {
             c1.setMinSize(1000, 1900);
             break;
         }
-        case WEB : {
+        case WEBUI : {
             c1.setMinSize(900, 1700);
             break;
         }
@@ -145,7 +142,7 @@ public class ApiQuickStartDialog extends Dialog {
             leftComposite.setBackgroundImage(backgroundImg);
             break;
         }
-        case WEB : {
+        case WEBUI : {
             Image backgroundWImg = ImageConstants.API_QUICKSTART_BACKGROUND_WEB_LEFT;
             leftComposite.setBackgroundImage(backgroundWImg);
             break;
@@ -233,7 +230,7 @@ public class ApiQuickStartDialog extends Dialog {
             shell.setBounds(30, 50, 1300, 650);
             break;
         }
-        case WEB : {
+        case WEBUI : {
             shell.setBounds(170, 50, 1035, 650);
             break;
         }

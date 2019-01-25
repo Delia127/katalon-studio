@@ -648,7 +648,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         } 
         else if(rbWebProjectType.getSelection())
         {
-            return ProjectType.WEB;
+            return ProjectType.WEBUI;
         }
         else if(rbMobileProjectType.getSelection())
         {
