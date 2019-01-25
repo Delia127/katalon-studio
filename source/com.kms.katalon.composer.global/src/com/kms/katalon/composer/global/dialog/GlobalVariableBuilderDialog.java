@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -31,6 +32,7 @@ import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.global.constants.StringConstants;
+import com.kms.katalon.composer.testcase.ast.editors.StringConstantCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
@@ -117,7 +119,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         tableViewerColumnName.setEditingSupport(new EditingSupport(tableViewer) {
             @Override
             protected CellEditor getCellEditor(Object element) {
-                return new TextCellEditor((Composite) this.getViewer().getControl());
+                return new CustomTextCellEditor(tableViewer.getTable());
             }
 
             @Override
@@ -180,7 +182,11 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
             private ExpressionWrapper expression;
 
             private Object oldValueTypeIndex;
-
+            
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                return new CustomComboBoxCellEditor(tableViewer.getTable(),readableValueTypeNames);
+            }
             @Override
             protected boolean canEdit(Object element) {
                 return (element instanceof GlobalVariableEntity);
@@ -222,18 +228,22 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         TableViewerColumn tableViewerColumnDefaultValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnDefaultValue.setEditingSupport(new EditingSupport(tableViewer) {
             private ExpressionWrapper expression;
-
-            @Override
+			@Override
             protected CellEditor getCellEditor(Object element) {
                 cellEditor = null;
                 expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
                 if (expression == null) {
                     return null;
                 }
+                
                 InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
-                if (inputValueType != null) {
-                    cellEditor = inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression);
+                if (inputValueType != null&&!inputValueType.equals(InputValueType.String)) {
+                    cellEditor = inputValueType.getCellEditorForValue(tableViewer.getTable(), expression);
                     return cellEditor;
+                    
+                }
+                if(inputValueType.equals(InputValueType.String)&&inputValueType != null){
+                	return new MultilineTextCellEditor(tableViewer.getTable());
                 }
                 return null;
             }
@@ -296,7 +306,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         tableViewerColumnDescription.setEditingSupport(new EditingSupport(tableViewer) {
             @Override
             protected CellEditor getCellEditor(Object element) {
-                return new TextCellEditor((Composite) this.getViewer().getControl());
+                return new CustomTextCellEditor(tableViewer.getTable());
             }
 
             @Override
@@ -403,45 +413,47 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         }
         super.okPressed();
     }
-    private class MultilineTextCellEditor extends TextCellEditor {
 
-        public MultilineTextCellEditor(Composite parent) {
-            super(parent, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
-        }
+        private class MultilineTextCellEditor extends StringConstantCellEditor {
 
-        @Override
-        public LayoutData getLayoutData() {
-            LayoutData data = new LayoutData();
-            data.minimumHeight = 100;
-            data.verticalAlignment = SWT.TOP;
-            return data;
+            public MultilineTextCellEditor(Composite parent) {
+                super(parent, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
+            }
+
+            @Override
+            public LayoutData getLayoutData() {
+                LayoutData data = new LayoutData();
+                data.minimumHeight = 100;
+                data.verticalAlignment = SWT.TOP;
+                return data;
+            }
         }
+        private class CustomTextCellEditor extends TextCellEditor {
+        	
+            public CustomTextCellEditor(Composite parent) {
+                super(parent);
+            }
+
+            @Override
+            public LayoutData getLayoutData() {
+                LayoutData result = super.getLayoutData();
+                result.minimumHeight =10;
+                return result;
+            }
+        }
+     
+    	private class CustomComboBoxCellEditor extends ComboBoxCellEditor {
+
+    		public CustomComboBoxCellEditor(Composite parent, String[] items) {
+    			super(parent, items);
+    		}
+
+    		@Override
+    		public LayoutData getLayoutData() {
+    			LayoutData result = super.getLayoutData();
+    			result.minimumHeight = tableViewer.getTable().getItemHeight();
+    			return result;
+    		}
+    	}
     }
- private class CustomTextCellEditor extends TextCellEditor {
-    	
-        public CustomTextCellEditor(Composite parent) {
-            super(parent);
-        }
 
-        @Override
-        public LayoutData getLayoutData() {
-            LayoutData result = super.getLayoutData();
-            result.minimumHeight =10;
-            return result;
-        }
-    }
- 
-	private class CustomComboBoxCellEditor extends ComboBoxCellEditor {
-
-		public CustomComboBoxCellEditor(Composite parent, String[] items) {
-			super(parent, items);
-		}
-
-		@Override
-		public LayoutData getLayoutData() {
-			LayoutData result = super.getLayoutData();
-			result.minimumHeight = tableViewer.getTable().getItemHeight();
-			return result;
-		}
-	}
-}
