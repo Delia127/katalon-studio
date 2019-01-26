@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -32,7 +33,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.service.KStoreRestClient;
@@ -41,6 +41,8 @@ import com.kms.katalon.plugin.store.PluginPreferenceStore;
 public class KStorePluginsDialog extends Dialog {
     
     private static final int CLMN_PLUGIN_NAME_IDX = 0;
+    
+    private static final int CLMN_UPDATE_LINK_IDX = 3;
 
     private List<ResultItem> result;
 
@@ -63,22 +65,20 @@ public class KStorePluginsDialog extends Dialog {
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         tableComposite.setLayout(new FillLayout());
         
-        TableViewer pluginTableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        TableViewer pluginTableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         pluginTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         Table pluginTable = pluginTableViewer.getTable();
         pluginTable.setHeaderVisible(true);
         pluginTable.setLinesVisible(true);
         
         TableViewerColumn tableViewerColumnPluginName = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
-        TableColumn colPluginName = tableViewerColumnPluginName.getColumn();
-        colPluginName.setWidth(200);
-        colPluginName.setText(StringConstants.KStorePluginsDialog_COL_PLUGIN);
+        TableColumn tableColumnPluginName = tableViewerColumnPluginName.getColumn();
+        tableColumnPluginName.setText(StringConstants.KStorePluginsDialog_COL_PLUGIN);
         tableViewerColumnPluginName.setLabelProvider(new PluginNameColumnLabelProvider(CLMN_PLUGIN_NAME_IDX));
-        
+       
         TableViewerColumn tableViewerColumnStatus = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
-        TableColumn colStatus = tableViewerColumnStatus.getColumn();
-        colStatus.setText(StringConstants.KStorePluginsDialog_COL_STATUS);
-        colStatus.setWidth(100);
+        TableColumn tableColumnStatus = tableViewerColumnStatus.getColumn();
+        tableColumnStatus.setText(StringConstants.KStorePluginsDialog_COL_STATUS);
         tableViewerColumnStatus.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -91,9 +91,27 @@ public class KStorePluginsDialog extends Dialog {
             }
         });
         
+      
+        TableViewerColumn tableViewerColumnVersion = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
+        TableColumn tableColumnVersion = tableViewerColumnVersion.getColumn();
+        tableColumnVersion.setText(StringConstants.KStorePluginsDialog_COL_VERSION);
+        tableViewerColumnVersion.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                ResultItem item = (ResultItem) element;
+                return item.getPlugin().getCurrentVersion().getNumber();
+            }
+        });
+        
+        TableViewerColumn tableViewerColumnUpdateLink = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
+        TableColumn tableColumnUpdateLink = tableViewerColumnUpdateLink.getColumn();
+        tableViewerColumnUpdateLink.setLabelProvider(new UpdateLinkColumnLabelProvider(CLMN_UPDATE_LINK_IDX));
+        
         TableColumnLayout tableLayout = new TableColumnLayout();
-        tableLayout.setColumnData(colPluginName, new ColumnWeightData(80, 70));
-        tableLayout.setColumnData(colStatus, new ColumnWeightData(20, 30));
+        tableLayout.setColumnData(tableColumnPluginName, new ColumnWeightData(40, 40));
+        tableLayout.setColumnData(tableColumnStatus, new ColumnWeightData(20, 10));
+        tableLayout.setColumnData(tableColumnVersion, new ColumnWeightData(20, 20));
+        tableLayout.setColumnData(tableColumnUpdateLink, new ColumnWeightData(20, 30));
         tableComposite.setLayout(tableLayout);
         
         pluginTableViewer.setInput(result);
@@ -150,7 +168,7 @@ public class KStorePluginsDialog extends Dialog {
                 
                 KStoreRestClient restClient = new KStoreRestClient(credentials);
                 restClient.goToProductPage(resultItem.getPlugin().getProduct());
-            } catch (GeneralSecurityException | IOException | KStoreClientException ex) {
+            } catch (GeneralSecurityException | IOException ex) {
                 LoggerSingleton.logError(ex);
             }
         }
@@ -171,5 +189,46 @@ public class KStorePluginsDialog extends Dialog {
         protected String getText(ResultItem element) {
             return element.getPlugin().getProduct().getName();
         }
+    }
+    
+    private class UpdateLinkColumnLabelProvider extends HyperLinkColumnLabelProvider<ResultItem> {
+
+        public UpdateLinkColumnLabelProvider(int columnIndex) {
+            super(columnIndex);
+        }
+
+        @Override
+        protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
+            try {
+                ResultItem resultItem = (ResultItem) cell.getElement();
+                PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
+                KStoreUsernamePasswordCredentials credentials = pluginPrefStore.getKStoreUsernamePasswordCredentials();
+                
+                KStoreRestClient restClient = new KStoreRestClient(credentials);
+                restClient.goToProductPage(resultItem.getPlugin().getProduct());
+            } catch (GeneralSecurityException | IOException ex) {
+                LoggerSingleton.logError(ex);
+            }
+        }
+
+        @Override
+        protected Class<ResultItem> getElementType() {
+            return ResultItem.class;
+        }
+
+        @Override
+        protected Image getImage(ResultItem element) {
+            return null;
+        }
+
+        @Override
+        protected String getText(ResultItem element) {
+            if (element.isNewVersionAvailable()) {
+                return StringConstants.KStorePluginsDialog_LBL_UPDATE;
+            } else {
+                return StringUtils.EMPTY;
+            }
+        }
+        
     }
 }

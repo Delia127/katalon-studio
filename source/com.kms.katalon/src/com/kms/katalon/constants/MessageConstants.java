@@ -371,13 +371,15 @@ public class MessageConstants extends NLS {
     public static String UserFeedbackDialog_MSG_USER_TWEET;
     
     //KStoreCredentialsDialog
-    public static String KStoreCredentialsDialog_DIA_TITLE;
+    public static String KStoreLoginDialog_DIA_TITLE;
     
-    public static String KStoreCredentialsDialog_LBL_USERNAME;
+    public static String KStoreLoginDialog_LBL_USERNAME;
     
-    public static String KStoreCredentialsDialog_LBL_PASSWORD;
+    public static String KStoreLoginDialog_LBL_PASSWORD;
     
-    public static String KStoreCredentialsDialog_INVALID_ACCOUNT_ERROR;
+    public static String KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
+    
+    public static String KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG;
     
     //ReloadPluginsResultDialog
     public static String KStorePluginsDialog_COL_PLUGIN;
@@ -389,6 +391,10 @@ public class MessageConstants extends NLS {
     public static String KStorePluginsDialog_STATUS_INSTALLED;
 
     public static String KStorePluginsDialog_STATUS_UNINSTALLED;
+    
+    public static String KStorePluginsDialog_COL_VERSION;
+    
+    public static String KStorePluginsDialog_LBL_UPDATE;
 
 	public static String LBL_DISABLE_MOB_BROWSER_PROXY;
 
