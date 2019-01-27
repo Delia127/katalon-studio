@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -37,22 +38,24 @@ public class EventLogPart {
         text = new StyledText(container, SWT.READ_ONLY | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
         text.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        LogManager.getOutputLogger().addWriter(new PrintStream(LogManager.getOutputLogger()) {
+        LogManager.getOutputLogger().setWriter(new PrintStream(LogManager.getOutputLogger()) {
             @Override
             public void write(byte[] buf, int off, int len) {
-                if (text.isDisposed()) {
-                    return;
-                }
-                text.getDisplay().syncExec(() -> {
-                    text.append(new String(ArrayUtils.subarray(buf, off, len)));
-                    text.setTopIndex(text.getLineCount() - 1);
-                });
+                writeLog(buf, off, len);
+            }
+        });
+        
+        LogManager.getErrorLogger().setWriter(new PrintStream(LogManager.getOutputLogger()) {
+            @Override
+            public void write(byte[] buf, int off, int len) {
+                writeErrorLog(buf, off, len);
             }
         });
 
         text.addDisposeListener(new DisposeListener() {
             public void widgetDisposed(DisposeEvent e) {
-                LogManager.getOutputLogger().addWriter(null);
+                LogManager.getOutputLogger().setWriter(null);
+                LogManager.getErrorLogger().setWriter(null);
             }
         });
         
@@ -67,6 +70,36 @@ public class EventLogPart {
                     text.setText("");
                 });
             }
+        });
+    }
+    
+    private void writeLog(byte[] buf, int off, int len) {
+        if (text == null || text.isDisposed()) {
+            return;
+        }
+        text.getDisplay().syncExec(() -> {
+            String string = new String(ArrayUtils.subarray(buf, off, len));
+            text.append(string);
+            text.setTopIndex(text.getLineCount() - 1);
+        });
+    }
+
+
+    private void writeErrorLog(byte[] buf, int off, int len) {
+        if (text == null || text.isDisposed()) {
+            return;
+        }
+        text.getDisplay().syncExec(() -> {
+            String string = new String(ArrayUtils.subarray(buf, off, len));
+            StyleRange range = new StyleRange();
+            range.start = text.getText().length();
+            range.length = string.length();
+            range.foreground = ColorUtil.getTextErrorColor();
+
+            text.append(string);
+            text.setStyleRange(range);
+
+            text.setTopIndex(text.getLineCount() - 1);
         });
     }
 }

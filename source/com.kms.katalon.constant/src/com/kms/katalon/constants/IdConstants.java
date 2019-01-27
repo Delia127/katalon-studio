@@ -68,6 +68,9 @@ public interface IdConstants {
     public static final String DEBUG_BREAKPOINT_PLACEHOLDER_ID = "com.kms.katalon.placeholder.debug.top.breakpoints";
 
     public static final String DEBUG_EXPRESSION_PLACEHOLDER_ID = "com.kms.katalon.placeholder.debug.top.expressions";
+    
+    // EventLog Part
+    public static final String EVENT_LOG_PART_ID = "com.kms.katalon.placeholder.eventLog";
 
     // Explorer part content
     public static final String EXPLORER_PART_ID = "com.kms.katalon.composer.part.explorer";

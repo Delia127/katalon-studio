@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
+import com.kms.katalon.composer.handlers.ActiveEventLogPartHandler;
 import com.kms.katalon.composer.handlers.CheckForUpdateOnStartupHandler;
 import com.kms.katalon.composer.handlers.ProjectToolbarHandler;
 import com.kms.katalon.composer.handlers.ShowInAppSurveyDialogHandler;
@@ -23,6 +24,7 @@ public class ContextServiceRegistryAddon {
         ContextInjectionFactory.make(ShowUserFeedbackDialogHandler.class, context);
         ContextInjectionFactory.make(ProjectToolbarHandler.class, context);
         ContextInjectionFactory.make(ShowInAppSurveyDialogHandler.class, context);
+        ContextInjectionFactory.make(ActiveEventLogPartHandler.class, context);
     }
     
 }

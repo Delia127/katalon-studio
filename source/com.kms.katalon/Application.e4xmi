@@ -32,13 +32,13 @@
               <children xsi:type="advanced:Placeholder" xmi:id="_dJQtoDqeEeWympSUeHeJlA" elementId="org.eclipse.ui.views.ProblemView" ref="_d5-CIP3zEeS6qc67Kbzx-g">
                 <tags>NoClose</tags>
               </children>
+              <children xsi:type="advanced:Placeholder" xmi:id="_gMDv8BPkEem7dOioj5kUcw" elementId="com.kms.katalon.placeholder.eventLog" ref="_BortMBPkEem7dOioj5kUcw"/>
               <children xsi:type="advanced:Placeholder" xmi:id="_nDgIAD8NEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" containerData="100" ref="_yewVQD8LEeSqW-o8jtXO1g">
                 <tags>NoClose</tags>
               </children>
               <children xsi:type="advanced:Placeholder" xmi:id="_g82UADqeEeWympSUeHeJlA" elementId="org.eclipse.search.ui.views.SearchView" toBeRendered="false" visible="false" ref="_zqfPgP3wEeS6qc67Kbzx-g">
                 <tags>NoClose</tags>
               </children>
-              <children xsi:type="advanced:Placeholder" xmi:id="_gMDv8BPkEem7dOioj5kUcw" elementId="com.kms.katalon.placeholder.eventLog" ref="_BortMBPkEem7dOioj5kUcw"/>
             </children>
           </children>
         </children>
