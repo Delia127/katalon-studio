@@ -51,6 +51,11 @@ public class PluginPreferenceStore {
         store.save();
     }
     
+    public List<String> getPluginLocations() {
+        Map<String, String> locationMap = getPluginLocationMap();
+        return new ArrayList<>(locationMap.values());
+    }
+    
     public String getPluginLocation(KStorePlugin plugin) {
         Map<String, String> locationMap = getPluginLocationMap();
         String key = PluginHelper.idAndVersionKey(plugin);

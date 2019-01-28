@@ -74,32 +74,22 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     KStoreUsernamePasswordCredentials[] credentials = new KStoreUsernamePasswordCredentials[1];
-//                    UISynchronizeService.syncExec(() -> {
-//                        try {
-//                            credentials[0] = getUsernamePasswordCredentials();
-//                        } catch (KStoreClientAuthException e) {
-//                            LoggerSingleton.logError(e);
-//                        }
-//                    });
-//                    if (credentials[0] != null) {
-//                        if (!silenceMode) {
-//                            UISynchronizeService.syncExec(() -> openResultDialog(result));
-//                        }
-//                        
-//                        if (!store.hasReloadedPluginsBefore()) {
-//                            store.markFirstTimeReloadPlugins();
-//                        }
-//                    }
-                    credentials[0] = new KStoreUsernamePasswordCredentials();
-                    credentials[0].setUsername("abc");
-                    credentials[0].setPassword("123");
-                    List<ResultItem> result = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
-                    if (!silenceMode) {
-                        UISynchronizeService.syncExec(() -> openResultDialog(result));
-                    }
-                    
-                    if (!store.hasReloadedPluginsBefore()) {
-                        store.markFirstTimeReloadPlugins();
+                    UISynchronizeService.syncExec(() -> {
+                        try {
+                            credentials[0] = getUsernamePasswordCredentials();
+                        } catch (KStoreClientAuthException e) {
+                            LoggerSingleton.logError(e);
+                        }
+                    });
+                    if (credentials[0] != null) {
+                        List<ResultItem> result = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
+                        if (!silenceMode) {
+                            UISynchronizeService.syncExec(() -> openResultDialog(result));
+                        }
+                        
+                        if (!store.hasReloadedPluginsBefore()) {
+                            store.markFirstTimeReloadPlugins();
+                        }
                     }
                 } catch (InterruptedException e) {
                     return Status.CANCEL_STATUS;
