@@ -54,10 +54,16 @@ public class TrackingService {
             
             payload = addApplicationTraits(payload);
             
+//            payload = addEventRam(payload,trackInfo);
+//            
+//            payload = addEventCPU(payload,trackInfo);
+            
             return payload.toString();
         }
         
-        private JsonObject addUserInfo(JsonObject payload, TrackInfo trackInfo) {
+       
+
+		private JsonObject addUserInfo(JsonObject payload, TrackInfo trackInfo) {
             String userId = getUserId(trackInfo.isAnonymous());
             payload.addProperty("userId", userId);
             return payload;
@@ -84,5 +90,23 @@ public class TrackingService {
   
             return payload;
         }
+//        private JsonObject addEventRam(JsonObject payload, TrackInfo trackInfo) {
+////        	 String ram = getRam();
+//             payload.addProperty("ram", "abc");
+//             return payload;
+//        }
+//        private JsonObject addEventCPU(JsonObject payload, TrackInfo trackInfo) {
+////       	 String cpu = getCPU(trackInfo);
+//            payload.addProperty("cpu", "xyz");
+//            return payload;
+//		}
+//        private String getRam(long ram) {
+//            return null;
+//        }
+//        
+//        private String getCPU(l cpu) {
+//            return "";
+//        }
+        
     }
 }
