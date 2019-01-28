@@ -16,6 +16,7 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -23,6 +24,8 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.logging.LogManager;
 
 public class EventLogPart {
+
+    private static final int MAX_LENGTH = 80000;
 
     @Inject
     private IEventBroker eventBroker;
@@ -44,7 +47,7 @@ public class EventLogPart {
                 writeLog(buf, off, len);
             }
         });
-        
+
         LogManager.getErrorLogger().setWriter(new PrintStream(LogManager.getOutputLogger()) {
             @Override
             public void write(byte[] buf, int off, int len) {
@@ -58,9 +61,9 @@ public class EventLogPart {
                 LogManager.getErrorLogger().setWriter(null);
             }
         });
-        
+
         eventBroker.subscribe("KATALON_STUDIO/EVENT_LOG/CLEAR_LOG", new EventHandler() {
-            
+
             @Override
             public void handleEvent(Event event) {
                 if (text.isDisposed()) {
@@ -72,24 +75,27 @@ public class EventLogPart {
             }
         });
     }
-    
+
     private void writeLog(byte[] buf, int off, int len) {
         if (text == null || text.isDisposed()) {
             return;
         }
-        text.getDisplay().syncExec(() -> {
+        Display currentDisplay = Display.getCurrent();
+        if (currentDisplay != null && Thread.currentThread() == currentDisplay.getThread()) {
+            clearTextIfReachMaxLength();
             String string = new String(ArrayUtils.subarray(buf, off, len));
             text.append(string);
             text.setTopIndex(text.getLineCount() - 1);
-        });
+        }
     }
-
 
     private void writeErrorLog(byte[] buf, int off, int len) {
         if (text == null || text.isDisposed()) {
             return;
         }
-        text.getDisplay().syncExec(() -> {
+        Display currentDisplay = Display.getCurrent();
+        if (currentDisplay != null && Thread.currentThread() == currentDisplay.getThread()) {
+            clearTextIfReachMaxLength();
             String string = new String(ArrayUtils.subarray(buf, off, len));
             StyleRange range = new StyleRange();
             range.start = text.getText().length();
@@ -98,8 +104,13 @@ public class EventLogPart {
 
             text.append(string);
             text.setStyleRange(range);
-
             text.setTopIndex(text.getLineCount() - 1);
-        });
+        }
+    }
+    
+    private void clearTextIfReachMaxLength() {
+        if (text.getText().length() >= MAX_LENGTH) {
+            text.setText("");
+        }
     }
 }
