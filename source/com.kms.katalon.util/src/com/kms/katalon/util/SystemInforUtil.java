@@ -23,10 +23,10 @@ public class SystemInforUtil {
 		try {
 			SystemInforUtil.getProcessCpuLoad();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
 	// percent cpu usage
 	public static double getProcessCpuLoad() throws Exception {
 

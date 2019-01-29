@@ -61,10 +61,10 @@ public class Trackings {
 		}
 
 		PercentageUsedFormatted = SystemInforUtil.getPercentageUsedFormatted();
-		trackAction("openApplication", isAnonymous, "runningMode", runningMode, "percent_cpu", cpu, "max_memory", maxmemory,
-				"used_memory", usedmemory, "total_memory", totalmemory, "free_memory", freememory, "percent_used",
-				PercentageUsed, "format_percent_used", PercentageUsedFormatted, "freephysicalMemorySize",
-				freephysicalMemorySize, "totalphysicalMemorySize", totalphysicalMemorySize);
+		trackAction("openApplication", isAnonymous, "runningMode", runningMode, "percent_cpu", cpu, "max_memory",
+				maxmemory, "used_memory", usedmemory, "total_memory", totalmemory, "free_memory", freememory,
+				"percent_used", PercentageUsed, "format_percent_used", PercentageUsedFormatted,
+				"freephysicalMemorySize", freephysicalMemorySize, "totalphysicalMemorySize", totalphysicalMemorySize);
 
 	}
 
