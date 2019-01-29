@@ -30,7 +30,6 @@ public class ExecutionProfilePartUI {
     private static final String GLOBAL_VARIABLE_EDITOR_PART_URI = BUNDLE_URI_EXECUTION_PROFILE
     		+ GlobalVariableEditorPart.class.getName();
     
-    
     private MCompositePart executionProfileCompositePart;
     
     private MPart globalVariablePart;
@@ -101,6 +100,7 @@ public class ExecutionProfilePartUI {
             subPartStack.getChildren().add(globalVariableEditorPart);
             subPartStack.setSelectedElement(globalVariableEditorPart);
         }
+
         stack.setSelectedElement(executionProfileCompositePart);
         
         partService.activate(executionProfileCompositePart);
@@ -146,5 +146,4 @@ public class ExecutionProfilePartUI {
     public MPart getGlobalVariableEditorPart(){
     	return globalVariableEditorPart;
     }
-    
 }
