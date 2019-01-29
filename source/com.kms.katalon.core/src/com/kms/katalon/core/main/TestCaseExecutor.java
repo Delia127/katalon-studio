@@ -122,6 +122,7 @@ public class TestCaseExecutor {
             logError(t, message);
             endAllUnfinishedKeywords(keywordStack);
         }
+        testCaseResult.setCause(t);
         testCaseResult.getTestStatus().setStatusValue(getResultByError(t));
         String stackTraceForThrowable;
         try {
@@ -181,6 +182,7 @@ public class TestCaseExecutor {
     }
 
     private void postExecution() {
+        errorCollector.clearErrors();
         errorCollector.getErrors().addAll(0, parentErrors);
         if (testCaseContext.isMainTestCase()) {
             BrowserMobProxyManager.shutdownProxy();
