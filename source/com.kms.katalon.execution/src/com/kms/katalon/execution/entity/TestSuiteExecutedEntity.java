@@ -79,6 +79,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
         testDataMap.clear();
 
+        List<TestSuiteTestCaseLink> ls = TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite);
         for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite)) {
             TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
                     testCaseLink.getTestCaseId());
@@ -95,6 +96,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             // make sure all TestDataExecutedEntity in testCaseExecutedEntity
             // has the same rows to prevent NullPointerException
 
+            List<IExecutedEntity> ls1 = getExecutedItems();
             getExecutedItems().add(testCaseExecutedEntity);
         }
     }
@@ -127,7 +129,9 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
                 numTestDataRowUsedManyTimes *= rowCount;
                 updateMultiplierForSibblingTestDataExecuted(testCaseExecutedEntity, rowCount);
             }
+            List<TestDataExecutedEntity> ls = testCaseExecutedEntity.getTestDataExecutions();
             testCaseExecutedEntity.getTestDataExecutions().add(testDataExecutedEntity);
+            System.out.println("hello");
         }
 
         testCaseExecutedEntity.setLoopTimes(numTestDataRowUsedManyTimes * Math.max(numberTestCaseUsedOnce, 1));

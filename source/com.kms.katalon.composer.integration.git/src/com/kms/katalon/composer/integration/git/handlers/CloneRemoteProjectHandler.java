@@ -220,6 +220,12 @@ public class CloneRemoteProjectHandler {
             if (projectType == ProjectType.WEBSERVICE) {
                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.API_QUICK_START_DIALOG_OPEN, null);
             }
+            if (projectType == ProjectType.WEBUI) {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.API_QUICK_START_WEB_DIALOG_OPEN, null);
+            }
+            if (projectType == ProjectType.MOBILE) {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.API_QUICK_START_MOBILE_DIALOG_OPEN, null);
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), GitStringConstants.ERROR,

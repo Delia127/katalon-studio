@@ -81,6 +81,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	    
 	    protected GlobalVariableEditorPart globalVariableEditorPart;
 	    
+	    
 	    protected ExecutionProfilePartUI ui;
 	    
 	    private CTabFolder tabFolder;
@@ -146,6 +147,12 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                    CTabItem globalVariableEditorPartTab = ui.getGlobalVariableEditorTab();
 	                    globalVariableEditorPartTab.setImage(ImageConstants.IMG_16_SCRIPT);
 	                    globalVariableEditorPartTab.setShowClose(false);
+	                    
+	                    CTabItem globalVariableAddTab = ui.getGlobalVariableAddTab();
+	                    globalVariableAddTab.setImage(ImageConstants.IMG_16_MANUAL);
+	                    globalVariableAddTab.setShowClose(false);
+	                    
+	                    
 	                }
 
 	            	//TODO: Handle these cases
@@ -170,6 +177,8 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                            return;
                         	}
 	                    }
+
+					
 
 	                });
 	                tabFolder.layout();
@@ -197,7 +206,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
                 setInvalidScheme(true);
             }
         }
-		
+        
 		private void setInvalidScheme(boolean value){
 		    invalidSchema = value;
 		}

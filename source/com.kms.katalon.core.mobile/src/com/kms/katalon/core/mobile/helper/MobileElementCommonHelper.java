@@ -323,9 +323,7 @@ public class MobileElementCommonHelper {
     public static void tapAtPosition(Number x, Number y) {
         MobileCommonHelper.checkXAndY(x, y);
 
-        TouchAction tap = new TouchAction(MobileDriverFactory.getDriver()).press(x.intValue(), y.intValue())
-                .waitAction(Duration.ofMillis(DEFAULT_TAP_DURATION))
-                .release();
+        TouchAction tap = new TouchAction(MobileDriverFactory.getDriver()).tap(x.intValue(), y.intValue());
         tap.perform();
         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_AT_X_Y, x, y));
     }

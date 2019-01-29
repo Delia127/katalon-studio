@@ -74,6 +74,7 @@ public class DocumentationMessageConstants extends NLS {
     public static String TEST_CASE_MANUAL;
 
     public static String TEST_CASE_VARIABLE;
+    
     public static String TEST_CASE_VARIABLE_EDITOR;
 
     public static String TEST_CASE_SCRIPT;

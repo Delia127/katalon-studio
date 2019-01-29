@@ -58,6 +58,10 @@ public class EventConstants {
 	public static final String EXPLORER_RELOAD_DATA = "EXPLORER/RELOAD_DATA";
 
 	public static final String EXPLORER_RELOAD_INPUT = "EXPLORER/RELOAD_INPUT";
+	
+	public static final String EXPLORER_RELOAD_WEB_INPUT = "EXPLORER/RELOAD_INPUT";
+	
+	public static final String EXPLORER_RELOAD_MOBILE_INPUT = "EXPLORER/RELOAD_INPUT";
 
 	public static final String EXPLORER_SET_SELECTED_ITEM = "EXPLORER/SET_SELECTED_ITEM";
 
@@ -108,6 +112,10 @@ public class EventConstants {
 	public static final String EXPLORER_OPEN_ITEM_BY_PART_ID = "EXPLORER/OPEN_ITEM_BY_PART_ID";
 
 	public static final String EXPLORER_OPEN_DRAFT_WEBSERVICE = "EXPLORER/OPEN_DRAFT_WEBSERVICE";
+	
+	public static final String EXPLORER_OPEN_DRAFT_WEB = "EXPLORER/OPEN_DRAFT_WEB";
+	
+	public static final String EXPLORER_OPEN_DRAFT_MOBILE= "EXPLORER/OPEN_DRAFT_MOBILE";
 
 	// Folder Events
 	public static final String FOLDER_REFRESH_CHILDREN = "EXPLORER/REFRESH_CHILDREN";
@@ -349,6 +357,10 @@ public class EventConstants {
 
 	// Api Quick Start Dialog
 	public static final String API_QUICK_START_DIALOG_OPEN = "API/OPEN_QUICK_START_DIALOG";
+	
+	public static final String API_QUICK_START_WEB_DIALOG_OPEN = "API/OPEN_QUICK_START_WEB_DIALOG";
+	   
+	public static final String API_QUICK_START_MOBILE_DIALOG_OPEN = "API/OPEN_QUICK_START_MOBILE_DIALOG";
 
     public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
     
@@ -357,4 +369,6 @@ public class EventConstants {
     
     // Web Sevice Method Events
     public static final String UPDATE_WEBSERVICE_METHODS = "WEBSERVICE/UPDATE_METHODS";
+
+   
 };
