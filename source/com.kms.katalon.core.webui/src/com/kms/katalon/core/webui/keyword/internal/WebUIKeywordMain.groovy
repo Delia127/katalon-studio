@@ -62,7 +62,7 @@ public class WebUIKeywordMain {
     @CompileStatic
     public static stepFailed(String message, FailureHandling flHandling, String reason, boolean takeScreenShot)
             throws StepFailedException {
-        KeywordMain.stepFailed(message, flHandling, reason, new WebUIScreenCaptor().takeScreenshotAndGetAttributes(takeScreenShot));
+        KeywordMain.stepFailed(message, flHandling, null, new WebUIScreenCaptor().takeScreenshotAndGetAttributes(takeScreenShot));
     }
            
     @CompileStatic

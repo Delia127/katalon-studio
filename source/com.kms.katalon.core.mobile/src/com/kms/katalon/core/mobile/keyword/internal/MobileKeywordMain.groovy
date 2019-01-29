@@ -37,7 +37,7 @@ public class MobileKeywordMain {
     @CompileStatic
     public static stepFailed(String message, FailureHandling flHandling, String reason, boolean takeScreenShot)
             throws StepFailedException {
-        KeywordMain.stepFailed(message, flHandling, reason, new MobileScreenCaptor().takeScreenshotAndGetAttributes(takeScreenShot));
+        KeywordMain.stepFailed(message, flHandling, null, new MobileScreenCaptor().takeScreenshotAndGetAttributes(takeScreenShot));
     }
            
     @CompileStatic
