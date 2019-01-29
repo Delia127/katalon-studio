@@ -7,6 +7,7 @@ import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.logging.ErrorCollector
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
+import com.kms.katalon.core.util.internal.ExceptionsUtil
 
 import groovy.transform.CompileStatic
 
@@ -22,7 +23,7 @@ public class KeywordMain {
 
     @CompileStatic
     public static stepFailed(String message, FailureHandling flHandling, Throwable t, Map<String, String> attributes = null) throws StepFailedException {
-        String failedMessage = buildReasonMessage(message, EMPTY_REASON).toString()
+        String failedMessage = buildReasonMessage(message, t != null ? ExceptionsUtil.getStackTraceForThrowable(t) : EMPTY_REASON).toString()
         switch (flHandling) {
             case FailureHandling.OPTIONAL:
                 logger.logWarning(failedMessage, attributes);
@@ -31,7 +32,7 @@ public class KeywordMain {
                 logger.logFailed(failedMessage, attributes);
                 Exception ex = null;
                 if (ErrorCollector.isErrorFailed(t)) {
-                    ex = new  StepErrorException(failedMessage, t)
+                    ex = new StepErrorException(failedMessage, t)
                 }
                 ex = new StepFailedException(failedMessage, t)
                 ErrorCollector.getCollector().addError(ex);
