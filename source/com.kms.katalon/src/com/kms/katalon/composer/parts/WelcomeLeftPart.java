@@ -108,31 +108,76 @@ public class WelcomeLeftPart extends Composite {
                 MessageConstants.PA_LBL_TUTORIALS_URL);
         addMenuSeparator(lowerComposite);
         addMenuItem(lowerComposite, ImageConstants.IMG_FAQ, StringConstants.PA_LBL_FAQ, StringConstants.PA_LBL_FAQ_URL);
-        addMenuSeparator(lowerComposite);
-//        addMenuItem(lowerComposite, ImageConstants.IMG_USER_GUIDE, StringConstants.PA_LBL_USER_GUIDE,
-//                StringConstants.PA_LBL_USER_GUIDE_URL);
-        addMenuItem(lowerComposite, ImageConstants.IMG_PLUGIN_STORE, StringConstants.PA_LBL_PLUGIN_STORE,
-                StringConstants.PA_LBL_PLUGIN_STORE_URL, PLUGIN_STORE_ITEM_BACKGROUND_COLOR);
-        addMenuSeparator(lowerComposite);
+        addPluginStoreMenuItem(lowerComposite);
         addMenuItem(lowerComposite, ImageConstants.IMG_BUSSINESS_SUPPORT, StringConstants.PA_LBL_BUSINESS_SUPPORT,
                 StringConstants.URL_KATALON_SUPPORT_SERVICE);
     }
 
-    private void addMenuItem(Composite parent, Image icon, String label, String url) {
-        addMenuItem(parent, icon, label, url, PLUGIN_STORE_ITEM_BACKGROUND_COLOR);
+    private void addPluginStoreMenuItem(Composite parent) {
+        Composite marginTop = new Composite(parent, SWT.NONE);
+        GridData gdMarginTop = new GridData(SWT.FILL, SWT.TOP, true, false);
+        gdMarginTop.minimumWidth = MIN_WIDTH;
+        gdMarginTop.heightHint = 5;
+        marginTop.setLayoutData(gdMarginTop);
+        marginTop.setBackground(BACKGROUND_COLOR);
+        
+        Composite holder = new Composite(parent, SWT.NONE);
+        GridData gdHolder = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gdHolder.minimumWidth = MIN_WIDTH;
+        holder.setLayoutData(gdHolder);
+        holder.setBackground(PLUGIN_STORE_ITEM_BACKGROUND_COLOR);
+        GridLayout glHolder = new GridLayout(1, false);
+        glHolder.marginTop = 15;
+        glHolder.marginBottom = 10;
+        holder.setLayout(glHolder);
+        holder.setCursor(CURSOR_HAND);
+        
+        Composite inner = new Composite(holder, SWT.NONE);
+        GridData gdInner = new GridData(SWT.CENTER , SWT.FILL, true, true);
+        gdInner.minimumWidth = 170;
+        inner.setLayoutData(gdInner);
+        inner.setBackground(PLUGIN_STORE_ITEM_BACKGROUND_COLOR);
+        GridLayout glInner = new GridLayout(1, false);
+        inner.setLayout(glInner);
+        inner.setCursor(CURSOR_HAND);
+
+        CLabel menuItem = new CLabel(inner, SWT.NONE);
+        menuItem.setAlignment(SWT.CENTER);
+        menuItem.setImage(ImageConstants.IMG_PLUGIN_STORE);
+        menuItem.setText(StringConstants.PA_LBL_PLUGIN_STORE);
+        menuItem.setForeground(ColorUtil.getDefaultTextColor());
+        menuItem.setCursor(CURSOR_HAND);
+        ControlUtils.setFontSize(menuItem, 12);
+        
+        Composite marginBottom = new Composite(parent, SWT.NONE);
+        GridData gdMarginBottom = new GridData(SWT.FILL, SWT.TOP, true, false);
+        gdMarginBottom.minimumWidth = MIN_WIDTH;
+        gdMarginBottom.heightHint = 5;
+        marginBottom.setLayoutData(gdMarginBottom);
+        marginBottom.setBackground(BACKGROUND_COLOR);
+
+        MouseAdapter mouseAdapter = new MouseAdapter() {
+
+            @Override
+            public void mouseUp(MouseEvent e) {
+                openURL(StringConstants.PA_LBL_PLUGIN_STORE_URL);
+            }
+        };
+        menuItem.addMouseListener(mouseAdapter);
+        holder.addMouseListener(mouseAdapter);
+        inner.addMouseListener(mouseAdapter);
     }
     
-    private void addMenuItem(Composite parent, Image icon, String label, String url, Color backgroundColor) {
+    private void addMenuItem(Composite parent, Image icon, String label, String url) {
         Composite holder = new Composite(parent, SWT.NONE);
         GridData gdHolder = new GridData(SWT.CENTER, SWT.FILL, true, false);
         gdHolder.minimumWidth = 170;
         holder.setLayoutData(gdHolder);
-        holder.setBackground(backgroundColor);
-//        RowLayout rlMenuComposite = new RowLayout(SWT.VERTICAL);
-//        rlMenuComposite.marginHeight = 10;
-//        rlMenuComposite.spacing = 20;
-//        holder.setLayout(rlMenuComposite);
-        holder.setLayout(new GridLayout(1, false));
+        holder.setBackground(BACKGROUND_COLOR);
+        RowLayout rlMenuComposite = new RowLayout(SWT.VERTICAL);
+        rlMenuComposite.marginHeight = 10;
+        rlMenuComposite.spacing = 20;
+        holder.setLayout(rlMenuComposite);
         holder.setCursor(CURSOR_HAND);
 
         CLabel menuItem = new CLabel(holder, SWT.NONE);
@@ -141,7 +186,6 @@ public class WelcomeLeftPart extends Composite {
         menuItem.setText(label);
         menuItem.setForeground(ColorUtil.getTextWhiteColor());
         menuItem.setCursor(CURSOR_HAND);
-        menuItem.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ControlUtils.setFontSize(menuItem, 12);
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -156,7 +200,7 @@ public class WelcomeLeftPart extends Composite {
     }
 
     private void addMenuSeparator(Composite parent) {
-        CLabel separator = new CLabel(parent, SWT.BORDER);
+        CLabel separator = new CLabel(parent, SWT.NONE);
         separator.setMargins(0, 0, 0, 0);
         separator.setAlignment(SWT.RIGHT);
         separator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

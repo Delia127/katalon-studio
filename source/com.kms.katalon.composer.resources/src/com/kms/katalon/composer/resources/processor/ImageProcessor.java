@@ -370,6 +370,7 @@ public class ImageProcessor {
     private void registerWelcomeImages() {
         ImageManager.registerImage(IImageKeys.FAQ_34);
         ImageManager.registerImage(IImageKeys.USER_GUIDE_34);
+        ImageManager.registerImage(IImageKeys.PLUGIN_STORE_34);
         ImageManager.registerImage(IImageKeys.TUTORIAL_34);
         ImageManager.registerImage(IImageKeys.BUSINESS_SUPPORT_34);
         ImageManager.registerImage(IImageKeys.KATALON_LOGO_202);
