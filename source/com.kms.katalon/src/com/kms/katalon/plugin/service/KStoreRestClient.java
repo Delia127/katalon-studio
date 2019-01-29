@@ -167,9 +167,17 @@ public class KStoreRestClient {
         }
     }
     
-    public void goToProductPage(KStoreProduct product) {
-        String productPageUrl = getProductPageUrl(product);
-        Program.launch(productPageUrl);
+    public void goToProductPage(KStoreProduct product) throws KStoreClientException {
+        try {
+            KStoreToken token = getToken();
+            if (token != null) {
+                String productPageUrl = getProductPageUrl(product, token.getToken());
+                Program.launch(productPageUrl);
+            }
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during opening Manage Plugins page", e);
+        }
     }
     
     private KStoreToken getToken() throws IOException, KStoreClientException {
@@ -229,8 +237,8 @@ public class KStoreRestClient {
         return getKatalonStoreUrl() + "/manage/products?token=" + token;
     }
     
-    private String getProductPageUrl(KStoreProduct product) {
-        return getKatalonStoreUrl() + product.getUrl();
+    private String getProductPageUrl(KStoreProduct product, String token) {
+        return getKatalonStoreUrl() + product.getUrl() + "?token=" + token;
     }
     
     private String getAuthenticateAPIUrl() {

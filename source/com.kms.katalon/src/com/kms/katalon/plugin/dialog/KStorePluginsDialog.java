@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.service.KStoreRestClient;
@@ -168,7 +169,7 @@ public class KStorePluginsDialog extends Dialog {
                 
                 KStoreRestClient restClient = new KStoreRestClient(credentials);
                 restClient.goToProductPage(resultItem.getPlugin().getProduct());
-            } catch (GeneralSecurityException | IOException ex) {
+            } catch (GeneralSecurityException | IOException | KStoreClientException ex) {
                 LoggerSingleton.logError(ex);
             }
         }
@@ -206,7 +207,7 @@ public class KStorePluginsDialog extends Dialog {
                 
                 KStoreRestClient restClient = new KStoreRestClient(credentials);
                 restClient.goToProductPage(resultItem.getPlugin().getProduct());
-            } catch (GeneralSecurityException | IOException ex) {
+            } catch (GeneralSecurityException | IOException | KStoreClientException ex) {
                 LoggerSingleton.logError(ex);
             }
         }
