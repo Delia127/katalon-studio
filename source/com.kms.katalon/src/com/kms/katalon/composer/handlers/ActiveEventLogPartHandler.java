@@ -33,7 +33,7 @@ public class ActiveEventLogPartHandler {
 
     @PostConstruct
     public void registerWorkbenchCreated() {
-        eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, new EventServiceAdapter() {
+        eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, new EventServiceAdapter() {
 
             @Override
             public void handleEvent(Event event) {

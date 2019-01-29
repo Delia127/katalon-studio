@@ -132,10 +132,11 @@ public class KStoreLoginDialog extends Dialog {
                 token = authenticateResult.getToken();
                 super.okPressed();
             } else {
-                showInvalidAccountErrorMessage();
+                showErrorMessage(StringConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
+            showErrorMessage(StringConstants.KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG);
         } finally {
             btnOk.setEnabled(true);
         }
@@ -153,20 +154,13 @@ public class KStoreLoginDialog extends Dialog {
         return token;
     }
 
-    private void showInvalidAccountErrorMessage() {
-        displayInvalidAccountErrorMessage(true);
+    private void showErrorMessage(String errorMsg) {
+        lblError.setText(errorMsg);
+        lblError.getParent().layout(true, true);
     }
 
     private void hideErrorMessage() {
-        displayInvalidAccountErrorMessage(false);
-    }
-
-    private void displayInvalidAccountErrorMessage(boolean display) {
-        if (display) {
-            lblError.setText(StringConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR);
-        } else {
-            lblError.setText(StringUtils.EMPTY);
-        }
-        lblError.getParent().layout();
+        lblError.setText(StringUtils.EMPTY);
+        lblError.getParent().layout(true, true);
     }
 }
