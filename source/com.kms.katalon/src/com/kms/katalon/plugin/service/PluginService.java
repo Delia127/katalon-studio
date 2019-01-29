@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.internal.runtime.InternalPlatform;
@@ -165,14 +164,6 @@ public class PluginService {
         FileUtils.cleanDirectory(downloadDir);
     }
 
-    public boolean checkForPluginUpdates(KStoreCredentials credentials, IProgressMonitor monitor) throws KStoreClientException {
-        List<KStorePlugin> localPlugins = pluginPrefStore.getInstalledPlugins();
-        List<KStorePlugin> latestPlugins = fetchLatestPlugins(credentials);
-        List<KStorePlugin> uninstalledPlugins = getUninstalledPlugins(localPlugins, latestPlugins);
-        List<KStorePlugin> newInstalledPlugins = getNewInstalledPlugins(localPlugins, latestPlugins);
-        return CollectionUtils.isNotEmpty(uninstalledPlugins) || CollectionUtils.isNotEmpty(newInstalledPlugins);
-    }
-
     private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientException {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         List<KStorePlugin> latestPlugins = restClient.getLatestPlugins();
@@ -187,13 +178,6 @@ public class PluginService {
                             !updatedPluginLookup.get(p.getId()).getCurrentVersion().getNumber()
                                 .equals(p.getCurrentVersion().getNumber());
                 }).collect(Collectors.toList());
-    }
-
-    private List<KStorePlugin> getNewInstalledPlugins(List<KStorePlugin> localPlugins,
-            List<KStorePlugin> latestPlugins) {
-        Map<Long, KStorePlugin> localPluginLookup = toMap(localPlugins);
-        return latestPlugins.stream().filter(p -> !localPluginLookup.containsKey(p.getId()))
-                .collect(Collectors.toList());
     }
 
     private Map<Long, KStorePlugin> toMap(List<KStorePlugin> plugins) {
@@ -236,12 +220,12 @@ public class PluginService {
         return pluginInstaller;
     }
 
-    private boolean isPluginDownloaded(KStorePlugin plugin) {
+    private boolean isPluginDownloaded(KStorePlugin plugin) throws IOException {
         String pluginLocation = getPluginLocation(plugin);
         return !StringUtils.isBlank(pluginLocation) && new File(pluginLocation).exists();
     }
 
-    private String getPluginLocation(KStorePlugin plugin) {
+    private String getPluginLocation(KStorePlugin plugin) throws IOException {
         return pluginPrefStore.getPluginLocation(plugin);
     }
 
