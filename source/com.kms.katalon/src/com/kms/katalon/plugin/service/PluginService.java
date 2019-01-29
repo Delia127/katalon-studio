@@ -22,6 +22,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -65,7 +66,7 @@ public class PluginService {
         
         try {
             List<ResultItem> results = new ArrayList<>();
-    
+
             SubMonitor subMonitor = SubMonitor.convert(monitor);
             subMonitor.beginTask("", 100);
     
@@ -88,7 +89,7 @@ public class PluginService {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
                 }
-                String pluginPath = getPluginFolderLocation(plugin);
+                String pluginPath = getPluginLocation(plugin);
                 if (!StringUtils.isBlank(pluginPath)) {
                     platformUninstall(pluginPath);
                 }
@@ -115,7 +116,7 @@ public class PluginService {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
                 }
-                String pluginPath = getPluginFolderLocation(plugin);
+                String pluginPath = getPluginLocation(plugin);
                 if (!isPluginDownloaded(plugin)) {
                     File download = downloadAndExtractPlugin(plugin, credentials);
                     if (download != null) {
@@ -128,6 +129,13 @@ public class PluginService {
                 ResultItem item = new ResultItem();
                 item.setPlugin(plugin);
                 item.markPluginInstalled(true);
+                if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
+                    plugin.getCurrentVersion().getNumber())) {
+                    item.setNewVersionAvailable(true);
+                } else {
+                    item.setNewVersionAvailable(false);
+                }
+                
                 results.add(item);
                 
                 installWork++;
@@ -152,7 +160,7 @@ public class PluginService {
     }
 
     private void cleanUpDownloadDir() throws IOException {
-        File downloadDir = getPluginDownloadDir();
+        File downloadDir = getRepoDownloadDir();
         downloadDir.mkdirs();
         FileUtils.cleanDirectory(downloadDir);
     }
@@ -174,8 +182,11 @@ public class PluginService {
     private List<KStorePlugin> getUninstalledPlugins(List<KStorePlugin> localPlugins,
             List<KStorePlugin> updatedPlugins) {
         Map<Long, KStorePlugin> updatedPluginLookup = toMap(updatedPlugins);
-        return localPlugins.stream().filter(p -> !updatedPluginLookup.containsKey(p.getId()))
-                .collect(Collectors.toList());
+        return localPlugins.stream().filter(p -> {
+                    return !updatedPluginLookup.containsKey(p.getId()) ||
+                            !updatedPluginLookup.get(p.getId()).getCurrentVersion().getNumber()
+                                .equals(p.getCurrentVersion().getNumber());
+                }).collect(Collectors.toList());
     }
 
     private List<KStorePlugin> getNewInstalledPlugins(List<KStorePlugin> localPlugins,
@@ -226,11 +237,11 @@ public class PluginService {
     }
 
     private boolean isPluginDownloaded(KStorePlugin plugin) {
-        String pluginLocation = getPluginFolderLocation(plugin);
+        String pluginLocation = getPluginLocation(plugin);
         return !StringUtils.isBlank(pluginLocation) && new File(pluginLocation).exists();
     }
 
-    private String getPluginFolderLocation(KStorePlugin plugin) {
+    private String getPluginLocation(KStorePlugin plugin) {
         return pluginPrefStore.getPluginLocation(plugin);
     }
 
@@ -245,7 +256,7 @@ public class PluginService {
 
     private File downloadAndExtractPlugin(KStorePlugin plugin, KStoreCredentials credentials) throws Exception {
 
-        File downloadDir = getPluginDownloadDir();
+        File downloadDir = getRepoDownloadDir();
         downloadDir.mkdirs();
         FileUtils.cleanDirectory(downloadDir);
 
@@ -255,13 +266,11 @@ public class PluginService {
         KStoreRestClient restClient = getRestClient(credentials);
         restClient.downloadPlugin(plugin.getProduct().getId(), downloadFile);
 
-        File installDir = getPluginInstallDir();
-        installDir.mkdirs();
-        File outputDir = new File(getPluginInstallDir(), PluginHelper.idAndVersionKey(plugin));
-        outputDir.mkdirs();
-        ZipManager.unzip(downloadFile, outputDir.getAbsolutePath());
+        File pluginInstallDir = getPluginInstallDir(plugin);
+        pluginInstallDir.mkdirs();
+        ZipManager.unzip(downloadFile, pluginInstallDir.getAbsolutePath());
 
-        File jar = Arrays.stream(outputDir.listFiles()).filter(file -> {
+        File jar = Arrays.stream(pluginInstallDir.listFiles()).filter(file -> {
             String name = file.getName().toLowerCase();
             return name.endsWith(".jar") && !name.endsWith("-javadoc.jar") && !name.endsWith("-sources.jar");
         }).findAny().orElse(null);
@@ -273,20 +282,27 @@ public class PluginService {
         return restClient;
     }
 
-    private File getPluginDownloadFileInfo(KStorePlugin plugin) throws IOException {
+    private File getPluginInstallDir(KStorePlugin plugin) {
+        return new File(getRepoInstallDir(), 
+                plugin.getId() +
+                File.separator +
+                plugin.getCurrentVersion().getNumber());
+    }
+    
+    private File getPluginDownloadFileInfo(KStorePlugin plugin) {
         String fileName = PluginHelper.idAndVersionKey(plugin) + ".zip";
-        return new File(getPluginDownloadDir(), fileName);
+        return new File(getRepoDownloadDir(), fileName);
     }
 
-    private File getPluginDownloadDir() throws IOException {
-        return new File(getPluginAppDir(), "download");
+    private File getRepoDownloadDir() {
+        return new File(getPluginRepoDir(), "download");
     }
 
-    private File getPluginInstallDir() throws IOException {
-        return new File(getPluginAppDir(), "install");
+    private File getRepoInstallDir() {
+        return new File(getPluginRepoDir(), "install");
     }
 
-    private File getPluginAppDir() throws IOException {
+    private File getPluginRepoDir() {
         return new File(GlobalStringConstants.APP_USER_DIR_LOCATION, "plugin");
     }
 }

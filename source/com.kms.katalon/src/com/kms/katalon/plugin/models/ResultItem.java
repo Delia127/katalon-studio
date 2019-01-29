@@ -4,7 +4,9 @@ public class ResultItem {
 
     private KStorePlugin plugin;
     
-    private boolean pluginInstalled;
+    private boolean isPluginInstalled;
+    
+    private boolean isNewVersionAvailable;
 
     public KStorePlugin getPlugin() {
         return plugin;
@@ -15,10 +17,22 @@ public class ResultItem {
     }
 
     public boolean isPluginInstalled() {
-        return pluginInstalled;
+        return isPluginInstalled;
     }
 
     public void markPluginInstalled(boolean installed) {
-        this.pluginInstalled = installed;
+        this.isPluginInstalled = installed;
+    }
+
+    public boolean isNewVersionAvailable() {
+        return isNewVersionAvailable;
+    }
+
+    public void setNewVersionAvailable(boolean isNewVersionAvailable) {
+        this.isNewVersionAvailable = isNewVersionAvailable;
+    }
+
+    public void setPluginInstalled(boolean isPluginInstalled) {
+        this.isPluginInstalled = isPluginInstalled;
     }
 }

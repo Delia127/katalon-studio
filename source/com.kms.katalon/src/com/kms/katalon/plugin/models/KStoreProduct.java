@@ -32,6 +32,8 @@ public class KStoreProduct {
     private String overview;
     
     private BigDecimal price;
+    
+    private String url;
 
     public long getId() {
         return id;
@@ -143,5 +145,13 @@ public class KStoreProduct {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
