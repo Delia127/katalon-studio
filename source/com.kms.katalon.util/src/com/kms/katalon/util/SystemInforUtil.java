@@ -49,27 +49,27 @@ public class SystemInforUtil {
 
     public static String TotalPhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
             MalformedObjectNameException, ReflectionException, MBeanException {
-        String totalmemory;
+        String totalMemory;
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
         Object attribute = mBeanServer.getAttribute(new ObjectName("java.lang", "type", "OperatingSystem"),
                 "TotalPhysicalMemorySize");
 
-        totalmemory = Long.parseLong(attribute.toString()) / 1024 + "MB";
+        totalMemory = Long.parseLong(attribute.toString()) / 1024 + "MB";
 
-        return totalmemory;
+        return totalMemory;
     }
 
     public static String FreePhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
             MalformedObjectNameException, ReflectionException, MBeanException {
-        String Freememory;
+        String freeMemory;
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
         Object attribute2 = mBeanServer.getAttribute(new ObjectName("java.lang", "type", "OperatingSystem"),
                 "FreePhysicalMemorySize");
 
-        Freememory = Long.parseLong(attribute2.toString()) / 1024 + "MB";
-        return Freememory;
+        freeMemory = Long.parseLong(attribute2.toString()) / 1024 + "MB";
+        return freeMemory;
     }
 
     // ram

@@ -148,9 +148,7 @@
 <unit id="org.zeroturnaround.zt-exec" version="1.7.0"/>
 <unit id="io.cucumber.html" version="0.2.7"/>
 <unit id="com.google.oauth-client.google-oauth-client" version="1.22.0"/>
-<unit id="com.sun.jna" version="5.2.0"/>
 <unit id="io.swagger.parser-v2" version="2.0.0.rc1"/>
-<unit id="cal10n.api" version="0.7.4"/>
 <unit id="com.fasterxml.woodstox.woodstox-core" version="5.0.3"/>
 <unit id="javax.interceptor-api" version="1.2.0"/>
 <unit id="slf4j.ext" version="1.6.3"/>
@@ -212,8 +210,6 @@
 <plugin id="com.oracle.jdbc.ojdbc7"/>
 <plugin id="com.sun.el"/>
 <plugin id="com.sun.el.source"/>
-<plugin id="com.sun.jna"/>
-<plugin id="com.sun.jna.platform"/>
 <plugin id="commonj.sdo"/>
 <plugin id="cucumber.eclipse.editor"/>
 <plugin id="cucumber.eclipse.steps.integration"/>

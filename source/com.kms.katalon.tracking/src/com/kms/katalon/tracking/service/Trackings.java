@@ -28,38 +28,19 @@ public class Trackings {
     private static TrackingService trackingService = new TrackingService();
     private static SystemInforUtil system = new SystemInforUtil();
 
-    public static void trackOpenApplication(boolean isAnonymous, String runningMode) {
+    public static void trackOpenApplication(boolean isAnonymous, String runningMode) throws Exception {
         double cpu = 0.0;
         double percentageUsed, percentageUsedFormatted;
         long maxMemory, usedMemory, totalMemory, freeMemory;
         String freePhysicalMemorySize = null, totalPhysicalMemorySize = null;
-
-        try {
-            cpu = SystemInforUtil.getProcessCpuLoad();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        cpu = SystemInforUtil.getProcessCpuLoad();
         maxMemory = SystemInforUtil.getMaxMemory();
         usedMemory = SystemInforUtil.getUsedMemory();
         totalMemory = SystemInforUtil.getTotalMemory();
         freeMemory = SystemInforUtil.getFreeMemory();
         percentageUsed = SystemInforUtil.getPercentageUsed();
-        try {
-            freePhysicalMemorySize = SystemInforUtil.FreePhysicalMemorySize();
-        } catch (InstanceNotFoundException | AttributeNotFoundException | MalformedObjectNameException
-                | ReflectionException | MBeanException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            totalPhysicalMemorySize = SystemInforUtil.TotalPhysicalMemorySize();
-        } catch (InstanceNotFoundException | AttributeNotFoundException | MalformedObjectNameException
-                | ReflectionException | MBeanException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        freePhysicalMemorySize = SystemInforUtil.FreePhysicalMemorySize();
+        totalPhysicalMemorySize = SystemInforUtil.TotalPhysicalMemorySize();
         percentageUsedFormatted = SystemInforUtil.getPercentageUsedFormatted();
         trackAction("openApplication", isAnonymous, "runningMode", runningMode, "percent_cpu", cpu, "max_memory",
                 maxMemory, "used_memory", usedMemory, "total_memory", totalMemory, "free_memory", freeMemory,
