@@ -37,6 +37,8 @@ public interface IdConstants {
     public static final String DEBUG_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.debug";
 
     public static final String PERSPECTIVE_SWITCHER_TOOL_CONTROL_ID = "com.kms.katalon.composer.toolbar.switcher";
+    
+    public static final String MANAGE_PLUGIN_TOOL_ITEM_ID = "com.kms.katalon.composer.toolbar.plugin.toolitem";
 
     // Composer PartStack content
     public static final String COMPOSER_CONTENT_PARTSTACK_ID = "com.kms.katalon.composer.content";
@@ -68,6 +70,9 @@ public interface IdConstants {
     public static final String DEBUG_BREAKPOINT_PLACEHOLDER_ID = "com.kms.katalon.placeholder.debug.top.breakpoints";
 
     public static final String DEBUG_EXPRESSION_PLACEHOLDER_ID = "com.kms.katalon.placeholder.debug.top.expressions";
+    
+    // EventLog Part
+    public static final String EVENT_LOG_PART_ID = "com.kms.katalon.placeholder.eventLog";
 
     // Explorer part content
     public static final String EXPLORER_PART_ID = "com.kms.katalon.composer.part.explorer";
@@ -84,6 +89,8 @@ public interface IdConstants {
     public static final String TEST_CASE_SUB_PART_STACK_ID_SUFFIX = ".partStack";
 
     public static final String TEST_CASE_EDITOR_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".editor";
+    
+    public static final String TEST_CASE_EDITOR_PART_ID_SUFFIX_2 = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".editor2";
 
     public static final String TEST_CASE_VARIABLES_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variables";
     

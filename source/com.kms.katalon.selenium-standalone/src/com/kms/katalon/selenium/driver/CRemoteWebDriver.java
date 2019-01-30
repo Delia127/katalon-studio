@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.remote.CommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.Response;
 
@@ -12,6 +13,15 @@ public class CRemoteWebDriver extends RemoteWebDriver implements IDelayableDrive
 
     public CRemoteWebDriver(URL remoteAddress, Capabilities capabilities, int actionDelay) {
         super(remoteAddress, capabilities);
+        setActionDelayInMilliseconds(actionDelay);
+    }
+    
+    public CRemoteWebDriver(CommandExecutor executor, Capabilities capabilities, int actionDelay) {
+        super(executor, capabilities);
+        setActionDelayInMilliseconds(actionDelay);
+    }
+    
+    private void setActionDelayInMilliseconds(int actionDelay) {
         this.actionDelayInMiliseconds = actionDelay * 1000;
     }
 

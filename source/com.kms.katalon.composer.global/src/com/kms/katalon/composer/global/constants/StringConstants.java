@@ -29,6 +29,8 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PA_BTN_TIP_REMOVE = DELETE;
 	public static final String PA_BTN_TIP_CLEAR = CLEAR;
 	public static final String PA_BTN_TIP_EDIT = EDIT;
+	public static final String PA_BTN_TIP_DOWN = DOWN;
+	public static final String PA_BTN_TIP_UP = UP;
 	public static final String PA_BTN_TIP_REFRESH = REFRESH;
     public static final String PA_MENU_CONTEXT_SHOW_PREFERENCES = ComposerGlobalMessageConstants.PA_MENU_CONTEXT_SHOW_PREFERENCES;
 	public static final String PA_COL_NAME = NAME;

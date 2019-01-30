@@ -69,8 +69,8 @@ public class TestSuiteScriptGenerator {
         List<String> testCaseBindings = new ArrayList<String>();
         syntaxErrorCollector = new StringBuilder();
 
-        List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance()
-                .getTestSuiteTestCaseRun(testSuite);
+        List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(
+                testSuite);
         for (IExecutedEntity testCaseExecuted : testSuiteExecuted.getExecutedItems()) {
             String testCaseId = testCaseExecuted.getSourceId();
             TestSuiteTestCaseLink testCaseLink = null;
@@ -80,8 +80,11 @@ public class TestSuiteScriptGenerator {
                 testCaseLink.setIsRun(true);
             } else {
                 testCaseLink = getTestCaseLink(testCaseId, lstTestCaseRun);
+                // KAT-4017, removing a test case so the next iteration we will consider
+                // the next (possibly duplicate) test cases
+                lstTestCaseRun.remove(testCaseLink);
             }
-
+            
             if (testCaseLink == null) {
                 throw new IllegalArgumentException("Test case: '" + testCaseId + "' not found");
             }
@@ -111,8 +114,7 @@ public class TestSuiteScriptGenerator {
             TestCaseExecutedEntity testCaseExecutedEntity) {
         List<String> testCaseBindingStrings = new ArrayList<String>();
         for (int iterationIdx = 0; iterationIdx < testCaseExecutedEntity.getLoopTimes(); iterationIdx++) {
-            TestCaseBindingStringBuilder builder = new TestCaseBindingStringBuilder(iterationIdx,
-                    testCaseExecutedEntity);
+            TestCaseBindingStringBuilder builder = new TestCaseBindingStringBuilder(iterationIdx, testCaseExecutedEntity);
 
             for (VariableLink variableLink : testCaseLink.getVariableLinks()) {
                 builder.append(variableLink, testSuiteExecuted.getTestDataMap());

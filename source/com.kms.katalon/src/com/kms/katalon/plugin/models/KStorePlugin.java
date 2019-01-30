@@ -19,6 +19,10 @@ public class KStorePlugin {
     private KStoreProduct product;
     
     private KStoreLicense licenseType;
+    
+    private KStorePluginVersion currentVersion;
+    
+    private KStorePluginVersion latestVersion;
 
     public long getId() {
         return id;
@@ -82,5 +86,21 @@ public class KStorePlugin {
 
     public void setLicenseType(KStoreLicense licenseType) {
         this.licenseType = licenseType;
+    }
+
+    public KStorePluginVersion getCurrentVersion() {
+        return currentVersion;
+    }
+
+    public void setCurrentVersion(KStorePluginVersion currentVersion) {
+        this.currentVersion = currentVersion;
+    }
+
+    public KStorePluginVersion getLatestVersion() {
+        return latestVersion;
+    }
+
+    public void setLatestVersion(KStorePluginVersion latestVersion) {
+        this.latestVersion = latestVersion;
     }
 }

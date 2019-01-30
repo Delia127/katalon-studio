@@ -60,7 +60,7 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
         for (Object object : data) {
             TestSuiteTestCaseLink link = (TestSuiteTestCaseLink) object;
             TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(link.getTestCaseId());
-            if (testCase != null && testCase.getId() != null) {
+            if (testCase != null && testCase.getId() != null ) {
                 testCasesPKs.add(testCase.getId());
             } else {
                 testCasesPKs.add(link.getTestCaseId());
@@ -119,11 +119,17 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
         TestSuiteTestCaseLink link = new TestSuiteTestCaseLink();
         link.setIsRun(true);
         link.setTestCaseId(testCase.getIdForDisplay());
-
+       
         for (VariableEntity variable : testCase.getVariables()) {
             VariableLink variableLink = new VariableLink();
             variableLink.setVariableId(variable.getId());
-            link.getVariableLinks().add(variableLink);
+            //if(containTestCasePk(variable.getId())){
+            //  variableLink.setVariableId(variable.getId()+1);
+             // link.getVariableLinks().add(variableLink);
+          //  }else{
+                link.getVariableLinks().add(variableLink);
+          //  }
+          
         }
         return link;
     }

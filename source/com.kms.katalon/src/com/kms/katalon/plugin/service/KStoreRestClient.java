@@ -33,6 +33,7 @@ import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStorePlugin;
+import com.kms.katalon.plugin.models.KStoreProduct;
 import com.kms.katalon.plugin.models.KStoreToken;
 import com.kms.katalon.plugin.util.KStoreTokenService;
 
@@ -144,8 +145,8 @@ public class KStoreRestClient {
         try {
             KStoreToken token = getToken();
             if (token != null) {
-                String searchPluginUrl = getSearchPluginUrl(token.getToken());
-                Program.launch(searchPluginUrl);
+                String searchPluginPageUrl = getSearchPluginUrl(token.getToken());
+                Program.launch(searchPluginPageUrl);
             }
         } catch (Exception e) {
             propagateIfInstanceOf(e, KStoreClientException.class);
@@ -157,8 +158,21 @@ public class KStoreRestClient {
         try {
             KStoreToken token = getToken();
             if (token != null) {
-                String managePluginsUrl = getManagePluginUrl(token.getToken());
-                Program.launch(managePluginsUrl);
+                String managePluginsPageUrl = getManagePluginUrl(token.getToken());
+                Program.launch(managePluginsPageUrl);
+            }
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during opening Manage Plugins page", e);
+        }
+    }
+    
+    public void goToProductPage(KStoreProduct product) throws KStoreClientException {
+        try {
+            KStoreToken token = getToken();
+            if (token != null) {
+                String productPageUrl = getProductPageUrl(product, token.getToken());
+                Program.launch(productPageUrl);
             }
         } catch (Exception e) {
             propagateIfInstanceOf(e, KStoreClientException.class);
@@ -223,6 +237,10 @@ public class KStoreRestClient {
         return getKatalonStoreUrl() + "/manage/products?token=" + token;
     }
     
+    private String getProductPageUrl(KStoreProduct product, String token) {
+        return getKatalonStoreUrl() + product.getUrl() + "?token=" + token;
+    }
+    
     private String getAuthenticateAPIUrl() {
         return getKatalonStoreAPIUrl() + "/authenticate";
     }
@@ -241,7 +259,6 @@ public class KStoreRestClient {
     
     private String getKatalonStoreUrl() {
         return "https://store-staging.katalon.com";
-//        return "http://localhost:3000";
     }
     
     private interface OnRequestSuccessHandler {

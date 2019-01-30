@@ -18,6 +18,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -96,7 +97,13 @@ public class LauncherOptionParserPlatformBuilderImpl implements PlatformLauncher
 				executedEntity.setReportLocation(reportableSetting.getReportLocationSetting());
 				executedEntity.setEmailConfig(reportableSetting.getEmailConfig(project));
 				executedEntity.setRerunSetting(rerunSetting);
-				executedEntity.prepareTestCases();
+				
+				if (testSuiteQuery.getValue() == null){
+	                executedEntity.prepareTestCases();
+	            } else {
+	            	executedEntity.prepareTestCasesWithTestSuiteQuery(testSuiteQuery.getValue());
+	            }
+				
 				AbstractRunConfiguration runConfig = (AbstractRunConfiguration) createRunConfiguration(project,
 						clonedTestSuite, browserTypeOption.getValue());
 
@@ -120,6 +127,11 @@ public class LauncherOptionParserPlatformBuilderImpl implements PlatformLauncher
 		}
 		
 		private TestSuiteEntity preExecution(TestSuiteEntity testSuite) {
+			// Should not interfere with Filtering Test Suite 
+			if(testSuite instanceof FilteringTestSuiteEntity){
+				return testSuite;
+			}
+			
 			TestCaseController testCaseController = ApplicationManager.getInstance().getControllerManager()
 					.getController(TestCaseController.class);
 

@@ -68,8 +68,9 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 		this.tableViewer = tableViewer;
 		setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
 		setAllowMultiple(false);
-		updateTestCaseTreeEntities();
+		
 		setDoubleClickSelects(false);
+		updateTestCaseTreeEntities();
 	}
 
 	/*
@@ -128,7 +129,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 		}
 		setReturnCode(IDialogConstants.SELECT_TYPES_ID);
 		try {
-			updateTestCaseTableViewer();
+			updateTestCaseTableViewer(); 
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);
 		}
@@ -153,10 +154,8 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
      * @throws Exception
      */
     public void updateTestCaseTableViewer() throws Exception {
-        List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
-        List<TestSuiteTestCaseLink> links = tableViewer.getInput();
-
-
+       List<Object> selectedObjects = new ArrayList<Object>(Arrays.asList(getResult()));
+       List<TestSuiteTestCaseLink> links = tableViewer.getInput();
 		// add new checked items
 		for (Object object : selectedObjects) {
 			if (!(object instanceof ITreeEntity)) {
@@ -173,6 +172,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 		// finally, update test case tree entity list
 		updateTestCaseTreeEntities();
 	}
+    
 
 	/**
 	 * Add test case folder into test case table viewer
@@ -291,7 +291,7 @@ public class TestCaseSelectionDialog extends TreeEntitySelectionDialog {
 			TestCaseController c = TestCaseController.getInstance();
 			for (String id : ids) {
 				TestCaseEntity tc = c.getTestCase(id);
-				testCaseList.add(TreeEntityUtil.getTestCaseTreeEntity(tc, tc.getProject()));
+				TestCaseTreeEntity tcTree = TreeEntityUtil.getTestCaseTreeEntity(tc, tc.getProject());		
 			}
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);

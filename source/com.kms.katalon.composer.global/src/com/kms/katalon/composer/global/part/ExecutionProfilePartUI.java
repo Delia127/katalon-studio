@@ -30,6 +30,7 @@ public class ExecutionProfilePartUI {
     private static final String GLOBAL_VARIABLE_EDITOR_PART_URI = BUNDLE_URI_EXECUTION_PROFILE
     		+ GlobalVariableEditorPart.class.getName();
     
+    
     private MCompositePart executionProfileCompositePart;
     
     private MPart globalVariablePart;
@@ -100,13 +101,11 @@ public class ExecutionProfilePartUI {
             subPartStack.getChildren().add(globalVariableEditorPart);
             subPartStack.setSelectedElement(globalVariableEditorPart);
         }
-        
         stack.setSelectedElement(executionProfileCompositePart);
         
         partService.activate(executionProfileCompositePart);
         partService.activate(globalVariableEditorPart);
         partService.activate(globalVariablePart);
-           
         tabFolder = (CTabFolder) subPartStack.getWidget();
         
         initComponents();
@@ -135,6 +134,11 @@ public class ExecutionProfilePartUI {
         return tabFolder.getItem(1);
     }
     
+    public CTabItem getGlobalVariableAddTab(){
+		return tabFolder.getItem(2);
+    	
+    }
+    
     public MPart getGlobalVariablePart(){
     	return globalVariablePart;
     }
@@ -142,4 +146,5 @@ public class ExecutionProfilePartUI {
     public MPart getGlobalVariableEditorPart(){
     	return globalVariableEditorPart;
     }
+    
 }

@@ -22,6 +22,8 @@ public interface IImageKeys {
     public static final String FAQ_34 = "welcome/faqs_34.png"; //$NON-NLS-1$
 
     public static final String USER_GUIDE_34 = "welcome/user_guide_34.png"; //$NON-NLS-1$
+    
+    public static final String KATALON_STORE_34 = "welcome/katalon_store_34.png"; //$NON-NLS-1$
 
     public static final String TUTORIAL_34 = "welcome/tutorial_34.png"; //$NON-NLS-1$
     
@@ -707,7 +709,11 @@ public interface IImageKeys {
     // Api Quick Start
     public static final String API_QUICKSTART_BACKGROUND = "api_quickstart/bg.png"; //$NON-NLS-1$
     
-    public static final String NEW_DRAFT_REST_REQUEST = "api_quickstart/new_draft_rest.png";  //$NON-NLS-1$
+    public static final String NEW_DRAFT_REST_REQUEST = "api_quickstart/new_draft_rest.png";
+    
+    public static final String NEW_DRAFT_REST_WEB_REQUEST = "api_quickstart/new_draft_rest.png";
+    
+    public static final String NEW_DRAFT_REST_MOBILE_REQUEST = "api_quickstart/new_draft_rest.png";//$NON-NLS-1$
     
     public static final String NEW_DRAFT_SOAP_REQUEST = "api_quickstart/new_draft_soap.png"; //$NON-NLS-1$
     
@@ -715,7 +721,11 @@ public interface IImageKeys {
     
     public static final String IMPORT_WSDL = "api_quickstart/import_wsdl.png"; //$NON-NLS-1$
     
-    public static final String API_QUICKSTART_BACKGROUND_LEFT = "api_quickstart/bg_left_part.png"; //$NON-NLS-1$
+    public static final String API_QUICKSTART_BACKGROUND_LEFT = "api_quickstart/quick_startAPI.png"; //$NON-NLS-1$
+    
+    public static final String API_QUICKSTART_BACKGROUND_WEB_LEFT = "api_quickstart/quick_startweb.png";
+    
+    public static final String API_QUICKSTART_BACKGROUND_MOBILE_LEFT = "api_quickstart/quick_startmobile.png";
     
     // In App Survey
     public static final String STAR = "highlight_24.png";

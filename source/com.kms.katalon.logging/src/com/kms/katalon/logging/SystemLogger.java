@@ -82,7 +82,7 @@ public class SystemLogger extends PrintStream {
         return Platform.getLogFileLocation().toFile();
     }
 
-    public void addWriter(PrintStream printStream) {
+    public void setWriter(PrintStream printStream) {
         this.writer = printStream;
     }
 }
