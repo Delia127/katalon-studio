@@ -26,7 +26,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     private static final String EXECUTION_PROFILE_OPTION = "executionProfile";
     
     private StringConsoleOption testSuitePathOption = new StringConsoleOption() {
-    	
+        
         @Override
         public String getOption() {
             return ConsoleMain.TESTSUITE_ID_OPTION;
@@ -49,12 +49,12 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     };
 
     private StringConsoleOption executionProfileOption = new StringConsoleOption() {
-		@Override
-		public String getOption() {
-			return EXECUTION_PROFILE_OPTION;
-		}
-		
-    	public boolean isRequired() {
+        @Override
+        public String getOption() {
+            return EXECUTION_PROFILE_OPTION;
+        }
+        
+        public boolean isRequired() {
             return false;
         }
 
@@ -76,12 +76,12 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-		super.setArgumentValue(consoleOption, argumentValue);
-		if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
-				|| consoleOption == executionProfileOption) {
-			consoleOption.setValue(argumentValue);
-			return;
-		}
+        super.setArgumentValue(consoleOption, argumentValue);
+        if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
+                || consoleOption == executionProfileOption) {
+            consoleOption.setValue(argumentValue);
+            return;
+        }
     }
     
     @Override

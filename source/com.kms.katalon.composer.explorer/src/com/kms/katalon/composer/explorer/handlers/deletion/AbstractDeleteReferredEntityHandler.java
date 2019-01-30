@@ -68,6 +68,14 @@ public abstract class AbstractDeleteReferredEntityHandler implements IDeleteEnti
         return response == IDialogConstants.YES_TO_ALL_ID || response == IDialogConstants.NO_TO_ALL_ID;
     }
 
+    protected boolean isNoToAllResponse() {
+        return response == IDialogConstants.YES_TO_ALL_ID;
+    }
+
+    protected boolean isYesToAllResponse() {
+        return response == IDialogConstants.NO_TO_ALL_ID;
+    }
+
     protected boolean isDefaultResponse() {
         return response == defaultResponse;
     }
