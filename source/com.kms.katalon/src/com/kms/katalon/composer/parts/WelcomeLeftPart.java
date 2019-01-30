@@ -143,7 +143,7 @@ public class WelcomeLeftPart extends Composite {
 
         CLabel menuItem = new CLabel(inner, SWT.NONE);
         menuItem.setAlignment(SWT.CENTER);
-        menuItem.setImage(ImageConstants.IMG_PLUGIN_STORE);
+        menuItem.setImage(ImageConstants.IMG_KATALON_STORE);
         menuItem.setText(StringConstants.PA_LBL_PLUGIN_STORE);
         menuItem.setForeground(ColorUtil.getDefaultTextColor());
         menuItem.setCursor(CURSOR_HAND);

@@ -23,7 +23,7 @@ public interface IImageKeys {
 
     public static final String USER_GUIDE_34 = "welcome/user_guide_34.png"; //$NON-NLS-1$
     
-    public static final String PLUGIN_STORE_34 = "welcome/plugin_store_34.png"; //$NON-NLS-1$
+    public static final String KATALON_STORE_34 = "welcome/katalon_store_34.png"; //$NON-NLS-1$
 
     public static final String TUTORIAL_34 = "welcome/tutorial_34.png"; //$NON-NLS-1$
     
