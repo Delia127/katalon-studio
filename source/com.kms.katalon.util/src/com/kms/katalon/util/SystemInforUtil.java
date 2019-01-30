@@ -47,7 +47,7 @@ public class SystemInforUtil {
         return ((int) (value * 1000) / 10.0);
     }
 
-    public static String TotalPhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
+    public static String totalPhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
             MalformedObjectNameException, ReflectionException, MBeanException {
         String totalMemory;
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
@@ -60,7 +60,7 @@ public class SystemInforUtil {
         return totalMemory;
     }
 
-    public static String FreePhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
+    public static String freePhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
             MalformedObjectNameException, ReflectionException, MBeanException {
         String freeMemory;
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();

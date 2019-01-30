@@ -1,11 +1,5 @@
 package com.kms.katalon.tracking.service;
 
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-import javax.management.MalformedObjectNameException;
-import javax.management.ReflectionException;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
@@ -39,8 +33,8 @@ public class Trackings {
         totalMemory = SystemInforUtil.getTotalMemory();
         freeMemory = SystemInforUtil.getFreeMemory();
         percentageUsed = SystemInforUtil.getPercentageUsed();
-        freePhysicalMemorySize = SystemInforUtil.FreePhysicalMemorySize();
-        totalPhysicalMemorySize = SystemInforUtil.TotalPhysicalMemorySize();
+        freePhysicalMemorySize = SystemInforUtil.freePhysicalMemorySize();
+        totalPhysicalMemorySize = SystemInforUtil.totalPhysicalMemorySize();
         percentageUsedFormatted = SystemInforUtil.getPercentageUsedFormatted();
         trackAction("openApplication", isAnonymous, "runningMode", runningMode, "percent_cpu", cpu, "max_memory",
                 maxMemory, "used_memory", usedMemory, "total_memory", totalMemory, "free_memory", freeMemory,
