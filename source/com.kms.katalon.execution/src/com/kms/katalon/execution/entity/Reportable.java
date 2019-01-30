@@ -8,6 +8,5 @@ public interface Reportable {
     ReportLocationSetting getReportLocationSetting();
 
     EmailConfig getEmailConfig(ProjectEntity project);
-    
-   // EmailConfig setEmailConfig(EmailConfig emailConfig);
+   
 }
