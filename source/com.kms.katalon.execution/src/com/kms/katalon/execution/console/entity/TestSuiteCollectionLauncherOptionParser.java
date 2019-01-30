@@ -1,24 +1,15 @@
 package com.kms.katalon.execution.console.entity;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
-import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
-import com.kms.katalon.execution.collector.RunConfigurationCollector;
-import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
-import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.console.ConsoleMain;
-import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
-import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.IConsoleLauncher;
@@ -56,33 +47,13 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
 
     @Override
     public IConsoleLauncher getConsoleLauncher(ProjectEntity projectEntity, LauncherManager manager)
-            throws ExecutionException, InvalidConsoleArgumentException, Exception {
+            throws ExecutionException, InvalidConsoleArgumentException {
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity, testSuiteCollectionOption.getValue());
-     //   TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
-     //   executedEntity.setReportable(reportableSetting);;
-       // executedEntity.setEmailConfig(reportableSetting.getEmailConfig(projectEntity));
-     //   executedEntity.setRerunable(rerunSetting);
-        //AbstractRunConfiguration runConfig = (AbstractRunConfiguration) createRunConfiguration(projectEntity, testSuiteCollection,
-              // getConsoleOptionList());
-        
-      //  String profileName = testSuiteCollectionOption.getValue();
-       // if (StringUtils.isBlank(profileName)) {
-      //      profileName = ExecutionProfileEntity.DF_PROFILE_NAME;
-     //   }
-    //    ExecutionProfileEntity executionProfile = GlobalVariableController.getInstance()
-       //         .getExecutionProfile(profileName, projectEntity);
-    //    if (executionProfile == null) {
-      //      throw new ExecutionException(
-         //           MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
-      //  }
-      //  runConfig.setExecutionProfile(executionProfile);
-        //runConfig.setOverridingGlobalVariables(super.getOverridingGlobalVariables());
-       // runConfig.build(testSuiteCollection, executedEntity);
-        //    GlobalVariableController.getInstance().
-      //      generateGlobalVariableLibFileWithSpecificProfile(projectEntity, executionProfile, null);
+        Map<String,Object> sp=super.getOverridingGlobalVariables();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting);
+                rerunSetting,sp);
     }
+
     private TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity projectEntity, String testSuiteCollectionID)
             throws InvalidConsoleArgumentException {
         try {
