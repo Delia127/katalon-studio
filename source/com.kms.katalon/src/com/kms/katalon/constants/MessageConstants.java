@@ -61,6 +61,8 @@ public class MessageConstants extends NLS {
 
     public static String PA_LBL_USER_GUIDE;
     
+    public static String PA_LBL_PLUGIN_STORE;
+    
     public static String PA_LBL_BUSINESS_SUPPORT;
 
     public static String PA_LBL_ARTICLES_DESCRIPTION;
@@ -74,6 +76,8 @@ public class MessageConstants extends NLS {
     public static String PA_TOOLTIP_ARTICLES;
 
     public static String PA_URL_USER_GUIDE;
+    
+    public static String PA_URL_PLUGIN_STORE;
 
     public static String PA_LBL_RECENT_PROJECT;
 

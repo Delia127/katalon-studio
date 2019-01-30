@@ -198,7 +198,8 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_KDRJMAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin">
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_1yN1YAbFEemu-rQeuokE_A" elementId="com.kms.katalon.toolbarseparator.1"/>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_27TkYAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.toolitem" label="Manage Plugin" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/plugin_24.png" tooltip="Manage Plugins" command="_5x1PkB7BEemVq49wBuyKyg">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_27TkYAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.toolitem" label="Plugin Store" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/plugin_store_32_24 .png" tooltip="Plugin Store" command="_5x1PkB7BEemVq49wBuyKyg">
+          <tags>FORCE_TEXT</tags>
           <menu xmi:id="_UvQVUAbGEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.menu">
             <children xsi:type="menu:HandledMenuItem" xmi:id="_gsFroAjzEemqvpskrRucLw" elementId="com.kms.katalon.composer.toolbar.plugin.menu.search" label="Search Plugins in Store" command="_1KbioAj0EemqvpskrRucLw"/>
             <children xsi:type="menu:HandledMenuItem" xmi:id="_EYdBcAj0EemqvpskrRucLw" elementId="com.kms.katalon.composer.toolbar.plugin.menu.manage" label="Manage Installed Plugins" command="_TKym4AhQEemdRPhm8aXnZw"/>

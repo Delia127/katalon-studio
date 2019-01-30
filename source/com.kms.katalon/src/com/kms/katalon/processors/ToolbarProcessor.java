@@ -38,8 +38,7 @@ public class ToolbarProcessor {
             KATALON_MAIN_TOOLBAR_ID,
             KATALON_MAIN_WEBSERVICE_TOOLBAR_ID,
             KATALON_MAIN_GENERIC_TOOLBAR_ID,
-            KATALON_EXECUTION_TOOLBAR_ID,
-            KATALON_PLUGIN_TOOLBAR_ID
+            KATALON_EXECUTION_TOOLBAR_ID
     };
 
     private static final String INDEX_KEY = "index";
