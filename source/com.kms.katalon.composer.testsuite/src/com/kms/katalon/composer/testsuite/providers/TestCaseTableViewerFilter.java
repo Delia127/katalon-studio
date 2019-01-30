@@ -25,7 +25,7 @@ public class TestCaseTableViewerFilter extends ViewerFilter {
 
     public boolean filter(String searchedString, TestSuiteTestCaseLink testCaseLink) {
         if (searchedString == null || searchedString.isEmpty()) return true;
-        String contentString = searchedString.trim().toLowerCase();
+        String contentString = searchedString.trim();
 
         String testCaseId = testCaseLink.getTestCaseId();
         if (testCaseId.contains(searchedString)) return true;

@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -31,6 +32,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -48,33 +50,33 @@ import com.kms.katalon.entity.project.ProjectEntity;
 @SuppressWarnings("unchecked")
 public class ManageTestCaseTagDialog extends Dialog {
 
-    public static final int CM_APPEND_TAGS = 1001;
+	public static final int CM_APPEND_TAGS = 1001;
 
-    private TestCaseSettingStore store;
+	private TestCaseSettingStore store;
 
-    private TableViewer tagTableViewer;
+	private TableViewer tagTableViewer;
 
-    private List<TagTableViewerItem> tagItems;
+	private List<TagTableViewerItem> tagItems;
 
-    private Set<String> currentTestCaseTags;
+	private Set<String> currentTestCaseTags;
 
-    private Set<String> appendedTags;
+	private Set<String> appendedTags;
 
-    private Text txtSearch;
+	private Text txtSearch;
 
-    private Button btnAppendTags;
+	private Button btnAppendTags;
 
-    private Button btnClose;
+	private Button btnCancel;
 
-    public ManageTestCaseTagDialog(Shell parentShell, Set<String> currentTestCaseTags) {
-        super(parentShell);
-        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        store = new TestCaseSettingStore(project.getFolderLocation());
-        this.currentTestCaseTags = currentTestCaseTags;
-        initializeTagInput();
-    }
+	public ManageTestCaseTagDialog(Shell parentShell, Set<String> currentTestCaseTags) {
+		super(parentShell);
+		ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+		store = new TestCaseSettingStore(project.getFolderLocation());
+		this.currentTestCaseTags = currentTestCaseTags;
+		initializeTagInput();
+	}
 
-    private void initializeTagInput() {
+	private void initializeTagInput() {
         try {
             Set<String> allTagsInProject = store.getTestCaseTags();
             Set<String> inputTags = new HashSet<>();
@@ -100,7 +102,7 @@ public class ManageTestCaseTagDialog extends Dialog {
         }
     }
 
-    @Override
+	@Override
     protected Control createDialogArea(Composite parent) {
         Composite body = new Composite(parent, SWT.NONE);
         body.setLayout(new GridLayout(1, false));
@@ -118,6 +120,7 @@ public class ManageTestCaseTagDialog extends Dialog {
 
         tagTableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         tagTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        
         Table tagTable = tagTableViewer.getTable();
         tagTable.setHeaderVisible(true);
         tagTable.setLinesVisible(true);
@@ -127,10 +130,14 @@ public class ManageTestCaseTagDialog extends Dialog {
         TableColumn tableColumnTagName = tableViewerColumnTagName.getColumn();
         tableColumnTagName.setText(ComposerTestcaseMessageConstants.ManageTestCaseTagDialog_TAG_TABLE_COL_TAG);
         tableViewerColumnTagName.setLabelProvider(new ColumnLabelProvider() {
+            
             @Override
-            public String getText(Object element) {
-                TagTableViewerItem item = (TagTableViewerItem) element;
-                return item.getTagName();
+            public void update(final ViewerCell cell) {
+            	TagTableViewerItem rowItem = (TagTableViewerItem) cell.getElement();
+                if (!rowItem.isEditable()) {
+                    cell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY)); 
+                }
+                cell.setText(rowItem.getTagName());
             }
         });
 
@@ -151,9 +158,9 @@ public class ManageTestCaseTagDialog extends Dialog {
         buttonComposite.setLayout(new GridLayout(2, false));
         buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false));
 
-        btnClose = new Button(buttonComposite, SWT.NONE);
-        btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
-        btnClose.setText(IDialogConstants.CLOSE_LABEL);
+        btnCancel = new Button(buttonComposite, SWT.NONE);
+        btnCancel.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+        btnCancel.setText(IDialogConstants.CANCEL_LABEL);
 
         btnAppendTags = new Button(buttonComposite, SWT.NONE);
         btnAppendTags.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
@@ -179,7 +186,7 @@ public class ManageTestCaseTagDialog extends Dialog {
             };
         });
 
-        btnClose.addSelectionListener(new SelectionAdapter() {
+        btnCancel.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 cancelPressed();
@@ -305,4 +312,5 @@ public class ManageTestCaseTagDialog extends Dialog {
             this.isEditable = isEditable;
         }
     }
+    
 }

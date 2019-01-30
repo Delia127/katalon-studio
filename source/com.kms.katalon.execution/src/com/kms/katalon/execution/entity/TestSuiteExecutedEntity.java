@@ -150,11 +150,10 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
         testDataMap.clear();
 
-        List<IExecutedEntity> executedItems = new ArrayList<>();
-        for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance()
-                .getTestSuiteTestCaseRun(testSuite)) {
-            TestCaseEntity testCase = TestCaseController.getInstance()
-                    .getTestCaseByDisplayId(testCaseLink.getTestCaseId());
+        List<TestSuiteTestCaseLink> ls = TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite);
+        for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite)) {
+            TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
+                    testCaseLink.getTestCaseId());
 
             if (testCase == null) {
                 throw new IllegalArgumentException(MessageFormat.format(StringConstants.UTIL_EXC_TEST_CASE_X_NOT_FOUND,
@@ -172,7 +171,8 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             // make sure all TestDataExecutedEntity in testCaseExecutedEntity
             // has the same rows to prevent NullPointerException
 
-            executedItems.add(testCaseExecutedEntity);
+            List<IExecutedEntity> ls1 = getExecutedItems();
+            getExecutedItems().add(testCaseExecutedEntity);
         }
         return executedItems;
     }
@@ -206,7 +206,9 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
                 numTestDataRowUsedManyTimes *= rowCount;
                 updateMultiplierForSibblingTestDataExecuted(testCaseExecutedEntity, rowCount);
             }
+            List<TestDataExecutedEntity> ls = testCaseExecutedEntity.getTestDataExecutions();
             testCaseExecutedEntity.getTestDataExecutions().add(testDataExecutedEntity);
+            System.out.println("hello");
         }
 
         testCaseExecutedEntity.setLoopTimes(numTestDataRowUsedManyTimes * Math.max(numberTestCaseUsedOnce, 1));

@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.katalon.platform.api.Plugin;
@@ -23,8 +22,7 @@ import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class FilterController {
 
-    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment", "description",
-            "folder");
+    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment", "description");
     
     private static final List<String> DEFAULT_KEYWORDS_FOR_INPUTS = Arrays.asList("id", "name", "tag", "comment", "description");
     
@@ -137,10 +135,10 @@ public class FilterController {
         }
         switch (keyword) {
         	case "ids":
-        		return textContainsEntityId(text, fileEntity);
+        		return textContainsEntityId(text.toLowerCase(), fileEntity);
             case "id":
-                return ObjectUtils.equals(fileEntity.getIdForDisplay(), text) ||
-                        fileEntity.getIdForDisplay().startsWith(text + "/");
+                return StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), text) 
+                		|| StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), text + "/");
             case "name":
                 return StringUtils.containsIgnoreCase(fileEntity.getName(), text);
             case "tag":
@@ -159,8 +157,9 @@ public class FilterController {
     	return Arrays.asList(text.split(CONTENT_DELIMITER))
     			.stream()
     			.map(a -> a.trim())
-    			.collect(Collectors.toList())
-    			.contains(fileEntity.getIdForDisplay());
+    			.filter(a -> StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), a) 
+                		|| StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), a + "/"))
+    			.findAny().isPresent();
 	}
 
 	private boolean isAdvancedTagPluginInstalled() {
@@ -170,7 +169,7 @@ public class FilterController {
     
     private boolean entityHasTags(FileEntity fileEntity, String searchTagValues) {
         if (StringUtils.isBlank(searchTagValues)) {
-            return false;
+            return true;
         }
         
         String entityTagValues = fileEntity.getTag();

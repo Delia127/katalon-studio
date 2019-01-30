@@ -19,7 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -812,8 +811,6 @@ public class WebUiCommonHelper extends KeywordHelper {
     	}    	
     	
     	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_START);
-    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_TRIGGER);
-    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_LEARN_ABOUT);
     	logger.logInfo("");
     	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_USING);
 
@@ -840,7 +837,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     		if(elementsFoundByThisXPath != null 
     				&& elementsFoundByThisXPath.size() > 0){
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS, 
-                		testObject.getObjectId(), thisXPath.getValue()));
+                		thisXPath.getValue()));
                 elementsFoundBeforeNeighborXPaths = elementsFoundByThisXPath;
 
 				String jsAutoHealingPath = RunConfiguration.getProjectDir()
@@ -860,7 +857,6 @@ public class WebUiCommonHelper extends KeywordHelper {
 		if(elementsFoundBeforeNeighborXPaths.size() > 0 && smartXPathsEnabled == true){
 			logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION);
 	    	logger.logInfo("");
-	    	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_OFF_SMART_XPATHS);
 	    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
 			return elementsFoundBeforeNeighborXPaths;			
 			
@@ -869,7 +865,6 @@ public class WebUiCommonHelper extends KeywordHelper {
 		}
 		
     	logger.logInfo("");
-    	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_ON_SMART_XPATHS);
     	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
 
     	return Collections.emptyList();    	
