@@ -167,6 +167,19 @@ public class KStoreRestClient {
         }
     }
     
+    public void goToManageApiKeysPage() throws KStoreClientException {
+        try {
+            KStoreToken token = getToken();
+            if (token != null) {
+                String manageApiKeysPageUrl = getManageApiKeysPageUrl(token.getToken());
+                Program.launch(manageApiKeysPageUrl);
+            }
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during opening Manage API Keys page", e);
+        }
+    }
+    
     public void goToProductPage(KStoreProduct product) throws KStoreClientException {
         try {
             KStoreToken token = getToken();
@@ -235,6 +248,10 @@ public class KStoreRestClient {
     
     private String getManagePluginUrl(String token) {
         return getKatalonStoreUrl() + "/manage/products?token=" + token;
+    }
+    
+    private String getManageApiKeysPageUrl(String token) {
+        return getKatalonStoreUrl() + "/settings?token=" + token;
     }
     
     private String getProductPageUrl(KStoreProduct product, String token) {
