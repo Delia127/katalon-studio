@@ -2,7 +2,6 @@ package com.kms.katalon.composer.webservice.parts;
 
 //import java.awt.Label;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,8 +66,6 @@ import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestServicePart extends WebServicePart {
-    
-    private static final String DUMMY_PROTOCOL = "http://";
 
     protected HttpBodyEditorComposite requestBodyEditor;
 
@@ -81,10 +78,6 @@ public class RestServicePart extends WebServicePart {
     private Label lblBodyNotSupported;
 
     private ModifyListener requestURLModifyListener;
-
-    private boolean allowEditParamsTable = true;
-    
-    private boolean useDummyProtocolForUrl = false;
 
     @Override
     protected void createAPIControls(Composite parent) {
@@ -260,36 +253,13 @@ public class RestServicePart extends WebServicePart {
     }
 
     private void updateParamsTable(String newUrl) {
-        try {
-            params = extractRestParameters(newUrl);
-            allowEditParamsTable = true;
-        } catch (MalformedURLException e) {
-            urlBuilder = null;
-            params = new ArrayList<>();
-            allowEditParamsTable = false;
-        }
+        params = extractRestParameters(newUrl);
         tblParams.setInput(params);
         tblParams.refresh();
     }
     
-    private void updateParamsTable(WebServiceRequestEntity entity){
-        tblParams.setInput(entity.getRestParameters());
-        tblParams.refresh();
-    }
-    
-    private List<WebElementPropertyEntity> extractRestParameters(String url) throws MalformedURLException {
-        List<WebElementPropertyEntity> paramEntities;
-        
-        //Fix for KAT-3862, prepend the URL with a dummy protocol
-        //in case its host is parameterized, which causes a protocol is 
-        //missing and URLBuilder cannot parse it
-        if (isHostParameterized(url)) {
-            url = StringUtils.prependIfMissing(url, DUMMY_PROTOCOL);
-            useDummyProtocolForUrl = true;
-        } else {
-            useDummyProtocolForUrl = false;
-        }
-        
+    private List<WebElementPropertyEntity> extractRestParameters(String url) {
+        List<WebElementPropertyEntity> paramEntities = new ArrayList<>();
         
         urlBuilder = new URLBuilder(url);
         List<NameValuePair> params = urlBuilder.getQueryParams();
@@ -297,10 +267,6 @@ public class RestServicePart extends WebServicePart {
                 .collect(Collectors.toList());
 
         return paramEntities;
-    }
-    
-    private boolean isHostParameterized(String url) {
-        return url.startsWith("${");
     }
 
     @Override
@@ -365,26 +331,17 @@ public class RestServicePart extends WebServicePart {
         tblParams.setInput(unselectedParamProperties);
         tblParams.refresh();
 
-        if (allowEditParamsTable) {
-            updateRequestUrlWithNewParams(unselectedParamProperties);
-        }
+        updateRequestUrlWithNewParams(unselectedParamProperties);
     }
 
     private void updateRequestUrlWithNewParams(List<WebElementPropertyEntity> paramProperties) {
         List<NameValuePair> params = toNameValuePair(paramProperties);
         urlBuilder.setParameters(params);
-        try {
-            String newUrl = urlBuilder.build().toString();
-            if (useDummyProtocolForUrl) {
-                newUrl = StringUtils.removeStart(newUrl, DUMMY_PROTOCOL);
-            }
-            Text text = wsApiControl.getRequestURLControl();
-            text.removeModifyListener(requestURLModifyListener);
-            text.setText(newUrl);
-            text.addModifyListener(requestURLModifyListener);
-        } catch (MalformedURLException ignored) {
-
-        }
+        String newUrl = urlBuilder.buildString();
+        Text text = wsApiControl.getRequestURLControl();
+        text.removeModifyListener(requestURLModifyListener);
+        text.setText(newUrl);
+        text.addModifyListener(requestURLModifyListener);
     }
 
     private List<NameValuePair> toNameValuePair(List<WebElementPropertyEntity> propertyEntities) {
@@ -394,8 +351,7 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void handleRequestParamNameChanged(Object element, Object value) {
-        if (element != null && element instanceof WebElementPropertyEntity && value != null && value instanceof String
-                && allowEditParamsTable) {
+        if (element != null && element instanceof WebElementPropertyEntity && value != null && value instanceof String) {
 
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setName((String) value);
@@ -408,8 +364,7 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void handleRequestParamValueChanged(Object element, Object value) {
-        if (element != null && element instanceof WebElementPropertyEntity && value != null && value instanceof String
-                && allowEditParamsTable) {
+        if (element != null && element instanceof WebElementPropertyEntity && value != null && value instanceof String) {
 
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setValue((String) value);

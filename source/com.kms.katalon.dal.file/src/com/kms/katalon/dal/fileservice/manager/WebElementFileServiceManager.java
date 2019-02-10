@@ -1,7 +1,6 @@
 package com.kms.katalon.dal.fileservice.manager;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,21 +53,19 @@ public class WebElementFileServiceManager {
         if (WebServiceRequestEntity.RESTFUL.equals(requestEntity.getServiceType())) {
             if (!requestEntity.getRestParameters().isEmpty()) {
                 String restUrl = requestEntity.getRestUrl();
-                try {
-                    URLBuilder urlBuilder = new URLBuilder(restUrl);
-                    
-                    List<WebElementPropertyEntity> paramProperties = requestEntity.getRestParameters();
-                    requestEntity.setRestParameters(Collections.emptyList());
-                    List<NameValuePair> params = paramProperties
-                            .stream()
-                            .map(pr -> new NameValuePair(pr.getName(), pr.getValue()))
-                            .collect(Collectors.toList());
-                    
-                    urlBuilder.addParameters(params);
-                    requestEntity.setRestUrl(urlBuilder.build().toString());
-                    requestEntity.setRestParameters(Collections.emptyList());
-                } catch (MalformedURLException ignored) {
-                }
+                
+                URLBuilder urlBuilder = new URLBuilder(restUrl);
+                
+                List<WebElementPropertyEntity> paramProperties = requestEntity.getRestParameters();
+                requestEntity.setRestParameters(Collections.emptyList());
+                List<NameValuePair> params = paramProperties
+                        .stream()
+                        .map(pr -> new NameValuePair(pr.getName(), pr.getValue()))
+                        .collect(Collectors.toList());
+                
+                urlBuilder.addParameters(params);
+                requestEntity.setRestUrl(urlBuilder.buildString());
+                requestEntity.setRestParameters(Collections.emptyList());
             }
             
             if (StringUtils.isBlank(requestEntity.getHttpBodyType()) 
