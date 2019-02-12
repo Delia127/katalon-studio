@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.handlers;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -8,7 +10,9 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -32,6 +36,8 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     @Inject
     private IEventBroker eventBroker;
+    
+    private static final long DIALOG_CLOSED_DELAY_MILLIS = 500L;
 
     private PluginPreferenceStore store;
     
@@ -62,6 +68,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
     }
 
     private void reloadPlugins(boolean silenceMode) {
+        List<ResultItem>[] resultHolder = new List[1];
         reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
@@ -75,11 +82,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                         }
                     });
                     if (credentials[0] != null) {
-                        List<ResultItem> result = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
-                        if (!silenceMode) {
-                            UISynchronizeService.syncExec(() -> openResultDialog(result));
-                        }
-                        
+                        resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
                         if (!store.hasReloadedPluginsBefore()) {
                             store.markFirstTimeReloadPlugins();
                         }
@@ -94,6 +97,27 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                 return Status.OK_STATUS;
             }
         };
+        
+        reloadPluginsJob.addJobChangeListener(new JobChangeAdapter() {
+            @Override
+            public void done(IJobChangeEvent event) {
+                if (!reloadPluginsJob.getResult().isOK()) {
+                    return;
+                }
+                
+                if (silenceMode) {
+                    return;
+                }
+                
+                Executors.newSingleThreadExecutor().submit(() -> {
+                    try {
+                        //wait for Reloading Plugins dialog to close 
+                        TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
+                    } catch (InterruptedException ignored) {}
+                    UISynchronizeService.syncExec(() -> openResultDialog(resultHolder[0]));
+                });
+            }
+        });
 
         if (silenceMode) {
             reloadPluginsJob.setUser(false);
