@@ -213,7 +213,7 @@ public class LifeCycleManager {
                 }
             }
 
-            private boolean checkActivation(final IEventBroker eventBroker) {
+            private boolean checkActivation(final IEventBroker eventBroker) throws Exception {
 //                if (VersionUtil.isInternalBuild()) {
 //                    return true;
 //                }
