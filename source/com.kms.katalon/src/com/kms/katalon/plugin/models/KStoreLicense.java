@@ -1,7 +1,5 @@
 package com.kms.katalon.plugin.models;
 
-import java.util.Date;
-
 public class KStoreLicense {
 
     private long id;
@@ -12,9 +10,9 @@ public class KStoreLicense {
     
     private int day;
     
-    private Date createdAt;
+    private String createdAt;
     
-    private Date updatedAt;
+    private String updatedAt;
 
     public long getId() {
         return id;
@@ -48,19 +46,19 @@ public class KStoreLicense {
         this.day = day;
     }
 
-    public Date getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 }
