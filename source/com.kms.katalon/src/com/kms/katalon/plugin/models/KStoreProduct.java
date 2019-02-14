@@ -1,7 +1,6 @@
 package com.kms.katalon.plugin.models;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 public class KStoreProduct {
 
@@ -19,15 +18,15 @@ public class KStoreProduct {
     
     private String license;
     
-    private Date releaseDate;
+    private String releaseDate;
     
     private String qaUrl;
     
     private String status;
     
-    private Date createdAt;
+    private String createdAt;
     
-    private Date updatedAt;
+    private String updatedAt;
     
     private String overview;
     
@@ -91,11 +90,11 @@ public class KStoreProduct {
         this.license = license;
     }
 
-    public Date getReleaseDate() {
+    public String getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
     }
 
@@ -115,19 +114,19 @@ public class KStoreProduct {
         this.status = status;
     }
 
-    public Date getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 

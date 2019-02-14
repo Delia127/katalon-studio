@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.handlers;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -24,8 +26,8 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.plugin.dialog.KStorePluginsDialog;
-import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
+import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.service.PluginService;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
@@ -34,11 +36,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     @Inject
     private IEventBroker eventBroker;
-
-    private boolean isReloading = false;
+    
+    private static final long DIALOG_CLOSED_DELAY_MILLIS = 500L;
 
     private PluginPreferenceStore store;
     
+    private Job reloadPluginsJob;
     
     @PostConstruct
     public void registerEventListener() {
@@ -56,11 +59,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     @CanExecute
     public boolean canExecute() {
-        if (isReloading) {
-            return false;
-        } else {
-            return true;
-        }
+        return true;
     }
 
     @Execute
@@ -69,7 +68,8 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
     }
 
     private void reloadPlugins(boolean silenceMode) {
-        Job reloadPluginsJob = new Job("Reloading plugins...") {
+        List<ResultItem>[] resultHolder = new List[1];
+        reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
@@ -82,11 +82,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                         }
                     });
                     if (credentials[0] != null) {
-                        List<ResultItem> result = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
-                        if (!silenceMode) {
-                            UISynchronizeService.syncExec(() -> openResultDialog(result));
-                        }
-                        
+                        resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
                         if (!store.hasReloadedPluginsBefore()) {
                             store.markFirstTimeReloadPlugins();
                         }
@@ -101,17 +97,25 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                 return Status.OK_STATUS;
             }
         };
-
+        
         reloadPluginsJob.addJobChangeListener(new JobChangeAdapter() {
             @Override
-            public void aboutToRun(IJobChangeEvent event) {
-                isReloading = true;
-            }
-
-            @Override
             public void done(IJobChangeEvent event) {
-                isReloading = false;
-                event.getJob().removeJobChangeListener(this);
+                if (!reloadPluginsJob.getResult().isOK()) {
+                    return;
+                }
+                
+                if (silenceMode) {
+                    return;
+                }
+                
+                Executors.newSingleThreadExecutor().submit(() -> {
+                    try {
+                        //wait for Reloading Plugins dialog to close 
+                        TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
+                    } catch (InterruptedException ignored) {}
+                    UISynchronizeService.syncExec(() -> openResultDialog(resultHolder[0]));
+                });
             }
         });
 
