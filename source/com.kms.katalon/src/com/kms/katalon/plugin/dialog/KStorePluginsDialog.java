@@ -3,6 +3,7 @@ package com.kms.katalon.plugin.dialog;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
@@ -115,7 +116,7 @@ public class KStorePluginsDialog extends Dialog {
         tableLayout.setColumnData(tableColumnUpdateLink, new ColumnWeightData(20, 30));
         tableComposite.setLayout(tableLayout);
         
-        pluginTableViewer.setInput(result);
+        pluginTableViewer.setInput(collectInstalledPluginResults(result));
         
         Button btnClose = new Button(body, SWT.NONE);
         btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
@@ -129,6 +130,14 @@ public class KStorePluginsDialog extends Dialog {
         });
         
         return body;
+    }
+    
+    private List<ResultItem> collectInstalledPluginResults(List<ResultItem> resultItems) {
+        List<ResultItem> installedPluginResults = resultItems
+            .stream()
+            .filter(result -> result.isPluginInstalled())
+            .collect(Collectors.toList());
+        return installedPluginResults;
     }
     
     @Override
