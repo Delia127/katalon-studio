@@ -124,4 +124,8 @@ public class ComposerJiraIntegrationMessageConstant extends NLS {
     public static String VIEW_LBL_KEY;
 
     public static String VIEW_TOOLTIP_VIEW_ISSUE_ON_JIRA;
+    
+    public static String JiraSettingsComposite_MSG_DEPRECATED;
+    
+    public static String JiraSettingsComposite_MSG_MOVE_SETTINGS;
 }

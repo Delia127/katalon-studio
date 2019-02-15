@@ -70,6 +70,7 @@ public class TestCaseControllerImpl implements com.katalon.platform.api.controll
             testCase.setComment(newDescription.getComment());
             testCase.setParentFolder(folder);
             testCase.setProject(currentProject);
+            testCase.setTag(newDescription.getTag());
 
             return new TestCaseEntityImpl(testCaseController.saveNewTestCase(testCase));
         } catch (ControllerException e) {
@@ -118,6 +119,7 @@ public class TestCaseControllerImpl implements com.katalon.platform.api.controll
 
             testCaseEntity.setDescription(updateDescription.getDescription());
             testCaseEntity.setComment(updateDescription.getComment());
+            testCaseEntity.setTag(updateDescription.getTag());
 
             TestCaseEntity updated = testCaseController.updateTestCase(testCaseEntity);
 

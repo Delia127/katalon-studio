@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -20,9 +21,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.atlassian.jira.rest.client.api.domain.User;
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.integration.jira.JiraUIComponent;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.composer.integration.jira.constant.StringConstants;
 import com.kms.katalon.composer.integration.jira.preference.JiraConnectionJob.JiraConnectionResult;
@@ -33,7 +37,7 @@ import com.kms.katalon.integration.jira.entity.JiraIssueType;
 import com.kms.katalon.integration.jira.entity.JiraProject;
 import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 
-public class JiraSettingsComposite {
+public class JiraSettingsComposite implements JiraUIComponent {
 
     private Composite container;
 
@@ -65,6 +69,12 @@ public class JiraSettingsComposite {
 
     private Button chckEncrypt;
 
+    private Composite settingComposite;
+
+    private Composite overridedComposite;
+
+    private StackLayout stackLayout;
+
     public JiraSettingsComposite() {
         settingStore = new JiraIntegrationSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
@@ -81,7 +91,7 @@ public class JiraSettingsComposite {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Shell shell = getShell();
-                JiraConnectionJob job = new JiraConnectionJob(shell, getCredential());
+                JiraConnectionJob job = new JiraConnectionJob(shell, getEdittingCredential());
                 JiraConnectionResult result = job.run();
                 if (result.getError() != null) {
                     MessageDialog.openError(shell, StringConstants.ERROR, result.getError().getMessage());
@@ -122,6 +132,12 @@ public class JiraSettingsComposite {
 
     public void initializeData() {
         try {
+            if (isJiraPluginEnabled()) {
+                stackLayout.topControl = overridedComposite;
+                return;
+            }
+            stackLayout.topControl = settingComposite;
+
             chckEnableIntegration.setSelection(settingStore.isIntegrationEnabled());
             enableIntegrationComposite();
 
@@ -160,8 +176,36 @@ public class JiraSettingsComposite {
 
     public Composite createContainer(Composite parent) {
         container = new Composite(parent, SWT.NONE);
-        container.setLayout(new GridLayout(1, false));
-        enablerComposite = new Composite(container, SWT.NONE);
+        container.setLayout(new GridLayout());
+
+        Composite deprecatedComposite = new Composite(container, SWT.NONE);
+        deprecatedComposite.setLayout(noneMarginGridLayout());
+
+        Label deprecatedMessage = new Label(container, SWT.WRAP);
+        GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
+        layoutData.widthHint = 300;
+        deprecatedMessage.setLayoutData(layoutData);
+        deprecatedMessage.setImage(ImageConstants.IMG_20_WARNING_MSG);
+        deprecatedMessage.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_DEPRECATED);
+        deprecatedMessage.setBackground(ColorUtil.getWarningLogBackgroundColor());
+        
+        Composite contentComposite = new Composite(container, SWT.NONE);
+        contentComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+        stackLayout = new StackLayout();
+        contentComposite.setLayout(stackLayout);
+
+        overridedComposite = new Composite(contentComposite, SWT.NONE);
+        overridedComposite.setLayout(new GridLayout());
+        Label lblOverriedSetting = new Label(overridedComposite, SWT.WRAP);
+        lblOverriedSetting.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_MOVE_SETTINGS);
+        GridData ldOverrideMessage = new GridData(SWT.FILL, SWT.TOP, true, false);
+        ldOverrideMessage.widthHint = 300;
+        lblOverriedSetting.setLayoutData(ldOverrideMessage);
+
+        settingComposite = new Composite(contentComposite, SWT.NONE);
+        settingComposite.setLayout(noneMarginGridLayout());
+
+        enablerComposite = new Composite(settingComposite, SWT.NONE);
         enablerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         enablerComposite.setLayout(new GridLayout());
 
@@ -169,7 +213,7 @@ public class JiraSettingsComposite {
         chckEnableIntegration.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         chckEnableIntegration.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_ENABLE_INTEGRATION);
 
-        mainComposite = new Composite(container, SWT.NONE);
+        mainComposite = new Composite(settingComposite, SWT.NONE);
         mainComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         GridLayout glMainComposite = new GridLayout(1, false);
         glMainComposite.marginWidth = 0;
@@ -181,6 +225,13 @@ public class JiraSettingsComposite {
         createSubmitOptionsGroup();
 
         return container;
+    }
+
+    private GridLayout noneMarginGridLayout() {
+        GridLayout gl = new GridLayout();
+        gl.marginHeight = 0;
+        gl.marginTop = 0;
+        return gl;
     }
 
     private void createAuthenticationGroup() {
@@ -273,6 +324,9 @@ public class JiraSettingsComposite {
 
     public boolean okPressed() {
         try {
+            if (!isJiraPluginEnabled()) {
+                return true;
+            }
             settingStore.enableIntegration(chckEnableIntegration.getSelection());
 
             boolean encryptionEnable = chckEncrypt.getSelection();
@@ -300,7 +354,7 @@ public class JiraSettingsComposite {
         }
     }
 
-    private JiraCredential getCredential() {
+    private JiraCredential getEdittingCredential() {
         JiraCredential credential = new JiraCredential();
         credential.setServerUrl(getTrimedValue(txtServerUrl));
         credential.setUsername(getTrimedValue(txtUsername));

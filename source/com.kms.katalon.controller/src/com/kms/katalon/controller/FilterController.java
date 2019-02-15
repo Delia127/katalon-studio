@@ -37,27 +37,25 @@ public class FilterController {
         return instance;
     }
     
-    private List<String> keywords;
-    
     private FilterController() {
-        keywords = new ArrayList<>();
+    }
+
+    public List<String> getDefaultKeywords() {
+        List<String> keywords = new ArrayList<>();
         keywords.addAll(DEFAULT_KEYWORDS);
         if (isAdvancedTagPluginInstalled()) {
             keywords.add(getAdvancedTagKeyword());
         }
-    }
-
-    public List<String> getDefaultKeywords() {
         return keywords;
     }
     
     public List<String> getDefaultKeywordsForInputs(){
-    	List<String> keywordsForInputs = new ArrayList<>();
-    	keywordsForInputs.addAll(DEFAULT_KEYWORDS_FOR_INPUTS);
-         if (isAdvancedTagPluginInstalled()) {
-        	 keywordsForInputs.add(getAdvancedTagKeyword());
-         }
-         return keywordsForInputs;
+        List<String> keywordsForInputs = new ArrayList<>();
+        keywordsForInputs.addAll(DEFAULT_KEYWORDS_FOR_INPUTS);
+        if (isAdvancedTagPluginInstalled()) {
+            keywordsForInputs.add(getAdvancedTagKeyword());
+        }
+        return keywordsForInputs;
     }
     
     public String getAdvancedTagKeyword() {
@@ -69,14 +67,13 @@ public class FilterController {
         if(trimmedText.equals(StringUtils.EMPTY)){
         	return true;
         }        
-        List<String> keywordList = new ArrayList<>();
-        keywordList.addAll(keywords);
+        List<String> keywordList = getDefaultKeywords();
         Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), trimmedText);
 
         if (!tagMap.isEmpty()) {
             for (Entry<String, String> entry : tagMap.entrySet()) {
                 String keyword = entry.getKey();
-                if (keywords.contains(keyword) && !compare(fileEntity, keyword, entry.getValue())) {
+                if (keywordList.contains(keyword) && !compare(fileEntity, keyword, entry.getValue())) {
                     return false;
                 }
             }
