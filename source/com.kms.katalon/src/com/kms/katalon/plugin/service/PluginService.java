@@ -45,8 +45,6 @@ import com.kms.katalon.plugin.util.PluginHelper;
 public class PluginService {
 
     private static final String EXCEPTION_UNAUTHORIZED_SINGAL = "Unauthorized";
-    
-    private static final String UNDEFINED_BUNDLE_NAME = "Undefined Bundle Name";
 
 	private static PluginService instance;
 
@@ -131,26 +129,22 @@ public class PluginService {
                     }
                 }
                 
-                try {
-                    String pluginBundleName = getPluginBundleName(pluginPath);
-                    if (!StringUtils.isBlank(pluginBundleName) && installedBundleNames.contains(pluginBundleName)) {
-                        continue;
-                    }
-                    platformInstall(pluginPath);
-                    ResultItem item = new ResultItem();
-                    item.setPlugin(plugin);
-                    item.markPluginInstalled(true);
-                    if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
-                        plugin.getCurrentVersion().getNumber())) {
-                        item.setNewVersionAvailable(true);
-                    } else {
-                        item.setNewVersionAvailable(false);
-                    }
-                    installedBundleNames.add(pluginBundleName);
-                    results.add(item);
-                } catch (BundleException e) {
-                    
+                String pluginBundleName = getPluginBundleName(pluginPath);
+                if (!StringUtils.isBlank(pluginBundleName) && installedBundleNames.contains(pluginBundleName)) {
+                    continue;
                 }
+                platformInstall(pluginPath);
+                ResultItem item = new ResultItem();
+                item.setPlugin(plugin);
+                item.markPluginInstalled(true);
+                if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
+                    plugin.getCurrentVersion().getNumber())) {
+                    item.setNewVersionAvailable(true);
+                } else {
+                    item.setNewVersionAvailable(false);
+                }
+                installedBundleNames.add(pluginBundleName);
+                results.add(item);
 
                 installWork++;
                 markWork(installWork, totalInstallWork, installPluginMonitor);
