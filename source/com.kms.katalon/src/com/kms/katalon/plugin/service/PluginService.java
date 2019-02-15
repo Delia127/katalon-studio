@@ -4,9 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -41,8 +45,6 @@ import com.kms.katalon.plugin.util.PluginHelper;
 public class PluginService {
 
     private static final String EXCEPTION_UNAUTHORIZED_SINGAL = "Unauthorized";
-    
-    private static final String EXCEPTION_DUPLICATED_BUNDLE_SIGNAL = "A bundle is already installed";
 
 	private static PluginService instance;
 
@@ -113,6 +115,7 @@ public class PluginService {
     
             int totalInstallWork = latestPlugins.size();
             int installWork = 0;
+            Set<String> installedBundleNames = new HashSet<>();
             for (KStorePlugin plugin : latestPlugins) {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
@@ -129,23 +132,22 @@ public class PluginService {
                     }
                 }
                 
-                try {
-                    platformInstall(pluginPath);
-                    ResultItem item = new ResultItem();
-                    item.setPlugin(plugin);
-                    item.markPluginInstalled(true);
-                    if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
-                        plugin.getCurrentVersion().getNumber())) {
-                        item.setNewVersionAvailable(true);
-                    } else {
-                        item.setNewVersionAvailable(false);
-                    }
-                    results.add(item);
-                } catch (BundleException e) {
-                    if (!StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_DUPLICATED_BUNDLE_SIGNAL)) {
-                        throw e;
-                    }
+                String pluginBundleName = getPluginBundleName(pluginPath);
+                if (!StringUtils.isBlank(pluginBundleName) && installedBundleNames.contains(pluginBundleName)) {
+                    continue;
                 }
+                platformInstall(pluginPath);
+                ResultItem item = new ResultItem();
+                item.setPlugin(plugin);
+                item.markPluginInstalled(true);
+                if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
+                    plugin.getCurrentVersion().getNumber())) {
+                    item.setNewVersionAvailable(true);
+                } else {
+                    item.setNewVersionAvailable(false);
+                }
+                installedBundleNames.add(pluginBundleName);
+                results.add(item);
 
                 installWork++;
                 markWork(installWork, totalInstallWork, installPluginMonitor);
@@ -209,6 +211,20 @@ public class PluginService {
         return pluginMap;
     }
 
+    private String getPluginBundleName(String pluginPath) {
+        try {
+            File pluginFile = new File(pluginPath);
+            JarFile jar = new JarFile(pluginFile);
+            Manifest manifest = jar.getManifest();
+            String bundleSymbolicNameAttribute = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+            String bundleSymbolicName = StringUtils.split(bundleSymbolicNameAttribute, ";")[0];
+            jar.close();
+            return bundleSymbolicName;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     private void platformInstall(String pluginPath) throws BundleException {
         BundleContext bundleContext = Platform.getBundle("com.katalon.platform").getBundleContext();
         String bundlePath = new File(pluginPath).toURI().toString();
