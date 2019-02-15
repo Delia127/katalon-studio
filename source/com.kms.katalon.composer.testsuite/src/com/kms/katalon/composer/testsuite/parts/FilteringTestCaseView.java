@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -39,6 +40,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.util.EntityIndexingUtil;
@@ -171,12 +174,25 @@ public class FilteringTestCaseView {
     }
 
     private void createCompositeTestCaseSearch(Composite parent) {
+    	parent.setLayout(new FillLayout(SWT.VERTICAL));
+        ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+        ToolBar toolbar = toolBarManager.createControl(parent);
+		ToolItem tltmAdvancedSearchGuide = new ToolItem(toolbar, SWT.NONE);
+        tltmAdvancedSearchGuide.setText("Advanced Search Guide");
+        tltmAdvancedSearchGuide.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+        tltmAdvancedSearchGuide.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch("https://docs.katalon.com/katalon-studio/docs/advanced-search.html");
+            }
+        });
+        
         Composite cpsSearchAndPreview = new Composite(parent, SWT.NONE);
         GridLayout gdSearchAndPreview = new GridLayout(2, false);
         gdSearchAndPreview.marginWidth = 0;
         gdSearchAndPreview.marginHeight = 0;
         cpsSearchAndPreview.setLayout(gdSearchAndPreview);
-
+        
         Composite compositeTableSearch = new Composite(cpsSearchAndPreview, SWT.BORDER);
         compositeTableSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         compositeTableSearch.setBackground(ColorUtil.getWhiteBackgroundColor());
@@ -184,9 +200,9 @@ public class FilteringTestCaseView {
         glCompositeTableSearch.marginWidth = 0;
         glCompositeTableSearch.marginHeight = 0;
         compositeTableSearch.setLayout(glCompositeTableSearch);
-
+        
         txtSearch = new Text(compositeTableSearch, SWT.NONE);
-        txtSearch.setMessage("Enter filter criteria");
+        txtSearch.setMessage("Enter search query");
         GridData gdTxtInput = new GridData(GridData.FILL_HORIZONTAL);
         gdTxtInput.grabExcessVerticalSpace = true;
         gdTxtInput.verticalAlignment = SWT.CENTER;
