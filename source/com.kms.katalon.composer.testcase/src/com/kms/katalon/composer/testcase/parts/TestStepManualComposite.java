@@ -134,7 +134,7 @@ public class TestStepManualComposite {
 
 	private Tree childTableTree;
 
-	private ToolItem tltmAddWSKeywordStep, tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent, tltmAddTestSuite;
+	private ToolItem tltmAddWSKeywordStep, tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent, tltmAddTestSuite, tltmEditTag;
 
 	private Label spacer;
 
@@ -154,9 +154,16 @@ public class TestStepManualComposite {
 			ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
 	private Menu recentMenu;
+	
+	private TestCaseCompositePart parentTestCaseCompositePart;
 
-	public TestStepManualComposite(ITestCasePart parentPart, Composite parent) {
+	public TestStepManualComposite(ITestCasePart parentPart, Composite parent){
+		this(parentPart, parent, null);
+	}
+	
+	public TestStepManualComposite(ITestCasePart parentPart, Composite parent, TestCaseCompositePart parentTestCaseCompositePart) {
 		this.parentPart = parentPart;
+		this.parentTestCaseCompositePart = parentTestCaseCompositePart;
 		selectionListener = new TestCaseSelectionListener(this);
 		// for ClosureDialog
 		if (parentPart instanceof ClosureBuilderDialog) {
@@ -304,6 +311,18 @@ public class TestStepManualComposite {
 		tltmDown.setText(StringConstants.PA_BTN_TIP_MOVE_DOWN);
 		tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
 		tltmDown.addSelectionListener(selectionListener);
+		
+		if(parentTestCaseCompositePart != null){
+			tltmEditTag = new ToolItem(toolbar, SWT.NONE);
+			tltmEditTag.setText(StringConstants.PA_BTN_EDIT_TAG);
+			tltmEditTag.setImage(ImageConstants.IMG_16_EDIT);
+			tltmEditTag.addSelectionListener(new SelectionAdapter() {
+				@Override
+			    public void widgetSelected(SelectionEvent e) {
+					parentTestCaseCompositePart.getTabFolder().setSelection(5);
+				}
+			});
+		}
 
 		// --------------------
 		tltmAddTestSuite = new ToolItem(toolbarTwo, SWT.DROP_DOWN);

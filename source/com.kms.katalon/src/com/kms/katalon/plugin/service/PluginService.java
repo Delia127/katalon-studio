@@ -41,6 +41,8 @@ import com.kms.katalon.plugin.util.PluginHelper;
 public class PluginService {
 
     private static final String EXCEPTION_UNAUTHORIZED_SINGAL = "Unauthorized";
+    
+    private static final String EXCEPTION_DUPLICATED_BUNDLE_SIGNAL = "A bundle is already installed";
 
 	private static PluginService instance;
 
@@ -123,20 +125,25 @@ public class PluginService {
                         savePluginLocation(plugin, pluginPath);
                     }
                 }
-                platformInstall(pluginPath);
-
-                ResultItem item = new ResultItem();
-                item.setPlugin(plugin);
-                item.markPluginInstalled(true);
-                if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
-                    plugin.getCurrentVersion().getNumber())) {
-                    item.setNewVersionAvailable(true);
-                } else {
-                    item.setNewVersionAvailable(false);
+                
+                try {
+                    platformInstall(pluginPath);
+                    ResultItem item = new ResultItem();
+                    item.setPlugin(plugin);
+                    item.markPluginInstalled(true);
+                    if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
+                        plugin.getCurrentVersion().getNumber())) {
+                        item.setNewVersionAvailable(true);
+                    } else {
+                        item.setNewVersionAvailable(false);
+                    }
+                    results.add(item);
+                } catch (BundleException e) {
+                    if (!StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_DUPLICATED_BUNDLE_SIGNAL)) {
+                        throw e;
+                    }
                 }
-                
-                results.add(item);
-                
+
                 installWork++;
                 markWork(installWork, totalInstallWork, installPluginMonitor);
             }
@@ -196,7 +203,7 @@ public class PluginService {
                     && bundle.getSymbolicName().equals(IdConstants.JIRA_PLUGIN_ID)
                         && ApplicationRunningMode.get() != RunningMode.CONSOLE) {
                 eventBroker.post(EventConstants.JIRA_PLUGIN_INSTALLED, null);
-            }   
+            }
         }
     }
 
