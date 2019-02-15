@@ -1065,4 +1065,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 	public void setInvalidSchemeDetected(boolean b) {
 		this.invalidScheme = b;
 	}
+	
+	public CTabFolder getTabFolder(){
+		return tabFolder;
+	}
 }
