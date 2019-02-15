@@ -111,7 +111,7 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
 
     private void createControls(Composite parent) {
         parent.setLayout(new FillLayout(SWT.HORIZONTAL));
-        testStepManualComposite = new TestStepManualComposite(this, parent);
+        testStepManualComposite = new TestStepManualComposite(this, parent, parentTestCaseCompositePart);
     }
 
     @Override
