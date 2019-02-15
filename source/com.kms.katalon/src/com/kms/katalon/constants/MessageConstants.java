@@ -396,6 +396,8 @@ public class MessageConstants extends NLS {
 
     public static String KStorePluginsDialog_STATUS_UNINSTALLED;
     
+    public static String KStorePluginsDialog_STATUS_EXPIRED;
+    
     public static String KStorePluginsDialog_COL_VERSION;
     
     public static String KStorePluginsDialog_LBL_UPDATE;

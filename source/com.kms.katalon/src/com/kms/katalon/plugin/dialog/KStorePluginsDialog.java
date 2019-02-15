@@ -46,15 +46,15 @@ public class KStorePluginsDialog extends Dialog {
     
     private static final int CLMN_UPDATE_LINK_IDX = 3;
 
-    private List<ResultItem> result;
+    private List<ResultItem> results;
 
     protected KStorePluginsDialog(Shell parentShell) {
         super(parentShell);
     }
 
-    public KStorePluginsDialog(Shell shell, List<ResultItem> result) {
+    public KStorePluginsDialog(Shell shell, List<ResultItem> results) {
         this(shell);
-        this.result = result;
+        this.results = results;
     }
 
     @Override
@@ -87,9 +87,9 @@ public class KStorePluginsDialog extends Dialog {
                 ResultItem item = (ResultItem) element;
                 if (item.isPluginInstalled()) {
                     return StringConstants.KStorePluginsDialog_STATUS_INSTALLED;
-                } else {
-                    return StringConstants.KStorePluginsDialog_STATUS_UNINSTALLED;
-                }
+                } 
+                return StringConstants.KStorePluginsDialog_STATUS_EXPIRED; // just display installed and expired
+                                                                           // plugins only
             }
         });
         
@@ -116,7 +116,7 @@ public class KStorePluginsDialog extends Dialog {
         tableLayout.setColumnData(tableColumnUpdateLink, new ColumnWeightData(20, 30));
         tableComposite.setLayout(tableLayout);
         
-        pluginTableViewer.setInput(collectInstalledPluginResults(result));
+        pluginTableViewer.setInput(collectInstalledAndExpiredPluginResults(results));
         
         Button btnClose = new Button(body, SWT.NONE);
         btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
@@ -132,12 +132,10 @@ public class KStorePluginsDialog extends Dialog {
         return body;
     }
     
-    private List<ResultItem> collectInstalledPluginResults(List<ResultItem> resultItems) {
-        List<ResultItem> installedPluginResults = resultItems
-            .stream()
-            .filter(result -> result.isPluginInstalled())
-            .collect(Collectors.toList());
-        return installedPluginResults;
+    private List<ResultItem> collectInstalledAndExpiredPluginResults(List<ResultItem> results) {
+        return results.stream()
+                .filter(result -> result.isPluginInstalled() || result.getPlugin().isExpired())
+                .collect(Collectors.toList());
     }
     
     @Override

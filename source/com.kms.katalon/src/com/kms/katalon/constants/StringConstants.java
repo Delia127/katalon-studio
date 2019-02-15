@@ -145,6 +145,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String KStorePluginsDialog_STATUS_UNINSTALLED = MessageConstants.KStorePluginsDialog_STATUS_UNINSTALLED;
     
+    public static final String KStorePluginsDialog_STATUS_EXPIRED = MessageConstants.KStorePluginsDialog_STATUS_EXPIRED;
+    
     public static final String KStorePluginsDialog_COL_VERSION = MessageConstants.KStorePluginsDialog_COL_VERSION;
     
     public static final String KStorePluginsDialog_LBL_UPDATE = MessageConstants.KStorePluginsDialog_LBL_UPDATE;
