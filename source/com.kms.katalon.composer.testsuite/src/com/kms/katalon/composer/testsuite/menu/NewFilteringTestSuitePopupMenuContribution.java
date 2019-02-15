@@ -45,7 +45,7 @@ public class NewFilteringTestSuitePopupMenuContribution {
             if (NewTestSuiteHandler.findParentTreeEntity(selectedObjects) != null
                     && plugin != null) {
                 MHandledMenuItem newTestSuitePopupMenuItem = MenuFactory.createPopupMenuItem(
-                        commandService.createCommand(NEW_FILTERING_TEST_SUITE_COMMAND, null), "Filtering Test Suite",
+                        commandService.createCommand(NEW_FILTERING_TEST_SUITE_COMMAND, null), "Dynamic Querying Test Suite",
                         ConstantsHelper.getApplicationURI());
                 if (newTestSuitePopupMenuItem != null) {
                     menuItems.add(newTestSuitePopupMenuItem);
