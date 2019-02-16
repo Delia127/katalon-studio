@@ -324,7 +324,7 @@ public class JiraSettingsComposite implements JiraUIComponent {
 
     public boolean okPressed() {
         try {
-            if (!isJiraPluginEnabled()) {
+            if (isJiraPluginEnabled()) {
                 return true;
             }
             settingStore.enableIntegration(chckEnableIntegration.getSelection());
