@@ -6,9 +6,7 @@ import java.text.MessageFormat
 import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang.StringUtils
 
-import com.kms.katalon.core.testcase.TestCaseFactory
-import com.kms.katalon.core.testdata.TestDataFactory
-import com.kms.katalon.core.testobject.ObjectRepository
+import com.kms.katalon.core.exception.KatalonRuntimeException
 import com.kms.katalon.custom.parser.GlobalVariableParser
 import com.kms.katalon.entity.global.ExecutionProfileEntity
 import com.kms.katalon.entity.global.GlobalVariableEntity
@@ -28,12 +26,8 @@ class GlobalVariableTemplate {
 ${PACKAGE_STRING}
 
 import com.kms.katalon.core.configuration.RunConfiguration
-import ${ObjectRepository.class.getName()} as ${ObjectRepository.class.getSimpleName()}
-import ${TestDataFactory.class.getName()} as ${TestDataFactory.class.getSimpleName()}
-import ${TestCaseFactory.class.getName()} as ${TestCaseFactory.class.getSimpleName()}
-import static ${ObjectRepository.class.getName()}.${FIND_TEST_OBJECT_METHOD_NAME}
-import static ${TestDataFactory.class.getName()}.${FIND_TEST_DATA_METHOD_NAME}
-import static ${TestCaseFactory.class.getName()}.${FIND_TEST_CASE_METHOD_NAME}
+import com.kms.katalon.core.main.TestCaseMain
+
 
 /**
  * This class is generated automatically by Katalon Studio and should not be modified or deleted.
@@ -47,29 +41,16 @@ public class GlobalVariable {
     <% } %> 
 
     static {
-        def allVariables = [:]\
-        <% executionProfiles.each { %>
-        allVariables.put(\
-'<%= it.getName() %>', \
-[<% it.getGlobalVariableEntities().eachWithIndex { v, i -> %>\
-<% if (i>0) { %>, <% } %>'<%=v.getName()%>' : <%=v.getInitValue()%><% } %>\
-<% if (it.getGlobalVariableEntities().isEmpty()) {%>:<% } %>\
-]\
-)<% } %>
-        
-        String profileName = RunConfiguration.getExecutionProfile()
-        def selectedVariables = allVariables[profileName]
-		
-		for(object in selectedVariables){
-			String overridingGlobalVariable = RunConfiguration.getOverridingGlobalVariable(object.key)
-			if(overridingGlobalVariable != null){
-				selectedVariables.put(object.key, overridingGlobalVariable)
-			}
-		}
-
-        <% globalVariables.each { entry -> %>\
+        try {
+            def selectedVariables = TestCaseMain.getGlobalVariables(RunConfiguration.getExecutionProfile())
+            selectedVariables += RunConfiguration.getOverridingParameters()
+    
+            <% globalVariables.each { entry -> %>\
 <%=entry.value.getName()%> = selectedVariables["<%=entry.value.getName()%>"]
-        <% } %>
+            <% } %>
+        } catch (Exception e) {
+            TestCaseMain.logGlobalVariableError(e)
+        }
     }
 }
 """
@@ -106,8 +87,7 @@ public class GlobalVariable {
         }
         def binding = [
             "GlobalVariableTemplate" : GlobalVariableTemplate.class,
-            "globalVariables": declaredGlobalVariables,
-            "executionProfiles" : profiles
+            "globalVariables": declaredGlobalVariables
         ]
 
         def engine = new GStringTemplateEngine()
