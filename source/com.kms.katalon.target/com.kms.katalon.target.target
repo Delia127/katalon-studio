@@ -40,7 +40,6 @@
 <unit id="org.dom4j" version="1.6.1.v201312101416"/>
 <unit id="io.swagger.parser-core" version="2.0.0.rc1"/>
 <unit id="com.google.guava" version="23.0.0"/>
-<unit id="org.apache.xml.apis" version="1.4.1"/>
 <unit id="org.apache.ant.launcher" version="1.9.6"/>
 <unit id="org.eclipse.jetty.websocket.client" version="9.3.9.v20160517"/>
 <unit id="io.swagger.parser-v3" version="2.0.0.rc1"/>
@@ -323,7 +322,6 @@
 <plugin id="org.apache.ws.commons.util"/>
 <plugin id="org.apache.xerces"/>
 <plugin id="org.apache.xerces.impl"/>
-<plugin id="org.apache.xml.apis"/>
 <plugin id="org.apache.xml.resolver"/>
 <plugin id="org.apache.xml.serializer"/>
 <plugin id="org.apache.xmlbeans"/>
