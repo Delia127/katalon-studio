@@ -377,9 +377,13 @@ public class MessageConstants extends NLS {
     //KStoreCredentialsDialog
     public static String KStoreLoginDialog_DIA_TITLE;
     
+    public static String KStoreLoginDialog_LBL_INSTRUCTION;
+    
     public static String KStoreLoginDialog_LBL_USERNAME;
     
     public static String KStoreLoginDialog_LBL_PASSWORD;
+    
+    public static String KStoreLoginDialog_BTN_CONNECT;
     
     public static String KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
     
