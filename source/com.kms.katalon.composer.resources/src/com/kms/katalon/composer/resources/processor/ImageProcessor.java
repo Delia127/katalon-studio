@@ -36,6 +36,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMPORT_SWAGGER);
         ImageManager.registerImage(IImageKeys.IMPORT_WSDL);
         ImageManager.registerImage(IImageKeys.API_QUICKSTART_BACKGROUND_LEFT);
+        ImageManager.registerImage(IImageKeys.API_QUICKSTART_BACKGROUND_WEB_LEFT);
+        ImageManager.registerImage(IImageKeys.API_QUICKSTART_BACKGROUND_MOBILE_LEFT);
     }
 
     private void registerHistoryRequestImages() {
@@ -228,6 +230,7 @@ public class ImageProcessor {
 
         ImageManager.registerImage(IImageKeys.TEST_SUITE_16);
         ImageManager.registerImage(IImageKeys.TEST_SUITE_COLLECTION_16);
+        ImageManager.registerImage(IImageKeys.FILTERING_TEST_SUITE_16);
         ImageManager.registerImage(IImageKeys.WS_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.PACKAGE_16);
         ImageManager.registerImage(IImageKeys.REPORT_16);
@@ -367,6 +370,7 @@ public class ImageProcessor {
     private void registerWelcomeImages() {
         ImageManager.registerImage(IImageKeys.FAQ_34);
         ImageManager.registerImage(IImageKeys.USER_GUIDE_34);
+        ImageManager.registerImage(IImageKeys.KATALON_STORE_34);
         ImageManager.registerImage(IImageKeys.TUTORIAL_34);
         ImageManager.registerImage(IImageKeys.BUSINESS_SUPPORT_34);
         ImageManager.registerImage(IImageKeys.KATALON_LOGO_202);

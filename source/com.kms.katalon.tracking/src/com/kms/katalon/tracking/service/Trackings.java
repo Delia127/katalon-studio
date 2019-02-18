@@ -15,12 +15,31 @@ import com.kms.katalon.tracking.model.ProjectStatistics;
 import com.kms.katalon.tracking.model.TrackInfo;
 import com.kms.katalon.tracking.osgi.service.IProjectStatisticsCollector;
 import com.kms.katalon.tracking.osgi.service.ServiceConsumer;
+import com.kms.katalon.util.SystemInforUtil;
 
 public class Trackings {
+
+
     private static TrackingService trackingService = new TrackingService();
 
-    public static void trackOpenApplication(boolean isAnonymous, String runningMode) {
-        trackAction("openApplication", isAnonymous, "runningMode", runningMode);
+    public static void trackOpenApplication(boolean isAnonymous, String runningMode) throws Exception {
+        double cpu = 0.0;
+        double percentageUsed, percentageUsedFormatted;
+        long maxMemory, usedMemory, totalMemory, freeMemory;
+        String freePhysicalMemorySize = null, totalPhysicalMemorySize = null;
+        cpu = SystemInforUtil.getProcessCpuLoad();
+        maxMemory = SystemInforUtil.getMaxMemory();
+        usedMemory = SystemInforUtil.getUsedMemory();
+        totalMemory = SystemInforUtil.getTotalMemory();
+        freeMemory = SystemInforUtil.getFreeMemory();
+        percentageUsed = SystemInforUtil.getPercentageUsed();
+        freePhysicalMemorySize = SystemInforUtil.freePhysicalMemorySize();
+        totalPhysicalMemorySize = SystemInforUtil.totalPhysicalMemorySize();
+        percentageUsedFormatted = SystemInforUtil.getPercentageUsedFormatted();
+        trackAction("openApplication", isAnonymous, "runningMode", runningMode, "percent_cpu", cpu, "max_memory",
+                maxMemory, "used_memory", usedMemory, "total_memory", totalMemory, "free_memory", freeMemory,
+                "percent_used", percentageUsed, "format_percent_used", percentageUsedFormatted,
+                "freephysicalMemorySize", freePhysicalMemorySize, "totalphysicalMemorySize", totalPhysicalMemorySize);
     }
 
     public static void trackProjectStatistics(ProjectEntity project, boolean isAnonymous, String runningMode) {
@@ -31,9 +50,11 @@ public class Trackings {
         trackUsageData(project, false, "gui", "openProject");
         trackOpenObject("project");
     }
-    
+
+
     private static void trackUsageData(ProjectEntity project, boolean isAnonymous, String runningMode,
             String triggeredBy) {
+
         if (project == null) {
             return;
         }
@@ -48,6 +69,7 @@ public class Trackings {
                     .eventName(TrackEvents.KATALON_STUDIO_TRACK)
                     .anonymous(isAnonymous)
                     .properties(properties);
+
             trackingService.track(trackInfo);
         } catch (Exception e) {
             LogUtil.logError(e);
@@ -66,6 +88,7 @@ public class Trackings {
                 .create()
                 .eventName(TrackEvents.KATALON_OPEN_FIRST_TIME)
                 .anonymous(true);
+
         trackingService.track(trackInfo);
     }
 
@@ -80,7 +103,7 @@ public class Trackings {
                 "active", useActiveBrowser,
                 "webLocatorConfig", webLocatorConfig.toString());
     }
-    
+
     public static void trackRecord(String type) {
         trackUserAction("record", "type", type);
     }
@@ -96,9 +119,8 @@ public class Trackings {
         } else {
             trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType, email_options, "all_test_case");
         }
-     
     }
-    
+
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType) {
         trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType);
     }

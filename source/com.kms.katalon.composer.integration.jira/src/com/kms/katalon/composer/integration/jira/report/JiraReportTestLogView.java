@@ -42,6 +42,7 @@ import com.kms.katalon.composer.integration.jira.report.provider.JiraIssueIDLabe
 import com.kms.katalon.composer.integration.jira.report.provider.JiraIssueLabelProvider;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.integration.jira.JiraIntegrationException;
 import com.kms.katalon.integration.jira.JiraObjectToEntityConverter;
@@ -68,8 +69,8 @@ public class JiraReportTestLogView extends TestCaseLogDetailsIntegrationView imp
 
     private Composite container;
 
-    public JiraReportTestLogView(ReportEntity reportEntity) {
-        super(reportEntity);
+    public JiraReportTestLogView(ReportEntity reportEntity, TestSuiteLogRecord testSuiteLogRecord) {
+        super(reportEntity, testSuiteLogRecord);
     }
 
     @Override

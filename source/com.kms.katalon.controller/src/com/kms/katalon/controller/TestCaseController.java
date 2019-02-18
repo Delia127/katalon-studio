@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.controller.constants.StringConstants;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -78,12 +79,16 @@ public class TestCaseController extends EntityController {
      * @return {@link TestCaseEntity}
      * @throws Exception
      */
-    public TestCaseEntity saveNewTestCase(TestCaseEntity newTestCase) throws Exception {
+    public TestCaseEntity saveNewTestCase(TestCaseEntity newTestCase) throws ControllerException {
         if (newTestCase == null || newTestCase.getProject() == null || newTestCase.getParentFolder() == null) {
             return null;
         }
 
-        return getDataProviderSetting().getTestCaseDataProvider().saveNewTestCase(newTestCase);
+        try {
+            return getDataProviderSetting().getTestCaseDataProvider().saveNewTestCase(newTestCase);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public TestCaseEntity getTestCase(String testCasePK) throws Exception {
@@ -118,8 +123,12 @@ public class TestCaseController extends EntityController {
         return sibblingName;
     }
 
-    public TestCaseEntity getTestCaseByDisplayId(String testCaseDisplayId) throws Exception {
-        return getDataProviderSetting().getTestCaseDataProvider().getTestCaseByDisplayId(testCaseDisplayId);
+    public TestCaseEntity getTestCaseByDisplayId(String testCaseDisplayId) throws ControllerException {
+        try {
+            return getDataProviderSetting().getTestCaseDataProvider().getTestCaseByDisplayId(testCaseDisplayId);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public String getGroovyClassName(TestCaseEntity testCase) {

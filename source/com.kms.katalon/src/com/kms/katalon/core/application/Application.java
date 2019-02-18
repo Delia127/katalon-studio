@@ -49,6 +49,10 @@ public class Application implements IApplication {
             return IApplication.EXIT_OK;
         }
 
+        if (!activateInternalPlatformBundle()) {
+            return IApplication.EXIT_OK;
+        }
+
         preRunInit();
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
@@ -112,11 +116,6 @@ public class Application implements IApplication {
     private int internalRunGUI() {
         Display display = PlatformUI.createDisplay();
         try {
-//            if (Platform.OS_LINUX.equals(Platform.getOS())) {
-//                LinuxNotSupportedDialog dialog = new LinuxNotSupportedDialog(display.getActiveShell());
-//                dialog.open();
-//                return PlatformUI.RETURN_OK;
-//            }
             return PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
         } catch (Exception e) {
             LogUtil.logError(e);
@@ -178,6 +177,15 @@ public class Application implements IApplication {
     private boolean activeLoggingBundle() {
         try {
             Platform.getBundle(IdConstants.KATALON_LOGGING_BUNDLE_ID).start();
+            return true;
+        } catch (BundleException ex) {
+            return false;
+        }
+    }
+
+    private boolean activateInternalPlatformBundle() {
+        try {
+            Platform.getBundle("com.kms.katalon.platform.internal").start();
             return true;
         } catch (BundleException ex) {
             return false;

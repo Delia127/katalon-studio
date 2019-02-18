@@ -10,6 +10,8 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
     // OpenTestSuiteHandler
     public static final String URL_16_TEST_SUITE = ImageManager.getImageURLString(IImageKeys.TEST_SUITE_16);
 
+    public static final String URL_16_FILTERING_TEST_SUITE = ImageManager.getImageURLString(IImageKeys.FILTERING_TEST_SUITE_16);
+
     // TestSuitePart
     public static final Image IMG_16_CHECKBOX_CHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16);
 

@@ -13,6 +13,7 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuiteTreeEntity extends AbstractTreeEntity {
@@ -49,6 +50,9 @@ public class TestSuiteTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
+        if (entity instanceof FilteringTestSuiteEntity) {
+            return ImageConstants.IMG_16_FILTERING_TEST_SUITE;
+        }
         return ImageConstants.IMG_16_TEST_SUITE;
     }
 

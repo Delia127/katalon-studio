@@ -14,15 +14,15 @@ import com.kms.katalon.composer.integration.jira.constant.ImageConstants;
 import com.kms.katalon.composer.integration.jira.report.provider.JiraTestCaseIssueLabelProvider;
 import com.kms.katalon.composer.report.parts.integration.TestCaseIntegrationColumn;
 import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.report.ReportEntity;
 
 public class JiraReportTestCaseColumn extends TestCaseIntegrationColumn {
 
-    public JiraReportTestCaseColumn(ReportEntity reportEntity) {
-        super(reportEntity);
+    public JiraReportTestCaseColumn(ReportEntity reportEntity, TestSuiteLogRecord testSuiteLogRecord) {
+        super(reportEntity, testSuiteLogRecord);
     }
 
-    @Override
     public ViewerColumn createIntegrationColumn(ColumnViewer tableViewer, int columnIndex) {
         TableViewerColumn tableViewerColumnIntegration = new TableViewerColumn((TableViewer) tableViewer, SWT.NONE);
         TableColumn tblclmnTCIntegration = tableViewerColumnIntegration.getColumn();

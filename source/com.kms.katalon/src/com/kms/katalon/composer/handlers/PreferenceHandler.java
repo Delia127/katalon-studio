@@ -51,14 +51,18 @@ public class PreferenceHandler extends AbstractHandler {
         int result = openPreferenceDialog(workbenchPref, initPreferencePageId);
 
         removeApplicationNodesFromWorkbenchPreferenceManager(workbenchPref, applicationNodes);
-        
+
         return result;
     }
 
     @Inject
     @Optional
     public void execute(@UIEventTopic(EventConstants.KATALON_PREFERENCES) Object eventData) {
-        execute();
+        if (eventData instanceof String) {
+            doExecute((String) eventData);
+        } else {
+            doExecute();
+        }
     }
 
     private static void removeUnnecessaryNodes(PreferenceManager workbenchPref) {
@@ -90,13 +94,15 @@ public class PreferenceHandler extends AbstractHandler {
         TreeViewer dialogTreeViewer = dialog.getTreeViewer();
         dialogTreeViewer.setComparator(new PreferencePageViewerComparator());
         dialog.setMinimumPageSize(500, 500);
-        
+
         if (DEFAULT_PREFERENCE_PAGE_ID.equals(dialog.getSelectedNodePreference())) {
             dialogTreeViewer.expandToLevel(dialog.getPreferenceManager().find(DEFAULT_PREFERENCE_PAGE_ID), 1);
         }
         if (StringUtils.isNotEmpty(initPreferencePagePath)) {
-            dialogTreeViewer
-                    .setSelection(new StructuredSelection(dialog.getPreferenceManager().find(initPreferencePagePath)));
+            IPreferenceNode preference = dialog.getPreferenceManager().find(initPreferencePagePath);
+            if (preference != null) {
+                dialogTreeViewer.setSelection(new StructuredSelection(preference));
+            }
         }
         dialogTreeViewer.getTree().forceFocus();
         return dialog.open();

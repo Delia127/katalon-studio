@@ -155,6 +155,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         // update status of "Run" and "Stop" buttons
         eventBroker.post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
 
+
         updateReport();
 
         if (runConfig instanceof ExistingRunConfiguration) {

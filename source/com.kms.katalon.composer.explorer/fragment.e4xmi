@@ -20,6 +20,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_3XD7kB3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu.open" label="Open" command="_DfqvoB7uEeSCzrWY6RMEZw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_DkjBoCH5EeSLeYgXIq1FKQ" elementId="com.kms.katalon.composer.explorer.popupmenu.rename" label="Rename" command="_ZMWQgCH5EeSLeYgXIq1FKQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_PlaG8CNjEeSA7eQW_3uciQ" elementId="com.kms.katalon.composer.explorer.popupmenu.copy" label="Copy" command="_X1bcYCNjEeSA7eQW_3uciQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_bJxREPklEeip3YLbQHnttQ" elementId="com.kms.katalon.composer.explorer.handledmenuitem.copyId" label="Copy ID" command="_S9S-4PklEeip3YLbQHnttQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_TwiIYImREeSwnaro5Nln-g" elementId="com.kms.katalon.composer.explorer.popupmenu.cut" label="Cut" command="_Phq7QImREeSwnaro5Nln-g"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_2j0ncCPTEeStgKkqz5sGOw" elementId="com.kms.katalon.composer.explorer.popupmenu.paste" label="Paste" command="_8CRNICPTEeStgKkqz5sGOw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_-a-DMB3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu.delete" label="Delete" command="_PMBCoCEKEeSe6pqNW7uvMw"/>
@@ -43,6 +44,7 @@
     <elements xsi:type="commands:Command" xmi:id="_Cl0jYIRZEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.command.collapseAll" commandName="Collapse All Command"/>
     <elements xsi:type="commands:Command" xmi:id="_bc4cMIRcEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.command.link" commandName="Link with Selected Part Command"/>
     <elements xsi:type="commands:Command" xmi:id="_yoRWIMKtEea8__5yGerh4w" elementId="com.kms.katalon.composer.explorer.command.explore" commandName="Open containing folder"/>
+    <elements xsi:type="commands:Command" xmi:id="_S9S-4PklEeip3YLbQHnttQ" elementId="com.kms.katalon.composer.explorer.command.copyId" commandName="Explorer Copy ID Command"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_LQfAkB7uEeSCzrWY6RMEZw" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_OlsB0B7uEeSCzrWY6RMEZw" elementId="com.kms.katalon.composer.explorer.handler.open" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.handlers.OpenHandler" command="_DfqvoB7uEeSCzrWY6RMEZw"/>
@@ -55,6 +57,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_LdHUMIRZEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handler.0" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.handlers.CollapseAllHandler" command="_Cl0jYIRZEeW5IumwiTbixg"/>
     <elements xsi:type="commands:Handler" xmi:id="_qckHkIRcEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handler.linkEditor" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.handlers.LinkEditorHandler" command="_bc4cMIRcEeW5IumwiTbixg"/>
     <elements xsi:type="commands:Handler" xmi:id="_fcER4MKrEea8__5yGerh4w" elementId="com.kms.katalon.composer.explorer.handler.explore" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.handlers.OpenContainingFolderHandler" command="_yoRWIMKtEea8__5yGerh4w"/>
+    <elements xsi:type="commands:Handler" xmi:id="_W4WfMPklEeip3YLbQHnttQ" elementId="com.kms.katalon.composer.explorer.handler.copyId" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.handlers.CopyIdHandler" command="_S9S-4PklEeip3YLbQHnttQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_B8mnUGsrEeWfg6wx-7KkhQ" featurename="addons" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="application:Addon" xmi:id="_DvtjsGsrEeWfg6wx-7KkhQ" elementId="com.kms.katalon.composer.explorer.addon.injection" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.addon.ExplorerContextInjectionAddon"/>

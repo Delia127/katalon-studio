@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.components.impl.dialogs;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -11,8 +13,10 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -105,13 +109,43 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
         treeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
         treeViewer.getTree().setFocus();
 
+        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                updateOKButtonStatus();
+            }
+        });
+
         return treeViewer;
+    }
+
+    @Override
+    protected Control createContents(Composite parent) {
+        try {
+            return super.createContents(parent);
+        } finally {
+            updateOKButtonStatus();
+        }
+    }
+
+    private void updateOKButtonStatus() {
+        Button btnOk = getButton(OK);
+        if (btnOk != null && !btnOk.isDisposed()) {
+            btnOk.setEnabled(treeViewer.getStructuredSelection().size() > 0);
+        }
+    }
+
+    @Override
+    public void create() {
+        super.create();
+        updateOKButtonStatus();
     }
 
     protected TreeViewer getTreeViewer() {
         return treeViewer;
     }
-    
+
     @Override
     protected TreeViewer doCreateTreeViewer(Composite parent, int style) {
         return new CTreeViewer(parent, style);
@@ -149,7 +183,8 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
             @Override
             public void run() {
                 try {
-                    if (txtInput.isDisposed()) return;
+                    if (txtInput.isDisposed())
+                        return;
                     if (searchString.equals(txtInput.getText()) && getTreeViewer().getInput() != null) {
                         String broadcastMessage = getSearchMessage();
                         labelProvider.setSearchString(broadcastMessage);

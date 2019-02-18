@@ -1,6 +1,9 @@
 package com.kms.katalon.core.webui.common;
 
 import java.awt.Rectangle;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -16,7 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -27,7 +29,9 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
@@ -39,6 +43,8 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.TestObjectXpath;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webui.common.XPathBuilder.PropertyType;
+import com.kms.katalon.core.webui.common.internal.BrokenTestObject;
+import com.kms.katalon.core.webui.common.internal.BrokenTestObjects;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
@@ -697,14 +703,11 @@ public class WebUiCommonHelper extends KeywordHelper {
         boolean isSwitchToParentFrame = false;
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
-            /*
-             * Smart XPath's enabled - only support in commercial
             Boolean smartXPathsEnabled = RunConfiguration.getAutoApplyNeighborXpaths();
-            */     
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
-            By defaultLocator = null;
-            String cssLocator = null;
+            By defaultLocator = null;	
+            String cssLocator = null;	
             String locatorString = null;
             final TestObject parentObject = testObject.getParentObject();
             WebElement shadowRootElement = null;
@@ -767,13 +770,12 @@ public class WebUiCommonHelper extends KeywordHelper {
 
             // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
-/*            // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
-            if(testObject.getSelectorMethod() == SelectorMethod.XPATH){
+            // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
+            if(testObject.getSelectorMethod() == SelectorMethod.XPATH && smartXPathsEnabled){
                 List<WebElement> elementsByOtherMethods = findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject, smartXPathsEnabled);
-                if(smartXPathsEnabled == true)
-                	return elementsByOtherMethods;
+                return elementsByOtherMethods;
             }
-*/
+
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
@@ -788,7 +790,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
-    @SuppressWarnings("unused")
+
 	private static List<WebElement> findWebElementsByOtherMethods(
     		WebDriver webDriver, 
     		boolean objectInsideShadowDom, 
@@ -809,8 +811,6 @@ public class WebUiCommonHelper extends KeywordHelper {
     	}    	
     	
     	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_START);
-    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_TRIGGER);
-    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_LEARN_ABOUT);
     	logger.logInfo("");
     	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_USING);
 
@@ -825,20 +825,30 @@ public class WebUiCommonHelper extends KeywordHelper {
     			.findFirst();
     	
     	// Use Neighbor as the stop condition if exists, otherwise just loop through all XPaths
-    	int firstNeighborXPathIndex = allXPaths.size();
+    	int firstNeighborXPathIndex = allXPaths.size() - 1;
     	if(workingNeighborXPath.isPresent()){
     		firstNeighborXPathIndex = allXPaths.indexOf(workingNeighborXPath.get());
     	}
-		for(int i = 0; i < firstNeighborXPathIndex; i++){
+    	
+		for(int i = 0; i <= firstNeighborXPathIndex; i++){
 			TestObjectXpath thisXPath = allXPaths.get(i);
 	   		By byThisXPath =  By.xpath(thisXPath.getValue());
     		List<WebElement> elementsFoundByThisXPath = webDriver.findElements(byThisXPath);
     		if(elementsFoundByThisXPath != null 
     				&& elementsFoundByThisXPath.size() > 0){
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS, 
-                		testObject.getObjectId(), thisXPath.getValue()));
+                		thisXPath.getValue()));
                 elementsFoundBeforeNeighborXPaths = elementsFoundByThisXPath;
-    			break;
+
+				String jsAutoHealingPath = RunConfiguration.getProjectDir()
+						+ "/Reports/smart_xpath/waiting-for-approval.json";
+				BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, thisXPath.getValue());
+				BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
+				if(existingBrokenTestObjects != null){
+    				existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
+    				writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
+    			}
+				break;
     		}
 		}
 		
@@ -847,7 +857,6 @@ public class WebUiCommonHelper extends KeywordHelper {
 		if(elementsFoundBeforeNeighborXPaths.size() > 0 && smartXPathsEnabled == true){
 			logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION);
 	    	logger.logInfo("");
-	    	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_OFF_SMART_XPATHS);
 	    	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
 			return elementsFoundBeforeNeighborXPaths;			
 			
@@ -856,13 +865,45 @@ public class WebUiCommonHelper extends KeywordHelper {
 		}
 		
     	logger.logInfo("");
-    	logger.logInfo(StringConstants.KW_LOG_INFO_WHERE_TO_TURN_ON_SMART_XPATHS);
     	logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
 
     	return Collections.emptyList();    	
     }
+    
+	private static void writeBrokenTestObjects(BrokenTestObjects brokenTestObjects, String filePath) {
+		try {
+			Writer writer = new FileWriter(filePath);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			gson.toJson(brokenTestObjects, writer);
+			writer.flush();
+			writer.close();
+		} catch (Exception e) {
+			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
+		}
+	}
 
-
+	private static BrokenTestObjects readExistingBrokenTestObjects(String filePath) {
+		try {
+			Gson gson = new Gson();
+			JsonReader reader = new JsonReader(new FileReader(filePath));
+			return gson.fromJson(reader, BrokenTestObjects.class);
+		} catch (Exception e) {
+			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
+		}
+		return null;
+	}
+	
+	private static BrokenTestObject buildBrokenTestObject(TestObject testObject, 
+			String newXPath) {
+		String oldXPath = testObject.getSelectorCollection().get(testObject.getSelectorMethod());
+		BrokenTestObject brokenTestObject = new BrokenTestObject();
+		brokenTestObject.setTestObjectId(testObject.getObjectId());
+		brokenTestObject.setApproved(false);
+		brokenTestObject.setBrokenXPath(oldXPath);
+		brokenTestObject.setProposedXPath(newXPath);
+		return brokenTestObject;
+	}
+    
     @SuppressWarnings("unused")
 	private static List<WebElement> findWebElementsUsingHeuristicMethod(
             WebDriver webDriver, 

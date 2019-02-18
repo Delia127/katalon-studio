@@ -21,7 +21,9 @@ public class StringConstantCellEditor extends TextCellEditor implements Applying
         constantExpression = ((ConstantExpressionWrapper) value).clone();
         super.doSetValue(((ConstantExpressionWrapper) value).getValue());
     }
-
+    public StringConstantCellEditor(Composite parent, int style) {
+		super(parent, style);
+	}
     @Override
     protected ConstantExpressionWrapper doGetValue() {
         String stringResult = (String) super.doGetValue();

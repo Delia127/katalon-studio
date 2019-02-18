@@ -27,7 +27,7 @@ public class TestSuiteIntegrationPart {
     private ToolBar toolBar;
     private Composite container;
     private MPart mpart;
-    private TestSuiteCompositePart parentTestSuiteCompositePart;
+    private ParentTestSuiteCompositePart parentTestSuiteCompositePart;
 
     // Used to store the products that is integrating with test suite view.
     // The key represents for product name
@@ -40,8 +40,8 @@ public class TestSuiteIntegrationPart {
         if (mpart.getParent().getParent() instanceof MGenericTile
                 && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
             MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
-            if (compositePart.getObject() instanceof TestSuiteCompositePart) {
-                parentTestSuiteCompositePart = ((TestSuiteCompositePart) compositePart.getObject());
+            if (compositePart.getObject() instanceof ParentTestSuiteCompositePart) {
+                parentTestSuiteCompositePart = ((ParentTestSuiteCompositePart) compositePart.getObject());
             }
         }
 
@@ -73,7 +73,7 @@ public class TestSuiteIntegrationPart {
 
     public void setDirty(boolean dirty) {
         mpart.setDirty(true);
-        parentTestSuiteCompositePart.checkDirty();
+        parentTestSuiteCompositePart.setDirty(true);
     }
 
     /**
