@@ -239,7 +239,7 @@ public class PluginService {
         Bundle[] bundles = bundleContext.getBundles();
         int count = 0;
         for (Bundle installedBundle : bundles) {
-            if (installedBundle.getSymbolicName().equalsIgnoreCase(bundle.getSymbolicName())) {
+            if (StringUtils.equalsIgnoreCase(installedBundle.getSymbolicName(), bundle.getSymbolicName())) {
                 count++;
                 if (count >= 2) {
                     return true;
