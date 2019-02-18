@@ -82,7 +82,7 @@ public class CachedPluginInfo {
         File preferenceFile = getPreferenceFile();
         if (preferenceFile.exists()) {
             FileInputStream input = new FileInputStream(preferenceFile);
-            prop.load(new FileInputStream(preferenceFile));
+            prop.load(input);
             input.close();
         }
         return prop;

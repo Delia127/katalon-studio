@@ -129,6 +129,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStoreLoginDialog_LBL_USERNAME = MessageConstants.KStoreLoginDialog_LBL_USERNAME;
 
     public static final String KStoreLoginDialog_LBL_PASSWORD = MessageConstants.KStoreLoginDialog_LBL_PASSWORD;
+    
+    public static final String KStoreLoginDialog_LBL_INSTRUCTION = MessageConstants.KStoreLoginDialog_LBL_INSTRUCTION;
+    
+    public static final String KStoreLoginDialog_BTN_CONNECT = MessageConstants.KStoreLoginDialog_BTN_CONNECT;
 
     public static final String KStoreLoginDialog_INVALID_ACCOUNT_ERROR = MessageConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
     
@@ -144,6 +148,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStorePluginsDialog_STATUS_INSTALLED = MessageConstants.KStorePluginsDialog_STATUS_INSTALLED;
 
     public static final String KStorePluginsDialog_STATUS_UNINSTALLED = MessageConstants.KStorePluginsDialog_STATUS_UNINSTALLED;
+    
+    public static final String KStorePluginsDialog_STATUS_EXPIRED = MessageConstants.KStorePluginsDialog_STATUS_EXPIRED;
     
     public static final String KStorePluginsDialog_COL_VERSION = MessageConstants.KStorePluginsDialog_COL_VERSION;
     

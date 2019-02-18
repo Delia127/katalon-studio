@@ -169,7 +169,7 @@ public class ComposerTestsuiteMessageConstants extends NLS {
 
     public static String TOOLTIP_MAP_ALL;
     
-    public static String HAND_WARN_TS_REQUIRES_PLUGIN_TAGS_TO_OPEN;
+    public static String HAND_WARN_TS_REQUIRES_PLUGIN_DYNAMIC_EXECUTION_TO_OPEN;
 
     static {
         // initialize resource bundle
