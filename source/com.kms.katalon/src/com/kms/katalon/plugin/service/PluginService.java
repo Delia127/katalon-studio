@@ -4,13 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -45,6 +41,10 @@ import com.kms.katalon.plugin.util.PluginHelper;
 public class PluginService {
 
     private static final String EXCEPTION_UNAUTHORIZED_SINGAL = "Unauthorized";
+    
+    private static final String EXCEPTION_DUPLICATED_BUNDLE_SIGNAL = "A bundle is already installed";
+    
+    private static final String EXCEPTION_ANOTHER_SINGLETON_BUNDLE_SELECTED_SIGNAL = "Another singleton bundle selected";
 
 	private static PluginService instance;
 
@@ -115,11 +115,11 @@ public class PluginService {
     
             int totalInstallWork = latestPlugins.size();
             int installWork = 0;
-            Set<String> installedBundleNames = new HashSet<>();
             for (KStorePlugin plugin : latestPlugins) {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
                 }
+                System.out.println(plugin.getProduct().getName());
                 String pluginPath = getPluginLocation(plugin);
                 if (!isPluginDownloaded(plugin)) {
                     File download = downloadAndExtractPlugin(plugin, credentials);
@@ -129,22 +129,29 @@ public class PluginService {
                     }
                 }
                 
-                String pluginBundleName = getPluginBundleName(pluginPath);
-                if (!StringUtils.isBlank(pluginBundleName) && installedBundleNames.contains(pluginBundleName)) {
-                    continue;
+                try {
+                    Bundle bundle = platformInstall(pluginPath);
+                    if (bundle != null && existBundleWithSameSymbolicName(bundle)) {
+                        platformUninstall(pluginPath);
+                        continue;
+                    }
+                    ResultItem item = new ResultItem();
+                    item.setPlugin(plugin);
+                    item.markPluginInstalled(true);
+                    if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
+                        plugin.getCurrentVersion().getNumber())) {
+                        item.setNewVersionAvailable(true);
+                    } else {
+                        item.setNewVersionAvailable(false);
+                    }
+                    results.add(item);
+                } catch (BundleException e) {
+                    if (!StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_DUPLICATED_BUNDLE_SIGNAL)
+                            && !StringUtils.containsIgnoreCase(e.getMessage(),
+                                    EXCEPTION_ANOTHER_SINGLETON_BUNDLE_SELECTED_SIGNAL)) {
+                        throw e;
+                    }
                 }
-                platformInstall(pluginPath);
-                ResultItem item = new ResultItem();
-                item.setPlugin(plugin);
-                item.markPluginInstalled(true);
-                if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
-                    plugin.getCurrentVersion().getNumber())) {
-                    item.setNewVersionAvailable(true);
-                } else {
-                    item.setNewVersionAvailable(false);
-                }
-                installedBundleNames.add(pluginBundleName);
-                results.add(item);
 
                 installWork++;
                 markWork(installWork, totalInstallWork, installPluginMonitor);
@@ -160,6 +167,7 @@ public class PluginService {
         } catch (InterruptedException e) {
             throw e;
         } catch (Exception e) {
+            System.out.println("Exception here");
         	if(StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_UNAUTHORIZED_SINGAL)){
                 throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins due to invalid API Key", e);
         	}
@@ -194,22 +202,8 @@ public class PluginService {
                 .collect(Collectors.toMap(KStorePlugin::getId, Function.identity()));
         return pluginMap;
     }
-
-    private String getPluginBundleName(String pluginPath) {
-        try {
-            File pluginFile = new File(pluginPath);
-            JarFile jar = new JarFile(pluginFile);
-            Manifest manifest = jar.getManifest();
-            String bundleSymbolicNameAttribute = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
-            String bundleSymbolicName = StringUtils.split(bundleSymbolicNameAttribute, ";")[0];
-            jar.close();
-            return bundleSymbolicName;
-        } catch (Exception e) {
-            return null;
-        }
-    }
     
-    private void platformInstall(String pluginPath) throws BundleException {
+    private Bundle platformInstall(String pluginPath) throws BundleException {
         BundleContext bundleContext = Platform.getBundle("com.katalon.platform").getBundleContext();
         String bundlePath = new File(pluginPath).toURI().toString();
         Bundle existingBundle = bundleContext.getBundle(bundlePath);
@@ -220,7 +214,25 @@ public class PluginService {
                         && ApplicationRunningMode.get() != RunningMode.CONSOLE) {
                 eventBroker.post(EventConstants.JIRA_PLUGIN_INSTALLED, null);
             }
+            return bundle;
+        } else {
+            return existingBundle;
         }
+    }
+    
+    private boolean existBundleWithSameSymbolicName(Bundle bundle) {
+        BundleContext bundleContext = Platform.getBundle("com.katalon.platform").getBundleContext();
+        Bundle[] bundles = bundleContext.getBundles();
+        int count = 0;
+        for (Bundle installedBundle : bundles) {
+            if (installedBundle.getSymbolicName().equalsIgnoreCase(bundle.getSymbolicName())) {
+                count++;
+                if (count >= 2) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void platformUninstall(String pluginPath) throws BundleException {
