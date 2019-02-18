@@ -83,6 +83,4 @@ public class TestSuiteCollectionExecutedEntity extends ExecutedEntity implements
     public EmailConfig getEmailConfig(ProjectEntity project) {
         return reportable.getEmailConfig(project);
     }
-
-
 }

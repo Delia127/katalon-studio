@@ -164,6 +164,4 @@ public class RunConfigurationCollector {
         }
         return customRunConfigIdList.toArray(new String[customRunConfigIdList.size()]);
     }
-
-   
 }
