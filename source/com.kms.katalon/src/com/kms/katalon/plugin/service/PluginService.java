@@ -97,11 +97,6 @@ public class PluginService {
                     platformUninstall(pluginPath);
                 }
     
-                ResultItem item = new ResultItem();
-                item.setPlugin(plugin);
-                item.markPluginInstalled(false);
-                results.add(item);
-    
                 uninstallWork++;
                 markWork(uninstallWork, totalUninstallWork, uninstallMonitor);
             }
@@ -121,8 +116,12 @@ public class PluginService {
                     throw new InterruptedException();
                 }
                 if (plugin.isExpired()) {
+                    ResultItem item = new ResultItem();
+                    item.setPlugin(plugin);
+                    results.add(item);
                     continue;
                 }
+                
                 String pluginPath = getPluginLocation(plugin);
                 if (!isPluginDownloaded(plugin)) {
                     File download = downloadAndExtractPlugin(plugin, credentials);
@@ -198,7 +197,6 @@ public class PluginService {
                 continue;
             }
             if (latestPluginInfo.isExpired()) {
-                plugin.setExpired(true);
                 uninstalledPlugins.add(plugin);
             }
         }
