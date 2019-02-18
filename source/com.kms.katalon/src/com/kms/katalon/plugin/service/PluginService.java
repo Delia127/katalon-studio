@@ -97,11 +97,6 @@ public class PluginService {
                     platformUninstall(pluginPath);
                 }
     
-                ResultItem item = new ResultItem();
-                item.setPlugin(plugin);
-                item.markPluginInstalled(false);
-                results.add(item);
-    
                 uninstallWork++;
                 markWork(uninstallWork, totalUninstallWork, uninstallMonitor);
             }
@@ -119,7 +114,14 @@ public class PluginService {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
                 }
-                System.out.println(plugin.getProduct().getName());
+
+                if (plugin.isExpired()) {
+                    ResultItem item = new ResultItem();
+                    item.setPlugin(plugin);
+                    results.add(item);
+                    continue;
+                }
+                
                 String pluginPath = getPluginLocation(plugin);
                 if (!isPluginDownloaded(plugin)) {
                     File download = downloadAndExtractPlugin(plugin, credentials);
@@ -188,13 +190,25 @@ public class PluginService {
     }
 
     private List<KStorePlugin> getUninstalledPlugins(List<KStorePlugin> localPlugins,
-            List<KStorePlugin> updatedPlugins) {
-        Map<Long, KStorePlugin> updatedPluginLookup = toMap(updatedPlugins);
-        return localPlugins.stream().filter(p -> {
-                    return !updatedPluginLookup.containsKey(p.getId()) ||
-                            !updatedPluginLookup.get(p.getId()).getCurrentVersion().getNumber()
-                                .equals(p.getCurrentVersion().getNumber());
-                }).collect(Collectors.toList());
+            List<KStorePlugin> latestPlugins) {
+        Map<Long, KStorePlugin> updatedPluginLookup = toMap(latestPlugins);
+        List<KStorePlugin> uninstalledPlugins = new ArrayList<>();
+        for (KStorePlugin plugin : localPlugins) {
+            if (!updatedPluginLookup.containsKey(plugin.getId())) {
+                uninstalledPlugins.add(plugin);
+                continue;
+            }
+            KStorePlugin latestPluginInfo = updatedPluginLookup.get(plugin.getId());
+            if (!latestPluginInfo.getCurrentVersion().getNumber().equals(
+                    plugin.getCurrentVersion().getNumber())) {
+                uninstalledPlugins.add(plugin);
+                continue;
+            }
+            if (latestPluginInfo.isExpired()) {
+                uninstalledPlugins.add(plugin);
+            }
+        }
+        return uninstalledPlugins;
     }
 
     private Map<Long, KStorePlugin> toMap(List<KStorePlugin> plugins) {

@@ -41,11 +41,11 @@ public class NewFilteringTestSuitePopupMenuContribution {
 
             Plugin plugin = ApplicationManager.getInstance()
                     .getPluginManager()
-                    .getPlugin("com.katalon.katalon-studio-tags-plugin");
+                    .getPlugin(IdConstants.PLUGIN_DYNAMIC_EXECUTION);
             if (NewTestSuiteHandler.findParentTreeEntity(selectedObjects) != null
                     && plugin != null) {
                 MHandledMenuItem newTestSuitePopupMenuItem = MenuFactory.createPopupMenuItem(
-                        commandService.createCommand(NEW_FILTERING_TEST_SUITE_COMMAND, null), "Filtering Test Suite",
+                        commandService.createCommand(NEW_FILTERING_TEST_SUITE_COMMAND, null), "Dynamic Querying Test Suite",
                         ConstantsHelper.getApplicationURI());
                 if (newTestSuitePopupMenuItem != null) {
                     menuItems.add(newTestSuitePopupMenuItem);
