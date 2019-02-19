@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.state.DataProviderState;
@@ -288,7 +289,11 @@ public class ProjectController extends EntityController {
         return getDataProviderSetting().getProjectDataProvider().updateProjectEntity(projectFile, newInfo);
     }
     
-    public ProjectEntity getProject(String projectFileLocation) throws Exception  {
-        return getDataProviderSetting().getProjectDataProvider().getProject(projectFileLocation);
+    public ProjectEntity getProject(String projectFileLocation) throws ControllerException  {
+        try {
+            return getDataProviderSetting().getProjectDataProvider().getProject(projectFileLocation);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 }

@@ -148,9 +148,11 @@ public class NewTestSuiteHandler {
 	private void execute(@UIEventTopic(EventConstants.TEST_SUITE_NEW) Object eventData) {
 		if (!canExecute()) {
 			return;
+		}else{
+			execute(Display.getCurrent().getActiveShell());
+
 		}
-		execute(Display.getCurrent().getActiveShell());
-	}
+			}
 
 	@Inject
 	@Optional

@@ -18,6 +18,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.testcase.handlers.CollectTestCaseTagHandler;
 import com.kms.katalon.composer.testcase.handlers.DeleteTestCaseFolderHandler;
 import com.kms.katalon.composer.testcase.handlers.DeleteTestCaseHandler;
 import com.kms.katalon.composer.testcase.handlers.EvaluateIntegrationContributionViewHandler;
@@ -43,6 +44,7 @@ public class TestCaseInjectionManagerAddon implements EventHandler {
         ContextInjectionFactory.make(RenameTestCaseHandler.class, context);
         ContextInjectionFactory.make(RefreshTestCaseHandler.class, context);
         ContextInjectionFactory.make(EvaluateIntegrationContributionViewHandler.class, context);
+        ContextInjectionFactory.make(CollectTestCaseTagHandler.class, context);
 
         TransferTypeCollection.getInstance().addTreeEntityTransferType(TreeEntityTransfer.getInstance());
         eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, this);

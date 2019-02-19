@@ -17,6 +17,7 @@ import com.kms.katalon.composer.report.parts.integration.IntegrationTestCaseColu
 import com.kms.katalon.composer.report.parts.integration.TestCaseIntegrationColumn;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
@@ -27,8 +28,8 @@ import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 
 public class QTestIntegrationReportTestCaseColumnView extends TestCaseIntegrationColumn {
 
-    public QTestIntegrationReportTestCaseColumnView(ReportEntity reportEntity) {
-        super(reportEntity);
+    public QTestIntegrationReportTestCaseColumnView(ReportEntity reportEntity, TestSuiteLogRecord testSuiteLogRecord) {
+        super(reportEntity, testSuiteLogRecord);
     }
 
     @Override

@@ -155,7 +155,9 @@ public class TestSuiteCollectionBuilderJob extends Job {
             IRunConfiguration runConfig = RunConfigurationCollector.getInstance()
                     .getRunConfiguration(configuration.getRunConfigurationId(), projectDir, configuration);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
-            runConfig.build(testSuiteEntity, new TestSuiteExecutedEntity(testSuiteEntity));
+            TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuiteEntity);
+            executedEntity.prepareTestCases();
+            runConfig.build(testSuiteEntity, executedEntity);
             SubIDELauncher launcher = new SubIDELauncher(runConfig, LaunchMode.RUN, configuration);
             reportCollection.getReportItemDescriptions()
                     .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configuration));

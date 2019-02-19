@@ -22,9 +22,6 @@ import com.kms.katalon.composer.execution.menu.AbstractExecutionMenuContribution
 import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
 import com.kms.katalon.composer.execution.menu.ExistingExecutionHandledMenuItem;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.launcher.model.LaunchMode;

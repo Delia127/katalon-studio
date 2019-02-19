@@ -61,6 +61,8 @@ public class MessageConstants extends NLS {
 
     public static String PA_LBL_USER_GUIDE;
     
+    public static String PA_LBL_PLUGIN_STORE;
+    
     public static String PA_LBL_BUSINESS_SUPPORT;
 
     public static String PA_LBL_ARTICLES_DESCRIPTION;
@@ -74,6 +76,8 @@ public class MessageConstants extends NLS {
     public static String PA_TOOLTIP_ARTICLES;
 
     public static String PA_URL_USER_GUIDE;
+    
+    public static String PA_URL_PLUGIN_STORE;
 
     public static String PA_LBL_RECENT_PROJECT;
 
@@ -369,8 +373,42 @@ public class MessageConstants extends NLS {
     
     //UserFeedbackDialog
     public static String UserFeedbackDialog_MSG_USER_TWEET;
+    
+    //KStoreCredentialsDialog
+    public static String KStoreLoginDialog_DIA_TITLE;
+    
+    public static String KStoreLoginDialog_LBL_USERNAME;
+    
+    public static String KStoreLoginDialog_LBL_PASSWORD;
+    
+    public static String KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
+    
+    public static String KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG;
+    
+    //ReloadPluginsResultDialog
+    public static String KStorePluginsDialog_COL_PLUGIN;
+
+    public static String KStorePluginsDialog_COL_STATUS;
+
+    public static String KStorePluginsDialog_DIA_TITLE;
+
+    public static String KStorePluginsDialog_STATUS_INSTALLED;
+
+    public static String KStorePluginsDialog_STATUS_UNINSTALLED;
+    
+    public static String KStorePluginsDialog_COL_VERSION;
+    
+    public static String KStorePluginsDialog_LBL_UPDATE;
 
 	public static String LBL_DISABLE_MOB_BROWSER_PROXY;
+
+	public static String LBL_USE_MOB_BROWSER_PROXY;
+	
+	public static String HAND_INFO_NO_PLUGINS_FOUND;
+	
+	public static String MSG_PLUGIN_HAS_BEEN_INSTALLED;
+	
+	public static String MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
 
     static {
         // initialize resource bundle

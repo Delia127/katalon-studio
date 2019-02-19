@@ -11,6 +11,7 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.testcase.actions.KatalonFormatAction;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
@@ -25,9 +26,9 @@ public class TestSuiteScriptPart {
 
     private ShowProblemAction showProblemAction;
 
-    private TestSuiteCompositePart parentPart;
+    private SavableCompositePart parentPart;
 
-    public TestSuiteScriptPart(TestSuiteCompositePart parentPart, CompatibilityEditor editorPart) {
+    public TestSuiteScriptPart(SavableCompositePart parentPart, CompatibilityEditor editorPart) {
         this.parentPart = parentPart;
         this.editorPart = editorPart;
         this.groovyEditor = (GroovyEditor) editorPart.getEditor();
@@ -52,7 +53,7 @@ public class TestSuiteScriptPart {
                 showProblemAction.startAction();
                 
                 getMPart().setDirty(true);
-                parentPart.checkDirty();
+                parentPart.setDirty(true);
             }
 
             @Override
@@ -73,12 +74,6 @@ public class TestSuiteScriptPart {
     
     public void save() {
         groovyEditor.doSave(new NullProgressMonitor());
-    }
-
-    public void interuptUIThreads() {
-        if (showProblemAction != null) {
-            showProblemAction.endAction();
-        }
     }
 
     private class ShowProblemAction {

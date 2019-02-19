@@ -32,6 +32,8 @@ public class ToolbarProcessor {
 
     public static final String KATALON_EXECUTION_TOOLBAR_ID = "com.kms.katalon.composer.toolbar.execution";
     
+    public static final String KATALON_PLUGIN_TOOLBAR_ID = "com.kms.katalon.composer.toolbar.plugin";
+    
     public static final String[] TOOLBAR_IDS = new String[] {
             KATALON_MAIN_TOOLBAR_ID,
             KATALON_MAIN_WEBSERVICE_TOOLBAR_ID,

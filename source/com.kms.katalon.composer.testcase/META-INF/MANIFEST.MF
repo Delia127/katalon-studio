@@ -55,13 +55,15 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.integration.analytics,
  org.greenrobot.eventbus,
  com.kms.katalon.tracking,
- org.eclipse.ui.workbench.texteditor
+ org.eclipse.ui.workbench.texteditor,
+ com.katalon.platform
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.testcase.actions,
  com.kms.katalon.composer.testcase.ast.dialogs,
  com.kms.katalon.composer.testcase.ast.editors,
  com.kms.katalon.composer.testcase.ast.treetable,
+ com.kms.katalon.composer.testcase.ast.variable.operations,
  com.kms.katalon.composer.testcase.components,
  com.kms.katalon.composer.testcase.constants,
  com.kms.katalon.composer.testcase.dialogs,
@@ -82,3 +84,4 @@ Export-Package: com.kms.katalon.composer.testcase.actions,
  com.kms.katalon.composer.testcase.util,
  com.kms.katalon.composer.testcase.views
 Bundle-ClassPath: .
+Bundle-Activator: com.kms.katalon.composer.testcase.TestCaseComposerActivator

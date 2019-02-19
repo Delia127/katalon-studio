@@ -931,5 +931,10 @@ public class WelcomeRightPart extends Composite implements EventHandler {
 
     public void onPartClosed() {
         eventBroker.unsubscribe(this);
+
+        
+        if (thread != null && thread.isAlive()) {
+            thread.interrupt();
+        }
     }
 }

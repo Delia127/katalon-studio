@@ -1,8 +1,8 @@
 package com.kms.katalon.composer.global.part;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -35,8 +35,8 @@ import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
-import com.kms.katalon.composer.global.constants.StringConstants;
 import com.kms.katalon.composer.components.part.SavableCompositePart;
+import com.kms.katalon.composer.global.constants.StringConstants;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
@@ -45,8 +45,6 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
-import com.kms.katalon.entity.global.GlobalVariableEntity;
-import com.kms.katalon.tracking.service.Trackings;
 
 public class ExecutionProfileCompositePart implements IComposerPartEvent, SavableCompositePart {
 	    @Inject
@@ -146,6 +144,12 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                    CTabItem globalVariableEditorPartTab = ui.getGlobalVariableEditorTab();
 	                    globalVariableEditorPartTab.setImage(ImageConstants.IMG_16_SCRIPT);
 	                    globalVariableEditorPartTab.setShowClose(false);
+	                    
+	                    CTabItem globalVariableAddTab = ui.getGlobalVariableAddTab();
+	                    globalVariableAddTab.setImage(ImageConstants.IMG_16_MANUAL);
+	                    globalVariableAddTab.setShowClose(false);
+	                    
+	                    
 	                }
 
 	            	//TODO: Handle these cases
@@ -169,8 +173,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                            variableTab = false;
 	                            return;
                         	}
-	                    }
-
+						}
 	                });
 	                tabFolder.layout();
 	            }
@@ -197,7 +200,7 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
                 setInvalidScheme(true);
             }
         }
-		
+
 		private void setInvalidScheme(boolean value){
 		    invalidSchema = value;
 		}

@@ -53,8 +53,8 @@ public class TestCaseMain {
         engine = ScriptEngine.getDefault(classLoader);
 
         // Load GlobalVariable class
-        // loadGlobalVariableClass(classLoader);
-        // loadInternalGlobalVariableClass(classLoader);
+//        loadGlobalVariableClass(classLoader);
+        loadInternalGlobalVariableClass(classLoader);
         loadCustomKeywordsClass(classLoader);
 
         eventManager = ExecutionEventManager.getInstance();

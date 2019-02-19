@@ -86,7 +86,8 @@ public class OpenProjectHandler {
 
     public static File getProjectFile(File projectDirectory) {
         for (File file : projectDirectory.listFiles()) {
-            if (('.' + FilenameUtils.getExtension(file.getAbsolutePath())).equals(ProjectEntity.getProjectFileExtension())) {
+            if (('.' + FilenameUtils.getExtension(file.getAbsolutePath()))
+                    .equals(ProjectEntity.getProjectFileExtension())) {
                 return file;
             }
         }
@@ -109,16 +110,16 @@ public class OpenProjectHandler {
     @Inject
     @Optional
     private void openProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-            @UIEventTopic(EventConstants.PROJECT_OPEN) final String projectPk) throws InvocationTargetException,
-            InterruptedException {
+            @UIEventTopic(EventConstants.PROJECT_OPEN) final String projectPk)
+            throws InvocationTargetException, InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
     }
 
     @Inject
     @Optional
     private void restoreOpenProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-            @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk) throws InvocationTargetException,
-            InterruptedException {
+            @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk)
+            throws InvocationTargetException, InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
 
         eventBroker.post(EventConstants.PROJECT_RESTORE_SESSION, null);
@@ -166,7 +167,7 @@ public class OpenProjectHandler {
 
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
-
+                    TimeUnit.SECONDS.sleep(1);
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {

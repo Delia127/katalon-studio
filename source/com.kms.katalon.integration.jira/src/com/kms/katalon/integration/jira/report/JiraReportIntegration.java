@@ -37,7 +37,8 @@ public class JiraReportIntegration implements ReportIntegrationContribution, Jir
     @Override
     public boolean isIntegrationActive(TestSuiteEntity testSuite) {
         try {
-            return getSettingStore().isIntegrationEnabled() && getSettingStore().isSubmitTestResultAutomatically();
+            return !isJiraPluginEnabled() && getSettingStore().isIntegrationEnabled()
+                    && getSettingStore().isSubmitTestResultAutomatically();
         } catch (IOException e) {
             LogUtil.logError(e);
             return false;

@@ -93,7 +93,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
                     .getRunConfiguration(configDescription.getRunConfigurationId(), projectDir, configDescription);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             runConfig.setOverridingGlobalVariables(overridingValueable);
-            
+
             runConfig.build(testSuiteEntity, new TestSuiteExecutedEntity(testSuiteEntity));
             SubConsoleLauncher launcher = new SubConsoleLauncher(launcherManager, runConfig, configDescription);
             reportCollection.getReportItemDescriptions()

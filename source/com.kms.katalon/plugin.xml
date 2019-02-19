@@ -11,9 +11,9 @@
                name="appName"
                value="Katalon Studio">
          </property>
-         <property
-         		name="applicationXMI"
-         		value="com.kms.katalon/Application.e4xmi">
+         <property 
+         		name="applicationXMI" 
+         		value="com.kms.katalon/Application.e4xmi"> 
 	     </property>
 	     <property
            name="lifeCycleURI"
@@ -27,6 +27,14 @@
                name="windowImages"
                value="icons/branding_16.png,icons/branding_32.png,icons/branding_48.png,icons/branding_64.png,icons/branding_128.png,icons/branding_256.png">
          </property>
+         <property
+               name="aboutImage"
+               value="icons/branding_128.png">
+         </property>
+         <property
+               name="aboutText"
+               value="%productBlurb">
+         </property>       
          <property
                name="startupForegroundColor"
                value="404040">
@@ -42,14 +50,6 @@
          <property
                name="applicationCSS"
                value="platform:/plugin/com.kms.katalon/css/default.css">
-         </property>
-         <property
-               name="aboutImage"
-               value="icons/branding_128.png">
-         </property>
-         <property
-               name="aboutText"
-               value="%productBlurb">
          </property>
          <property
                name="preferenceCustomization"
@@ -96,7 +96,13 @@
           id="com.kms.katalon.composer.preferences.GeneralPreferencePage"
           name="Katalon">
     </page>
- 	</extension>
+    <page
+          class="com.kms.katalon.composer.preferences.PluginPreferencePage"
+          id="com.kms.katalon.composer.preferences.PluginPreferencePage"
+          category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+          name="Plugins">
+    </page>
+ 	</extension> 
  	<extension
 	     point="org.eclipse.ui.contexts">
 	  <context
@@ -124,7 +130,7 @@
 		 </activeWhen>
 	  	</handler>
 	  </extension>
-
+	  
 	<extension
 	     point="org.eclipse.ui.handlers">
 	  	<handler

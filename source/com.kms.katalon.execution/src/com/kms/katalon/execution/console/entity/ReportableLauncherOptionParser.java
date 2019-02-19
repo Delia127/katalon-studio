@@ -47,34 +47,16 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
         }
     }
 
-	@Override
-	public void setOverridingArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-    	if (overridingOptions.contains(consoleOption)) {
-        	consoleOption.setValue(argumentValue);
-            return;
-        }
-	}
-	
-	@Override
-	public void collectOverridingParameters(ProjectEntity project) throws ExecutionException {
-		collectOverridableGlobalVariables(project);
-	}
-
-	
-	private void collectOverridableGlobalVariables(ProjectEntity project) throws ExecutionException {
-		overridingOptions = new OverridingParametersConsoleOptionContributor(project).getConsoleOptionList();
-	}
-	
     public Map<String, Object> getOverridingGlobalVariables(){
-    	Map<String, Object> overridingGlobalVariables = new HashMap<>();
-		overridingOptions.forEach(a -> {
-			if (a.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX) 
-					&& a.getValue() != null) {
-				overridingGlobalVariables.put(a.getOption().
-						replace(OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
-						String.valueOf(a.getValue()));
-			}
-		});
-    	return overridingGlobalVariables;
+        Map<String, Object> overridingGlobalVariables = new HashMap<>();
+        overridingOptions.forEach(a -> {
+            if (a.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX) 
+                    && a.getValue() != null) {
+                overridingGlobalVariables.put(a.getOption().
+                        replace(OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
+                        String.valueOf(a.getValue()));
+            }
+        });
+        return overridingGlobalVariables;
     }
 }

@@ -17,9 +17,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import com.katalon.platform.api.event.ExecutionEvent;
+import com.katalon.platform.api.execution.TestCaseExecutionContext;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
@@ -38,10 +42,12 @@ import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunable;
+import com.kms.katalon.execution.entity.TestCaseExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.entity.TestSuiteExecutionContextImpl;
+import com.kms.katalon.execution.entity.TestSuiteExecutionEvent;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
-import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.setting.EmailVariableBinding;
@@ -57,7 +63,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
-    
+
     @Override
     protected void preExecutionComplete() {
         if (getStatus() == LauncherStatus.TERMINATED) {
@@ -87,7 +93,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         waitForLoggingFinished();
-        
+
+        fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_FINISHED_EVENT);
+
         if (needToRerun()) {
             Rerunable rerun = (Rerunable) getExecutedEntity();
 
@@ -101,8 +109,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                         getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
 
                 IRunConfiguration newConfig = getRunConfig().cloneConfig();
-                if (getRunConfig() instanceof AbstractRunConfiguration && 
-                        newConfig instanceof AbstractRunConfiguration) {
+                if (getRunConfig() instanceof AbstractRunConfiguration
+                        && newConfig instanceof AbstractRunConfiguration) {
                     ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
                 }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
@@ -117,8 +125,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     private boolean needToRerun() {
-        if (getResult().getNumErrors() + getResult().getNumFailures() > 0 
-                && getExecutedEntity() instanceof Rerunable) {
+        if (getResult().getNumErrors() + getResult().getNumFailures() > 0 && getExecutedEntity() instanceof Rerunable) {
             Rerunable rerun = (Rerunable) getExecutedEntity();
 
             return rerun.getRemainingRerunTimes() > 0;
@@ -126,7 +133,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             return false;
         }
     }
-    
+
     private void waitForLoggingFinished() {
         try {
             long startTime = System.currentTimeMillis();
@@ -134,7 +141,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 Thread.sleep(200);
             }
         } catch (Exception ignored) {
-            
+
         }
     }
 
@@ -193,8 +200,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_UUID);
             ReportUtil.writeExecutionUUIDToFile(this.getExecutionUUID(), reportFolder);
 
-//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
-//            ReportUtil.writeJsonReport(suiteLog, reportFolder);
+            // setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
+            // ReportUtil.writeJsonReport(suiteLog, reportFolder);
 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
             ReportUtil.writeJUnitReport(suiteLog, reportFolder);
@@ -399,5 +406,29 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     public void setReportEntity(ReportEntity reportEntity) {
         this.reportEntity = reportEntity;
+    }
+
+    protected TestSuiteExecutionEvent fireTestSuiteExecutionEvent(String eventName) {
+        IExecutedEntity executedEntity = getExecutedEntity();
+        if (executedEntity instanceof TestSuiteExecutedEntity) {
+            TestSuiteExecutedEntity testSuiteEx = (TestSuiteExecutedEntity) executedEntity;
+
+            List<TestCaseExecutionContext> testCaseContexts = new ArrayList<>();
+            for (TestStatus testStatus : getResult().getStatuses()) {
+                testCaseContexts.add(TestCaseExecutionContextImpl.Builder.create("", "")
+                        .withTestCaseStatus(testStatus.getStatusValue().name())
+                        .withMessage(testStatus.getStackTrace())
+                        .build());
+            }
+
+            TestSuiteExecutionContextImpl executionContext = TestSuiteExecutionContextImpl.Builder
+                    .create(getId(), testSuiteEx.getSourceId())
+                    .withReportId(getReportEntity().getIdForDisplay())
+                    .withTestCaseContext(testCaseContexts)
+                    .build();
+            TestSuiteExecutionEvent eventObject = new TestSuiteExecutionEvent(eventName, executionContext);
+            EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
+        }
+        return null;
     }
 }

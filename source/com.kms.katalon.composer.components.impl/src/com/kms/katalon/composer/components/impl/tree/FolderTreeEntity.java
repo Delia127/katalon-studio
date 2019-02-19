@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,7 @@ import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -71,7 +73,9 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                     if (nodeA instanceof ReportTreeEntity && nodeB instanceof ReportTreeEntity) {
                         ReportEntity reportA = (ReportEntity) nodeA.getObject();
                         ReportEntity reportB = (ReportEntity) nodeB.getObject();
-                        return reportA.getDateCreated().after(reportB.getDateCreated()) ? 1 : -1;
+                        Date dateCreatedA = ReportController.getInstance().getReportDate(reportA);
+                        Date dateCreatedB = ReportController.getInstance().getReportDate(reportB);
+                        return dateCreatedB.compareTo(dateCreatedA);
                     }
                     return StringUtils.compareIgnoreCase(nodeA.getText(), nodeB.getText());
                 } catch (Exception e) {

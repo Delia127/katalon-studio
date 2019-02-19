@@ -44,7 +44,6 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
-import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
@@ -63,7 +62,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 @SuppressWarnings("restriction")
-public class TestSuiteCompositePart implements EventHandler, SavableCompositePart, IComposerPartEvent {
+public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteCompositePart, IComposerPartEvent {
     // compositePart has only one child is subPartStack.
     // Children of subPartStack: childTestSuiteGeneralPart &
     // childTestSuiteIntegrationPart
@@ -456,7 +455,7 @@ public class TestSuiteCompositePart implements EventHandler, SavableCompositePar
 
     private void interuptUIThreads() {
         childTestSuiteMainPart.interuptUIThreads();
-        scriptPart.interuptUIThreads();
+        //scriptPart.interuptUIThreads();
     }
 
     public TestSuiteEntity getTestSuiteClone() {

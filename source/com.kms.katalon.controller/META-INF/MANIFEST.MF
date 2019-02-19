@@ -4,7 +4,8 @@ Bundle-Name: Controller
 Bundle-SymbolicName: com.kms.katalon.controller;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.controller
+Export-Package: com.kms.katalon.controller,
+ com.kms.katalon.controller.exception
 Require-Bundle: com.kms.katalon.constant,
  com.kms.katalon.entity,
  com.kms.katalon.preferences,
@@ -27,6 +28,7 @@ Require-Bundle: com.kms.katalon.constant,
  org.apache.httpcomponents.httpcore,
  org.javalite.common,
  com.kms.katalon.core.webservice,
- com.kms.katalon.logging
+ com.kms.katalon.logging,
+ com.katalon.platform
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
