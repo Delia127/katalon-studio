@@ -31,7 +31,6 @@
 <unit id="commons-logging" version="1.1.1"/>
 <unit id="io.cucumber.tag-expressions" version="1.1.1"/>
 <unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.1"/>
-<unit id="org.apache.commons.commons-text" version="1.6.0"/>
 <unit id="jackson-core-asl" version="1.9.13"/>
 <unit id="wsdl4j" version="1.6.2"/>
 <unit id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml" version="2.9.6"/>
@@ -138,7 +137,6 @@
 <unit id="org.apache.commons.beanutils" version="1.9.2"/>
 <unit id="org.apache.commons.codec" version="1.7.0"/>
 <unit id="dom4j" version="1.6.1"/>
-<unit id="com.katalon.platform" version="1.0.5"/>
 <unit id="org.apache.xmlbeans" version="2.6.0"/>
 <unit id="org.apache.commons.digester" version="1.8.1"/>
 <unit id="org.apache.commons.email" version="1.4.0"/>
@@ -206,7 +204,6 @@
 <plugin id="com.jcraft.jsch" version="0.1.53.v201508180515"/>
 <plugin id="com.jcraft.jsch" version="0.1.54.v20170116-1932"/>
 <plugin id="com.jcraft.jsch.source"/>
-<plugin id="com.katalon.platform"/>
 <plugin id="com.microsoft.sqlserver.sqljdbc4"/>
 <plugin id="com.mysql.jdbc"/>
 <plugin id="com.oracle.jdbc.ojdbc7"/>
@@ -286,7 +283,6 @@
 <plugin id="org.apache.commons.cli"/>
 <plugin id="org.apache.commons.codec" version="1.7.0"/>
 <plugin id="org.apache.commons.collections"/>
-<plugin id="org.apache.commons.commons-text"/>
 <plugin id="org.apache.commons.compress"/>
 <plugin id="org.apache.commons.dbutils"/>
 <plugin id="org.apache.commons.digester"/>
