@@ -22,7 +22,7 @@ public class VariableNameEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        return new TextCellEditor((Composite) this.getViewer().getControl());
+        return new CustomTextCellEditor((Composite) this.getViewer().getControl());
     }
 
     @Override
@@ -48,5 +48,17 @@ public class VariableNameEditingSupport extends EditingSupport {
             }
         }
     }
+    private class CustomTextCellEditor extends TextCellEditor {
+        
+        public CustomTextCellEditor(Composite parent) {
+            super(parent);
+        }
 
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData result = super.getLayoutData();
+            result.minimumHeight =10;
+            return result;
+        }
+    }
 }

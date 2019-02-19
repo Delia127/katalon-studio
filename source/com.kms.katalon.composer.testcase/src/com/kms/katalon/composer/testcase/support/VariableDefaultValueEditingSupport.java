@@ -4,8 +4,10 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.testcase.ast.editors.StringConstantCellEditor;
 import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableDefaultValueOperation;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
@@ -39,8 +41,11 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
             return null;
         }
         InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
-        if (inputValueType != null) {
+        if (inputValueType != null && !inputValueType.equals(InputValueType.String)) {
             return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression, testCasePart);
+        }
+        if (inputValueType.equals(InputValueType.String) && inputValueType != null) {
+            return new MultilineTextCellEditor((Composite) getViewer().getControl());
         }
         return null;
     }
@@ -81,5 +86,21 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
             variablesPart.executeOperation(new ChangeVariableDefaultValueOperation(variablesPart, variableEntity,
                     stringBuilder.toString()));
         }
+       
     }
+    private class MultilineTextCellEditor extends StringConstantCellEditor {
+
+        public MultilineTextCellEditor(Composite parent) {
+            super(parent, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
+        }
+
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData data = new LayoutData();
+            data.minimumHeight = 100;
+            data.verticalAlignment = SWT.TOP;
+            return data;
+        }
+    }
+ 
 }
