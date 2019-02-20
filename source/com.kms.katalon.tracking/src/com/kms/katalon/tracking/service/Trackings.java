@@ -324,6 +324,14 @@ public class Trackings {
     public static void trackInAppSurveyRatingAndIdea(int numberOfStars, String userIdea) {
         trackUserAction("katalonStudioSurvey", "star", numberOfStars, "content", userIdea);
     }
+    
+    public static void trackClickWalkthroughDialogLink(String dialogId, String linkName, String link){
+    	trackUserAction("clickWalkthroughLink", "dialogId", dialogId, "linkName", linkName, "link", link);
+    }
+    
+    public static void trackClickWalkthroughIgnoreButton(String dialogId){
+    	trackUserAction("clickWalkthroughIgnoreButton", "dialogId", dialogId);
+    }
 
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);

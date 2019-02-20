@@ -278,9 +278,11 @@ public abstract class AbstractExecutionHandler {
         if (targetEntity instanceof TestCaseEntity) {
             TestCaseEntity testCase = (TestCaseEntity) targetEntity;
             executeTestCase(testCase, launchMode, runConfiguration);
+            eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
         } else if (targetEntity instanceof TestSuiteEntity) {
             TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
             executeTestSuite(testSuite, launchMode, runConfiguration);
+            eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
         } else if (targetEntity instanceof SystemFileEntity) {
             SystemFileEntity feature = (SystemFileEntity) targetEntity;
             executeFeatureFile(feature, launchMode, runConfiguration);
