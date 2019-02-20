@@ -28,6 +28,7 @@ Require-Bundle: com.katalon.platform,
  org.eclipse.e4.core.di,
  com.kms.katalon.composer.report,
  com.kms.katalon.execution,
- com.kms.katalon.dal;bundle-version="1.0.0"
+ com.kms.katalon.dal;bundle-version="1.0.0",
+ org.apache.commons.io
 Bundle-Activator: com.kms.katalon.platform.internal.InternalPlatformPlugin
 Bundle-ActivationPolicy: lazy

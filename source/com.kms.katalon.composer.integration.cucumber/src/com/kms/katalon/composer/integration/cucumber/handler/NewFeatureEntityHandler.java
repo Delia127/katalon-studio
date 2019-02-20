@@ -32,6 +32,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
@@ -84,7 +85,7 @@ public class NewFeatureEntityHandler extends FeatureTreeRootCatcher {
         }
     }
 
-    private FolderTreeEntity getParentFeatureTreeFolder() throws DALException {
+    private FolderTreeEntity getParentFeatureTreeFolder() throws DALException, ControllerException {
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
 
         FolderTreeEntity parentFeatureTreeFolder = getSelectedTreeEntity(

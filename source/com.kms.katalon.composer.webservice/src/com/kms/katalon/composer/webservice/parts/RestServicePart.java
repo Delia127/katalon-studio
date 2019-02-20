@@ -371,6 +371,9 @@ public class RestServicePart extends WebServicePart {
     }
 
     private void updateRequestUrlWithNewParams(List<WebElementPropertyEntity> paramProperties) {
+        if (urlBuilder == null) {
+            urlBuilder = new URLBuilder();
+        }
         List<NameValuePair> params = toNameValuePair(paramProperties);
         urlBuilder.setParameters(params);
         try {
