@@ -42,7 +42,7 @@ public class KStoreRestClient {
     
     private static final String DEVELOPMENT_URL = "https://store-staging.katalon.com";
     
-    private static final String PRODUCTION_URL = "https://store.katalon.com/";
+    private static final String PRODUCTION_URL = "https://store.katalon.com";
     
     private KStoreCredentials credentials;
     
