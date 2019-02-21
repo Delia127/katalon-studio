@@ -27,6 +27,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
@@ -38,6 +39,10 @@ import com.kms.katalon.plugin.models.KStoreToken;
 import com.kms.katalon.plugin.util.KStoreTokenService;
 
 public class KStoreRestClient {
+    
+    private static final String DEVELOPMENT_URL = "https://store-staging.katalon.com";
+    
+    private static final String PRODUCTION_URL = "https://store.katalon.com/";
     
     private KStoreCredentials credentials;
     
@@ -275,7 +280,11 @@ public class KStoreRestClient {
     }
     
     private String getKatalonStoreUrl() {
-        return "https://store-staging.katalon.com";
+        if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
+            return DEVELOPMENT_URL;
+        } else {
+            return PRODUCTION_URL;
+        }
     }
     
     private interface OnRequestSuccessHandler {
