@@ -138,6 +138,8 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG = MessageConstants.KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG;
 
+    public static final String KStoreLoginDialog_LICENSE_AGREEMENT_MSG = MessageConstants.KStoreLoginDialog_LICENSE_AGREEMENT_MSG;
+    
     //ReloadPluginsResultDialog
     public static final String KStorePluginsDialog_COL_PLUGIN = MessageConstants.KStorePluginsDialog_COL_PLUGIN;
 
