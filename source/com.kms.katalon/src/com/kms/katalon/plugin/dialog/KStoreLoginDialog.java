@@ -10,11 +10,13 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -43,6 +45,10 @@ public class KStoreLoginDialog extends Dialog {
     private Button btnConnect;
     
     private Button btnClose;
+    
+    private Button cbLicenseAgreement;
+    
+    private Link lnkLicenseAgreement;
 
     public KStoreLoginDialog(Shell parentShell) {
         super(parentShell);
@@ -78,6 +84,19 @@ public class KStoreLoginDialog extends Dialog {
 
         txtPassword = new Text(inputComposite, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        
+        Composite licenseComposite = new Composite(body, SWT.NONE);
+        licenseComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        licenseComposite.setLayout(new GridLayout(2, false));
+        
+        cbLicenseAgreement = new Button(licenseComposite, SWT.CHECK);
+        cbLicenseAgreement.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        
+        lnkLicenseAgreement = new Link(licenseComposite, SWT.WRAP);
+        lnkLicenseAgreement.setText(StringConstants.KStoreLoginDialog_LICENSE_AGREEMENT_MSG);
+        GridData gdLicenseAgreement = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gdLicenseAgreement.widthHint = 350;
+        lnkLicenseAgreement.setLayoutData(gdLicenseAgreement);
 
         lblError = new Label(body, SWT.NONE);
         lblError.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
@@ -134,6 +153,20 @@ public class KStoreLoginDialog extends Dialog {
                 close();
             }
         });
+        
+        cbLicenseAgreement.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                validate();
+            }
+        });
+        
+        lnkLicenseAgreement.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
     }
     
     @Override
@@ -142,7 +175,7 @@ public class KStoreLoginDialog extends Dialog {
     }
 
     private void validate() {
-        if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+        if (StringUtils.isBlank(username) || StringUtils.isBlank(password) || !cbLicenseAgreement.getSelection()) {
             btnConnect.setEnabled(false);
         } else {
             btnConnect.setEnabled(true);

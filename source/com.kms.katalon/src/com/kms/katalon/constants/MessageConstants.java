@@ -389,6 +389,8 @@ public class MessageConstants extends NLS {
     
     public static String KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG;
     
+    public static String KStoreLoginDialog_LICENSE_AGREEMENT_MSG;
+    
     //ReloadPluginsResultDialog
     public static String KStorePluginsDialog_COL_PLUGIN;
 
