@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 
-import com.katalon.platform.api.exception.PlatformException;
-import com.katalon.platform.api.service.ApplicationManager;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -132,9 +130,6 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
 		super.setArgumentValue(consoleOption, argumentValue);
 		if(consoleOption == testSuiteQuery){
-			if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_DYNAMIC_EXECUTION) == null) {
-                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
-            }
 			consoleOption.setValue(argumentValue);
 		} else if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
 				|| consoleOption == executionProfileOption

@@ -536,4 +536,9 @@ public class RestServicePart extends WebServicePart {
         updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
                 originalWsObject.getRestRequestMethod()));
     }
+
+    @Override
+    public boolean isDirty() {
+        return mPart.isDirty();
+    }
 }

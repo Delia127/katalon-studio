@@ -10,8 +10,6 @@ import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
-import com.katalon.platform.api.Plugin;
-import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.testsuite.handlers.NewTestSuiteHandler;
@@ -39,11 +37,7 @@ public class NewFilteringTestSuitePopupMenuContribution {
                 return;
             }
 
-            Plugin plugin = ApplicationManager.getInstance()
-                    .getPluginManager()
-                    .getPlugin(IdConstants.PLUGIN_DYNAMIC_EXECUTION);
-            if (NewTestSuiteHandler.findParentTreeEntity(selectedObjects) != null
-                    && plugin != null) {
+            if (NewTestSuiteHandler.findParentTreeEntity(selectedObjects) != null) {
                 MHandledMenuItem newTestSuitePopupMenuItem = MenuFactory.createPopupMenuItem(
                         commandService.createCommand(NEW_FILTERING_TEST_SUITE_COMMAND, null), "Dynamic Querying Test Suite",
                         ConstantsHelper.getApplicationURI());

@@ -96,4 +96,29 @@ public class FolderControllerImpl implements com.katalon.platform.api.controller
             throw new ResourceException(ExceptionsUtil.getMessageForThrowable(e));
         }
     }
+
+    @Override
+    public List<com.katalon.platform.api.model.FolderEntity> getChildFolders(
+            com.katalon.platform.api.model.ProjectEntity project,
+            com.katalon.platform.api.model.FolderEntity parentFolder) throws ResourceException {
+        try {
+            ProjectEntity projectEntity = ProjectController.getInstance().getProject(project.getId());
+            if (projectEntity == null) {
+                throw new ResourceException(MessageFormat.format("Project {0} doesn't exist", project.getId()));
+            }
+            FolderEntity parentFolderEntity = folderController.getFolderByDisplayId(projectEntity,
+                    parentFolder.getId());
+            if (parentFolderEntity == null) {
+                throw new ResourceException(
+                        MessageFormat.format("Parent folder {0} doesn't exist", parentFolder.getId()));
+            }
+            return FolderController.getInstance()
+                    .getChildFolders(parentFolderEntity)
+                    .stream()
+                    .map(sourceFolder -> new FolderEntityImpl(sourceFolder))
+                    .collect(Collectors.toList());
+        } catch (ControllerException e) {
+            throw new ResourceException(ExceptionsUtil.getMessageForThrowable(e));
+        }
+    }
 }

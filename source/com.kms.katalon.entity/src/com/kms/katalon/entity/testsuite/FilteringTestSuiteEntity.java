@@ -8,6 +8,10 @@ public class FilteringTestSuiteEntity extends TestSuiteEntity {
 
     private String filteringText;
 
+    private String filteringPlugin;
+
+    private String filteringExtension;
+
     public String getFilteringText() {
         return filteringText;
     }
@@ -15,18 +19,34 @@ public class FilteringTestSuiteEntity extends TestSuiteEntity {
     public void setFilteringText(String filteringText) {
         this.filteringText = filteringText;
     }
-    
+
     public FilteringTestSuiteEntity clone() {
         FilteringTestSuiteEntity newTestSuite = (FilteringTestSuiteEntity) super.clone();
         newTestSuite.setTestSuiteGuid(Util.generateGuid());
         return newTestSuite;
     }
-    
+
     @Override
     public boolean equals(Object that) {
         if (!super.equals(that)) {
             return false;
         }
         return getFilteringText().equals(((FilteringTestSuiteEntity) that).getFilteringText());
+    }
+
+    public String getFilteringPlugin() {
+        return filteringPlugin;
+    }
+
+    public void setFilteringPlugin(String filteringPlugin) {
+        this.filteringPlugin = filteringPlugin;
+    }
+
+    public String getFilteringExtension() {
+        return filteringExtension;
+    }
+
+    public void setFilteringExtension(String filteringExtension) {
+        this.filteringExtension = filteringExtension;
     }
 }

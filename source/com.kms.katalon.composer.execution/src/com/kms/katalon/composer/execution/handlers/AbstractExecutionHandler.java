@@ -62,6 +62,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.controller.exception.ControllerException;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.SystemFileEntity;
@@ -78,9 +79,6 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
-
-
-
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionHandler {
@@ -201,7 +199,8 @@ public abstract class AbstractExecutionHandler {
                 return testCaseCompositePart.getOriginalTestCase();
             } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof ParentTestSuiteCompositePart) {
-                ParentTestSuiteCompositePart testSuiteComposite = (ParentTestSuiteCompositePart) selectedPart.getObject();
+                ParentTestSuiteCompositePart testSuiteComposite = (ParentTestSuiteCompositePart) selectedPart
+                        .getObject();
                 TestSuiteEntity originalTestSuite = testSuiteComposite.getOriginalTestSuite();
                 if (originalTestSuite instanceof FilteringTestSuiteEntity) {
                     return originalTestSuite;
@@ -215,18 +214,6 @@ public abstract class AbstractExecutionHandler {
                     return null;
                 }
                 return originalTestSuite;
-            }  else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
-                    && selectedPart.getObject() instanceof TestSuiteCompositePart) {
-                TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
-                if (testSuiteComposite.getOriginalTestSuite().getTestSuiteTestCaseLinks().isEmpty()) {
-                    if (MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
-                            StringConstants.HAND_TITLE_INFORMATION,
-                            StringConstants.HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE)) {
-                        testSuiteComposite.openAddTestCaseDialog();
-                    }
-                    return null;
-                }
-                return testSuiteComposite.getOriginalTestSuite();
             } else if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
                 CompatibilityEditor editor = (CompatibilityEditor) selectedPart.getObject();
                 if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
@@ -265,7 +252,7 @@ public abstract class AbstractExecutionHandler {
         try {
             AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
                     projectDir);
-           
+
             if (runConfiguration == null) {
                 return;
             }
@@ -391,9 +378,10 @@ public abstract class AbstractExecutionHandler {
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
 
-                        trackTestSuiteExecution(launchMode, runConfig,testSuiteExecutedEntity.getEmailSettings().getEmailConfig().isSendEmailTestFailedOnly());
-                        //trackEmailAfterExecution(testSuiteExecutedEntity.getEmailSettings().getEmailConfig().isSendEmailTestFailedOnly());
-                        
+                        trackTestSuiteExecution(launchMode, runConfig, testSuiteExecutedEntity.getEmailSettings()
+                                .getEmailConfig()
+                                .isSendEmailTestFailedOnly());
+                        // trackEmailAfterExecution(testSuiteExecutedEntity.getEmailSettings().getEmailConfig().isSendEmailTestFailedOnly());
 
                         monitor.worked(1);
 
@@ -414,15 +402,13 @@ public abstract class AbstractExecutionHandler {
                 } catch (JobCancelException e) {
                     return Status.CANCEL_STATUS;
                 } catch (PlatformException e) {
-                    return new Status(Status.WARNING, FrameworkUtil.getBundle(AbstractExecutionHandler.class).getSymbolicName(), e.getDetailMessage());
+                    return new Status(Status.WARNING,
+                            FrameworkUtil.getBundle(AbstractExecutionHandler.class).getSymbolicName(),
+                            e.getDetailMessage(), e);
                 } catch (final Exception e) {
-                    sync.syncExec(() -> {
-                        MultiStatusErrorDialog.showErrorDialog(e,
-                                StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_SUITE,
-                                StringConstants.HAND_ERROR_MSG_REASON_INVALID_TEST_SUITE);
-                    });
-
-                    return Status.CANCEL_STATUS;
+                    return new Status(Status.WARNING,
+                            FrameworkUtil.getBundle(AbstractExecutionHandler.class).getSymbolicName(), e.getMessage(),
+                            e);
                 } finally {
                     monitor.done();
                 }
@@ -430,15 +416,17 @@ public abstract class AbstractExecutionHandler {
         };
         job.setUser(true);
         job.schedule();
-        
+
         job.addJobChangeListener(new JobChangeAdapter() {
             @Override
             public void done(IJobChangeEvent event) {
                 super.done(event);
                 if (event.getResult() != null && event.getResult().matches(Status.WARNING)) {
-                    sync.syncExec(() -> {
-                        MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN,
-                                event.getResult().getMessage());
+                    sync.asyncExec(() -> {
+                        MultiStatusErrorDialog.showErrorDialog(
+                                StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_SUITE,
+                                event.getResult().getMessage(),
+                                ExceptionsUtil.getStackTraceForThrowable(event.getResult().getException()));
                     });
                 }
 
@@ -447,10 +435,10 @@ public abstract class AbstractExecutionHandler {
         });
     }
 
-    private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig,boolean testFailedOnly) {
-        Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString(), runConfig.getName(),testFailedOnly);
+    private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig, boolean testFailedOnly) {
+        Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString(), runConfig.getName(), testFailedOnly);
     }
-    
+
     /**
      * Open LogViewerPart and its partStack
      * 
