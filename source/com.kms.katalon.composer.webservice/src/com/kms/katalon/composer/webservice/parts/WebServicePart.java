@@ -1240,7 +1240,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 		glParent.marginWidth = 0;
 		glParent.marginHeight = 0;
 		parent.setLayout(glParent);
-		GridData gdParent = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		GridData gdParent = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
 		gdParent.heightHint = 200;
 		parent.setLayoutData(gdParent);
 
