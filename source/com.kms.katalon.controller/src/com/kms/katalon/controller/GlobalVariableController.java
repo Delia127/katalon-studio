@@ -2,6 +2,7 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -70,16 +71,33 @@ public class GlobalVariableController extends EntityController {
         }
     }
     
-    public void generateGlobalVariableLibFileWithSpecificProfile(ProjectEntity project, ExecutionProfileEntity profile, IProgressMonitor monitor) throws Exception {
+    /**
+     * Generate GlobalVariable.groovy by evaluating Default profile and user-selected profile
+     * @param project Current project
+     * @param profile User-selected execution profile
+     * @param monitor A monitor used to display progress, can be null
+     * @throws Exception is thrown when failed to generate GlobalVariable.groovy
+     */
+    public void generateGlobalVariableLibFileWithSpecificProfile(ProjectEntity project, ExecutionProfileEntity profile, IProgressMonitor monitor) throws Exception{
         try {
             if (monitor != null) {
                 String taskName = "Generating global variables...";
                 monitor.beginTask(taskName, 1);
             }
-
+            
+            ExecutionProfileEntity defaultProfile = getExecutionProfile("default", project);
+            List<ExecutionProfileEntity> profilesToBeEvaluated = new ArrayList<>();
+            
+            if(defaultProfile != null){
+            	profilesToBeEvaluated.add(defaultProfile);
+            }
+            
+            profilesToBeEvaluated.add(profile);
+            
 			IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
 			GlobalVariableParser.getInstance().generateGlobalVariableLibFile(libFolder,
-					Arrays.asList(new ExecutionProfileEntity[] { profile }));
+					profilesToBeEvaluated);
+			
 			waitForGlobalVariableClassFileAvailable(project);
         } finally {
             if (monitor != null) {
