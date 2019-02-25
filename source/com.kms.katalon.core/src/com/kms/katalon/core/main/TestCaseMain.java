@@ -22,6 +22,10 @@ import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.util.ContextInitializer;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.util.Node;
@@ -165,7 +169,7 @@ public class TestCaseMain {
 
         eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_SUITE, new Object[] { testSuiteContext });
     }
-
+    
     public static Map<String, Object> getGlobalVariables(String profileName) {
         try {
             Map<String, Object> selectedVariables = new HashMap<>();
@@ -193,13 +197,13 @@ public class TestCaseMain {
             return Collections.emptyMap();
         }
     }
-
+    
     public static void logGlobalVariableError(Exception e) {
         KatalonRuntimeException runtimeException = new KatalonRuntimeException(
                 String.format("There was something wrong in GlobalVariable. Details: %s", e.getMessage()));
         ErrorCollector.getCollector().addError(runtimeException);
     }
-
+    
     public static ScriptEngine getScriptEngine() {
         return engine;
     }
