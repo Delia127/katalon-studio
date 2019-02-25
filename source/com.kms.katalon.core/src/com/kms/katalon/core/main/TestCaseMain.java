@@ -197,7 +197,13 @@ public class TestCaseMain {
             return Collections.emptyMap();
         }
     }
-
+    
+    public static void logGlobalVariableError(Exception e) {
+        KatalonRuntimeException runtimeException = new KatalonRuntimeException(
+                String.format("There was something wrong in GlobalVariable. Details: %s", e.getMessage()));
+        ErrorCollector.getCollector().addError(runtimeException);
+    }
+    
     public static ScriptEngine getScriptEngine() {
         return engine;
     }
