@@ -171,7 +171,6 @@ public class TestCaseMain {
     }
     
     public static Map<String, Object> getGlobalVariables(String profileName) {
-    	System.out.println(" I`m run ! ");
         try {
             Map<String, Object> selectedVariables = new HashMap<>();
             Node rootNode = new XmlParser()
