@@ -71,42 +71,6 @@ public class GlobalVariableController extends EntityController {
         }
     }
     
-    /**
-     * Generate GlobalVariable.groovy by evaluating Default profile and user-selected profile
-     * @param project Current project
-     * @param profile User-selected execution profile
-     * @param monitor A monitor used to display progress, can be null
-     * @throws Exception is thrown when failed to generate GlobalVariable.groovy
-     */
-    public void generateGlobalVariableLibFileWithSpecificProfile(ProjectEntity project, ExecutionProfileEntity profile, IProgressMonitor monitor) throws Exception{
-        try {
-            if (monitor != null) {
-                String taskName = "Generating global variables...";
-                monitor.beginTask(taskName, 1);
-            }
-            
-            ExecutionProfileEntity defaultProfile = getExecutionProfile("default", project);
-            List<ExecutionProfileEntity> profilesToBeEvaluated = new ArrayList<>();
-            
-            if(defaultProfile != null){
-            	profilesToBeEvaluated.add(defaultProfile);
-            }
-            
-            profilesToBeEvaluated.add(profile);
-            
-			IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
-			GlobalVariableParser.getInstance().generateGlobalVariableLibFile(libFolder,
-					profilesToBeEvaluated);
-			
-			waitForGlobalVariableClassFileAvailable(project);
-        } finally {
-            if (monitor != null) {
-                monitor.done();
-            }
-        }
-    }
-
-
     private void waitForGlobalVariableClassFileAvailable(ProjectEntity project) throws InterruptedException {
         File globalVariableClassFile = new File(project.getFolderLocation(), "bin/lib/internal/GlobalVariable.class");
         long time = System.currentTimeMillis();
