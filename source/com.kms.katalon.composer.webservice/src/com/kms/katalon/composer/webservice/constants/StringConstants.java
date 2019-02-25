@@ -50,7 +50,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_XML_REQ_MSG = ComposerWebserviceMessageConstants.PA_LBL_XML_REQ_MSG;
 
 	// NewRequestDialog
-    public static final String WIEW_TITLE_NEW = ComposerWebserviceMessageConstants.WIEW_TITLE_NEW;
 	public static final String VIEW_LBL_NAME = NAME;
     public static final String VIEW_LBL_REQ_TYPE = ComposerWebserviceMessageConstants.VIEW_LBL_REQ_TYPE;
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ;
