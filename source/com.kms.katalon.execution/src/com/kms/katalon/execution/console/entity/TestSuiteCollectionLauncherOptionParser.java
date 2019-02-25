@@ -2,6 +2,7 @@ package com.kms.katalon.execution.console.entity;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
@@ -48,8 +49,9 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
     public IConsoleLauncher getConsoleLauncher(ProjectEntity projectEntity, LauncherManager manager)
             throws ExecutionException, InvalidConsoleArgumentException {
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity, testSuiteCollectionOption.getValue());
+        Map<String,Object> sp=super.getOverridingGlobalVariables();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting);
+                rerunSetting,sp);
     }
 
     private TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity projectEntity, String testSuiteCollectionID)

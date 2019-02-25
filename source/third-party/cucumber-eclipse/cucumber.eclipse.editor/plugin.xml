@@ -6,7 +6,7 @@
             class="cucumber.eclipse.editor.editors.Editor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             extensions="feature"
-            icon="icons/feature_16.png"
+            icon="icons/cukes.gif"
             id="cucumber.eclipse.editor.editors.Editor"
             name="Editor">
       </editor>
@@ -123,21 +123,21 @@
          <command
                commandId="cucumber.eclipse.editor.formmater.pretty_formatter"
                helpContextId="cucumber.eclipse.editor.pretty_format_action_context"
-               icon="icons/feature_16.png"
+               icon="icons/cukes.gif"
                label="Pretty Format"
                style="push">
          </command>
          <command
                commandId="cucumber.eclipse.editor.navigation.findstep"
                helpContextId="cucumber.eclipse.editor.findsteps_action_context"
-               icon="icons/feature_16.png"
+               icon="icons/cukes.gif"
                label="Find Step"
                style="push">
          </command>
          <command
                commandId="cucumber.eclipse.editor.toggle.recalculate"
                helpContextId="cucumber.eclipse.editor.recalculate_action_context"
-               icon="icons/feature_16.png"
+               icon="icons/cukes.gif"
                label="Recalculate steps"
                style="push">
          </command>         
@@ -181,7 +181,7 @@
 </extension>
 <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
     <launchConfigurationTypeImage
-        icon="icons/feature_16.png"
+        icon="icons/cukes.gif"
         configTypeID="cucumber.eclipse.launching.localCucumberFeature"
         id="cucumber.eclipse.launching.launchConfigurationTypeImage.localCucumberFeature">
     </launchConfigurationTypeImage>
@@ -192,6 +192,34 @@
         class="cucumber.eclipse.launching.CucumberFeatureTabGroup"
         id="cucumber.eclipse.launching.launchConfigurationTabGroup.localCucumberFeature">
     </launchConfigurationTabGroup>
+</extension>
+<extension point="org.eclipse.debug.ui.launchShortcuts">
+    <shortcut
+        id="cucumber.eclipse.launching.featureLaunchShortcut"
+        class="cucumber.eclipse.launching.CucumberFeatureLaunchShortcut"
+        label="Feature"
+        icon="icons/cukes.gif"
+        modes="run, debug">
+        <configurationType
+        id="cucumber.eclipse.launching.localCucumberFeature">
+        </configurationType>
+           <contextualLaunch>
+         <contextLabel mode="run" label="Cucumber Feature" />
+         <contextLabel mode="debug" label="Cucumber Feature" />
+         <enablement >
+           <with variable="selection">
+           <count value="1"/>
+          <iterate>
+            <adapt type="org.eclipse.core.resources.IResource">
+                <and>
+                <test property="org.eclipse.core.resources.name" value="*.feature"/>
+            </and>
+        </adapt>
+          </iterate>
+           </with>
+       </enablement>
+     </contextualLaunch>
+    </shortcut>
 </extension>
     <extension
            id="cucumber.eclipse.editor.editors.Editor.syntaxerror"
@@ -296,7 +324,7 @@
     <wizard
           category="cucumber.eclipse.editor"
           class="cucumber.eclipse.editor.wizard.NewStepDefFileWizard"
-          icon="icons/feature_16.png"
+          icon="icons/cukes.gif"
           id="cucumber.eclipse.editor.wizard.NewFeatureFileWizard"
           name="Step-Definition class">
     </wizard>

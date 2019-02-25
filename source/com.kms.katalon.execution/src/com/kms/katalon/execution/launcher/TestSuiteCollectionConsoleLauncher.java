@@ -3,6 +3,7 @@ package com.kms.katalon.execution.launcher;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -38,7 +39,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
     }
 
     public static TestSuiteCollectionConsoleLauncher newInstance(TestSuiteCollectionEntity testSuiteCollection,
-            LauncherManager parentManager, Reportable reportable, Rerunable rerunable) throws ExecutionException {
+            LauncherManager parentManager, Reportable reportable, Rerunable rerunable,Map<String,Object> overridingValueable) throws ExecutionException {
         TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
         executedEntity.setReportable(reportable);
         executedEntity.setRerunable(rerunable);
@@ -49,7 +50,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
             TestSuiteCollectionConsoleLauncher testSuiteCollectionConsoleLauncher = new TestSuiteCollectionConsoleLauncher(
                     executedEntity, parentManager,
-                    buildSubLaunchers(testSuiteCollection, executedEntity, parentManager, reportCollection),
+                    buildSubLaunchers(testSuiteCollection, executedEntity, parentManager, reportCollection,overridingValueable),
                     reportCollection);
 
             ReportController.getInstance().updateReportCollection(reportCollection);
@@ -61,13 +62,13 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
     private static List<ReportableLauncher> buildSubLaunchers(TestSuiteCollectionEntity testSuiteCollection,
             TestSuiteCollectionExecutedEntity executedEntity, LauncherManager launcherManager,
-            ReportCollectionEntity reportCollection) throws ExecutionException {
+            ReportCollectionEntity reportCollection,Map<String,Object> overridingValueable) throws ExecutionException {
         List<ReportableLauncher> tsLaunchers = new ArrayList<>();
         for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollection.getTestSuiteRunConfigurations()) {
             if (!tsRunConfig.isRunEnabled()) {
                 continue;
             }
-            ConsoleLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection);
+            ConsoleLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,overridingValueable);
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
                     .getExecutedEntity();
@@ -84,16 +85,16 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
     }
 
     private static ConsoleLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
-            LauncherManager launcherManager, ReportCollectionEntity reportCollection) throws ExecutionException {
+            LauncherManager launcherManager, ReportCollectionEntity reportCollection,Map<String,Object> overridingValueable) throws ExecutionException {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
             RunConfigurationDescription configDescription = tsRunConfig.getConfiguration();
             IRunConfiguration runConfig = RunConfigurationCollector.getInstance()
                     .getRunConfiguration(configDescription.getRunConfigurationId(), projectDir, configDescription);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
-            TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuiteEntity);
-            executedEntity.prepareTestCases();
-            runConfig.build(testSuiteEntity, executedEntity);
+            runConfig.setOverridingGlobalVariables(overridingValueable);
+
+            runConfig.build(testSuiteEntity, new TestSuiteExecutedEntity(testSuiteEntity));
             SubConsoleLauncher launcher = new SubConsoleLauncher(launcherManager, runConfig, configDescription);
             reportCollection.getReportItemDescriptions()
                     .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configDescription));
