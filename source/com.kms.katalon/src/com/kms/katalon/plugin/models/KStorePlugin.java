@@ -21,6 +21,8 @@ public class KStorePlugin {
     private KStorePluginVersion currentVersion;
     
     private KStorePluginVersion latestVersion;
+    
+    private boolean expired;
 
     public long getId() {
         return id;
@@ -100,5 +102,13 @@ public class KStorePlugin {
 
     public void setLatestVersion(KStorePluginVersion latestVersion) {
         this.latestVersion = latestVersion;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
     }
 }

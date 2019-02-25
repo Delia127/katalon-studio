@@ -216,7 +216,7 @@ public interface IdConstants {
 
     public static final String QTEST_INTEGRATION_BUNDLE_ID = "com.kms.katalon.composer.integration.qtest";
     
-    public static final String PLUGIN_TAGS = "com.katalon.katalon-studio-tags-plugin";
+    public static final String PLUGIN_DYNAMIC_EXECUTION = "com.katalon.katalon-studio-dynamic-execution-plugin";
     
     public static final String PLUGIN_ADVANCED_TAGS = "com.katalon.tags-plugin";
 

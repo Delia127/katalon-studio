@@ -67,7 +67,6 @@ import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSuppo
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.controller.LocalVariableController;
-import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.entity.variable.VariableEntityWrapper;
 import com.kms.katalon.execution.util.SyntaxUtil;

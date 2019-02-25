@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
@@ -62,10 +61,10 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.SystemFileEntity;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -77,6 +76,7 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 
@@ -233,8 +233,13 @@ public abstract class AbstractExecutionHandler {
                     FileEditorInput editorInput = (FileEditorInput) editor.getEditor().getEditorInput();
                     String featureFilePath = new File(editorInput.getFile().getRawLocationURI()).getAbsolutePath();
 
-                    return SystemFileController.getInstance().getSystemFile(featureFilePath,
-                            ProjectController.getInstance().getCurrentProject());
+                    try {
+                        return SystemFileController.getInstance().getSystemFile(featureFilePath,
+                                ProjectController.getInstance().getCurrentProject());
+                    } catch (ControllerException e) {
+                        LogUtil.logError(e);
+                        return null;
+                    }
                 }
             }
         }

@@ -118,8 +118,8 @@ public class UserFeedbackDialog extends Dialog {
     }
 
     private String getTwitterRedirectUrl() {
-        Random rand = new Random();
-        String url = TWITTER_REDIRECT_URLS[rand.nextInt(TWITTER_REDIRECT_URLS.length)];
+        int ind = (int) (System.currentTimeMillis() % TWITTER_REDIRECT_URLS.length); //pick index randomly
+        String url = TWITTER_REDIRECT_URLS[ind];
         return url;
     }
 
