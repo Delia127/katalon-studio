@@ -22,12 +22,10 @@ import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class FilterController {
 
-    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment",
-            "description");
-
-    private static final List<String> DEFAULT_KEYWORDS_FOR_INPUTS = Arrays.asList("id", "name", "tag", "comment",
-            "description");
-
+    private static final List<String> DEFAULT_KEYWORDS = Arrays.asList("ids", "id", "name", "tag", "comment", "description");
+    
+    private static final List<String> DEFAULT_KEYWORDS_FOR_INPUTS = Arrays.asList("id", "name", "tag", "comment", "description");
+    
     private static final String CONTENT_DELIMITER = ",";
 
     private static FilterController instance;
@@ -38,7 +36,7 @@ public class FilterController {
         }
         return instance;
     }
-
+    
     private FilterController() {
     }
 
@@ -50,8 +48,8 @@ public class FilterController {
         }
         return keywords;
     }
-
-    public List<String> getDefaultKeywordsForInputs() {
+    
+    public List<String> getDefaultKeywordsForInputs(){
         List<String> keywordsForInputs = new ArrayList<>();
         keywordsForInputs.addAll(DEFAULT_KEYWORDS_FOR_INPUTS);
         if (isAdvancedTagPluginInstalled()) {
@@ -59,16 +57,16 @@ public class FilterController {
         }
         return keywordsForInputs;
     }
-
+    
     public String getAdvancedTagKeyword() {
         return "tags";
     }
 
     public boolean isMatched(FileEntity fileEntity, String filteringText) {
         String trimmedText = filteringText.trim();
-        if (trimmedText.equals(StringUtils.EMPTY)) {
+        if(trimmedText.equals(StringUtils.EMPTY)){
             return true;
-        }
+        }        
         List<String> keywordList = getDefaultKeywords();
         Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), trimmedText);
 
@@ -127,7 +125,7 @@ public class FilterController {
                 return "";
         }
     }
-
+    
     public boolean compare(FileEntity fileEntity, String keyword, String text) {
         if (fileEntity == null || keyword == null || text == null) {
             return false;
@@ -136,7 +134,7 @@ public class FilterController {
             case "ids":
                 return textContainsEntityId(text.toLowerCase(), fileEntity);
             case "id":
-                return StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), text)
+                return StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), text) 
                         || StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), text + "/");
             case "name":
                 return StringUtils.containsIgnoreCase(fileEntity.getName(), text);
@@ -150,43 +148,40 @@ public class FilterController {
                 return false;
         }
     }
-
+    
     private boolean textContainsEntityId(String text, FileEntity fileEntity) {
         // Allow spaces before and after delimiter
         return Arrays.asList(text.split(CONTENT_DELIMITER))
                 .stream()
                 .map(a -> a.trim())
-                .filter(a -> StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), a)
+                .filter(a -> StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), a) 
                         || StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), a + "/"))
-                .findAny()
-                .isPresent();
+                .findAny().isPresent();
     }
 
     private boolean isAdvancedTagPluginInstalled() {
         Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_ADVANCED_TAGS);
         return plugin != null;
     }
-
+    
     private boolean entityHasTags(FileEntity fileEntity, String searchTagValues) {
         if (StringUtils.isBlank(searchTagValues)) {
             return true;
         }
-
+        
         String entityTagValues = fileEntity.getTag();
         if (StringUtils.isBlank(entityTagValues)) {
             return false;
         }
-
-        Set<String> searchTags = EntityTagUtil.parse(searchTagValues)
-                .stream()
+        
+        Set<String> searchTags = EntityTagUtil.parse(searchTagValues).stream()
                 .map(tag -> tag.toLowerCase())
                 .collect(Collectors.toSet());
-
-        Set<String> entityTags = EntityTagUtil.parse(entityTagValues)
-                .stream()
+        
+        Set<String> entityTags = EntityTagUtil.parse(entityTagValues).stream()
                 .map(tag -> tag.toLowerCase())
                 .collect(Collectors.toSet());
-
+        
         return entityTags.containsAll(searchTags);
     }
 }

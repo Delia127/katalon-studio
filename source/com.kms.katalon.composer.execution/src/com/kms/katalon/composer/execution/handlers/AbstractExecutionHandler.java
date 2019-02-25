@@ -214,6 +214,18 @@ public abstract class AbstractExecutionHandler {
                     return null;
                 }
                 return originalTestSuite;
+            } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
+                    && selectedPart.getObject() instanceof TestSuiteCompositePart) {
+                TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
+                if (testSuiteComposite.getOriginalTestSuite().getTestSuiteTestCaseLinks().isEmpty()) {
+                    if (MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                            StringConstants.HAND_TITLE_INFORMATION,
+                            StringConstants.HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE)) {
+                        testSuiteComposite.openAddTestCaseDialog();
+                    }
+                    return null;
+                }
+                return testSuiteComposite.getOriginalTestSuite();
             } else if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
                 CompatibilityEditor editor = (CompatibilityEditor) selectedPart.getObject();
                 if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
