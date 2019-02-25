@@ -269,7 +269,7 @@ public class CucumberBuiltinKeywords extends BuiltinKeywords {
                     failuresDescriptions.add(failure.getMessage())
                 }
                 KeywordMain.stepFailed(
-                    MessageFormat.format("These following reason:\n {0}", failuresDescriptions));
+                    MessageFormat.format("These following reason:\n {0}", failuresDescriptions), flowControl);
             }
             return cucumberResult;
         }, flowControl, "Keyword runWithCucumberRunner was failed");

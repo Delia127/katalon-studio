@@ -122,6 +122,7 @@ public class TestCaseExecutor {
             logError(t, message);
             endAllUnfinishedKeywords(keywordStack);
         }
+        testCaseResult.setCause(t);
         testCaseResult.getTestStatus().setStatusValue(getResultByError(t));
         String stackTraceForThrowable;
         try {
@@ -181,6 +182,7 @@ public class TestCaseExecutor {
     }
 
     private void postExecution() {
+        errorCollector.clearErrors();
         errorCollector.getErrors().addAll(0, parentErrors);
         if (testCaseContext.isMainTestCase()) {
             BrowserMobProxyManager.shutdownProxy();
@@ -217,6 +219,7 @@ public class TestCaseExecutor {
                 testCaseResult = invokeTestSuiteMethod(SetupTestCase.class.getName(), StringConstants.LOG_SETUP_ACTION,
                         false, testCaseResult);
                 if (ErrorCollector.getCollector().containsErrors()) {
+                    testCaseResult.setMessage(ExceptionsUtil.getStackTraceForThrowable(ErrorCollector.getCollector().getFirstError()));
                     logger.logError(testCaseResult.getMessage());
                     return testCaseResult;
                 }

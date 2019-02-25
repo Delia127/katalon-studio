@@ -1,9 +1,16 @@
 package cucumber.eclipse.steps.integration;
 
-import java.util.regex.Pattern;
+import java.util.List;
+import java.util.Locale;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.resources.IResource;
+
+import io.cucumber.cucumberexpressions.Argument;
+import io.cucumber.cucumberexpressions.Expression;
+import io.cucumber.cucumberexpressions.ExpressionFactory;
+import io.cucumber.cucumberexpressions.ParameterTypeRegistry;
+import io.cucumber.cucumberexpressions.UndefinedParameterTypeException;
 
 public class Step {
 
@@ -11,7 +18,7 @@ public class Step {
 	private IResource source;
 	private int lineNumber;
 	private String lang;
-	private Pattern compiledText;
+	private Expression expression;
 	
 	//Added By Girija
 	//For Reading Steps from External-ClassPath-JAR
@@ -25,10 +32,25 @@ public class Step {
 	}
 	public void setText(String text) {
 		this.text = text;
-		try { 
-		    this.compiledText = Pattern.compile(text);
-		} catch (PatternSyntaxException ignored) {
-		    this.compiledText = Pattern.compile(Pattern.quote(text));
+		Locale locale = this.lang == null ? Locale.getDefault() : new Locale(this.lang);
+		try {
+			this.expression = new ExpressionFactory(new ParameterTypeRegistry(locale)).createExpression(text);
+		}
+		
+		catch (UndefinedParameterTypeException e) {
+			// the cucumber expression have a custom parameter type
+			// without definition.
+			// For example, "I have a {color} ball" 
+			// But the "color" parameter type was not register 
+			// thanks to a TypeRegistryConfigurer.
+			this.expression = null;
+		}
+		catch (PatternSyntaxException e) {
+			// This fix #286
+			// the regular expression is wrong
+			// we do not expect to match something with it
+			// but we do not want to crash the F3
+			this.expression = null;
 		}
 	}
 	public IResource getSource() {
@@ -46,7 +68,10 @@ public class Step {
 	}
 	
 	public boolean matches(String s) {
-		return compiledText.matcher(s).matches();
+		if(this.expression == null)
+			return false;
+		List<Argument<?>> match = this.expression.match(s);
+		return match != null;
 	}
 	
 	public String getLang() {

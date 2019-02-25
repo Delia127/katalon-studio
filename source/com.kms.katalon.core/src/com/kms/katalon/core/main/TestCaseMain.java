@@ -8,10 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.slf4j.LoggerFactory;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
@@ -54,7 +52,7 @@ public class TestCaseMain {
      */
     public static void beforeStart() throws IOException {
         LogbackConfigurator.init();
-        
+
         GroovyClassLoader classLoader = new GroovyClassLoader(TestCaseMain.class.getClassLoader());
         engine = ScriptEngine.getDefault(classLoader);
 
@@ -83,18 +81,20 @@ public class TestCaseMain {
             }
         }
     }
-    
+
     private static void loadInternalGlobalVariableClass(GroovyClassLoader cl) {
         try {
             cl.loadClass(StringConstants.INTERNAL_GLOBAL_VARIABLE_CLASS_NAME);
         } catch (ClassNotFoundException ex) {
             try {
-                cl.parseClass(new File(RunConfiguration.getProjectDir(), StringConstants.INTERNAL_GLOBAL_VARIABLE_FILE_NAME));
+                cl.parseClass(
+                        new File(RunConfiguration.getProjectDir(), StringConstants.INTERNAL_GLOBAL_VARIABLE_FILE_NAME));
             } catch (CompilationFailedException | IOException ignored) {
 
             }
         }
     }
+
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
         return runTestCase(testCaseId, testCaseBinding, flowControl, true, true);
@@ -113,7 +113,7 @@ public class TestCaseMain {
         return new TestCaseExecutor(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp)
                 .execute(flowControl);
     }
-    
+
     public static TestResult runWSVerificationScript(String verificationScript, FailureHandling flowControl,
             boolean doCleanUp) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
@@ -196,12 +196,6 @@ public class TestCaseMain {
             ErrorCollector.getCollector().addError(runtimeException);
             return Collections.emptyMap();
         }
-    }
-    
-    public static void logGlobalVariableError(Exception e) {
-        KatalonRuntimeException runtimeException = new KatalonRuntimeException(
-                String.format("There was something wrong in GlobalVariable. Details: %s", e.getMessage()));
-        ErrorCollector.getCollector().addError(runtimeException);
     }
 
     public static ScriptEngine getScriptEngine() {
