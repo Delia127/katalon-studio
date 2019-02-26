@@ -79,15 +79,20 @@ public class FolderController extends EntityController implements Serializable {
         return allDescendant;
     }
 
-    public List<FolderEntity> getChildFolders(FolderEntity parentFolder) throws Exception {
-        List<FileEntity> childrenEntities = getDataProviderSetting().getFolderDataProvider().getChildren(parentFolder);
-        List<FolderEntity> childrentFolders = new ArrayList<FolderEntity>();
-        for (FileEntity entity : childrenEntities) {
-            if (entity instanceof FolderEntity) {
-                childrentFolders.add((FolderEntity) entity);
+    public List<FolderEntity> getChildFolders(FolderEntity parentFolder) throws ControllerException {
+        try {
+            List<FileEntity> childrenEntities = getDataProviderSetting().getFolderDataProvider().getChildren(parentFolder);
+
+            List<FolderEntity> childrentFolders = new ArrayList<FolderEntity>();
+            for (FileEntity entity : childrenEntities) {
+                if (entity instanceof FolderEntity) {
+                    childrentFolders.add((FolderEntity) entity);
+                }
             }
+            return childrentFolders;
+        } catch (Exception e) {
+            throw new ControllerException(e);
         }
-        return childrentFolders;
     }
 
     public FolderEntity getTestSuiteRoot(ProjectEntity project) throws Exception {

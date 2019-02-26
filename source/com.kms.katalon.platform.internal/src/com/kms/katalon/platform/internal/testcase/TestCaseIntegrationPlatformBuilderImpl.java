@@ -15,11 +15,14 @@ import org.eclipse.swt.widgets.Composite;
 import com.katalon.platform.api.extension.TestCaseIntegrationViewDescription;
 import com.katalon.platform.api.extension.TestCaseIntegrationViewDescription.PartActionService;
 import com.katalon.platform.api.extension.TestCaseIntegrationViewDescription.TestCaseIntegrationView;
+import com.katalon.platform.api.model.Integration;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
 import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationPlatformBuilder;
 import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationViewBuilder;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.integration.IntegratedEntity;
+import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.platform.internal.entity.ProjectEntityImpl;
@@ -92,6 +95,7 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
     private static class PluginIntegrationView extends AbstractTestCaseIntegrationView {
 
         private TestCaseIntegrationView integrationView;
+        private PartActionServiceImpl partActionService;
 
         public PluginIntegrationView(TestCaseEntity testCaseEntity, MPart mpart,
                 TestCaseIntegrationView integrationView) {
@@ -104,7 +108,8 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
             Composite container = new Composite(parent, SWT.NONE);
             container.setLayout(new FillLayout());
 
-            integrationView.onCreateView(container, new PartActionServiceImpl(mpart),
+            partActionService = new PartActionServiceImpl(testCaseEntity, mpart);
+            integrationView.onCreateView(container, partActionService,
                     new TestCaseEntityImpl(testCaseEntity));
 
             return container;
@@ -115,7 +120,7 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
 
         private MPart mpart;
 
-        public PartActionServiceImpl(MPart mpart) {
+        public PartActionServiceImpl(TestCaseEntity testCaseEntity, MPart mpart) {
             this.mpart = mpart;
         }
 

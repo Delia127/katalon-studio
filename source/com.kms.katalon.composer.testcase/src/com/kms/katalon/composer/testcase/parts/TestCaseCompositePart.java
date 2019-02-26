@@ -1069,4 +1069,9 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 	public CTabFolder getTabFolder(){
 		return tabFolder;
 	}
+
+	@Override
+    public boolean isDirty() {
+        return compositePart.isDirty();
+    }
 }

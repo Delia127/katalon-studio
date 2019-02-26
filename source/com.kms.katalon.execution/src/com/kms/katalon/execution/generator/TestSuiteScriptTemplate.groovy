@@ -67,7 +67,6 @@ TestCaseMain.startTestSuite('<%= testSuite.getIdForDisplay() %>', suitePropertie
             ReportUtil.class.getName(),
             TestCaseMain.class.getName(),
             TestDataColumn.class.getName(),
-            MissingPropertyException.class.getName(),
             TestCaseBinding.class.getName(),
             DriverCleanerCollector.class.getName(),
             FailureHandling.class.getName(),

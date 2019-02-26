@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.katalon.platform.api.exception.PlatformException;
@@ -131,8 +132,8 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 	@Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
 		super.setArgumentValue(consoleOption, argumentValue);
-		if(consoleOption == testSuiteQuery){
-			if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_DYNAMIC_EXECUTION) == null) {
+		if (consoleOption == testSuiteQuery){
+		    if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_DYNAMIC_EXECUTION) == null) {
                 throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
             }
 			consoleOption.setValue(argumentValue);
