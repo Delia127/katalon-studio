@@ -93,6 +93,7 @@ public class ImportJiraJQLHandler implements JiraUIComponent {
                 }
                 MToolItem jiraToolItem = (MToolItem) jiraToolItemElement;
                 jiraToolItem.setToBeRendered(false);
+                jiraToolItem.setVisible(false);
             }
         });
         
@@ -119,6 +120,7 @@ public class ImportJiraJQLHandler implements JiraUIComponent {
                 }
                 MToolItem jiraToolItem = (MToolItem) jiraToolItemElement;
                 jiraToolItem.setToBeRendered(true);
+                jiraToolItem.setVisible(true);
             }
         });
     }
