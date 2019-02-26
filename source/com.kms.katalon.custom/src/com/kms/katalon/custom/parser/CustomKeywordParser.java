@@ -69,27 +69,33 @@ public class CustomKeywordParser {
     
     public void parsePluginKeywords(ClassLoader projectClassLoader, IFolder srcfolder, IFolder libFolder) throws Exception {
         IResource[] resources = srcfolder.members(true);
+        boolean devMode = false;
         for (IResource resource : resources) {
-            File pluginFile = resource.getRawLocation().toFile();
-            JarFile jar = new JarFile(pluginFile);
-            try {
-                ZipEntry jsonEntry = jar.getEntry("katalon-plugin.json");
-                Reader reader = new InputStreamReader(jar.getInputStream(jsonEntry));
-                KeywordsManifest manifest = JsonUtil.fromJson(reader, KeywordsManifest.class);
-                
-                List<String> keywords = manifest.getKeywords();
-                for (String keyword : keywords) {
-                    String filePath = resource.getFullPath().toOSString();
-                    Class clazz = projectClassLoader.loadClass(keyword);
-                    ClassNode classNode = new ClassNode(clazz);
-                    CustomMethodNodeFactory.getInstance().removeMethodNodes(filePath);
-                    CustomMethodNodeFactory.getInstance().addMethodNodes(classNode.getName(), classNode.getMethods(),
-                            filePath);
+            if (!devMode && resource.getName().endsWith(".jar")) {
+                File pluginFile = resource.getRawLocation().toFile();
+                JarFile jar = new JarFile(pluginFile);
+                try {
+                    ZipEntry jsonEntry = jar.getEntry("katalon-plugin.json");
+                    devMode = true;
+                    
+                    if (jsonEntry != null) {
+                        Reader reader = new InputStreamReader(jar.getInputStream(jsonEntry));
+                        KeywordsManifest manifest = JsonUtil.fromJson(reader, KeywordsManifest.class);
+                        
+                        List<String> keywords = manifest.getKeywords();
+                        for (String keyword : keywords) {
+                            String filePath = resource.getFullPath().toOSString();
+                            Class clazz = projectClassLoader.loadClass(keyword);
+                            ClassNode classNode = new ClassNode(clazz);
+                            CustomMethodNodeFactory.getInstance().addMethodNodes(classNode.getName(), classNode.getMethods(),
+                                    filePath);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    jar.close();
                 }
-            } catch (Exception e) {
-                System.out.println(e);
-            } finally {
-                jar.close();
             }
         }
 
