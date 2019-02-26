@@ -104,15 +104,15 @@ public class ApiQuickStartDialog extends Dialog {
         c1.setExpandVertical(true);
         switch(projectType){
         case WEBSERVICE :{
-            c1.setMinSize(1000, 1900);
+            c1.setMinSize(1000, 2088);
             break;
         }
         case WEBUI : {
-            c1.setMinSize(900, 1700);
+            c1.setMinSize(900, 2088);
             break;
         }
         case MOBILE :{
-            c1.setMinSize(900, 2201);
+            c1.setMinSize(900, 2180);
             break;
         }
            default: {
@@ -140,20 +140,17 @@ public class ApiQuickStartDialog extends Dialog {
        switch(projectType){
        case WEBSERVICE :{
            Image backgroundImg = ImageConstants.API_QUICKSTART_BACKGROUND_LEFT;
-           backgroundImg=resize(backgroundImg,1020,1876);
            leftComposite.setBackgroundImage(backgroundImg);
            
            break;
        }
        case WEBUI : {
            Image backgroundWImg = ImageConstants.API_QUICKSTART_BACKGROUND_WEB_LEFT;
-           backgroundWImg=resize(backgroundWImg,1020,2109);
            leftComposite.setBackgroundImage(backgroundWImg);
            break;
        }
        case MOBILE :{
            Image backgroundMImg = ImageConstants.API_QUICKSTART_BACKGROUND_MOBILE_LEFT;
-           backgroundMImg=resize(backgroundMImg,1020,2201);
            leftComposite.setBackgroundImage(backgroundMImg);
            break;
        }
@@ -162,23 +159,7 @@ public class ApiQuickStartDialog extends Dialog {
           }
        }
      
-   }
-   
-    protected Image resize(Image imageFromSource, int width, int height) {
-        if (width > 0 && height > 0) {
-            Image scaledImage = new Image(Display.getDefault(), width, height);
-            GC gc = new GC(scaledImage);
-            gc.setAntialias(SWT.ON);
-            gc.setInterpolation(SWT.HIGH);
-            gc.drawImage(imageFromSource, 0, 0, imageFromSource.getBounds().width, imageFromSource.getBounds().height,
-                    0, 0, width, height);
-            gc.dispose();
-            return scaledImage;
-        } else
-            return imageFromSource;
-    }
-   
-    
+   } 
     public void createRightPart(Composite parent) {
         Composite rightComposite = new Composite(parent, SWT.NONE);
         GridLayout glRight = new GridLayout(1, false);
@@ -315,62 +296,62 @@ public class ApiQuickStartDialog extends Dialog {
 
     private void importSwaggerFromFileOrUrl() {
         FolderEntity parentFolderEntity;
-		try {
-			parentFolderEntity = (FolderEntity) this.parentTreeEntity.getObject();
-			ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
+        try {
+            parentFolderEntity = (FolderEntity) this.parentTreeEntity.getObject();
+            ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
 
-	        ImportWebServiceObjectsFromSwaggerDialog dialog = new ImportWebServiceObjectsFromSwaggerDialog(Display.getCurrent().getActiveShell(), parentFolderEntity);
-	        
-	        if (dialog.open() == Dialog.OK) {
-	        	
-	        	 List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
-	             for(WebServiceRequestEntity entity : requestEntities){
-	             	toController.saveNewTestObject(entity);
-	             }
-	             
-	             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-	             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
-	             close();
-	        }
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
+            ImportWebServiceObjectsFromSwaggerDialog dialog = new ImportWebServiceObjectsFromSwaggerDialog(Display.getCurrent().getActiveShell(), parentFolderEntity);
+            
+            if (dialog.open() == Dialog.OK) {
+                
+                 List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
+                 for(WebServiceRequestEntity entity : requestEntities){
+                    toController.saveNewTestObject(entity);
+                 }
+                 
+                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
+                 close();
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
         
     }
 
     private void importWsdlFromUrl() {
-		try {
-	        FolderEntity parentFolderEntity;
-			parentFolderEntity = (FolderEntity) this.parentTreeEntity.getObject();
+        try {
+            FolderEntity parentFolderEntity;
+            parentFolderEntity = (FolderEntity) this.parentTreeEntity.getObject();
 
-	        ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
+            ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
 
-	        ImportWebServiceObjectsFromWSDLDialog dialog = new ImportWebServiceObjectsFromWSDLDialog(Display.getCurrent().getActiveShell());
-	        
-	        String [] requestMethods = new String[]{WebServiceRequestEntity.SOAP, WebServiceRequestEntity.SOAP12};
-	        if (dialog.open() == Dialog.OK) {
-	        	for(int i = 0; i < requestMethods.length; i++){
-	        		String requestMethod = requestMethods[i]; 
+            ImportWebServiceObjectsFromWSDLDialog dialog = new ImportWebServiceObjectsFromWSDLDialog(Display.getCurrent().getActiveShell());
+            
+            String [] requestMethods = new String[]{WebServiceRequestEntity.SOAP, WebServiceRequestEntity.SOAP12};
+            if (dialog.open() == Dialog.OK) {
+                for(int i = 0; i < requestMethods.length; i++){
+                    String requestMethod = requestMethods[i]; 
 
-	            	List<WebServiceRequestEntity> soapRequestEntities = dialog.getWebServiceRequestEntities(requestMethod);
-	            	if(soapRequestEntities != null && soapRequestEntities.size() > 0 ){
-	                	FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolderEntity, requestMethod);
-	                    FolderTreeEntity newFolderTree = new FolderTreeEntity(folder, parentTreeEntity);
-	                    for(WebServiceRequestEntity entity : soapRequestEntities){
-	                    	entity.setElementGuidId(Util.generateGuid());
-	                    	entity.setParentFolder(folder);
-	                    	entity.setProject(folder.getProject());
-	                    	toController.saveNewTestObject(entity);
-	                    }
-	            	}
-	        	}
-	        	EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-	            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
-	            close();
-	        }
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
+                    List<WebServiceRequestEntity> soapRequestEntities = dialog.getWebServiceRequestEntities(requestMethod);
+                    if(soapRequestEntities != null && soapRequestEntities.size() > 0 ){
+                        FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolderEntity, requestMethod);
+                        FolderTreeEntity newFolderTree = new FolderTreeEntity(folder, parentTreeEntity);
+                        for(WebServiceRequestEntity entity : soapRequestEntities){
+                            entity.setElementGuidId(Util.generateGuid());
+                            entity.setParentFolder(folder);
+                            entity.setProject(folder.getProject());
+                            toController.saveNewTestObject(entity);
+                        }
+                    }
+                }
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
+                close();
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
     
     @Override
