@@ -42,11 +42,12 @@ public class GlobalVariable {
 
     static {
         try {
-            def selectedVariables = TestCaseMain.getGlobalVariables(RunConfiguration.getExecutionProfile())
+            def selectedVariables = TestCaseMain.getGlobalVariables("default")
+			selectedVariables += TestCaseMain.getGlobalVariables(RunConfiguration.getExecutionProfile())
             selectedVariables += RunConfiguration.getOverridingParameters()
     
             <% globalVariables.each { entry -> %>\
-<%=entry.value.getName()%> = selectedVariables["<%=entry.value.getName()%>"]
+<%=entry.value.getName()%> = selectedVariables['<%=entry.value.getName()%>']
             <% } %>
         } catch (Exception e) {
             TestCaseMain.logGlobalVariableError(e)
