@@ -43,23 +43,13 @@ public class FilterController {
     public List<String> getDefaultKeywords() {
         List<String> keywords = new ArrayList<>();
         keywords.addAll(DEFAULT_KEYWORDS);
-        if (isAdvancedTagPluginInstalled()) {
-            keywords.add(getAdvancedTagKeyword());
-        }
         return keywords;
     }
     
     public List<String> getDefaultKeywordsForInputs(){
         List<String> keywordsForInputs = new ArrayList<>();
         keywordsForInputs.addAll(DEFAULT_KEYWORDS_FOR_INPUTS);
-        if (isAdvancedTagPluginInstalled()) {
-            keywordsForInputs.add(getAdvancedTagKeyword());
-        }
         return keywordsForInputs;
-    }
-    
-    public String getAdvancedTagKeyword() {
-        return "tags";
     }
 
     public boolean isMatched(FileEntity fileEntity, String filteringText) {
@@ -142,8 +132,6 @@ public class FilterController {
                 return StringUtils.containsIgnoreCase(fileEntity.getTag(), text);
             case "description":
                 return StringUtils.containsIgnoreCase(fileEntity.getDescription(), text);
-            case "tags":
-                return entityHasTags(fileEntity, text);
             default:
                 return false;
         }
@@ -157,31 +145,5 @@ public class FilterController {
                 .filter(a -> StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), a) 
                         || StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), a + "/"))
                 .findAny().isPresent();
-    }
-
-    private boolean isAdvancedTagPluginInstalled() {
-        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_ADVANCED_TAGS);
-        return plugin != null;
-    }
-    
-    private boolean entityHasTags(FileEntity fileEntity, String searchTagValues) {
-        if (StringUtils.isBlank(searchTagValues)) {
-            return true;
-        }
-        
-        String entityTagValues = fileEntity.getTag();
-        if (StringUtils.isBlank(entityTagValues)) {
-            return false;
-        }
-        
-        Set<String> searchTags = EntityTagUtil.parse(searchTagValues).stream()
-                .map(tag -> tag.toLowerCase())
-                .collect(Collectors.toSet());
-        
-        Set<String> entityTags = EntityTagUtil.parse(entityTagValues).stream()
-                .map(tag -> tag.toLowerCase())
-                .collect(Collectors.toSet());
-        
-        return entityTags.containsAll(searchTags);
     }
 }
