@@ -65,7 +65,7 @@ public class FilterController {
     public boolean isMatched(FileEntity fileEntity, String filteringText) {
         String trimmedText = filteringText.trim();
         if(trimmedText.equals(StringUtils.EMPTY)){
-        	return true;
+            return true;
         }        
         List<String> keywordList = getDefaultKeywords();
         Map<String, String> tagMap = parseSearchedString(keywordList.toArray(new String[0]), trimmedText);
@@ -131,11 +131,11 @@ public class FilterController {
             return false;
         }
         switch (keyword) {
-        	case "ids":
-        		return textContainsEntityId(text.toLowerCase(), fileEntity);
+            case "ids":
+                return textContainsEntityId(text.toLowerCase(), fileEntity);
             case "id":
                 return StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), text) 
-                		|| StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), text + "/");
+                        || StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), text + "/");
             case "name":
                 return StringUtils.containsIgnoreCase(fileEntity.getName(), text);
             case "tag":
@@ -150,16 +150,16 @@ public class FilterController {
     }
     
     private boolean textContainsEntityId(String text, FileEntity fileEntity) {
-    	// Allow spaces before and after delimiter
-    	return Arrays.asList(text.split(CONTENT_DELIMITER))
-    			.stream()
-    			.map(a -> a.trim())
-    			.filter(a -> StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), a) 
-                		|| StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), a + "/"))
-    			.findAny().isPresent();
-	}
+        // Allow spaces before and after delimiter
+        return Arrays.asList(text.split(CONTENT_DELIMITER))
+                .stream()
+                .map(a -> a.trim())
+                .filter(a -> StringUtils.equalsIgnoreCase(fileEntity.getIdForDisplay(), a) 
+                        || StringUtils.startsWithIgnoreCase(fileEntity.getIdForDisplay(), a + "/"))
+                .findAny().isPresent();
+    }
 
-	private boolean isAdvancedTagPluginInstalled() {
+    private boolean isAdvancedTagPluginInstalled() {
         Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_ADVANCED_TAGS);
         return plugin != null;
     }

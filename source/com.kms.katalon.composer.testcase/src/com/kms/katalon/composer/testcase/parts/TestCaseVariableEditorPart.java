@@ -1,8 +1,8 @@
 package com.kms.katalon.composer.testcase.parts;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -20,12 +20,10 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.constants.TextContentType;
 import com.kms.katalon.composer.components.impl.editors.MirrorEditor;
 import com.kms.katalon.composer.components.impl.handler.DocumentReadyHandler;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.CPart;
-import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.controller.GlobalVariableController;
-import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.entity.variable.VariableEntityWrapper;
 
@@ -155,5 +153,10 @@ public class TestCaseVariableEditorPart extends CPart implements SavableComposit
 		res.add(getMPart());
 		return res;
 	}
+
+    @Override
+    public boolean isDirty() {
+        return parentTestCaseCompositePart.isDirty();
+    }
 
 }

@@ -15,6 +15,8 @@ import com.kms.katalon.execution.console.LauncherOptionParserFactory;
 import com.kms.katalon.execution.handler.EvaluateDriverConnectorContributionsHandler;
 import com.kms.katalon.execution.handler.EvaluateRunConfigurationContributionsHandler;
 import com.kms.katalon.execution.integration.EvaluateReportIntegrationContribution;
+import com.kms.katalon.execution.platform.DynamicQueryingTestSuiteExtensionProvider;
+import com.kms.katalon.execution.platform.ExecutionPlatformServiceProvider;
 import com.kms.katalon.execution.platform.PlatformLauncherOptionParserBuilder;
 
 public class ExecutionBundleActivator implements BundleActivator {
@@ -24,7 +26,7 @@ public class ExecutionBundleActivator implements BundleActivator {
         ContextInjectionFactory.make(EvaluateReportIntegrationContribution.class, eclipseContext);
         ContextInjectionFactory.make(EvaluateRunConfigurationContributionsHandler.class, eclipseContext);
         ContextInjectionFactory.make(EvaluateDriverConnectorContributionsHandler.class, eclipseContext);
-        
+
         context.addServiceListener(new ServiceListener() {
             @Override
             public void serviceChanged(ServiceEvent event) {
@@ -36,19 +38,32 @@ public class ExecutionBundleActivator implements BundleActivator {
                 }
             }
         });
-        
+
+        context.addServiceListener(new ServiceListener() {
+            @Override
+            public void serviceChanged(ServiceEvent event) {
+                if (context.getService(event.getServiceReference()) instanceof PlatformLauncherOptionParserBuilder) {
+                    ServiceReference<DynamicQueryingTestSuiteExtensionProvider> serviceReference = context
+                            .getServiceReference(DynamicQueryingTestSuiteExtensionProvider.class);
+                    ExecutionPlatformServiceProvider.getInstance().addService(
+                            DynamicQueryingTestSuiteExtensionProvider.class, context.getService(serviceReference));
+                    context.removeServiceListener(this);
+                }
+            }
+        });
+
         // Injection into handlers may not have happened at this point in console execution
         initHandlersIfNotInitialized(eclipseContext);
     }
 
     private void initHandlersIfNotInitialized(IEclipseContext eclipseContext) {
-        if(EventBrokerSingleton.getInstance().getEventBroker() == null){
+        if (EventBrokerSingleton.getInstance().getEventBroker() == null) {
             IEventBroker eventBroker = eclipseContext.get(IEventBroker.class);
-    		EventBrokerSingleton.getInstance().setEventBroker(eventBroker);
+            EventBrokerSingleton.getInstance().setEventBroker(eventBroker);
         }
-	}
+    }
 
-	@Override
+    @Override
     public void stop(BundleContext context) throws Exception {
         // Do nothing here
     }
