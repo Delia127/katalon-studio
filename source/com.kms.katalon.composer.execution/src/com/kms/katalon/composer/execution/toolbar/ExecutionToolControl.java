@@ -22,7 +22,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 
 public class ExecutionToolControl implements EventHandler {
@@ -84,7 +84,7 @@ public class ExecutionToolControl implements EventHandler {
             dropdownBox.setItems(profileNames);
 
             fireSelectedProfileChange();
-        } catch (DALException e) {
+        } catch (ControllerException e) {
             setVisible(true);
         }
     }

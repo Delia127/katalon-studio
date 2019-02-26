@@ -114,6 +114,24 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
 
             return container;
         }
+
+        @Override
+        public boolean needsSaving() {
+            return integrationView.needsSaving();
+        }
+
+        @Override
+        public IntegratedEntity getEditingIntegrated() {
+            Integration integration = integrationView.getIntegrationBeforeSaving();
+            if (integration == null) {
+                return null;
+            }
+            IntegratedEntity integratedEntity = new IntegratedEntity();
+            integratedEntity.setProductName(integration.getName());
+            integratedEntity.setType(IntegratedType.TESTCASE);
+            integratedEntity.setProperties(integration.getProperties());
+            return integratedEntity;
+        }
     }
 
     private static class PartActionServiceImpl implements PartActionService {

@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.testcase.integration.TestCaseIntegrationFactory;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
+import com.kms.katalon.entity.integration.IntegratedEntity;
 
 public class TestCaseIntegrationPart {
     private ToolBar toolBar;
@@ -34,6 +35,8 @@ public class TestCaseIntegrationPart {
     private String documentationUrl;
 
     private Map<String, AbstractTestCaseIntegrationView> integrationCompositeMap;
+
+    private Map<String, IntegratedEntity> editingIntegratedEntities = new HashMap<>();
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
@@ -148,6 +151,16 @@ public class TestCaseIntegrationPart {
 
     public String getDocumentationUrl() {
         return documentationUrl;
+    }
+
+    public Map<String, IntegratedEntity> getEditingIntegrated() {
+        integrationCompositeMap.entrySet().stream().forEach(entry -> {
+            if (entry.getValue().needsSaving()) {
+                editingIntegratedEntities.put(entry.getKey(), entry.getValue().getEditingIntegrated());
+            }
+        });
+
+        return editingIntegratedEntities;
     }
 
 }
