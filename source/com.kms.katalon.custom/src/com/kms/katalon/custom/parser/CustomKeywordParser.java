@@ -4,6 +4,8 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
@@ -25,7 +29,10 @@ import org.eclipse.jdt.core.JavaCore;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.annotation.Keyword;
+import com.kms.katalon.core.util.internal.JarUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
+import com.kms.katalon.custom.keyword.KeywordsManifest;
 
 public class CustomKeywordParser {
 
@@ -39,7 +46,7 @@ public class CustomKeywordParser {
     private static CustomKeywordParser _instance;
 
     private static List<MethodNode> methodNodes = new ArrayList<MethodNode>();
-
+    
     private CustomKeywordParser() {
     }
 
@@ -55,6 +62,35 @@ public class CustomKeywordParser {
         List<IFile> customKeywordFiles = getAllCustomKeywordFiles(srcfolder);
         for (IFile file : customKeywordFiles) {
             parseCustomKeywordFile(file, libFolder, false);
+        }
+
+        generateCustomKeywordLibFile(libFolder);
+    }
+    
+    public void parsePluginKeywords(ClassLoader projectClassLoader, IFolder srcfolder, IFolder libFolder) throws Exception {
+        IResource[] resources = srcfolder.members(true);
+        for (IResource resource : resources) {
+            File pluginFile = resource.getRawLocation().toFile();
+            JarFile jar = new JarFile(pluginFile);
+            try {
+                ZipEntry jsonEntry = jar.getEntry("katalon-plugin.json");
+                Reader reader = new InputStreamReader(jar.getInputStream(jsonEntry));
+                KeywordsManifest manifest = JsonUtil.fromJson(reader, KeywordsManifest.class);
+                
+                List<String> keywords = manifest.getKeywords();
+                for (String keyword : keywords) {
+                    String filePath = resource.getFullPath().toOSString();
+                    Class clazz = projectClassLoader.loadClass(keyword);
+                    ClassNode classNode = new ClassNode(clazz);
+                    CustomMethodNodeFactory.getInstance().removeMethodNodes(filePath);
+                    CustomMethodNodeFactory.getInstance().addMethodNodes(classNode.getName(), classNode.getMethods(),
+                            filePath);
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+            } finally {
+                jar.close();
+            }
         }
 
         generateCustomKeywordLibFile(libFolder);

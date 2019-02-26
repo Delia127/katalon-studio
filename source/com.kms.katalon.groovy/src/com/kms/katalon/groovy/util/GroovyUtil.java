@@ -976,4 +976,9 @@ public class GroovyUtil {
         IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
         return GroovyUtil.getProjectClasLoader(project, JavaRuntime.computeDefaultRuntimeClassPath(project));
     }
+    
+    public static IFolder getPluginsFolder(ProjectEntity project) {
+        IProject groovyProject = getGroovyProject(project);
+        return groovyProject.getFolder(PLUGINS_FOLDER_NAME);
+    }
 }
