@@ -7,6 +7,8 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
@@ -36,6 +38,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
 
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.internal.ProxyUtil;
@@ -62,19 +65,20 @@ public class HttpClientProxyBuilder {
     public static HttpClientProxyBuilder create(ProxyInformation proxyInfo) throws URISyntaxException, IOException,
             NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         Proxy proxy = ProxyUtil.getProxy(proxyInfo);
-
-        SSLContextBuilder builder = new SSLContextBuilder();
-        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), new HostnameVerifier() {
+        
+        HttpClientBuilder clientBuilder = HttpClients.custom().setSSLHostnameVerifier(new HostnameVerifier() {
 
             @Override
-            public boolean verify(String hostname, SSLSession session) {
+            public boolean verify(String arg0, SSLSession arg1) {
                 return true;
             }
-        });
+        }).setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
 
-        HttpClientBuilder clientBuilder = HttpClients.custom();
-        clientBuilder.setSSLSocketFactory(sslsf);
+            @Override
+            public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                return true;
+            }
+        }).build());
         HttpClientContext context = HttpClientContext.create();
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
             HttpHost httpHost = new HttpHost(proxyInfo.getProxyServerAddress(), proxyInfo.getProxyServerPort());
@@ -92,8 +96,6 @@ public class HttpClientProxyBuilder {
                     .setDefaultCredentialsProvider(credentialsProvider)
                     .setConnectionManager(getSystemConnectionManager(proxy))
                     .setSSLHostnameVerifier(new NoopHostnameVerifier());
-        } else {
-            clientBuilder.setSSLHostnameVerifier(new NoopHostnameVerifier());
         }
 
         return new HttpClientProxyBuilder(clientBuilder, context);

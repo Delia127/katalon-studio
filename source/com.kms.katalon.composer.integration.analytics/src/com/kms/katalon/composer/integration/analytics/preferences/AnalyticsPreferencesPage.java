@@ -33,6 +33,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.NewProjectDialog;
+import com.kms.katalon.composer.integration.analytics.providers.AnalyticsProvider;
 import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -41,7 +42,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
-import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -242,9 +242,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     @Override
-
     public boolean performOk() {
-
 
         if (!isInitialized()) {
             return true;
@@ -314,26 +312,27 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
 
             if (enableAnalyticsIntegration.getSelection()) {
-                AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(
+                AnalyticsTokenInfo tokenInfo = AnalyticsProvider.getToken(
                         analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                        analyticsSettingStore.getEmail(encryptionEnabled), password,
-                        new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+                        analyticsSettingStore.getEmail(encryptionEnabled), 
+                        password, 
+                        analyticsSettingStore);
                 if (tokenInfo == null){
                     txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
                     txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
                     maskPasswordField();
                     return;
                 }
-                teams = AnalyticsApiProvider.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
+                teams = AnalyticsProvider.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
                         analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo,
                         new ProgressMonitorDialog(getShell()));
-                projects = AnalyticsApiProvider.getProjects(serverUrl, email, password,
-                        teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
+                projects = AnalyticsProvider.getProjects(serverUrl, email, password,
+                        teams.get(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
                         new ProgressMonitorDialog(getShell()));
 
                 if (teams != null && !teams.isEmpty()) {
-                    cbbTeams.setItems(AnalyticsApiProvider.getTeamNames(teams).toArray(new String[teams.size()]));
-                    cbbTeams.select(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    cbbTeams.setItems(AnalyticsProvider.getTeamNames(teams).toArray(new String[teams.size()]));
+                    cbbTeams.select(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
                 }
 
                 if (teams != null && teams.size() > 0) {
@@ -448,21 +447,19 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 }
                 cbbTeams.setItems();
                 cbbProjects.setItems();
-                AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl, email, password,
-                        new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+                AnalyticsTokenInfo tokenInfo = AnalyticsProvider.getToken(serverUrl, email, password, analyticsSettingStore);
                 if (tokenInfo == null) {
                     return;
                 }
-
-                teams = AnalyticsApiProvider.getTeams(serverUrl, email, password, tokenInfo,
-                        new ProgressMonitorDialog(getShell()));
-                projects = AnalyticsApiProvider.getProjects(serverUrl, email, password,
-                        teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
+                teams = AnalyticsProvider.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(getShell()));
+                projects = AnalyticsProvider.getProjects(serverUrl, email, password,
+                        teams.get(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams)),
+                        tokenInfo,
                         new ProgressMonitorDialog(getShell()));
 
                 if (teams != null && !teams.isEmpty()) {
-                    cbbTeams.setItems(AnalyticsApiProvider.getTeamNames(teams).toArray(new String[teams.size()]));
-                    cbbTeams.select(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    cbbTeams.setItems(AnalyticsProvider.getTeamNames(teams).toArray(new String[teams.size()]));
+                    cbbTeams.select(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
                 }
 
                 setProjectsBasedOnTeam(teams, projects, serverUrl, email, password);
@@ -476,9 +473,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     String serverUrl = txtServerUrl.getText();
                     String email = txtEmail.getText();
                     String password = txtPassword.getText();
-                    AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl, email, password,
-                            new ProgressMonitorDialog(getShell()), analyticsSettingStore);
-                    projects = AnalyticsApiProvider.getProjects(serverUrl, email, password,
+                    AnalyticsTokenInfo tokenInfo = AnalyticsProvider.getToken(serverUrl, email, password, analyticsSettingStore);
+                    projects = AnalyticsProvider.getProjects(serverUrl, email, password,
                             teams.get(cbbTeams.getSelectionIndex()), tokenInfo, new ProgressMonitorDialog(getShell()));
                     analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
                     setProjectsBasedOnTeam(teams, projects, serverUrl, email, password);
@@ -499,7 +495,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
                 AnalyticsTeam team = null;
                 if (teams != null && teams.size() > 0) {
-                    team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    team = teams.get(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
                 }
 
                 NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(), serverUrl,
@@ -509,17 +505,16 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     if (createdProject != null) {
                         try {
                             analyticsSettingStore.setProject(createdProject);
-                            AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl, email, password,
-                                    new ProgressMonitorDialog(getShell()), analyticsSettingStore);
-                            projects = AnalyticsApiProvider.getProjects(serverUrl, email, password, team, tokenInfo,
+                            AnalyticsTokenInfo tokenInfo = AnalyticsProvider.getToken(serverUrl, email, password, analyticsSettingStore);
+                            projects = AnalyticsProvider.getProjects(serverUrl, email, password, team, tokenInfo,
                                     new ProgressMonitorDialog(getShell()));
                             if (projects == null) {
                                 return;
                             }
-                            cbbProjects.setItems(AnalyticsApiProvider.getProjectNames(projects)
+                            cbbProjects.setItems(AnalyticsProvider.getProjectNames(projects)
                                     .toArray(new String[projects.size()]));
                             cbbProjects.select(
-                                    AnalyticsApiProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
+                                    AnalyticsProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
                         } catch (IOException ex) {
                             LoggerSingleton.logError(ex);
                             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
@@ -541,11 +536,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects, String serverUrl,
             String email, String password) {
-        AnalyticsTeam team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+        AnalyticsTeam team = teams.get(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
 
         if (projects != null && !projects.isEmpty()) {
-            cbbProjects.setItems(AnalyticsApiProvider.getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(AnalyticsApiProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
+            cbbProjects.setItems(AnalyticsProvider.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
         }
         String role = team.getRole();
         if (role.equals("USER")) {

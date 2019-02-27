@@ -23,10 +23,10 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
+import com.kms.katalon.composer.integration.analytics.providers.AnalyticsProvider;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
-import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 
 public class NewProjectDialog extends AbstractDialog {
     
@@ -106,8 +106,8 @@ public class NewProjectDialog extends AbstractDialog {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    final AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                    analyticsProject = AnalyticsApiProvider.createProject(serverUrl, newProjectName, team, tokenInfo.getAccess_token());
+                    final AnalyticsTokenInfo tokenInfo = AnalyticsProvider.requestToken(serverUrl, email, password);
+                    analyticsProject = AnalyticsProvider.createProject(serverUrl, newProjectName, team, tokenInfo.getAccess_token());
                     return Status.OK_STATUS;
                 } catch (final Exception e) {
                     if (!monitor.isCanceled() && !isDisposed()) {
