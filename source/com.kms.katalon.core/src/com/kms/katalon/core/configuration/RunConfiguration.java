@@ -532,7 +532,7 @@ public class RunConfiguration {
     public static Boolean getAutoApplyNeighborXpaths(){
     	if(getProperty("com.katalon.katalon-studio-smart-xpath") != null){
         	try {
-    			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.katalon-studio-smart-xpath", false).
+    			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.katalon-studio-smart-xpath", true).
     					getBoolean("SmartXPathEnabled", false);
     		} catch (IOException e) {
     			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
@@ -545,7 +545,7 @@ public class RunConfiguration {
         return RunningMode.valueOf(getStringProperty(RUNNING_MODE));
     }
     
-    private static Map<String, Object> getOverridingParameters(){
+    public static Map<String, Object> getOverridingParameters(){
     	Map<String, Object> overridingParameters = (Map<String, Object>) getProperty(OVERRIDING_GLOBAL_VARIABLES);
     	if(overridingParameters == null){
     		return new HashMap<String, Object>();

@@ -32,4 +32,6 @@ public interface IRunConfiguration {
     boolean allowsRecording();
     
     ExecutionProfileEntity getExecutionProfile();
+    
+    public void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables);
 }

@@ -7,6 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -136,28 +137,47 @@ public class ApiQuickStartDialog extends Dialog {
        c1.setVisible(true);
        
         
-        switch(projectType){
-        case WEBSERVICE :{
-            Image backgroundImg = ImageConstants.API_QUICKSTART_BACKGROUND_LEFT;
-            leftComposite.setBackgroundImage(backgroundImg);
-            break;
-        }
-        case WEBUI : {
-            Image backgroundWImg = ImageConstants.API_QUICKSTART_BACKGROUND_WEB_LEFT;
-            leftComposite.setBackgroundImage(backgroundWImg);
-            break;
-        }
-        case MOBILE :{
-            Image backgroundMImg = ImageConstants.API_QUICKSTART_BACKGROUND_MOBILE_LEFT;
-            leftComposite.setBackgroundImage(backgroundMImg);
-            break;
-        }
-           default: {
-               break;
-           }
-        }
-      
+       switch(projectType){
+       case WEBSERVICE :{
+           Image backgroundImg = ImageConstants.API_QUICKSTART_BACKGROUND_LEFT;
+           backgroundImg=resize(backgroundImg,1020,1876);
+           leftComposite.setBackgroundImage(backgroundImg);
+           
+           break;
+       }
+       case WEBUI : {
+           Image backgroundWImg = ImageConstants.API_QUICKSTART_BACKGROUND_WEB_LEFT;
+           backgroundWImg=resize(backgroundWImg,1020,2109);
+           leftComposite.setBackgroundImage(backgroundWImg);
+           break;
+       }
+       case MOBILE :{
+           Image backgroundMImg = ImageConstants.API_QUICKSTART_BACKGROUND_MOBILE_LEFT;
+           backgroundMImg=resize(backgroundMImg,1020,2201);
+           leftComposite.setBackgroundImage(backgroundMImg);
+           break;
+       }
+          default: {
+              break;
+          }
+       }
+     
+   }
+   
+    protected Image resize(Image imageFromSource, int width, int height) {
+        if (width > 0 && height > 0) {
+            Image scaledImage = new Image(Display.getDefault(), width, height);
+            GC gc = new GC(scaledImage);
+            gc.setAntialias(SWT.ON);
+            gc.setInterpolation(SWT.HIGH);
+            gc.drawImage(imageFromSource, 0, 0, imageFromSource.getBounds().width, imageFromSource.getBounds().height,
+                    0, 0, width, height);
+            gc.dispose();
+            return scaledImage;
+        } else
+            return imageFromSource;
     }
+   
     
     public void createRightPart(Composite parent) {
         Composite rightComposite = new Composite(parent, SWT.NONE);

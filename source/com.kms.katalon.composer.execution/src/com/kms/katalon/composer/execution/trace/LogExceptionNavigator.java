@@ -140,6 +140,8 @@ public class LogExceptionNavigator {
                 customKeywordScriptFile = keywordRootFolder.getFile(className + GroovyConstants.GROOVY_FILE_EXTENSION);
             }
 
+//            IType type = JavaCore.create(GroovyUtil.getGroovyProject(project)).findType(className);
+
             if (customKeywordScriptFile != null) {
                 AbstractTextEditor editor = (AbstractTextEditor) IDE.openEditor(
                         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), customKeywordScriptFile);

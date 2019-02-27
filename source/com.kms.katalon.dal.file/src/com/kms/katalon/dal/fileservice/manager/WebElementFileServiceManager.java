@@ -121,14 +121,22 @@ public class WebElementFileServiceManager {
                 for (Object iEntity : entityList) {
                     if ((((WebElementEntity) iEntity).getName()).equalsIgnoreCase(newname)) {
                         duplicate = true;
+                    }else{
+                        duplicate = false;
                     }
                 }
-                if (duplicate == false)
-                    flag = true;
-                else {
+                if (duplicate == true){
                     i++;
                     newname = name + " (" + Integer.toString(i) + ")";
+                    flag = false;
+                } 
+                else {
+                    flag = true;
                 }
+                if( flag == true){
+                    newname = name;
+                }
+               
             }
         }
         return newname;

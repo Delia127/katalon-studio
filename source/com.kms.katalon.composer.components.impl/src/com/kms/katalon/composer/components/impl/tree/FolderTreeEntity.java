@@ -23,6 +23,7 @@ import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -72,9 +73,9 @@ public class FolderTreeEntity extends AbstractTreeEntity {
                     if (nodeA instanceof ReportTreeEntity && nodeB instanceof ReportTreeEntity) {
                         ReportEntity reportA = (ReportEntity) nodeA.getObject();
                         ReportEntity reportB = (ReportEntity) nodeB.getObject();
-                        Date dateCreatedA = reportA.getDateCreated() != null ? reportA.getDateCreated() : new Date();
-                        Date dateCreatedB = reportB.getDateCreated() != null ? reportB.getDateCreated() : new Date();
-                        return dateCreatedA.after(dateCreatedB) ? 1 : -1;
+                        Date dateCreatedA = ReportController.getInstance().getReportDate(reportA);
+                        Date dateCreatedB = ReportController.getInstance().getReportDate(reportB);
+                        return dateCreatedB.compareTo(dateCreatedA);
                     }
                     return StringUtils.compareIgnoreCase(nodeA.getText(), nodeB.getText());
                 } catch (Exception e) {

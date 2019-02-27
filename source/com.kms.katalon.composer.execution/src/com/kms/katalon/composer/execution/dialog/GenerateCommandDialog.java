@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -230,8 +231,6 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         createExecutionProfileComposite();
         
-
-
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject.getType() == ProjectType.WEBSERVICE) {
             ((GridData) configurationComposite.getLayoutData()).exclude = true;
@@ -387,6 +386,16 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         Label lblSeconds = new Label(grpOptionsContainer, SWT.NONE);
         lblSeconds.setText(StringConstants.DIA_LBL_SECONDS);
+        
+        Composite pluginOptionsComposite = new Composite(grpOptionsContainer, SWT.NONE);
+        pluginOptionsComposite.setLayout(new GridLayout(2, false));
+        pluginOptionsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
+        
+        Label lblKStoreApiKeyUsage = new Label(pluginOptionsComposite, SWT.NONE);
+        ControlUtils.setFontStyle(lblKStoreApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
+        lblKStoreApiKeyUsage.setText(StringConstants.DIA_LBL_KSTORE_API_KEY_USAGE);
+        
+        new HelpComposite(pluginOptionsComposite, DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
     }
 
     @Override

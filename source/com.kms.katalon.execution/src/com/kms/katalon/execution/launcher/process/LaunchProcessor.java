@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.launching.JavaRuntime;
 
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.launcher.ILaunchProcessor;
 
 public class LaunchProcessor implements ILaunchProcessor {
@@ -45,6 +46,7 @@ public class LaunchProcessor implements ILaunchProcessor {
                         + getClasspaths(),
                 STARTER_CLASS, "--main", MAIN_CLASS, FilenameUtils.separatorsToSystem(scripFile.getAbsolutePath()));
         pb.environment().putAll(getEnviromentVariables());
+        pb.directory(new File(ProjectController.getInstance().getCurrentProject().getFolderLocation()));
         return pb.start();
     }
 
