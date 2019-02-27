@@ -68,10 +68,10 @@ import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.application.Application;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -599,7 +599,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                     }
                     runConfigDescription.setProfileName(dialog.getSelectedProfile().getName());
                     updateExecutionProfileLabel();
-                } catch (DALException ex) {
+                } catch (ControllerException ex) {
                     MultiStatusErrorDialog.showErrorDialog(
                             ComposerExecutionMessageConstants.PA_MSG_UNABLE_TO_SELECT_EXECUTION_PROFILES,
                             ex.getMessage(), ExceptionsUtil.getMessageForThrowable(ex));
