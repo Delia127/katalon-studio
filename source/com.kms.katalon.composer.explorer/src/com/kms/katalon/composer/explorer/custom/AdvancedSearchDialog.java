@@ -75,11 +75,8 @@ public class AdvancedSearchDialog extends Dialog {
                 for (final String tag : searchTags) {
                     Label tagLabel = new Label(container, SWT.NONE);
                     tagLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-                    if (FilterController.getInstance().getAdvancedTagKeyword().equals(tag)) {
-                        tagLabel.setText("Advanced Tags");
-                    } else {
-                        tagLabel.setText(StringUtils.capitalize(tag));
-                    }
+                    tagLabel.setText(StringUtils.capitalize(tag));
+
                     
                     Text tagValue = new Text(container, SWT.BORDER);
                     tagValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
