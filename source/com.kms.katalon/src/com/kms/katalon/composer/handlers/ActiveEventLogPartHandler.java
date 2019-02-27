@@ -1,54 +1,116 @@
 package com.kms.katalon.composer.handlers;
 
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.MUIElement;
-import org.eclipse.e4.ui.model.application.ui.advanced.MPlaceholder;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.logging.LogManager;
 
 public class ActiveEventLogPartHandler {
 
     @Inject
     private IEventBroker eventBroker;
-    
-    @Inject
-    private MApplication application;
-    
-    @Inject
-    private EModelService modelService;
-    
-    @Inject
-    private EPartService partService;
+
+    private Collection<ColorString> bufferredStrings = new ConcurrentLinkedQueue<>();
+
+    private static ActiveEventLogPartHandler instance;
 
     @PostConstruct
     public void registerWorkbenchCreated() {
-        eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, new EventServiceAdapter() {
+        instance = this;
+
+        LogManager.getOutputLogger().setWriter(new PrintStream(LogManager.getOutputLogger()) {
+            @Override
+            public void write(byte[] buf, int off, int len) {
+                writeLog(buf, off, len);
+            }
+        });
+
+        LogManager.getErrorLogger().setWriter(new PrintStream(LogManager.getOutputLogger()) {
+            @Override
+            public void write(byte[] buf, int off, int len) {
+                writeErrorLog(buf, off, len);
+            }
+        });
+        
+        eventBroker.subscribe("KATALON_STUDIO/EVENT_LOG/CLEAR_LOG", new EventHandler() {
 
             @Override
             public void handleEvent(Event event) {
-                activeEventLogPart();
+                bufferredStrings.clear();
             }
         });
     }
 
-    private void activeEventLogPart() {
-        MUIElement eventLogElement = modelService.find(IdConstants.EVENT_LOG_PART_ID, application);
-        if (!(eventLogElement instanceof MPlaceholder)) {
-            LoggerSingleton.logWarn("System could not initialize EventLog Part");
-            return;
+    @PreDestroy
+    public void onDestroy() {
+        LogManager.getOutputLogger().setWriter(null);
+
+        LogManager.getOutputLogger().setWriter(null);
+    }
+
+    private void writeLog(byte[] buf, int off, int len) {
+        String string = new String(ArrayUtils.subarray(buf, off, len));
+        bufferredStrings.add(new ColorString(string, false));
+        truncateIfReachMaxSize();
+    }
+
+    private void truncateIfReachMaxSize() {
+        if (bufferredStrings.size() > 1000) { 
+            ColorString[] bufferredStringAsArray = bufferredStrings.toArray(new ColorString[0]);
+            bufferredStringAsArray = Arrays.copyOf(bufferredStringAsArray, 1000);
+            
+            bufferredStrings.clear();
+            bufferredStrings.addAll(Arrays.asList(bufferredStringAsArray));
         }
-        MPlaceholder eventLog = (MPlaceholder) eventLogElement;
-        partService.activate((MPart) eventLog.getRef(), false);
+    }
+
+    private void writeErrorLog(byte[] buf, int off, int len) {
+        String string = new String(ArrayUtils.subarray(buf, off, len));
+        bufferredStrings.add(new ColorString(string, true));
+        truncateIfReachMaxSize();
+    }
+
+    public static ActiveEventLogPartHandler getInstance() {
+        return instance;
+    }
+    
+    public List<ColorString> getBufferredStrings() {
+        return new ArrayList<>(bufferredStrings);
+    }
+
+    public void clearBufferredStrings() {
+        bufferredStrings.clear();
+    }
+
+    public static class ColorString {
+        private final boolean isError;
+
+        private final String string;
+
+        public ColorString(String string, boolean isError) {
+            this.string = string;
+            this.isError = isError;
+        }
+
+        public boolean isError() {
+            return isError;
+        }
+
+        public String getString() {
+            return string;
+        }
     }
 }

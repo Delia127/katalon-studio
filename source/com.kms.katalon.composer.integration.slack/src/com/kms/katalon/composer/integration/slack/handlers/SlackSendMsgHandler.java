@@ -30,6 +30,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
@@ -128,22 +129,32 @@ public class SlackSendMsgHandler implements EventHandler {
     public void handleEvent(Event event) {
         getSlackPreferences();
         slackUtil = new SlackUtil();
+        if (!slackUtil.isSlackEnabled()) {
+            return;
+        }
         try {
             Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
             Object[] names;
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
             switch (event.getTopic()) {
                 case EventConstants.PROJECT_OPENED:
+                    if (currentProject == null) {
+                        return;
+                    }
                     // Open project
                     if (OPEN_PROJECT)
                         slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_OPEN_PROJECT,
-                                slackUtil.fmtBold(ProjectController.getInstance().getCurrentProject().getName())));
+                                slackUtil.fmtBold(currentProject.getName())));
                     break;
 
                 case EventConstants.PROJECT_CLOSED:
+                    if (currentProject == null) {
+                        return;
+                    }
                     // Close project
                     if (CLOSE_PROJECT)
                         slackUtil.sendMessage(MessageFormat.format(StringConstants.EMOJI_MSG_CLOSE_PROJECT,
-                                slackUtil.fmtBold(ProjectController.getInstance().getCurrentProject().getName())));
+                                slackUtil.fmtBold(currentProject.getName())));
                     break;
 
                 case EventConstants.TESTCASE_UPDATED:
