@@ -96,4 +96,5 @@ public class FolderControllerImpl implements com.katalon.platform.api.controller
             throw new ResourceException(ExceptionsUtil.getMessageForThrowable(e));
         }
     }
+
 }
