@@ -7,18 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.katalon.platform.api.Plugin;
-import com.katalon.platform.api.service.ApplicationManager;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.file.FileEntity;
-import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class FilterController {
 
