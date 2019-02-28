@@ -205,11 +205,13 @@ public class FilteringTestCaseView {
         compositeTableSearch.setLayout(glCompositeTableSearch);
 
         Label lblFilteringPlugin = new Label(compositeTableSearch, SWT.NONE);
-        lblFilteringPlugin.setText("Query Type");
+        lblFilteringPlugin.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        lblFilteringPlugin.setText("Query Provider");
 
         cbbExtensions = new Combo(compositeTableSearch, SWT.READ_ONLY);
         GridData gdCbbPlugins = new GridData(SWT.LEFT, SWT.TOP, true, false);
         gdCbbPlugins.widthHint = 500;
+        gdCbbPlugins.horizontalIndent = 5;
         cbbExtensions.setLayoutData(gdCbbPlugins);
 
         Label lblQuery = new Label(compositeTableSearch, SWT.NONE);

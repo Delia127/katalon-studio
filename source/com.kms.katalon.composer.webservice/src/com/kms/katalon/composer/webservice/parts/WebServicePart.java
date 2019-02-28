@@ -403,6 +403,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected Text txtUsername;
 
     protected Text txtPassword;
+    
+    protected Text txtOAuth2Username;
+
+    protected Text txtOAuth2Password;
 
     protected Text txtConsumerKey;
 
@@ -1258,9 +1262,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
 		ccbOAuth2SignatureMethod = addAuthComboBox("Grant Type", ccbOAuth2SignatureMethod, contentComposite,
 				auth02Signatures);
-		txtUsername = addAuthInput(ComposerWebserviceMessageConstants.LBL_USERNAME, txtUsername, contentComposite,
+		txtOAuth2Username = addAuthInput(ComposerWebserviceMessageConstants.LBL_USERNAME, txtOAuth2Username, contentComposite,
 				null);
-		txtPassword = addAuthInput(ComposerWebserviceMessageConstants.LBL_PASSWORD, txtPassword, contentComposite,
+		txtOAuth2Password = addAuthInput(ComposerWebserviceMessageConstants.LBL_PASSWORD, txtOAuth2Password, contentComposite,
 				null);
 		
 		new Label(contentComposite, SWT.NONE);
@@ -1363,8 +1367,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 	}
 	
 	private void loadAuthDataIntoInputs(Map<String, String> variableMap) {
-		txtUsername.setText(variableMap.getOrDefault(OAuth2Constants.USERNAME, StringUtils.EMPTY));
-		txtPassword.setText(variableMap.getOrDefault(OAuth2Constants.PASSWORD, StringUtils.EMPTY));
+		txtOAuth2Username.setText(variableMap.getOrDefault(OAuth2Constants.USERNAME, StringUtils.EMPTY));
+		txtOAuth2Password.setText(variableMap.getOrDefault(OAuth2Constants.PASSWORD, StringUtils.EMPTY));
 		txtAccessTokenUrl.setText(variableMap.getOrDefault(OAuth2Constants.ACCESS_TOKEN_URL, StringUtils.EMPTY));
 		txtConsumerKey.setText(variableMap.getOrDefault(OAuth2Constants.CLIENT_ID, StringUtils.EMPTY));
 		txtConsumerSecret.setText(variableMap.getOrDefault(OAuth2Constants.CLIENT_SECRET, StringUtils.EMPTY));
@@ -1372,12 +1376,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 		txtRefreshToken.setText(variableMap.getOrDefault(OAuth2Constants.REFRESH_TOKEN, StringUtils.EMPTY));
 		txtRefreshToken.setText(variableMap.getOrDefault(OAuth2Constants.STATE, StringUtils.EMPTY));
 	}
-	
+
 	private void disableAllOauth2Inputs(){
 		txtConsumerKey.setEnabled(false);
 		txtConsumerSecret.setEnabled(false);
-		txtUsername.setEnabled(false);
-		txtPassword.setEnabled(false);
+		txtOAuth2Username.setEnabled(false);
+		txtOAuth2Password.setEnabled(false);
 		txtCallbackUrl.setEnabled(false);
 		txtAuthUrl.setEnabled(false);
 	}
@@ -1388,8 +1392,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 		case PASSWORD_CREDENTIALS:
 			txtConsumerKey.setEnabled(true);
 			txtConsumerSecret.setEnabled(true);
-			txtUsername.setEnabled(true);
-			txtPassword.setEnabled(true);
+			txtOAuth2Username.setEnabled(true);
+			txtOAuth2Password.setEnabled(true);
 			break;
 		case REFRESH_TOKEN:
 			txtConsumerKey.setEnabled(true);
@@ -1455,8 +1459,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 			parameters.addParameter(
 					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, StringUtils.trim(txtConsumerSecret.getText())));
 			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "password"));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.USERNAME, StringUtils.trim(txtUsername.getText())));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.PASSWORD, StringUtils.trim(txtPassword.getText())));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.USERNAME, StringUtils.trim(txtOAuth2Username.getText())));
+			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.PASSWORD, StringUtils.trim(txtOAuth2Password.getText())));
 			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.STATE, StringUtils.trim(txtPassword.getText())));
 			break;
 		case REFRESH_TOKEN:
@@ -2405,8 +2409,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     private WebElementPropertyEntity createBasicAuthHeaderElement() {
+        String username = txtUsername.getText();
+        String password = txtPassword.getText();
         return new WebElementPropertyEntity(HTTP_HEADER_AUTHORIZATION,
-                BASIC_AUTH_PREFIX_VALUE + Base64.basicEncode(txtUsername.getText(), txtPassword.getText()));
+                BASIC_AUTH_PREFIX_VALUE + Base64.basicEncode(username, password));
     }
 
     protected void populateOAuth1FromHeader() {
