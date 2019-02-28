@@ -942,7 +942,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             setScriptContentToManual();
         }
         childTestCasePart.getTreeTableInput().reloadTestCaseVariables(childTestCasePart.getVariables());
-        childTestCaseIntegrationPart.loadInput();
+        childTestCaseIntegrationPart.reloadInput();
 
         updateDirty();
         setDirty(isAnyChildDirty);

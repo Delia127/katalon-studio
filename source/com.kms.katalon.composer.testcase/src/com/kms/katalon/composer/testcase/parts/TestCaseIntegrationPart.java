@@ -79,6 +79,10 @@ public class TestCaseIntegrationPart {
         mpart.setDirty(true);
         parentTestCaseCompositePart.updateDirty();
     }
+    
+    public void reloadInput() {
+        
+    }
 
     public void loadInput() {
         clearToolbar();
