@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
@@ -78,6 +79,9 @@ public class KStoreLoginDialog extends Dialog {
 
         txtUsername = new Text(inputComposite, SWT.BORDER);
         txtUsername.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        
+        username = ApplicationInfo.getAppProperty("email");
+        txtUsername.setText(username);
 
         Label lblPassword = new Label(inputComposite, SWT.NONE);
         lblPassword.setText(StringConstants.KStoreLoginDialog_LBL_PASSWORD);
