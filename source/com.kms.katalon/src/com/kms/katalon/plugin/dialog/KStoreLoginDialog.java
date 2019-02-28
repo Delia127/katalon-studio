@@ -82,6 +82,7 @@ public class KStoreLoginDialog extends Dialog {
         
         username = ApplicationInfo.getAppProperty("email");
         txtUsername.setText(username);
+        txtUsername.setEditable(false);
 
         Label lblPassword = new Label(inputComposite, SWT.NONE);
         lblPassword.setText(StringConstants.KStoreLoginDialog_LBL_PASSWORD);
