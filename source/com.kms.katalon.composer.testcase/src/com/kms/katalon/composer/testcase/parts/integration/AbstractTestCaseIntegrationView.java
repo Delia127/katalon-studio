@@ -46,4 +46,12 @@ public abstract class AbstractTestCaseIntegrationView {
 	public IntegratedEntity getEditingIntegrated() {
 	    return null;
 	}
+	
+	public void onSaveSuccess(TestCaseEntity testCase) {
+	    
+	}
+	
+	public void onSaveFailure(Exception failure) {
+        
+    }
 }

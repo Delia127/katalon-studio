@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.testcase.integration.TestCaseIntegrationFactory;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
 import com.kms.katalon.entity.integration.IntegratedEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class TestCaseIntegrationPart {
     private ToolBar toolBar;
@@ -80,6 +81,10 @@ public class TestCaseIntegrationPart {
         parentTestCaseCompositePart.updateDirty();
     }
 
+    public void reloadInput() {
+
+    }
+
     public void loadInput() {
         clearToolbar();
         integrationCompositeMap = new HashMap<String, AbstractTestCaseIntegrationView>();
@@ -87,8 +92,8 @@ public class TestCaseIntegrationPart {
         TestCaseIntegrationFactory.getInstance().getSortedViewBuilders().forEach(builderEntry -> {
             ToolItem item = new ToolItem(toolBar, SWT.CHECK);
             item.setText(builderEntry.getName());
-            integrationCompositeMap.put(builderEntry.getName(),
-                    builderEntry.getIntegrationView(parentTestCaseCompositePart.getTestCase(), mpart));
+            integrationCompositeMap.put(builderEntry.getName(), builderEntry
+                    .getIntegrationView(parentTestCaseCompositePart.getTestCase(), mpart, parentTestCaseCompositePart));
         });
 
         for (ToolItem item : toolBar.getItems()) {
@@ -161,6 +166,18 @@ public class TestCaseIntegrationPart {
         });
 
         return editingIntegratedEntities;
+    }
+
+    public void onSaveSuccess(TestCaseEntity testCase) {
+        integrationCompositeMap.entrySet().stream().forEach(entry -> {
+            entry.getValue().onSaveSuccess(testCase);
+        });
+    }
+
+    public void onSaveFailure(Exception e) {
+        integrationCompositeMap.entrySet().stream().forEach(entry -> {
+            entry.getValue().onSaveFailure(e);
+        });
     }
 
 }

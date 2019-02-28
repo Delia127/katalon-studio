@@ -242,6 +242,10 @@ public class FilteringTestCaseView {
         btnQueryBuilder = new Button(buttonsComposite, SWT.PUSH | SWT.FLAT);
         btnQueryBuilder.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         btnQueryBuilder.setText("Query Builder");
+        
+        Label lblQueryBuilderUsage = new Label(compositeTableSearch, SWT.NONE);
+        lblQueryBuilderUsage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        lblQueryBuilderUsage.setText(ComposerTestcaseMessageConstants.LBL_QUERY_BUILDER_USAGE);
     }
 
     public void layout() {
@@ -249,7 +253,13 @@ public class FilteringTestCaseView {
     }
 
     public void beforeSaving() {
-        ((FilteringTestSuiteEntity) parentPart.getTestSuiteClone()).setFilteringText(txtSearch.getText());
+        FilteringTestSuiteEntity testSuiteClone = (FilteringTestSuiteEntity) parentPart.getTestSuiteClone();
+        testSuiteClone.setFilteringText(txtSearch.getText());
+        if (selectedExtensionDescription != null) {
+            Extension selectedExtension = extensions.get(cbbExtensions.getSelectionIndex());
+            testSuiteClone.setFilteringPlugin(selectedExtension.getPluginId());
+            testSuiteClone.setFilteringExtension(selectedExtension.getExtensionId());
+        }
     }
 
     public void afterSaving() {
@@ -387,6 +397,8 @@ public class FilteringTestCaseView {
                 ? (DynamicQueryingTestSuiteDescription) extensions.get(selectedIndex).getImplementationClass() : null;
 
         btnPreview.setEnabled(selectedExtensionDescription != null);
+        
+        parentPart.setDirty(true);
     }
 
     private void showPreviewTestCases() {

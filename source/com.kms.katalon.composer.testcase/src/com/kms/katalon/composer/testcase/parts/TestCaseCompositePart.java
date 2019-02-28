@@ -91,7 +91,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
@@ -673,12 +672,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             propertiesPart.preSave();
 
             childTestCaseIntegrationPart.getEditingIntegrated().entrySet().forEach(entry -> {
-                IntegratedEntity integratedEntity = testCase.getIntegratedEntity(entry.getKey());
-                if (integratedEntity == null) {
-                    testCase.getIntegratedEntities().add(entry.getValue());
-                } else {
-                    integratedEntity.setProperties(entry.getValue().getProperties());
-                }
+                testCase.updateIntegratedEntity(entry.getValue());
             });
             // back-up
             String oldPk = originalTestCase.getId();
@@ -716,6 +710,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
                 originalTestCase.setScriptContents(new byte[0]);
                 temp.setScriptContents(new byte[0]);
+                
+                childTestCaseIntegrationPart.onSaveSuccess(originalTestCase);
                 return true;
             } catch (Exception e) {
                 // revert
@@ -723,6 +719,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 originalTestCase.setScriptContents(temp.getScriptContents());
 
                 LoggerSingleton.logError(e);
+                
+                childTestCaseIntegrationPart.onSaveFailure(e);
                 MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
                         e.getMessage());
             }
@@ -942,7 +940,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             setScriptContentToManual();
         }
         childTestCasePart.getTreeTableInput().reloadTestCaseVariables(childTestCasePart.getVariables());
-        childTestCaseIntegrationPart.loadInput();
+        childTestCaseIntegrationPart.reloadInput();
 
         updateDirty();
         setDirty(isAnyChildDirty);
