@@ -72,9 +72,9 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
     public IConsoleLauncher getConsoleLauncher(ProjectEntity projectEntity, LauncherManager manager)
             throws ExecutionException, InvalidConsoleArgumentException {
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity, testSuiteCollectionOption.getValue());
-        Map<String,Object> sp = super.getOverridingGlobalVariables();
+        Map<String,Object> overridingVariables = getOverridingGlobalVariables();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting, sp);
+                rerunSetting, overridingVariables);
     }
 
 

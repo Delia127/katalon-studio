@@ -39,7 +39,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
     }
 
     public static TestSuiteCollectionConsoleLauncher newInstance(TestSuiteCollectionEntity testSuiteCollection,
-            LauncherManager parentManager, Reportable reportable, Rerunable rerunable,Map<String,Object> overridingValueable) throws ExecutionException {
+            LauncherManager parentManager, Reportable reportable, Rerunable rerunable, Map<String,Object> overridingVariables) throws ExecutionException {
         TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
         executedEntity.setReportable(reportable);
         executedEntity.setRerunable(rerunable);
@@ -50,7 +50,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
             TestSuiteCollectionConsoleLauncher testSuiteCollectionConsoleLauncher = new TestSuiteCollectionConsoleLauncher(
                     executedEntity, parentManager,
-                    buildSubLaunchers(testSuiteCollection, executedEntity, parentManager, reportCollection,overridingValueable),
+                    buildSubLaunchers(testSuiteCollection, executedEntity, parentManager, reportCollection, overridingVariables),
                     reportCollection);
 
             ReportController.getInstance().updateReportCollection(reportCollection);
