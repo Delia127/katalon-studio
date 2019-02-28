@@ -428,6 +428,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String DIALOG_TITLE_TEST_CASE_FOLDER_SELECTION;
     
+    public static String LBL_QUERY_BUILDER_USAGE;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);
