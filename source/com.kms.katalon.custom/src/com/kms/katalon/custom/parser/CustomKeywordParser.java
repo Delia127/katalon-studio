@@ -1,18 +1,21 @@
 package com.kms.katalon.custom.parser;
 
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyObject;
-
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -29,10 +32,17 @@ import org.eclipse.jdt.core.JavaCore;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.annotation.Keyword;
-import com.kms.katalon.core.util.internal.JarUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
+
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyObject;
+import groovyjarjarasm.asm.ClassReader;
+import groovyjarjarasm.asm.ClassVisitor;
+import groovyjarjarasm.asm.Label;
+import groovyjarjarasm.asm.MethodVisitor;
+import groovyjarjarasm.asm.Opcodes;
 
 public class CustomKeywordParser {
 
@@ -68,11 +78,11 @@ public class CustomKeywordParser {
     }
     
     public void parsePluginKeywords(ClassLoader projectClassLoader, IFolder srcfolder, IFolder libFolder) throws Exception {
-        IResource[] resources = srcfolder.members(true);
+        File srcDir = srcfolder.getRawLocation().toFile();
+        File[] jarFiles = srcDir.listFiles();
         boolean devMode = false;
-        for (IResource resource : resources) {
-            if (!devMode && resource.getName().endsWith(".jar")) {
-                File pluginFile = resource.getRawLocation().toFile();
+        for (File pluginFile : jarFiles) {
+            if (!devMode && pluginFile.getName().endsWith(".jar")) {
                 JarFile jar = new JarFile(pluginFile);
                 try {
                     ZipEntry jsonEntry = jar.getEntry("katalon-plugin.json");
@@ -84,11 +94,22 @@ public class CustomKeywordParser {
                         
                         List<String> keywords = manifest.getKeywords();
                         for (String keyword : keywords) {
-                            String filePath = resource.getFullPath().toOSString();
+                            String filePath = pluginFile.getAbsolutePath();
                             Class clazz = projectClassLoader.loadClass(keyword);
                             ClassNode classNode = new ClassNode(clazz);
-                            CustomMethodNodeFactory.getInstance().addMethodNodes(classNode.getName(), classNode.getMethods(),
-                                    filePath);
+                            
+                            InputStream stream = projectClassLoader.getResourceAsStream(keyword.replace('.', '/') + ".class");
+                            ClassReader classReader = new ClassReader(stream);
+                            NamingMethodVisitor visitor = new NamingMethodVisitor(clazz);
+                            classReader.accept(visitor, ClassReader.SKIP_FRAMES);
+                            
+                            Map<String, List<String>> parametersMap = new HashMap<>();
+                            classNode.getMethods().forEach(methodNode -> {
+                                List<String> paramNames = visitor.getParameterNames(methodNode.getName());
+                                parametersMap.put(methodNode.getName(), paramNames);
+                            });
+                            CustomMethodNodeFactory.getInstance().addPluginMethodNodes(classNode.getName(), classNode.getMethods(),
+                                    filePath, parametersMap);
                         }
                     }
                 } catch (Exception e) {
