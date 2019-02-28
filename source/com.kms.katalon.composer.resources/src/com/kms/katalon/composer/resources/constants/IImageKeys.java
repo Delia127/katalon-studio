@@ -568,6 +568,8 @@ public interface IImageKeys {
     public static final String DESKTOP_16 = "desktop_16.png"; //$NON-NLS-1$
 
     public static final String OK_16 = "ok_16.png"; //$NON-NLS-1$
+    
+    public static final String ERROR_16_GREY = "error_16_grey.png";  //$NON-NLS-1$
 
     public static final String DONE_16 = "done_16.png"; //$NON-NLS-1$
 
