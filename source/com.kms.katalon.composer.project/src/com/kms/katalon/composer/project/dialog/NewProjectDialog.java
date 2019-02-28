@@ -97,11 +97,11 @@ public class NewProjectDialog extends TitleAreaDialog {
     private Button rbWebServiceProjectType;
 
     private Button rbGenericProjectType;
-    
+
     private Button rbWebProjectType;
-    
+
     private Button rbMobileProjectType;
-    
+
     private boolean okButtonClicked = false;
 
     public NewProjectDialog(Shell parentShell) {
@@ -112,7 +112,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         super(parentShell);
         this.title = StringConstants.VIEW_TITLE_NEW_PROJ;
         this.initialSampleProject = sampleProject;
-        
+
     }
 
     public NewProjectDialog(Shell parentShell, ProjectEntity project) {
@@ -133,22 +133,20 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         Composite container = new Composite(area, SWT.NONE);
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
-        GridLayout g=new GridLayout(2, false);
+        GridLayout g = new GridLayout(2, false);
         container.setLayout(g);
-        g.verticalSpacing=15;
-        g.horizontalSpacing=15;
-        g.marginHeight=15;
-        g.marginBottom=15;
-        g.marginLeft=20;
-        g.marginRight=20;
-     
+        g.verticalSpacing = 15;
+        g.horizontalSpacing = 15;
+        g.marginHeight = 15;
+        g.marginBottom = 15;
+        g.marginLeft = 20;
+        g.marginRight = 20;
+
         Label l = new Label(container, SWT.NONE);
         l.setText(StringConstants.VIEW_LBL_NAME);
-        
 
         txtProjectName = new Text(container, SWT.BORDER);
         txtProjectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        
 
         Label lblProjectType = new Label(container, SWT.NONE);
         lblProjectType.setText("Type");
@@ -156,7 +154,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         Composite projectTypeComposite = new Composite(container, SWT.NONE);
         projectTypeComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         projectTypeComposite.setLayout(new GridLayout(5, false));
-      //WEBSERVICE
+        // WEBSERVICE
         rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
         GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
@@ -166,8 +164,8 @@ public class NewProjectDialog extends TitleAreaDialog {
             public void widgetSelected(SelectionEvent e) {
                 populateWebServiceProjects();
             }
-        }); 
-       
+        });
+
         // WEB
         rbWebProjectType = new Button(projectTypeComposite, SWT.RADIO);
         GridData WebProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
@@ -179,7 +177,7 @@ public class NewProjectDialog extends TitleAreaDialog {
                 populateWebProjects();
             }
         });
-        //MOBILE
+        // MOBILE
         rbMobileProjectType = new Button(projectTypeComposite, SWT.RADIO);
         GridData gdMobileProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         rbMobileProjectType.setLayoutData(gdMobileProjectType);
@@ -190,8 +188,8 @@ public class NewProjectDialog extends TitleAreaDialog {
                 populateMobileProjects();
             }
         });
-       
-        //GENERIC
+
+        // GENERIC
         rbGenericProjectType = new Button(projectTypeComposite, SWT.RADIO);
         GridData gdGenericProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         rbGenericProjectType.setLayoutData(gdGenericProjectType);
@@ -202,7 +200,7 @@ public class NewProjectDialog extends TitleAreaDialog {
                 populateGenericProjects();
             }
         });
-        //HELP Button
+        // HELP Button
         new HelpCompositeForDialog(projectTypeComposite, DocumentationMessageConstants.MANAGE_TEST_PROJECT) {
             @Override
             protected GridData createGridData() {
@@ -212,10 +210,10 @@ public class NewProjectDialog extends TitleAreaDialog {
             @Override
             protected GridLayout createLayout() {
                 GridLayout layout = new GridLayout();
-                layout.marginHeight =0;
-                layout.marginBottom =0;
+                layout.marginHeight = 0;
+                layout.marginBottom = 0;
                 layout.marginWidth = 0;
-      
+
                 return layout;
             }
         };
@@ -244,9 +242,9 @@ public class NewProjectDialog extends TitleAreaDialog {
         txtProjectDescription = new StyledText(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         // increase projectDescription's height on MAC OS so that it is able to show 4 text line
         // and modify the left margin so that it is vertical alignment with project name and project location
-       
+
         GridData layout = new GridData(GridData.FILL_BOTH);
-        
+
         GC graphicContext = new GC(txtProjectDescription);
         FontMetrics fm = graphicContext.getFontMetrics();
         layout.heightHint = PROJECT_DESC_DISPLAY_LINE_NUMBER * fm.getHeight();
@@ -268,20 +266,20 @@ public class NewProjectDialog extends TitleAreaDialog {
 
         if (initialSampleProject != null) {
             if (initialSampleProject.getType() == SampleProjectType.WEBUI) {
-                
+
                 populateWebProjects();
                 rbWebProjectType.setSelection(true);
-            } else if (initialSampleProject.getType() != SampleProjectType.MIXED)  {
+            } else if (initialSampleProject.getType() == SampleProjectType.MIXED) {
                 populateGenericProjects();
                 rbGenericProjectType.setSelection(true);
             }
-              
-            else if (initialSampleProject.getType() != SampleProjectType.MOBILE)  {
+
+            else if (initialSampleProject.getType() == SampleProjectType.MOBILE) {
                 populateMobileProjects();
                 rbMobileProjectType.setSelection(true);
             }
-            
-            else if (initialSampleProject.getType() != SampleProjectType.WS)  {
+
+            else if (initialSampleProject.getType() == SampleProjectType.WS) {
                 populateWebServiceProjects();
                 rbWebServiceProjectType.setSelection(true);
             }
@@ -312,6 +310,7 @@ public class NewProjectDialog extends TitleAreaDialog {
         populateProjects(SampleProjectType.WEBUI, SampleProjectType.MOBILE, SampleProjectType.WS,
                 SampleProjectType.MIXED);
     }
+
     private void populateMobileProjects() {
         populateProjects(SampleProjectType.MOBILE);
     }
@@ -321,9 +320,10 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     private void populateWebProjects() {
-        populateProjects(SampleProjectType.WEBUI,SampleProjectType.MIXED);
-            
+        populateProjects(SampleProjectType.WEBUI, SampleProjectType.MIXED);
+
     }
+
     private void populateProjects(SampleProjectType... sampleProjectTypes) {
         List<SampleProjectType> sampleProjectTypeList = Arrays.asList(sampleProjectTypes);
 
@@ -426,8 +426,7 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     private boolean validateProjectFolderLocation() {
-    	
-    	
+
         String projectLocation = getProjectLocationInput();
         if (StringUtils.isBlank(projectLocation)) {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK);
@@ -453,17 +452,18 @@ public class NewProjectDialog extends TitleAreaDialog {
             setErrorMessage(StringConstants.VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE);
             return false;
         }
-        
-        try{
-        	 String katalonFolderAbsolutePath = new File(Platform.getInstallLocation().getURL().getFile()).getAbsolutePath();
-             String locFileAbsolutePath = new File(projectLocation).getAbsolutePath();
-             if(locFileAbsolutePath.startsWith(katalonFolderAbsolutePath)){
-             	setErrorMessage(StringConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER);
-             	return false;
-             }
-        } catch (Exception e){
-        	LoggerSingleton.logError(e);
-        	return false;
+
+        try {
+            String katalonFolderAbsolutePath = new File(Platform.getInstallLocation().getURL().getFile())
+                    .getAbsolutePath();
+            String locFileAbsolutePath = new File(projectLocation).getAbsolutePath();
+            if (locFileAbsolutePath.startsWith(katalonFolderAbsolutePath)) {
+                setErrorMessage(StringConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER);
+                return false;
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return false;
         }
         return true;
     }
@@ -513,8 +513,8 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     @Override
     protected void okPressed() {
-    	okButtonClicked = true;
-        
+        okButtonClicked = true;
+
         name = txtProjectName.getText();
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
@@ -534,7 +534,6 @@ public class NewProjectDialog extends TitleAreaDialog {
         super.okPressed();
     }
 
-
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();
         String projectLocation = getProjectLocation();
@@ -550,7 +549,6 @@ public class NewProjectDialog extends TitleAreaDialog {
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.GIT_CLONE_REMOTE_PROJECT,
                 new Object[] { sampleRemoteProject, projectEntity, false });
     }
-
 
     private void handleCreatingSampleBuiltInProject(SampleLocalProject sampleBuiltInProject) {
         try {
@@ -573,12 +571,11 @@ public class NewProjectDialog extends TitleAreaDialog {
             Trackings.trackCreatingSampleProject(sampleBuiltInProject.getName(), newProject.getUUID(), projectType);
 
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
-            
+
             TimeUnit.SECONDS.sleep(1);
-           
-                eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
-            
-          
+
+            eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
+
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -602,10 +599,10 @@ public class NewProjectDialog extends TitleAreaDialog {
             Trackings.trackCreatingProject(newProject.getUUID(), projectType);
 
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
-            
+
             TimeUnit.SECONDS.sleep(1);
-          
-            if(!(getSelectedProjectType()==ProjectType.GENERIC)){
+
+            if (!(getSelectedProjectType() == ProjectType.GENERIC)) {
                 eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
             }
         } catch (FilePathTooLongException ex) {
@@ -645,17 +642,11 @@ public class NewProjectDialog extends TitleAreaDialog {
     private ProjectType getSelectedProjectType() {
         if (rbWebServiceProjectType.getSelection()) {
             return ProjectType.WEBSERVICE;
-        } 
-        else if(rbWebProjectType.getSelection())
-        {
+        } else if (rbWebProjectType.getSelection()) {
             return ProjectType.WEBUI;
-        }
-        else if(rbMobileProjectType.getSelection())
-        {
+        } else if (rbMobileProjectType.getSelection()) {
             return ProjectType.MOBILE;
-        }
-       else 
-        {
+        } else {
             return ProjectType.GENERIC;
         }
     }
