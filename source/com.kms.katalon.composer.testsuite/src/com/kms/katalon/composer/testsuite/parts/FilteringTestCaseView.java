@@ -206,7 +206,7 @@ public class FilteringTestCaseView {
 
         Label lblFilteringPlugin = new Label(compositeTableSearch, SWT.NONE);
         lblFilteringPlugin.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
-        lblFilteringPlugin.setText("Query Type");
+        lblFilteringPlugin.setText("Query Provider");
 
         cbbExtensions = new Combo(compositeTableSearch, SWT.READ_ONLY);
         GridData gdCbbPlugins = new GridData(SWT.LEFT, SWT.TOP, true, false);
