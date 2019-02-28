@@ -242,6 +242,10 @@ public class FilteringTestCaseView {
         btnQueryBuilder = new Button(buttonsComposite, SWT.PUSH | SWT.FLAT);
         btnQueryBuilder.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         btnQueryBuilder.setText("Query Builder");
+        
+        Label lblQueryBuilderUsage = new Label(compositeTableSearch, SWT.NONE);
+        lblQueryBuilderUsage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        lblQueryBuilderUsage.setText(ComposerTestcaseMessageConstants.LBL_QUERY_BUILDER_USAGE);
     }
 
     public void layout() {
