@@ -88,7 +88,7 @@ public class TestCaseIntegrationPart {
             ToolItem item = new ToolItem(toolBar, SWT.CHECK);
             item.setText(builderEntry.getName());
             integrationCompositeMap.put(builderEntry.getName(),
-                    builderEntry.getIntegrationView(parentTestCaseCompositePart.getTestCase(), mpart));
+                    builderEntry.getIntegrationView(parentTestCaseCompositePart.getTestCase(), mpart, parentTestCaseCompositePart));
         });
 
         for (ToolItem item : toolBar.getItems()) {
