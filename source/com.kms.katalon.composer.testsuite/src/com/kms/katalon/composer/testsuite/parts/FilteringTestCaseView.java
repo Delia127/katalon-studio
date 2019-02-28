@@ -249,7 +249,13 @@ public class FilteringTestCaseView {
     }
 
     public void beforeSaving() {
-        ((FilteringTestSuiteEntity) parentPart.getTestSuiteClone()).setFilteringText(txtSearch.getText());
+        FilteringTestSuiteEntity testSuiteClone = (FilteringTestSuiteEntity) parentPart.getTestSuiteClone();
+        testSuiteClone.setFilteringText(txtSearch.getText());
+        if (selectedExtensionDescription != null) {
+            Extension selectedExtension = extensions.get(cbbExtensions.getSelectionIndex());
+            testSuiteClone.setFilteringPlugin(selectedExtension.getPluginId());
+            testSuiteClone.setFilteringExtension(selectedExtension.getExtensionId());
+        }
     }
 
     public void afterSaving() {
@@ -387,6 +393,8 @@ public class FilteringTestCaseView {
                 ? (DynamicQueryingTestSuiteDescription) extensions.get(selectedIndex).getImplementationClass() : null;
 
         btnPreview.setEnabled(selectedExtensionDescription != null);
+        
+        parentPart.setDirty(true);
     }
 
     private void showPreviewTestCases() {
