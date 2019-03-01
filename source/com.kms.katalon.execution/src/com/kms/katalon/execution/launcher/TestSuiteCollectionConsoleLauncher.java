@@ -75,6 +75,14 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             tsExecutedEntity.setRerunSetting((DefaultRerunSetting) executedEntity.getRunnable());
             tsExecutedEntity.setReportLocation(executedEntity.getReportLocationForChildren(subLauncher.getId()));
             tsExecutedEntity.setEmailConfig(executedEntity.getEmailConfig(testSuiteCollection.getProject()));
+
+            try {
+                tsExecutedEntity.prepareTestCases();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
             if (tsExecutedEntity.getTotalTestCases() == 0) {
                 throw new ExecutionException(ExecutionMessageConstants.LAU_MESSAGE_EMPTY_TEST_SUITE);
             }

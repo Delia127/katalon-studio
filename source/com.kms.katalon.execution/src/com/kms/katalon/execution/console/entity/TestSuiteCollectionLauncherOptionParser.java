@@ -62,6 +62,12 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
+        for (ConsoleOption<?> overridingOption : overridingOptions) {
+            if (overridingOption.getOption().equals(consoleOption.getOption())) {
+                overridingOption.setValue(argumentValue);
+                return;
+            }
+        }
         super.setArgumentValue(consoleOption, argumentValue);
         if (consoleOption == testSuiteCollectionOption) {
             consoleOption.setValue(argumentValue);
