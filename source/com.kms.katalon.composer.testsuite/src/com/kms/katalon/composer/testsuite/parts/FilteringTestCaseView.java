@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -29,11 +30,11 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -41,6 +42,7 @@ import com.katalon.platform.api.Extension;
 import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.extension.DynamicQueryingTestSuiteDescription;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
@@ -70,7 +72,7 @@ public class FilteringTestCaseView {
 
     private Button btnPreview;
 
-    private Text txtSearch;
+    private StyledText txtSearch;
 
     private Button btnViewHistory;
 
@@ -90,6 +92,8 @@ public class FilteringTestCaseView {
     private DynamicQueryingTestSuiteDescription selectedExtensionDescription;
 
     private List<Extension> extensions;
+
+    private Link lnkFindOnStore;
 
     public FilteringTestCaseView(ParentTestSuiteCompositePart parentPart, FilteringTestSuitePart part) {
         this.parentPart = parentPart;
@@ -124,7 +128,7 @@ public class FilteringTestCaseView {
 
         Composite cpsTestCaseSummary = new Composite(cpsTestCasePreview, SWT.NONE);
         cpsTestCaseSummary.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
-        cpsTestCaseSummary.setLayout(new FillLayout());
+        cpsTestCaseSummary.setLayout(new GridLayout());
 
         lblSummary = new Label(cpsTestCaseSummary, SWT.NONE);
 
@@ -181,7 +185,7 @@ public class FilteringTestCaseView {
         ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
         ToolBar toolbar = toolBarManager.createControl(parent);
         ToolItem tltmAdvancedSearchGuide = new ToolItem(toolbar, SWT.NONE);
-        tltmAdvancedSearchGuide.setText("Advanced Search Guide");
+        tltmAdvancedSearchGuide.setText("Help");
         tltmAdvancedSearchGuide.setImage(ImageManager.getImage(IImageKeys.HELP_16));
         tltmAdvancedSearchGuide.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -208,8 +212,15 @@ public class FilteringTestCaseView {
         lblFilteringPlugin.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
         lblFilteringPlugin.setText("Query Provider");
 
-        cbbExtensions = new Combo(compositeTableSearch, SWT.READ_ONLY);
-        GridData gdCbbPlugins = new GridData(SWT.LEFT, SWT.TOP, true, false);
+        Composite compositeQueryProvider = new Composite(compositeTableSearch, SWT.NONE);
+        compositeQueryProvider.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        GridLayout glCompositeQueryProvider = new GridLayout(1, false);
+        glCompositeQueryProvider.marginWidth = 0;
+        glCompositeQueryProvider.marginHeight = 0;
+        compositeQueryProvider.setLayout(glCompositeQueryProvider);
+
+        cbbExtensions = new Combo(compositeQueryProvider, SWT.READ_ONLY);
+        GridData gdCbbPlugins = new GridData(SWT.LEFT, SWT.TOP, false, false);
         gdCbbPlugins.widthHint = 500;
         gdCbbPlugins.horizontalIndent = 5;
         cbbExtensions.setLayoutData(gdCbbPlugins);
@@ -224,10 +235,14 @@ public class FilteringTestCaseView {
         glCompositeTableSearch.marginWidth = glCustomSearchComposite.marginHeight = 0;
         customSearchComposite.setLayout(glCustomSearchComposite);
 
-        txtSearch = new Text(customSearchComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+        txtSearch = new StyledText(customSearchComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
         GridData gdTxtInput = new GridData(SWT.FILL, SWT.TOP, true, false);
         gdTxtInput.heightHint = 80;
+        gdTxtInput.horizontalIndent = 5;
         txtSearch.setLayoutData(gdTxtInput);
+
+        StyledTextMessage styledTextMessage = new StyledTextMessage(txtSearch);
+        styledTextMessage.setMessage("Type a query in the text box and then select Preview");
 
         Composite buttonsComposite = new Composite(customSearchComposite, SWT.NONE);
         GridLayout glButtonsComposite = new GridLayout();
@@ -238,14 +253,15 @@ public class FilteringTestCaseView {
         btnPreview = new Button(buttonsComposite, SWT.PUSH | SWT.FLAT);
         btnPreview.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         btnPreview.setText("Preview");
+        btnPreview.setEnabled(false);
 
         btnQueryBuilder = new Button(buttonsComposite, SWT.PUSH | SWT.FLAT);
         btnQueryBuilder.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         btnQueryBuilder.setText("Query Builder");
-        
-        Label lblQueryBuilderUsage = new Label(compositeTableSearch, SWT.NONE);
-        lblQueryBuilderUsage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        lblQueryBuilderUsage.setText(ComposerTestcaseMessageConstants.LBL_QUERY_BUILDER_USAGE);
+
+        lnkFindOnStore = new Link(compositeTableSearch, SWT.NONE);
+        lnkFindOnStore.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+        lnkFindOnStore.setText("Search function is provided by plugins. Find a plugin on <a>Katalon Store</a>.");
     }
 
     public void layout() {
@@ -274,7 +290,7 @@ public class FilteringTestCaseView {
         extensions = part.getExtensionProvider().getAvailableExtensions(currentProject);
 
         if (extensions.isEmpty()) {
-            cbbExtensions.setItems("No query type available");
+            cbbExtensions.setItems("No query provider available");
             cbbExtensions.select(0);
         } else {
             List<DynamicQueryingTestSuiteDescription> extensionDescriptions = extensions.stream()
@@ -305,7 +321,6 @@ public class FilteringTestCaseView {
         txtSearch.setText(StringUtils.defaultString(testSuite.getFilteringText()));
 
         testCaseTableViewer.getTable().setVisible(false);
-        lblSummary.setText("Type a query in search box then press Preview to preview the result.");
         lblSummary.getParent().getParent().layout(true, true);
 
         showPreviewTestCases();
@@ -389,15 +404,26 @@ public class FilteringTestCaseView {
                 onCbbExtensionChangeItem();
             }
         });
+
+        lnkFindOnStore.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch("https://store.katalon.com/search?search=dynamic+execution");
+            }
+        });
     }
 
     private void onCbbExtensionChangeItem() {
+        if (extensions.isEmpty()) {
+            return;
+        }
         int selectedIndex = cbbExtensions.getSelectionIndex();
         selectedExtensionDescription = extensions.size() > 0
                 ? (DynamicQueryingTestSuiteDescription) extensions.get(selectedIndex).getImplementationClass() : null;
 
         btnPreview.setEnabled(selectedExtensionDescription != null);
-        
+
         parentPart.setDirty(true);
     }
 
@@ -408,8 +434,7 @@ public class FilteringTestCaseView {
             }
             List<TestCaseEntity> filteredTestCases = part.getExtensionProvider().getFilteredTestCases(
                     ProjectController.getInstance().getCurrentProject(),
-                    (FilteringTestSuiteEntity) parentPart.getTestSuiteClone(),
-                    selectedExtensionDescription,
+                    (FilteringTestSuiteEntity) parentPart.getTestSuiteClone(), selectedExtensionDescription,
                     txtSearch.getText());
 
             testCaseTableViewer.setInput(filteredTestCases);
