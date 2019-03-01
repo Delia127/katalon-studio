@@ -171,6 +171,59 @@ public class CustomKeywordParser {
         }
         return Collections.emptyList();
     }
+    
+    public List<Method> parsePluginKeywordsIntoAst(URLClassLoader classLoader, IFolder srcfolder)throws Exception {
+        File srcDir = srcfolder.getRawLocation().toFile();
+        File[] jarFiles = srcDir.listFiles();
+        List<Method> methods = new ArrayList<>();
+        for (File jarFile : jarFiles) {
+            methods.addAll(parsePluginKeywordJarIntoAst(classLoader, jarFile));
+        }
+        Collections.sort(methods, new Comparator<Method>() {
+
+            @Override
+            public int compare(Method methodA, Method methodB) {
+                return methodA.getName().compareToIgnoreCase(methodB.getName());
+            }
+
+        });
+        return methods;
+    }
+    
+    public List<Method> parsePluginKeywordJarIntoAst(URLClassLoader classLoader, File pluginFile) throws Exception {
+        List<Method> methods = new ArrayList<>();
+        if (pluginFile.exists() && pluginFile.getName().endsWith(".jar") && classLoader instanceof GroovyClassLoader) {
+            JarFile jar = new JarFile(pluginFile);
+            try {
+                ZipEntry jsonEntry = jar.getEntry("katalon-plugin.json");
+                
+                if (jsonEntry != null) {
+                    Reader reader = new InputStreamReader(jar.getInputStream(jsonEntry));
+                    KeywordsManifest manifest = JsonUtil.fromJson(reader, KeywordsManifest.class);
+                    
+                    List<String> keywords = manifest.getKeywords();
+                    for (String keyword : keywords) {
+                        Class clazz = classLoader.loadClass(keyword);
+                        if (clazz != null) {
+                            for (Method method : clazz.getMethods()) {
+                                for (Annotation annotation : method.getDeclaredAnnotations()) {
+                                    if (annotation.annotationType().getName().equals(Keyword.class.getName())) {
+                                        methods.add(method);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                jar.close();
+            }
+        }
+        return methods;
+    }
 
     public void parseCustomKeywordFile(IFile file, IFolder libFolder, boolean generateLibFile) throws Exception {
         try {
