@@ -2,12 +2,8 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -15,6 +11,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.kms.katalon.controller.constants.ControllerMessageConstants;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -37,13 +34,17 @@ public class GlobalVariableController extends EntityController {
         return (GlobalVariableController) _instance;
     }
 
-    public List<GlobalVariableEntity> getAllGlobalVariables(ProjectEntity project) throws Exception {
-        return getDataProviderSetting().getGlobalVariableDataProvider()
-                .getAll(project)
-                .stream()
-                .map(p -> p.getGlobalVariableEntities())
-                .flatMap(v -> v.stream())
-                .collect(Collectors.toList());
+    public List<GlobalVariableEntity> getAllGlobalVariables(ProjectEntity project) throws ControllerException {
+        try {
+            return getDataProviderSetting().getGlobalVariableDataProvider()
+                    .getAll(project)
+                    .stream()
+                    .map(p -> p.getGlobalVariableEntities())
+                    .flatMap(v -> v.stream())
+                    .collect(Collectors.toList());
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
     public String[] getAllGlobalVariableNames(ProjectEntity project) throws Exception {
@@ -88,15 +89,25 @@ public class GlobalVariableController extends EntityController {
         getDataProviderSetting().getGlobalVariableDataProvider().delete(profile);
     }
 
-    public ExecutionProfileEntity getExecutionProfile(String name, ProjectEntity project) throws DALException {
-        return getDataProviderSetting().getGlobalVariableDataProvider().get(name, project);
+    public ExecutionProfileEntity getExecutionProfile(String name, ProjectEntity project) throws ControllerException {
+        try {
+            return getDataProviderSetting().getGlobalVariableDataProvider().get(name, project);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
-    public ExecutionProfileEntity newExecutionProfile(String newName, ProjectEntity project) throws Exception {
-        ExecutionProfileEntity newProfile = getDataProviderSetting().getGlobalVariableDataProvider().newProfile(newName,
-                project);
-        generateGlobalVariableLibFile(project, null);
-        return newProfile;
+    public ExecutionProfileEntity newExecutionProfile(String newName, ProjectEntity project) throws ControllerException {
+        ExecutionProfileEntity newProfile;
+        try {
+            newProfile = getDataProviderSetting().getGlobalVariableDataProvider().newProfile(newName,
+                    project);
+
+            generateGlobalVariableLibFile(project, null);
+            return newProfile;
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public ExecutionProfileEntity renameExecutionProfile(String newName, ExecutionProfileEntity profile)
@@ -117,23 +128,28 @@ public class GlobalVariableController extends EntityController {
         return getDataProviderSetting().getGlobalVariableDataProvider().get(name, project);
     }
 
-    public List<ExecutionProfileEntity> getAllGlobalVariableCollections(ProjectEntity project) throws DALException {
-        List<ExecutionProfileEntity> profiles = getDataProviderSetting().getGlobalVariableDataProvider()
-                .getAll(project);
-        profiles.sort(new Comparator<ExecutionProfileEntity>() {
+    public List<ExecutionProfileEntity> getAllGlobalVariableCollections(ProjectEntity project) throws ControllerException {
+        try {
+            List<ExecutionProfileEntity> profiles = getDataProviderSetting().getGlobalVariableDataProvider()
+                    .getAll(project);
 
-            @Override
-            public int compare(ExecutionProfileEntity profileA, ExecutionProfileEntity profileB) {
-                if (profileA.isDefaultProfile()) {
-                    return -1;
+            profiles.sort(new Comparator<ExecutionProfileEntity>() {
+
+                @Override
+                public int compare(ExecutionProfileEntity profileA, ExecutionProfileEntity profileB) {
+                    if (profileA.isDefaultProfile()) {
+                        return -1;
+                    }
+                    if (profileB.isDefaultProfile()) {
+                        return 1;
+                    }
+                    return profileA.getName().compareTo(profileB.getName());
                 }
-                if (profileB.isDefaultProfile()) {
-                    return 1;
-                }
-                return profileA.getName().compareTo(profileB.getName());
-            }
-        });
-        return profiles;
+            });
+            return profiles;
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
     
     public ExecutionProfileEntity toExecutionProfileEntity(String xmlString) throws DALException{

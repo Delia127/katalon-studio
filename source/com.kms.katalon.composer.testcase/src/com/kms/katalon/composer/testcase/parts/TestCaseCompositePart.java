@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject; 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
@@ -81,8 +81,8 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.providers.TestObjectScriptDropListener;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
-import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
+import com.kms.katalon.composer.util.groovy.editor;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -104,7 +104,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     private static final int CHILD_TEST_CASE_MANUAL_PART_INDEX = 0;
 
     private static final int CHILD_TEST_CASE_VARIABLE_PART_INDEX = 2;
-    
+
     private static final int CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX = 3;
 
     private static final int CHILD_TEST_CASE_INTEGRATION_PART_INDEX = 4;
@@ -116,7 +116,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     public static final String MANUAL_TAB_TITLE = StringConstants.PA_TAB_MANUAL;
 
     public static final String VARIABLE_TAB_TITLE = StringConstants.PA_TAB_VARIABLE;
-    
+
     public static final String VARIABLE_EDITOR_TAB_TITLE = StringConstants.PA_TAB_VARIABLE_EDITOR;
 
     public static final String INTEGRATION_TAB_TITLE = StringConstants.PA_TAB_INTEGRATION;
@@ -152,7 +152,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     private TestCasePart childTestCasePart;
 
     private TestCaseVariablePart childTestCaseVariablesPart;
-    
+
     private TestCaseVariableEditorPart childTestCaseVariableEditorPart;
 
     private CompatibilityEditor childTestCaseEditorPart;
@@ -183,9 +183,9 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     private boolean disposed;
 
-	private boolean invalidScheme;
-	
-	private boolean variableTab = true;
+    private boolean invalidScheme;
+
+    private boolean variableTab = true;
 
     public boolean isInitialized() {
         return isInitialized;
@@ -213,14 +213,14 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 if (partObject instanceof TestCaseVariablePart) {
                     return DocumentationMessageConstants.TEST_CASE_VARIABLE;
                 }
-                
+
                 if (partObject instanceof TestCaseVariableEditorPart) {
-                	return DocumentationMessageConstants.TEST_CASE_VARIABLE_EDITOR;
+                    return DocumentationMessageConstants.TEST_CASE_VARIABLE_EDITOR;
                 }
                 if (partObject instanceof CompatibilityEditor) {
                     return DocumentationMessageConstants.TEST_CASE_SCRIPT;
                 }
-                
+
                 if (partObject instanceof TestCaseIntegrationPart) {
                     return ((TestCaseIntegrationPart) partObject).getDocumentationUrl();
                 }
@@ -276,9 +276,9 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         childTestCaseVariablesPart = (TestCaseVariablePart) partObject;
                         continue;
                     }
-                    
+
                     if (partObject instanceof TestCaseVariableEditorPart) {
-                    	childTestCaseVariableEditorPart = (TestCaseVariableEditorPart) partObject;
+                        childTestCaseVariableEditorPart = (TestCaseVariableEditorPart) partObject;
                         continue;
                     }
 
@@ -316,7 +316,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                     variablePartTab.setText(VARIABLE_TAB_TITLE);
                     variablePartTab.setImage(ImageConstants.IMG_16_VARIABLE);
                     variablePartTab.setShowClose(false);
-                    
+
                     CTabItem variableEditorPartTab = tabFolder.getItem(CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX);
                     variableEditorPartTab.setText(VARIABLE_EDITOR_TAB_TITLE);
                     variableEditorPartTab.setImage(ImageConstants.IMG_16_SCRIPT);
@@ -354,20 +354,20 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
-                        	if(dirty.isDirty())
-                        	        updateVariableManualView();
+                            if (dirty.isDirty())
+                                updateVariableManualView();
                             Trackings.trackOpenObject("testCaseVariable");
                             variableTab = true;
                             return;
                         }
-                        
-                        if(tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX){
-                            if(dirty.isDirty())
-                                updateVariableScriptView();                        	
-                        	variableTab = false;
-                        	return;
+
+                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX) {
+                            if (dirty.isDirty())
+                                updateVariableScriptView();
+                            variableTab = false;
+                            return;
                         }
-                        
+
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_PROPERTIES_PART_INDEX) {
                             if (isScriptChanged || scriptNode == null) {
                                 setScriptContentToManual();
@@ -392,13 +392,13 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             isInitialized = true;
         }
     }
-    
 
     private void updateVariableManualView() {
         try {
-            childTestCaseVariablesPart.setVariablesFromScriptContent(childTestCaseVariableEditorPart.getScriptContent());
+            childTestCaseVariablesPart
+                    .setVariablesFromScriptContent(childTestCaseVariableEditorPart.getScriptContent());
             setInvalidScheme(false);
-        } catch (Exception e) {    
+        } catch (Exception e) {
             setInvalidScheme(true);
         }
     }
@@ -407,7 +407,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         try {
             childTestCaseVariableEditorPart.setScriptContentFrom(childTestCaseVariablesPart.getVariableEntityWrapper());
             setInvalidScheme(false);
-        } catch (Exception e) {                               
+        } catch (Exception e) {
             setInvalidScheme(true);
         }
     }
@@ -458,7 +458,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     }
 
     public void changeOriginalTestCase(TestCaseEntity testCase) {
-        originalTestCase = testCase; 
+        originalTestCase = testCase;
         cloneTestCase();
     }
 
@@ -589,10 +589,11 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     public MPart getChildVariablesPart() {
         return childTestCaseVariablesPart.getMPart();
     }
-    
-    public MPart getChildVariableEditorPart(){
-    	return childTestCaseVariableEditorPart.getMPart();
+
+    public MPart getChildVariableEditorPart() {
+        return childTestCaseVariableEditorPart.getMPart();
     }
+
     public MPart getChildIntegrationPart() {
         return childTestCaseIntegrationPart.getMPart();
     }
@@ -608,22 +609,22 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     public TestCaseEntity getOriginalTestCase() {
         return originalTestCase;
     }
-    
-    private void setInvalidScheme(boolean value){
+
+    private void setInvalidScheme(boolean value) {
         invalidScheme = value;
     }
 
     @Override
     public void save() throws Exception {
         // If VariableView is switched from VariableEditorView
-        // then they are already in sync. If user only interact on VariableView so far 
+        // then they are already in sync. If user only interact on VariableView so far
         // then update VariableEditorView (vice versa)
-        if(variableTab == true){
+        if (variableTab == true) {
             updateVariableScriptView();
-        }else{
+        } else {
             updateVariableManualView();
         }
-        
+
         if (invalidScheme == true) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
@@ -670,6 +671,9 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             variableList.addAll(childTestCaseVariablesPart.getVariablesList());
             propertiesPart.preSave();
 
+            childTestCaseIntegrationPart.getEditingIntegrated().entrySet().forEach(entry -> {
+                testCase.updateIntegratedEntity(entry.getValue());
+            });
             // back-up
             String oldPk = originalTestCase.getId();
             String oldIdForDisplay = originalTestCase.getIdForDisplay();
@@ -706,6 +710,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
                 originalTestCase.setScriptContents(new byte[0]);
                 temp.setScriptContents(new byte[0]);
+                
+                childTestCaseIntegrationPart.onSaveSuccess(originalTestCase);
                 return true;
             } catch (Exception e) {
                 // revert
@@ -713,6 +719,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 originalTestCase.setScriptContents(temp.getScriptContents());
 
                 LoggerSingleton.logError(e);
+                
+                childTestCaseIntegrationPart.onSaveFailure(e);
                 MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
                         e.getMessage());
             }
@@ -751,9 +759,9 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     private boolean isAnyChildDirty() {
         return childTestCasePart.getMPart().isDirty() || childTestCaseEditorPart.getModel().isDirty()
-                || childTestCaseVariablesPart.getMPart().isDirty() || childTestCaseVariableEditorPart.getMPart().isDirty()
-                || childTestCaseIntegrationPart.getMPart().isDirty()
-                || propertiesPart.isDirty();
+                || childTestCaseVariablesPart.getMPart().isDirty()
+                || childTestCaseVariableEditorPart.getMPart().isDirty()
+                || childTestCaseIntegrationPart.getMPart().isDirty() || propertiesPart.isDirty();
     }
 
     @Persist
@@ -905,16 +913,15 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 childTestCaseVariablesPart.getMPart()
                         .setElementId(newCompositePartId + IdConstants.TEST_CASE_VARIABLES_PART_ID_SUFFIX);
                 getPropertiesPart().setElementId(newCompositePartId + IdConstants.TEST_CASE_PROPERTIES_PART_ID_SUFFIX);
-                
+
                 childTestCaseVariableEditorPart.getMPart()
-                .setElementId(newCompositePartId + IdConstants.TEST_CASE_VARIABLE_EDITOR_PART_ID_SUFFIX);
-                
+                        .setElementId(newCompositePartId + IdConstants.TEST_CASE_VARIABLE_EDITOR_PART_ID_SUFFIX);
+
                 partService.hidePart(getChildCompatibilityPart(), true);
                 String testCaseEditorId = newCompositePartId + IdConstants.TEST_CASE_EDITOR_PART_ID_SUFFIX;
                 MPart editorPart = editor.createTestCaseEditorPart(
-                        ResourcesPlugin.getWorkspace()
-                                .getRoot()
-                                .getFile(GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(testCase).getPath()),
+                        ResourcesPlugin.getWorkspace().getRoot().getFile(
+                                GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(testCase).getPath()),
                         partStack, testCaseEditorId, partService, CHILD_TEST_CASE_EDITOR_PART_INDEX);
                 partService.activate(editorPart);
                 initComponent();
@@ -933,7 +940,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             setScriptContentToManual();
         }
         childTestCasePart.getTreeTableInput().reloadTestCaseVariables(childTestCasePart.getVariables());
-        childTestCaseIntegrationPart.loadInput();
+        childTestCaseIntegrationPart.reloadInput();
 
         updateDirty();
         setDirty(isAnyChildDirty);
@@ -1062,11 +1069,16 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
     }
 
-	public void setInvalidSchemeDetected(boolean b) {
-		this.invalidScheme = b;
-	}
-	
-	public CTabFolder getTabFolder(){
-		return tabFolder;
-	}
+    public void setInvalidSchemeDetected(boolean b) {
+        this.invalidScheme = b;
+    }
+
+    public CTabFolder getTabFolder() {
+        return tabFolder;
+    }
+
+    @Override
+    public boolean isDirty() {
+        return compositePart.isDirty();
+    }
 }
