@@ -23,6 +23,11 @@ public class ImageProcessor {
         registerHistoryRequestImages();
         registerApiQuickStartImages();
         registerInAppSurveyImages();
+        registerWalkthroughImages();
+    }
+    
+    private void registerWalkthroughImages(){
+    	ImageManager.registerImage(IImageKeys.ERROR_16_GREY);
     }
     
     private void registerInAppSurveyImages(){
