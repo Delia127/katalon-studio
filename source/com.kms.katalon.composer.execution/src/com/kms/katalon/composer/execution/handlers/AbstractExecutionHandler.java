@@ -74,6 +74,7 @@ import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.FeatureFileExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.exception.ExtensionRequiredException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
@@ -413,6 +414,10 @@ public abstract class AbstractExecutionHandler {
 
                 } catch (JobCancelException e) {
                     return Status.CANCEL_STATUS;
+                } catch (ExtensionRequiredException e) {
+                    return new Status(Status.WARNING,
+                            FrameworkUtil.getBundle(AbstractExecutionHandler.class).getSymbolicName(),
+                            e.getMessage());
                 } catch (PlatformException e) {
                     return new Status(Status.WARNING,
                             FrameworkUtil.getBundle(AbstractExecutionHandler.class).getSymbolicName(),
@@ -435,10 +440,15 @@ public abstract class AbstractExecutionHandler {
                 super.done(event);
                 if (event.getResult() != null && event.getResult().matches(Status.WARNING)) {
                     sync.asyncExec(() -> {
-                        MultiStatusErrorDialog.showErrorDialog(
-                                StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_SUITE,
-                                event.getResult().getMessage(),
-                                ExceptionsUtil.getStackTraceForThrowable(event.getResult().getException()));
+                        if (event.getResult().getException() == null) {
+                            MessageDialog.openInformation(null, StringConstants.WARN_TITLE,
+                                    event.getResult().getMessage());
+                        } else {
+                            MultiStatusErrorDialog.showErrorDialog(
+                                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_SUITE,
+                                    event.getResult().getMessage(),
+                                    ExceptionsUtil.getStackTraceForThrowable(event.getResult().getException()));
+                        }
                     });
                 }
 

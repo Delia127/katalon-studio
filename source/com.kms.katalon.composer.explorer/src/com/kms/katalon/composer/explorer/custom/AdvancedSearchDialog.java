@@ -106,7 +106,7 @@ public class AdvancedSearchDialog extends Dialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(DIALOG_TITLE);
+        newShell.setText("Query Builder");
         newShell.setImage(ImageConstants.IMG_16_ADVANCED_SEARCH);
     }
 
