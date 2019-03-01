@@ -134,24 +134,24 @@ public class LauncherManager {
 
     // Let all the launcher run parallel for now
     protected boolean isLauncherReadyToRun(ILauncher launcher) {
-        // if (runningLaunchers.size() > 0)
-        // return false;
-
-        // for (AbstractLauncher runningLauncher : runningLaunchers) {
-        // String driverType = runningLauncher.getRunConfiguration().getPropertyMap()
-        // .get(DriverFactory.EXECUTED_BROWSER_PROPERTY);
-        // if (driverType == null) {
-        // if (runningLauncher.getRunConfiguration().getPropertyMap()
-        // .get(MobileDriverFactory.EXECUTED_DEVICE_NAME) != null
-        // && !runningLauncher.getRunConfiguration().getPropertyMap()
-        // .get(MobileDriverFactory.EXECUTED_DEVICE_NAME).equals("")) {
-        // return false;
-        // }
-        // } else if (driverType.equals(launcher.getRunConfiguration().getPropertyMap()
-        // .get(DriverFactory.EXECUTED_BROWSER_PROPERTY))) {
-        // return false;
-        // }
-        // }
+//        if (runningLaunchers.size() > 0)
+//            return false;
+//        
+//        for (AbstractLauncher runningLauncher : runningLaunchers) {
+//            String driverType = runningLauncher.getRunConfiguration().getPropertyMap()
+//                    .get(DriverFactory.EXECUTED_BROWSER_PROPERTY);
+//            if (driverType == null) {
+//                if (runningLauncher.getRunConfiguration().getPropertyMap()
+//                            .get(MobileDriverFactory.EXECUTED_DEVICE_NAME) != null
+//                        && !runningLauncher.getRunConfiguration().getPropertyMap()
+//                            .get(MobileDriverFactory.EXECUTED_DEVICE_NAME).equals("")) {
+//                    return false;
+//                }
+//            } else if (driverType.equals(launcher.getRunConfiguration().getPropertyMap()
+//                        .get(DriverFactory.EXECUTED_BROWSER_PROPERTY))) {
+//                return false;
+//            }
+//        }
         return true;
     }
 
