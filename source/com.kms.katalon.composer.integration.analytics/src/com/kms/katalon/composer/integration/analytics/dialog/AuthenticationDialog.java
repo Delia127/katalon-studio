@@ -29,7 +29,7 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
-import com.kms.katalon.composer.integration.analytics.providers.AnalyticsProvider;
+import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
@@ -230,7 +230,7 @@ public class AuthenticationDialog extends Dialog {
         String serverUrlText = serverUrl.getText();
         updateDataStore(emailText, passwordText);
         setReturnCode(CONNECT_ID);
-        AnalyticsTokenInfo tokenInfo = AnalyticsProvider.getToken(serverUrlText, emailText, passwordText, analyticsSettingStore);
+        AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrlText, emailText, passwordText, analyticsSettingStore);
         setTokenInfo(tokenInfo);
         if (tokenInfo != null) {
             closeDialog();

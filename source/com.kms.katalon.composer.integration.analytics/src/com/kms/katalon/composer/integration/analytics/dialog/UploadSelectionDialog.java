@@ -24,7 +24,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
-import com.kms.katalon.composer.integration.analytics.providers.AnalyticsProvider;
+import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -89,7 +89,7 @@ public class UploadSelectionDialog extends Dialog {
         cbbProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         btnCreate = new Button(projectComposite, SWT.NONE);
         btnCreate.setText("New Project");
-        if (teams.get(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams)).getRole()
+        if (teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)).getRole()
                 .equals("USER")) {
             btnCreate.setEnabled(false);
         }
@@ -128,7 +128,7 @@ public class UploadSelectionDialog extends Dialog {
                 AnalyticsTeam team = null;
 
                 if (teams != null && teams.size() > 0) {
-                    team = teams.get(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
                 }
 
                 NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(),
@@ -142,10 +142,10 @@ public class UploadSelectionDialog extends Dialog {
                             if (projects == null) {
                                 return;
                             }
-                            cbbProjects.setItems(AnalyticsProvider.getProjectNames(projects)
+                            cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects)
                                     .toArray(new String[projects.size()]));
                             cbbProjects.select(
-                                    AnalyticsProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
+                                    AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
                         } catch (IOException ex) {
                             LoggerSingleton.logError(ex);
                             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
@@ -176,7 +176,7 @@ public class UploadSelectionDialog extends Dialog {
                 }
                 try {
                     analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
-                    AnalyticsTeam team = teams.get(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    AnalyticsTeam team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
 
                     HashMap<String, String> info = null;
                     try {
@@ -188,8 +188,8 @@ public class UploadSelectionDialog extends Dialog {
                     String serverUrl = info.get("serverUrl");
                     String email = info.get("email");
                     String password = info.get("password");
-                    AnalyticsTokenInfo tokenInfo = AnalyticsProvider.getToken(serverUrl, email, password, analyticsSettingStore);
-                    projects = AnalyticsProvider.getProjects(serverUrl, email, password, team, tokenInfo,
+                    AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, team, tokenInfo,
                             new ProgressMonitorDialog(getShell()));
                     setProjectsBasedOnTeam(teams, projects);
                 } catch (IOException ex) {
@@ -203,8 +203,8 @@ public class UploadSelectionDialog extends Dialog {
     private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects) {
         
         if (projects != null && !projects.isEmpty()) {
-            cbbProjects.setItems(AnalyticsProvider.getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(AnalyticsProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
+            cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
         }
     }
 
@@ -223,8 +223,8 @@ public class UploadSelectionDialog extends Dialog {
 
     private void fillData() {
         try {
-            cbbTeams.setItems(AnalyticsProvider.getTeamNames(teams).toArray(new String[teams.size()]));
-            cbbTeams.select(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+            cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+            cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
             setProjectsBasedOnTeam(teams, projects);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -251,7 +251,7 @@ public class UploadSelectionDialog extends Dialog {
         try {
             AnalyticsTeam team = null;
             if (teams != null && teams.size() > 0) {
-                team = teams.get(AnalyticsProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+                team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
             }
             analyticsSettingStore.setTeam(team);
             analyticsSettingStore.setProject(

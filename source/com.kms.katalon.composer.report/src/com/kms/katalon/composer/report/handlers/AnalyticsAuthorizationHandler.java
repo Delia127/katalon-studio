@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.report.provider;
+package com.kms.katalon.composer.report.handlers;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +28,7 @@ import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
-public class AnalyticsProvider {
+public class AnalyticsAuthorizationHandler {
     
     public static AnalyticsTokenInfo getToken(String serverUrl, String email, String password, AnalyticsSettingStore settingStore) {
         try {

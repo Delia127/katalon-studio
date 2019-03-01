@@ -96,11 +96,11 @@ import com.kms.katalon.composer.integration.analytics.dialog.UploadSelectionDial
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.composer.report.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
-import com.kms.katalon.composer.report.provider.AnalyticsProvider;
 import com.kms.katalon.composer.report.provider.HyperlinkTestCaseVideoLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
@@ -817,7 +817,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         Boolean authenticationDialogOpened = Boolean.valueOf(credentialInfo.get("authenticationDialogOpened"));
 
         if (!StringUtils.isEmpty(analyticsPassword) && authenticationDialogOpened == false) {
-            tokenInfo = AnalyticsProvider.getToken(serverUrl, analyticsEmail, analyticsPassword, analyticsSettingStore);
+            tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, analyticsEmail, analyticsPassword, analyticsSettingStore);
         }
 
         // in case the stored credential info is wrong, token is null => prompt
@@ -832,10 +832,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             authenticationDialogOpened = true;
         }
 
-        teams = AnalyticsProvider.getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo,
+        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo,
                 new ProgressMonitorDialog(shell));
         teamCount = teams.size();
-        projects = AnalyticsProvider.getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
+        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
                 tokenInfo, new ProgressMonitorDialog(shell));
         projectCount = projects.size();
         UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams, projects);
@@ -852,14 +852,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 }
             } else if (projectCount == 0 && teamCount == 1 && authenticationDialogOpened) {
                 // create default project and upload
-                AnalyticsProvider.createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo, new ProgressMonitorDialog(shell));
+                AnalyticsAuthorizationHandler.createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo, new ProgressMonitorDialog(shell));
                 analyticsSettingStore.enableIntegration(true);
                 uploadToKA();
             } else {
                 AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, false);
                 int returnCode = authenticationDialog.open();
                 if (returnCode == AuthenticationDialog.CONNECT_ID) {
-                    AnalyticsProvider.createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo, new ProgressMonitorDialog(shell));
+                    AnalyticsAuthorizationHandler.createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo, new ProgressMonitorDialog(shell));
                     analyticsSettingStore.enableIntegration(true);
                     uploadToKA();
                 } else {
