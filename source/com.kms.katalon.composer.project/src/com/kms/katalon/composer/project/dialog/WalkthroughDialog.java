@@ -124,7 +124,7 @@ public class WalkthroughDialog extends Dialog {
 
 				CLabel checkBox = new CLabel(walkthroughItemContainer, SWT.NONE);
 				checkBox.setText(item.getPrimaryInstruction());
-				checkBox.setImage(ImageManager.getImage(IImageKeys.ERROR_16));
+				checkBox.setImage(ImageManager.getImage(IImageKeys.ERROR_16_GREY));
 
 				EventBrokerSingleton.getInstance().getEventBroker().subscribe(item.getRegisteredEvent(),
 						new EventHandler() {
