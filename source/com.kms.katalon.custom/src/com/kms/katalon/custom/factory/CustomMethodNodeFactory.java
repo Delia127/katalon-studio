@@ -20,6 +20,8 @@ public class CustomMethodNodeFactory {
      */
     private Map<String, List<MethodNode>> methodNodesMap;
     
+    private Map<String, List<String>> methodParameterNamesMap;
+    
     /**
      * key: file path, value: class name;
      */
@@ -30,6 +32,7 @@ public class CustomMethodNodeFactory {
     private CustomMethodNodeFactory() {
         methodNodesMap = new HashMap<String, List<MethodNode>>();
         classPathMap = new HashMap<>();
+        methodParameterNamesMap = new HashMap<>();
     }
 
     public static CustomMethodNodeFactory getInstance() {
@@ -48,6 +51,25 @@ public class CustomMethodNodeFactory {
             for (AnnotationNode annotationNode : method.getAnnotations()) {
                 if (isKeywordAnnotationNode(annotationNode)) {
                     customKeywordMethods.add(method);
+                    break;
+                }
+            }
+        }
+        methodNodesMap.put(className, customKeywordMethods);
+        addClassToClassPath(className, filePath);
+    }
+    
+    public void addPluginMethodNodes(String className, List<MethodNode> methodNodes, String filePath, Map<String, List<String>> parameterMaps) {
+        List<MethodNode> customKeywordMethods = new ArrayList<MethodNode>();
+        for (MethodNode method : methodNodes) {
+            if (method.getAnnotations() == null) {
+                continue;
+            }
+            for (AnnotationNode annotationNode : method.getAnnotations()) {
+                if (isKeywordAnnotationNode(annotationNode)) {
+                    customKeywordMethods.add(method);
+                    List<String> parameterNames = parameterMaps.get(method.getName());
+                    this.methodParameterNamesMap.put(className + '#' + method.getName(), parameterNames);
                     break;
                 }
             }
@@ -87,13 +109,29 @@ public class CustomMethodNodeFactory {
     public void reset() {
         methodNodesMap.clear();
         classPathMap.clear();
+        methodParameterNamesMap.clear();
     }
     
     public boolean isCustomKeywordClass(String className) {
         return StringUtils.isNotEmpty(className) && methodNodesMap.containsKey(className);
     }
     
+    public boolean isCustomKeywordMethod(MethodNode method) {
+        if (method.getAnnotations() != null) {
+            for (AnnotationNode annotationNode : method.getAnnotations()) {
+                if (isKeywordAnnotationNode(annotationNode)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     public Map<String, List<MethodNode>> getMethodNodesMap() {
         return methodNodesMap;
+    }
+    
+    public Map<String, List<String>> getMethodParameterNamesMap() {
+        return methodParameterNamesMap;
     }
 }

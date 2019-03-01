@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.codehaus.groovy.eclipse.core.model.GroovyRuntime;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.internal.resources.ModelObjectWriter;
@@ -47,6 +48,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.ClasspathAttribute;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.util.ManifestElement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -96,6 +98,8 @@ public class GroovyUtil {
     private static final String KEYWORD_LIB_OUTPUT_FOLDER_NAME = "lib";
 
     private static final String DRIVERS_FOLDER_NAME = "Drivers";
+    
+    private static final String PLUGINS_FOLDER_NAME = "Plugins";
 
     private static final String JDT_LAUNCHING = "org.eclipse.jdt.launching.JRE_CONTAINER";
 
@@ -223,6 +227,11 @@ public class GroovyUtil {
         if (!driversFolder.exists()) {
             driversFolder.create(true, true, null);
         }
+        
+        IFolder pluginsFolder = groovyProject.getFolder(PLUGINS_FOLDER_NAME);
+        if (!pluginsFolder.exists()) {
+            pluginsFolder.create(true, true, null);
+        }
 
         IFolder outputParentFolder = groovyProject.getFolder(OUTPUT_FOLDER_NAME);
         if (!outputParentFolder.exists()) {
@@ -318,7 +327,11 @@ public class GroovyUtil {
 
         // Add class path for external jars
         File driversDir = driversFolder.getRawLocation().toFile();
-        for (File jarFile : driversDir.listFiles()) {
+        File pluginsDir = pluginsFolder.getRawLocation().toFile();
+        
+        File[] jarFiles = ArrayUtils.addAll(driversDir.listFiles(), pluginsDir.listFiles());
+        
+        for (File jarFile : jarFiles) {
             IClasspathEntry oldEntry = null;
             if (jarFile.isFile() && jarFile.getName().endsWith(".jar")) {
                 for (IClasspathEntry e : javaProject.getRawClasspath()) {
@@ -956,5 +969,16 @@ public class GroovyUtil {
                 new FileInfoMatcherDescription(RESOURCE_REGEX_FILTER,
                         RESOURCE_FILE_NAME_REGEX),
                 IResource.NONE, new NullProgressMonitor());
+    }
+    
+    public static URLClassLoader getProjectClasLoader(ProjectEntity projectEntity)
+            throws MalformedURLException, CoreException {
+        IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
+        return GroovyUtil.getProjectClasLoader(project, JavaRuntime.computeDefaultRuntimeClassPath(project));
+    }
+    
+    public static IFolder getPluginsFolder(ProjectEntity project) {
+        IProject groovyProject = getGroovyProject(project);
+        return groovyProject.getFolder(PLUGINS_FOLDER_NAME);
     }
 }
