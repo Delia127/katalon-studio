@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Ansi Console
 Bundle-SymbolicName: com.kms.katalon.ansiconsole;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: mnita.ansiconsole.AnsiConsoleActivator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui.console,
@@ -15,5 +14,4 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.ansiconsole.listeners,
- mnita.ansiconsole.participants
+Export-Package: com.kms.katalon.ansiconsole.listeners

@@ -22,8 +22,6 @@ import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.logging.RecordingOutputStreamHandler.OutputType;
 import com.kms.katalon.execution.logging.RecordingOutputStreamHandler.RecordedOutputLine;
 
-import mnita.ansiconsole.participants.AnsiConsoleStyleListener;
-
 public class RecordedLogView {
     private StyledText txtVerificationLog;
     private Label lblVerificationResultStatus;
@@ -40,27 +38,26 @@ public class RecordedLogView {
         glResultStatus.marginWidth = 0;
         glResultStatus.marginHeight = 0;
         resultStatusComposite.setLayout(glResultStatus);
-        
+
         Label lblVerificationResult = new Label(resultStatusComposite, SWT.NONE);
         lblVerificationResult.setText("Status");
-        
+
         lblVerificationResultStatus = new Label(resultStatusComposite, SWT.NONE);
         lblVerificationResultStatus.setForeground(ColorUtil.getTextWhiteColor());
-        
+
         txtVerificationLog = new StyledText(logView, SWT.READ_ONLY| SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
         txtVerificationLog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         txtVerificationLog.setFont(JFaceResources.getTextFont());
         txtVerificationLog.setBackground(ColorUtil.getWhiteBackgroundColor());
-        txtVerificationLog.addLineStyleListener(new AnsiConsoleStyleListener());
-        
+
         registerEventListeners();
-        
+
         return logView;
     }
-    
+
     private void registerEventListeners() {
         eventHandler = new EventServiceAdapter() {
-            
+
             @Override
             public void handleEvent(Event event) {
                 switch (event.getTopic()) {
@@ -113,9 +110,9 @@ public class RecordedLogView {
         eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_EXECUTION_FINISHED, eventHandler);
         eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_START_EXECUTION, eventHandler);
         eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_STOP_EXECUTION, eventHandler);
-        
+
         resultStatusComposite.addDisposeListener(new DisposeListener() {
-            
+
             @Override
             public void widgetDisposed(DisposeEvent e) {
                 eventBroker.unsubscribe(eventHandler);
@@ -140,6 +137,7 @@ public class RecordedLogView {
         } else if (TestStatusValue.INCOMPLETE.equals(value)) {
             return ColorUtil.getIncompleteLogColor();
         }
+        return null;
         return ColorUtil.getDefaultBackgroundColor();
     }
 }
