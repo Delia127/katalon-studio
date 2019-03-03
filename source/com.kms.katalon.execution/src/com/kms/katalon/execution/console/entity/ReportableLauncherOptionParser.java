@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
@@ -35,14 +36,29 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
         getContributors().forEach(contributor -> allOptions.addAll(
                 contributor.getConsoleOptionList()));
         allOptions.addAll(overridingOptions);
+        if (overridingOptions.isEmpty()) {
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+            if (currentProject != null) {
+                overridingOptions = new OverridingParametersConsoleOptionContributor(currentProject).getConsoleOptionList();
+                allOptions.addAll(overridingOptions);
+            }
+        }
         return allOptions;
     }
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-        for (ConsoleOptionContributor contributor : getContributors()) {
-            if (contributor.getConsoleOptionList().contains(consoleOption)) {
-                contributor.setArgumentValue(consoleOption, argumentValue);
+        if (consoleOption.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX)) {
+            for (ConsoleOption<?> option : overridingOptions) {
+                if (option.getOption().compareTo(consoleOption.getOption()) == 0) {
+                    option.setValue(argumentValue);
+                }
+            }
+        } else {
+            for (ConsoleOptionContributor contributor : getContributors()) {
+                if (contributor.getConsoleOptionList().contains(consoleOption)) {
+                    contributor.setArgumentValue(consoleOption, argumentValue);
+                }
             }
         }
     }

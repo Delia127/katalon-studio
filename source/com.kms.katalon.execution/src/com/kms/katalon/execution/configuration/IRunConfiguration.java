@@ -16,6 +16,7 @@ public interface IRunConfiguration {
     public Map<String, IDriverConnector> getDriverConnectors();
 	
 	public IExecutionSetting build(FileEntity fileEntity, IExecutedEntity entity) throws IOException, ExecutionException;
+	//public IExecutionSetting build(FileEntity fileEntity, IExecutedEntity entity,Map<String,Object>globalVariable) throws IOException, ExecutionException;
 	
 	public IHostConfiguration getHostConfiguration();
 	
