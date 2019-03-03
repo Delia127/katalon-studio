@@ -71,7 +71,7 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='cucumber.eclipse.feature.feature.jar' version='0.0.23.201901220358'>
+    <unit id='cucumber.eclipse.feature.feature.jar' version='0.0.23.201902192336'>
       <properties size='5'>
         <property name='org.eclipse.equinox.p2.name' value='Cucumber Eclipse Feature'/>
         <property name='org.eclipse.equinox.p2.description' value='Eclipse plugin for Cucumber'/>
@@ -80,15 +80,15 @@
         <property name='maven-version' value='0.0.23-SNAPSHOT'/>
       </properties>
       <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.jar' version='0.0.23.201901220358'/>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.jar' version='0.0.23.201902192336'/>
         <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-        <provided namespace='org.eclipse.update.feature' name='cucumber.eclipse.feature' version='0.0.23.201901220358'/>
+        <provided namespace='org.eclipse.update.feature' name='cucumber.eclipse.feature' version='0.0.23.201902192336'/>
       </provides>
       <filter>
         (org.eclipse.update.install.features=true)
       </filter>
       <artifacts size='1'>
-        <artifact classifier='org.eclipse.update.feature' id='cucumber.eclipse.feature' version='0.0.23.201901220358'/>
+        <artifact classifier='org.eclipse.update.feature' id='cucumber.eclipse.feature' version='0.0.23.201902192336'/>
       </artifacts>
       <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
       <touchpointData size='1'>
@@ -460,58 +460,6 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='cucumber.eclipse.editor' version='0.0.23.201901220358'>
-      <update id='cucumber.eclipse.editor' range='[0.0.0,0.0.23.201901220358)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='Cucumber Editor'/>
-        <property name='maven-groupId' value='cucumber.eclipse'/>
-        <property name='maven-artifactId' value='cucumber.eclipse.editor'/>
-        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
-      </properties>
-      <provides size='5'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.editor' version='0.0.23.201901220358'/>
-        <provided namespace='osgi.bundle' name='cucumber.eclipse.editor' version='0.0.23.201901220358'/>
-        <provided namespace='java.package' name='cucumber.eclipse.editor' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.eclipse.editor.editors' version='0.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='23'>
-        <required namespace='osgi.bundle' name='org.eclipse.ui' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.debug.core' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.launching' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.debug.ui' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.debug.ui' range='3.4.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.variables' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.views' range='3.4.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.text' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jface' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.swt' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.equinox.common' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.jdt' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.jobs' range='0.0.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='cucumber.eclipse.editor' version='0.0.23.201901220358'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-SymbolicName: cucumber.eclipse.editor;singleton:=true&#xA;Bundle-Version: 0.0.23.201901220358
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
     <unit id='org.w3c.dom.svg' version='1.1.0.v201011041433' singleton='false'>
       <update id='org.w3c.dom.svg' range='[0.0.0,1.1.0.v201011041433)' severity='0'/>
       <properties size='5'>
@@ -683,61 +631,6 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='org.eclipse.swt.cocoa.macosx.x86_64' version='3.104.2.v20160212-1350'>
-      <update id='org.eclipse.swt.cocoa.macosx.x86_64' range='[0.0.0,3.104.2.v20160212-1350)' severity='0'/>
-      <properties size='8'>
-        <property name='df_LT.fragmentName' value='Standard Widget Toolkit for Mac OS X (Cocoa)'/>
-        <property name='df_LT.providerName' value='Eclipse.org'/>
-        <property name='org.eclipse.equinox.p2.name' value='%fragmentName'/>
-        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
-        <property name='org.eclipse.equinox.p2.bundle.localization' value='fragment'/>
-        <property name='maven-groupId' value='org.eclipse.swt'/>
-        <property name='maven-artifactId' value='org.eclipse.swt.cocoa.macosx.x86_64'/>
-        <property name='maven-version' value='3.104.2-SNAPSHOT'/>
-      </properties>
-      <provides size='23'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.swt.cocoa.macosx.x86_64' version='3.104.2.v20160212-1350'/>
-        <provided namespace='osgi.bundle' name='org.eclipse.swt.cocoa.macosx.x86_64' version='3.104.2.v20160212-1350'/>
-        <provided namespace='java.package' name='org.eclipse.swt' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.accessibility' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.awt' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.browser' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.custom' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.dnd' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.events' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.graphics' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.layout' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.opengl' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.printing' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.program' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.widgets' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.image' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.theme' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.mozilla' version='0.0.0'/>
-        <provided namespace='java.package' name='org.eclipse.swt.internal.cocoa' version='0.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-        <provided namespace='osgi.fragment' name='org.eclipse.swt' version='3.104.2.v20160212-1350'/>
-        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
-      </provides>
-      <requires size='1'>
-        <required namespace='osgi.bundle' name='org.eclipse.swt' range='[3.0.0,4.0.0)'/>
-      </requires>
-      <filter>
-        (&amp;(osgi.arch=x86_64)(osgi.os=macosx)(osgi.ws=cocoa))
-      </filter>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='org.eclipse.swt.cocoa.macosx.x86_64' version='3.104.2.v20160212-1350'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-SymbolicName: org.eclipse.swt.cocoa.macosx.x86_64; singleton:=true&#xA;Bundle-Version: 3.104.2.v20160212-1350&#xA;Fragment-Host: org.eclipse.swt; bundle-version=&quot;[3.0.0,4.0.0)&quot;
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
     <unit id='org.eclipse.compare.core' version='3.5.500.v20150505-1058' singleton='false'>
       <update id='org.eclipse.compare.core' range='[0.0.0,3.5.500.v20150505-1058)' severity='0'/>
       <properties size='8'>
@@ -882,6 +775,53 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-SymbolicName: org.eclipse.core.resources; singleton:=true&#xA;Bundle-Version: 3.10.1.v20150725-1910
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='cucumber.eclipse.steps.integration' version='0.0.23.201902192336'>
+      <update id='cucumber.eclipse.steps.integration' range='[0.0.0,0.0.23.201902192336)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Cucumber Steps Integration'/>
+        <property name='maven-groupId' value='cucumber.eclipse'/>
+        <property name='maven-artifactId' value='cucumber.eclipse.steps.integration'/>
+        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
+      </properties>
+      <provides size='20'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.integration' version='0.0.23.201902192336'/>
+        <provided namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' version='0.0.23.201902192336'/>
+        <provided namespace='java.package' name='cucumber.eclipse.steps.integration' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.autocomplete' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.formatter' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.io' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.model' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.snippets' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.table' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.runtime.xstream' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.formatter' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.formatter.ansi' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.formatter.model' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.lexer' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='gherkin.util' version='0.0.0'/>
+        <provided namespace='java.package' name='io.cucumber.cucumberexpressions' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='3'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.text' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='cucumber.eclipse.steps.integration' version='0.0.23.201902192336'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: cucumber.eclipse.steps.integration;singleton:=true&#xA;Bundle-Version: 0.0.23.201902192336
           </instruction>
         </instructions>
       </touchpointData>
@@ -1153,6 +1093,65 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-SymbolicName: org.eclipse.equinox.app; singleton:=true&#xA;Bundle-Version: 1.3.300.v20150423-1356
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.eclipse.swt.win32.win32.x86_64' version='3.104.2.v20160212-1350'>
+      <update id='org.eclipse.swt.win32.win32.x86_64' range='[0.0.0,3.104.2.v20160212-1350)' severity='0'/>
+      <properties size='8'>
+        <property name='df_LT.fragmentName' value='Standard Widget Toolkit for Windows'/>
+        <property name='df_LT.providerName' value='Eclipse.org'/>
+        <property name='org.eclipse.equinox.p2.name' value='%fragmentName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+        <property name='org.eclipse.equinox.p2.bundle.localization' value='fragment'/>
+        <property name='maven-groupId' value='org.eclipse.swt'/>
+        <property name='maven-artifactId' value='org.eclipse.swt.win32.win32.x86_64'/>
+        <property name='maven-version' value='3.104.2-SNAPSHOT'/>
+      </properties>
+      <provides size='27'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.swt.win32.win32.x86_64' version='3.104.2.v20160212-1350'/>
+        <provided namespace='osgi.bundle' name='org.eclipse.swt.win32.win32.x86_64' version='3.104.2.v20160212-1350'/>
+        <provided namespace='java.package' name='org.eclipse.swt' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.accessibility' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.awt' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.browser' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.custom' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.dnd' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.events' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.graphics' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.layout' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.opengl' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.printing' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.program' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.widgets' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.internal' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.internal.image' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.internal.theme' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.internal.mozilla' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.ole.win32' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.internal.gdip' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.internal.ole.win32' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.internal.win32' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.swt.internal.opengl.win32' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+        <provided namespace='osgi.fragment' name='org.eclipse.swt' version='3.104.2.v20160212-1350'/>
+        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='osgi.bundle' name='org.eclipse.swt' range='[3.0.0,4.0.0)'/>
+      </requires>
+      <filter>
+        (&amp;(osgi.arch=x86_64)(osgi.os=win32)(osgi.ws=win32))
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.eclipse.swt.win32.win32.x86_64' version='3.104.2.v20160212-1350'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.eclipse.swt.win32.win32.x86_64; singleton:=true&#xA;Bundle-Version: 3.104.2.v20160212-1350&#xA;Fragment-Host: org.eclipse.swt; bundle-version=&quot;[3.0.0,4.0.0)&quot;
           </instruction>
         </instructions>
       </touchpointData>
@@ -1644,6 +1643,91 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='cucumber.eclipse.editor' version='0.0.23.201902192336'>
+      <update id='cucumber.eclipse.editor' range='[0.0.0,0.0.23.201902192336)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Cucumber Editor'/>
+        <property name='maven-groupId' value='cucumber.eclipse'/>
+        <property name='maven-artifactId' value='cucumber.eclipse.editor'/>
+        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
+      </properties>
+      <provides size='5'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.editor' version='0.0.23.201902192336'/>
+        <provided namespace='osgi.bundle' name='cucumber.eclipse.editor' version='0.0.23.201902192336'/>
+        <provided namespace='java.package' name='cucumber.eclipse.editor' version='0.0.0'/>
+        <provided namespace='java.package' name='cucumber.eclipse.editor.editors' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='23'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.core' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.launching' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.ui' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.debug.ui' range='3.4.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.variables' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.views' range='3.4.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.text' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.swt' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.equinox.common' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.jdt' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.jobs' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='cucumber.eclipse.editor' version='0.0.23.201902192336'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: cucumber.eclipse.editor;singleton:=true&#xA;Bundle-Version: 0.0.23.201902192336
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='cucumber.eclipse.feature.feature.group' version='0.0.23.201902192336' singleton='false'>
+      <update id='cucumber.eclipse.feature.feature.group' range='[0.0.0,0.0.23.201902192336)' severity='0'/>
+      <properties size='6'>
+        <property name='org.eclipse.equinox.p2.name' value='Cucumber Eclipse Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='Eclipse plugin for Cucumber'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+        <property name='maven-groupId' value='cucumber.eclipse'/>
+        <property name='maven-artifactId' value='cucumber.eclipse.feature'/>
+        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.group' version='0.0.23.201902192336'/>
+      </provides>
+      <requires size='4'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.editor' range='[0.0.23.201902192336,0.0.23.201902192336]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.integration' range='[0.0.23.201902192336,0.0.23.201902192336]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.jdt' range='[0.0.23.201902192336,0.0.23.201902192336]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.jar' range='[0.0.23.201902192336,0.0.23.201902192336]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='' url=''>
+          The MIT License&#xA;&#xA;Permission is hereby granted, free of charge, to any person obtaining&#xA;a copy of this software and associated documentation files (the&#xA;&quot;Software&quot;), to deal in the Software without restriction, including&#xA;without limitation the rights to use, copy, modify, merge, publish,&#xA;distribute, sublicense, and/or sell copies of the Software, and to&#xA;permit persons to whom the Software is furnished to do so, subject to&#xA;the following conditions:&#xA;&#xA;The above copyright notice and this permission notice shall be&#xA;included in all copies or substantial portions of the Software.&#xA;&#xA;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,&#xA;EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF&#xA;MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND&#xA;NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE&#xA;LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION&#xA;OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION&#xA;WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (c) 2012,2013 Aslak Hellesøy and contributors
+      </copyright>
     </unit>
     <unit id='org.eclipse.core.databinding' version='1.5.0.v20150422-0725' singleton='false'>
       <update id='org.eclipse.core.databinding' range='[0.0.0,1.5.0.v20150422-0725)' severity='0'/>
@@ -3646,39 +3730,6 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='cucumber.eclipse.feature.feature.group' version='0.0.23.201901220358' singleton='false'>
-      <update id='cucumber.eclipse.feature.feature.group' range='[0.0.0,0.0.23.201901220358)' severity='0'/>
-      <properties size='6'>
-        <property name='org.eclipse.equinox.p2.name' value='Cucumber Eclipse Feature'/>
-        <property name='org.eclipse.equinox.p2.description' value='Eclipse plugin for Cucumber'/>
-        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
-        <property name='maven-groupId' value='cucumber.eclipse'/>
-        <property name='maven-artifactId' value='cucumber.eclipse.feature'/>
-        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
-      </properties>
-      <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.group' version='0.0.23.201901220358'/>
-      </provides>
-      <requires size='4'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.editor' range='[0.0.23.201901220358,0.0.23.201901220358]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.integration' range='[0.0.23.201901220358,0.0.23.201901220358]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.jdt' range='[0.0.23.201901220358,0.0.23.201901220358]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.feature.feature.jar' range='[0.0.23.201901220358,0.0.23.201901220358]'>
-          <filter>
-            (org.eclipse.update.install.features=true)
-          </filter>
-        </required>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
-      <licenses size='1'>
-        <license uri='' url=''>
-          The MIT License&#xA;&#xA;Permission is hereby granted, free of charge, to any person obtaining&#xA;a copy of this software and associated documentation files (the&#xA;&quot;Software&quot;), to deal in the Software without restriction, including&#xA;without limitation the rights to use, copy, modify, merge, publish,&#xA;distribute, sublicense, and/or sell copies of the Software, and to&#xA;permit persons to whom the Software is furnished to do so, subject to&#xA;the following conditions:&#xA;&#xA;The above copyright notice and this permission notice shall be&#xA;included in all copies or substantial portions of the Software.&#xA;&#xA;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,&#xA;EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF&#xA;MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND&#xA;NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE&#xA;LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION&#xA;OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION&#xA;WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-        </license>
-      </licenses>
-      <copyright>
-        Copyright (c) 2012,2013 Aslak Hellesøy and contributors
-      </copyright>
-    </unit>
     <unit id='org.eclipse.ui.console' version='3.6.100.v20150822-1912'>
       <update id='org.eclipse.ui.console' range='[0.0.0,3.6.100.v20150822-1912)' severity='0'/>
       <properties size='8'>
@@ -3717,6 +3768,43 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-SymbolicName: org.eclipse.ui.console; singleton:=true&#xA;Bundle-Version: 3.6.100.v20150822-1912
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='cucumber.eclipse.steps.jdt' version='0.0.23.201902192336'>
+      <update id='cucumber.eclipse.steps.jdt' range='[0.0.0,0.0.23.201902192336)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Cucumber Steps via Eclipse JDT'/>
+        <property name='maven-groupId' value='cucumber.eclipse'/>
+        <property name='maven-artifactId' value='cucumber.eclipse.steps.jdt'/>
+        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.jdt' version='0.0.23.201902192336'/>
+        <provided namespace='osgi.bundle' name='cucumber.eclipse.steps.jdt' version='0.0.23.201902192336'/>
+        <provided namespace='java.package' name='cucumber.eclipse.steps.jdt' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='9'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='3.5.0'/>
+        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.5.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='cucumber.eclipse.steps.jdt' version='0.0.23.201902192336'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: cucumber.eclipse.steps.jdt;singleton:=true&#xA;Bundle-Version: 0.0.23.201902192336
           </instruction>
         </instructions>
       </touchpointData>
@@ -3955,53 +4043,6 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='cucumber.eclipse.steps.integration' version='0.0.23.201901220358'>
-      <update id='cucumber.eclipse.steps.integration' range='[0.0.0,0.0.23.201901220358)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='Cucumber Steps Integration'/>
-        <property name='maven-groupId' value='cucumber.eclipse'/>
-        <property name='maven-artifactId' value='cucumber.eclipse.steps.integration'/>
-        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
-      </properties>
-      <provides size='20'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.integration' version='0.0.23.201901220358'/>
-        <provided namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' version='0.0.23.201901220358'/>
-        <provided namespace='java.package' name='cucumber.eclipse.steps.integration' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.autocomplete' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.formatter' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.io' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.model' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.snippets' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.table' version='0.0.0'/>
-        <provided namespace='java.package' name='cucumber.runtime.xstream' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.formatter' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.formatter.ansi' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.formatter.model' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.lexer' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.parser' version='0.0.0'/>
-        <provided namespace='java.package' name='gherkin.util' version='0.0.0'/>
-        <provided namespace='java.package' name='io.cucumber.cucumberexpressions' version='0.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='3'>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.text' range='0.0.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='cucumber.eclipse.steps.integration' version='0.0.23.201901220358'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-SymbolicName: cucumber.eclipse.steps.integration;singleton:=true&#xA;Bundle-Version: 0.0.23.201901220358
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
     <unit id='org.eclipse.equinox.security' version='1.2.100.v20150423-1356'>
       <update id='org.eclipse.equinox.security' range='[0.0.0,1.2.100.v20150423-1356)' severity='0'/>
       <properties size='8'>
@@ -4098,43 +4139,6 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-SymbolicName: org.eclipse.core.expressions; singleton:=true&#xA;Bundle-Version: 3.5.0.v20150421-2214
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
-    <unit id='cucumber.eclipse.steps.jdt' version='0.0.23.201901220358'>
-      <update id='cucumber.eclipse.steps.jdt' range='[0.0.0,0.0.23.201901220358)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='Cucumber Steps via Eclipse JDT'/>
-        <property name='maven-groupId' value='cucumber.eclipse'/>
-        <property name='maven-artifactId' value='cucumber.eclipse.steps.jdt'/>
-        <property name='maven-version' value='0.0.23-SNAPSHOT'/>
-      </properties>
-      <provides size='4'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='cucumber.eclipse.steps.jdt' version='0.0.23.201901220358'/>
-        <provided namespace='osgi.bundle' name='cucumber.eclipse.steps.jdt' version='0.0.23.201901220358'/>
-        <provided namespace='java.package' name='cucumber.eclipse.steps.jdt' version='0.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='9'>
-        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='3.5.0'/>
-        <required namespace='osgi.bundle' name='cucumber.eclipse.steps.integration' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.5.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='cucumber.eclipse.steps.jdt' version='0.0.23.201901220358'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-SymbolicName: cucumber.eclipse.steps.jdt;singleton:=true&#xA;Bundle-Version: 0.0.23.201901220358
           </instruction>
         </instructions>
       </touchpointData>
