@@ -1,8 +1,13 @@
 package com.kms.katalon.execution.launcher;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.katalon.platform.api.event.ExecutionEvent;
+import com.katalon.platform.api.execution.TestSuiteExecutionContext;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.dal.exception.DALException;
@@ -10,6 +15,7 @@ import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
+import com.kms.katalon.execution.entity.TestSuiteCollectionExecutionContextImpl;
 import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.listener.LauncherListener;
 import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
@@ -18,10 +24,11 @@ import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.execution.platform.TestSuiteCollectionExecutionEvent;
 import com.kms.katalon.logging.LogUtil;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
-    
+
     public static final int MAX_NUMBER_INSTANCES_IN_PARALLEL_MODE = 8;
 
     protected List<ReportableLauncher> subLaunchers;
@@ -40,13 +47,17 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     private ReportCollectionEntity reportCollection;
 
+    private Date startTime;
+
+    private Date endTime;
+
     public TestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity, LauncherManager parentManager,
             List<ReportableLauncher> subLaunchers, ExecutionMode executionMode,
             ReportCollectionEntity reportCollection) {
         this.subLauncherManager = new TestSuiteCollectionLauncherManager();
         this.subLaunchers = subLaunchers;
         for (ReportableLauncher subLauncher : subLaunchers) {
-        	subLauncher.setExecutionUUID(super.getExecutionUUID());
+            subLauncher.setExecutionUUID(super.getExecutionUUID());
         }
         this.result = new LauncherResult(executedEntity.getTotalTestCases());
         this.parentManager = parentManager;
@@ -72,6 +83,9 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         scheduleSubLaunchers();
 
         startWatchDog();
+
+        startTime = new Date();
+        fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_COLLECTION_STARTED_EVENT);
     }
 
     private void scheduleSubLaunchers() {
@@ -105,6 +119,9 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     protected void postExecution() {
         schedule();
+
+        endTime = new Date();
+        fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_COLLECTION_FINISHED_EVENT);
     }
 
     protected void schedule() {
@@ -114,15 +131,15 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             LogUtil.logError(e);
         }
     }
-    
+
     @Override
     public void setStatus(LauncherStatus status) {
-    	super.setStatus(status);
-    	if (LauncherStatus.DONE == status || LauncherStatus.TERMINATED == status) {
-    		ExecutionEntityResult executionResult = new ExecutionEntityResult();
-    		executionResult.setEnd(true);
-    		notifyProccess(status, executedEntity, executionResult);
-    	}
+        super.setStatus(status);
+        if (LauncherStatus.DONE == status || LauncherStatus.TERMINATED == status) {
+            ExecutionEntityResult executionResult = new ExecutionEntityResult();
+            executionResult.setEnd(true);
+            notifyProccess(status, executedEntity, executionResult);
+        }
     }
 
     @Override
@@ -243,5 +260,27 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             }
             onUpdateResult(statusValue);
         }
+    }
+
+    protected TestSuiteCollectionExecutionEvent fireTestSuiteExecutionEvent(String eventName) {
+        List<TestSuiteExecutionContext> testSuiteContexts = new ArrayList<>();
+
+        for (ReportableLauncher subLauncher : subLaunchers) {
+            testSuiteContexts.add(subLauncher.getTestSuiteExecutionContext());
+        }
+
+        TestSuiteCollectionExecutionContextImpl executionContext = TestSuiteCollectionExecutionContextImpl.Builder
+                .create(getId(), executedEntity.getSourceId())
+                .withReportId(reportCollection.getIdForDisplay())
+                .withTestSuiteContexts(testSuiteContexts)
+                .withProjectLocation(executedEntity.getEntity().getProject().getFolderLocation())
+                .withStartTime(startTime != null ? startTime.getTime() : 0L)
+                .withEndTime(endTime != null ? endTime.getTime() : 0L)
+                .build();
+        TestSuiteCollectionExecutionEvent eventObject = new TestSuiteCollectionExecutionEvent(eventName,
+                executionContext);
+        EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
+
+        return eventObject;
     }
 }
