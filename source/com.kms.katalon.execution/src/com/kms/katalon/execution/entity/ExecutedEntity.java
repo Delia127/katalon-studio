@@ -15,6 +15,10 @@ public abstract class ExecutedEntity implements IExecutedEntity {
 
     private FileEntity entity;
 
+    public FileEntity getEntity() {
+        return entity;
+    }
+
     protected ExecutedEntity() {
         entity = null;
     }

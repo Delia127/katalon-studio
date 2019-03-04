@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testsuite.util;
 
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuiteEntityUtil {
@@ -24,5 +25,12 @@ public class TestSuiteEntityUtil {
         for (IntegratedEntity integratedEntity : src.getIntegratedEntities()) {
             des.getIntegratedEntities().add(integratedEntity);
         }
+    }
+
+    public static void copyFilteringTestSuiteProperties(FilteringTestSuiteEntity src, FilteringTestSuiteEntity des) {
+        copyTestSuiteProperties(src, des);
+        des.setFilteringText(src.getFilteringText());
+        des.setFilteringPlugin(src.getFilteringPlugin());
+        des.setFilteringExtension(src.getFilteringExtension());
     }
 }

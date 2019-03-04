@@ -13,7 +13,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
 import org.eclipse.debug.ui.IDebugUIConstants;
@@ -38,9 +40,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.eclipse.ui.part.FileEditorInput;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.katalon.platform.api.exception.PlatformException;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
@@ -51,24 +55,30 @@ import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
 import com.kms.katalon.composer.execution.launcher.IDELaunchShorcut;
 import com.kms.katalon.composer.execution.launcher.IDELauncher;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
+import com.kms.katalon.composer.testsuite.parts.ParentTestSuiteCompositePart;
 import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
+import com.kms.katalon.controller.exception.ControllerException;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.FeatureFileExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.exception.ExtensionRequiredException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
@@ -189,6 +199,23 @@ public abstract class AbstractExecutionHandler {
                 }
                 return testCaseCompositePart.getOriginalTestCase();
             } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
+                    && selectedPart.getObject() instanceof ParentTestSuiteCompositePart) {
+                ParentTestSuiteCompositePart testSuiteComposite = (ParentTestSuiteCompositePart) selectedPart
+                        .getObject();
+                TestSuiteEntity originalTestSuite = testSuiteComposite.getOriginalTestSuite();
+                if (originalTestSuite instanceof FilteringTestSuiteEntity) {
+                    return originalTestSuite;
+                }
+                if (originalTestSuite.getTestSuiteTestCaseLinks().isEmpty()) {
+                    if (MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                            StringConstants.HAND_TITLE_INFORMATION,
+                            StringConstants.HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE)) {
+                        ((TestSuiteCompositePart) testSuiteComposite).openAddTestCaseDialog();
+                    }
+                    return null;
+                }
+                return originalTestSuite;
+            } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestSuiteCompositePart) {
                 TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
                 if (testSuiteComposite.getOriginalTestSuite().getTestSuiteTestCaseLinks().isEmpty()) {
@@ -206,8 +233,13 @@ public abstract class AbstractExecutionHandler {
                     FileEditorInput editorInput = (FileEditorInput) editor.getEditor().getEditorInput();
                     String featureFilePath = new File(editorInput.getFile().getRawLocationURI()).getAbsolutePath();
 
-                    return SystemFileController.getInstance().getSystemFile(featureFilePath,
-                            ProjectController.getInstance().getCurrentProject());
+                    try {
+                        return SystemFileController.getInstance().getSystemFile(featureFilePath,
+                                ProjectController.getInstance().getCurrentProject());
+                    } catch (ControllerException e) {
+                        LogUtil.logError(e);
+                        return null;
+                    }
                 }
             }
         }
@@ -233,7 +265,7 @@ public abstract class AbstractExecutionHandler {
         try {
             AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
                     projectDir);
-           
+
             if (runConfiguration == null) {
                 return;
             }
@@ -251,9 +283,11 @@ public abstract class AbstractExecutionHandler {
         if (targetEntity instanceof TestCaseEntity) {
             TestCaseEntity testCase = (TestCaseEntity) targetEntity;
             executeTestCase(testCase, launchMode, runConfiguration);
+            eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
         } else if (targetEntity instanceof TestSuiteEntity) {
             TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
             executeTestSuite(testSuite, launchMode, runConfiguration);
+            eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
         } else if (targetEntity instanceof SystemFileEntity) {
             SystemFileEntity feature = (SystemFileEntity) targetEntity;
             executeFeatureFile(feature, launchMode, runConfiguration);
@@ -334,11 +368,14 @@ public abstract class AbstractExecutionHandler {
             @Override
             protected IStatus run(final IProgressMonitor monitor) {
                 try {
-                    monitor.beginTask(StringConstants.HAND_JOB_LAUNCHING_TEST_SUITE, 4);
+                    monitor.beginTask(StringConstants.HAND_JOB_LAUNCHING_TEST_SUITE, 5);
                     monitor.subTask(StringConstants.HAND_JOB_VALIDATING_TEST_SUITE);
                     // back-up
 
                     final TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity(testSuite);
+                    monitor.subTask("Preparing test cases...");
+                    testSuiteExecutedEntity.prepareTestCases();
+
                     final int totalTestCases = testSuiteExecutedEntity.getTotalTestCases();
                     if (totalTestCases > 0) {
                         monitor.subTask(StringConstants.HAND_JOB_ACTIVATING_VIEWERS);
@@ -356,7 +393,10 @@ public abstract class AbstractExecutionHandler {
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
 
-                        trackTestSuiteExecution(launchMode, runConfig);
+                        trackTestSuiteExecution(launchMode, runConfig, testSuiteExecutedEntity.getEmailSettings()
+                                .getEmailConfig()
+                                .isSendEmailTestFailedOnly());
+                        // trackEmailAfterExecution(testSuiteExecutedEntity.getEmailSettings().getEmailConfig().isSendEmailTestFailedOnly());
 
                         monitor.worked(1);
 
@@ -376,29 +416,50 @@ public abstract class AbstractExecutionHandler {
 
                 } catch (JobCancelException e) {
                     return Status.CANCEL_STATUS;
+                } catch (ExtensionRequiredException e) {
+                    return new Status(Status.WARNING,
+                            FrameworkUtil.getBundle(AbstractExecutionHandler.class).getSymbolicName(),
+                            e.getMessage());
+                } catch (PlatformException e) {
+                    return new Status(Status.WARNING,
+                            FrameworkUtil.getBundle(AbstractExecutionHandler.class).getSymbolicName(),
+                            e.getDetailMessage(), e);
                 } catch (final Exception e) {
-                    sync.syncExec(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            MultiStatusErrorDialog.showErrorDialog(e,
-                                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_SUITE,
-                                    StringConstants.HAND_ERROR_MSG_REASON_INVALID_TEST_SUITE);
-                        }
-                    });
-
-                    return Status.CANCEL_STATUS;
+                    return new Status(Status.WARNING,
+                            FrameworkUtil.getBundle(AbstractExecutionHandler.class).getSymbolicName(), e.getMessage(),
+                            e);
                 } finally {
-                    // UsageInfoCollector.collect(
-                    // UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
+                    monitor.done();
                 }
             }
         };
         job.setUser(true);
         job.schedule();
+
+        job.addJobChangeListener(new JobChangeAdapter() {
+            @Override
+            public void done(IJobChangeEvent event) {
+                super.done(event);
+                if (event.getResult() != null && event.getResult().matches(Status.WARNING)) {
+                    sync.asyncExec(() -> {
+                        if (event.getResult().getException() == null) {
+                            MessageDialog.openInformation(null, StringConstants.WARN_TITLE,
+                                    event.getResult().getMessage());
+                        } else {
+                            MultiStatusErrorDialog.showErrorDialog(
+                                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_SUITE,
+                                    event.getResult().getMessage(),
+                                    ExceptionsUtil.getStackTraceForThrowable(event.getResult().getException()));
+                        }
+                    });
+                }
+
+                job.removeJobChangeListener(this);
+            }
+        });
     }
 
-    private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig) {
+    private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig, boolean testFailedOnly) {
         Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString(), runConfig.getName());
     }
 

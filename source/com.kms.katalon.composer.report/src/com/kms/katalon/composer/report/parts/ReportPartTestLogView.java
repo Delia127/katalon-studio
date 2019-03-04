@@ -628,7 +628,8 @@ public class ReportPartTestLogView {
             if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
                 continue;
             }
-            TestLogIntegrationColumn testLogIntegrationColumn = builder.getTestLogIntegrationColumn(report);
+            TestLogIntegrationColumn testLogIntegrationColumn = builder.getTestLogIntegrationColumn(report,
+                    parentPart.getTestSuiteLogRecord());
             if (testLogIntegrationColumn == null) {
                 continue;
             }
@@ -862,16 +863,15 @@ public class ReportPartTestLogView {
                 }
             }
         });
-        
+
         compositeSTLSImageView.addListener(SWT.Resize, new Listener() {
-            
+
             @Override
             public void handleEvent(Event event) {
                 selectedTestLogCanvas.redraw();
                 drawImage();
             }
         });
-        
 
         compositeSTLSImageView.setContent(selectedTestLogCanvas);
     }
@@ -924,8 +924,10 @@ public class ReportPartTestLogView {
         selectedReportTestCaseIntegrationView.createContainer(compositeTestCaseLogIntegration);
 
         compositeTestCaseLogIntegration.layout(true, true);
-        selectedReportTestCaseIntegrationView
-                .changeTestCase((TestCaseLogRecord) parentPart.getSelectedTestCaseLogRecord());
+        if (parentPart.getSelectedTestCaseLogRecord() != null) {
+            selectedReportTestCaseIntegrationView
+                    .changeTestCase((TestCaseLogRecord) parentPart.getSelectedTestCaseLogRecord());
+        }
     }
 
     private void clearTestCaseIntegrationContainer() {

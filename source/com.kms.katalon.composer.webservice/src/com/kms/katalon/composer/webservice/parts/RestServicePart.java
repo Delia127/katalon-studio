@@ -335,6 +335,9 @@ public class RestServicePart extends WebServicePart {
     }
 
     private void updateRequestUrlWithNewParams(List<WebElementPropertyEntity> paramProperties) {
+        if (urlBuilder == null) {
+            urlBuilder = new URLBuilder();
+        }
         List<NameValuePair> params = toNameValuePair(paramProperties);
         urlBuilder.setParameters(params);
         String newUrl = urlBuilder.buildString();
@@ -487,5 +490,10 @@ public class RestServicePart extends WebServicePart {
     protected void updatePartImage() {
         updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(),
                 originalWsObject.getRestRequestMethod()));
+    }
+
+    @Override
+    public boolean isDirty() {
+        return mPart.isDirty();
     }
 }

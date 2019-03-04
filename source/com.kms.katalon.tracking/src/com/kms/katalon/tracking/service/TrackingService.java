@@ -13,15 +13,14 @@ import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.model.TrackInfo;
 
 public class TrackingService {
-    
+
     private ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public void track(TrackInfo trackInfo) {
-        
+
         executor.submit(() -> {
             try {
                 String payload = buildEventPayload(trackInfo);
-            
                 sendEventPayload(payload);
             } catch (Exception e) {
                 LogUtil.logError(e);
@@ -31,58 +30,50 @@ public class TrackingService {
 
     protected String buildEventPayload(TrackInfo trackInfo) {
         PayloadBuilder payloadBuilder = new PayloadBuilder();
-        
         String payloadJson = payloadBuilder.build(trackInfo);
-        
         return payloadJson;
     }
-    
+
     private void sendEventPayload(String payload) throws IOException, GeneralSecurityException {
         TrackingApiService.getInstance().post(payload);
     }
-    
+
     private class PayloadBuilder {
-        
+
         public String build(TrackInfo trackInfo) {
             JsonObject payload = new JsonObject();
-            
             payload = addUserInfo(payload, trackInfo);
-            
             payload = addEventName(payload, trackInfo);
-            
             payload = addEventProperties(payload, trackInfo);
-            
             payload = addApplicationTraits(payload);
-            
             return payload.toString();
         }
-        
+
         private JsonObject addUserInfo(JsonObject payload, TrackInfo trackInfo) {
             String userId = getUserId(trackInfo.isAnonymous());
             payload.addProperty("userId", userId);
             return payload;
         }
-        
+
         private String getUserId(boolean isAnonymous) {
             return isAnonymous ? "anonymous" : ApplicationInfo.getAppProperty("email");
         }
-        
+
         private JsonObject addEventName(JsonObject payload, TrackInfo trackInfo) {
             payload.addProperty("event", trackInfo.getEventName());
             return payload;
         }
-        
+
         private JsonObject addEventProperties(JsonObject payload, TrackInfo trackInfo) {
             payload.add("properties", trackInfo.getProperties());
             return payload;
         }
-        
+
         private JsonObject addApplicationTraits(JsonObject payload) {
             JsonObject appTraitsObject = ActivationInfoCollector.traitsWithAppInfo();
-
             JsonUtil.mergeJsonObject(appTraitsObject, payload.get("properties").getAsJsonObject());
-  
             return payload;
         }
+
     }
 }

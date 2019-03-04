@@ -22,6 +22,8 @@ public interface IImageKeys {
     public static final String FAQ_34 = "welcome/faqs_34.png"; //$NON-NLS-1$
 
     public static final String USER_GUIDE_34 = "welcome/user_guide_34.png"; //$NON-NLS-1$
+    
+    public static final String KATALON_STORE_34 = "welcome/katalon_store_34.png"; //$NON-NLS-1$
 
     public static final String TUTORIAL_34 = "welcome/tutorial_34.png"; //$NON-NLS-1$
     
@@ -427,6 +429,8 @@ public interface IImageKeys {
     public static final String FOLDER_FEATURE_16 = "entity/folder_feature_16.png"; //$NON-NLS-1$
     
     public static final String FOLDER_SOURCE_16 = "entity/folder_source_16.png"; //$NON-NLS-1$
+    
+    public static final String FILTERING_TEST_SUITE_16 = "entity/filtering_test_suite_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar
@@ -564,6 +568,8 @@ public interface IImageKeys {
     public static final String DESKTOP_16 = "desktop_16.png"; //$NON-NLS-1$
 
     public static final String OK_16 = "ok_16.png"; //$NON-NLS-1$
+    
+    public static final String ERROR_16_GREY = "error_16_grey.png";  //$NON-NLS-1$
 
     public static final String DONE_16 = "done_16.png"; //$NON-NLS-1$
 

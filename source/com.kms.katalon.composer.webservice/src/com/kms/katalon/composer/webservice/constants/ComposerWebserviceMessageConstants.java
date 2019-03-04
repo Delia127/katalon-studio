@@ -3,7 +3,41 @@ package com.kms.katalon.composer.webservice.constants;
 import org.eclipse.osgi.util.NLS;
 
 public class ComposerWebserviceMessageConstants extends NLS {
-    private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
+	private static final String BUNDLE_NAME = "com.kms.katalon.composer.webservice.constants.composerWebserviceMessages";
+
+	public static String PA_AUTHORIZATION_CODE;
+
+	public static String AUTHORIZATION_HEADER;
+
+	public static String PA_ACCESS_TOKEN;
+
+	public static String PA_REFRESH_TOKEN;
+
+	public static String PA_TOKEN_TYPE;
+
+	public static String PA_REQUEST_TOKEN;
+
+	public static String PA_LBL_GRANT_TYPE;
+	
+	public static String PA_LBL_CALLBACK_URL;
+	
+	public static String PA_LBL_AUTH_URL;
+	
+	public static String PA_LBL_ACCESS_TOKEN_URL;
+	
+	public static String PA_LBL_SCOPE;
+	
+	public static String PA_LBL_STATE;
+
+	public static String PA_TOOLTIP_CALLBACK_URL;
+
+	public static String PA_TOOLTIP_AUTH_URL;
+	
+	public static String PA_TOOLTIP_ACCESS_TOKEN_URL;
+	
+	public static String PA_TOOLTIP_SCOPE;
+	
+	public static String PA_TOOLTIP_STATE;
 
     public static String PA_ERROR_MSG_UNABLE_TO_SAVE_PART;
     
@@ -56,12 +90,6 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PA_LBL_SOAP_HEADER_OPT;
 
     public static String PA_LBL_SOAP_BODY;
-
-    public static String WIEW_TITLE_NEW;
-
-    public static String WIEW_TITLE_SWAGGER;
-    
-    public static String WIEW_TITLE_WSDL;
     
     public static String VIEW_LBL_REQ_TYPE;
 
@@ -71,13 +99,9 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ;
     
-    public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ_SWAGGER;
-    
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
     
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
-    
-    public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ_WSDL;
     
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER; 
     

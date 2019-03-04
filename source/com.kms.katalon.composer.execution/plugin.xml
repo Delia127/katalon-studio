@@ -101,4 +101,12 @@
             delegateClass="com.kms.katalon.composer.execution.debug.WatchExpressionDelegate">
       </watchExpressionDelegate>
    </extension>
+   <extension
+         point="org.eclipse.debug.ui.consoleColorProviders">
+      <consoleColorProvider
+            class="com.kms.katalon.composer.execution.ConsoleColorProvider1"
+            id="com.kms.katalon.composer.execution.consoleColorProvider1"
+            processType="com.kms.katalon.composer.execution.consoleColorProvider1">
+      </consoleColorProvider>
+   </extension>
 </plugin>

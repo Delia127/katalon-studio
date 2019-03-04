@@ -86,6 +86,7 @@ import com.kms.katalon.composer.explorer.constants.ExplorerPreferenceConstants;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
+import com.kms.katalon.composer.explorer.custom.EntityTooltip;
 import com.kms.katalon.composer.explorer.custom.SearchDropDownBox;
 import com.kms.katalon.composer.explorer.handlers.CopyHandler;
 import com.kms.katalon.composer.explorer.handlers.CutHandler;
@@ -489,8 +490,7 @@ public class ExplorerPart {
                 Point location = new Point(pt.x + searchComposite.getBounds().width, pt.y);
                 AdvancedSearchDialog dialog;
                 if (selectionIndex > 0) {
-                    ITreeEntity treeEntity = treeEntities.get(selectionIndex - 1);
-                    dialog = new AdvancedSearchDialog(shell, treeEntity.getSearchTags(), txtInput.getText(), location);
+                    dialog = new AdvancedSearchDialog(shell, txtInput.getText(), location);
                 } else {
                     for (ITreeEntity treeEntity : treeEntities) {
                         if (treeEntity.getSearchTags() == null) {
@@ -503,8 +503,7 @@ public class ExplorerPart {
                             }
                         }
                     }
-                    dialog = new AdvancedSearchDialog(shell, searchTags.toArray(new String[searchTags.size()]),
-                            txtInput.getText(), location);
+                    dialog = new AdvancedSearchDialog(shell, txtInput.getText(), location);
                 }
                 // set position for dialog
                 if (dialog.open() == Window.OK) {
@@ -521,6 +520,9 @@ public class ExplorerPart {
     }
 
     private void updateStatusSearchLabel() {
+        if (lblSearch == null) {
+            return;
+        }
         if (isSearching) {
             lblSearch.setImage(ImageConstants.IMG_16_CLOSE_SEARCH);
             lblSearch.setToolTipText(IMAGE_CLOSE_SEARCH_TOOLTIP);

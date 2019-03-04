@@ -28,6 +28,14 @@ public class VariableEntity implements Serializable {
         description = "";
         masked = false;
     }
+    
+    public VariableEntity(String name, String defaultValue){
+    	this.id = Util.generateGuid();
+        this.name = name;
+        this.defaultValue = defaultValue;
+        this.description = "";
+        this.masked = false;
+    }
 
     public String getName() {
         return name;

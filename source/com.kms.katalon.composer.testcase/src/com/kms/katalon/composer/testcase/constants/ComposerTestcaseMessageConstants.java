@@ -198,6 +198,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String PA_BTN_TIP_MOVE_UP;
 
     public static String PA_BTN_TIP_MOVE_DOWN;
+    
+    public static String PA_BTN_EDIT_TAG;
 
     public static String PA_BTN_TIP_RECENT;
 
@@ -411,6 +413,22 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String KA_HOMEPAGE;
     
     public static String KA_HOMEPAGE_NOTOKEN;
+    
+    public static String ManageTestCaseTagDialog_SEARCH_MSG;
+    
+    public static String ManageTestCaseTagDialog_TAG_TABLE_COL_TAG;
+    
+    public static String ManageTestCaseTagDialog_TAG_TABLE_COL_SELECTED;
+    
+    public static String ManageTestCaseTagDialog_BTN_APPEND_TAGS;
+    
+    public static String ManageTestCaseTagDialog_DIA_TITLE;
+    
+    public static String TestCasePropertiesPart_BTN_MANAGE_TAGS;
+
+    public static String DIALOG_TITLE_TEST_CASE_FOLDER_SELECTION;
+    
+    public static String LBL_QUERY_BUILDER_USAGE;
     
     static {
         // initialize resource bundle

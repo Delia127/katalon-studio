@@ -2,11 +2,14 @@ package com.kms.katalon.composer.testcase.parts;
 
 import static org.apache.commons.lang.StringUtils.join;
 
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
@@ -17,16 +20,26 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.katalon.platform.api.Plugin;
+import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.util.CssUtil;
 import com.kms.katalon.composer.parts.CPart;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.dialogs.ManageTestCaseTagDialog;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.util.EntityTagUtil;
 
 public class TestCasePropertiesPart extends CPart {
 
@@ -52,6 +65,8 @@ public class TestCasePropertiesPart extends CPart {
     private Text txtDescription;
 
     private Text txtComment;
+    
+    private Button btnManageTags;
 
     private boolean isInputLoaded;
 
@@ -112,7 +127,15 @@ public class TestCasePropertiesPart extends CPart {
         createLabel(StringConstants.TAG, left, SWT.CENTER);
         txtTag = new Text(left, SWT.BORDER);
         txtTag.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
+        
+        if (isAdvancedTagPluginInstalled()) {
+            Composite tagComposite = new Composite(left, SWT.NONE);
+            tagComposite.setLayout(new GridLayout());
+            tagComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 2, 1));
+            btnManageTags = new Button(tagComposite, SWT.NONE);
+            btnManageTags.setText(ComposerTestcaseMessageConstants.TestCasePropertiesPart_BTN_MANAGE_TAGS);
+        }
+        
         createLabel(StringConstants.DESCRIPTION, left, SWT.TOP);
         txtDescription = new Text(left, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         GridData gdDesc = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -162,6 +185,7 @@ public class TestCasePropertiesPart extends CPart {
                 setDirty(true);
             }
         });
+        
         txtDescription.addModifyListener(new ModifyListener() {
 
             @Override
@@ -171,6 +195,30 @@ public class TestCasePropertiesPart extends CPart {
                 setDirty(true);
             }
         });
+        
+        if (isAdvancedTagPluginInstalled()) {
+            btnManageTags.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    Set<String> testCaseTags = EntityTagUtil.parse(txtTag.getText());
+                    ManageTestCaseTagDialog dialog = new ManageTestCaseTagDialog(Display.getCurrent().getActiveShell(),
+                            testCaseTags);
+                    if (dialog.open() == ManageTestCaseTagDialog.CM_APPEND_TAGS) {
+                        Set<String> newTags = dialog.getAppendedTags();
+                        String newTagValues = EntityTagUtil.joinTags(newTags);
+                        if (!StringUtils.isBlank(newTagValues)) {
+                            String updatedTagValues = EntityTagUtil.appendTags(txtTag.getText(), newTags);
+                            txtTag.setText(updatedTagValues);
+                        }
+                    }
+                }
+            });
+        }
+    }
+    
+    private boolean isAdvancedTagPluginInstalled() {
+        Plugin plugin = ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_ADVANCED_TAGS);
+        return plugin != null;
     }
 
     public void loadInput() {

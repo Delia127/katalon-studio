@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -19,8 +20,16 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MElementContainer;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolItem;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -34,6 +43,7 @@ import com.kms.katalon.composer.integration.jira.toolbar.dialog.ImportJiraJQLDia
 import com.kms.katalon.composer.integration.jira.toolbar.dialog.IssueSelectionDialog;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -47,8 +57,73 @@ import com.kms.katalon.integration.jira.entity.JiraIssue;
 
 public class ImportJiraJQLHandler implements JiraUIComponent {
 
+    private static final String JIRA_TOOL_ITEM = "com.kms.katalon.composer.integration.jira.handledtoolitem.jira";
+
     @Inject
     private IEventBroker eventBroker;
+
+    @Inject
+    private EModelService modelService;
+
+    @Inject
+    private MApplication application;
+
+    @PostConstruct
+    public void registerPlatformEvent() {
+        eventBroker.subscribe(EventConstants.JIRA_PLUGIN_INSTALLED, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
+                MUIElement groupElement = modelService.find(IdConstants.MAIN_TOOLBAR_ID, application);
+
+                if (!(groupElement instanceof MElementContainer)) {
+                    return;
+                }
+
+                MElementContainer<?> container = (MElementContainer<?>) groupElement;
+
+                if (!(container instanceof MToolBar)) {
+                    return;
+                }
+
+                MUIElement jiraToolItemElement = modelService
+                        .find(JIRA_TOOL_ITEM, container);
+                if (jiraToolItemElement == null) {
+                    return;
+                }
+                MToolItem jiraToolItem = (MToolItem) jiraToolItemElement;
+                jiraToolItem.setToBeRendered(false);
+                jiraToolItem.setVisible(false);
+            }
+        });
+        
+        eventBroker.subscribe(EventConstants.JIRA_PLUGIN_UNINSTALLED, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
+                MUIElement groupElement = modelService.find(IdConstants.MAIN_TOOLBAR_ID, application);
+
+                if (!(groupElement instanceof MElementContainer)) {
+                    return;
+                }
+
+                MElementContainer<?> container = (MElementContainer<?>) groupElement;
+
+                if (!(container instanceof MToolBar)) {
+                    return;
+                }
+
+                MUIElement jiraToolItemElement = modelService
+                        .find(JIRA_TOOL_ITEM, container);
+                if (jiraToolItemElement == null) {
+                    return;
+                }
+                MToolItem jiraToolItem = (MToolItem) jiraToolItemElement;
+                jiraToolItem.setToBeRendered(true);
+                jiraToolItem.setVisible(true);
+            }
+        });
+    }
 
     @CanExecute
     public boolean canExecute() {
@@ -160,8 +235,7 @@ public class ImportJiraJQLHandler implements JiraUIComponent {
             private String getScriptAsComment(String comment) {
                 StringBuilder commentBuilder = new StringBuilder();
                 Arrays.asList(StringUtils.split(comment, "\r\n")).forEach(line -> {
-                    commentBuilder
-                            .append(String.format("WebUI.comment('%s')\n", GroovyStringUtil.escapeGroovy(line)));
+                    commentBuilder.append(String.format("WebUI.comment('%s')\n", GroovyStringUtil.escapeGroovy(line)));
                 });
                 return commentBuilder.toString();
             }

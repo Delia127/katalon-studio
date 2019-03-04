@@ -424,4 +424,9 @@ public class SoapServicePart extends WebServicePart {
                 originalWsObject.getSoapRequestMethod()));
     }
 
+    @Override
+    public boolean isDirty() {
+        return mPart.isDirty();
+    }
+
 }

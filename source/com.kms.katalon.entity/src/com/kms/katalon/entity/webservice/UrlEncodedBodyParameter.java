@@ -5,6 +5,15 @@ public class UrlEncodedBodyParameter {
     private String name;
     
     private String value;
+    
+    public UrlEncodedBodyParameter(String name, String value){
+    	this.name = name;
+    	this.value = value;
+    }
+    
+    public UrlEncodedBodyParameter(){
+    	
+    }
 
     public String getName() {
         return name;

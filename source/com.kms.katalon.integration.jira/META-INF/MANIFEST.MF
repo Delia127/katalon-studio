@@ -25,7 +25,8 @@ Require-Bundle: com.kms.katalon.core,
  com.kms.katalon.controller,
  com.kms.katalon.execution,
  net.lingala.zip4j,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ org.eclipse.core.runtime
 Export-Package: com.atlassian.jira.rest.client.api,
  com.atlassian.jira.rest.client.api.domain,
  com.kms.katalon.integration.jira,

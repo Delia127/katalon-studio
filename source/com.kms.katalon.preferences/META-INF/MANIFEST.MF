@@ -11,5 +11,6 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.constant,
  org.eclipse.jface
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: com.kms.katalon.preferences.internal
+Export-Package: com.kms.katalon.preferences,
+ com.kms.katalon.preferences.internal
 Bundle-ActivationPolicy: lazy

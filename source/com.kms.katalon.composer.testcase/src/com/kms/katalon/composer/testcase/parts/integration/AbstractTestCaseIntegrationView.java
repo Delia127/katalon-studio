@@ -4,6 +4,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.parts.TestCaseIntegrationPart;
+import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public abstract class AbstractTestCaseIntegrationView {
@@ -23,7 +24,7 @@ public abstract class AbstractTestCaseIntegrationView {
 		TestCaseIntegrationPart integrationPart = (TestCaseIntegrationPart) mpart.getObject();
 		integrationPart.setDirty(dirty);
 	}
-	
+
 	public boolean isDirty() {
 		TestCaseIntegrationPart integrationPart = (TestCaseIntegrationPart) mpart.getObject();
 		
@@ -37,4 +38,20 @@ public abstract class AbstractTestCaseIntegrationView {
 	public String getDocumentationUrl() {
 	    return "";
 	}
+
+	public boolean needsSaving() {
+	    return false;
+	}
+
+	public IntegratedEntity getEditingIntegrated() {
+	    return null;
+	}
+	
+	public void onSaveSuccess(TestCaseEntity testCase) {
+	    
+	}
+	
+	public void onSaveFailure(Exception failure) {
+        
+    }
 }

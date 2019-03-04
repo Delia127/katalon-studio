@@ -52,19 +52,31 @@ pipeline {
 
                     script {
                         dir("source") {
-			// Generate Katalon builds   
-                            if (BRANCH_NAME ==~ /^[release]+/) {
-                                sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
-                            } else {                      
+                // Generate Katalon builds   
+                // If branch name contains "release", build production mode for non-qTest package
+                // else build development mode for qTest package    
+                            if (BRANCH_NAME ==~ /.*release.*/) {
+                                if (BRANCH_NAME ==~ /.*qtest.*/) {
+                                    echo "Building: qTest Prod"
+                                    sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
+                                } else {
+                                    echo "Building: Standard Prod"
+                                    sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
+                                }
+
+                            } else {      
+                                echo "Building: qTest Dev"                
                                 sh 'mvn -pl \\!com.kms.katalon.product clean verify -P dev'
                             }
-                        // Generate API docs
+                
+                            // Generate API docs
                             sh "cd com.kms.katalon.apidocs && mvn clean verify && cp -R 'target/resources/apidocs' ${env.tmpDir}"
                         }
                     }
                 }
             }
         }
+        
         /*
         stage('Testing') {
             steps {
@@ -76,13 +88,14 @@ pipeline {
                 }
             }
         }
-*/              
+        */ 
+        
         stage('Copy builds') {
             // Copy generated builds and changelogs to shared folder on server
             steps {
                 dir("source/com.kms.katalon.product/target/products") {
                     script { 
-                        if (BRANCH_NAME ==~ /^[release]+/) {
+                        if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/)) {
                             sh "cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -93,12 +106,12 @@ pipeline {
                                         flattenFiles: true,
                                         targetLocation: "${env.tmpDir}")
                             ])
-						}
+            }
                     }
                 }
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
-                        if (BRANCH_NAME !=~ /^[release]+/) {
+                        if (!(BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/))) {
                             sh "cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -115,12 +128,16 @@ pipeline {
             }
         }
         
-        // stage('Package .DMG file') {
-        //     steps {
-        //             // Execute codesign command to package .DMG file for macOS
-        //             sh "./package.sh ${env.tmpDir}"
-        //     }
-        // }
+        stage('Package .DMG file') {
+            steps {
+            script {   
+                    // For release branches, execute codesign command to package .DMG file for macOS
+            if (BRANCH_NAME ==~ /.*release.*/) {
+                       sh "./package.sh ${env.tmpDir}"
+            }       
+        }    
+            }
+        }
 
         stage ('Success') {
             steps {

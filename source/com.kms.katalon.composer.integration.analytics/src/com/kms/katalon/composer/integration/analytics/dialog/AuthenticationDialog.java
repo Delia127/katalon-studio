@@ -5,7 +5,6 @@ import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -30,12 +29,12 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
-import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class AuthenticationDialog extends Dialog {
@@ -231,8 +230,7 @@ public class AuthenticationDialog extends Dialog {
         String serverUrlText = serverUrl.getText();
         updateDataStore(emailText, passwordText);
         setReturnCode(CONNECT_ID);
-        AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrlText, emailText, passwordText, new ProgressMonitorDialog(getShell()),
-                analyticsSettingStore);
+        AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrlText, emailText, passwordText, analyticsSettingStore);
         setTokenInfo(tokenInfo);
         if (tokenInfo != null) {
             closeDialog();

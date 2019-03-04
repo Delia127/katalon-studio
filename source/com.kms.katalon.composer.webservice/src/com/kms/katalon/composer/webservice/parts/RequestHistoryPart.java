@@ -339,6 +339,10 @@ public class RequestHistoryPart implements IRequestHistoryListener {
 
     @Override
     public void addHistoryRequest(RequestHistoryEntity addedRequest) {
+        if (treeViewer == null || treeViewer.getTree() == null || treeViewer.getTree().isDisposed()) {
+            return;
+        }
+
         reloadTreeData();
 
         RequestDateTreeItem dateItem = contentProvider.findElementByDate(addedRequest.getReceivedResponseTime());

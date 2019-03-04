@@ -86,6 +86,7 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.application,
  org.greenrobot.eventbus,
  com.kms.katalon.tracking,
+ com.katalon.platform,
  org.eclipse.core.filesystem
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

@@ -264,6 +264,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_BTN_TIP_MOVE_UP = ComposerTestcaseMessageConstants.PA_BTN_TIP_MOVE_UP;
 
     public static final String PA_BTN_TIP_MOVE_DOWN = ComposerTestcaseMessageConstants.PA_BTN_TIP_MOVE_DOWN;
+    
+    public static final String PA_BTN_EDIT_TAG = ComposerTestcaseMessageConstants.PA_BTN_EDIT_TAG;
 
     public static final String PA_COL_INDEX = ComposerTestcaseMessageConstants.PA_COL_INDEX;
 
@@ -494,5 +496,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String CONS_MENU_CONTEXT_ADD_TO_TEST_SUITE = ComposerTestcaseMessageConstants.CONS_MENU_CONTEXT_ADD_TO_TEST_SUITE;
     public static final String CONS_MENU_CONTEXT_ADD_TO_AN_EXISTING_TEST_SUITE = ComposerTestcaseMessageConstants.CONS_MENU_CONTEXT_ADD_TO_AN_EXISTING_TEST_SUITE;
     public static final String CONS_MENU_CONTEXT_ADD_TO_A_NEW_TEST_SUITE = ComposerTestcaseMessageConstants.CONS_MENU_CONTEXT_ADD_TO_A_NEW_TEST_SUITE;
-
 }

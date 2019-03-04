@@ -24,6 +24,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.dialogs.IDEResourceInfoUtils;
+import org.osgi.framework.BundleException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -31,7 +32,6 @@ import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
 import com.kms.katalon.composer.handlers.QuitHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
@@ -62,7 +62,7 @@ public class LifeCycleManager {
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.WORKSPACE_CREATED, "");
     }
 
-    protected void setupHandlers() {
+    protected void setupHandlers() throws BundleException {
         IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench()
                 .getActiveWorkbenchWindow()
                 .getService(IHandlerService.class);
@@ -131,8 +131,6 @@ public class LifeCycleManager {
         new ProblemViewImageInitializer().setup();
         new DefaultTextFontInitializer().setup();
         new DisplayInitializer().setup();
-        
-//        EventBus.builder().installDefaultEventBus();
     }
 
     private void setupPreferences() {
@@ -141,25 +139,25 @@ public class LifeCycleManager {
     }
 
     private void setupGroovyTemplatePlugin() {
-		try {
-			ScopedPreferenceStore prefStore = getPreferenceStore(
-					GroovyTemplatePreferenceConstants.ORG_CODEHAUS_GROOVY_ECLIPSE_QUICKFIX_PLUGIN_ID);
+        try {
+            ScopedPreferenceStore prefStore = getPreferenceStore(
+                    GroovyTemplatePreferenceConstants.ORG_CODEHAUS_GROOVY_ECLIPSE_QUICKFIX_PLUGIN_ID);
 
-			if (!prefStore.getBoolean(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP)) {
-				// prevent user clear all or remove the predefined templates
-				prefStore.setDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY,
-						GroovyTemplatePreferenceConstants.GROOVY_TEMPLATES);
-				prefStore.setToDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY);
-				prefStore.setValue(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP, true);
-			}
-			prefStore.save();
-		} catch (IOException e) {
-			logError(e);
-		}
+            if (!prefStore.getBoolean(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP)) {
+                // prevent user clear all or remove the predefined templates
+                prefStore.setDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY,
+                        GroovyTemplatePreferenceConstants.GROOVY_TEMPLATES);
+                prefStore.setToDefault(GroovyTemplatePreferenceConstants.GROOVY_PREF_KEY);
+                prefStore.setValue(GroovyTemplatePreferenceConstants.FIRST_TIME_SET_UP, true);
+            }
+            prefStore.save();
+        } catch (IOException e) {
+            logError(e);
+        }
 
-	}
+    }
 
-	private void setupResourcePlugin() {
+    private void setupResourcePlugin() {
         try {
             ScopedPreferenceStore runtimePrefStore = getPreferenceStore(ResourcesPlugin.PI_RESOURCES);
             if (!runtimePrefStore.getBoolean(ResourcesPlugin.PREF_AUTO_BUILDING)) {
@@ -201,9 +199,9 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
-            
+
                     scheduleCollectingStatistics();
-                    
+
                     if (checkActivation(eventBroker)) {
                         eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
                     }
@@ -213,7 +211,8 @@ public class LifeCycleManager {
                 }
             }
 
-            private boolean checkActivation(final IEventBroker eventBroker) {
+
+            private boolean checkActivation(final IEventBroker eventBroker) throws Exception {
 //                if (VersionUtil.isInternalBuild()) {
 //                    return true;
 //                }
@@ -223,19 +222,23 @@ public class LifeCycleManager {
                     return false;
                 }
 
-//                Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-//                        .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
-//                                RunningMode.GUI)));
-//                sendEventForTracking();
-                Trackings.trackOpenApplication(false, "gui");
-                
+                // Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+                // .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
+                // RunningMode.GUI)));
+                // sendEventForTracking();
+                try {
+                    Trackings.trackOpenApplication(false, "gui");
+                } catch (Exception ignored) {
+                    
+                }
+
                 return true;
             }
-            
+
             private void scheduleCollectingStatistics() {
                 int trackingTime = TrackingManager.getInstance().getTrackingTime();
                 Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-                    Trackings.trackProjectStatistics(ProjectController.getInstance().getCurrentProject(), 
+                    Trackings.trackProjectStatistics(ProjectController.getInstance().getCurrentProject(),
                             !ActivationInfoCollector.isActivated(), "gui");
                 }, trackingTime, trackingTime, TimeUnit.SECONDS);
             }

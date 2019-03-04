@@ -5,14 +5,16 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 
 public interface ReportTestCaseIntegrationViewBuilder {
+    String getName();
+
     TestCaseLogDetailsIntegrationView getIntegrationDetails(ReportEntity report,
             TestSuiteLogRecord testSuiteLogRecord);
 
-    TestCaseIntegrationColumn getTestCaseIntegrationColumn(ReportEntity report);
+    TestCaseIntegrationColumn getTestCaseIntegrationColumn(ReportEntity report, TestSuiteLogRecord suiteRecord);
     
-    TestLogIntegrationColumn getTestLogIntegrationColumn(ReportEntity report);
+    TestLogIntegrationColumn getTestLogIntegrationColumn(ReportEntity reportt, TestSuiteLogRecord suiteRecord);
 
     int getPreferredOrder();
-    
+
     boolean isIntegrationEnabled(ProjectEntity project);
 }

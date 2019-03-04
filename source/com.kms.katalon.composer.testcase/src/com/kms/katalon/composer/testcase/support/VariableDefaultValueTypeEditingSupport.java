@@ -1,6 +1,9 @@
 package com.kms.katalon.composer.testcase.support;
 
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableDefaultValueOperation;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
@@ -20,6 +23,10 @@ public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValue
             InputValueType[] defaultInputValueTypes) {
         super(viewer, defaultInputValueTypes);
         this.variablesPart = variablesPart;
+    }
+    @Override
+    protected CellEditor getCellEditor(Object element) {
+        return new CustomComboBoxCellEditor((Composite) this.getViewer().getControl(),readableValueTypeNames);
     }
 
     @Override
@@ -57,5 +64,17 @@ public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValue
         variablesPart.executeOperation(new ChangeVariableDefaultValueOperation(variablesPart, (VariableEntity) element,
                 stringBuilder.toString()));
     }
+    private class CustomComboBoxCellEditor extends ComboBoxCellEditor {
 
+        public CustomComboBoxCellEditor(Composite parent, String[] items) {
+            super(parent, items);
+        }
+
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData result = super.getLayoutData();
+            result.minimumHeight = variablesPart.getTableViewer().getTable().getHeaderHeight();
+            return result;
+        }
+    }
 }

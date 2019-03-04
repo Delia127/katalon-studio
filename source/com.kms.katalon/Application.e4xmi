@@ -32,6 +32,7 @@
               <children xsi:type="advanced:Placeholder" xmi:id="_dJQtoDqeEeWympSUeHeJlA" elementId="org.eclipse.ui.views.ProblemView" ref="_d5-CIP3zEeS6qc67Kbzx-g">
                 <tags>NoClose</tags>
               </children>
+              <children xsi:type="advanced:Placeholder" xmi:id="_gMDv8BPkEem7dOioj5kUcw" elementId="com.kms.katalon.placeholder.eventLog" ref="_BortMBPkEem7dOioj5kUcw"/>
               <children xsi:type="advanced:Placeholder" xmi:id="_nDgIAD8NEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" containerData="100" ref="_yewVQD8LEeSqW-o8jtXO1g">
                 <tags>NoClose</tags>
               </children>
@@ -119,6 +120,10 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_4l8VEFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handledmenuitem.service" label="Business Support" command="_CeYPQFdcEeiRfOF4k51oXA"/>
         <children xsi:type="menu:DynamicMenuContribution" xmi:id="_JEmWAOi_Eei2Q7mM03p58A" elementId="com.kms.katalon.dynamicmenucontribution.checkForUpdates" label="Check for Updates..." contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.menu.CheckForUpdatesMenuContribution"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_kCdBsOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.menu.plugin" label="Plugin">
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_nemYcOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.installPlugin" label="Install Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.InstallPluginHandler"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_X471sOJsEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.uninstallPlugin" label="Uninstall Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UninstallPluginHandler"/>
+      </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
     <sharedElements xsi:type="advanced:Area" xmi:id="_2Ev6oD8CEeSqW-o8jtXO1g" elementId="org.eclipse.ui.editorss" containerData="50">
@@ -139,6 +144,11 @@
     <sharedElements xsi:type="basic:Part" xmi:id="_zqfPgP3wEeS6qc67Kbzx-g" elementId="org.eclipse.search.ui.views.SearchView" visible="false" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Search" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/search_16.png" closeable="true">
       <toolbar xmi:id="_2gfMQP3wEeS6qc67Kbzx-g" elementId="com.kms.katalon.toolbar.1"/>
     </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_BortMBPkEem7dOioj5kUcw" elementId="com.kms.katalon.part.eventLog" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.parts.EventLogPart" label="Event Log" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png">
+      <toolbar xmi:id="_qt3TEBPqEem7dOioj5kUcw" elementId="com.kms.katalon.toolbar.0">
+        <children xsi:type="menu:DirectToolItem" xmi:id="_r821wBPqEem7dOioj5kUcw" elementId="com.kms.katalon.eventLog.clearLog" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/clear_16.png" tooltip="Clear logs" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.parts.ClearLogHandler"/>
+      </toolbar>
+    </sharedElements>
     <trimBars xmi:id="_hQQH9RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">
         <tags>NoMove</tags>
@@ -147,6 +157,7 @@
           <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_disabled_24.png"/>
           <tags>Opaque</tags>
           <tags>FORCE_TEXT</tags>
+          <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_l7A2sAbGEemu-rQeuokE_A"/>
         </children>
         <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" label="Save All" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_all_24.png" tooltip="" command="_8qJlUEO4EeSlQuaMBzQJOw">
           <persistedState key="index" value="1"/>
@@ -183,6 +194,21 @@
         <tags>NoMove</tags>
         <children xsi:type="menu:HandledToolItem" xmi:id="_v1hLMI_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support.chatsupport" label="Community Chat" iconURI="platform:/plugin/com.kms.katalon/icons/chat_support_24.png" command="_Wci7UI_aEeifVM5dtK86vQ">
           <tags>FORCE_TEXT</tags>
+        </children>
+      </children>
+      <children xsi:type="menu:ToolBar" xmi:id="_KDRJMAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin">
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_1yN1YAbFEemu-rQeuokE_A" elementId="com.kms.katalon.toolbarseparator.1"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_27TkYAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.toolitem" label="Plugin Store" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/katalon_store_32x24.png" tooltip="Plugin Store" command="_5x1PkB7BEemVq49wBuyKyg">
+          <tags>FORCE_TEXT</tags>
+          <menu xmi:id="_UvQVUAbGEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.menu">
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_kqH2kAbGEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.menu.reload" label="Reload Plugins" iconURI="" tooltip="" command="_VUn2wAbHEemu-rQeuokE_A"/>
+            <children xsi:type="menu:MenuSeparator" xmi:id="_gW1-8Aj0EemqvpskrRucLw" elementId="com.kms.katalon.menuseparator.2"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_gsFroAjzEemqvpskrRucLw" elementId="com.kms.katalon.composer.toolbar.plugin.menu.search" label="Search Plugins" tooltip="" command="_1KbioAj0EemqvpskrRucLw"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_EYdBcAj0EemqvpskrRucLw" elementId="com.kms.katalon.composer.toolbar.plugin.menu.manage" label="Manage Plugins" tooltip="" command="_TKym4AhQEemdRPhm8aXnZw"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_7_t30CRxEem3k_cDce2KKQ" elementId="com.kms.katalon.composer.toolbar.plugin.menu.manageclikeys" label="Manage API Keys" tooltip="" command="_TIr-gCRyEem3k_cDce2KKQ"/>
+            <children xsi:type="menu:MenuSeparator" xmi:id="_S48o8DHREemAoL-JB9vDaQ" elementId="com.kms.katalon.menuseparator.3"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_TrJh8DHREemAoL-JB9vDaQ" elementId="com.kms.katalon.composer.toolbar.plugin.menu.help" label="Help" command="_31emIDHREemAoL-JB9vDaQ"/>
+          </menu>
         </children>
       </children>
     </trimBars>
@@ -222,6 +248,12 @@
   <handlers xmi:id="_jkq6sFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handler.service" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenSupportServicePageHandler" command="_CeYPQFdcEeiRfOF4k51oXA"/>
   <handlers xmi:id="_jNSC4I_aEeifVM5dtK86vQ" elementId="com.kms.katalon.handler.chatSupport" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ChatSupportHandler" command="_Wci7UI_aEeifVM5dtK86vQ"/>
   <handlers xmi:id="_JTi4oMecEeiT4f3fp0QbHA" elementId="com.kms.katalon.handler.openErrorLog" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenErrorLogHandler" command="_xthpkMebEeiT4f3fp0QbHA"/>
+  <handlers xmi:id="_gtgakAbHEemu-rQeuokE_A" elementId="com.kms.katalon.handler.reloadPlugins" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ReloadPluginsHandler" command="_VUn2wAbHEemu-rQeuokE_A"/>
+  <handlers xmi:id="_bSoQsAhQEemdRPhm8aXnZw" elementId="com.kms.katalon.handler.managePlugins" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ManagePluginsHandler" command="_TKym4AhQEemdRPhm8aXnZw"/>
+  <handlers xmi:id="_AmpHQAj1EemqvpskrRucLw" elementId="com.kms.katalon.handler.searchPlugins" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SearchPluginsHandler" command="_1KbioAj0EemqvpskrRucLw"/>
+  <handlers xmi:id="_EW7mAB7CEemVq49wBuyKyg" elementId="com.kms.katalon.handler.showPluginMenu" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ShowPluginMenuHandler" command="_5x1PkB7BEemVq49wBuyKyg"/>
+  <handlers xmi:id="_cIfyICRyEem3k_cDce2KKQ" elementId="com.kms.katalon.handler.managekstoreclikeys" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler" command="_TIr-gCRyEem3k_cDce2KKQ"/>
+  <handlers xmi:id="_Ah91IDHSEemAoL-JB9vDaQ" elementId="com.kms.katalon.handler.pluginHelp" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenPluginHelpPageHandler" command="_31emIDHREemAoL-JB9vDaQ"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -253,6 +285,12 @@
   <commands xmi:id="_CeYPQFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.command.service" commandName="openSupportServicePageCommand"/>
   <commands xmi:id="_Wci7UI_aEeifVM5dtK86vQ" elementId="com.kms.katalon.command.chatSupport" commandName="Chat Support"/>
   <commands xmi:id="_xthpkMebEeiT4f3fp0QbHA" elementId="com.kms.katalon.command.openErrorLog" commandName="openErrorLog"/>
+  <commands xmi:id="_VUn2wAbHEemu-rQeuokE_A" elementId="com.kms.katalon.command.reloadPlugins" commandName="reloadPlugins"/>
+  <commands xmi:id="_TKym4AhQEemdRPhm8aXnZw" elementId="com.kms.katalon.command.managePlugins" commandName="managePlugins"/>
+  <commands xmi:id="_1KbioAj0EemqvpskrRucLw" elementId="com.kms.katalon.command.searchPlugins" commandName="searchPlugins"/>
+  <commands xmi:id="_5x1PkB7BEemVq49wBuyKyg" elementId="com.kms.katalon.command.showPluginMenu" commandName="showPluginMenu"/>
+  <commands xmi:id="_TIr-gCRyEem3k_cDce2KKQ" elementId="com.kms.katalon.command.managekstoreclikeys" commandName="manageKStoreCLIKeys"/>
+  <commands xmi:id="_31emIDHREemAoL-JB9vDaQ" elementId="com.kms.katalon.command.pluginHelp" commandName="pluginHelp"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

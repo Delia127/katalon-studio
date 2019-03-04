@@ -16,5 +16,4 @@
             pluginId="com.kms.katalon.preferences">
       </preferenceStoreProvider>
     </extension>
-   		
 </plugin>

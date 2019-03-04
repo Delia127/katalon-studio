@@ -14,7 +14,8 @@ Require-Bundle: com.kms.katalon.logging,
  net.sf.jopt-simple.jopt-simple,
  com.kms.katalon.entity,
  com.kms.katalon.controller,
- com.kms.katalon.core.webui
+ com.kms.katalon.core.webui,
+ com.kms.katalon.util
 Export-Package: com.kms.katalon.tracking.core,
  com.kms.katalon.tracking.model,
  com.kms.katalon.tracking.osgi.service,

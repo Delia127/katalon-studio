@@ -111,7 +111,7 @@
     </elements>
     <elements xsi:type="commands:KeyBinding" xmi:id="_unBEUNfxEeilW6ltg3pXaA" elementId="com.kms.katalon.composer.execution.keybinding.debug" keySequence="M1+M2+D" command="_Z3Hl4OJWEeSyVPtKyNklew">
       <parameters xmi:id="_X9Ma8Nf1Eeip0P00ARdx0w" elementId="com.kms.katalon.composer.execution.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
-	</elements>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4dEXYM0EEeiPt9_2nJ1Mzg" featurename="children" parentElementId="com.kms.katalon.menu.run" positionInList="">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_zzdSgM0FEeiPt9_2nJ1Mzg" elementId="com.kms.katalon.composer.execution.menuseparator.0"/>

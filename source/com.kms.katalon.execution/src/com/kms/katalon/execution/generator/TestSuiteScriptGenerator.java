@@ -11,6 +11,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.IExecutedEntity;
@@ -47,12 +48,12 @@ public class TestSuiteScriptGenerator {
 
     public File generateScriptFile() throws Exception {
         IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(testSuite.getProject());
-        File file = new File(libFolder.getRawLocation().toString(), TEMP_TEST_SUITE_FILE_NAME
-                + System.currentTimeMillis() + GroovyConstants.GROOVY_FILE_EXTENSION);
+        File file = new File(libFolder.getRawLocation().toString(),
+                TEMP_TEST_SUITE_FILE_NAME + System.currentTimeMillis() + GroovyConstants.GROOVY_FILE_EXTENSION);
         file.createNewFile();
         GroovyObject object = (GroovyObject) Class.forName(TEMPLATE_CLASS_NAME).newInstance();
-        object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME, new Object[] { file, testSuite,
-                createTestCaseBindings(), config, testSuiteExecuted });
+        object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME,
+                new Object[] { file, testSuite, createTestCaseBindings(), config, testSuiteExecuted });
 
         libFolder.refreshLocal(IResource.DEPTH_ONE, null);
         return file;
@@ -60,8 +61,8 @@ public class TestSuiteScriptGenerator {
 
     public String generateScriptAsString() throws Exception {
         GroovyObject object = (GroovyObject) Class.forName(TEMPLATE_CLASS_NAME).newInstance();
-        return (String) object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME, new Object[] { null, testSuite,
-                createTestCaseBindings(), config });
+        return (String) object.invokeMethod(GENERATED_TEST_SUITE_SCRIPT_METHOD_NAME,
+                new Object[] { null, testSuite, createTestCaseBindings(), config });
     }
 
     public List<String> createTestCaseBindings() {
@@ -70,35 +71,36 @@ public class TestSuiteScriptGenerator {
 
         List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(
                 testSuite);
-        for (IExecutedEntity testCaseExecuted : testSuiteExecuted.getExecutedItems()) {//*
-            //testCaseExecuted id=null
-            String testCaseId = testCaseExecuted.getSourceId();//*
-            TestSuiteTestCaseLink testCaseLink = getTestCaseLink(testCaseId, lstTestCaseRun);
-            
-            // KAT-4017, removing a test case so the next iteration we will consider
-            // the next (possibly duplicate) test cases
-            lstTestCaseRun.remove(testCaseLink);
+        for (IExecutedEntity testCaseExecuted : testSuiteExecuted.getExecutedItems()) {
+            String testCaseId = testCaseExecuted.getSourceId();
+            TestSuiteTestCaseLink testCaseLink = null;
+            if (testSuite instanceof FilteringTestSuiteEntity) {
+                testCaseLink = new TestSuiteTestCaseLink();
+                testCaseLink.setTestCaseId(testCaseId);
+                testCaseLink.setIsRun(true);
+            } else {
+                testCaseLink = getTestCaseLink(testCaseId, lstTestCaseRun);
+                // KAT-4017, removing a test case so the next iteration we will consider
+                // the next (possibly duplicate) test cases
+                lstTestCaseRun.remove(testCaseLink);
+            }
             
             if (testCaseLink == null) {
                 throw new IllegalArgumentException("Test case: '" + testCaseId + "' not found");
             }
-            
 
             List<String> testCaseBinding = getTestCaseBindingString(testCaseLink,
                     (TestCaseExecutedEntity) testCaseExecuted);
-            //            testCaseBindings size=2 count =2,testCaseLink size=1, count =1
             testCaseBindings.addAll(testCaseBinding);
-            //count =1
         }
 
         if (syntaxErrorCollector.toString().isEmpty()) {
             return testCaseBindings;
-            //size=3
         } else {
             throw new IllegalArgumentException(syntaxErrorCollector.toString());
         }
     }
-    
+
     private TestSuiteTestCaseLink getTestCaseLink(String testCaseId, List<TestSuiteTestCaseLink> distinctTestCaseLink) {
         for (TestSuiteTestCaseLink testCaseLink : distinctTestCaseLink) {
             if (testCaseLink.getTestCaseId().equals(testCaseId)) {
@@ -113,15 +115,11 @@ public class TestSuiteScriptGenerator {
         List<String> testCaseBindingStrings = new ArrayList<String>();
         for (int iterationIdx = 0; iterationIdx < testCaseExecutedEntity.getLoopTimes(); iterationIdx++) {
             TestCaseBindingStringBuilder builder = new TestCaseBindingStringBuilder(iterationIdx, testCaseExecutedEntity);
-            
-           // List<VariableLink> ls = testCaseLink.getVariableLinks();
+
             for (VariableLink variableLink : testCaseLink.getVariableLinks()) {
-                //id=null
                 builder.append(variableLink, testSuiteExecuted.getTestDataMap());
-                //varialeBinding =hashmap<K,V>
-                //modcount ,size=0,value=null
             }
-            
+
             if (builder.hasErrors()) {
                 syntaxErrorCollector.append(builder.getErrorMessage()).append(SyntaxUtil.LINE_SEPARATOR);
                 break;

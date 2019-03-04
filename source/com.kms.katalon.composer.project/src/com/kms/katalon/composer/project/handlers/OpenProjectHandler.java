@@ -26,17 +26,25 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
+import com.kms.katalon.composer.project.dialog.WalkthroughDialog;
+import com.kms.katalon.composer.project.dialog.WalkthroughItem;
+import com.kms.katalon.composer.project.dialog.WalkthroughItem.SecondaryLinkItem;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenProjectHandler {
@@ -86,7 +94,8 @@ public class OpenProjectHandler {
 
     public static File getProjectFile(File projectDirectory) {
         for (File file : projectDirectory.listFiles()) {
-            if (('.' + FilenameUtils.getExtension(file.getAbsolutePath())).equals(ProjectEntity.getProjectFileExtension())) {
+            if (('.' + FilenameUtils.getExtension(file.getAbsolutePath()))
+                    .equals(ProjectEntity.getProjectFileExtension())) {
                 return file;
             }
         }
@@ -109,16 +118,16 @@ public class OpenProjectHandler {
     @Inject
     @Optional
     private void openProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-            @UIEventTopic(EventConstants.PROJECT_OPEN) final String projectPk) throws InvocationTargetException,
-            InterruptedException {
+            @UIEventTopic(EventConstants.PROJECT_OPEN) final String projectPk)
+            throws InvocationTargetException, InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
     }
 
     @Inject
     @Optional
     private void restoreOpenProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-            @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk) throws InvocationTargetException,
-            InterruptedException {
+            @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk)
+            throws InvocationTargetException, InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
 
         eventBroker.post(EventConstants.PROJECT_RESTORE_SESSION, null);
@@ -139,7 +148,8 @@ public class OpenProjectHandler {
                     monitor.worked(1);
                     monitor.subTask(StringConstants.HAND_LOADING_PROJ);
                     final ProjectEntity project = ProjectController.getInstance().openProjectForUI(projectPk,
-                            progress.newChild(7, SubMonitor.SUPPRESS_SUBTASK));
+                            progress.newChild(7, SubMonitor.SUPPRESS_SUBTASK));                    
+                    
                     monitor.subTask(StringConstants.HAND_REFRESHING_EXPLORER);
                     syncService.syncExec(new Runnable() {
                         @Override
@@ -166,7 +176,7 @@ public class OpenProjectHandler {
 
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
-
+                    TimeUnit.SECONDS.sleep(1);
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {
@@ -184,6 +194,26 @@ public class OpenProjectHandler {
                 }
             }
         });
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        if(project != null && project.getType().equals(ProjectType.WEBUI)){
+    		ScopedPreferenceStore prefStore = PreferenceStoreManager
+    				.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
+    		boolean shouldShowWalkthroughDialog = prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_WALKTHROUGH_DIALOG);
+    		if (shouldShowWalkthroughDialog) {
+    			Display.getDefault().asyncExec(() -> {
+        			WalkthroughDialog walkthroughDialog = new WalkthroughDialog(
+        					"WebUiWalkthroughDialog", "Walkthrough for beginners",
+        					null, getItems(), "https://docs.katalon.com/katalon-studio/docs/index.html",
+        					"I am an experienced user");
+        			walkthroughDialog.open();
+        			if(walkthroughDialog.isIgnore()){
+        				prefStore.setValue(PreferenceConstants.GENERAL_SHOW_WALKTHROUGH_DIALOG, false);
+        			}
+    			});
+    		}
+
+        }
+        
     }
 
     public static void updateProjectTitle(ProjectEntity projectEntity, EModelService modelService, MApplication app) {
@@ -194,4 +224,49 @@ public class OpenProjectHandler {
             win.updateLocalization();
         }
     }
+    
+
+
+	private static List<WalkthroughItem> getItems() {
+		List<WalkthroughItem> items = new ArrayList<>();
+		WalkthroughItem createTestCase = new WalkthroughItem("Create a test case", EventConstants.TESTCASE_OPEN);
+		List<SecondaryLinkItem> createTestCaseLinks = new ArrayList<>();
+		createTestCaseLinks.add(new WalkthroughItem.SecondaryLinkItem("How to create test cases using script mode",
+				"https://docs.katalon.com/katalon-studio/tutorials/create_test_case_using_record_playback.html"));
+		createTestCaseLinks
+				.add(new WalkthroughItem.SecondaryLinkItem("How to create test cases using Record & Playback",
+						"https://docs.katalon.com/katalon-studio/tutorials/create_test_case_using_script_mode.html"));
+		createTestCase.setSecondaryLinkItems(createTestCaseLinks);
+		items.add(createTestCase);
+
+		WalkthroughItem executeTestCase = new WalkthroughItem("Execute the test case",
+				EventConstants.EXECUTE_TEST_CASE);
+		List<SecondaryLinkItem> executeTestCaseLinks = new ArrayList<>();
+		executeTestCaseLinks.add(new WalkthroughItem.SecondaryLinkItem("How to execute test cases",
+				"https://docs.katalon.com/katalon-studio/docs/execute-a-test-case-or-a-test-suite.html"));
+		executeTestCase.setSecondaryLinkItems(executeTestCaseLinks);
+		items.add(executeTestCase);
+
+		WalkthroughItem createTestSuite = new WalkthroughItem("Plan the test case to a test suite",
+				EventConstants.TEST_SUITE_OPEN);
+		List<SecondaryLinkItem> createTestSuiteLinks = new ArrayList<>();
+		createTestSuiteLinks.add(new WalkthroughItem.SecondaryLinkItem("How to add test suites",
+				"https://docs.katalon.com/katalon-studio/docs/test-suite.html"));
+		createTestSuiteLinks.add(new WalkthroughItem.SecondaryLinkItem("How to design test suites",
+				"https://docs.katalon.com/katalon-studio/docs/design-a-test-suite.html"));
+		createTestSuite.setSecondaryLinkItems(createTestSuiteLinks);
+		items.add(createTestSuite);
+
+		WalkthroughItem executeTestSuite = new WalkthroughItem("Execute the test suite",
+				EventConstants.EXECUTE_TEST_SUITE);
+		List<SecondaryLinkItem> executeTestSuiteLinks = new ArrayList<>();
+		executeTestSuiteLinks.add(new WalkthroughItem.SecondaryLinkItem("How to execute test suites",
+				"https://docs.katalon.com/katalon-studio/docs/execute-a-test-case-or-a-test-suite.html"));
+		executeTestSuiteLinks.add(new WalkthroughItem.SecondaryLinkItem("How to execute test suites in console mode",
+				"https://docs.katalon.com/katalon-studio/docs/console-mode-execution.html#katalon-command-line-options"));
+		executeTestSuite.setSecondaryLinkItems(executeTestSuiteLinks);
+		items.add(executeTestSuite);
+
+		return items;
+	}
 }

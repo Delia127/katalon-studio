@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -52,10 +51,8 @@ import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.TestSuiteEventConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -79,9 +76,7 @@ public class TestSuitePart implements EventHandler {
 
 	private boolean isExecutionCompositeExpanded;
 
-	private Text txtLastRun, txtRerun, txtUserDefinePageLoadTimeout;
-
-	private Link lblLastRun;
+	private Text txtRerun, txtUserDefinePageLoadTimeout;
 
 	private MPart mpart;
 
@@ -112,8 +107,6 @@ public class TestSuitePart implements EventHandler {
 	private Composite parent;
 
     private boolean isLoading;
-    
-    private ReportEntity lastRunReport;
 
 	private Listener layoutExecutionCompositeListener = new Listener() {
 
@@ -297,13 +290,6 @@ public class TestSuitePart implements EventHandler {
         });
         txtUserDefinePageLoadTimeout.addVerifyListener(verifyNumberListener);
 
-        lblLastRun.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                openReportOfLastRun();
-            }
-        });
-
         txtRerun.addModifyListener(new ModifyListener() {
 
             @Override
@@ -331,21 +317,6 @@ public class TestSuitePart implements EventHandler {
         });
 
         childrenView.registerControlModifyListeners();
-    }
-
-    private void openReportOfLastRun() {
-        try {
-            if (lastRunReport != null) {
-                eventBroker.post(EventConstants.REPORT_OPEN, lastRunReport);
-            } else {
-                MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN_TITLE,
-                        StringConstants.PA_WARN_MSG_REPORT_FILE_DOES_NOT_EXIST);
-            }
-        } catch (Exception ex) {
-            LoggerSingleton.logError(ex);
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_UNABLE_TO_OPEN_REPORT);
-        }
     }
 
     public void loadTestSuite(final TestSuiteEntity testSuite) {
@@ -381,16 +352,6 @@ public class TestSuitePart implements EventHandler {
     }
 
     private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
-        lastRunReport = ReportController.getInstance().getLastRunReportEntity(testSuite);
-        if (lastRunReport != null) {
-            lblLastRun.setText("<A>" + StringConstants.PA_LBL_LAST_RUN + "</A>");
-            lblLastRun.setToolTipText(StringConstants.PA_LBL_TIP_LAST_RUN);
-            txtLastRun.setText(ReportController.getInstance().getReportDate(lastRunReport).toString());
-        } else {
-            lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
-            lblLastRun.setToolTipText("");
-        }
-
         txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
         rerunTestCaseOnly.setSelection(testSuite.isRerunFailedTestCasesOnly());
 
@@ -451,7 +412,7 @@ public class TestSuitePart implements EventHandler {
 
         Composite compositeExecutionCompositeHeader = new Composite(compositeExecution, SWT.NONE);
         compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(3, false);
+        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(2, false);
         glCompositeExecutionCompositeHeader.marginHeight = 0;
         glCompositeExecutionCompositeHeader.marginWidth = 0;
         compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
@@ -470,13 +431,13 @@ public class TestSuitePart implements EventHandler {
 
         compositeExecutionDetails = new Composite(compositeExecution, SWT.NONE);
         compositeExecutionDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glCompositeExecutionDetail = new GridLayout(3, true);
+        GridLayout glCompositeExecutionDetail = new GridLayout(2, false);
         glCompositeExecutionDetail.marginLeft = 45;
         glCompositeExecutionDetail.horizontalSpacing = 40;
         compositeExecutionDetails.setLayout(glCompositeExecutionDetail);
 
         Composite compositePageLoadTimeout = new Composite(compositeExecutionDetails, SWT.NONE);
-        GridData gdCompositePageLoadTimeout = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        GridData gdCompositePageLoadTimeout = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
         gdCompositePageLoadTimeout.minimumWidth = MINIMUM_COMPOSITE_SIZE;
         compositePageLoadTimeout.setLayoutData(gdCompositePageLoadTimeout);
         GridLayout glCompositePageLoadTimeout = new GridLayout(1, false);
@@ -506,29 +467,15 @@ public class TestSuitePart implements EventHandler {
         GridData gdTxtUserDefinePageLoadTimeout = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdTxtUserDefinePageLoadTimeout.heightHint = 20;
         txtUserDefinePageLoadTimeout.setLayoutData(gdTxtUserDefinePageLoadTimeout);
-        // limit the input length for the range of
-        // TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue() and
-        // TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()
         txtUserDefinePageLoadTimeout.setTextLimit(4);
 
-        compositeLastRunAndReRun = new Composite(compositeExecutionDetails, SWT.NONE);
+        compositeLastRunAndReRun = new Composite(compositePageLoadTimeout, SWT.NONE);
         GridData gdCompositeTestDataAndLastRun = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gdCompositeTestDataAndLastRun.minimumWidth = MINIMUM_COMPOSITE_SIZE;
         compositeLastRunAndReRun.setLayoutData(gdCompositeTestDataAndLastRun);
         GridLayout glCompositeTestDataAndLastRun = new GridLayout(4, false);
         glCompositeTestDataAndLastRun.verticalSpacing = 10;
         compositeLastRunAndReRun.setLayout(glCompositeTestDataAndLastRun);
-
-        lblLastRun = new Link(compositeLastRunAndReRun, SWT.NONE);
-        GridData gdLblLastRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblLastRun.widthHint = 85;
-        lblLastRun.setLayoutData(gdLblLastRun);
-        lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
-
-        txtLastRun = new Text(compositeLastRunAndReRun, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtLastRun = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
-        gdTxtLastRun.heightHint = 20;
-        txtLastRun.setLayoutData(gdTxtLastRun);
 
         Label lblReRun = new Label(compositeLastRunAndReRun, SWT.NONE);
         GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -561,7 +508,6 @@ public class TestSuitePart implements EventHandler {
 
         Composite compositeMailRecipients = new Composite(compositeExecutionDetails, SWT.NONE);
         GridData gdCompositeMailRecipients = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gdCompositeMailRecipients.minimumWidth = MINIMUM_COMPOSITE_SIZE;
         compositeMailRecipients.setLayoutData(gdCompositeMailRecipients);
         GridLayout glCompositeMailRecipients = new GridLayout(3, false);
         compositeMailRecipients.setLayout(glCompositeMailRecipients);
@@ -574,13 +520,11 @@ public class TestSuitePart implements EventHandler {
 
         listMailRcpViewer = new ListViewer(compositeMailRecipients, SWT.BORDER | SWT.V_SCROLL);
         listMailRcp = listMailRcpViewer.getList();
-        GridData gdListMailRcp = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdListMailRcp.heightHint = 70;
-        listMailRcp.setLayoutData(gdListMailRcp);
+        listMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         listMailRcpViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         Composite compositeMailRcpButtons = new Composite(compositeMailRecipients, SWT.NONE);
-        compositeMailRcpButtons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        compositeMailRcpButtons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
         GridLayout glCompositeMailRcpButtons = new GridLayout(1, false);
         glCompositeMailRcpButtons.marginWidth = 0;
         glCompositeMailRcpButtons.marginHeight = 0;

@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -21,9 +20,11 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
 import com.kms.katalon.core.util.internal.JsonUtil;
 
@@ -529,14 +530,22 @@ public class RunConfiguration {
     }
     
     public static Boolean getAutoApplyNeighborXpaths(){
-    	return (Boolean) getExecutionGeneralProperties().get(AUTO_APPLY_NEIGHBOR_XPATHS);
+    	if(getProperty("com.katalon.katalon-studio-smart-xpath") != null){
+        	try {
+    			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.katalon-studio-smart-xpath", true).
+    					getBoolean("SmartXPathEnabled", false);
+    		} catch (IOException e) {
+    			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
+    		}
+    	}
+    	return false;
     }
     
     public static RunningMode getRunningMode() {
         return RunningMode.valueOf(getStringProperty(RUNNING_MODE));
     }
     
-    private static Map<String, Object> getOverridingParameters(){
+    public static Map<String, Object> getOverridingParameters(){
     	Map<String, Object> overridingParameters = (Map<String, Object>) getProperty(OVERRIDING_GLOBAL_VARIABLES);
     	if(overridingParameters == null){
     		return new HashMap<String, Object>();

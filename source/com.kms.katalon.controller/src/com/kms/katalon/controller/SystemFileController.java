@@ -3,6 +3,7 @@ package com.kms.katalon.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
@@ -20,12 +21,20 @@ public class SystemFileController extends EntityController {
         return (SystemFileController) _instance;
     }
 
-    public SystemFileEntity newFile(String newName, String content, FolderEntity folder) throws DALException {
-        return getDataProviderSetting().getSystemFileDataProvider().newFile(newName, content, folder);
+    public SystemFileEntity newFile(String newName, String content, FolderEntity folder) throws ControllerException {
+        try {
+            return getDataProviderSetting().getSystemFileDataProvider().newFile(newName, content, folder);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
-    public List<FileEntity> getChildren(FolderEntity parentFolder) throws DALException {
-        return getDataProviderSetting().getSystemFileDataProvider().getChildren(parentFolder);
+    public List<FileEntity> getChildren(FolderEntity parentFolder) throws ControllerException {
+        try {
+            return getDataProviderSetting().getSystemFileDataProvider().getChildren(parentFolder);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
     public void deleteFile(SystemFileEntity fileEntity) {
@@ -36,9 +45,11 @@ public class SystemFileController extends EntityController {
         return getDataProviderSetting().getSystemFileDataProvider().renameFile(newName, renamedFile);
     }
 
-    public List<FileEntity> getSiblingFiles(SystemFileEntity renamedFile, FolderEntity parentFolder) throws DALException {
+    public List<FileEntity> getSiblingFiles(SystemFileEntity renamedFile, FolderEntity parentFolder)
+            throws ControllerException {
         return getChildren(parentFolder).stream()
-                .filter(f -> !f.getName().equals(renamedFile.getName())).collect(Collectors.toList());
+                .filter(f -> !f.getName().equals(renamedFile.getName()))
+                .collect(Collectors.toList());
     }
 
     public SystemFileEntity copySystemFile(SystemFileEntity sourceFile, FolderEntity targetFolder) throws DALException {
@@ -49,7 +60,12 @@ public class SystemFileController extends EntityController {
         return getDataProviderSetting().getSystemFileDataProvider().moveFile(systemFile, targetFolder);
     }
 
-    public SystemFileEntity getSystemFile(String systemFilePath, ProjectEntity projectEntity) throws DALException {
-        return getDataProviderSetting().getSystemFileDataProvider().getSystemFile(systemFilePath, projectEntity);
+    public SystemFileEntity getSystemFile(String systemFilePath, ProjectEntity projectEntity)
+            throws ControllerException {
+        try {
+            return getDataProviderSetting().getSystemFileDataProvider().getSystemFile(systemFilePath, projectEntity);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 }

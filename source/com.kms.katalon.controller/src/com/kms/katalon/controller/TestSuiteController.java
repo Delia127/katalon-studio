@@ -22,6 +22,7 @@ import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.util.Util;
@@ -82,6 +83,37 @@ public class TestSuiteController extends EntityController {
     }
 
     /**
+     * Create a NEW Filtering Test Suite without save
+     * 
+     * @param parentFolder Parent folder
+     * @param testSuiteName Test Suite name. Default name (New Test Suite) will be used if this null or empty
+     * @return {@link TestSuiteEntity}
+     * @throws DALException 
+     * @throws Exception
+     */
+    public FilteringTestSuiteEntity newFilteringTestSuiteWithoutSave(FolderEntity parentFolder, String testSuiteName) throws DALException {
+        if (parentFolder == null) {
+            return null;
+        }
+
+        if (StringUtils.isBlank(testSuiteName)) {
+            testSuiteName = StringConstants.CTRL_NEW_TEST_SUITE;
+        }
+
+        FilteringTestSuiteEntity newTestSuite = new FilteringTestSuiteEntity();
+        newTestSuite.setTestSuiteGuid(Util.generateGuid());
+        try {
+            newTestSuite.setName(getAvailableTestSuiteName(parentFolder, testSuiteName));
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+        newTestSuite.setParentFolder(parentFolder);
+        newTestSuite.setProject(parentFolder.getProject());
+        newTestSuite.setFilteringText("");
+        return newTestSuite;
+    }
+
+    /**
      * Save a NEW Test Suite.<br>
      * Please user {@link #updateTestSuite(TestSuiteEntity)} if you want to save an existing Test Suite.
      * 
@@ -100,7 +132,7 @@ public class TestSuiteController extends EntityController {
     public synchronized TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
         return getDataProviderSetting().getTestSuiteDataProvider().updateTestSuite(testSuite);
     }
-    
+
     public TestSuiteEntity renameTestSuite(String newName, TestSuiteEntity testSuite) throws Exception {
         return getDataProviderSetting().getTestSuiteDataProvider().renameTestSuite(newName, testSuite);
     }
@@ -123,9 +155,8 @@ public class TestSuiteController extends EntityController {
      */
     @Deprecated
     public String getIdForDisplay(TestSuiteEntity entity) throws Exception {
-        return getDataProviderSetting().getTestSuiteDataProvider()
-                .getIdForDisplay(entity)
-                .replace(File.separator, GlobalStringConstants.ENTITY_ID_SEPARATOR);
+        return getDataProviderSetting().getTestSuiteDataProvider().getIdForDisplay(entity).replace(File.separator,
+                GlobalStringConstants.ENTITY_ID_SEPARATOR);
     }
 
     public TestSuiteEntity getTestSuiteByDisplayId(String testSuiteId, ProjectEntity projectEntity) throws Exception {
@@ -146,9 +177,8 @@ public class TestSuiteController extends EntityController {
         List<FileEntity> sibblingEntities = FolderController.getInstance().getChildren(testSuite.getParentFolder());
         List<String> sibblingName = new ArrayList<String>();
         for (FileEntity sibblingEntity : sibblingEntities) {
-            if (sibblingEntity instanceof TestSuiteEntity
-                    && !getDataProviderSetting().getEntityPk(sibblingEntity).equals(
-                            getDataProviderSetting().getEntityPk(testSuite))) {
+            if (sibblingEntity instanceof TestSuiteEntity && !getDataProviderSetting().getEntityPk(sibblingEntity)
+                    .equals(getDataProviderSetting().getEntityPk(testSuite))) {
                 sibblingName.add(sibblingEntity.getName());
             }
         }
@@ -253,8 +283,8 @@ public class TestSuiteController extends EntityController {
 
     public List<TestSuiteCollectionEntity> getTestSuiteCollectionReferences(TestSuiteEntity testSuite)
             throws DALException {
-        return getDataProviderSetting().getTestSuiteCollectionDataProvider().getTestSuiteCollectionReferences(
-                testSuite, ProjectController.getInstance().getCurrentProject());
+        return getDataProviderSetting().getTestSuiteCollectionDataProvider().getTestSuiteCollectionReferences(testSuite,
+                ProjectController.getInstance().getCurrentProject());
     }
 
     public void removeTestSuiteCollectionReferences(TestSuiteEntity testSuite,
@@ -262,11 +292,11 @@ public class TestSuiteController extends EntityController {
         getDataProviderSetting().getTestSuiteCollectionDataProvider().removeTestSuiteCollectionReferences(testSuite,
                 testSuiteCollectionReferences);
     }
-    
+
     public File getTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
         return getDataProviderSetting().getTestSuiteDataProvider().getTestSuiteScriptFile(testSuite);
     }
-    
+
     public File newTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
         return getDataProviderSetting().getTestSuiteDataProvider().newTestSuiteScriptFile(testSuite);
     }

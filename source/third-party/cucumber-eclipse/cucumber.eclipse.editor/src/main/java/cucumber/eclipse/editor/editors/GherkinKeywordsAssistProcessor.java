@@ -26,7 +26,7 @@ public class GherkinKeywordsAssistProcessor implements IContentAssistProcessor {
 	private static final List<String> FEATURE_ELEMENT_KEYWORD_KEYS = Arrays.asList("feature", "background", "scenario", "scenario_outline","examples");
 	private final IContextInformation[] NO_CONTEXTS = {};
 	private ICompletionProposal[] NO_COMPLETIONS = {};
-	public final Image ICON = Activator.getImageDescriptor("icons/feature_16.png").createImage();
+	public final Image ICON = Activator.getImageDescriptor("icons/cukes.gif").createImage();
 	
 	//For content assistance feature By Girija
 	private CucumberContentAssist contentAssist = null;
