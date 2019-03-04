@@ -1,16 +1,13 @@
 package com.kms.katalon.execution.console.entity;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
-import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -52,9 +49,9 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
     public IConsoleLauncher getConsoleLauncher(ProjectEntity projectEntity, LauncherManager manager)
             throws ExecutionException, InvalidConsoleArgumentException {
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity, testSuiteCollectionOption.getValue());
-        Map<String,Object> overridingVariable = super.getOverridingGlobalVariables();
+        Map<String,Object> globalVariables = super.getOverridingGlobalVariables();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting,overridingVariable);
+                rerunSetting,globalVariables);
     }
 
     private TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity projectEntity, String testSuiteCollectionID)
