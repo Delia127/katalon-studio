@@ -29,6 +29,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.entity.util.ZipManager;
+import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
@@ -36,6 +37,7 @@ import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 import com.kms.katalon.plugin.util.PluginHelper;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class PluginService {
@@ -289,6 +291,8 @@ public class PluginService {
 
     private File downloadAndExtractPlugin(KStorePlugin plugin, KStoreCredentials credentials) throws Exception {
 
+        trackDownloadPlugin(plugin, credentials);
+        
         File downloadDir = getRepoDownloadDir();
         downloadDir.mkdirs();
         FileUtils.cleanDirectory(downloadDir);
@@ -308,6 +312,18 @@ public class PluginService {
             return name.endsWith(".jar") && !name.endsWith("-javadoc.jar") && !name.endsWith("-sources.jar");
         }).findAny().orElse(null);
         return jar;
+    }
+    
+    private void trackDownloadPlugin(KStorePlugin plugin, KStoreCredentials credentials) {
+        String apiKey = credentials instanceof KStoreApiKeyCredentials
+            ? ((KStoreApiKeyCredentials) credentials).getApiKey() 
+            : StringUtils.EMPTY;
+        Trackings.trackDownloadPlugin(
+            apiKey,
+            plugin.getProduct().getId(),
+            plugin.getProduct().getName(),
+            plugin.getCurrentVersion().getNumber(),
+            ApplicationRunningMode.get());
     }
 
     private KStoreRestClient getRestClient(KStoreCredentials credentials) {
