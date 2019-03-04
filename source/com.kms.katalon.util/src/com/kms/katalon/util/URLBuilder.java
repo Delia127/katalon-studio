@@ -1,7 +1,5 @@
 package com.kms.katalon.util;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -18,35 +16,34 @@ public class URLBuilder {
     private static final char QP_SEP_A = '&';
     private static final char QP_SEP_S = ';';
     private static final char NAME_VALUE_SEPARATOR = '=';
-    
-    private String protocol;
-    private String authority;
-    private String userInfo;
-    private String host;
-    private int port;
+
     private String path;
     private List<NameValuePair> queryParams;
     private String query;
     private String ref;
     
     public URLBuilder() {
-        this.port = -1;
     }
     
-    public URLBuilder(final String string) throws MalformedURLException {
-        digestURL(new URL(string));
+    public URLBuilder(final String string) {
+        digestURL(string);
     }
     
-    private void digestURL(final URL url) {
-        this.protocol = url.getProtocol();
-        this.authority = url.getAuthority();
-        this.host = url.getHost();
-        this.port = url.getPort();
-        this.userInfo = url.getUserInfo();
-        this.path = url.getPath();
-        this.query = url.getQuery();
-        this.queryParams = parseQuery(url.getQuery());
-        this.ref = url.getRef();
+    private void digestURL(final String string) {
+        String url = string;
+        int ind = url.indexOf('#');
+        ref = ind < 0 ? null: url.substring(ind + 1);
+        url = ind < 0 ? url: url.substring(0, ind);
+        int q = url.lastIndexOf('?');
+        if (q != -1) {
+            query = url.substring(q + 1);
+            path = url.substring(0, q);
+        } else {
+            path = url;
+        }
+        if (!StringUtils.isBlank(query)) {
+            this.queryParams = parseQuery(query);
+        }
     }
     
     private List<NameValuePair> parseQuery(final String query) {
@@ -118,36 +115,16 @@ public class URLBuilder {
         }
     }
     
-    public URL build() throws MalformedURLException {
-       return new URL(buildString());
-    }
-    
-    private String buildString() {
+    public String buildString() {
         final StringBuilder sb = new StringBuilder();
-        if (this.protocol != null) {
-            sb.append(this.protocol).append(':');
-        }
-       
-        if (this.authority != null) {
-            sb.append("//").append(this.authority);
-        } else if (this.host != null) {
-            sb.append("//");
-            if (this.userInfo != null) {
-                sb.append(this.userInfo).append("@");
-            } 
-           
-            sb.append(this.host);
-            
-            if (this.port >= 0) {
-                sb.append(":").append(this.port);
-            }
-        }
         
-        sb.append(normalizePath(this.path));
+        if (this.path != null) {
+            sb.append(this.path);
+        }
         
         if (this.query != null) {
             sb.append("?").append(this.query);
-        } else if (this.queryParams != null) {
+        } else if (this.queryParams != null && !this.queryParams.isEmpty()) {
             sb.append("?").append(toQueryString(this.queryParams));
         }
        
@@ -172,22 +149,5 @@ public class URLBuilder {
             }
         }
         return result.toString();
-    }
-
-    private static String normalizePath(final String path) {
-        String s = path;
-        if (s == null) {
-            return null;
-        }
-        int n = 0;
-        for (; n < s.length(); n++) {
-            if (s.charAt(n) != '/') {
-                break;
-            }
-        }
-        if (n > 1) {
-            s = s.substring(n - 1);
-        }
-        return s;
     }
 }
