@@ -154,7 +154,5 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_SELECT_ALL_BTN = ObjectspyMessageConstants.DIA_MSG_SELECT_ALL_BTN;
 
     public static final String DIA_MSG_DE_SELECT_ALL_BTN = ObjectspyMessageConstants.DIA_MSG_DE_SELECT_ALL_BTN;
-    
-    // Error message
-    public static final String ERR_INVALID_XPATH_JSON_MSG = ObjectspyMessageConstants.ERR_INVALID_XPATH_JSON_MSG;
+
 }

@@ -326,7 +326,6 @@ public class WebElementUtils {
     private static void collectElementXpaths(JsonObject elementJsonObject,
             List<WebElementXpathEntity> xpaths) {
         if (!isElementXpathsSet(elementJsonObject)) {
-        	LoggerSingleton.logError(MessageFormat.format(ObjectspyMessageConstants.ERR_INVALID_XPATH_JSON_MSG, ELEMENT_XPATHS_KEY));
             return;
         }
         for (Entry<String, JsonElement> entry : elementJsonObject.getAsJsonObject(ELEMENT_XPATHS_KEY).entrySet()) {
