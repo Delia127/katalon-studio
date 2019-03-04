@@ -62,17 +62,13 @@ public class TestCaseEntityImpl implements com.katalon.platform.api.model.TestCa
     }
 
     @Override
-    public Integration getIntegration(String integrationName) {
+    public com.katalon.platform.api.model.Integration getIntegration(String integrationName) {
         if (StringUtils.isEmpty(integrationName)) {
             return null;
         }
-        return source.getIntegratedEntities()
-                .stream()
-                .filter(i -> {
-                    return i.getProductName() != null && i.getProductName().equals(integrationName);
-                }).map(i -> new IntegrationImpl(i))
-                .findFirst()
-                .orElse(null);
+        return source.getIntegratedEntities().stream().filter(i -> {
+            return i.getProductName() != null && i.getProductName().equals(integrationName);
+        }).map(i -> new IntegrationImpl(i)).findFirst().orElse(null);
     }
 
     @Override
@@ -90,9 +86,14 @@ public class TestCaseEntityImpl implements com.katalon.platform.api.model.TestCa
         }
     }
 
-	@Override
-	public String getTags() {
-		return source.getTag();
-	}
+    @Override
+    public String getTags() {
+        return source.getTag();
+    }
+
+    @Override
+    public List<com.katalon.platform.api.model.VariableEntity> getVariables() {
+        return source.getVariables().stream().map(v -> new VariableEntityImpl(v)).collect(Collectors.toList());
+    }
 
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.katalon.platform.api.controller.Controller;
+import com.katalon.platform.api.controller.FeatureFileController;
 import com.katalon.platform.api.controller.FolderController;
 import com.katalon.platform.api.controller.ReportController;
 import com.katalon.platform.api.controller.TestCaseController;
@@ -19,6 +20,7 @@ public class ControllerManagerImpl implements ControllerManager {
         lookup.put(TestCaseController.class.getName(), new TestCaseControllerImpl());
         lookup.put(ProjectController.class.getName(), new ProjectControllerImpl());
         lookup.put(ReportController.class.getName(), new ReportControllerImpl());
+        lookup.put(FeatureFileController.class.getName(), new FeatureFileControllerImpl());
     }
 
     @SuppressWarnings("unchecked")

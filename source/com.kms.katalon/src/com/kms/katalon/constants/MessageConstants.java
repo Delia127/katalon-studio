@@ -377,13 +377,19 @@ public class MessageConstants extends NLS {
     //KStoreCredentialsDialog
     public static String KStoreLoginDialog_DIA_TITLE;
     
+    public static String KStoreLoginDialog_LBL_INSTRUCTION;
+    
     public static String KStoreLoginDialog_LBL_USERNAME;
     
     public static String KStoreLoginDialog_LBL_PASSWORD;
     
+    public static String KStoreLoginDialog_BTN_CONNECT;
+    
     public static String KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
     
     public static String KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG;
+    
+    public static String KStoreLoginDialog_LICENSE_AGREEMENT_MSG;
     
     //ReloadPluginsResultDialog
     public static String KStorePluginsDialog_COL_PLUGIN;
@@ -396,13 +402,13 @@ public class MessageConstants extends NLS {
 
     public static String KStorePluginsDialog_STATUS_UNINSTALLED;
     
+    public static String KStorePluginsDialog_STATUS_EXPIRED;
+    
     public static String KStorePluginsDialog_COL_VERSION;
     
     public static String KStorePluginsDialog_LBL_UPDATE;
 
 	public static String LBL_DISABLE_MOB_BROWSER_PROXY;
-
-	public static String LBL_USE_MOB_BROWSER_PROXY;
 	
 	public static String HAND_INFO_NO_PLUGINS_FOUND;
 	

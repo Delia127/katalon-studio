@@ -37,8 +37,12 @@ public class FolderController extends EntityController implements Serializable {
         return (FolderController) _instance;
     }
 
-    public List<FileEntity> getChildren(FolderEntity folder) throws Exception {
-        return getDataProviderSetting().getFolderDataProvider().getChildren(folder);
+    public List<FileEntity> getChildren(FolderEntity folder) throws ControllerException {
+        try {
+            return getDataProviderSetting().getFolderDataProvider().getChildren(folder);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public List<String> getChildNames(FolderEntity folder) throws Exception {
@@ -75,15 +79,20 @@ public class FolderController extends EntityController implements Serializable {
         return allDescendant;
     }
 
-    public List<FolderEntity> getChildFolders(FolderEntity parentFolder) throws Exception {
-        List<FileEntity> childrenEntities = getDataProviderSetting().getFolderDataProvider().getChildren(parentFolder);
-        List<FolderEntity> childrentFolders = new ArrayList<FolderEntity>();
-        for (FileEntity entity : childrenEntities) {
-            if (entity instanceof FolderEntity) {
-                childrentFolders.add((FolderEntity) entity);
+    public List<FolderEntity> getChildFolders(FolderEntity parentFolder) throws ControllerException {
+        try {
+            List<FileEntity> childrenEntities = getDataProviderSetting().getFolderDataProvider().getChildren(parentFolder);
+
+            List<FolderEntity> childrentFolders = new ArrayList<FolderEntity>();
+            for (FileEntity entity : childrenEntities) {
+                if (entity instanceof FolderEntity) {
+                    childrentFolders.add((FolderEntity) entity);
+                }
             }
+            return childrentFolders;
+        } catch (Exception e) {
+            throw new ControllerException(e);
         }
-        return childrentFolders;
     }
 
     public FolderEntity getTestSuiteRoot(ProjectEntity project) throws Exception {
@@ -252,8 +261,12 @@ public class FolderController extends EntityController implements Serializable {
         return getDataProviderSetting().getFolderDataProvider().getIncludeRoot(project);
     }
     
-    public FolderEntity getFeatureRoot(ProjectEntity project) throws DALException {
-    	return getDataProviderSetting().getFolderDataProvider().getFeatureRoot(project);
+    public FolderEntity getFeatureRoot(ProjectEntity project) throws ControllerException {
+    	try {
+            return getDataProviderSetting().getFolderDataProvider().getFeatureRoot(project);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
     
     public FolderEntity getGroovyScriptRoot(ProjectEntity project) throws DALException {

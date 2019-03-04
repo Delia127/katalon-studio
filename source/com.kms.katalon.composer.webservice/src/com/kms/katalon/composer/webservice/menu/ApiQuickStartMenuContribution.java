@@ -14,7 +14,6 @@ import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.project.ProjectType;
 
 @SuppressWarnings("restriction")
 public class ApiQuickStartMenuContribution {
@@ -31,13 +30,11 @@ public class ApiQuickStartMenuContribution {
         if (currentProject == null) {
             return;
         }
-        if (currentProject.getType() == ProjectType.WEBSERVICE) {
-            MHandledMenuItem quickStartMenuItem = MenuFactory.createPopupMenuItem(
-                    commandService.createCommand(OPEN_QUICK_START_DIALOG_COMMAND_ID, null),
-                    StringConstants.TITLE_QUICKSTART, ConstantsHelper.getApplicationURI());
-            if (quickStartMenuItem != null) {
-                menuItems.add(quickStartMenuItem);
-            }
+        MHandledMenuItem quickStartMenuItem = MenuFactory.createPopupMenuItem(
+                commandService.createCommand(OPEN_QUICK_START_DIALOG_COMMAND_ID, null),
+                StringConstants.TITLE_QUICKSTART, ConstantsHelper.getApplicationURI());
+        if (quickStartMenuItem != null) {
+            menuItems.add(quickStartMenuItem);
         }
     }
 }

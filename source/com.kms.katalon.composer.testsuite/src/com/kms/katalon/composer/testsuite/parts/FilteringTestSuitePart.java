@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -56,6 +55,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.platform.DynamicQueryingTestSuiteExtensionProvider;
 
 public class FilteringTestSuitePart implements EventHandler {
 
@@ -69,14 +69,15 @@ public class FilteringTestSuitePart implements EventHandler {
 
     @Inject
     private IEventBroker eventBroker;
+    
+    @Inject
+    private DynamicQueryingTestSuiteExtensionProvider extensionProvider;
 
     private Composite compositeExecution, compositeMain;
 
     private boolean isExecutionCompositeExpanded;
 
-    private Text txtLastRun, txtRerun, txtUserDefinePageLoadTimeout;
-
-    private Link lblLastRun;
+    private Text txtRerun, txtUserDefinePageLoadTimeout;
 
     private MPart mpart;
 
@@ -129,7 +130,7 @@ public class FilteringTestSuitePart implements EventHandler {
                 parentTestSuiteCompositePart = ((ParentTestSuiteCompositePart) compositePart.getObject());
             }
         }
-        childrenView = new FilteringTestCaseView(parentTestSuiteCompositePart);
+        childrenView = new FilteringTestCaseView(parentTestSuiteCompositePart, this);
         uiThreads = new LinkedList<Thread>();
         isLoading = false;
 
@@ -389,7 +390,7 @@ public class FilteringTestSuitePart implements EventHandler {
 
         Composite compositeExecutionCompositeHeader = new Composite(compositeExecution, SWT.NONE);
         compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(3, false);
+        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(2, false);
         glCompositeExecutionCompositeHeader.marginHeight = 0;
         glCompositeExecutionCompositeHeader.marginWidth = 0;
         compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
@@ -408,13 +409,13 @@ public class FilteringTestSuitePart implements EventHandler {
 
         compositeExecutionDetails = new Composite(compositeExecution, SWT.NONE);
         compositeExecutionDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glCompositeExecutionDetail = new GridLayout(3, true);
+        GridLayout glCompositeExecutionDetail = new GridLayout(2, false);
         glCompositeExecutionDetail.marginLeft = 45;
         glCompositeExecutionDetail.horizontalSpacing = 40;
         compositeExecutionDetails.setLayout(glCompositeExecutionDetail);
 
         Composite compositePageLoadTimeout = new Composite(compositeExecutionDetails, SWT.NONE);
-        GridData gdCompositePageLoadTimeout = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        GridData gdCompositePageLoadTimeout = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
         gdCompositePageLoadTimeout.minimumWidth = MINIMUM_COMPOSITE_SIZE;
         compositePageLoadTimeout.setLayoutData(gdCompositePageLoadTimeout);
         GridLayout glCompositePageLoadTimeout = new GridLayout(1, false);
@@ -444,29 +445,15 @@ public class FilteringTestSuitePart implements EventHandler {
         GridData gdTxtUserDefinePageLoadTimeout = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdTxtUserDefinePageLoadTimeout.heightHint = 20;
         txtUserDefinePageLoadTimeout.setLayoutData(gdTxtUserDefinePageLoadTimeout);
-        // limit the input length for the range of
-        // TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue() and
-        // TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()
         txtUserDefinePageLoadTimeout.setTextLimit(4);
 
-        compositeLastRunAndReRun = new Composite(compositeExecutionDetails, SWT.NONE);
+        compositeLastRunAndReRun = new Composite(compositePageLoadTimeout, SWT.NONE);
         GridData gdCompositeTestDataAndLastRun = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gdCompositeTestDataAndLastRun.minimumWidth = MINIMUM_COMPOSITE_SIZE;
         compositeLastRunAndReRun.setLayoutData(gdCompositeTestDataAndLastRun);
         GridLayout glCompositeTestDataAndLastRun = new GridLayout(4, false);
         glCompositeTestDataAndLastRun.verticalSpacing = 10;
         compositeLastRunAndReRun.setLayout(glCompositeTestDataAndLastRun);
-
-        lblLastRun = new Link(compositeLastRunAndReRun, SWT.NONE);
-        GridData gdLblLastRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblLastRun.widthHint = 85;
-        lblLastRun.setLayoutData(gdLblLastRun);
-        lblLastRun.setText(StringConstants.PA_LBL_LAST_RUN);
-
-        txtLastRun = new Text(compositeLastRunAndReRun, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtLastRun = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
-        gdTxtLastRun.heightHint = 20;
-        txtLastRun.setLayoutData(gdTxtLastRun);
 
         Label lblReRun = new Label(compositeLastRunAndReRun, SWT.NONE);
         GridData gdLblReRun = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -499,7 +486,6 @@ public class FilteringTestSuitePart implements EventHandler {
 
         Composite compositeMailRecipients = new Composite(compositeExecutionDetails, SWT.NONE);
         GridData gdCompositeMailRecipients = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gdCompositeMailRecipients.minimumWidth = MINIMUM_COMPOSITE_SIZE;
         compositeMailRecipients.setLayoutData(gdCompositeMailRecipients);
         GridLayout glCompositeMailRecipients = new GridLayout(3, false);
         compositeMailRecipients.setLayout(glCompositeMailRecipients);
@@ -512,13 +498,11 @@ public class FilteringTestSuitePart implements EventHandler {
 
         listMailRcpViewer = new ListViewer(compositeMailRecipients, SWT.BORDER | SWT.V_SCROLL);
         listMailRcp = listMailRcpViewer.getList();
-        GridData gdListMailRcp = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdListMailRcp.heightHint = 70;
-        listMailRcp.setLayoutData(gdListMailRcp);
+        listMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         listMailRcpViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         Composite compositeMailRcpButtons = new Composite(compositeMailRecipients, SWT.NONE);
-        compositeMailRcpButtons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        compositeMailRcpButtons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
         GridLayout glCompositeMailRcpButtons = new GridLayout(1, false);
         glCompositeMailRcpButtons.marginWidth = 0;
         glCompositeMailRcpButtons.marginHeight = 0;
@@ -627,5 +611,9 @@ public class FilteringTestSuitePart implements EventHandler {
 
     public void openAddedTestData(DataFileEntity dataFileEntity) {
         eventBroker.post(EventConstants.TEST_DATA_OPEN, dataFileEntity);
+    }
+
+    public DynamicQueryingTestSuiteExtensionProvider getExtensionProvider() {
+        return extensionProvider;
     }
 }

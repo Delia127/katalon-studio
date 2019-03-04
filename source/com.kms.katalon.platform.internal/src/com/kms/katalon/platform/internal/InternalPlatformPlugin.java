@@ -20,10 +20,12 @@ import com.katalon.platform.internal.console.LauncherOptionParserPlatformBuilder
 import com.kms.katalon.composer.report.platform.PlatformReportIntegrationViewBuilder;
 import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationPlatformBuilder;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.execution.platform.DynamicQueryingTestSuiteExtensionProvider;
 import com.kms.katalon.execution.platform.PlatformLauncherOptionParserBuilder;
 import com.kms.katalon.platform.internal.event.ProjectEventPublisher;
 import com.kms.katalon.platform.internal.report.ReportIntegrationPlatformBuilderImpl;
 import com.kms.katalon.platform.internal.testcase.TestCaseIntegrationPlatformBuilderImpl;
+import com.kms.katalon.platform.internal.testsuite.DynamicQueryingTestSuiteProviderImpl;
 
 public class InternalPlatformPlugin implements BundleActivator {
 
@@ -37,32 +39,37 @@ public class InternalPlatformPlugin implements BundleActivator {
     }
 
     private void activatePlatform(BundleContext context) throws BundleException {
-        IEclipseContext modelContext = EclipseContextFactory.getServiceContext(context);
+        IEclipseContext bundleEclipseContext = EclipseContextFactory.getServiceContext(context);
 
         Bundle bundle = Platform.getBundle("com.katalon.platform");
         bundle.start();
 
-        IEventBroker eventBroker = modelContext.get(IEventBroker.class);
+        IEventBroker eventBroker = bundleEclipseContext.get(IEventBroker.class);
 
         PlatformServiceProvider platformServiceProvider = PlatformServiceProvider.getInstance();
         eventBroker.post("KATALON_PLUGIN/CONTROLLER_MANAGER_ADDED", platformServiceProvider.getControllerManager());
+
+        DynamicQueryingTestSuiteExtensionProvider testCaseIntegrationViewBuilder = ContextInjectionFactory
+                .make(DynamicQueryingTestSuiteProviderImpl.class, bundleEclipseContext);
+        context.registerService(DynamicQueryingTestSuiteExtensionProvider.class, testCaseIntegrationViewBuilder,
+                null);
 
         eventBroker.post("KATALON_PLUGIN/UISERVICE_MANAGER_ADDED", platformServiceProvider.getUiServiceManager());
         eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, new EventHandler() {
 
             @Override
             public void handleEvent(Event event) {
-                IEclipseContext eclipseContext = PlatformUI.getWorkbench().getService(IEclipseContext.class);
+                IEclipseContext workbenchEclipseContext = PlatformUI.getWorkbench().getService(IEclipseContext.class);
                 BundleContext bundleContext = bundle.getBundleContext();
-                bundleContext.registerService(IEclipseContext.class, eclipseContext, null);
+                bundleContext.registerService(IEclipseContext.class, workbenchEclipseContext, null);
 
                 TestCaseIntegrationPlatformBuilder testCaseIntegrationViewBuilder = ContextInjectionFactory
-                        .make(TestCaseIntegrationPlatformBuilderImpl.class, eclipseContext);
+                        .make(TestCaseIntegrationPlatformBuilderImpl.class, workbenchEclipseContext);
                 bundleContext.registerService(TestCaseIntegrationPlatformBuilder.class, testCaseIntegrationViewBuilder,
                         null);
                 
                 PlatformReportIntegrationViewBuilder reportIntegrationViewBuilder = ContextInjectionFactory
-                        .make(ReportIntegrationPlatformBuilderImpl.class, eclipseContext);
+                        .make(ReportIntegrationPlatformBuilderImpl.class, workbenchEclipseContext);
                 bundleContext.registerService(PlatformReportIntegrationViewBuilder.class, reportIntegrationViewBuilder,
                         null);
             }

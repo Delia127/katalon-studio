@@ -13,80 +13,80 @@ import javax.management.ReflectionException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 
-public class SystemInforUtil {
+public class SystemInformationUtil {
 
     private OperatingSystemMXBean os = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-
-    public SystemInforUtil() {
+    private static int  ONE_MB= 1048576;
+    private static int  ONE_KB= 1024;
+    public SystemInformationUtil() {
 
         /// [1] com.sun.management.OperatingSystemMXBean
         try {
-            SystemInforUtil.getProcessCpuLoad();
+            SystemInformationUtil.getProcessCpuLoad();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // percent cpu usage
-    public static double getProcessCpuLoad() throws Exception {
+    public static double getProcessCpuLoad() throws MalformedObjectNameException, ReflectionException, InstanceNotFoundException {
 
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         ObjectName name = ObjectName.getInstance("java.lang:type=OperatingSystem");
-        AttributeList list = mbs.getAttributes(name, new String[] { "ProcessCpuLoad" });
+        AttributeList list = mbs.getAttributes(name, new String[]{"ProcessCpuLoad"});
 
-        if (list.isEmpty())
-            return Double.NaN;
-
+        if (list.isEmpty()) {
+            return 0.0;
+        }
         Attribute att = (Attribute) list.get(0);
         Double value = (Double) att.getValue();
 
-        // usually takes a couple of seconds before we get real values
-        if (value == -1.0)
-            return Double.NaN;
-        // returns a percentage value with 1 decimal point precision
-        return ((int) (value * 1000) / 10.0);
+        if (value < 0.0) {
+            return 0.0;  
+        }
+        return  value * 100.0; 
     }
-
-    public static String totalPhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
+    
+    public static long totalPhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
             MalformedObjectNameException, ReflectionException, MBeanException {
-        String totalMemory;
+        long totalMemory;
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
         Object attribute = mBeanServer.getAttribute(new ObjectName("java.lang", "type", "OperatingSystem"),
                 "TotalPhysicalMemorySize");
 
-        totalMemory = Long.parseLong(attribute.toString()) / 1024 + "MB";
+        totalMemory = Long.parseLong(attribute.toString()) / ONE_KB ;
 
         return totalMemory;
     }
 
-    public static String freePhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
+    public static long freePhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
             MalformedObjectNameException, ReflectionException, MBeanException {
-        String freeMemory;
+        long freeMemory;
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
         Object attribute2 = mBeanServer.getAttribute(new ObjectName("java.lang", "type", "OperatingSystem"),
                 "FreePhysicalMemorySize");
 
-        freeMemory = Long.parseLong(attribute2.toString()) / 1024 + "MB";
+        freeMemory = Long.parseLong(attribute2.toString()) / ONE_KB;
         return freeMemory;
     }
 
     // ram
     public static long getMaxMemory() {
-        return Runtime.getRuntime().maxMemory();
+        return Runtime.getRuntime().maxMemory()/ONE_MB;
     }
 
     public static long getUsedMemory() {
-        return getMaxMemory() - getFreeMemory();
+        return getMaxMemory() - getFreeMemory()/ONE_MB;
     }
 
     public static long getTotalMemory() {
-        return Runtime.getRuntime().totalMemory();
+        return Runtime.getRuntime().totalMemory()/ONE_MB;
     }
 
     public static long getFreeMemory() {
-        return Runtime.getRuntime().freeMemory();
+        return Runtime.getRuntime().freeMemory()/ONE_MB;
     }
 
     public static double getPercentageUsed() {

@@ -526,4 +526,9 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         originalTestSuite.setTag(updatedEntity.getTag());
         originalTestSuite.setDescription(updatedEntity.getDescription());
     }
+
+    @Override
+    public boolean isDirty() {
+        return compositePart.isDirty();
+    }
 }

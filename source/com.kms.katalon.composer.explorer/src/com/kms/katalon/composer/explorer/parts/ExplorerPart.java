@@ -328,7 +328,7 @@ public class ExplorerPart {
         entityViewerFilter = new EntityViewerFilter(contentProvider);
         getViewer().addFilter(entityViewerFilter);
         explorer.setToolTipText(StringUtils.EMPTY);
-        EntityTooltip.createFor(treeViewer);
+        //EntityTooltip.createFor(treeViewer);
 
         hookDoubleClickEvent();
         hookDragEvent();

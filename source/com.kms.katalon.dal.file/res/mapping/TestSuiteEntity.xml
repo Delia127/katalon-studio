@@ -8,7 +8,6 @@
 				<xml-element java-attribute="pageLoadTimeout" />
 				<xml-element java-attribute="isRerun" />
 				<xml-element java-attribute="numberOfRerun" />
-				<xml-element java-attribute="lastRun" />
 			</java-attributes>
 		</java-type>
 	</java-types>

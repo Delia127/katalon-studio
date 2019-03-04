@@ -35,6 +35,8 @@ class CustomKeywordTemplate {
     
     private static Map<String, String> shortClassNameLookup = [:]
     
+    private static Map<String, List<String>> methodParameterNamesMap = [:];
+    
     private static final String tpl =
     '''
 /**
@@ -46,9 +48,9 @@ import <%= it %>
 <% methodNodesMap.each { key, value ->
     value.each { %>
 def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex { item, index -> %>
-    <% if (index > 0) { %> , <% }%>	<%= CustomKeywordTemplate.getInitialExpression(item) %>	<% } %>) {
+    <% if (index > 0) { %> , <% }%>	<%= CustomKeywordTemplate.getInitialExpression(it, item, index) %>	<% } %>) {
     (new <%= key %>()).<%= it.getName() %>(<% it.getParameters().eachWithIndex { item, index -> %>
-        <% if (index > 0) { %> , <% }%>	<%= item.getName() %><% } %>)
+        <% if (index > 0) { %> , <% }%>	<%= CustomKeywordTemplate.getParameterName(it, item, index) %><% } %>)
 }
 <% }
 } %>'''
@@ -57,6 +59,7 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
     def generateCustomKeywordFile(File file) {
         shortClassNameLookup.clear()
         Map<String, List<MethodNode>> methodNodesMap = CustomMethodNodeFactory.getInstance().getMethodNodesMap()
+        methodParameterNamesMap = CustomMethodNodeFactory.getInstance().getMethodParameterNamesMap()
         String[] importClassNames = getImportClassNames(methodNodesMap)
         def binding = [
             "importClassNames": importClassNames,
@@ -147,9 +150,10 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
         return StringUtils.isNotEmpty(packageName) ? packageName + DOT : "";
     }
 
-    public static String getInitialExpression(Parameter param) {
+    public static String getInitialExpression(MethodNode method, Parameter param, int index) {
+        String parameterName = getParameterName(method, param, index)
         StringBuilder initializedString = new StringBuilder(resolveClassName(param.getType(), true))
-                .append(" ").append(param.getName())
+                .append(" ").append(parameterName)
 
         if (param.hasInitialExpression()) {
             initializedString.append(" = ")
@@ -159,5 +163,21 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
         }
 
         return initializedString.toString()
+    }
+    
+    public static String getParameterName(MethodNode method, Parameter param, int index) {
+        String className = method.getDeclaringClass().getName();
+        String paramName = param.getName();
+        if (this.methodParameterNamesMap != null) {
+            List<String> parameterNames = this.methodParameterNamesMap.get(className + '#' + method.getName());
+            if (parameterNames != null) {
+                if (method.isStatic()) index--
+                String name = parameterNames.get(index);
+                if (StringUtils.isNotEmpty(name)) {
+                    paramName = name;
+                }
+            }
+        }
+        return paramName;
     }
 }

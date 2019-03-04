@@ -24,6 +24,8 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
@@ -309,6 +311,7 @@ public class ConsoleMain {
         }
         deleteLibFolders(projectPk);
         ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk);
+        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_OPENED, null);
         if (projectEntity == null) {
             throw new InvalidConsoleArgumentException(
                     MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X, projectPk));

@@ -86,6 +86,8 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                         if (!store.hasReloadedPluginsBefore()) {
                             store.markFirstTimeReloadPlugins();
                         }
+                    } else {
+                        return Status.CANCEL_STATUS;
                     }
                 } catch (InterruptedException e) {
                     return Status.CANCEL_STATUS;

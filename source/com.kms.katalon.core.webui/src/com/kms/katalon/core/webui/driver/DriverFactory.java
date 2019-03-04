@@ -312,6 +312,7 @@ public class DriverFactory {
         if (remoteWebServerType == null) {
             remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
         }
+        desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         
         HttpCommandExecutor executor = getExecutorForRemoteDriver(remoteWebServerUrl);
         

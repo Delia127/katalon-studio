@@ -42,6 +42,7 @@ import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunable;
+import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestCaseExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutionContextImpl;
@@ -414,11 +415,19 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             TestSuiteExecutedEntity testSuiteEx = (TestSuiteExecutedEntity) executedEntity;
 
             List<TestCaseExecutionContext> testCaseContexts = new ArrayList<>();
-            for (TestStatus testStatus : getResult().getStatuses()) {
-                testCaseContexts.add(TestCaseExecutionContextImpl.Builder.create("", "")
-                        .withTestCaseStatus(testStatus.getStatusValue().name())
-                        .withMessage(testStatus.getStackTrace())
-                        .build());
+            int iterationIndex = 0;
+            for (int index = 0; index < testSuiteEx.getExecutedItems().size(); index++) {
+                TestCaseExecutedEntity testCaseExecutedEntity = (TestCaseExecutedEntity) testSuiteEx.getExecutedItems()
+                        .get(index);
+                for (int loopTime = 0; loopTime < testCaseExecutedEntity.getLoopTimes(); loopTime++) {
+                    TestStatus testStatus = getResult().getStatuses()[iterationIndex];
+                    testCaseContexts.add(TestCaseExecutionContextImpl.Builder
+                            .create(testCaseExecutedEntity.getSourceId(), testCaseExecutedEntity.getSourceId())
+                            .withTestCaseStatus(testStatus.getStatusValue().name())
+                            .withMessage(testStatus.getStackTrace())
+                            .build());
+                    iterationIndex++;
+                }
             }
 
             TestSuiteExecutionContextImpl executionContext = TestSuiteExecutionContextImpl.Builder
