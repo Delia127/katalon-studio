@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ZipUtil;
@@ -114,10 +117,16 @@ public class AnalyticsReportService implements AnalyticsComponent {
         return files;
     }
     
-    private List<Path> scanHarFiles(String path) throws IOException {
+    private List<Path> scanHarFiles(String path) {
         List<Path> harFiles = scanFilesWithFilter(path, true,  AnalyticsStringConstants.ANALYTICS_HAR_FILE_EXTENSION_PATTERN);
-        Path zipFile =  FileUtils.createTemporaryFile(path + "katalon-analitics-tmp", "hars-", ".zip");
-        return Arrays.asList(ZipUtil.compress(harFiles, zipFile));
+        try {
+            Path zipFile =  FileUtils.createTemporaryFile(StringUtils.appendIfMissing(path, File.separator) + "katalon-analitics-tmp", "hars-", ".zip");
+            Path harsZipFile = ZipUtil.compress(harFiles, zipFile);
+            return Arrays.asList(harsZipFile);
+        } catch(Exception e) {
+            LogUtil.logError(e, "Can not compress har files");
+            return harFiles;
+        }
     }
     
     private void addToList(List<Path> files, List<Path> other) {
