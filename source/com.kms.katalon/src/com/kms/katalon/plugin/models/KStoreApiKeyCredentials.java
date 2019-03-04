@@ -3,7 +3,7 @@ package com.kms.katalon.plugin.models;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KStoreApiCredentials implements KStoreCredentials {
+public class KStoreApiKeyCredentials implements KStoreCredentials {
 
     private String apiKey;
     

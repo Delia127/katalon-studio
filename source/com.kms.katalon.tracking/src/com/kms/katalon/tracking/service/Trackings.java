@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -328,6 +329,13 @@ public class Trackings {
     	trackUserAction("clickWalkthroughIgnoreButton", "dialogId", dialogId);
     }
 
+    public static void trackDownloadPlugin(String apiKey, long pluginId, String pluginName, String pluginVersion,
+            RunningMode runningMode) {
+        apiKey = StringUtils.isNotBlank(apiKey) ? apiKey : StringUtils.EMPTY;
+        trackUserAction("downloadPlugin", "apiKey", apiKey, "pluginId", pluginId, "pluginName", pluginName,
+                    "pluginVersion", pluginVersion, "runningMode", runningMode.toString());
+    }
+    
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
     }
