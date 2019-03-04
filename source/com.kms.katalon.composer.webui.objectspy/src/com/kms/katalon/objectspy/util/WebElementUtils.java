@@ -5,6 +5,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -104,7 +106,7 @@ public class WebElementUtils {
         }
         String name = propsMap.get(ELEMENT_NAME_KEY);
         if (name != null) {
-        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
+        	if(usefulNeighborText.equals(StringUtils.EMPTY)){
                 return elementType + "_" + toValidFileName(name);
         	}else{
                 return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(name);
@@ -112,7 +114,7 @@ public class WebElementUtils {
         }
         String id = propsMap.get(ELEMENT_ID_KEY);
         if (id != null) {
-        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
+        	if(usefulNeighborText.equals(StringUtils.EMPTY)){
         		return elementType +  toValidFileName(id);
         	}else{
         		return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(id);
@@ -120,7 +122,7 @@ public class WebElementUtils {
         }
         String cssClass = propsMap.get(ELEMENT_CLASS_KEY);
         if (cssClass != null) {
-        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
+        	if(usefulNeighborText.equals(StringUtils.EMPTY)){
                 return elementType + "_" + toValidFileName(cssClass);
         	}else{
                 return elementType + "_" + toValidFileName(usefulNeighborText) + "_" +  toValidFileName(cssClass) ;
@@ -205,9 +207,10 @@ public class WebElementUtils {
             }
         }
         
-        if(!xpaths.isEmpty() && xpaths.size() > 0){
-            xpaths.get(0).setIsSelected(true);
+        if(!xpaths.isEmpty()){
+        	Optional.ofNullable(xpaths.get(0)).ifPresent(a -> a.setIsSelected(true));
         }
+        
         
         String usefulNeighborText = getElementUsefulNeighborText(elementJsonObject);
         WebFrame parentElement = getParentElement(elementJsonObject);
@@ -228,7 +231,10 @@ public class WebElementUtils {
         // New TestObject will always have a NoneEmpty SelectorCollection
         switch(selectorMethod){
 	        case XPATH:
-	        	el.setSelectorValue(selectorMethod, xpaths.get(0).getValue());
+	        	if(!xpaths.isEmpty()){
+	        		String value = Optional.ofNullable(xpaths.get(0)).orElse(new WebElementXpathEntity("", "")).getValue();
+	        		el.setSelectorValue(selectorMethod, value);
+	        	}
 	        	break;
 	        default:
 	        	break;
@@ -314,12 +320,13 @@ public class WebElementUtils {
     	 if (elementJsonObject.has(ELEMENT_USEFUL_NEIGHBOR_TEXT) && elementJsonObject.get(ELEMENT_USEFUL_NEIGHBOR_TEXT).isJsonPrimitive()) {
              return elementJsonObject.getAsJsonPrimitive(ELEMENT_USEFUL_NEIGHBOR_TEXT).getAsString();
          }
-         return null;
+         return StringUtils.EMPTY;
     }
     
     private static void collectElementXpaths(JsonObject elementJsonObject,
             List<WebElementXpathEntity> xpaths) {
         if (!isElementXpathsSet(elementJsonObject)) {
+        	LoggerSingleton.logError(MessageFormat.format(ObjectspyMessageConstants.ERR_INVALID_XPATH_JSON_MSG, ELEMENT_XPATHS_KEY));
             return;
         }
         for (Entry<String, JsonElement> entry : elementJsonObject.getAsJsonObject(ELEMENT_XPATHS_KEY).entrySet()) {

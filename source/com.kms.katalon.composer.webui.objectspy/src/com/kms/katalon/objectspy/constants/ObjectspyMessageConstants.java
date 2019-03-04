@@ -190,6 +190,8 @@ public class ObjectspyMessageConstants extends NLS {
     public static String DIA_MSG_HIGHLIGHTING;
 
     public static String DIA_MSG_VERIFYING;
+    
+    public static String ERR_INVALID_XPATH_JSON_MSG;
 
     static {
         // initialize resource bundle
