@@ -154,5 +154,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_SELECT_ALL_BTN = ObjectspyMessageConstants.DIA_MSG_SELECT_ALL_BTN;
 
     public static final String DIA_MSG_DE_SELECT_ALL_BTN = ObjectspyMessageConstants.DIA_MSG_DE_SELECT_ALL_BTN;
-
 }
