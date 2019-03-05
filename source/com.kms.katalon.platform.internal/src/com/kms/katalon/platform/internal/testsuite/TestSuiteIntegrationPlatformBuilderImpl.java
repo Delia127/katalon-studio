@@ -1,4 +1,4 @@
-package com.kms.katalon.platform.internal.testcase;
+package com.kms.katalon.platform.internal.testsuite;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,67 +12,67 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import com.katalon.platform.api.extension.TestCaseIntegrationViewDescription;
-import com.katalon.platform.api.extension.TestCaseIntegrationViewDescription.PartActionService;
-import com.katalon.platform.api.extension.TestCaseIntegrationViewDescription.TestCaseIntegrationView;
+import com.katalon.platform.api.extension.TestSuiteIntegrationViewDescription;
+import com.katalon.platform.api.extension.TestSuiteIntegrationViewDescription.PartActionService;
+import com.katalon.platform.api.extension.TestSuiteIntegrationViewDescription.TestSuiteIntegrationView;
 import com.katalon.platform.api.model.Integration;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.composer.components.part.SavableCompositePart;
-import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
-import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationPlatformBuilder;
-import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationViewBuilder;
+import com.kms.katalon.composer.testsuite.parts.integration.AbstractTestSuiteIntegrationView;
+import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegrationPlatformBuilder;
+import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegrationViewBuilder;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.platform.internal.entity.ProjectEntityImpl;
-import com.kms.katalon.platform.internal.entity.TestCaseEntityImpl;
+import com.kms.katalon.platform.internal.entity.TestSuiteEntityImpl;
 
-public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrationPlatformBuilder {
-
+public class TestSuiteIntegrationPlatformBuilderImpl implements TestSuiteIntegrationPlatformBuilder {
     @Inject
     private IEclipseContext context;
 
-    private TestCaseIntegrationViewBuilder getViewerBuilder(TestCaseIntegrationViewDescription pluginViewDescription) {
+    private TestSuiteIntegrationViewBuilder getViewerBuilder(
+            TestSuiteIntegrationViewDescription pluginViewDescription) {
         String name = pluginViewDescription.getName();
-        TestCaseIntegrationView testCaseIntegrationView = ContextInjectionFactory
-                .make(pluginViewDescription.getTestCaseIntegrationView(), context);
+        TestSuiteIntegrationView testCaseIntegrationView = ContextInjectionFactory
+                .make(pluginViewDescription.getTestSuiteIntegrationView(), context);
         return new PluginInterationViewBuilder(name, testCaseIntegrationView);
     }
 
     @Override
-    public List<TestCaseIntegrationViewBuilder> getBuilders() {
+    public List<TestSuiteIntegrationViewBuilder> getBuilders() {
         com.katalon.platform.api.model.ProjectEntity project = new ProjectEntityImpl(
                 ProjectController.getInstance().getCurrentProject());
         return ApplicationManager.getInstance()
                 .getExtensionManager()
-                .getExtensions(TestCaseIntegrationViewDescription.EXTENSION_POINT_ID)
+                .getExtensions(TestSuiteIntegrationViewDescription.EXTENSION_POINT_ID)
                 .stream()
                 .filter(e -> {
-                    return e.getImplementationClass() instanceof TestCaseIntegrationViewDescription
-                            && ((TestCaseIntegrationViewDescription) e.getImplementationClass()).isEnabled(project);
+                    return e.getImplementationClass() instanceof TestSuiteIntegrationViewDescription
+                            && ((TestSuiteIntegrationViewDescription) e.getImplementationClass()).isEnabled(project);
                 })
-                .map(e -> getViewerBuilder((TestCaseIntegrationViewDescription) e.getImplementationClass()))
+                .map(e -> getViewerBuilder((TestSuiteIntegrationViewDescription) e.getImplementationClass()))
                 .collect(Collectors.toList());
     }
 
-    private static class PluginInterationViewBuilder implements TestCaseIntegrationViewBuilder {
+    private static class PluginInterationViewBuilder implements TestSuiteIntegrationViewBuilder {
 
-        private TestCaseIntegrationViewDescription description;
+        private TestSuiteIntegrationViewDescription description;
 
-        private TestCaseIntegrationView testCaseIntegrationView;
+        private TestSuiteIntegrationView testCaseIntegrationView;
 
         private String name;
 
-        public PluginInterationViewBuilder(String name, TestCaseIntegrationView testCaseIntegrationView) {
+        public PluginInterationViewBuilder(String name, TestSuiteIntegrationView testCaseIntegrationView) {
             this.name = name;
             this.testCaseIntegrationView = testCaseIntegrationView;
         }
 
         @Override
-        public AbstractTestCaseIntegrationView getIntegrationView(TestCaseEntity testCase, MPart mpart,
+        public AbstractTestSuiteIntegrationView getIntegrationView(TestSuiteEntity testCase, MPart mpart,
                 SavableCompositePart parentPart) {
             return new PluginIntegrationView(name, testCase, mpart, testCaseIntegrationView, parentPart);
         }
@@ -90,9 +90,9 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
         }
     }
 
-    private static class PluginIntegrationView extends AbstractTestCaseIntegrationView {
+    private static class PluginIntegrationView extends AbstractTestSuiteIntegrationView {
 
-        private TestCaseIntegrationView integrationView;
+        private TestSuiteIntegrationView integrationView;
 
         private PartActionServiceImpl partActionService;
 
@@ -100,9 +100,9 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
 
         private String name;
 
-        public PluginIntegrationView(String integrationName, TestCaseEntity testCaseEntity, MPart mpart,
-                TestCaseIntegrationView integrationView, SavableCompositePart parentPart) {
-            super(testCaseEntity, mpart);
+        public PluginIntegrationView(String integrationName, TestSuiteEntity testSuiteEntity, MPart mpart,
+                TestSuiteIntegrationView integrationView, SavableCompositePart parentPart) {
+            super(testSuiteEntity, mpart);
             this.name = integrationName;
             this.integrationView = integrationView;
             this.parentPart = parentPart;
@@ -113,9 +113,9 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
             Composite container = new Composite(parent, SWT.NONE);
             container.setLayout(new FillLayout());
 
-            partActionService = new PartActionServiceImpl(testCaseEntity, mpart, parentPart);
+            partActionService = new PartActionServiceImpl(testSuiteEntity, mpart, parentPart);
             try {
-                integrationView.onCreateView(container, partActionService, new TestCaseEntityImpl(testCaseEntity));
+                integrationView.onCreateView(container, partActionService, new TestSuiteEntityImpl(testSuiteEntity));
             } catch (Exception e) {
                 LogUtil.printAndLogError(e, "Unable to create integration view for: " + name);
             }
@@ -142,9 +142,9 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
         }
 
         @Override
-        public void onSaveSuccess(TestCaseEntity testCase) {
-            this.testCaseEntity = testCase;
-            integrationView.onSaveSuccess(new TestCaseEntityImpl(testCaseEntity));
+        public void onSaveSuccess(TestSuiteEntity testSuite) {
+            this.testSuiteEntity = testSuite;
+            integrationView.onSaveSuccess(new TestSuiteEntityImpl(testSuiteEntity));
         }
 
         @Override
@@ -159,7 +159,7 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
 
         private SavableCompositePart parentPart;
 
-        public PartActionServiceImpl(TestCaseEntity testCaseEntity, MPart mpart, SavableCompositePart parentPart) {
+        public PartActionServiceImpl(TestSuiteEntity testSuiteEntity, MPart mpart, SavableCompositePart parentPart) {
             this.mpart = mpart;
             this.parentPart = parentPart;
         }
