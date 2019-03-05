@@ -72,7 +72,7 @@ public class ZipUtil {
         }
     }
     
-    public static Path compress(List<Path> files, Path zipfile) throws Exception {
+    public static Path compress(List<Path> files, Path zipfile) throws IOException {
         try (OutputStream zipFileOutputStream = Files.newOutputStream(zipfile);
                 ZipOutputStream zipOutputStream = new ZipOutputStream(zipFileOutputStream)) {
             for (Path file : files) {
@@ -84,8 +84,6 @@ public class ZipUtil {
                 IOUtils.closeQuietly(fileInputStream);
             }
             return zipfile;
-        } catch(Exception ex) {
-            throw ex;
         }
     }
 }
