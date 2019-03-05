@@ -73,7 +73,7 @@ public class ZipUtil {
     }
     
     public static Path compress(List<Path> files, Path zipfile) throws Exception {
-        try(OutputStream zipFileOutputStream = Files.newOutputStream(zipfile);
+        try (OutputStream zipFileOutputStream = Files.newOutputStream(zipfile);
                 ZipOutputStream zipOutputStream = new ZipOutputStream(zipFileOutputStream)) {
             for (Path file : files) {
                 InputStream fileInputStream = Files.newInputStream(file);
