@@ -62,9 +62,10 @@ public class ConsoleExecutor {
         setValueForOptionalOptions(optionalOptions, optionSet);
         
         LauncherOptionParser launcherOption = new LauncherOptionSelector().getSelectedOption(optionSet);
-                
-        for (ConsoleOption<?> consoleOption : launcherOption.getConsoleOptionList()) {
-            if (optionSet.has(consoleOption.getOption())) {
+        List<ConsoleOption<?>> listConsoleOption = launcherOption.getConsoleOptionList();
+        for (ConsoleOption<?> consoleOption : listConsoleOption) {
+            String option = consoleOption.getOption();
+            if (optionSet.has(option)) {
                 launcherOption.setArgumentValue(consoleOption,
                         String.valueOf(optionSet.valueOf(consoleOption.getOption())));
             }

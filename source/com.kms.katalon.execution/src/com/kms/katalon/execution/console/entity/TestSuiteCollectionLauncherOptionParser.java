@@ -19,7 +19,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherOptionParser {
 
     private ConsoleOption<String> testSuiteCollectionOption = new StringConsoleOption() {
-
+        
         @Override
         public String getOption() {
             return ConsoleMain.TESTSUITE_COLLECTION_ID_OPTION;
@@ -49,9 +49,9 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
     public IConsoleLauncher getConsoleLauncher(ProjectEntity projectEntity, LauncherManager manager)
             throws ExecutionException, InvalidConsoleArgumentException {
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity, testSuiteCollectionOption.getValue());
-        Map<String,Object> sp=super.getOverridingGlobalVariables();
+        Map<String,Object> globalVariables = super.getOverridingGlobalVariables();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting,sp);
+                rerunSetting,globalVariables);
     }
 
     private TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity projectEntity, String testSuiteCollectionID)
