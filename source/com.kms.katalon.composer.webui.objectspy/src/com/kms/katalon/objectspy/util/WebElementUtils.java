@@ -278,7 +278,7 @@ public class WebElementUtils {
     }
 
     public static String toValidFileName(String fileName) {
-        return fileName.trim().replaceAll("[^A-Za-z0-9._()\\- ]", "");
+        return fileName.trim().replaceAll("[^A-Za-z0-9_()\\- ]", "");
     }
 
     private static WebFrame getParentElement(JsonObject elementJsonObject) throws UnsupportedEncodingException {
@@ -388,8 +388,6 @@ public class WebElementUtils {
 
         String pageUrlString = parentPageJsonObject.getAsJsonPrimitive(PAGE_URL_KEY).getAsString();
         String pageTitleString = parentPageJsonObject.getAsJsonPrimitive(PAGE_TITLE_KEY).getAsString();
-        pageTitleString = pageTitleString.trim();
-        pageTitleString = pageTitleString.replaceAll("[^A-Za-z0-9_()\\- ]","");
         
         List<WebElementPropertyEntity> properties = new ArrayList<>();
         properties.add(new WebElementPropertyEntity(PAGE_URL_KEY, pageUrlString, PRIORITY_PROPERTIES.contains(PAGE_URL_KEY)));
