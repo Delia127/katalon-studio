@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -15,31 +16,33 @@ import com.kms.katalon.tracking.model.ProjectStatistics;
 import com.kms.katalon.tracking.model.TrackInfo;
 import com.kms.katalon.tracking.osgi.service.IProjectStatisticsCollector;
 import com.kms.katalon.tracking.osgi.service.ServiceConsumer;
-import com.kms.katalon.util.SystemInforUtil;
+import com.kms.katalon.util.SystemInformationUtil;
 
 public class Trackings {
 
-
     private static TrackingService trackingService = new TrackingService();
+    private static SystemInformationUtil system = new SystemInformationUtil();
 
     public static void trackOpenApplication(boolean isAnonymous, String runningMode) throws Exception {
         double cpu = 0.0;
         double percentageUsed, percentageUsedFormatted;
         long maxMemory, usedMemory, totalMemory, freeMemory;
-        String freePhysicalMemorySize = null, totalPhysicalMemorySize = null;
-        cpu = SystemInforUtil.getProcessCpuLoad();
-        maxMemory = SystemInforUtil.getMaxMemory();
-        usedMemory = SystemInforUtil.getUsedMemory();
-        totalMemory = SystemInforUtil.getTotalMemory();
-        freeMemory = SystemInforUtil.getFreeMemory();
-        percentageUsed = SystemInforUtil.getPercentageUsed();
-        freePhysicalMemorySize = SystemInforUtil.freePhysicalMemorySize();
-        totalPhysicalMemorySize = SystemInforUtil.totalPhysicalMemorySize();
-        percentageUsedFormatted = SystemInforUtil.getPercentageUsedFormatted();
+        long freePhysicalMemorySize = 0L;
+        long totalPhysicalMemorySize = 0L;
+        cpu = SystemInformationUtil.getProcessCpuLoad();
+        maxMemory = SystemInformationUtil.getMaxMemory();
+        usedMemory = SystemInformationUtil.getUsedMemory();
+        totalMemory = SystemInformationUtil.getTotalMemory();
+        freeMemory = SystemInformationUtil.getFreeMemory();
+        percentageUsed = SystemInformationUtil.getPercentageUsed();
+        freePhysicalMemorySize = SystemInformationUtil.freePhysicalMemorySize();
+        totalPhysicalMemorySize = SystemInformationUtil.totalPhysicalMemorySize();
+        percentageUsedFormatted = SystemInformationUtil.getPercentageUsedFormatted();
         trackAction("openApplication", isAnonymous, "runningMode", runningMode, "percent_cpu", cpu, "max_memory",
                 maxMemory, "used_memory", usedMemory, "total_memory", totalMemory, "free_memory", freeMemory,
                 "percent_used", percentageUsed, "format_percent_used", percentageUsedFormatted,
                 "freephysicalMemorySize", freePhysicalMemorySize, "totalphysicalMemorySize", totalPhysicalMemorySize);
+
     }
 
     public static void trackProjectStatistics(ProjectEntity project, boolean isAnonymous, String runningMode) {
@@ -51,7 +54,6 @@ public class Trackings {
         trackOpenObject("project");
     }
 
-
     private static void trackUsageData(ProjectEntity project, boolean isAnonymous, String runningMode,
             String triggeredBy) {
 
@@ -61,13 +63,13 @@ public class Trackings {
 
         try {
             JsonObject statisticsObject = collectProjectStatistics(project);
+
             JsonObject properties = new JsonObject();
             properties.addProperty("triggeredBy", triggeredBy);
             properties.addProperty("runningMode", runningMode);
             JsonUtil.mergeJsonObject(statisticsObject, properties);
-            TrackInfo trackInfo = TrackInfo.create()
-                    .eventName(TrackEvents.KATALON_STUDIO_TRACK)
-                    .anonymous(isAnonymous)
+
+            TrackInfo trackInfo = TrackInfo.create().eventName(TrackEvents.KATALON_STUDIO_TRACK).anonymous(isAnonymous)
                     .properties(properties);
 
             trackingService.track(trackInfo);
@@ -76,18 +78,19 @@ public class Trackings {
         }
     }
 
+    // collect
     private static JsonObject collectProjectStatistics(ProjectEntity project) throws Exception {
         IProjectStatisticsCollector collector = ServiceConsumer.getProjectStatisticsCollector();
+
         ProjectStatistics statistics = collector.collect(project);
+
         JsonObject statisticsObject = JsonUtil.toJsonObject(statistics);
+
         return statisticsObject;
     }
 
     public static void trackOpenFirstTime() {
-        TrackInfo trackInfo = TrackInfo
-                .create()
-                .eventName(TrackEvents.KATALON_OPEN_FIRST_TIME)
-                .anonymous(true);
+        TrackInfo trackInfo = TrackInfo.create().eventName(TrackEvents.KATALON_OPEN_FIRST_TIME).anonymous(true);
 
         trackingService.track(trackInfo);
     }
@@ -96,11 +99,9 @@ public class Trackings {
         trackUserAction("spy", "type", type);
     }
 
-    public static void trackWebRecord(WebUIDriverType browserType, boolean useActiveBrowser,SelectorMethod webLocatorConfig) {
-        trackUserAction("record", 
-                "type", "web",
-                "browserType", browserType.toString(),
-                "active", useActiveBrowser,
+    public static void trackWebRecord(WebUIDriverType browserType, boolean useActiveBrowser,
+            SelectorMethod webLocatorConfig) {
+        trackUserAction("record", "type", "web", "browserType", browserType.toString(), "active", useActiveBrowser,
                 "webLocatorConfig", webLocatorConfig.toString());
     }
 
@@ -112,13 +113,8 @@ public class Trackings {
         trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType);
     }
 
-    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType,boolean testFailedOnly) {
-        String email_options = "email_options";
-        if (testFailedOnly == true) {
-            trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType,email_options, "failed_test_case");
-        } else {
-            trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType, email_options, "all_test_case");
-        }
+    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType) {
+        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType);
     }
 
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType) {
@@ -324,7 +320,22 @@ public class Trackings {
     public static void trackInAppSurveyRatingAndIdea(int numberOfStars, String userIdea) {
         trackUserAction("katalonStudioSurvey", "star", numberOfStars, "content", userIdea);
     }
+    
+    public static void trackClickWalkthroughDialogLink(String dialogId, String linkName, String link){
+    	trackUserAction("clickWalkthroughLink", "dialogId", dialogId, "linkName", linkName, "link", link);
+    }
+    
+    public static void trackClickWalkthroughIgnoreButton(String dialogId){
+    	trackUserAction("clickWalkthroughIgnoreButton", "dialogId", dialogId);
+    }
 
+    public static void trackDownloadPlugin(String apiKey, long pluginId, String pluginName, String pluginVersion,
+            RunningMode runningMode) {
+        apiKey = StringUtils.isNotBlank(apiKey) ? apiKey : StringUtils.EMPTY;
+        trackUserAction("downloadPlugin", "apiKey", apiKey, "pluginId", pluginId, "pluginName", pluginName,
+                    "pluginVersion", pluginVersion, "runningMode", runningMode.toString());
+    }
+    
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
     }
@@ -343,9 +354,7 @@ public class Trackings {
             JsonUtil.mergeJsonObject(createJsonObject(properties), propertiesObject);
         }
 
-        TrackInfo trackInfo = TrackInfo.create()
-                .eventName(TrackEvents.KATALON_STUDIO_USED)
-                .anonymous(isAnonymous)
+        TrackInfo trackInfo = TrackInfo.create().eventName(TrackEvents.KATALON_STUDIO_USED).anonymous(isAnonymous)
                 .properties(propertiesObject);
 
         trackingService.track(trackInfo);
@@ -353,10 +362,12 @@ public class Trackings {
 
     private static JsonObject createJsonObject(Object... properties) {
         JsonObject jsonObject = new JsonObject();
+
         if (properties != null) {
             for (int i = 0; i < properties.length - 1; i += 2) {
                 String key = (String) properties[i];
                 Object value = properties[i + 1];
+
                 if (value instanceof Character) {
                     jsonObject.addProperty(key, (Character) value);
                 } else if (value instanceof String) {

@@ -693,4 +693,9 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         return executionProfileEntity;
     }
 
+    @Override
+    public boolean isDirty() {
+        return mpart.isDirty();
+    }
+
 }

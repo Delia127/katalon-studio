@@ -22,4 +22,5 @@ Export-Package: com.kms.katalon.groovy.constant,
  com.kms.katalon.groovy.reference,
  com.kms.katalon.groovy.util
 Import-Package: org.apache.commons.lang,
- org.codehaus.groovy.ast.expr
+ org.codehaus.groovy.ast.expr,
+ org.eclipse.jdt.launching

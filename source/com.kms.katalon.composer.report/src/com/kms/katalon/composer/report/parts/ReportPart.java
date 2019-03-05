@@ -83,6 +83,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -95,6 +96,7 @@ import com.kms.katalon.composer.integration.analytics.dialog.UploadSelectionDial
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.composer.report.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
@@ -117,7 +119,6 @@ import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.util.internal.DateUtil;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -126,7 +127,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
-import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
@@ -817,8 +817,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         Boolean authenticationDialogOpened = Boolean.valueOf(credentialInfo.get("authenticationDialogOpened"));
 
         if (!StringUtils.isEmpty(analyticsPassword) && authenticationDialogOpened == false) {
-            tokenInfo = AnalyticsApiProvider.getToken(serverUrl, analyticsEmail, analyticsPassword,
-                    new ProgressMonitorDialog(shell), analyticsSettingStore);
+            tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, analyticsEmail, analyticsPassword, analyticsSettingStore);
         }
 
         // in case the stored credential info is wrong, token is null => prompt
@@ -833,10 +832,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             authenticationDialogOpened = true;
         }
 
-        teams = AnalyticsApiProvider.getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo,
+        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo,
                 new ProgressMonitorDialog(shell));
         teamCount = teams.size();
-        projects = AnalyticsApiProvider.getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
+        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
                 tokenInfo, new ProgressMonitorDialog(shell));
         projectCount = projects.size();
         UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams, projects);
@@ -853,14 +852,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 }
             } else if (projectCount == 0 && teamCount == 1 && authenticationDialogOpened) {
                 // create default project and upload
-                createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo);
+                AnalyticsAuthorizationHandler.createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo, new ProgressMonitorDialog(shell));
                 analyticsSettingStore.enableIntegration(true);
                 uploadToKA();
             } else {
                 AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, false);
                 int returnCode = authenticationDialog.open();
                 if (returnCode == AuthenticationDialog.CONNECT_ID) {
-                    createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo);
+                    AnalyticsAuthorizationHandler.createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo, new ProgressMonitorDialog(shell));
                     analyticsSettingStore.enableIntegration(true);
                     uploadToKA();
                 } else {
@@ -879,44 +878,13 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             }
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+            MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
                     ex.getMessage());
             try {
                 analyticsSettingStore.enableIntegration(false);
             } catch (IOException e1) {
                 LoggerSingleton.logError(e1);
             }
-        }
-    }
-
-    private void createDefaultProject(AnalyticsSettingStore analyticsSettingStore, String serverUrl, AnalyticsTeam team,
-            AnalyticsTokenInfo tokenInfo) {
-        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        String currentProjectName = project.getName();
-        try {
-            new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) {
-                    try {
-                        monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
-                        monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
-                        AnalyticsProject analyticsProject = AnalyticsApiProvider.createProject(serverUrl,
-                                currentProjectName, team, tokenInfo.getAccess_token());
-                        analyticsSettingStore.setProject(analyticsProject);
-                        analyticsSettingStore.setTeam(team);
-                        monitor.worked(1);
-                    } catch (AnalyticsApiExeception | IOException ex) {
-                        LoggerSingleton.logError(ex);
-                        MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                                ComposerAnalyticsStringConstants.ERROR,
-                                ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
-                    }
-                }
-            });
-        } catch (InvocationTargetException | InterruptedException ex) {
-            LoggerSingleton.logError(ex);
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
         }
     }
 
@@ -937,15 +905,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         monitor.worked(2);
                     } catch (AnalyticsApiExeception ex) {
                         LoggerSingleton.logError(ex);
-                        MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                                ComposerAnalyticsStringConstants.ERROR,
+                        MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
                                 ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
                     }
                 }
             });
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+            MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
                     ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
         }
     }

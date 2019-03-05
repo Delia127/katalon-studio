@@ -309,6 +309,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_LBL_PROFILE;
 
     public static String DIA_MSG_CONFIGURATION_IS_REQUIRED;
+    
+    public static String KSTORE_API_KEY_USAGE;
 
     // MobileDeviceUIProvider
     public static String DIA_MSG_ANDROID_SDK_MISSING;

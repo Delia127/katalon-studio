@@ -21,8 +21,10 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.view.ApiQuickStartDialog;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
@@ -38,7 +40,7 @@ public class OpenApiQuickStartHandler {
         eventBroker.subscribe(EventConstants.API_QUICK_START_DIALOG_OPEN, new EventServiceAdapter() {
             @Override
             public void handleEvent(Event event) {
-              ProjectType projectType= (ProjectType) event.getProperty("org.eclipse.e4.data");
+                ProjectType projectType = (ProjectType) event.getProperty("org.eclipse.e4.data");
                 execute(null, projectType);
             }
         });
@@ -46,11 +48,16 @@ public class OpenApiQuickStartHandler {
 
     @CanExecute
     public boolean canExecute() {
-        return true;
+        return  ProjectController.getInstance().getCurrentProject() != null;
     }
 
     @Execute
-    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects, ProjectType projectType) {
+    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects) {
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        execute(selectedObjects, currentProject.getType());
+    }
+
+    public void execute(Object[] selectedObjects, ProjectType projectType) {
         try {
             ITreeEntity parentTreeEntity;
             parentTreeEntity = findParentTreeEntity(selectedObjects);

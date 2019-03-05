@@ -145,11 +145,6 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                    globalVariableEditorPartTab.setImage(ImageConstants.IMG_16_SCRIPT);
 	                    globalVariableEditorPartTab.setShowClose(false);
 	                    
-	                    CTabItem globalVariableAddTab = ui.getGlobalVariableAddTab();
-	                    globalVariableAddTab.setImage(ImageConstants.IMG_16_MANUAL);
-	                    globalVariableAddTab.setShowClose(false);
-	                    
-	                    
 	                }
 
 	            	//TODO: Handle these cases

@@ -198,4 +198,9 @@ public class GlobalVariableEditorPart extends CPart implements SavableCompositeP
     public String getScriptContent() {
         return mirrorEditor.getText();
     }
+
+    @Override
+    public boolean isDirty() {
+        return mpart.isDirty();
+    }
 }

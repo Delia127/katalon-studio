@@ -11,10 +11,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.katalon.platform.api.exception.PlatformException;
-import com.katalon.platform.api.service.ApplicationManager;
-import com.kms.katalon.composer.components.impl.util.EntityIndexingUtil;
-import com.kms.katalon.constants.IdConstants;
+import com.katalon.platform.api.Extension;
+import com.katalon.platform.api.exception.ResourceException;
+import com.katalon.platform.api.extension.DynamicQueryingTestSuiteDescription;
 import com.kms.katalon.controller.FilterController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
@@ -31,8 +30,11 @@ import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
-import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.exception.ExtensionRequiredException;
+import com.kms.katalon.execution.platform.DynamicQueryingTestSuiteExtensionProvider;
+import com.kms.katalon.execution.platform.ExecutionPlatformServiceProvider;
 import com.kms.katalon.execution.util.MailUtil;
 
 public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportable, Rerunable, ConsoleOptionContributor {
@@ -82,23 +84,25 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         TestSuiteEntity testSuite = (TestSuiteEntity) getEntity();
         List<IExecutedEntity> executedItems;
         if (testSuite instanceof FilteringTestSuiteEntity) {
-            if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
-                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
-            }
+            // if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_DYNAMIC_EXECUTION)
+            // == null) {
+            // throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
+            // }
             executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite, StringUtils.EMPTY);
         } else {
             executedItems = loadTestCases(testSuite, StringUtils.EMPTY);
         }
         setTestCaseExecutedEntities(executedItems);
     }
-    
+
     public void prepareTestCasesWithTestSuiteQuery(String testSuiteQuery) throws Exception {
         TestSuiteEntity testSuite = (TestSuiteEntity) getEntity();
         List<IExecutedEntity> executedItems;
         if (testSuite instanceof FilteringTestSuiteEntity) {
-            if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
-                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
-            }
+            // if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_DYNAMIC_EXECUTION)
+            // == null) {
+            // throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
+            // }
             executedItems = loadTestCasesForFilteringTestSuite((FilteringTestSuiteEntity) testSuite, testSuiteQuery);
         } else {
             executedItems = loadTestCases(testSuite, testSuiteQuery);
@@ -106,25 +110,28 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         setTestCaseExecutedEntities(executedItems);
     }
 
-    private List<IExecutedEntity> loadTestCasesForFilteringTestSuite(FilteringTestSuiteEntity testSuite, String testSuiteQuery)
-            throws IOException {
-        List<String> testCaseIds = EntityIndexingUtil.getInstance(ProjectController.getInstance().getCurrentProject())
-                .getIndexedEntityIds("tc");
-        List<TestCaseEntity> filteredTestCases = new ArrayList<>();
-        List<TestCaseEntity> testCaseEntities = testCaseIds.stream().map(id -> {
-            try {
-                return TestCaseController.getInstance().getTestCaseByDisplayId(id);
-            } catch (Exception e1) {
-                return null;
+    private List<IExecutedEntity> loadTestCasesForFilteringTestSuite(FilteringTestSuiteEntity testSuite,
+            String testSuiteQuery) throws IOException, ExecutionException, ResourceException {
+        DynamicQueryingTestSuiteExtensionProvider dynamicQueryingTestSuiteProvider = ExecutionPlatformServiceProvider
+                .getInstance().getPlatformService(DynamicQueryingTestSuiteExtensionProvider.class);
+
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        DynamicQueryingTestSuiteDescription selectedQueryingDescription = dynamicQueryingTestSuiteProvider
+                .getSelectedDynamicQueryingDescription(project, testSuite);
+        if (selectedQueryingDescription == null) {
+            List<Extension> availableExtensions = dynamicQueryingTestSuiteProvider.getAvailableExtensions(project);
+            if (availableExtensions.isEmpty()) {
+                throw new ExtensionRequiredException(
+                        "No query provider available to execute the dynamic querying test suite: "
+                                + testSuite.getIdForDisplay());
             }
-        }).collect(Collectors.toList());
-        
-        if(testSuiteQuery.equals(StringUtils.EMPTY)){
-            filteredTestCases = FilterController.getInstance().filter(testCaseEntities, testSuite.getFilteringText());
-        } else {
-        	filteredTestCases = FilterController.getInstance().filter(testCaseEntities, testSuiteQuery);
+            selectedQueryingDescription = dynamicQueryingTestSuiteProvider.getDynamicQueryingDescription(
+                    dynamicQueryingTestSuiteProvider.getSuggestedExtension(project, testSuite));
         }
-        
+        List<TestCaseEntity> filteredTestCases = new ArrayList<>();
+        filteredTestCases = dynamicQueryingTestSuiteProvider.getFilteredTestCases(project, testSuite,
+                selectedQueryingDescription, StringUtils.defaultIfEmpty(testSuiteQuery, testSuite.getFilteringText()));
+
         return filteredTestCases.stream().map(tc -> {
             TestCaseExecutedEntity executedTestCase = new TestCaseExecutedEntity(tc);
             executedTestCase.setLoopTimes(1);
@@ -140,27 +147,21 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
      */
     private List<IExecutedEntity> loadTestCases(TestSuiteEntity testSuite, String testSuiteQuery) throws Exception {
 
-    	if(!testSuiteQuery.equals(StringUtils.EMPTY)){
-    		if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_TAGS) == null) {
-                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
-            }
-        }
-        
         String projectDir = testSuite.getProject().getFolderLocation();
 
         testDataMap.clear();
 
-        List<TestSuiteTestCaseLink> ls = TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite);
-        for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance().getTestSuiteTestCaseRun(testSuite)) {
-            TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(
-                    testCaseLink.getTestCaseId());
+        for (TestSuiteTestCaseLink testCaseLink : TestSuiteController.getInstance()
+                .getTestSuiteTestCaseRun(testSuite)) {
+            TestCaseEntity testCase = TestCaseController.getInstance()
+                    .getTestCaseByDisplayId(testCaseLink.getTestCaseId());
 
             if (testCase == null) {
                 throw new IllegalArgumentException(MessageFormat.format(StringConstants.UTIL_EXC_TEST_CASE_X_NOT_FOUND,
                         testCaseLink.getTestCaseId()));
             }
-            
-            if(!FilterController.getInstance().isMatched(testCase, testSuiteQuery)){
+
+            if (!FilterController.getInstance().isMatched(testCase, testSuiteQuery)) {
                 continue;
             }
 
@@ -171,12 +172,10 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
             // make sure all TestDataExecutedEntity in testCaseExecutedEntity
             // has the same rows to prevent NullPointerException
 
-            List<IExecutedEntity> ls1 = getExecutedItems();
             getExecutedItems().add(testCaseExecutedEntity);
         }
         return executedItems;
     }
-
 
     private void prepareTestCaseExecutedEntity(String projectDir, TestSuiteTestCaseLink testCaseLink,
             TestCaseExecutedEntity testCaseExecutedEntity) throws Exception {
@@ -206,9 +205,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
                 numTestDataRowUsedManyTimes *= rowCount;
                 updateMultiplierForSibblingTestDataExecuted(testCaseExecutedEntity, rowCount);
             }
-            List<TestDataExecutedEntity> ls = testCaseExecutedEntity.getTestDataExecutions();
             testCaseExecutedEntity.getTestDataExecutions().add(testDataExecutedEntity);
-            System.out.println("hello");
         }
 
         testCaseExecutedEntity.setLoopTimes(numTestDataRowUsedManyTimes * Math.max(numberTestCaseUsedOnce, 1));

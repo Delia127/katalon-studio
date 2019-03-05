@@ -296,6 +296,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_LBL_RETRY_TIMES = ComposerExecutionMessageConstants.DIA_LBL_RETRY_TIMES;
 
     public static final String DIA_CHK_FOR_FAILED_TEST_CASES = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES;
+    
+    public static final String DIA_LBL_KSTORE_API_KEY_USAGE = ComposerExecutionMessageConstants.KSTORE_API_KEY_USAGE;
 
     // TestSuiteSelectionDialog
     public static final String DIA_TITLE_TEST_SUITE_BROWSER = ComposerExecutionMessageConstants.DIA_TITLE_TEST_SUITE_BROWSER;

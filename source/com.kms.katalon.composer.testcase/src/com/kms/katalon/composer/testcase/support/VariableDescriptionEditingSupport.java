@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.CellEditor.LayoutData;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableDescriptionOperation;
@@ -22,7 +23,7 @@ public class VariableDescriptionEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        return new TextCellEditor((Composite) this.getViewer().getControl());
+        return new CustomTextCellEditor((Composite) this.getViewer().getControl());
     }
 
     @Override
@@ -48,5 +49,19 @@ public class VariableDescriptionEditingSupport extends EditingSupport {
             }
         }
     }
+    private class CustomTextCellEditor extends TextCellEditor {
+        
+        public CustomTextCellEditor(Composite parent) {
+            super(parent);
+        }
+
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData result = super.getLayoutData();
+            result.minimumHeight =10;
+            return result;
+        }
+    }
+ 
 
 }

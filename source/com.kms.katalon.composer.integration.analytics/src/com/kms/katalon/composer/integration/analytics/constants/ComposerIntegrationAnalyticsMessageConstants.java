@@ -85,6 +85,7 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     
     public static String REPORT_MSG_MUST_CONNECT_SUCCESSFULLY;
 
+    public static String MSG_REQUEST_TOKEN_ERROR;
     
     static {
         // initialize resource bundle

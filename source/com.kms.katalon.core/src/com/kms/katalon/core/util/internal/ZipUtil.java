@@ -73,11 +73,8 @@ public class ZipUtil {
     }
     
     public static Path compress(List<Path> files, Path zipfile) throws IOException {
-        OutputStream zipFileOutputStream = null;
-        ZipOutputStream zipOutputStream = null;
-        try {
-            zipFileOutputStream = Files.newOutputStream(zipfile);
-            zipOutputStream = new ZipOutputStream(zipFileOutputStream);
+        try (OutputStream zipFileOutputStream = Files.newOutputStream(zipfile);
+                ZipOutputStream zipOutputStream = new ZipOutputStream(zipFileOutputStream)) {
             for (Path file : files) {
                 InputStream fileInputStream = Files.newInputStream(file);
                 ZipEntry zipEntry = new ZipEntry(file.toFile().getName());
@@ -86,14 +83,7 @@ public class ZipUtil {
                 IOUtils.copy(fileInputStream, zipOutputStream);
                 IOUtils.closeQuietly(fileInputStream);
             }
-        } finally {
-            if (zipFileOutputStream != null) {
-                zipFileOutputStream.close();
-            }
-            if (zipOutputStream != null) {
-                zipOutputStream.close();
-            }
+            return zipfile;
         }
-        return zipfile;
     }
 }

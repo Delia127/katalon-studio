@@ -10,4 +10,6 @@ public interface SavableCompositePart {
 	public void save() throws Exception;
 
 	void setDirty(boolean dirty);
+	
+	boolean isDirty();
 }

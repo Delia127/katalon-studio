@@ -30,5 +30,7 @@ public class TestSuiteEntityUtil {
     public static void copyFilteringTestSuiteProperties(FilteringTestSuiteEntity src, FilteringTestSuiteEntity des) {
         copyTestSuiteProperties(src, des);
         des.setFilteringText(src.getFilteringText());
+        des.setFilteringPlugin(src.getFilteringPlugin());
+        des.setFilteringExtension(src.getFilteringExtension());
     }
 }

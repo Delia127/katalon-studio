@@ -34,7 +34,6 @@ public class TestCaseExecutedEntity extends ExecutedEntity {
 	}
 	
 	public TestDataExecutedEntity getTestDataExecuted(String testDataLinkId) {
-	    List<TestDataExecutedEntity> ls = getTestDataExecutions();
 		for (TestDataExecutedEntity executedEntity : getTestDataExecutions()) {
 			if (executedEntity.getTestDataLinkId().equals(testDataLinkId) ) {
 				return executedEntity;

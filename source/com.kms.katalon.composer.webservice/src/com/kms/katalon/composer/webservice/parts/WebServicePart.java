@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -210,7 +211,8 @@ import com.kms.katalon.util.listener.EventListener;
 
 import mnita.ansiconsole.participants.AnsiConsoleStyleListener;
 
-public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent, VerificationScriptEventHandler {
+public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent,
+        VerificationScriptEventHandler {
 
     protected static final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(WebServicePart.class).getSymbolicName();
 
@@ -249,7 +251,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected static final String AUTHORIZATION_TYPE = RequestHeaderConstants.AUTHORIZATION_TYPE;
 
     private static final String AUTHORIZATION_HEADER = ComposerWebserviceMessageConstants.AUTHORIZATION_HEADER;
-      
+
     private static final String BASIC_AUTH = ComposerWebserviceMessageConstants.BASIC_AUTH;
 
     private static final String NO_AUTH = ComposerWebserviceMessageConstants.NO_AUTH;
@@ -258,34 +260,34 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     private static final String TOOLTIP_CONSUMER_SECRET = ComposerWebserviceMessageConstants.PA_TOOLTIP_CONSUMER_SECRET;
 
-	public static final String PA_TOOLTIP_CALLBACK_URL = ComposerWebserviceMessageConstants.PA_TOOLTIP_CALLBACK_URL;
+    public static final String PA_TOOLTIP_CALLBACK_URL = ComposerWebserviceMessageConstants.PA_TOOLTIP_CALLBACK_URL;
 
-	public static final String PA_TOOLTIP_AUTH_URL = ComposerWebserviceMessageConstants.PA_TOOLTIP_AUTH_URL;
-	
-	public static final String PA_TOOLTIP_ACCESS_TOKEN_URL = ComposerWebserviceMessageConstants.PA_TOOLTIP_ACCESS_TOKEN_URL;
-	
-	public static final String PA_TOOLTIP_SCOPE = ComposerWebserviceMessageConstants.PA_TOOLTIP_SCOPE;
-	
-	public static final String PA_TOOLTIP_STATE = ComposerWebserviceMessageConstants.PA_TOOLTIP_STATE;
-    
+    public static final String PA_TOOLTIP_AUTH_URL = ComposerWebserviceMessageConstants.PA_TOOLTIP_AUTH_URL;
+
+    public static final String PA_TOOLTIP_ACCESS_TOKEN_URL = ComposerWebserviceMessageConstants.PA_TOOLTIP_ACCESS_TOKEN_URL;
+
+    public static final String PA_TOOLTIP_SCOPE = ComposerWebserviceMessageConstants.PA_TOOLTIP_SCOPE;
+
+    public static final String PA_TOOLTIP_STATE = ComposerWebserviceMessageConstants.PA_TOOLTIP_STATE;
+
     private static final String TXT_IMPORT_CONSUMER_SECRET_FROM_FILE = ComposerWebserviceMessageConstants.PA_TXT_IMPORT_CONSUMER_SECRET_FROM_FILE;
 
     private static final String TOOLTIP_IMPORT_CONSUMER_SECRET_FROM_FILE = ComposerWebserviceMessageConstants.PA_TOOLTIP_IMPORT_CONSUMER_SECRET_FROM_FILE;
 
     private static final String WARNING_UNSUPORTED_PRIVATE_KEY_FILE = ComposerWebserviceMessageConstants.PA_WARNING_UNSUPORTED_PRIVATE_KEY_FILE;
-    
-	public static final String LBL_GRANT_TYPE = ComposerWebserviceMessageConstants.PA_LBL_GRANT_TYPE;
-	
-	public static final String LBL_CALLBACK_URL = ComposerWebserviceMessageConstants.PA_LBL_CALLBACK_URL;
-	
-	public static final String LBL_AUTH_URL = ComposerWebserviceMessageConstants.PA_LBL_AUTH_URL;
-	
-	public static final String LBL_ACCESS_TOKEN_URL = ComposerWebserviceMessageConstants.PA_LBL_ACCESS_TOKEN_URL;
-	
-	public static final String LBL_SCOPE = ComposerWebserviceMessageConstants.PA_LBL_SCOPE;
-	
-	public static final String LBL_STATE = ComposerWebserviceMessageConstants.PA_LBL_STATE;
-    
+
+    public static final String LBL_GRANT_TYPE = ComposerWebserviceMessageConstants.PA_LBL_GRANT_TYPE;
+
+    public static final String LBL_CALLBACK_URL = ComposerWebserviceMessageConstants.PA_LBL_CALLBACK_URL;
+
+    public static final String LBL_AUTH_URL = ComposerWebserviceMessageConstants.PA_LBL_AUTH_URL;
+
+    public static final String LBL_ACCESS_TOKEN_URL = ComposerWebserviceMessageConstants.PA_LBL_ACCESS_TOKEN_URL;
+
+    public static final String LBL_SCOPE = ComposerWebserviceMessageConstants.PA_LBL_SCOPE;
+
+    public static final String LBL_STATE = ComposerWebserviceMessageConstants.PA_LBL_STATE;
+
     private static final String LBL_CONSUMER_KEY = ComposerWebserviceMessageConstants.PA_LBL_CONSUMER_KEY;
 
     private static final String LBL_CONSUMER_SECRET = ComposerWebserviceMessageConstants.PA_LBL_CONSUMER_SECRET;
@@ -295,16 +297,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private static final String LBL_TOKEN_SECRET = ComposerWebserviceMessageConstants.PA_LBL_TOKEN_SECRET;
 
     private static final String LBL_REALM = ComposerWebserviceMessageConstants.PA_LBL_REALM;
-    
-	private static final String LBL_REQUEST_TOKEN = ComposerWebserviceMessageConstants.PA_REQUEST_TOKEN; 
 
-	private static final String LBL_AUTHORIZATION_CODE = ComposerWebserviceMessageConstants.PA_AUTHORIZATION_CODE; 
-	
-	private static final String LBL_ACCESS_TOKEN = ComposerWebserviceMessageConstants.PA_ACCESS_TOKEN; 
+    private static final String LBL_REQUEST_TOKEN = ComposerWebserviceMessageConstants.PA_REQUEST_TOKEN;
 
-	private static final String LBL_REFRESH_TOKEN = ComposerWebserviceMessageConstants.PA_REFRESH_TOKEN; 
+    private static final String LBL_AUTHORIZATION_CODE = ComposerWebserviceMessageConstants.PA_AUTHORIZATION_CODE;
 
-	private static final String LBL_TOKEN_TYPE = ComposerWebserviceMessageConstants.PA_TOKEN_TYPE; 
+    private static final String LBL_ACCESS_TOKEN = ComposerWebserviceMessageConstants.PA_ACCESS_TOKEN;
+
+    private static final String LBL_REFRESH_TOKEN = ComposerWebserviceMessageConstants.PA_REFRESH_TOKEN;
+
+    private static final String LBL_TOKEN_TYPE = ComposerWebserviceMessageConstants.PA_TOKEN_TYPE;
 
     private static final String TXT_MSG_OPTIONAL = ComposerWebserviceMessageConstants.PA_TXT_MSG_OPTIONAL;
 
@@ -320,20 +322,20 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
 
-	private static final String OAUTH_2_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_2_0;
-	
+    private static final String OAUTH_2_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_2_0;
+
     private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
             InputValueType.List, InputValueType.Map };
 
-	private static final String PASSWORD_CREDENTIALS = RequestHeaderConstants.SIGNATURE_METHOD_PASSWORD_CREDENTIALS;
-	
-	private static final String REFRESH_TOKEN = RequestHeaderConstants.REFRESH_TOKEN;
-	
-	private static final String AUTHORIZATION_CODE = RequestHeaderConstants.SIGNATURE_METHOD_AUTHORIZTION_CODE;
+    private static final String PASSWORD_CREDENTIALS = RequestHeaderConstants.SIGNATURE_METHOD_PASSWORD_CREDENTIALS;
 
-	private static final String CLIENT_CREDENTIALS = RequestHeaderConstants.SIGNATURE_METHOD_CLIENT_CREDENTIALS;
-    
+    private static final String REFRESH_TOKEN = RequestHeaderConstants.REFRESH_TOKEN;
+
+    private static final String AUTHORIZATION_CODE = RequestHeaderConstants.SIGNATURE_METHOD_AUTHORIZTION_CODE;
+
+    private static final String CLIENT_CREDENTIALS = RequestHeaderConstants.SIGNATURE_METHOD_CLIENT_CREDENTIALS;
+
     @Inject
     private ESelectionService selectionService;
 
@@ -365,7 +367,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected Composite oauth1Composite;
 
     protected Composite updateHeaderComposite;
-    
+
     protected Composite oauth2Composite;
 
     protected ParameterTable tblParams;
@@ -391,9 +393,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected CTabItem tabBody;
 
     protected CTabItem tabVerification;
-    
+
     protected CTabItem tabVariable;
-    
+
     protected CTabItem tabVariableEditor;
 
     protected Composite responseComposite;
@@ -404,6 +406,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected Text txtPassword;
 
+    protected Text txtOAuth2Username;
+
+    protected Text txtOAuth2Password;
+
     protected Text txtConsumerKey;
 
     protected Text txtConsumerSecret;
@@ -413,33 +419,33 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected Text txtTokenSecret;
 
     protected Text txtSignatureMethod;
-    
+
     protected Text txtAccessToken;
-    
+
     protected Text txtRefreshToken;
-    
+
     protected Text txtTokenType;
 
     protected Text txtRealm;
 
-	private Text txtCallbackUrl;
+    private Text txtCallbackUrl;
 
-	private Text txtAuthUrl;
+    private Text txtAuthUrl;
 
-	private Text txtAccessTokenUrl;
-	
-	private Text txtState;
-	
-	private Text txtAuthorizationCode;
-	
-	private Text txtScope;
+    private Text txtAccessTokenUrl;
+
+    private Text txtState;
+
+    private Text txtAuthorizationCode;
+
+    private Text txtScope;
 
     protected CCombo ccbOAuth1SignatureMethod;
-    
+
     protected CCombo ccbOAuth2SignatureMethod;
 
     protected List<WebElementPropertyEntity> oauth1Headers = new ArrayList<WebElementPropertyEntity>();
-    
+
     protected List<WebElementPropertyEntity> oauth2Headers = new ArrayList<WebElementPropertyEntity>();
 
     protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
@@ -464,7 +470,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private WSRequestPartUI ui;
 
     protected TestCaseVariableView variableView;
-    
+
     protected TestCaseVariableEditorView variableEditorView;
 
     public WebServiceRequestEntity getOriginalWsObject() {
@@ -480,12 +486,11 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected Label lblVerificationResultStatus;
 
     private Composite verificationResultComposite;
-    
+
     private boolean invalidScheme = false;
 
     private boolean variableTab = true;
 
-    
     @PostConstruct
     public void createComposite(Composite parent, MCompositePart part) {
         this.mPart = part;
@@ -504,9 +509,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         this.ui = wsRequestPartUI;
 
         new ToolBarForVerificationPart(ui.getVerificationPart());
-        
+
         new HelpToolBarForMPart(ui.getVariablePart(), DocumentationMessageConstants.WEB_SERVICE_VARIABLES);
-        
+
         new HelpToolBarForMPart(ui.getAuthorizationPart(), DocumentationMessageConstants.WEB_SERVICE_AUTHORIZATION);
 
         scriptEditorPart = ui.getScriptEditorPart();
@@ -524,9 +529,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         createParamsComposite(apiControlsPartInnerComposite);
 
         createVariableComposite();
-        
+
         createVariableEditorComposite();
-        
+
         createTabsComposite();
 
         createSnippetComposite();
@@ -554,7 +559,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         insertVerificationScript(0, importBuilder.toString());
         // Insert Import <=> content changed <=> ScriptEditorPart marked dirty <=> Save All icon enabled
         // Since this "content changed" is irrelevant to the users, ix to the above problem
-//        scriptEditorPart.setDirty(false);
+        // scriptEditorPart.setDirty(false);
         GroovyEditorUtil.saveEditor(scriptEditorPart);
     }
 
@@ -586,7 +591,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     protected void createAPIControls(Composite parent) {
-//        String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
+        // String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
         wsApiControl = new WebServiceAPIControl(parent, originalWsObject);
         wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
 
@@ -645,7 +650,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         if (!isDraft()) {
             wsApiControl.addAddRequestToTestCaseSelectionListener(new DropdownToolItemSelectionListener() {
-    
+
                 @Override
                 public void widgetSelected(SelectionEvent event) {
                     if (event.detail == SWT.ARROW) {
@@ -661,15 +666,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                         }
                     }
                 }
-    
+
                 @Override
                 protected Menu getMenu() {
                     return wsApiControl.getAddRequestToTestCaseMenu();
                 }
             });
-    
+
             wsApiControl.addAddRequestToNewTestCaseSelectionListener(new SelectionAdapter() {
-    
+
                 @Override
                 public void widgetSelected(SelectionEvent event) {
                     Trackings.trackClickAddingRequestToTestCase(true);
@@ -682,9 +687,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                     }
                 }
             });
-    
+
             wsApiControl.addAddRequestToExistingTestCaseSelectionListener(new SelectionAdapter() {
-    
+
                 @Override
                 public void widgetSelected(SelectionEvent event) {
                     Trackings.trackClickAddingRequestToTestCase(false);
@@ -698,12 +703,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 }
             });
         }
-        
+
         if (isDraft()) {
             wsApiControl.addSaveDraftSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    SaveDraftRequestHandler.saveDraftRequest(Display.getCurrent().getActiveShell(), getOriginalWsObject());
+                    SaveDraftRequestHandler.saveDraftRequest(Display.getCurrent().getActiveShell(),
+                            getOriginalWsObject());
                 }
             });
         }
@@ -723,7 +729,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         if (testCaseEntity != null) {
             addSendRequestStatementToTestCase(testCaseEntity);
         }
-        
+
         Trackings.trackAddRequestToTestCase(true);
     }
 
@@ -733,7 +739,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             eventBroker.send(EventConstants.TESTCASE_OPEN, selectedTestCaseEntity);
             addSendRequestStatementToTestCase(selectedTestCaseEntity);
         }
-        
+
         Trackings.trackAddRequestToTestCase(false);
     }
 
@@ -742,7 +748,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
         dialog.setAllowMultiple(false);
         dialog.setTitle(StringConstants.DIA_TITLE_TEST_CASE_BROWSER);
-        
+
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject != null) {
             FolderEntity rootFolder = FolderController.getInstance().getTestCaseRoot(currentProject);
@@ -805,7 +811,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         VariableEntity[] requestVariables = variableView.getVariables();
         if (requestVariables.length > 0) {
             MapExpressionWrapper variableMapExpression = new MapExpressionWrapper(findTestObjectMethodCallArgumentList);
-            
+
             for (VariableEntity variable : requestVariables) {
                 MapEntryExpressionWrapper newMapEntry = new MapEntryExpressionWrapper(variableMapExpression);
 
@@ -819,7 +825,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             }
 
             findTestObjectMethodCallArgumentList.addExpression(variableMapExpression);
-        }     
+        }
 
         // replace the default created argument of sendRequest method with
         // findTestObject method call
@@ -876,26 +882,25 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         addTabBody(tabFolder);
         addTabVariable(tabFolder);
         addTabVariableEditor(tabFolder);
-        
-        
+
         tabFolder.addSelectionListener(new SelectionAdapter() {
             @SuppressWarnings("unused")
             @Override
             public void widgetSelected(SelectionEvent event) {
-                if (tabFolder == null) {                            
+                if (tabFolder == null) {
                     return;
                 }
-                
+
                 if (tabFolder.getSelectionIndex() == 4) {
                     variableTab = true;
-                    if(dirtyable.isDirty())
+                    if (dirtyable.isDirty())
                         updateVariableManualView();
                     return;
                 }
 
                 if (tabFolder.getSelectionIndex() == 5) {
                     variableTab = false;
-                    if(dirtyable.isDirty())
+                    if (dirtyable.isDirty())
                         updateVariableScriptView();
                     return;
                 }
@@ -936,16 +941,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         List<VariableEntity> variables = originalWsObject.getVariables();
         variableView.addVariable(variables.toArray(new VariableEntity[variables.size()]));
     }
-    
+
     private void createVariableEditorComposite() {
         Composite variableEditorPartComposite = ui.getVariableEditorPartComposite();
-        
+
         variableEditorView = new TestCaseVariableEditorView(this, variableEditorPartComposite);
     }
 
     @Override
     public void setDirty(boolean isDirty) {
-    	dirtyable.setDirty(isDirty);
+        dirtyable.setDirty(isDirty);
     }
 
     @Override
@@ -1073,7 +1078,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         ccbAuthType.add(BASIC_AUTH);
         ccbAuthType.add(OAUTH_1_0);
         ccbAuthType.add(OAUTH_2_0);
-        
+
         userComposite = new Composite(formComposite, SWT.NONE);
         oauth1Composite = new Composite(formComposite, SWT.NONE);
         updateHeaderComposite = new Composite(formComposite, SWT.NONE);
@@ -1095,8 +1100,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         ccbAuthType.select(0);
         renderAuthenticationUI(ccbAuthType.getText());
     }
-    
-	/**
+
+    /**
      * @param composite
      * Composite with GridData layout
      * @param isVisible
@@ -1230,325 +1235,329 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         txtTokenSecret = addAuthInput(LBL_TOKEN_SECRET, txtTokenSecret, parent, null);
         txtRealm = addAuthInput(LBL_REALM, txtRealm, parent, TXT_MSG_OPTIONAL);
     }
-    
 
+    private void createOAuth2Input(Composite parent) {
+        GridLayout glParent = new GridLayout(2, false);
+        glParent.marginWidth = 0;
+        glParent.marginHeight = 0;
+        parent.setLayout(glParent);
+        GridData gdParent = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+        gdParent.heightHint = 200;
+        parent.setLayoutData(gdParent);
 
-	private void createOAuth2Input(Composite parent) {
-		GridLayout glParent = new GridLayout(2, false);
-		glParent.marginWidth = 0;
-		glParent.marginHeight = 0;
-		parent.setLayout(glParent);
-		GridData gdParent = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
-		gdParent.heightHint = 200;
-		parent.setLayoutData(gdParent);
+        ScrolledComposite scrollableComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+        scrollableComposite.setLayout(new GridLayout(2, false));
+        scrollableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		ScrolledComposite scrollableComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
-		scrollableComposite.setLayout(new GridLayout(2, false));
-		scrollableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        Composite contentComposite = new Composite(scrollableComposite, SWT.NONE);
+        GridLayout glContent = new GridLayout(2, false);
+        glContent.marginWidth = 0;
+        glContent.marginHeight = 0;
+        contentComposite.setLayout(glContent);
+        GridData gdComposite = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+        contentComposite.setLayoutData(gdComposite);
 
-		Composite contentComposite = new Composite(scrollableComposite, SWT.NONE);
-		GridLayout glContent = new GridLayout(2, false);
-		glContent.marginWidth = 0;
-		glContent.marginHeight = 0;
-		contentComposite.setLayout(glContent);
-		GridData gdComposite = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
-		contentComposite.setLayoutData(gdComposite);
+        String[] auth02Signatures = new String[] { PASSWORD_CREDENTIALS, AUTHORIZATION_CODE, CLIENT_CREDENTIALS,
+                REFRESH_TOKEN };
 
-		String[] auth02Signatures = new String[] { PASSWORD_CREDENTIALS, AUTHORIZATION_CODE, CLIENT_CREDENTIALS, REFRESH_TOKEN };
+        ccbOAuth2SignatureMethod = addAuthComboBox("Grant Type", ccbOAuth2SignatureMethod, contentComposite,
+                auth02Signatures);
+        txtOAuth2Username = addAuthInput(ComposerWebserviceMessageConstants.LBL_USERNAME, txtOAuth2Username,
+                contentComposite, null);
+        txtOAuth2Password = addAuthInput(ComposerWebserviceMessageConstants.LBL_PASSWORD, txtOAuth2Password,
+                contentComposite, null);
 
-		ccbOAuth2SignatureMethod = addAuthComboBox("Grant Type", ccbOAuth2SignatureMethod, contentComposite,
-				auth02Signatures);
-		txtUsername = addAuthInput(ComposerWebserviceMessageConstants.LBL_USERNAME, txtUsername, contentComposite,
-				null);
-		txtPassword = addAuthInput(ComposerWebserviceMessageConstants.LBL_PASSWORD, txtPassword, contentComposite,
-				null);
-		
-		new Label(contentComposite, SWT.NONE);
-		final Button chkShowPassword = new Button(contentComposite, SWT.CHECK);
+        new Label(contentComposite, SWT.NONE);
+        final Button chkShowPassword = new Button(contentComposite, SWT.CHECK);
         chkShowPassword.setText(ComposerWebserviceMessageConstants.CHK_SHOW_PASSWORD);
         chkShowPassword.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 txtPassword.setEchoChar(PASSWORD_CHAR_MASK);
                 if (chkShowPassword.getSelection()) {
-                    txtPassword.setEchoChar(RAW_PASSWORD_CHAR_MASK); 
+                    txtPassword.setEchoChar(RAW_PASSWORD_CHAR_MASK);
                 }
             }
         });
-        
+
         txtPassword.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				 txtPassword.setEchoChar(PASSWORD_CHAR_MASK);
-	                if (chkShowPassword.getSelection()) {
-	                    txtPassword.setEchoChar(RAW_PASSWORD_CHAR_MASK); 
-	                }
-			}
-		});
-        
-		txtCallbackUrl = addAuthInput(LBL_CALLBACK_URL, txtCallbackUrl, contentComposite, null);
-		txtAuthUrl = addAuthInput(LBL_AUTH_URL, txtAuthUrl, contentComposite, null);
-		txtAccessTokenUrl = addAuthInput(LBL_ACCESS_TOKEN_URL, txtAccessTokenUrl, contentComposite, null);
-		txtState = addAuthInput(LBL_STATE, txtState, contentComposite, null);
-		txtConsumerKey = addAuthInput(LBL_CONSUMER_KEY, txtConsumerKey, contentComposite, null);
-		txtConsumerSecret = addAuthInput(LBL_CONSUMER_SECRET, txtConsumerSecret, contentComposite, null);
-		txtAuthorizationCode = addAuthInput(LBL_AUTHORIZATION_CODE, txtAuthorizationCode, contentComposite, null);
-		txtScope = addAuthInput(LBL_SCOPE, txtScope, contentComposite, null);
-		txtAccessToken = addAuthInput(LBL_ACCESS_TOKEN, txtAccessToken, contentComposite, null);
-		txtRefreshToken = addAuthInput(LBL_REFRESH_TOKEN, txtRefreshToken, contentComposite, null);
-		txtTokenType = addAuthInput(LBL_TOKEN_TYPE, txtTokenType, contentComposite, null);
+            @Override
+            public void modifyText(ModifyEvent e) {
+                txtPassword.setEchoChar(PASSWORD_CHAR_MASK);
+                if (chkShowPassword.getSelection()) {
+                    txtPassword.setEchoChar(RAW_PASSWORD_CHAR_MASK);
+                }
+            }
+        });
 
-		Button btnLoadAuthData = new Button(contentComposite, SWT.FLAT);
-		btnLoadAuthData.setText("Load data from Excel");
-		btnLoadAuthData.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FileDialog dialog = new FileDialog(btnLoadAuthData.getShell());
-				String path = dialog.open();
-				if (path == null) {
-					return;
-				}
-				Map<String, String> variableMap = ExcelHelper.readFrom(path);
-				loadAuthDataIntoInputs(variableMap);
-			}
-		});
+        txtCallbackUrl = addAuthInput(LBL_CALLBACK_URL, txtCallbackUrl, contentComposite, null);
+        txtAuthUrl = addAuthInput(LBL_AUTH_URL, txtAuthUrl, contentComposite, null);
+        txtAccessTokenUrl = addAuthInput(LBL_ACCESS_TOKEN_URL, txtAccessTokenUrl, contentComposite, null);
+        txtState = addAuthInput(LBL_STATE, txtState, contentComposite, null);
+        txtConsumerKey = addAuthInput(LBL_CONSUMER_KEY, txtConsumerKey, contentComposite, null);
+        txtConsumerSecret = addAuthInput(LBL_CONSUMER_SECRET, txtConsumerSecret, contentComposite, null);
+        txtAuthorizationCode = addAuthInput(LBL_AUTHORIZATION_CODE, txtAuthorizationCode, contentComposite, null);
+        txtScope = addAuthInput(LBL_SCOPE, txtScope, contentComposite, null);
+        txtAccessToken = addAuthInput(LBL_ACCESS_TOKEN, txtAccessToken, contentComposite, null);
+        txtRefreshToken = addAuthInput(LBL_REFRESH_TOKEN, txtRefreshToken, contentComposite, null);
+        txtTokenType = addAuthInput(LBL_TOKEN_TYPE, txtTokenType, contentComposite, null);
 
-		Button btnRequestToken = new Button(contentComposite, SWT.FLAT);
-		btnRequestToken.setText(LBL_REQUEST_TOKEN);
-		btnRequestToken.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					
-					if(!ccbOAuth2SignatureMethod.getText().equals(PASSWORD_CREDENTIALS) 
-							&& !ccbOAuth2SignatureMethod.getText().equals(CLIENT_CREDENTIALS)
-							&& !ccbOAuth2SignatureMethod.getText().equals(REFRESH_TOKEN)){
-						
-						String urlToGetAuthorizationCode = constructUrlToGetAuthorizationCode();
-						Oauth2AuthorizationRetrievalDialog oAuth2AuthorizationRetrievalDialog = 
-								new Oauth2AuthorizationRetrievalDialog(Display.getCurrent().getActiveShell(), 
-										urlToGetAuthorizationCode);
-						int responseCode = oAuth2AuthorizationRetrievalDialog.open();
-						if(responseCode == IDialogConstants.OK_ID){
-							String restUrl = oAuth2AuthorizationRetrievalDialog.getAuthorizationCode();
-							String authorizationCode = WebServiceController.extractParamFromRestUrl("code", restUrl);
-							String state = WebServiceController.extractParamFromRestUrl("state", restUrl);
-							boolean valid = verifyResponseState(state);
-							if(valid){
-								txtAuthorizationCode.setText(authorizationCode);
-							}	
-							getOAuth2AccessToken();
-						}
-					} else {
-						getOAuth2AccessToken();
-					}
-				} catch (UnsupportedOperationException | IOException e1) {
-					LoggerSingleton.logError(e1);
-				}
-			}
-		});
-		
-		disableAllOauth2Inputs();
-		ccbOAuth2SignatureMethod.addSelectionListener(new SelectionAdapter() {
-			@Override
+        Button btnLoadAuthData = new Button(contentComposite, SWT.FLAT);
+        btnLoadAuthData.setText("Load data from Excel");
+        btnLoadAuthData.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
-				enableOAuth2InputsAccordingToSignature();
-			}
-		});
-		
-		scrollableComposite.setContent(contentComposite);
-		scrollableComposite.setExpandHorizontal(true);
-		scrollableComposite.setExpandVertical(true);
-		scrollableComposite.setMinSize(contentComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-	}
-	
-	private void loadAuthDataIntoInputs(Map<String, String> variableMap) {
-		txtUsername.setText(variableMap.getOrDefault(OAuth2Constants.USERNAME, StringUtils.EMPTY));
-		txtPassword.setText(variableMap.getOrDefault(OAuth2Constants.PASSWORD, StringUtils.EMPTY));
-		txtAccessTokenUrl.setText(variableMap.getOrDefault(OAuth2Constants.ACCESS_TOKEN_URL, StringUtils.EMPTY));
-		txtConsumerKey.setText(variableMap.getOrDefault(OAuth2Constants.CLIENT_ID, StringUtils.EMPTY));
-		txtConsumerSecret.setText(variableMap.getOrDefault(OAuth2Constants.CLIENT_SECRET, StringUtils.EMPTY));
-		txtAccessToken.setText(variableMap.getOrDefault(OAuth2Constants.ACCESS_TOKEN, StringUtils.EMPTY));
-		txtRefreshToken.setText(variableMap.getOrDefault(OAuth2Constants.REFRESH_TOKEN, StringUtils.EMPTY));
-		txtRefreshToken.setText(variableMap.getOrDefault(OAuth2Constants.STATE, StringUtils.EMPTY));
-	}
-	
-	private void disableAllOauth2Inputs(){
-		txtConsumerKey.setEnabled(false);
-		txtConsumerSecret.setEnabled(false);
-		txtUsername.setEnabled(false);
-		txtPassword.setEnabled(false);
-		txtCallbackUrl.setEnabled(false);
-		txtAuthUrl.setEnabled(false);
-	}
-	
-	private void enableOAuth2InputsAccordingToSignature() {
-		disableAllOauth2Inputs();
-		switch (ccbOAuth2SignatureMethod.getText()) {
-		case PASSWORD_CREDENTIALS:
-			txtConsumerKey.setEnabled(true);
-			txtConsumerSecret.setEnabled(true);
-			txtUsername.setEnabled(true);
-			txtPassword.setEnabled(true);
-			break;
-		case REFRESH_TOKEN:
-			txtConsumerKey.setEnabled(true);
-			txtConsumerSecret.setEnabled(true);
-			txtRefreshToken.setEnabled(true);
-			break;
-		case AUTHORIZATION_CODE:
-			txtConsumerKey.setEnabled(true);
-			txtConsumerSecret.setEnabled(true);
-			txtCallbackUrl.setEnabled(true);
-			txtAuthorizationCode.setEnabled(true);
-			txtAuthUrl.setEnabled(true);
-			break;
-		case CLIENT_CREDENTIALS:
-			txtConsumerKey.setEnabled(true);
-			txtConsumerSecret.setEnabled(true);
-			break;
-		default:
-			break;
-		}
-	}
-	
-	private String constructUrlToGetAuthorizationCode() {
-		try {
-			WebServiceRequestEntity wsObj = new WebServiceRequestEntity();
-			wsObj.setServiceType("RESTful");
-			wsObj.setRestRequestMethod("POST");
-			wsObj.setRestUrl(txtAuthUrl.getText());
-			List<WebElementPropertyEntity> parameters = new ArrayList<>();
-			parameters.add(new WebElementPropertyEntity(OAuth2Constants.RESPONSE_TYPE, "code"));
-			parameters.add(new WebElementPropertyEntity(OAuth2Constants.CLIENT_ID, txtConsumerKey.getText()));
-			parameters.add(new WebElementPropertyEntity(OAuth2Constants.REDIRECT_URI, txtCallbackUrl.getText()));
-			parameters.add(new WebElementPropertyEntity(OAuth2Constants.STATE, txtState.getText()));
-			parameters.add(new WebElementPropertyEntity(OAuth2Constants.SCOPE, txtScope.getText()));
-			wsObj.setRestParameters(parameters);
-			RequestObject requestObject = WebServiceController.getRequestObject(wsObj,
-					ProjectController.getInstance().getCurrentProject().getFolderLocation(),
-					Collections.<String, Object>unmodifiableMap(Collections.emptyMap()));
-			RestfulClient.processRequestParams(requestObject);
-			if (requestObject != null)
-				return requestObject.getRestUrl();
-		} catch (MalformedURLException e) {
-			LoggerSingleton.logError(e);
-		}
-		return StringUtils.EMPTY;
-	}
+                FileDialog dialog = new FileDialog(btnLoadAuthData.getShell());
+                String path = dialog.open();
+                if (path == null) {
+                    return;
+                }
+                Map<String, String> variableMap = ExcelHelper.readFrom(path);
+                loadAuthDataIntoInputs(variableMap);
+            }
+        });
 
-	private void getOAuth2AccessToken() throws UnsupportedOperationException, IOException {
-		WebServiceRequestEntity wsObj = new WebServiceRequestEntity();
-		wsObj.setServiceType("RESTful");
-		wsObj.setRestRequestMethod("POST");
-		wsObj.setRestUrl(StringUtils.trim(txtAccessTokenUrl.getText()));
-		wsObj.setHttpHeaderProperties(
-				Arrays.asList(new WebElementPropertyEntity("Content-Type", "application/x-www-form-urlencoded")));
-		ParameterizedBodyContent<UrlEncodedBodyParameter> parameters = new ParameterizedBodyContent<UrlEncodedBodyParameter>();
-		parameters.setContentType("application/x-www-form-urlencoded");
-		parameters.setCharset("UTF-8");
-		wsObj.setHttpBodyType("x-www-form-urlencoded");
+        Button btnRequestToken = new Button(contentComposite, SWT.FLAT);
+        btnRequestToken.setText(LBL_REQUEST_TOKEN);
+        btnRequestToken.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
 
-		switch (ccbOAuth2SignatureMethod.getText()) {
-		case PASSWORD_CREDENTIALS:
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, StringUtils.trim(txtConsumerKey.getText())));
-			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, StringUtils.trim(txtConsumerSecret.getText())));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "password"));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.USERNAME, StringUtils.trim(txtUsername.getText())));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.PASSWORD, StringUtils.trim(txtPassword.getText())));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.STATE, StringUtils.trim(txtPassword.getText())));
-			break;
-		case REFRESH_TOKEN:
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, StringUtils.trim(txtConsumerKey.getText())));
-			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, StringUtils.trim(txtConsumerSecret.getText())));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "refresh_token"));
-			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.REFRESH_TOKEN, StringUtils.trim(txtRefreshToken.getText())));
-			break;
-		case AUTHORIZATION_CODE:
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, StringUtils.trim(txtConsumerKey.getText())));
-			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, StringUtils.trim(txtConsumerSecret.getText())));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "authorization_code"));
-			parameters
-					.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.REDIRECT_URI, StringUtils.trim(txtCallbackUrl.getText())));
-			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.AUTHORIZATION_CODE, StringUtils.trim(txtAuthorizationCode.getText())));
-			break;
-		case CLIENT_CREDENTIALS:
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID, StringUtils.trim(txtConsumerKey.getText())));
-			parameters.addParameter(
-					new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET, StringUtils.trim(txtConsumerSecret.getText())));
-			parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "client_credentials"));
-			break;
-		default:
-			break;
-		}
+                    if (!ccbOAuth2SignatureMethod.getText().equals(PASSWORD_CREDENTIALS)
+                            && !ccbOAuth2SignatureMethod.getText().equals(CLIENT_CREDENTIALS)
+                            && !ccbOAuth2SignatureMethod.getText().equals(REFRESH_TOKEN)) {
 
-		wsObj.setHttpBodyContent(JsonUtil.toJson(parameters));
-		sendRequestForAuthentication(wsObj);
-	}
-	
-	private void sendRequestForAuthentication(WebServiceRequestEntity wsObj){
-		ProgressMonitorDialogWithThread progress = new ProgressMonitorDialogWithThread(
-				Display.getCurrent().getActiveShell());
-		progress.setOpenOnRun(true);
-		try {
-			progress.run(true, true, new IRunnableWithProgress() {
+                        String urlToGetAuthorizationCode = constructUrlToGetAuthorizationCode();
+                        Oauth2AuthorizationRetrievalDialog oAuth2AuthorizationRetrievalDialog = new Oauth2AuthorizationRetrievalDialog(
+                                Display.getCurrent().getActiveShell(), urlToGetAuthorizationCode);
+                        int responseCode = oAuth2AuthorizationRetrievalDialog.open();
+                        if (responseCode == IDialogConstants.OK_ID) {
+                            String restUrl = oAuth2AuthorizationRetrievalDialog.getAuthorizationCode();
+                            String authorizationCode = WebServiceController.extractParamFromRestUrl("code", restUrl);
+                            String state = WebServiceController.extractParamFromRestUrl("state", restUrl);
+                            boolean valid = verifyResponseState(state);
+                            if (valid) {
+                                txtAuthorizationCode.setText(authorizationCode);
+                            }
+                            getOAuth2AccessToken();
+                        }
+                    } else {
+                        getOAuth2AccessToken();
+                    }
+                } catch (UnsupportedOperationException | IOException e1) {
+                    LoggerSingleton.logError(e1);
+                }
+            }
+        });
 
-				@Override
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					try {
-						monitor.beginTask("Authenticating ...", IProgressMonitor.UNKNOWN);
-						ResponseObject responseObject = WebServiceController.getInstance().sendRequest(wsObj,
-								ProjectController.getInstance().getCurrentProject().getFolderLocation(),
-								ProxyPreferences.getProxyInformation(),
-								Collections.<String, Object>unmodifiableMap(Collections.emptyMap()), false);
-						String bodyContent = responseObject.getResponseText();
-						Display.getDefault().asyncExec(new Runnable() {
-							@Override
-							public void run() {
-								if (!bodyContent.isEmpty()) {									
-									JSONObject jsonObj = new JSONObject(bodyContent);
-									String stateInResponse = jsonObj.optString(OAuth2Constants.STATE);
-									boolean valid = verifyResponseState(stateInResponse);
-									if(valid){
-										txtAccessToken.setText(jsonObj.optString(OAuth2Constants.ACCESS_TOKEN));
-										txtRefreshToken.setText(jsonObj.optString(OAuth2Constants.REFRESH_TOKEN));
-										txtTokenType.setText(jsonObj.optString(OAuth2Constants.TOKEN_TYPE));
-										
-									}
-								}
-							}
-						});
-					} catch (Exception e) {
-						throw new InvocationTargetException(e);
-					} finally {
-						monitor.done();
-					}
-				}
-			});
-		} catch (InvocationTargetException | InterruptedException e) {
-			LoggerSingleton.logError(e);
-		}
-	}
-	
-	private boolean verifyResponseState(String stateInResponse){
-		// If user sent a request with non-empty state, then verify if
-		// response contains the same value
-		if(!txtToken.getText().equals(StringUtils.EMPTY)){
-			if(!stateInResponse.equals(txtToken.getText())){
-				// Forged request, do not proceed
-				MessageDialog.openWarning(Display.getDefault().getActiveShell()
-						, "Error", "Invalid state parameter!");
-				return false;
-			}
-		}
-		return true;
-	}
-	
+        disableAllOauth2Inputs();
+        ccbOAuth2SignatureMethod.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                enableOAuth2InputsAccordingToSignature();
+            }
+        });
+
+        scrollableComposite.setContent(contentComposite);
+        scrollableComposite.setExpandHorizontal(true);
+        scrollableComposite.setExpandVertical(true);
+        scrollableComposite.setMinSize(contentComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+    }
+
+    private void loadAuthDataIntoInputs(Map<String, String> variableMap) {
+        txtOAuth2Username.setText(variableMap.getOrDefault(OAuth2Constants.USERNAME, StringUtils.EMPTY));
+        txtOAuth2Password.setText(variableMap.getOrDefault(OAuth2Constants.PASSWORD, StringUtils.EMPTY));
+        txtAccessTokenUrl.setText(variableMap.getOrDefault(OAuth2Constants.ACCESS_TOKEN_URL, StringUtils.EMPTY));
+        txtConsumerKey.setText(variableMap.getOrDefault(OAuth2Constants.CLIENT_ID, StringUtils.EMPTY));
+        txtConsumerSecret.setText(variableMap.getOrDefault(OAuth2Constants.CLIENT_SECRET, StringUtils.EMPTY));
+        txtAccessToken.setText(variableMap.getOrDefault(OAuth2Constants.ACCESS_TOKEN, StringUtils.EMPTY));
+        txtRefreshToken.setText(variableMap.getOrDefault(OAuth2Constants.REFRESH_TOKEN, StringUtils.EMPTY));
+        txtRefreshToken.setText(variableMap.getOrDefault(OAuth2Constants.STATE, StringUtils.EMPTY));
+    }
+
+    private void disableAllOauth2Inputs() {
+        txtConsumerKey.setEnabled(false);
+        txtConsumerSecret.setEnabled(false);
+        txtOAuth2Username.setEnabled(false);
+        txtOAuth2Password.setEnabled(false);
+        txtCallbackUrl.setEnabled(false);
+        txtAuthUrl.setEnabled(false);
+    }
+
+    private void enableOAuth2InputsAccordingToSignature() {
+        disableAllOauth2Inputs();
+        switch (ccbOAuth2SignatureMethod.getText()) {
+            case PASSWORD_CREDENTIALS:
+                txtConsumerKey.setEnabled(true);
+                txtConsumerSecret.setEnabled(true);
+                txtOAuth2Username.setEnabled(true);
+                txtOAuth2Password.setEnabled(true);
+                break;
+            case REFRESH_TOKEN:
+                txtConsumerKey.setEnabled(true);
+                txtConsumerSecret.setEnabled(true);
+                txtRefreshToken.setEnabled(true);
+                break;
+            case AUTHORIZATION_CODE:
+                txtConsumerKey.setEnabled(true);
+                txtConsumerSecret.setEnabled(true);
+                txtCallbackUrl.setEnabled(true);
+                txtAuthorizationCode.setEnabled(true);
+                txtAuthUrl.setEnabled(true);
+                break;
+            case CLIENT_CREDENTIALS:
+                txtConsumerKey.setEnabled(true);
+                txtConsumerSecret.setEnabled(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private String constructUrlToGetAuthorizationCode() {
+        try {
+            WebServiceRequestEntity wsObj = new WebServiceRequestEntity();
+            wsObj.setServiceType("RESTful");
+            wsObj.setRestRequestMethod("POST");
+            wsObj.setRestUrl(txtAuthUrl.getText());
+            List<WebElementPropertyEntity> parameters = new ArrayList<>();
+            parameters.add(new WebElementPropertyEntity(OAuth2Constants.RESPONSE_TYPE, "code"));
+            parameters.add(new WebElementPropertyEntity(OAuth2Constants.CLIENT_ID, txtConsumerKey.getText()));
+            parameters.add(new WebElementPropertyEntity(OAuth2Constants.REDIRECT_URI, txtCallbackUrl.getText()));
+            parameters.add(new WebElementPropertyEntity(OAuth2Constants.STATE, txtState.getText()));
+            parameters.add(new WebElementPropertyEntity(OAuth2Constants.SCOPE, txtScope.getText()));
+            wsObj.setRestParameters(parameters);
+            RequestObject requestObject = WebServiceController.getRequestObject(wsObj,
+                    ProjectController.getInstance().getCurrentProject().getFolderLocation(),
+                    Collections.<String, Object> unmodifiableMap(Collections.emptyMap()));
+            RestfulClient.processRequestParams(requestObject);
+            if (requestObject != null)
+                return requestObject.getRestUrl();
+        } catch (MalformedURLException e) {
+            LoggerSingleton.logError(e);
+        }
+        return StringUtils.EMPTY;
+    }
+
+    private void getOAuth2AccessToken() throws UnsupportedOperationException, IOException {
+        WebServiceRequestEntity wsObj = new WebServiceRequestEntity();
+        wsObj.setServiceType("RESTful");
+        wsObj.setRestRequestMethod("POST");
+        wsObj.setRestUrl(StringUtils.trim(txtAccessTokenUrl.getText()));
+        wsObj.setHttpHeaderProperties(
+                Arrays.asList(new WebElementPropertyEntity("Content-Type", "application/x-www-form-urlencoded")));
+        ParameterizedBodyContent<UrlEncodedBodyParameter> parameters = new ParameterizedBodyContent<UrlEncodedBodyParameter>();
+        parameters.setContentType("application/x-www-form-urlencoded");
+        parameters.setCharset("UTF-8");
+        wsObj.setHttpBodyType("x-www-form-urlencoded");
+
+        switch (ccbOAuth2SignatureMethod.getText()) {
+            case PASSWORD_CREDENTIALS:
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID,
+                        StringUtils.trim(txtConsumerKey.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET,
+                        StringUtils.trim(txtConsumerSecret.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "password"));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.USERNAME,
+                        StringUtils.trim(txtOAuth2Username.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.PASSWORD,
+                        StringUtils.trim(txtOAuth2Password.getText())));
+                parameters.addParameter(
+                        new UrlEncodedBodyParameter(OAuth2Constants.STATE, StringUtils.trim(txtPassword.getText())));
+                break;
+            case REFRESH_TOKEN:
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID,
+                        StringUtils.trim(txtConsumerKey.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET,
+                        StringUtils.trim(txtConsumerSecret.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "refresh_token"));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.REFRESH_TOKEN,
+                        StringUtils.trim(txtRefreshToken.getText())));
+                break;
+            case AUTHORIZATION_CODE:
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID,
+                        StringUtils.trim(txtConsumerKey.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET,
+                        StringUtils.trim(txtConsumerSecret.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "authorization_code"));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.REDIRECT_URI,
+                        StringUtils.trim(txtCallbackUrl.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.AUTHORIZATION_CODE,
+                        StringUtils.trim(txtAuthorizationCode.getText())));
+                break;
+            case CLIENT_CREDENTIALS:
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_ID,
+                        StringUtils.trim(txtConsumerKey.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.CLIENT_SECRET,
+                        StringUtils.trim(txtConsumerSecret.getText())));
+                parameters.addParameter(new UrlEncodedBodyParameter(OAuth2Constants.GRANT_TYPE, "client_credentials"));
+                break;
+            default:
+                break;
+        }
+
+        wsObj.setHttpBodyContent(JsonUtil.toJson(parameters));
+        sendRequestForAuthentication(wsObj);
+    }
+
+    private void sendRequestForAuthentication(WebServiceRequestEntity wsObj) {
+        ProgressMonitorDialogWithThread progress = new ProgressMonitorDialogWithThread(
+                Display.getCurrent().getActiveShell());
+        progress.setOpenOnRun(true);
+        try {
+            progress.run(true, true, new IRunnableWithProgress() {
+
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask("Authenticating ...", IProgressMonitor.UNKNOWN);
+                        ResponseObject responseObject = WebServiceController.getInstance().sendRequest(wsObj,
+                                ProjectController.getInstance().getCurrentProject().getFolderLocation(),
+                                ProxyPreferences.getProxyInformation(),
+                                Collections.<String, Object> unmodifiableMap(Collections.emptyMap()), false);
+                        String bodyContent = responseObject.getResponseText();
+                        Display.getDefault().asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!bodyContent.isEmpty()) {
+                                    JSONObject jsonObj = new JSONObject(bodyContent);
+                                    String stateInResponse = jsonObj.optString(OAuth2Constants.STATE);
+                                    boolean valid = verifyResponseState(stateInResponse);
+                                    if (valid) {
+                                        txtAccessToken.setText(jsonObj.optString(OAuth2Constants.ACCESS_TOKEN));
+                                        txtRefreshToken.setText(jsonObj.optString(OAuth2Constants.REFRESH_TOKEN));
+                                        txtTokenType.setText(jsonObj.optString(OAuth2Constants.TOKEN_TYPE));
+
+                                    }
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+                        throw new InvocationTargetException(e);
+                    } finally {
+                        monitor.done();
+                    }
+                }
+            });
+        } catch (InvocationTargetException | InterruptedException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    private boolean verifyResponseState(String stateInResponse) {
+        // If user sent a request with non-empty state, then verify if
+        // response contains the same value
+        if (!txtToken.getText().equals(StringUtils.EMPTY)) {
+            if (!stateInResponse.equals(txtToken.getText())) {
+                // Forged request, do not proceed
+                MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Error", "Invalid state parameter!");
+                return false;
+            }
+        }
+        return true;
+    }
+
     private Text addAuthInput(String label, Text txtField, Composite parent, String placeholder) {
         Label lbl = new Label(parent, SWT.NONE);
         lbl.setText(label);
@@ -1566,8 +1575,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
         return txtField;
     }
-    
-    private CCombo addAuthComboBox(String label, CCombo ccbox, Composite parent, String[] values){
+
+    private CCombo addAuthComboBox(String label, CCombo ccbox, Composite parent, String[] values) {
         Label lbl = new Label(parent, SWT.NONE);
         lbl.setText(label);
         GridData gdLbl = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -1578,9 +1587,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         GridData gdTxt = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gdTxt.widthHint = AUTH_FIELD_WIDTH;
         ccbox.setLayoutData(gdTxt);
-        for(String str : values) ccbox.add(str);
+        for (String str : values)
+            ccbox.add(str);
         ccbox.select(0);
-		return ccbox;
+        return ccbox;
     }
 
     private void createUpdateHeaderButton(Composite parent) {
@@ -1623,7 +1633,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                     createOAuth2Headers(txtAccessToken.getText());
                     return;
                 }
-                
+
                 // No authorization
                 removeOAuth1Headers();
                 removeOAuth2Headers();
@@ -1669,15 +1679,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected void addTabVerification(CTabFolder parent) {
         tabVerification = ui.getVerificationTab();
     }
-    
-    protected void addTabVariable(CTabFolder parent){
+
+    protected void addTabVariable(CTabFolder parent) {
         tabVariable = ui.getVariableTab();
     }
-    
-    protected void addTabVariableEditor(CTabFolder parent){
+
+    protected void addTabVariableEditor(CTabFolder parent) {
         tabVariableEditor = ui.getVariableEditorTab();
     }
-    
+
     protected void createResponseComposite(Composite parent) {
 
         responseComposite = new Composite(parent, SWT.NONE);
@@ -2217,12 +2227,12 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             }
         }
     }
-    
+
     @Override
     public void insertScript(String script) {
         IEditorInput editorInput = verificationScriptEditor.getEditorInput();
         IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
-        
+
         insertVerificationScript(document.getLength(), "\n");
 
         insertVerificationScript(document.getLength(), script);
@@ -2263,14 +2273,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     public void save() {
         try {
             // If VariableView is switched from VariableEditorView
-            // then they are already in sync. If user only interact on VariableView so far 
+            // then they are already in sync. If user only interact on VariableView so far
             // then update VariableEditorView (vice versa)
-            if(variableTab == true){
+            if (variableTab == true) {
                 updateVariableScriptView();
-            }else{
+            } else {
                 updateVariableManualView();
             }
-            
+
             if (invalidScheme == true) {
                 MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                         StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
@@ -2327,8 +2337,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
         editor.saveEditor(scriptEditorPart);
     }
-    
-    private void setInvalidScheme(boolean value){
+
+    private void setInvalidScheme(boolean value) {
         invalidScheme = value;
     }
 
@@ -2405,8 +2415,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     }
 
     private WebElementPropertyEntity createBasicAuthHeaderElement() {
+        String username = txtUsername.getText();
+        String password = txtPassword.getText();
         return new WebElementPropertyEntity(HTTP_HEADER_AUTHORIZATION,
-                BASIC_AUTH_PREFIX_VALUE + Base64.basicEncode(txtUsername.getText(), txtPassword.getText()));
+                BASIC_AUTH_PREFIX_VALUE + Base64.basicEncode(username, password));
     }
 
     protected void populateOAuth1FromHeader() {
@@ -2458,7 +2470,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             }
         });
     }
-    
+
     protected void createOAuth1Headers(String consumerKey, String consumerSecretOrPrivateKey, String token,
             String tokenSecret, String signatureMethod, String realm) {
         removeOAuth1Headers();
@@ -2478,23 +2490,22 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
         tblHeaders.addRows(oauth1Headers);
     }
-    
-    protected void createOAuth2Headers(String accessToken){
-    	removeOAuth2Headers();
-    	oauth2Headers.add(new WebElementPropertyEntity(AUTHORIZATION_HEADER, "Bearer " + accessToken));
-    	tblHeaders.addRows(oauth2Headers);
+
+    protected void createOAuth2Headers(String accessToken) {
+        removeOAuth2Headers();
+        oauth2Headers.add(new WebElementPropertyEntity(AUTHORIZATION_HEADER, "Bearer " + accessToken));
+        tblHeaders.addRows(oauth2Headers);
     }
 
     protected void removeOAuth1Headers() {
         tblHeaders.deleteRows(oauth1Headers);
         oauth1Headers.clear();
     }
-    
+
     protected void removeOAuth2Headers() {
         tblHeaders.deleteRows(oauth2Headers);
         oauth2Headers.clear();
     }
-    
 
     protected void populateBasicAuthFromHeader() {
         java.util.Optional<WebElementPropertyEntity> authHeader = tblHeaders.getInput()
@@ -2526,7 +2537,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected boolean isSOAP() {
         return WebServiceRequestEntity.SOAP.equals(originalWsObject.getServiceType());
     }
-
 
     protected String getPrettyHeaders(ResponseObject reponseObject) {
         StringBuilder sb = new StringBuilder();
@@ -2561,13 +2571,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
         mPart.setIconURI(imageURL);
     }
-    
+
     protected abstract void updatePartImage();
 
     @Override
     public List<MPart> getChildParts() {
         return Arrays.asList(ui.getApiControlsPart(), ui.getHeadersPart(), ui.getAuthorizationPart(), ui.getBodyPart(),
-                ui.getScriptEditorPart(), ui.getSnippetPart(), ui.getResponsePart(), ui.getVariablePart(), ui.getVariableEditorPart());
+                ui.getScriptEditorPart(), ui.getSnippetPart(), ui.getResponsePart(), ui.getVariablePart(),
+                ui.getVariableEditorPart());
     }
 
     private class ToolBarForVerificationPart extends ToolBarForMPart {

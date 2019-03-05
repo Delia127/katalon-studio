@@ -68,8 +68,12 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
             URLClassLoader classLoader = GroovyGuiUtil.getProjectClasLoader(projectEntity);
             IFolder srcFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
+            IFolder pluginFolder = GroovyUtil.getPluginsFolder(projectEntity);
             List<Method> allKeywordMethod = CustomKeywordParser.getInstance().parseAllCustomKeywordsIntoAst(
             		classLoader, srcFolder);
+            
+            allKeywordMethod.addAll(CustomKeywordParser.getInstance().parsePluginKeywordsIntoAst(
+                    classLoader, pluginFolder));
             
             Map<String, List<Method>> methodActionMap = new HashMap<String, List<Method>>();
         	

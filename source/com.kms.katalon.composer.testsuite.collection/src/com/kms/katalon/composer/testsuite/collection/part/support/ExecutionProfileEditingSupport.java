@@ -13,8 +13,8 @@ import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteC
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
@@ -73,7 +73,7 @@ public class ExecutionProfileEditingSupport extends EditingSupportWithTableProvi
                     return profileName;
                 }
                 return dialog.getSelectedProfile().getName();
-            } catch (DALException e) {
+            } catch (ControllerException e) {
                 MultiStatusErrorDialog.showErrorDialog(
                         ComposerTestsuiteCollectionMessageConstants.PA_MSG_UNABLE_TO_SELECT_EXECUTION_PROFILES,
                         e.getMessage(), ExceptionsUtil.getMessageForThrowable(e));

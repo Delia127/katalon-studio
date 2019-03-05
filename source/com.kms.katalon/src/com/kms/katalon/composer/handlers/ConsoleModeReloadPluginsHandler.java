@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.plugin.models.KStoreApiCredentials;
+import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.service.PluginService;
 
@@ -17,7 +17,7 @@ public class ConsoleModeReloadPluginsHandler {
         try {
             LogUtil.printOutputLine("Start reloading plugins...");
             
-            KStoreApiCredentials credentials = new KStoreApiCredentials();
+            KStoreApiKeyCredentials credentials = new KStoreApiKeyCredentials();
             credentials.setApiKey(apiKey);
             List<ResultItem> reloadPluginResults = PluginService.getInstance().reloadPlugins(credentials,
                     new NullProgressMonitor());

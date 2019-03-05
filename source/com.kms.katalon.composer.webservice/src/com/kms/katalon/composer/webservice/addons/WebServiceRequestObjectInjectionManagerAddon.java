@@ -24,6 +24,8 @@ public class WebServiceRequestObjectInjectionManagerAddon {
         context.set(RequestHistoryHandler.class, requestHistoryHandler);
         WebServiceExecutionHandler wsExecutionHandler = ContextInjectionFactory.make(WebServiceExecutionHandler.class, context);
         context.set(WebServiceExecutionHandler.class, wsExecutionHandler);
-        EventBusSingleton.getInstance().getEventBus().register(wsExecutionHandler);
+        
+        //TODO: Huy please fix this
+        //EventBusSingleton.getInstance().getEventBus().register(wsExecutionHandler);
 	}
 }

@@ -304,6 +304,11 @@ public class EventConstants {
     public static final String PROPERTIES_ENTITY_UPDATED = "PROPERTIES/ENTITY_UPDATED";
 
     // Execution Events
+    
+    public static final String EXECUTE_TEST_CASE = "EXECUTE/EXECUTE_TEST_CASE";
+    
+    public static final String EXECUTE_TEST_SUITE = "EXECUTE/EXECUTE_TEST_SUITE";
+    
     public static final String EXECUTE_FROM_TEST_STEP = "EXECUTE/FROM_TEST_STEP";
 
     public static final String KATALON_HELP = "KATALON/HELP";
