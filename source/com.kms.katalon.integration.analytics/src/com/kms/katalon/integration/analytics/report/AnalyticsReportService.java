@@ -120,8 +120,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
     private List<Path> scanHarFiles(String path) {
         List<Path> harFiles = scanFilesWithFilter(path, true,  AnalyticsStringConstants.ANALYTICS_HAR_FILE_EXTENSION_PATTERN);
         try {
-            Path zipFile;
-            zipFile = FileUtils.createTemporaryFile(StringUtils.appendIfMissing(path, File.separator) + "katalon-analitics-tmp", "hars-", ".zip");
+            Path zipFile = FileUtils.createTemporaryFile(StringUtils.appendIfMissing(path, File.separator) + "katalon-analitics-tmp", "hars-", ".zip");
             Path harsZipFile = ZipUtil.compress(harFiles, zipFile);
             return Arrays.asList(harsZipFile);
         } catch (IOException e) {
