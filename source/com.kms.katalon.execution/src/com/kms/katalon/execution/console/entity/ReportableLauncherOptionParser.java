@@ -47,20 +47,17 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-        if (consoleOption.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX)) {
             for (ConsoleOption<?> option : overridingOptions) {
-                if (option.getOption().compareTo(consoleOption.getOption()) == 0) {
+                if (option.getOption().equals(consoleOption.getOption())) {
                     option.setValue(argumentValue);
                 }
             }
-        } else {
             for (ConsoleOptionContributor contributor : getContributors()) {
                 if (contributor.getConsoleOptionList().contains(consoleOption)) {
                     contributor.setArgumentValue(consoleOption, argumentValue);
                 }
             }
-        }
-    }
+     }
 
     public Map<String, Object> getOverridingGlobalVariables(){
         Map<String, Object> overridingGlobalVariables = new HashMap<>();
