@@ -22,6 +22,14 @@ public class ExecutionMessageConstants extends NLS {
     public static String MNG_PRT_MISSING_REQUIRED_ARG;
 
     public static String MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X;
+    
+    public static String MNG_PRT_PROJECT_PATH_IS_FOLDER;
+    
+    public static String MNG_PRT_FOUND_PROJECT_FILE;
+    
+    public static String MNG_PR_EXAMINE_FILE;
+    
+    public static String MNG_PR_EXAMINE_FOLDER;
 
     public static String MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_INTEGER;
 
