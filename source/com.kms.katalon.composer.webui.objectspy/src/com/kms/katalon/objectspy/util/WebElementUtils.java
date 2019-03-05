@@ -278,7 +278,7 @@ public class WebElementUtils {
     }
 
     public static String toValidFileName(String fileName) {
-        return fileName.trim().replaceAll("[^A-Za-z-0-9_().\\- ]", "");
+        return fileName.trim().replaceAll("[^A-Za-z0-9_()\\- ]", "");
     }
 
     private static WebFrame getParentElement(JsonObject elementJsonObject) throws UnsupportedEncodingException {
