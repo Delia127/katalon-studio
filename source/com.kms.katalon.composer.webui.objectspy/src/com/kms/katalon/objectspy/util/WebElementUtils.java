@@ -5,6 +5,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
+import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -93,41 +95,42 @@ public class WebElementUtils {
                 "placeholder", "selected", "src", "title", "type", "text", "linked_text" });
     }
 
-    public static String generateWebElementName(String elementType, List<WebElementPropertyEntity> properties, String usefulNeighborText) {
-        Map<String, String> propsMap = properties.stream()
-                .filter(p -> ELEMENT_TEXT_KEY.equals(p.getName()) || ELEMENT_NAME_KEY.equals(p.getName())
-                        || ELEMENT_ID_KEY.equals(p.getName()) || ELEMENT_CLASS_KEY.equals(p.getName()))
-                .collect(Collectors.toMap(WebElementPropertyEntity::getName, WebElementPropertyEntity::getValue));
-        String content = propsMap.get(ELEMENT_TEXT_KEY);
-        if (content != null) {
-            return elementType + "_" + toValidFileName(content);
-        }
-        String name = propsMap.get(ELEMENT_NAME_KEY);
-        if (name != null) {
-        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
-                return elementType + "_" + toValidFileName(name);
-        	}else{
-                return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(name);
-        	}
-        }
-        String id = propsMap.get(ELEMENT_ID_KEY);
-        if (id != null) {
-        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
-        		return elementType +  toValidFileName(id);
-        	}else{
-        		return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(id);
-        	}
-        }
-        String cssClass = propsMap.get(ELEMENT_CLASS_KEY);
-        if (cssClass != null) {
-        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
-                return elementType + "_" + toValidFileName(cssClass);
-        	}else{
-                return elementType + "_" + toValidFileName(usefulNeighborText) + "_" +  toValidFileName(cssClass) ;
-        	}
-        }
-        return elementType;
-    }
+	public static String generateWebElementName(String elementType, List<WebElementPropertyEntity> properties,
+			String usefulNeighborText) {
+		Map<String, String> propsMap = properties.stream()
+				.filter(p -> ELEMENT_TEXT_KEY.equals(p.getName()) || ELEMENT_NAME_KEY.equals(p.getName())
+						|| ELEMENT_ID_KEY.equals(p.getName()) || ELEMENT_CLASS_KEY.equals(p.getName()))
+				.collect(Collectors.toMap(WebElementPropertyEntity::getName, WebElementPropertyEntity::getValue));
+		String content = propsMap.get(ELEMENT_TEXT_KEY);
+		if (content != null) {
+			return elementType + "_" + toValidFileName(content);
+		}
+		String name = propsMap.get(ELEMENT_NAME_KEY);
+		if (name != null) {
+			if (StringUtils.EMPTY.equals(usefulNeighborText)) {
+				return elementType + "_" + toValidFileName(name);
+			} else {
+				return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(name);
+			}
+		}
+		String id = propsMap.get(ELEMENT_ID_KEY);
+		if (id != null) {
+			if (StringUtils.EMPTY.equals(usefulNeighborText)) {
+				return elementType + toValidFileName(id);
+			} else {
+				return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(id);
+			}
+		}
+		String cssClass = propsMap.get(ELEMENT_CLASS_KEY);
+		if (cssClass != null) {
+			if (StringUtils.EMPTY.equals(usefulNeighborText)) {
+				return elementType + "_" + toValidFileName(cssClass);
+			} else {
+				return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(cssClass);
+			}
+		}
+		return elementType;
+	}
 
     public static String decodeURIComponent(String encodedString) throws UnsupportedEncodingException {
         return URLDecoder.decode(encodedString.replace("+", "%2B"), "UTF-8").replace("%2B", "+");
@@ -205,9 +208,10 @@ public class WebElementUtils {
             }
         }
         
-        if(!xpaths.isEmpty() && xpaths.size() > 0){
-            xpaths.get(0).setIsSelected(true);
-        }
+		if (!xpaths.isEmpty()) {
+			Optional.ofNullable(xpaths.get(0)).ifPresent(a -> a.setIsSelected(true));
+		}
+        
         
         String usefulNeighborText = getElementUsefulNeighborText(elementJsonObject);
         WebFrame parentElement = getParentElement(elementJsonObject);
@@ -225,14 +229,17 @@ public class WebElementUtils {
         el.setUsefulNeighborText(usefulNeighborText);
         el.setSelectorMethod(selectorMethod);
         
-        // New TestObject will always have a NoneEmpty SelectorCollection
-        switch(selectorMethod){
-	        case XPATH:
-	        	el.setSelectorValue(selectorMethod, xpaths.get(0).getValue());
-	        	break;
-	        default:
-	        	break;
-        }
+		// New TestObject will always have a NoneEmpty SelectorCollection
+		switch (selectorMethod) {
+		case XPATH:
+			if (!xpaths.isEmpty()) {
+				String value = Optional.ofNullable(xpaths.get(0)).orElse(new WebElementXpathEntity("", "")).getValue();
+				el.setSelectorValue(selectorMethod, value);
+			}
+			break;
+		default:
+			break;
+		}
         
         return el;
     }
@@ -271,7 +278,7 @@ public class WebElementUtils {
     }
 
     public static String toValidFileName(String fileName) {
-        return fileName.trim().replaceAll("[^A-Za-z-0-9_()\\- ]", "");
+        return fileName.trim().replaceAll("[^A-Za-z0-9._().\\- ]","");
     }
 
     private static WebFrame getParentElement(JsonObject elementJsonObject) throws UnsupportedEncodingException {
@@ -314,7 +321,7 @@ public class WebElementUtils {
     	 if (elementJsonObject.has(ELEMENT_USEFUL_NEIGHBOR_TEXT) && elementJsonObject.get(ELEMENT_USEFUL_NEIGHBOR_TEXT).isJsonPrimitive()) {
              return elementJsonObject.getAsJsonPrimitive(ELEMENT_USEFUL_NEIGHBOR_TEXT).getAsString();
          }
-         return null;
+         return StringUtils.EMPTY;
     }
     
     private static void collectElementXpaths(JsonObject elementJsonObject,
@@ -381,7 +388,8 @@ public class WebElementUtils {
 
         String pageUrlString = parentPageJsonObject.getAsJsonPrimitive(PAGE_URL_KEY).getAsString();
         String pageTitleString = parentPageJsonObject.getAsJsonPrimitive(PAGE_TITLE_KEY).getAsString();
-
+        pageTitleString = pageTitleString.trim();
+        pageTitleString = pageTitleString.replaceAll("[^A-Za-z0-9_()\\- ]","");
         
         List<WebElementPropertyEntity> properties = new ArrayList<>();
         properties.add(new WebElementPropertyEntity(PAGE_URL_KEY, pageUrlString, PRIORITY_PROPERTIES.contains(PAGE_URL_KEY)));
@@ -390,6 +398,7 @@ public class WebElementUtils {
         webPage.setProperties(properties);
         return webPage;
     }
+
     private static String generateWebPageName(String pageTitleString) {
         return PAGE_ELEMENT_NAME_PREFIX + StringUtils.substring(toValidFileName(pageTitleString), 0, NAME_LENGTH_LIMIT);
     }
