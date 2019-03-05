@@ -95,41 +95,42 @@ public class WebElementUtils {
                 "placeholder", "selected", "src", "title", "type", "text", "linked_text" });
     }
 
-    public static String generateWebElementName(String elementType, List<WebElementPropertyEntity> properties, String usefulNeighborText) {
-        Map<String, String> propsMap = properties.stream()
-                .filter(p -> ELEMENT_TEXT_KEY.equals(p.getName()) || ELEMENT_NAME_KEY.equals(p.getName())
-                        || ELEMENT_ID_KEY.equals(p.getName()) || ELEMENT_CLASS_KEY.equals(p.getName()))
-                .collect(Collectors.toMap(WebElementPropertyEntity::getName, WebElementPropertyEntity::getValue));
-        String content = propsMap.get(ELEMENT_TEXT_KEY);
-        if (content != null) {
-            return elementType + "_" + toValidFileName(content);
-        }
-        String name = propsMap.get(ELEMENT_NAME_KEY);
-        if (name != null) {
-        	if(usefulNeighborText.equals(StringUtils.EMPTY)){
-                return elementType + "_" + toValidFileName(name);
-        	}else{
-                return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(name);
-        	}
-        }
-        String id = propsMap.get(ELEMENT_ID_KEY);
-        if (id != null) {
-        	if(usefulNeighborText.equals(StringUtils.EMPTY)){
-        		return elementType +  toValidFileName(id);
-        	}else{
-        		return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(id);
-        	}
-        }
-        String cssClass = propsMap.get(ELEMENT_CLASS_KEY);
-        if (cssClass != null) {
-        	if(usefulNeighborText.equals(StringUtils.EMPTY)){
-                return elementType + "_" + toValidFileName(cssClass);
-        	}else{
-                return elementType + "_" + toValidFileName(usefulNeighborText) + "_" +  toValidFileName(cssClass) ;
-        	}
-        }
-        return elementType;
-    }
+	public static String generateWebElementName(String elementType, List<WebElementPropertyEntity> properties,
+			String usefulNeighborText) {
+		Map<String, String> propsMap = properties.stream()
+				.filter(p -> ELEMENT_TEXT_KEY.equals(p.getName()) || ELEMENT_NAME_KEY.equals(p.getName())
+						|| ELEMENT_ID_KEY.equals(p.getName()) || ELEMENT_CLASS_KEY.equals(p.getName()))
+				.collect(Collectors.toMap(WebElementPropertyEntity::getName, WebElementPropertyEntity::getValue));
+		String content = propsMap.get(ELEMENT_TEXT_KEY);
+		if (content != null) {
+			return elementType + "_" + toValidFileName(content);
+		}
+		String name = propsMap.get(ELEMENT_NAME_KEY);
+		if (name != null) {
+			if (StringUtils.EMPTY.equals(usefulNeighborText)) {
+				return elementType + "_" + toValidFileName(name);
+			} else {
+				return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(name);
+			}
+		}
+		String id = propsMap.get(ELEMENT_ID_KEY);
+		if (id != null) {
+			if (StringUtils.EMPTY.equals(usefulNeighborText)) {
+				return elementType + toValidFileName(id);
+			} else {
+				return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(id);
+			}
+		}
+		String cssClass = propsMap.get(ELEMENT_CLASS_KEY);
+		if (cssClass != null) {
+			if (StringUtils.EMPTY.equals(usefulNeighborText)) {
+				return elementType + "_" + toValidFileName(cssClass);
+			} else {
+				return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(cssClass);
+			}
+		}
+		return elementType;
+	}
 
     public static String decodeURIComponent(String encodedString) throws UnsupportedEncodingException {
         return URLDecoder.decode(encodedString.replace("+", "%2B"), "UTF-8").replace("%2B", "+");
