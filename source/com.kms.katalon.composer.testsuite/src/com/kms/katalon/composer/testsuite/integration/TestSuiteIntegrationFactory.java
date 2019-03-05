@@ -1,7 +1,7 @@
 package com.kms.katalon.composer.testsuite.integration;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,16 +13,16 @@ import com.kms.katalon.controller.ProjectController;
 public class TestSuiteIntegrationFactory {
     private static TestSuiteIntegrationFactory _instance;
 
-    private Map<String, TestSuiteIntegrationViewBuilder> integrationViewMap;
-
-    private Map<String, TestSuiteIntegrationViewBuilder> getIntegrationViewMap() {
-        return integrationViewMap;
-    }
+    private Map<String, TestSuiteIntegrationViewBuilder> integrationViewMap = new HashMap<>();
 
     private TestSuiteIntegrationPlatformBuilder platformBuilder;
 
-    private TestSuiteIntegrationFactory() {
-        integrationViewMap = new LinkedHashMap<String, TestSuiteIntegrationViewBuilder>();
+    public TestSuiteIntegrationPlatformBuilder getPlatformBuilder() {
+        return platformBuilder;
+    }
+
+    public void setPlatformBuilder(TestSuiteIntegrationPlatformBuilder platformBuilder) {
+        this.platformBuilder = platformBuilder;
     }
 
     public static TestSuiteIntegrationFactory getInstance() {
@@ -37,8 +37,7 @@ public class TestSuiteIntegrationFactory {
     }
 
     public List<TestSuiteIntegrationViewBuilder> getSortedViewBuilders() {
-        List<TestSuiteIntegrationViewBuilder> sortedBuilders = new ArrayList<>(getIntegrationViewMap().entrySet())
-                .stream()
+        List<TestSuiteIntegrationViewBuilder> sortedBuilders = new ArrayList<>(integrationViewMap.entrySet()).stream()
                 .map(e -> e.getValue())
                 .filter(e -> e.isEnabled(ProjectController.getInstance().getCurrentProject()))
                 .collect(Collectors.toList());
