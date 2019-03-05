@@ -124,7 +124,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
             Path harsZipFile = ZipUtil.compress(harFiles, zipFile);
             return Arrays.asList(harsZipFile);
         } catch(Exception e) {
-            LogUtil.logError(e, "Can not compress har files");
+            LogUtil.logError(e, "Could not compress har files");
             return harFiles;
         }
     }
