@@ -3,7 +3,6 @@ package com.kms.katalon.composer.intro;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.FileLocator;
@@ -25,9 +24,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.core.webservice.support.UrlEncoder;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
@@ -46,7 +43,7 @@ public class UserFeedbackDialog extends Dialog {
 
     public UserFeedbackDialog(Shell parentShell) {
         super(parentShell);
-        setShellStyle(SWT.APPLICATION_MODAL | SWT.NO_TRIM | SWT.ON_TOP);
+        setShellStyle(SWT.APPLICATION_MODAL | SWT.CLOSE);
         shouldShowDialogAgain = getPreferenceStore()
                 .getBoolean(PreferenceConstants.GENERAL_SHOW_USER_FEEDBACK_DIALOG_ON_APP_CLOSE);
     }
