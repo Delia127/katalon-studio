@@ -42,7 +42,7 @@ public class NewIssueHTMLLinkProvider extends DefaultIssueHTMLLinkProvider {
         if (settingStore.isUseTestCaseNameAsSummaryEnabled()) {
             pairs.add(new BasicNameValuePair(JiraIssue.FIELD_SUMMARY, issueMetaData.getSummary()));
         }
-//        pairs.add(new BasicNameValuePair(JiraIssue.FIELD_REPORTER, settingStore.getJiraUser().getName()));
+        pairs.add(new BasicNameValuePair(JiraIssue.FIELD_REPORTER, settingStore.getJiraUser().getName()));
 //        pairs.add(new BasicNameValuePair(JiraIssue.FIELD_DESCRIPTION, issueMetaData.getDescription()));
 //        pairs.add(new BasicNameValuePair(JiraIssue.FIELD_ENVIRONMENT, issueMetaData.getEnvironment()));
         return pairs;
