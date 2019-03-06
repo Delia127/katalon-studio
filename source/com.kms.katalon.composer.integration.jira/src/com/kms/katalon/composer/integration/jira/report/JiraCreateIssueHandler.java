@@ -11,7 +11,9 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.jira.JiraUIComponent;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.composer.integration.jira.report.dialog.CreateAsSubTaskBrowserDialog;
+import com.kms.katalon.composer.integration.jira.report.dialog.JiraEditIssueDialog;
 import com.kms.katalon.composer.integration.jira.report.dialog.JiraIssueBrowserDialog;
+import com.kms.katalon.composer.integration.jira.report.dialog.JiraNewIssueDialog;
 import com.kms.katalon.composer.integration.jira.report.dialog.LinkJiraIssueDialog;
 import com.kms.katalon.composer.integration.jira.report.dialog.progress.JiraIssueProgressResult;
 import com.kms.katalon.composer.integration.jira.report.dialog.progress.LinkJiraIssueProgressDialog;
@@ -47,7 +49,7 @@ public class JiraCreateIssueHandler implements JiraUIComponent {
 
     public JiraIssueProgressResult openNewIssueDialog(int numSteps) {
         try {
-            return openNewIssueBrowserDialog(new JiraIssueBrowserDialog(shell, logRecord,
+            return openNewIssueBrowserDialog(new JiraNewIssueDialog(shell, logRecord,
                     new NewIssueHTMLLinkProvider(logRecord, numSteps, getSettingStore())));
         } catch (URISyntaxException | IOException ex) {
             LoggerSingleton.logError(ex);
@@ -111,7 +113,7 @@ public class JiraCreateIssueHandler implements JiraUIComponent {
 
     public JiraIssueProgressResult openEditIssueDialog(JiraIssue jiraIssue) {
         try {
-            JiraIssueBrowserDialog browserDialog = new JiraIssueBrowserDialog(shell, logRecord,
+            JiraEditIssueDialog browserDialog = new JiraEditIssueDialog(shell, logRecord,
                     new EditIssueHTMLLinkProvider(logRecord, getSettingStore(), jiraIssue));
 
             if (browserDialog.open() != Dialog.OK) {
