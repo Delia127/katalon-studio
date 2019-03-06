@@ -90,10 +90,17 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
 			public void completed(ProgressEvent event) {
 				try {
 					String url = browser.getUrl();
-					if (url.startsWith(htmlLinkProvider.getSecureDashboardHTMLLink())
-							&& !url.equals(htmlLinkProvider.getDashboardHTMLLink())
-							&& !url.startsWith(htmlLinkProvider.getIssueUrlPrefix())) {
-						browser.setUrl(htmlLinkProvider.getHTMLLink());
+					if (isJiraCloud(url)) {
+    					if (url.startsWith(htmlLinkProvider.getSecureDashboardHTMLLink())
+    							&& !url.equals(htmlLinkProvider.getDashboardHTMLLink())
+    							&& !url.startsWith(htmlLinkProvider.getIssueUrlPrefix())) {
+    						browser.setUrl(htmlLinkProvider.getHTMLLink());
+    					}
+					} else {
+					    if (!isLoginPage() 
+                                && !url.startsWith(htmlLinkProvider.getHTMLLink())) {
+					        browser.setUrl(htmlLinkProvider.getHTMLLink());
+					    }
 					}
 
 					if (url.equals(htmlLinkProvider.getDashboardHTMLLink())) {
@@ -165,11 +172,15 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
 
 	private boolean isLoginPage() throws IOException, URISyntaxException, GeneralSecurityException {
 		String url = browser.getUrl();
-		return htmlLinkProvider.getLoginHTMLLink().startsWith(url);
+		return url.startsWith(htmlLinkProvider.getLoginHTMLLink());
 	}
 
 	private boolean isSmartLoginPage(String url) {
 		return url.contains("smartlock.google.com") || url.contains("https://id.atlassian.com/login");
+	}
+	
+	private boolean isJiraCloud(String url) {
+	    return url.contains("atlassian.net");
 	}
 
 	protected void loginForCloud() {
