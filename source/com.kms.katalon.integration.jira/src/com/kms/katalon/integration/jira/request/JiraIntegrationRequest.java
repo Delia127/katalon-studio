@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -67,7 +68,8 @@ public class JiraIntegrationRequest {
 
     protected <T> T getJiraObject(JiraCredential credential, String url, Class<T> clazz)
             throws JiraIntegrationException {
-        Gson gson = new GsonBuilder().registerTypeAdapter(ImprovedIssue.class, new ImprovedIssueDeserializer()).create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(ImprovedIssue.class, new ImprovedIssueDeserializer())
+                .create();
         return gson.fromJson(getJiraResponse(credential, url), clazz);
     }
 
@@ -147,7 +149,8 @@ public class JiraIntegrationRequest {
     }
 
     protected String getBodyString(CloseableHttpResponse response) throws IOException {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        BufferedReader rd = new BufferedReader(
+                new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8));
 
         StringBuilder result = new StringBuilder();
         String line = StringUtils.EMPTY;
