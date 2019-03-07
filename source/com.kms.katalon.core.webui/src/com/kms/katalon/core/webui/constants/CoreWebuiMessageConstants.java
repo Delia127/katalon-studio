@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class CoreWebuiMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.core.webui.constants.coreWebuiMessages";
 
+	public static String KW_LOG_INFO_SAVED_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS;
+
     public static String COMM_EXC_UNABLE_TO_INIT_RESRC_BUNDLE;
 
     public static String COMM_EXC_RESRC_BUNDLE_IS_NOT_INIT;
