@@ -68,7 +68,7 @@ public class WaitForJQueryLoadKeyword extends WebUIAbstractKeyword {
 
             boolean isJQueryReady = jQueryWait.until(jQueryLoadExpectation)
             if (!isJQueryReady) {
-                WebUIKeywordMain.stepFailed(CoreWebuiMessageConstants.KW_LOG_JQUERY_NOT_READY, flowControl, "timeout", true)
+                WebUIKeywordMain.stepFailedWithReason(CoreWebuiMessageConstants.KW_LOG_JQUERY_NOT_READY, flowControl, "timeout", true)
                 return false
             }
 
