@@ -13,8 +13,6 @@ public interface IProjectDataProvider {
 			throws Exception;
 	
 	public ProjectEntity getProject(String projectFileLocation) throws DALException;
-
-	public ProjectEntity openProject(String projectValue) throws Exception;
 	
 	public ProjectEntity openProjectWithoutClasspath(String projectValue) throws Exception;
 

@@ -20,11 +20,6 @@ public class ProjectFileServiceDataProvider implements IProjectDataProvider {
     }
 
     @Override
-    public ProjectEntity openProject(String projectValue) throws Exception {
-        return ProjectFileServiceManager.openProject(projectValue);
-    }
-
-    @Override
     public ProjectEntity openProjectWithoutClasspath(String projectValue) throws Exception {
         return ProjectFileServiceManager.openProjectWithoutClasspath(projectValue);
     }

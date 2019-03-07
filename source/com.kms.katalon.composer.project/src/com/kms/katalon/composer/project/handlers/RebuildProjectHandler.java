@@ -34,9 +34,11 @@ public class RebuildProjectHandler {
                     try {
                         monitor.beginTask(StringConstants.HAND_REBUILDING_PROJ, 10);
                         SubMonitor progress = SubMonitor.convert(monitor, 10);
-                        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-                        GroovyUtil.initGroovyProjectClassPath(ProjectController.getInstance().getCurrentProject(),
-                                FolderController.getInstance().getTestCaseRoot(projectEntity), false,
+                        ProjectController projectController = ProjectController.getInstance();
+                        ProjectEntity currentProject = projectController.getCurrentProject();
+                        ProjectEntity projectEntity = currentProject;
+                        GroovyUtil.initGroovyProjectClassPath(currentProject,
+                                projectController.getCustomKeywordPlugins(currentProject), false,
                                 progress.newChild(10));
                         return Status.OK_STATUS;
                     } catch (Exception e) {
