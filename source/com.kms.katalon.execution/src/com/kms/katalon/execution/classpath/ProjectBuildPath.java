@@ -11,6 +11,8 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
@@ -66,6 +68,24 @@ public class ProjectBuildPath {
             }
         };
     }
+    
+    public List<IBuildPath> getCustomKeywordPaths() throws ControllerException {
+        List<File> customKeywordPluginFiles = ProjectController.getInstance().getCustomKeywordPlugins(project);
+        List<IBuildPath> customKeywordBuildPaths = new ArrayList<>();
+        for (File jarFile : customKeywordPluginFiles) {
+            BuildPathEntry jarFileEntry = new BuildPathEntry(jarFile.getAbsolutePath());
+            customKeywordBuildPaths.add(jarFileEntry);
+        }
+        return customKeywordBuildPaths;
+    }
+    
+    public List<String> getCustomKeywordPathLocations() throws ControllerException, IOException {
+        List<String> customKeywordPluginPaths = new ArrayList<>();
+        for (IBuildPath entryBuildPath : getCustomKeywordPaths()) {
+            customKeywordPluginPaths.add(entryBuildPath.getBuildPathLocation());
+        }
+        return customKeywordPluginPaths;
+    }
 
     public List<BundleBuildPath> getBundleBuildpaths() {
         List<BundleBuildPath> bundlePaths = new ArrayList<BundleBuildPath>();
@@ -107,10 +127,11 @@ public class ProjectBuildPath {
         return bundleBpLocs;
     }
     
-    public List<String> getClassPaths() throws IOException {
+    public List<String> getClassPaths() throws IOException, ControllerException {
         List<String> classPaths = new ArrayList<String>();
         classPaths.addAll(getBundleBuildPathLoc());
         classPaths.addAll(getExternalBuildPathLoc());
+        classPaths.addAll(getCustomKeywordPathLocations());
         return classPaths;
     }
 

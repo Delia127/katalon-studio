@@ -9,13 +9,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.codehaus.groovy.eclipse.core.model.GroovyRuntime;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.internal.resources.ModelObjectWriter;
@@ -98,19 +98,19 @@ public class GroovyUtil {
     private static final String KEYWORD_LIB_OUTPUT_FOLDER_NAME = "lib";
 
     private static final String DRIVERS_FOLDER_NAME = "Drivers";
-    
+
     private static final String PLUGINS_FOLDER_NAME = "Plugins";
 
     private static final String JDT_LAUNCHING = "org.eclipse.jdt.launching.JRE_CONTAINER";
 
     private static final String[] KAT_PROJECT_NATURES = new String[] { GROOVY_NATURE, JavaCore.NATURE_ID };
-    
+
     private static final String RESOURCE_REGEX_FILTER = "org.eclipse.core.resources.regexFilterMatcher";
 
     private static final String RESOURCE_FILE_NAME_REGEX = "(.*\\.svn-base$)|(.*\\.png$)|(.*\\.log$)|(.*\\.xlsx$)|(.*\\.xls$)|(.*\\.csv$)|(.*\\.txt$)";
-    
+
     private static final String RESOURCE_FOLDER_NAME_REGEX = ".*\\.svn$";
-    
+
     public static IProject getGroovyProject(ProjectEntity projectEntity) {
         return ResourcesPlugin.getWorkspace()
                 .getRoot()
@@ -140,7 +140,7 @@ public class GroovyUtil {
         return null;
     }
 
-    public static void initGroovyProject(ProjectEntity projectEntity, FolderEntity testCaseRootFolder,
+    public static void initGroovyProject(ProjectEntity projectEntity, List<File> customKeywordPluginFiles,
             IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         SubProgressMonitor subProgressDescription = null;
         SubProgressMonitor subProgressClasspath = null;
@@ -151,7 +151,7 @@ public class GroovyUtil {
             subProgressClasspath = new SubProgressMonitor(monitor, 9, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
         }
         initGroovyProjectDescription(projectEntity, subProgressDescription);
-        initGroovyProjectClassPath(projectEntity, testCaseRootFolder, true, subProgressClasspath);
+        initGroovyProjectClassPath(projectEntity, customKeywordPluginFiles, true, subProgressClasspath);
     }
 
     private static void cleanDirectory(File folder) {
@@ -170,7 +170,7 @@ public class GroovyUtil {
         }
     }
 
-    public static void emptyProjectClasspath(ProjectEntity projectEntity) throws CoreException{
+    public static void emptyProjectClasspath(ProjectEntity projectEntity) throws CoreException {
         IProject groovyProject = getGroovyProject(projectEntity);
 
         IFolder outputParentFolder = groovyProject.getFolder(OUTPUT_FOLDER_NAME);
@@ -186,11 +186,11 @@ public class GroovyUtil {
         GroovyRuntime.addGroovyClasspathContainer(javaProject);
     }
 
-    public static void initGroovyProjectClassPath(ProjectEntity projectEntity, FolderEntity testCaseRootFolder,
-            boolean isNew, IProgressMonitor monitor) throws CoreException, IOException, BundleException {
+    public static void initGroovyProjectClassPath(ProjectEntity projectEntity, List<File> pluginFiles, boolean isNew,
+            IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         IProject groovyProject = getGroovyProject(projectEntity);
         groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
-        
+
         IFolder listenerSourceFolder = groovyProject.getFolder("Test Listeners");
         if (!listenerSourceFolder.exists()) {
             listenerSourceFolder.create(true, true, null);
@@ -227,7 +227,7 @@ public class GroovyUtil {
         if (!driversFolder.exists()) {
             driversFolder.create(true, true, null);
         }
-        
+
         IFolder pluginsFolder = groovyProject.getFolder(PLUGINS_FOLDER_NAME);
         if (!pluginsFolder.exists()) {
             pluginsFolder.create(true, true, null);
@@ -289,7 +289,7 @@ public class GroovyUtil {
         IPackageFragmentRoot keywordLibPackageRoot = javaProject.getPackageFragmentRoot(keywordLibFolder);
         entries.add(JavaCore.newSourceEntry(keywordLibPackageRoot.getPath(), new Path[] {}, new Path[] {},
                 outputKWLibFolder.getFullPath()));
-        
+
         IPackageFragmentRoot sourceMainGroovyPackageRoot = javaProject.getPackageFragmentRoot(sourceMainGroovy);
         entries.add(JavaCore.newSourceEntry(sourceMainGroovyPackageRoot.getPath(), new Path[] {}, new Path[] {},
                 outputSourceMainGroovy.getFullPath()));
@@ -328,14 +328,17 @@ public class GroovyUtil {
         // Add class path for external jars
         File driversDir = driversFolder.getRawLocation().toFile();
         File pluginsDir = pluginsFolder.getRawLocation().toFile();
-        
-        File[] jarFiles = ArrayUtils.addAll(driversDir.listFiles(), pluginsDir.listFiles());
-        
-        for (File jarFile : jarFiles) {
+
+        List<File> allJarFiles = new ArrayList<>();
+        allJarFiles.addAll(Arrays.asList(driversDir.listFiles()));
+        allJarFiles.addAll(Arrays.asList(pluginsDir.listFiles()));
+        allJarFiles.addAll(pluginFiles);
+
+        for (File jarFile : allJarFiles) {
             IClasspathEntry oldEntry = null;
             if (jarFile.isFile() && jarFile.getName().endsWith(".jar")) {
                 for (IClasspathEntry e : javaProject.getRawClasspath()) {
-                    if (e.getEntryKind() == IClasspathEntry.CPE_LIBRARY 
+                    if (e.getEntryKind() == IClasspathEntry.CPE_LIBRARY
                             && e.getPath().toFile().getAbsolutePath().equals(jarFile.getAbsolutePath())) {
                         oldEntry = e;
                         break;
@@ -352,9 +355,9 @@ public class GroovyUtil {
         javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), monitor);
         GroovyRuntime.addGroovyClasspathContainer(javaProject);
     }
-    
-    private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries) throws IOException,
-            BundleException {
+
+    private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries)
+            throws IOException, BundleException {
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle(IdConstants.KATALON_CORE_BUNDLE_ID));
 
         addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(TempClass.class));
@@ -412,14 +415,14 @@ public class GroovyUtil {
             }
         }
     }
-    
+
     private static File getConfigurationFolder() throws IOException {
         return new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
     }
 
     /**
      * @return Returns resources folder of the current Katalon installed folder.
-     * @throws IOException 
+     * @throws IOException
      */
     private static File getPlatformResourcesDir() throws IOException {
         return new File(getConfigurationFolder(), "resources");
@@ -427,7 +430,7 @@ public class GroovyUtil {
 
     /**
      * @return Returns API document folder of the current Katalon installed folder.
-     * @throws IOException 
+     * @throws IOException
      */
     private static File getPlatformAPIDocDir() throws IOException {
         return new File(getPlatformResourcesDir(), "apidocs");
@@ -435,7 +438,7 @@ public class GroovyUtil {
 
     /**
      * @return Returns libraries folder of the current Katalon installed folder.
-     * @throws IOException 
+     * @throws IOException
      */
     private static File getPlatformLibDir() throws IOException {
         return new File(getPlatformResourcesDir(), "lib");
@@ -451,8 +454,8 @@ public class GroovyUtil {
      * @param entries
      */
     protected static void addSourceFolderToClassPath(File customBundleFile, List<IClasspathEntry> entries) {
-        entries.add(JavaCore.newLibraryEntry(new Path(new File(customBundleFile, "bin").getAbsolutePath()), new Path(
-                new File(customBundleFile, "src").getAbsolutePath()), null));
+        entries.add(JavaCore.newLibraryEntry(new Path(new File(customBundleFile, "bin").getAbsolutePath()),
+                new Path(new File(customBundleFile, "src").getAbsolutePath()), null));
 
         File resourceFolder = new File(customBundleFile, "resources" + File.separator + "lib");
         if (resourceFolder.exists() && resourceFolder.isDirectory()) {
@@ -476,12 +479,11 @@ public class GroovyUtil {
             }
         }
     }
-    
+
     private static void addJarFileToClasspath(File jarFile, IClasspathEntry oldEntry, List<IClasspathEntry> entries) {
         if (checkRequiredBundleLocation(jarFile, entries)) {
-            IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), 
-                    oldEntry.getSourceAttachmentPath(), 
-                    oldEntry.getSourceAttachmentRootPath(), 
+            IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()),
+                    oldEntry.getSourceAttachmentPath(), oldEntry.getSourceAttachmentRootPath(),
                     oldEntry.getAccessRules(), oldEntry.getExtraAttributes(), oldEntry.isExported());
             if (entry != null && !entries.contains(entry)) {
                 entries.add(entry);
@@ -579,14 +581,15 @@ public class GroovyUtil {
 
         IProjectDescription projectDescription = groovyProject.getDescription();
         projectDescription.setNatureIds(new String[] { GROOVY_NATURE, JavaCore.NATURE_ID });
-        org.eclipse.core.resources.ICommand[] commands = new ICommand[] { projectDescription.newCommand()};
+        org.eclipse.core.resources.ICommand[] commands = new ICommand[] { projectDescription.newCommand() };
         commands[0].setBuilderName(org.eclipse.jdt.core.JavaCore.BUILDER_ID);
         projectDescription.setBuildSpec(commands);
         groovyProject.setDescription(projectDescription, monitor);
         groovyProject.refreshLocal(IResource.DEPTH_ZERO, monitor);
     }
-    
-    public static void updateGroovyProject(ProjectEntity projectEntity, IProject oldGroovyProject) throws CoreException {
+
+    public static void updateGroovyProject(ProjectEntity projectEntity, IProject oldGroovyProject)
+            throws CoreException {
         IProjectDescription projectDescription = oldGroovyProject.getDescription();
         projectDescription.setName(getProjectNameIdFromLocation(projectEntity.getLocation()));
         oldGroovyProject.move(projectDescription, true, null);
@@ -608,8 +611,8 @@ public class GroovyUtil {
             throws JavaModelException {
         IProject groovyProject = getGroovyProject(projectEntity);
         List<IPackageFragment> packageFragments = new ArrayList<IPackageFragment>();
-        IPackageFragmentRoot root = JavaCore.create(groovyProject).getPackageFragmentRoot(
-                groovyProject.getFolder(folderPath));
+        IPackageFragmentRoot root = JavaCore.create(groovyProject)
+                .getPackageFragmentRoot(groovyProject.getFolder(folderPath));
         for (IJavaElement javaElement : root.getChildren()) {
             if (javaElement instanceof IPackageFragment) {
                 IPackageFragment packageFragment = (IPackageFragment) javaElement;
@@ -640,8 +643,7 @@ public class GroovyUtil {
                 .getPackageFragment("");
     }
 
-    public static List<ICompilationUnit> getAllGroovyClasses(IPackageFragment packageFragment)
-            throws CoreException {
+    public static List<ICompilationUnit> getAllGroovyClasses(IPackageFragment packageFragment) throws CoreException {
         if (packageFragment == null) {
             return Collections.emptyList();
         }
@@ -655,9 +657,10 @@ public class GroovyUtil {
         return groovyClassFiles;
     }
 
-    public static void openGroovyProject(ProjectEntity projectEntity, FolderEntity testCaseRootFolder)
+    public static void openGroovyProject(ProjectEntity projectEntity,
+            List<File> customKeywordPluginFiles)
             throws CoreException, IOException, BundleException {
-        initGroovyProject(projectEntity, testCaseRootFolder, null);
+        initGroovyProject(projectEntity, customKeywordPluginFiles, null);
         IProject groovyProject = getGroovyProject(projectEntity);
         if (groovyProject.exists() && !groovyProject.isOpen()) {
             groovyProject.open(null);
@@ -691,23 +694,23 @@ public class GroovyUtil {
     public static void copyPackage(IPackageFragment packageFragment, FolderEntity targetFolder, String newName)
             throws JavaModelException {
         IProject groovyProject = getGroovyProject(targetFolder.getProject());
-        IPackageFragmentRoot packageFragmentRoot = JavaCore.create(groovyProject).getPackageFragmentRoot(
-                groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME));
+        IPackageFragmentRoot packageFragmentRoot = JavaCore.create(groovyProject)
+                .getPackageFragmentRoot(groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME));
         packageFragment.copy(packageFragmentRoot, null, newName, false, null);
     }
 
     public static void copyKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
             throws JavaModelException {
         GroovyCompilationUnit compilationUnit = (GroovyCompilationUnit) JavaCore.create(keywordFile);
-        compilationUnit.copy(targetPackageFragment, null, newName != null ? newName
-                + GroovyConstants.GROOVY_FILE_EXTENSION : newName, false, null);
+        compilationUnit.copy(targetPackageFragment, null,
+                newName != null ? newName + GroovyConstants.GROOVY_FILE_EXTENSION : newName, false, null);
     }
 
     public static void moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
             throws JavaModelException {
         GroovyCompilationUnit compilationUnit = (GroovyCompilationUnit) JavaCore.create(keywordFile);
-        compilationUnit.move(targetPackageFragment, null, newName != null ? newName
-                + GroovyConstants.GROOVY_FILE_EXTENSION : newName, false, null);
+        compilationUnit.move(targetPackageFragment, null,
+                newName != null ? newName + GroovyConstants.GROOVY_FILE_EXTENSION : newName, false, null);
     }
 
     public static String getGroovyClassName(TestCaseEntity testCase) {
@@ -798,7 +801,8 @@ public class GroovyUtil {
         getTestCaseScriptFolder(updatedTestCase);
 
         IProject groovyProject = getGroovyProject(updatedTestCase.getProject());
-        IFolder testCaseScriptFolder = groovyProject.getFolder(getScriptPackageRelativePathForTestCase(updatedTestCase));
+        IFolder testCaseScriptFolder = groovyProject
+                .getFolder(getScriptPackageRelativePathForTestCase(updatedTestCase));
         String scriptFileName = getScriptNameForTestCase(updatedTestCase);
         if (scriptFileName == null) {
             scriptFileName = getGroovyClassName(updatedTestCase);
@@ -856,11 +860,13 @@ public class GroovyUtil {
         String scriptFolderPath = project.getFolderLocation() + File.separator
                 + getScriptPackageRelativePathForTestCase(testCase);
         String scriptFileName = getScriptNameForTestCase(testCase);
-        File scriptFile = new File(scriptFolderPath + File.separator + scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
+        File scriptFile = new File(
+                scriptFolderPath + File.separator + scriptFileName + GroovyConstants.GROOVY_FILE_EXTENSION);
         if (!scriptFile.exists()) {
             return;
         }
-        try (StringReader stringReader = new StringReader(FileUtils.readFileToString(scriptFile, GlobalStringConstants.DF_CHARSET))) {
+        try (StringReader stringReader = new StringReader(
+                FileUtils.readFileToString(scriptFile, GlobalStringConstants.DF_CHARSET))) {
             testCase.setScriptContents(IOUtils.toByteArray(stringReader, GlobalStringConstants.DF_CHARSET));
         }
     }
@@ -891,14 +897,16 @@ public class GroovyUtil {
     public static void refreshScriptTestCaseClasspath(ProjectEntity projectEntity, FolderEntity testCaseFolder)
             throws CoreException {
         IProject groovyProject = getGroovyProject(projectEntity);
-        IFolder scriptFolderOfTestCaseFolder = groovyProject.getFolder(getScriptPackageRelativePathForFolder(testCaseFolder));
+        IFolder scriptFolderOfTestCaseFolder = groovyProject
+                .getFolder(getScriptPackageRelativePathForFolder(testCaseFolder));
         scriptFolderOfTestCaseFolder.refreshLocal(IResource.DEPTH_ONE, null);
     }
 
     public static void refreshInfiniteScriptTestCaseClasspath(ProjectEntity projectEntity, FolderEntity testCaseFolder,
             IProgressMonitor monitor) throws CoreException {
         IProject groovyProject = getGroovyProject(projectEntity);
-        IFolder scriptFolderOfTestCaseFolder = groovyProject.getFolder(getScriptPackageRelativePathForFolder(testCaseFolder));
+        IFolder scriptFolderOfTestCaseFolder = groovyProject
+                .getFolder(getScriptPackageRelativePathForFolder(testCaseFolder));
         scriptFolderOfTestCaseFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
     }
 
@@ -948,35 +956,33 @@ public class GroovyUtil {
         }
         return listTestCaseFiles;
     }
-    
+
     public static List<IFile> getAllTestCaseScripts(ProjectEntity projectEntity) throws CoreException {
         IFolder testCaseRootFolder = GroovyUtil.getTestCaseScriptSourceFolder(projectEntity);
         return getAllScriptFiles(testCaseRootFolder);
     }
-    
+
     public static List<IFile> getAllCustomKeywordsScripts(ProjectEntity projectEntity) throws CoreException {
         IFolder customKeywordRootFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
         return getAllScriptFiles(customKeywordRootFolder);
     }
-    
+
     private static void createFilters(IProject groovyProject) throws CoreException {
         // Exclude user created files/SVN meta files when loading project
         groovyProject.createFilter(IResourceFilterDescription.EXCLUDE_ALL | IResourceFilterDescription.FOLDERS,
-                new FileInfoMatcherDescription(RESOURCE_REGEX_FILTER,
-                        RESOURCE_FOLDER_NAME_REGEX),
-                IResource.NONE, new NullProgressMonitor());
+                new FileInfoMatcherDescription(RESOURCE_REGEX_FILTER, RESOURCE_FOLDER_NAME_REGEX), IResource.NONE,
+                new NullProgressMonitor());
         groovyProject.createFilter(IResourceFilterDescription.EXCLUDE_ALL | IResourceFilterDescription.FILES,
-                new FileInfoMatcherDescription(RESOURCE_REGEX_FILTER,
-                        RESOURCE_FILE_NAME_REGEX),
-                IResource.NONE, new NullProgressMonitor());
+                new FileInfoMatcherDescription(RESOURCE_REGEX_FILTER, RESOURCE_FILE_NAME_REGEX), IResource.NONE,
+                new NullProgressMonitor());
     }
-    
+
     public static URLClassLoader getProjectClasLoader(ProjectEntity projectEntity)
             throws MalformedURLException, CoreException {
         IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
         return GroovyUtil.getProjectClasLoader(project, JavaRuntime.computeDefaultRuntimeClassPath(project));
     }
-    
+
     public static IFolder getPluginsFolder(ProjectEntity project) {
         IProject groovyProject = getGroovyProject(project);
         return groovyProject.getFolder(PLUGINS_FOLDER_NAME);

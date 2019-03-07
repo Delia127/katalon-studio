@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
@@ -63,9 +64,13 @@ public class RecordingScriptLauncher extends ConsoleLauncher {
 
     @Override
     protected Process executeProcess() throws IOException, ExecutionException {
-        return new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance().getCurrentProject()),
-                runConfig.getAdditionalEnvironmentVariables())
-                        .execute(getRunConfig().getExecutionSetting().getScriptFile());
+        try {
+            return new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance().getCurrentProject()),
+                    runConfig.getAdditionalEnvironmentVariables())
+                            .execute(getRunConfig().getExecutionSetting().getScriptFile());
+        } catch (ControllerException e) {
+            throw new ExecutionException(e);
+        }
     }
 
 }

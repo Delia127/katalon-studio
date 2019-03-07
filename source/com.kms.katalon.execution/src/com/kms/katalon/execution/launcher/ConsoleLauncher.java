@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.List;
 
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.exception.ExecutionException;
-import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.process.ConsoleProcess;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
@@ -39,9 +39,13 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
     }
 
     protected Process executeProcess() throws IOException, ExecutionException {
-        return new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
-                .getCurrentProject()), runConfig.getAdditionalEnvironmentVariables()).execute(getRunConfig()
-                .getExecutionSetting().getScriptFile());
+        try {
+            return new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
+                    .getCurrentProject()), runConfig.getAdditionalEnvironmentVariables()).execute(getRunConfig()
+                    .getExecutionSetting().getScriptFile());
+        } catch (ControllerException e) {
+            throw new ExecutionException(e);
+        }
     }
 
     @Override
@@ -59,7 +63,6 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
     
     @Override
     protected void onStartExecution() {
-    	// TODO Auto-generated method stub
     	super.onStartExecution();
     }
 }
