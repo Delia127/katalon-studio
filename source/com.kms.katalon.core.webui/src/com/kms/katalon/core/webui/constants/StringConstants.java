@@ -540,4 +540,5 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION;
     public static final String KW_LOG_INFO_SMART_XPATHS_SUPPORT_END = CoreWebuiMessageConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END;
     public static final String KW_LOG_INFO_USING_HEURISTIC_METHOD = CoreWebuiMessageConstants.KW_LOG_INFO_USING_HEURISTIC_METHOD;
+	public static final String KW_LOG_INFO_SAVED_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS = CoreWebuiMessageConstants.KW_LOG_INFO_SAVED_FOUND_WEB_ELEMENT_WITH_SMART_XPATHS;
 }
