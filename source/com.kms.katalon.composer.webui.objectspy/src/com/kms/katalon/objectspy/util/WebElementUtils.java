@@ -54,7 +54,7 @@ public class WebElementUtils {
 
     private static final String ELEMENT_ATTRIBUTES_STYLE_KEY = "style";
 
-    private static final int NAME_LENGTH_LIMIT = 150;
+    private static final int NAME_LENGTH_LIMIT = 220;
 
     public static final String PAGE_TITLE_KEY = "title";
 
