@@ -10,6 +10,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
+import com.kms.katalon.execution.exception.ExecutionException;
 
 public abstract class ReportableLauncherOptionParser implements LauncherOptionParser {
     protected DefaultReportSetting reportableSetting;
