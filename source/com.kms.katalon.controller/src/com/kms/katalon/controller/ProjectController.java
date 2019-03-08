@@ -53,8 +53,6 @@ public class ProjectController extends EntityController {
     public ProjectEntity addNewProject(String name, String description, String projectLocation) throws Exception {
         ProjectEntity newProject = getDataProviderSetting().getProjectDataProvider().addNewProject(name, description,
                 DEFAULT_PAGELOAD_TIMEOUT, projectLocation);
-        GlobalVariableController.getInstance().generateGlobalVariableLibFile(newProject, null);
-        KeywordController.getInstance().parseAllCustomKeywordsWithoutRefreshing(newProject);
 
         addRecentProject(newProject);
         return newProject;
