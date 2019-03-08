@@ -22,6 +22,8 @@ public class KStorePlugin {
     
     private KStorePluginVersion latestVersion;
     
+    private boolean isCustomKeywordPlugin;
+    
     private boolean expired;
 
     public long getId() {
@@ -110,5 +112,13 @@ public class KStorePlugin {
 
     public void setExpired(boolean expired) {
         this.expired = expired;
+    }
+
+    public boolean isCustomKeywordPlugin() {
+        return isCustomKeywordPlugin;
+    }
+
+    public void setCustomKeywordPlugin(boolean isCustomKeywordPlugin) {
+        this.isCustomKeywordPlugin = isCustomKeywordPlugin;
     }
 }

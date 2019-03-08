@@ -309,6 +309,6 @@ public class ProjectController extends EntityController {
     }
 
     public List<File> getCustomKeywordPlugins(ProjectEntity project) throws ControllerException {
-        return Collections.emptyList();
+        return CustomKeywordPluginFactory.getInstance().getPluginFiles();
     }
 }
