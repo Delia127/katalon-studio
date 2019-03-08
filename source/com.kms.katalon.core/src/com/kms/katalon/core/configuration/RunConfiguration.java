@@ -529,17 +529,17 @@ public class RunConfiguration {
         return getStringProperty(RECORD_CAPTURED_OBJECTS_FILE);
     }
     
-    public static Boolean getAutoApplyNeighborXpaths(){
-    	if(getProperty("com.katalon.katalon-studio-smart-xpath") != null){
-        	try {
-    			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.katalon-studio-smart-xpath", true).
-    					getBoolean("SmartXPathEnabled", false);
-    		} catch (IOException e) {
-    			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
-    		}
-    	}
-    	return false;
-    }
+	public static Boolean shouldApplySmartXPath() {
+		if (getProperty("com.katalon.katalon-studio-smart-xpath") != null) {
+			try {
+				return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.katalon-studio-smart-xpath", true)
+						.getBoolean("SmartXPathEnabled", false);
+			} catch (IOException e) {
+				KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
+			}
+		}
+		return false;
+	}
     
     public static RunningMode getRunningMode() {
         return RunningMode.valueOf(getStringProperty(RUNNING_MODE));
