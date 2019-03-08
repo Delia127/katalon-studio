@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,8 +23,6 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.util.StringUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -69,6 +68,8 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static final String WEB_ELEMENT_ATTRIBUTE_TEXT = "text";
 
     public static final String WEB_ELEMENT_XPATH = "xpath";
+    
+    private static AtomicInteger atomicCounter = new AtomicInteger(0);
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
             throws WebDriverException, IllegalArgumentException {
@@ -775,7 +776,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
-            if(testObject.getSelectorMethod() == SelectorMethod.XPATH && smartXPathsEnabled){
+            if(testObject.getSelectorMethod().equals(SelectorMethod.XPATH) && smartXPathsEnabled){
                 List<WebElement> elementsByOtherMethods = findWebElementsWithSmartXPath(webDriver, objectInsideShadowDom, testObject);
                 return elementsByOtherMethods;
             }
@@ -809,9 +810,8 @@ public class WebUiCommonHelper extends KeywordHelper {
 		Map<TestObjectXpath, List<WebElement>> smartXPathsMap = new HashMap<>();
 		List<TestObjectXpath> allXPaths = testObject.getXpaths();
 		TestObjectXpath selectedSmartXPath = null;
-		String smartXPathFolder = SmartXPathController.getSmartXPathFolderPath();
-		int neighborIndex = 0;
-		
+		int index = atomicCounter.getAndIncrement();
+
 		for (int i = 0; i < allXPaths.size(); i++) {
 			TestObjectXpath thisXPath = allXPaths.get(i);
 			By byThisXPath = By.xpath(thisXPath.getValue());
@@ -828,14 +828,18 @@ public class WebUiCommonHelper extends KeywordHelper {
 					}
 					smartXPathsMap.put(thisXPath, elementsFoundByThisXPath);
 				}
-				
-				// By convention all XPath finders must abide 'xpath:finder_name'
+
+				// By convention all XPath finders must abide
+				// 'xpath:finder_name'
 				String xpathFinder = thisXPath.getName().split(":")[1];
-				
-				// Append suffix in case of neighbor xpath
+
 				String screenShotName = testObject.getObjectId() + "_" + xpathFinder;
-				screenShotName += xpathFinder.contains("neighbor") ? String.valueOf(neighborIndex++) : "";
-				
+
+				// Increase local index for neighbor
+				if (xpathFinder.equals("neighbor")) {
+					screenShotName += "_" + (index++);
+				}
+
 				SmartXPathController.takeScreenShot(webDriver, elementsFoundByThisXPath.get(0), screenShotName);
 
 			} else {
@@ -844,10 +848,6 @@ public class WebUiCommonHelper extends KeywordHelper {
 						thisXPath.getValue()));
 			}
 		}
-
-		logger.logInfo("");
-		KeywordLogger.getInstance(WebUiCommonHelper.class).logInfo(MessageFormat
-				.format(StringConstants.KW_LOG_INFO_SCREENSHOTS_BY_SMART_XPATH_ARE_SAVED, smartXPathFolder));
 
 		if (selectedSmartXPath != null) {
 			List<WebElement> elementsFoundWithSelectedSmartXPath = smartXPathsMap.get(selectedSmartXPath);

@@ -52,8 +52,11 @@ public class SetTextKeyword extends WebUIAbstractKeyword {
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLEARING_OBJ_TXT, to.getObjectId()))
                 webElement.clear()
 
-                webElement = WebUIAbstractKeyword.findWebElement(to)
+				// This line was here since the dawn of time, not sure why but
+				// it is deleted because findWebElement will trigger Smart XPath twice
+                // webElement = WebUIAbstractKeyword.findWebElement(to)
                 String readableText = SeleniumKeysUtil.getReadableText(text)
+				
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_VAL, [to.getObjectId(), readableText] as Object[]))
                 webElement.sendKeys(text)
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TXT_IS_SET_ON_OBJ, [readableText, to.getObjectId()] as Object[]))

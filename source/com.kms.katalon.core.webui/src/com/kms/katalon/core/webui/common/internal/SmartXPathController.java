@@ -81,7 +81,7 @@ public class SmartXPathController {
 	}
 
 	public static String getSmartXPathFolderPath() {
-		return RunConfiguration.getProjectDir() + "/Reports/smart_xpath/";
+		return RunConfiguration.getProjectDir() + "/Reports/smart_xpath";
 	}
 
 	public static String getSmartXPathInternalFilePath() {
@@ -103,7 +103,10 @@ public class SmartXPathController {
 	public static void takeScreenShot(WebDriver webDriver, WebElement ele, String name) {
 		String smartXPathFolder = getSmartXPathFolderPath();
 		try {
+			String fullPath = smartXPathFolder + "/" + name;
 			WebUiCommonHelper.saveWebElementScreenshot(webDriver, ele, name, smartXPathFolder);
+			KeywordLogger.getInstance(WebUiCommonHelper.class).logInfo("Screenshot: " + fullPath);
+
 		} catch (Exception ex) {
 			KeywordLogger.getInstance(SmartXPathController.class).logError(MessageFormat
 					.format(StringConstants.KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT, smartXPathFolder, ex.getMessage()));
