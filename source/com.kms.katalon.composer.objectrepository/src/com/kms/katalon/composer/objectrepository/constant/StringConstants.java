@@ -37,6 +37,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_CONFIRM_TITLE_FILE_CHANGED = ComposerObjectRepositoryMessageConstants.PA_CONFIRM_TITLE_FILE_CHANGED;
     public static final String PA_CONFIRM_MSG_RELOAD_FILE = ComposerObjectRepositoryMessageConstants.PA_CONFIRM_MSG_RELOAD_FILE;
 
+    
+    
     // AddPropertyDialog
     public static final String VIEW_LBL_NAME = NAME;
     public static final String VIEW_LBL_VALUE = VALUE;
@@ -71,4 +73,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_HEADER_TEST_OBJECT_REFERENCES = ComposerObjectRepositoryMessageConstants.DIA_MSG_HEADER_TEST_OBJECT_REFERENCES;
     public static final String DIA_FIELD_TEST_OBJECT_ID = ComposerObjectRepositoryMessageConstants.DIA_FIELD_TEST_OBJECT_ID;
     public static final String DIA_TITLE_TEST_OBJECT_REFERENCES = ComposerObjectRepositoryMessageConstants.DIA_TITLE_TEST_OBJECT_REFERENCES;
+	public static final String PA_TEST_OBJECT_PART_TITLE = ComposerObjectRepositoryMessageConstants.PA_TEST_OBJECT_PART_TITLE;
+	public static final String PA_TEST_OBJECT_INTEGRATION_PART_TITLE = ComposerObjectRepositoryMessageConstants.PA_TEST_OBJECT_INTEGRATION_PART_TITLE;
 }
