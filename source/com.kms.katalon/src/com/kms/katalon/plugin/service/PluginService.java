@@ -37,6 +37,7 @@ import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
+import com.kms.katalon.plugin.models.KStoreProductType;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
@@ -306,7 +307,7 @@ public class PluginService {
     }
     
     private boolean isCustomKeywordPlugin(KStorePlugin plugin) {
-        return plugin.getProduct().getName().equalsIgnoreCase("excel custom keyword");
+        return plugin.getProduct().getProductType().getName().equalsIgnoreCase(KStoreProductType.CUSTOM_KEYWORD);
     }
 
     private void markWork(int work, int totalWork, SubMonitor monitor) {
