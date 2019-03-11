@@ -40,6 +40,7 @@ import org.openqa.selenium.support.ui.Select;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
+import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
@@ -802,11 +803,10 @@ public class WebUiCommonHelper extends KeywordHelper {
 		if (objectInsideShadowDom) {
 			return Collections.emptyList();
 		}
+		
+		SmartXPathController.setLogger(logger);
 
-		logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_START);
-		logger.logInfo("");
-		logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_USING);
-		logger.logInfo("");
+		SmartXPathController.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_USING);
 
 		Map<TestObjectXpath, List<WebElement>> smartXPathsMap = new HashMap<>();
 		List<TestObjectXpath> allXPaths = testObject.getXpaths();
@@ -821,7 +821,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 			List<WebElement> elementsFoundByThisXPath = webDriver.findElements(byThisXPath);
 			if (elementsFoundByThisXPath != null && elementsFoundByThisXPath.size() > 0) {
 
-				logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_THIS_SMART_XPATH,
+				SmartXPathController.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_THIS_SMART_XPATH,
 						thisXPath.getValue()));
 
 				if (smartXPathsMap.get(thisXPath) == null) {
@@ -853,7 +853,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 				}
 
 			} else {
-				logger.logInfo(MessageFormat.format(
+				SmartXPathController.logInfo(MessageFormat.format(
 						StringConstants.KW_LOG_INFO_COULD_NOT_FIND_WEB_ELEMENT_WITH_THIS_SMART_XPATH,
 						thisXPath.getValue()));
 			}
@@ -862,19 +862,13 @@ public class WebUiCommonHelper extends KeywordHelper {
 		if (selectedSmartXPath != null) {
 			List<WebElement> elementsFoundWithSelectedSmartXPath = smartXPathsMap.get(selectedSmartXPath);
 			SmartXPathController.registerBrokenTestObject(testObject, selectedSmartXPath, pathToSelectedSmartXPathScreenshot);
-			logger.logInfo("");
-			logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECT_SMART_XPATH,
+			SmartXPathController.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECT_SMART_XPATH,
 					selectedSmartXPath.getValue()));
-			logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION);
-			logger.logInfo("");
-			logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
+			SmartXPathController.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_AUTO_UPDATE_AND_CONTINUE_EXECUTION);
 			return elementsFoundWithSelectedSmartXPath;
 		} else {
-			logger.logInfo(StringConstants.KW_LOG_INFO_COULD_NOT_FIND_ANY_WEB_ELEMENT_WITH_SMART_XPATHS);
+			SmartXPathController.logInfo(StringConstants.KW_LOG_INFO_COULD_NOT_FIND_ANY_WEB_ELEMENT_WITH_SMART_XPATHS);
 		}
-
-		logger.logInfo("");
-		logger.logInfo(StringConstants.KW_LOG_INFO_SMART_XPATHS_SUPPORT_END);
 
 		return Collections.emptyList();
 	}
@@ -929,7 +923,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 		File fileScreenshot = new File(screenshotPath);
 		FileUtils.copyFile(screenshot, fileScreenshot);
 		// Delete temporary image
-		FileUtils.forceDelete(screenshot);
+		screenshot.deleteOnExit();
 		return screenshotPath;
 	}
 	    

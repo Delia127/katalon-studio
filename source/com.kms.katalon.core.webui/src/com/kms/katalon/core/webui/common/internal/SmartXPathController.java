@@ -24,6 +24,46 @@ import com.kms.katalon.core.webui.constants.StringConstants;
  *
  */
 public class SmartXPathController {
+
+	private static String SMART_XPATH_PREFIX = "[SMART_XPATH]";
+
+	private static KeywordLogger logger;
+
+	/**
+	 * This method initializes Smart XPath Logger with a logger of the calling
+	 * object, should be called first before doing anything
+	 * 
+	 * @param logger
+	 *            An KeywordLogger instance
+	 */
+	public static void setLogger(KeywordLogger logger) {
+		SmartXPathController.logger = logger;
+	}
+
+	/**
+	 * Log an information with Smart XPath plug-in's internal prefix. Note that
+	 * a KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
+	 * 
+	 * @param message
+	 */
+	public static void logInfo(String message) {
+		logger.logInfo(smartXPathPrefixify(message));
+	}
+
+	/**
+	 * Log an error with Smart XPath plug-in's internal prefix. Note that a
+	 * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
+	 * 
+	 * @param message
+	 */
+	public static void logError(String message) {
+		logger.logError(smartXPathPrefixify(message));
+	}
+
+	private static String smartXPathPrefixify(String message) {
+		return SMART_XPATH_PREFIX + " " + message;
+	}
+
 	/**
 	 * Register a Test Object as broken, register this information along with a
 	 * proposed XPath to an internal file provided by Smart Path Plug-in.
@@ -33,9 +73,11 @@ public class SmartXPathController {
 	 * @param thisXPath
 	 *            The proposed XPath for the broken Test Object
 	 * @param pathToScreenshot
-	 * 			  Path to the screenshot of the web element retrieved by the proposed XPath           
+	 *            Path to the screenshot of the web element retrieved by the
+	 *            proposed XPath
 	 */
-	public static void registerBrokenTestObject(TestObject testObject, TestObjectXpath thisXPath, String pathToScreenshot) {
+	public static void registerBrokenTestObject(TestObject testObject, TestObjectXpath thisXPath,
+			String pathToScreenshot) {
 		String jsAutoHealingPath = getSmartXPathInternalFilePath();
 		BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, thisXPath.getValue(), pathToScreenshot);
 		BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
@@ -43,8 +85,7 @@ public class SmartXPathController {
 			existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
 			writeBrokenTestObjects(existingBrokenTestObjects, jsAutoHealingPath);
 		} else {
-			KeywordLogger.getInstance(SmartXPathController.class)
-					.logError(jsAutoHealingPath + " does not exist or is provided by Smart XPath Plugin!");
+			logError(jsAutoHealingPath + " does not exist or is provided by Smart XPath Plugin!");
 		}
 	}
 
@@ -56,7 +97,7 @@ public class SmartXPathController {
 			writer.flush();
 			writer.close();
 		} catch (Exception e) {
-			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
+			logError(e.getMessage());
 		}
 	}
 
@@ -66,12 +107,13 @@ public class SmartXPathController {
 			JsonReader reader = new JsonReader(new FileReader(filePath));
 			return gson.fromJson(reader, BrokenTestObjects.class);
 		} catch (Exception e) {
-			KeywordLogger.getInstance(WebUiCommonHelper.class).logError(e.getMessage());
+			logError(e.getMessage());
 		}
 		return null;
 	}
 
-	private static BrokenTestObject buildBrokenTestObject(TestObject testObject, String newXPath, String pathToScreenshot) {
+	private static BrokenTestObject buildBrokenTestObject(TestObject testObject, String newXPath,
+			String pathToScreenshot) {
 		String oldXPath = testObject.getSelectorCollection().get(testObject.getSelectorMethod());
 		BrokenTestObject brokenTestObject = new BrokenTestObject();
 		brokenTestObject.setTestObjectId(testObject.getObjectId());
@@ -100,18 +142,18 @@ public class SmartXPathController {
 	 * @param ele
 	 *            The web element to be taken screenshot of
 	 * @param name
-	 * 			  Name of the screenshot
+	 *            Name of the screenshot
 	 * @return A path to the newly taken screenshot, an empty string otherwise
 	 */
 	public static String takeScreenShot(WebDriver webDriver, WebElement ele, String name) {
 		String smartXPathFolder = getSmartXPathFolderPath();
 		try {
 			String fullPath = WebUiCommonHelper.saveWebElementScreenshot(webDriver, ele, name, smartXPathFolder);
-			KeywordLogger.getInstance(WebUiCommonHelper.class).logInfo("Screenshot: " + fullPath);
+			logInfo("Screenshot: " + fullPath);
 			return fullPath;
 		} catch (Exception ex) {
-			KeywordLogger.getInstance(SmartXPathController.class).logError(MessageFormat
-					.format(StringConstants.KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT, smartXPathFolder, ex.getMessage()));
+			logError(MessageFormat.format(StringConstants.KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT, smartXPathFolder,
+					ex.getMessage()));
 		}
 		return StringUtils.EMPTY;
 	}
