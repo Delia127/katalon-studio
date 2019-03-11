@@ -104,7 +104,7 @@ public class SmartXPathController {
 		String smartXPathFolder = getSmartXPathFolderPath();
 		try {
 			String fullPath = smartXPathFolder + "/" + name;
-			WebUiCommonHelper.saveWebElementScreenshot(webDriver, ele, name, smartXPathFolder);
+			fullPath = WebUiCommonHelper.saveWebElementScreenshot(webDriver, ele, name, smartXPathFolder);
 			KeywordLogger.getInstance(WebUiCommonHelper.class).logInfo("Screenshot: " + fullPath);
 
 		} catch (Exception ex) {

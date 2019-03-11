@@ -6,8 +6,18 @@ public class TestObjectIntegrationPart {
 	
     private MPart mPart;
 
+    private TestObjectCompositePart testObjectCompositePart;
+    
 	public MPart getPart() {
 		return mPart;
+	}
+
+	public void setDirty(boolean dirty) {
+		mPart.setDirty(true);
+	}
+
+	public boolean isParentDirty() {
+		return testObjectCompositePart.getDirty().isDirty();
 	}
 
 }

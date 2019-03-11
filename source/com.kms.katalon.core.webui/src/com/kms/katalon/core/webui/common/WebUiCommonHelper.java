@@ -885,10 +885,11 @@ public class WebUiCommonHelper extends KeywordHelper {
 	 *            Name of the screenshot
 	 * @param path
 	 *            An absolute path to a folder to which the image will be saved
+	 * @return Path to the newly taken screenshot if exists, an empty string otherwise           
 	 * @throws IOException
 	 *             If an exception during I/O occurs
 	 */
-	public static void saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
+	public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
 			throws IOException {
 		// Get entire page screenshot
 		File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
@@ -918,6 +919,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 		FileUtils.copyFile(screenshot, fileScreenshot);
 		// Delete temporary image
 		FileUtils.forceDelete(screenshot);
+		return screenshotPath;
 	}
 	    
     @SuppressWarnings("unused")
