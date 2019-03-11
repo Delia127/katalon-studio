@@ -502,9 +502,9 @@ public class StringConstants {
 
 	public static final String SMART_XPATH_REPORT_AVAILABLE = CoreMessageConstants.SMART_XPATH_REPORT_AVAILABLE;
 	
-	public static final String SMART_XPATH_REPORT_AVAILABLE_OPENING = "=================== Smart XPath Report ===================";
+	public static final String SMART_XPATH_REPORT_AVAILABLE_OPENING = "=================== Smart XPath Report =======================";
 	
-	public static final String SMART_XPATH_REPORT_AVAILABLE_ENDING = "===========================================================";
+	public static final String SMART_XPATH_REPORT_AVAILABLE_ENDING = "===============================================================";
 
 	public static final String SMART_XPATH_DOCUMENT = CoreMessageConstants.SMART_XPATH_DOCUMENT;
 }
