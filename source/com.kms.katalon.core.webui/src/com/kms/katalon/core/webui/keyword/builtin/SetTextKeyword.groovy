@@ -51,9 +51,7 @@ public class SetTextKeyword extends WebUIAbstractKeyword {
                 WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLEARING_OBJ_TXT, to.getObjectId()))
                 webElement.clear()
-
-				// This line was here since the dawn of time, not sure why but
-				// it is deleted because findWebElement will trigger Smart XPath twice
+				
                 // webElement = WebUIAbstractKeyword.findWebElement(to)
                 String readableText = SeleniumKeysUtil.getReadableText(text)
 				

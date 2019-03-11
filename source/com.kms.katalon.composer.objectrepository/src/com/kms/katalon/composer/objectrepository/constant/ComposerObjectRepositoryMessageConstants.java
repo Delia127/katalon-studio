@@ -86,10 +86,6 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
     // ObjectPropertyView
     public static String VIEW_ITEM_TIP_ADD_NEW_PROPERTY;
 
-	public static String PA_TEST_OBJECT_PART_TITLE;
-
-	public static String PA_TEST_OBJECT_INTEGRATION_PART_TITLE;
-
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerObjectRepositoryMessageConstants.class);

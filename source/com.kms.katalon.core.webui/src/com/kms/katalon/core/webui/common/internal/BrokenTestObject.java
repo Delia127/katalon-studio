@@ -108,5 +108,4 @@ public class BrokenTestObject {
 	public void setBrokenXPath(String brokenXPath) {
 		this.brokenXPath = brokenXPath;
 	}
-
 }
