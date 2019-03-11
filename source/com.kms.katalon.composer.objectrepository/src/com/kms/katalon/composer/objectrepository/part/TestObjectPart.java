@@ -93,10 +93,6 @@ public class TestObjectPart extends CPart implements EventHandler, IComposerPart
         eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
     }
-    
-    public MPart getPart(){
-    	return mPart;
-    }
 
     @Override
     public void handleEvent(Event event) {

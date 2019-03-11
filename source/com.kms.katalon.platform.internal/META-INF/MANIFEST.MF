@@ -33,4 +33,3 @@ Require-Bundle: com.katalon.platform,
  com.kms.katalon.logging
 Bundle-Activator: com.kms.katalon.platform.internal.InternalPlatformPlugin
 Bundle-ActivationPolicy: lazy
-Import-Package: com.kms.katalon.composer.objectrepository.integration
