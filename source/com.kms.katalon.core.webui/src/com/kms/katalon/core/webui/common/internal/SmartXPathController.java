@@ -4,7 +4,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.text.MessageFormat;
-import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.WebDriver;
@@ -33,10 +32,12 @@ public class SmartXPathController {
 	 *            The broken Test Object to be registered
 	 * @param thisXPath
 	 *            The proposed XPath for the broken Test Object
+	 * @param pathToScreenshot
+	 * 			  Path to the screenshot of the web element retrieved by the proposed XPath           
 	 */
-	public static void registerBrokenTestObject(TestObject testObject, TestObjectXpath thisXPath) {
+	public static void registerBrokenTestObject(TestObject testObject, TestObjectXpath thisXPath, String pathToScreenshot) {
 		String jsAutoHealingPath = getSmartXPathInternalFilePath();
-		BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, thisXPath.getValue());
+		BrokenTestObject brokenTestObject = buildBrokenTestObject(testObject, thisXPath.getValue(), pathToScreenshot);
 		BrokenTestObjects existingBrokenTestObjects = readExistingBrokenTestObjects(jsAutoHealingPath);
 		if (existingBrokenTestObjects != null) {
 			existingBrokenTestObjects.getBrokenTestObjects().add(brokenTestObject);
@@ -70,13 +71,14 @@ public class SmartXPathController {
 		return null;
 	}
 
-	private static BrokenTestObject buildBrokenTestObject(TestObject testObject, String newXPath) {
+	private static BrokenTestObject buildBrokenTestObject(TestObject testObject, String newXPath, String pathToScreenshot) {
 		String oldXPath = testObject.getSelectorCollection().get(testObject.getSelectorMethod());
 		BrokenTestObject brokenTestObject = new BrokenTestObject();
 		brokenTestObject.setTestObjectId(testObject.getObjectId());
 		brokenTestObject.setApproved(false);
 		brokenTestObject.setBrokenXPath(oldXPath);
 		brokenTestObject.setProposedXPath(newXPath);
+		brokenTestObject.setPathToScreenshot(pathToScreenshot);
 		return brokenTestObject;
 	}
 
@@ -99,17 +101,18 @@ public class SmartXPathController {
 	 *            The web element to be taken screenshot of
 	 * @param name
 	 * 			  Name of the screenshot
+	 * @return A path to the newly taken screenshot, an empty string otherwise
 	 */
-	public static void takeScreenShot(WebDriver webDriver, WebElement ele, String name) {
+	public static String takeScreenShot(WebDriver webDriver, WebElement ele, String name) {
 		String smartXPathFolder = getSmartXPathFolderPath();
 		try {
-			String fullPath = smartXPathFolder + "/" + name;
-			fullPath = WebUiCommonHelper.saveWebElementScreenshot(webDriver, ele, name, smartXPathFolder);
+			String fullPath = WebUiCommonHelper.saveWebElementScreenshot(webDriver, ele, name, smartXPathFolder);
 			KeywordLogger.getInstance(WebUiCommonHelper.class).logInfo("Screenshot: " + fullPath);
-
+			return fullPath;
 		} catch (Exception ex) {
 			KeywordLogger.getInstance(SmartXPathController.class).logError(MessageFormat
 					.format(StringConstants.KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT, smartXPathFolder, ex.getMessage()));
 		}
+		return StringUtils.EMPTY;
 	}
 }

@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -810,6 +811,8 @@ public class WebUiCommonHelper extends KeywordHelper {
 		Map<TestObjectXpath, List<WebElement>> smartXPathsMap = new HashMap<>();
 		List<TestObjectXpath> allXPaths = testObject.getXpaths();
 		TestObjectXpath selectedSmartXPath = null;
+		String pathToSelectedSmartXPathScreenshot = StringUtils.EMPTY;
+		
 		int index = atomicCounter.getAndIncrement();
 
 		for (int i = 0; i < allXPaths.size(); i++) {
@@ -840,7 +843,14 @@ public class WebUiCommonHelper extends KeywordHelper {
 					screenShotName += "_" + (index++);
 				}
 
-				SmartXPathController.takeScreenShot(webDriver, elementsFoundByThisXPath.get(0), screenShotName);
+				// Save the first working XPath's screenshot
+				if (pathToSelectedSmartXPathScreenshot.equals(StringUtils.EMPTY)) {
+					pathToSelectedSmartXPathScreenshot = SmartXPathController.takeScreenShot(webDriver,
+							elementsFoundByThisXPath.get(0), screenShotName);
+				} else {
+					SmartXPathController.takeScreenShot(webDriver,
+							elementsFoundByThisXPath.get(0), screenShotName);
+				}
 
 			} else {
 				logger.logInfo(MessageFormat.format(
@@ -851,7 +861,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 
 		if (selectedSmartXPath != null) {
 			List<WebElement> elementsFoundWithSelectedSmartXPath = smartXPathsMap.get(selectedSmartXPath);
-			SmartXPathController.registerBrokenTestObject(testObject, selectedSmartXPath);
+			SmartXPathController.registerBrokenTestObject(testObject, selectedSmartXPath, pathToSelectedSmartXPathScreenshot);
 			logger.logInfo("");
 			logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECT_SMART_XPATH,
 					selectedSmartXPath.getValue()));
@@ -885,7 +895,8 @@ public class WebUiCommonHelper extends KeywordHelper {
 	 *            Name of the screenshot
 	 * @param path
 	 *            An absolute path to a folder to which the image will be saved
-	 * @return Path to the newly taken screenshot if exists, an empty string otherwise           
+	 * @return Path to the newly taken screenshot if exists, an empty string
+	 *         otherwise
 	 * @throws IOException
 	 *             If an exception during I/O occurs
 	 */
