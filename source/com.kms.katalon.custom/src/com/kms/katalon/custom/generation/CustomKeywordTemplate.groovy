@@ -12,6 +12,7 @@ import org.codehaus.groovy.ast.Parameter
 
 import com.kms.katalon.core.ast.GroovyParser
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory
+import com.kms.katalon.custom.parser.MethodUtils
 
 class CustomKeywordTemplate {
     private static final String[] GROOVY_DF_IMPORTED = [
@@ -169,10 +170,12 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
         String className = method.getDeclaringClass().getName();
         String paramName = param.getName();
         if (this.methodParameterNamesMap != null) {
-            List<String> parameterNames = this.methodParameterNamesMap.get(className + '#' + method.getName());
+            String typesName = MethodUtils.getParamtersDescriptor(method);
+            String methodName = method.getName() + "#" + typesName;
+            List<String> parameterNames = this.methodParameterNamesMap.get(className + '#' + methodName);
             if (parameterNames != null) {
-                if (method.isStatic()) index--
-                String name = parameterNames.get(index);
+                int i = index;
+                String name = parameterNames.get(i);
                 if (StringUtils.isNotEmpty(name)) {
                     paramName = name;
                 }

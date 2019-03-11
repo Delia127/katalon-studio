@@ -12,6 +12,7 @@ import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.MethodNode;
 
 import com.kms.katalon.core.annotation.Keyword;
+import com.kms.katalon.custom.parser.MethodUtils;
 
 public class CustomMethodNodeFactory {
 
@@ -68,8 +69,10 @@ public class CustomMethodNodeFactory {
             for (AnnotationNode annotationNode : method.getAnnotations()) {
                 if (isKeywordAnnotationNode(annotationNode)) {
                     customKeywordMethods.add(method);
-                    List<String> parameterNames = parameterMaps.get(method.getName());
-                    this.methodParameterNamesMap.put(className + '#' + method.getName(), parameterNames);
+                    String typesName = MethodUtils.getParamtersDescriptor(method);
+                    String methodName = method.getName() + "#" + typesName;
+                    List<String> parameterNames = parameterMaps.get(methodName);
+                    this.methodParameterNamesMap.put(className + '#' + methodName, parameterNames);
                     break;
                 }
             }

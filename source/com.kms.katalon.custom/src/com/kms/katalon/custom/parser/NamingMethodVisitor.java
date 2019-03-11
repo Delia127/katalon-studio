@@ -6,10 +6,12 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import groovyjarjarasm.asm.ClassVisitor;
 import groovyjarjarasm.asm.Label;
@@ -30,15 +32,19 @@ public class NamingMethodVisitor extends ClassVisitor {
         this.clazz = clazz;
         this.methodVisitorMap = new HashMap<>();
         for (Method method : clazz.getMethods()) {
-            String methodName = method.getName();
-            List<Type> parameterTypes = Arrays.stream(method.getParameterTypes()).map(Type::getType).collect(toList());
+            List<Type> parameterTypes = Arrays.stream(method.getParameterTypes())
+                .map(Type::getType)
+                .collect(toList());
+            
+            String typesClassName = MethodUtils.getParamtersDescriptor(parameterTypes);
+            String methodName = method.getName() + "#" + typesClassName;
             ParameterNameMethodVisitor methodVisitor = new ParameterNameMethodVisitor(isStatic(method.getModifiers()), parameterTypes);
             this.methodVisitorMap.put(methodName, methodVisitor);
         }
     }
 
-    List<String> getParameterNames(String methodName) {
-        ParameterNameMethodVisitor methodVisitor = this.methodVisitorMap.get(methodName);
+    List<String> getParameterNames(String methodNameAndParams) {
+        ParameterNameMethodVisitor methodVisitor = this.methodVisitorMap.get(methodNameAndParams);
         if (methodVisitor != null) {
             return methodVisitor.getParamterNames();
         }
@@ -47,7 +53,11 @@ public class NamingMethodVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        ParameterNameMethodVisitor methodVisitor = this.methodVisitorMap.get(name);
+        String typesClassName = Arrays.stream(Type.getArgumentTypes(desc))
+        .map(Type::getClassName)
+        .collect(Collectors.joining(","));
+        
+        ParameterNameMethodVisitor methodVisitor = this.methodVisitorMap.get(name + "#" + typesClassName);
         return methodVisitor;
     }
 }
