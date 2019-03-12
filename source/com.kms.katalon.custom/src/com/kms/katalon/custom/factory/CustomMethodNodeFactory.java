@@ -69,7 +69,7 @@ public class CustomMethodNodeFactory {
             for (AnnotationNode annotationNode : method.getAnnotations()) {
                 if (isKeywordAnnotationNode(annotationNode)) {
                     customKeywordMethods.add(method);
-                    String typesName = MethodUtils.getParamtersDescriptor(method);
+                    String typesName = MethodUtils.getParametersDescriptor(method);
                     String methodName = method.getName() + "#" + typesName;
                     List<String> parameterNames = parameterMaps.get(methodName);
                     this.methodParameterNamesMap.put(className + '#' + methodName, parameterNames);

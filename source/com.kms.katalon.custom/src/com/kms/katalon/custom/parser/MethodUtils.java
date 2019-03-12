@@ -14,7 +14,7 @@ import groovyjarjarasm.asm.Type;
 
 public class MethodUtils {
 
-    public static String getParamtersDescriptor(MethodNode methodNode) {
+    public static String getParametersDescriptor(MethodNode methodNode) {
         String typesClassName = Arrays.stream(methodNode.getParameters())
                 .map(Parameter::getType)
                 .map(ClassNode::getName)
@@ -22,7 +22,7 @@ public class MethodUtils {
         return typesClassName;
     }
     
-    public static String getParamtersDescriptor(List<Type> types) {
+    public static String getParametersDescriptor(List<Type> types) {
         String typesClassName = types.stream()
                 .map(Type::getClassName)
                 .collect(Collectors.joining(","));

@@ -170,7 +170,7 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
         String className = method.getDeclaringClass().getName();
         String paramName = param.getName();
         if (this.methodParameterNamesMap != null) {
-            String typesName = MethodUtils.getParamtersDescriptor(method);
+            String typesName = MethodUtils.getParametersDescriptor(method);
             String methodName = method.getName() + "#" + typesName;
             List<String> parameterNames = this.methodParameterNamesMap.get(className + '#' + methodName);
             if (parameterNames != null) {

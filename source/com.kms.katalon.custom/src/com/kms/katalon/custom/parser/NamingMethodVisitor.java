@@ -36,7 +36,7 @@ public class NamingMethodVisitor extends ClassVisitor {
                 .map(Type::getType)
                 .collect(toList());
             
-            String typesClassName = MethodUtils.getParamtersDescriptor(parameterTypes);
+            String typesClassName = MethodUtils.getParametersDescriptor(parameterTypes);
             String methodName = method.getName() + "#" + typesClassName;
             ParameterNameMethodVisitor methodVisitor = new ParameterNameMethodVisitor(isStatic(method.getModifiers()), parameterTypes);
             this.methodVisitorMap.put(methodName, methodVisitor);

@@ -109,7 +109,7 @@ public class CustomKeywordParser {
                             
                             Map<String, List<String>> parametersMap = new HashMap<>();
                             classNode.getMethods().forEach(methodNode -> {
-                                String typesClassName = MethodUtils.getParamtersDescriptor(methodNode);
+                                String typesClassName = MethodUtils.getParametersDescriptor(methodNode);
                                 String methodName = methodNode.getName() + "#" + typesClassName;
                                 List<String> paramNames = visitor.getParameterNames(methodName);
                                 parametersMap.put(methodName, paramNames);
