@@ -65,7 +65,6 @@ public class ReportController extends EntityController {
         }
        
         reportFolderAtRuntime.mkdir();
-       // if(reportFolderAtRuntime.getName())
         return reportFolderAtRuntime.getAbsolutePath();
     }
 
