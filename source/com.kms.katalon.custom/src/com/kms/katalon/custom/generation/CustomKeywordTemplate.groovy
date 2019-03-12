@@ -174,8 +174,7 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
             String methodName = method.getName() + "#" + typesName;
             List<String> parameterNames = this.methodParameterNamesMap.get(className + '#' + methodName);
             if (parameterNames != null) {
-                int i = index;
-                String name = parameterNames.get(i);
+                String name = parameterNames.get(index);
                 if (StringUtils.isNotEmpty(name)) {
                     paramName = name;
                 }
