@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.support.ui.Sleeper;
 
 import com.google.gson.Gson;
 import com.katalon.platform.api.Application;
@@ -125,6 +126,10 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
             logFolderPath = getTemporaryLogFolderLocation(fileEntity);
         } else if (fileEntity instanceof TestSuiteEntity) {
             logFolderPath = getLogFolderLocation((TestSuiteEntity) fileEntity);
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
         }
 
         executionSetting.setFolderPath(logFolderPath);

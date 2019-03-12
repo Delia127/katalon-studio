@@ -101,6 +101,7 @@ public class ProjectController extends EntityController {
                 .openProjectWithoutClasspath(projectPk);
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
+            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
             addRecentProject(project);
             LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
