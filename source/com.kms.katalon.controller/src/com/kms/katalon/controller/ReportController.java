@@ -57,15 +57,20 @@ public class ReportController extends EntityController {
 
     private String generateReportFolder(String reportRootFolderPath) throws InterruptedException {
         // create report folder if it doesn't exist
+        synchronized(this) {
         long current = Calendar.getInstance().getTimeInMillis();
         File reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
-        while (reportFolderAtRuntime.exists() && (Calendar.getInstance().getTimeInMillis() - current) < 30 * 1000) {
-            Thread.sleep(1000);
-            reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
-        }
+       
+            while (reportFolderAtRuntime.exists() && (Calendar.getInstance().getTimeInMillis() - current) < 30 * 1000) {
+                Thread.sleep(1000);
+                reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
+            }
+
         reportFolderAtRuntime.mkdir();
 
         return reportFolderAtRuntime.getAbsolutePath();
+        }
+        
     }
 
     public File getLogFile(TestCaseEntity testCase, String reportFolderName) throws Exception {
