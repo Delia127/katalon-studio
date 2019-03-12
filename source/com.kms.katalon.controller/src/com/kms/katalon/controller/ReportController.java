@@ -64,7 +64,7 @@ public class ReportController extends EntityController {
             reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
         }
         reportFolderAtRuntime.mkdir();
-        
+
         return reportFolderAtRuntime.getAbsolutePath();
     }
 

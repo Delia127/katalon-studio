@@ -2,17 +2,13 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.support.ui.Sleeper;
 
 import com.google.gson.Gson;
-import com.katalon.platform.api.Application;
 import com.katalon.platform.api.Plugin;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.kms.katalon.controller.ProjectController;
@@ -23,7 +19,6 @@ import com.kms.katalon.core.util.LogbackUtil;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
-import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
