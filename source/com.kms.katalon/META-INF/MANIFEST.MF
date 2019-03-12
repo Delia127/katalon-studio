@@ -78,7 +78,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.katalon.platform,
  net.lingala.zip4j,
  com.kms.katalon.selenium-standalone,
- org.eclipse.swt
+ org.eclipse.swt,
+ com.kms.katalon.groovy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: 
