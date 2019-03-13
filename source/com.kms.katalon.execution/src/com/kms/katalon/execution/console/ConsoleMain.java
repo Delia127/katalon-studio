@@ -304,15 +304,18 @@ public class ConsoleMain {
         File projectFile = new File(projectPk);
         if (projectFile.isDirectory()) {
             LogUtil.printOutputLine(StringConstants.MNG_PRT_PROJECT_PATH_IS_FOLDER);
-            for (File file : projectFile.listFiles()) {
-                if (file.isFile()) {
-                    LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PR_EXAMINE_FILE, file.getName()));
-                } else {
-                    LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PR_EXAMINE_FOLDER, file.getName()));
-                }
-                if (file.isFile() && file.getName().endsWith(ProjectEntity.getProjectFileExtension())) {
-                    projectPk = file.getAbsolutePath();
-                    LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PRT_FOUND_PROJECT_FILE, projectPk));
+            File[] projectFiles = projectFile.listFiles();
+            if (projectFiles != null) {
+                for (File file : projectFiles) {
+                    if (file.isFile()) {
+                        LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PR_EXAMINE_FILE, file.getName()));
+                    } else {
+                        LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PR_EXAMINE_FOLDER, file.getName()));
+                    }
+                    if (file.isFile() && file.getName().endsWith(ProjectEntity.getProjectFileExtension())) {
+                        projectPk = file.getAbsolutePath();
+                        LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PRT_FOUND_PROJECT_FILE, projectPk));
+                    }
                 }
             }
         }
