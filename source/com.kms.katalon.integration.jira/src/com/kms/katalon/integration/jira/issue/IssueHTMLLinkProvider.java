@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 
 public interface IssueHTMLLinkProvider {
+	String getSecureDashboardHTMLLink() throws IOException, URISyntaxException, GeneralSecurityException;
+	
     String getLoginHTMLLink() throws IOException, URISyntaxException, GeneralSecurityException;
 
     String getHTMLLink() throws IOException, URISyntaxException, GeneralSecurityException;

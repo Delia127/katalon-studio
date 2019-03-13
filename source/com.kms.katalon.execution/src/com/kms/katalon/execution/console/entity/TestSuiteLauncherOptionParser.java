@@ -122,10 +122,10 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(installPluginOption);
         allOptions.add(testSuiteQuery);
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-		if (currentProject != null && overridingOptions.isEmpty()) {
-			overridingOptions = new OverridingParametersConsoleOptionContributor(currentProject).getConsoleOptionList();
-		}
-		allOptions.addAll(overridingOptions);
+        if (currentProject != null && overridingOptions.isEmpty()) {
+            overridingOptions = new OverridingParametersConsoleOptionContributor(currentProject).getConsoleOptionList();
+        }
+        allOptions.addAll(overridingOptions);
         return allOptions;
     }
 

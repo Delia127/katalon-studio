@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -52,8 +53,6 @@ public class ProjectController extends EntityController {
     public ProjectEntity addNewProject(String name, String description, String projectLocation) throws Exception {
         ProjectEntity newProject = getDataProviderSetting().getProjectDataProvider().addNewProject(name, description,
                 DEFAULT_PAGELOAD_TIMEOUT, projectLocation);
-        GlobalVariableController.getInstance().generateGlobalVariableLibFile(newProject, null);
-        KeywordController.getInstance().parseAllCustomKeywordsWithoutRefreshing(newProject);
 
         addRecentProject(newProject);
         return newProject;
@@ -61,9 +60,11 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity openProjectForUI(String projectPk, IProgressMonitor monitor) throws Exception {
         try {
-            if (monitor == null) monitor = new NullProgressMonitor();
+            if (monitor == null)
+                monitor = new NullProgressMonitor();
 
-            ProjectEntity project = getDataProviderSetting().getProjectDataProvider().openProjectWithoutClasspath(projectPk);
+            ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
+                    .openProjectWithoutClasspath(projectPk);
 
             if (project != null) {
                 monitor.beginTask("Initialzing project's working space...", 10);
@@ -73,7 +74,7 @@ public class ProjectController extends EntityController {
                 }
                 SubMonitor progress = SubMonitor.convert(monitor, 100);
                 DataProviderState.getInstance().setCurrentProject(project);
-                GroovyUtil.initGroovyProject(project, FolderController.getInstance().getTestCaseRoot(project),
+                GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project),
                         progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 addRecentProject(project);
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
@@ -88,7 +89,7 @@ public class ProjectController extends EntityController {
             }
         }
     }
-    
+
     public void cleanProjectUISettings(ProjectEntity projectEntity) throws CoreException {
         CustomMethodNodeFactory.getInstance().reset();
         GroovyUtil.emptyProjectClasspath(projectEntity);
@@ -96,21 +97,27 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity openProject(String projectPk) throws Exception {
         LogUtil.printOutputLine("Opening project file: " + projectPk);
-        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().openProject(projectPk);
+        ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
+                .openProjectWithoutClasspath(projectPk);
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
+            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
             addRecentProject(project);
-            LogUtil.printOutputLine("Parsing custom keywords...");
-            KeywordController.getInstance().parseAllCustomKeywords(project, null);
             LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
+
+            GroovyUtil.openGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project));
+
+            LogUtil.printOutputLine("Parsing custom keywords...");
+            KeywordController.getInstance().parseAllCustomKeywords(project, null);
             LogUtil.printOutputLine(MessageFormat.format("Project ''{0}'' opened", project.getName()));
         }
         return project;
     }
 
     public void closeProject(String projectPk, IProgressMonitor monitor) throws Exception {
-        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().openProjectWithoutClasspath(projectPk);
+        ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
+                .openProjectWithoutClasspath(projectPk);
         if (project != null) {
             IProject groovyProject = GroovyUtil.getGroovyProject(project);
             groovyProject.clearHistory(monitor);
@@ -136,16 +143,18 @@ public class ProjectController extends EntityController {
         List<ProjectEntity> recentProjects = getRecentProjects();
         int existedProjectIndex = -1;
         for (int i = 0; i < recentProjects.size(); i++) {
-            if (getDataProviderSetting().getEntityPk(project).equals(getDataProviderSetting().getEntityPk(recentProjects.get(i)))) {
+            if (getDataProviderSetting().getEntityPk(project)
+                    .equals(getDataProviderSetting().getEntityPk(recentProjects.get(i)))) {
                 existedProjectIndex = i;
                 break;
             }
         }
 
         if (existedProjectIndex > -1 && existedProjectIndex < recentProjects.size()) {
-            project.setRecentExpandedTreeEntityIds(recentProjects.get(existedProjectIndex)
-                    .getRecentExpandedTreeEntityIds());
-            project.setRecentOpenedTreeEntityIds(recentProjects.get(existedProjectIndex).getRecentOpenedTreeEntityIds());
+            project.setRecentExpandedTreeEntityIds(
+                    recentProjects.get(existedProjectIndex).getRecentExpandedTreeEntityIds());
+            project.setRecentOpenedTreeEntityIds(
+                    recentProjects.get(existedProjectIndex).getRecentOpenedTreeEntityIds());
             recentProjects.remove(existedProjectIndex);
         }
 
@@ -224,7 +233,7 @@ public class ProjectController extends EntityController {
     public String getTempDir() {
         return getDataProviderSetting().getProjectDataProvider().getSystemTempFolder();
     }
-    
+
     public String getWebServiceTempDir() {
         return getTempDir() + File.separator + "Web Services";
     }
@@ -280,20 +289,25 @@ public class ProjectController extends EntityController {
     public File getProjectFile(String folderLocation) {
         return getDataProviderSetting().getProjectDataProvider().getProjectFile(folderLocation);
     }
-    
-    public ProjectEntity newProjectEntity(String name, String description, String location, boolean legacy) throws DALException {
+
+    public ProjectEntity newProjectEntity(String name, String description, String location, boolean legacy)
+            throws DALException {
         return getDataProviderSetting().getProjectDataProvider().newProjectEntity(name, description, location, legacy);
     }
 
     public ProjectEntity updateProjectInfo(File projectFile, ProjectEntity newInfo) throws DALException {
         return getDataProviderSetting().getProjectDataProvider().updateProjectEntity(projectFile, newInfo);
     }
-    
-    public ProjectEntity getProject(String projectFileLocation) throws ControllerException  {
+
+    public ProjectEntity getProject(String projectFileLocation) throws ControllerException {
         try {
             return getDataProviderSetting().getProjectDataProvider().getProject(projectFileLocation);
         } catch (DALException e) {
             throw new ControllerException(e);
         }
+    }
+
+    public List<File> getCustomKeywordPlugins(ProjectEntity project) throws ControllerException {
+        return CustomKeywordPluginFactory.getInstance().getPluginFiles();
     }
 }

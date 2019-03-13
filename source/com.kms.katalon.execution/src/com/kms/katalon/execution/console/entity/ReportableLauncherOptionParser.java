@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
+import com.kms.katalon.execution.exception.ExecutionException;
 
 public abstract class ReportableLauncherOptionParser implements LauncherOptionParser {
     protected DefaultReportSetting reportableSetting;
@@ -33,17 +36,29 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
         getContributors().forEach(contributor -> allOptions.addAll(
                 contributor.getConsoleOptionList()));
         allOptions.addAll(overridingOptions);
+        if (overridingOptions.isEmpty()) {
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+            if (currentProject != null) {
+                overridingOptions = new OverridingParametersConsoleOptionContributor(currentProject).getConsoleOptionList();
+                allOptions.addAll(overridingOptions);
+            }
+        }
         return allOptions;
     }
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-        for (ConsoleOptionContributor contributor : getContributors()) {
-            if (contributor.getConsoleOptionList().contains(consoleOption)) {
-                contributor.setArgumentValue(consoleOption, argumentValue);
+            for (ConsoleOption<?> option : overridingOptions) {
+                if (option.getOption().equals(consoleOption.getOption())) {
+                    option.setValue(argumentValue);
+                }
             }
-        }
-    }
+            for (ConsoleOptionContributor contributor : getContributors()) {
+                if (contributor.getConsoleOptionList().contains(consoleOption)) {
+                    contributor.setArgumentValue(consoleOption, argumentValue);
+                }
+            }
+     }
 
     public Map<String, Object> getOverridingGlobalVariables(){
         Map<String, Object> overridingGlobalVariables = new HashMap<>();

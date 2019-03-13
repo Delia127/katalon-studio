@@ -71,7 +71,7 @@ return angular.element(document.body).injector().get('$http').pendingRequests.le
 
             boolean isAngularLoaded = wait.until(jQueryLoadExpectation)
             if (!isAngularLoaded) {
-                WebUIKeywordMain.stepFailed(CoreWebuiMessageConstants.KW_LOG_ANGULAR_NOT_READY, flowControl, "timeout", true)
+                WebUIKeywordMain.stepFailedWithReason(CoreWebuiMessageConstants.KW_LOG_ANGULAR_NOT_READY, flowControl, "timeout", true)
                 return false
             }
             logger.logPassed(CoreWebuiMessageConstants.KW_LOG_ANGULAR_READY)
