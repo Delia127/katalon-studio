@@ -19,6 +19,7 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.logging.LogUtil;
 
 public class ReportController extends EntityController {
     private static EntityController _instance;
@@ -57,9 +58,9 @@ public class ReportController extends EntityController {
 
     private synchronized String generateReportFolder(String reportRootFolderPath) throws InterruptedException {
         // create report folder if it doesn't exist
+        long current = Calendar.getInstance().getTimeInMillis();
         File reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
-       
-        while (reportFolderAtRuntime.exists()) {
+        while (reportFolderAtRuntime.exists() && (Calendar.getInstance().getTimeInMillis() - current) < 30 * 1000) {
             Thread.sleep(1000);
             reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
         }
