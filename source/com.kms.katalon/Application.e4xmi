@@ -192,9 +192,12 @@
       <children xsi:type="menu:ToolControl" xmi:id="_Ec3EoI_EEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.forumsearch" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl"/>
       <children xsi:type="menu:ToolBar" xmi:id="_vDJ6II_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support">
         <tags>NoMove</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_v1hLMI_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support.chatsupport" label="Community Chat" iconURI="platform:/plugin/com.kms.katalon/icons/chat_support_24.png" command="_Wci7UI_aEeifVM5dtK86vQ">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_qlBqcEVeEem5YYH0D7Rhiw" elementId="com.kms.katalon.handledtoolitem.0" iconURI="platform:/plugin/com.kms.katalon/icons/search_icon_24.png" tooltip="Forum" command="_S1u1gEVcEem5YYH0D7Rhiw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_v1hLMI_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support.chatsupport" iconURI="platform:/plugin/com.kms.katalon/icons/chat_support_24.png" tooltip="Support Chat" command="_Wci7UI_aEeifVM5dtK86vQ">
           <tags>FORCE_TEXT</tags>
         </children>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_aJWZ0EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handledtoolitem.1" iconURI="platform:/plugin/com.kms.katalon/icons/tweetaboutus_24.png" tooltip="Tweet about us" command="_QJZX0EVsEem5YYH0D7Rhiw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_sK-90EVtEem5YYH0D7Rhiw" elementId="com.kms.katalon.handledtoolitem.feedback" iconURI="platform:/plugin/com.kms.katalon/icons/Feedback_24PX.png" tooltip="Feedback" command="_0jpHUEVsEem5YYH0D7Rhiw"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_KDRJMAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin">
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_1yN1YAbFEemu-rQeuokE_A" elementId="com.kms.katalon.toolbarseparator.1"/>
@@ -254,6 +257,9 @@
   <handlers xmi:id="_EW7mAB7CEemVq49wBuyKyg" elementId="com.kms.katalon.handler.showPluginMenu" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ShowPluginMenuHandler" command="_5x1PkB7BEemVq49wBuyKyg"/>
   <handlers xmi:id="_cIfyICRyEem3k_cDce2KKQ" elementId="com.kms.katalon.handler.managekstoreclikeys" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler" command="_TIr-gCRyEem3k_cDce2KKQ"/>
   <handlers xmi:id="_Ah91IDHSEemAoL-JB9vDaQ" elementId="com.kms.katalon.handler.pluginHelp" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenPluginHelpPageHandler" command="_31emIDHREemAoL-JB9vDaQ"/>
+  <handlers xmi:id="_727iAEVcEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.searchForum" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl" command="_S1u1gEVcEem5YYH0D7Rhiw"/>
+  <handlers xmi:id="_Tsnm8EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.tweetaboutus" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.intro.Tweetaboutus" command="_QJZX0EVsEem5YYH0D7Rhiw"/>
+  <handlers xmi:id="_3aIMQEVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.feedback" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.intro.FeedbackUser" command="_0jpHUEVsEem5YYH0D7Rhiw"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -283,7 +289,7 @@
   <commands xmi:id="_2sDjkOBxEeejXLn7_j51hg" elementId="com.kms.katalon.command.importSeleniumIde" commandName="Import Selenium IDE"/>
   <commands xmi:id="_VC7xYDdkEeiyIrMgpAUQAg" elementId="com.kms.katalon.command.checkForUpdates" commandName="Check for Updates"/>
   <commands xmi:id="_CeYPQFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.command.service" commandName="openSupportServicePageCommand"/>
-  <commands xmi:id="_Wci7UI_aEeifVM5dtK86vQ" elementId="com.kms.katalon.command.chatSupport" commandName="Chat Support"/>
+  <commands xmi:id="_Wci7UI_aEeifVM5dtK86vQ" elementId="com.kms.katalon.command.chatSupport" commandName=""/>
   <commands xmi:id="_xthpkMebEeiT4f3fp0QbHA" elementId="com.kms.katalon.command.openErrorLog" commandName="openErrorLog"/>
   <commands xmi:id="_VUn2wAbHEemu-rQeuokE_A" elementId="com.kms.katalon.command.reloadPlugins" commandName="reloadPlugins"/>
   <commands xmi:id="_TKym4AhQEemdRPhm8aXnZw" elementId="com.kms.katalon.command.managePlugins" commandName="managePlugins"/>
@@ -291,6 +297,9 @@
   <commands xmi:id="_5x1PkB7BEemVq49wBuyKyg" elementId="com.kms.katalon.command.showPluginMenu" commandName="showPluginMenu"/>
   <commands xmi:id="_TIr-gCRyEem3k_cDce2KKQ" elementId="com.kms.katalon.command.managekstoreclikeys" commandName="manageKStoreCLIKeys"/>
   <commands xmi:id="_31emIDHREemAoL-JB9vDaQ" elementId="com.kms.katalon.command.pluginHelp" commandName="pluginHelp"/>
+  <commands xmi:id="_S1u1gEVcEem5YYH0D7Rhiw" elementId="com.kms.katalon.command.searchForum" commandName="SearchForum"/>
+  <commands xmi:id="_QJZX0EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.command.tweetaboutus" commandName="Tweet about us"/>
+  <commands xmi:id="_0jpHUEVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.command.feedback" commandName="Feedback"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
