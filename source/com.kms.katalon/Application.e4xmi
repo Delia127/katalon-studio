@@ -124,6 +124,11 @@
         <children xsi:type="menu:DirectMenuItem" xmi:id="_nemYcOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.installPlugin" label="Install Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.InstallPluginHandler"/>
         <children xsi:type="menu:DirectMenuItem" xmi:id="_X471sOJsEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.uninstallPlugin" label="Uninstall Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UninstallPluginHandler"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_1lwroEVsEemrfdWg5nXJug" elementId="com.kms.katalon.menu.integration" label="Integration">
+        <children xsi:type="menu:DirectMenuItem" xmi:id="__A-o4EVsEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.jiraIntegration" label="Jira" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenJiraPluginPageHandler"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_FUzXYEVtEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.slackIntegration" label="Slack" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenSlackPluginPageHandler"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_IibJ8EVtEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.testRailIntegratiion" label="TestRail" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenTestRailPluginPageHandler"/>
+      </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
     <sharedElements xsi:type="advanced:Area" xmi:id="_2Ev6oD8CEeSqW-o8jtXO1g" elementId="org.eclipse.ui.editorss" containerData="50">

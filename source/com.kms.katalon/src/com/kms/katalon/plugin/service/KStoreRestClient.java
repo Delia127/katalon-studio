@@ -50,14 +50,15 @@ public class KStoreRestClient {
         this.credentials = credentials;
     }
     
-    public List<KStorePlugin> getLatestPlugins() throws KStoreClientException {
+    public List<KStorePlugin> getLatestPlugins(String appVersion) throws KStoreClientException {
         AtomicReference<List<KStorePlugin>> plugins = new AtomicReference<>();
         try {
-            executeGetRequest(getPluginsAPIUrl(), credentials, response -> {
+            executeGetRequest(getPluginsAPIUrl(appVersion), credentials, response -> {
                 try {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
                         String responseContent = EntityUtils.toString(response.getEntity());
+                        responseContent = responseContent.replace("{}", "null");
                         plugins.set(parsePluginListJson(responseContent));
                     } else {
                         throw new KStoreClientException("Failed to get latest plugin. No content returned from server.");
@@ -83,9 +84,9 @@ public class KStoreRestClient {
         return gson.fromJson(json, listType);
     }
     
-    public void downloadPlugin(long productId, File downloadFile) throws KStoreClientException {
+    public void downloadPlugin(long productId, File downloadFile, String pluginVersion) throws KStoreClientException {
         try {
-            executeGetRequest(getPluginDownloadAPIUrl(productId), credentials, response -> {
+            executeGetRequest(getPluginDownloadAPIUrl(productId, pluginVersion), credentials, response -> {
                 try {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
@@ -267,12 +268,13 @@ public class KStoreRestClient {
         return getKatalonStoreAPIUrl() + "/authenticate";
     }
     
-    private String getPluginsAPIUrl() {
-        return getKatalonStoreAPIUrl() + "/products/ks";
+    private String getPluginsAPIUrl(String appVersion) {
+        return getKatalonStoreAPIUrl() + "/products/ks?appVersion=" + appVersion;
     }
     
-    private String getPluginDownloadAPIUrl(long pluginId) {
-        return getKatalonStoreAPIUrl() + "/download/source/" + pluginId;
+    private String getPluginDownloadAPIUrl(long pluginId, String pluginVersion) {
+        System.out.println("Plugin ID: " + pluginId + " - Version: " + pluginVersion);
+        return getKatalonStoreAPIUrl() + "/download/source/" + pluginId + "?version=" + pluginVersion;
     }
     
     private String getKatalonStoreAPIUrl() {
