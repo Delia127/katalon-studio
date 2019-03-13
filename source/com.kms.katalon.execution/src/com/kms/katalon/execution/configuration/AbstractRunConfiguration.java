@@ -122,10 +122,6 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         } else if (fileEntity instanceof TestSuiteEntity) {
             logFolderPath = getLogFolderLocation((TestSuiteEntity) fileEntity);
         }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
 
         executionSetting.setFolderPath(logFolderPath);
     }
