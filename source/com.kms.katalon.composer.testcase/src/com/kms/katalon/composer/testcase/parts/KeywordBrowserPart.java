@@ -75,6 +75,7 @@ public class KeywordBrowserPart implements EventHandler {
 
     private void registerListerners() {
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
+        eventBroker.subscribe(EventConstants.KEYWORD_BROWSER_REFRESH, this);
     }
 
     private void hookDoubleClickEvent() {
@@ -350,7 +351,8 @@ public class KeywordBrowserPart implements EventHandler {
 
     @Override
     public void handleEvent(Event event) {
-        if (event.getTopic().equals(EventConstants.PROJECT_OPENED)) {
+        if (event.getTopic().equals(EventConstants.PROJECT_OPENED)
+                || event.getTopic().equals(EventConstants.KEYWORD_BROWSER_REFRESH)) {
             loadTreeData();
         }
     }
