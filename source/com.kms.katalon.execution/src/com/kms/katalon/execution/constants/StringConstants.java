@@ -14,6 +14,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MNG_PRT_WORKBENCH_CLOSED = ExecutionMessageConstants.MNG_PRT_WORKBENCH_CLOSED;
     public static final String MNG_PRT_MISSING_REQUIRED_ARG = ExecutionMessageConstants.MNG_PRT_MISSING_REQUIRED_ARG;
     public static final String MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X = ExecutionMessageConstants.MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X;
+    public static final String MNG_PRT_PROJECT_PATH_IS_FOLDER = ExecutionMessageConstants.MNG_PRT_PROJECT_PATH_IS_FOLDER;
+    public static final String MNG_PRT_FOUND_PROJECT_FILE = ExecutionMessageConstants.MNG_PRT_FOUND_PROJECT_FILE;
+    public static final String MNG_PR_EXAMINE_FILE=ExecutionMessageConstants.MNG_PR_EXAMINE_FILE;
+    public static final String MNG_PR_EXAMINE_FOLDER=ExecutionMessageConstants.MNG_PR_EXAMINE_FOLDER;
     public static final String MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_INTEGER = ExecutionMessageConstants.MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_INTEGER;
     public static final String MNG_PRT_TEST_SUITE_X_NOT_FOUND = ExecutionMessageConstants.MNG_PRT_TEST_SUITE_X_NOT_FOUND;
     public static final String MNG_PRT_INVALID_BROWSER_X = ExecutionMessageConstants.MNG_PRT_INVALID_BROWSER_X;
