@@ -27,6 +27,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.CustomKeywordPluginFactory;
+import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
@@ -182,13 +183,14 @@ public class PluginService {
             ProjectEntity currentProject = projectController.getCurrentProject();
             if (currentProject != null) {
                 GroovyUtil.initGroovyProjectClassPath(currentProject,
-                        projectController.getCustomKeywordPlugins(currentProject), false,
-                        refreshClasspathMonitor);
+                        projectController.getCustomKeywordPlugins(currentProject), false, refreshClasspathMonitor);
+                KeywordController.getInstance().parseAllCustomKeywords(currentProject, null);
+                if (ApplicationRunningMode.get() == RunningMode.GUI) {
+                    eventBroker.post(EventConstants.KEYWORD_BROWSER_REFRESH, null);
+                }
             }
 
             monitor.done();
-//            
-//            rebuildProject();
     
             return results;
         } catch (InterruptedException e) {
