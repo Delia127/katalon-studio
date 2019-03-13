@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.keywords;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -74,6 +75,11 @@ public class CustomKeywordFolderBrowserTreeEntity extends KeywordBrowserFolderTr
             
             allKeywordMethod.addAll(CustomKeywordParser.getInstance().parsePluginKeywordsIntoAst(
                     classLoader, pluginFolder));
+            
+            for (File customKeywordPlugin : ProjectController.getInstance().getCustomKeywordPlugins(projectEntity)) {
+                allKeywordMethod.addAll(CustomKeywordParser.getInstance().parsePluginKeywordJarIntoAst(classLoader,
+                        customKeywordPlugin));
+            }
             
             Map<String, List<Method>> methodActionMap = new HashMap<String, List<Method>>();
         	

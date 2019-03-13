@@ -26,13 +26,19 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.CustomKeywordPluginFactory;
+import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.util.ZipManager;
+import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
+import com.kms.katalon.plugin.models.KStoreProductType;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
@@ -105,13 +111,14 @@ public class PluginService {
     
             uninstallMonitor.done();
     
-            SubMonitor installPluginMonitor = subMonitor.split(50, SubMonitor.SUPPRESS_NONE);
+            SubMonitor installPluginMonitor = subMonitor.split(40, SubMonitor.SUPPRESS_NONE);
             installPluginMonitor.beginTask("Installing plugins...", 100);
     
             cleanUpDownloadDir();
     
             int totalInstallWork = latestPlugins.size();
             int installWork = 0;
+            CustomKeywordPluginFactory.getInstance().clear();
             for (KStorePlugin plugin : latestPlugins) {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
@@ -134,10 +141,15 @@ public class PluginService {
                 }
                 
                 try {
-                    Bundle bundle = platformInstall(pluginPath);
-                    if (bundle != null && existBundleWithSameSymbolicName(bundle)) {
-                        platformUninstall(pluginPath);
-                        continue;
+                    if (isCustomKeywordPlugin(plugin)) {
+                        String location = getPluginLocation(plugin);
+                        CustomKeywordPluginFactory.getInstance().addPluginFile(new File(location));
+                    } else {
+                        Bundle bundle = platformInstall(pluginPath);
+                        if (bundle != null && existBundleWithSameSymbolicName(bundle)) {
+                            platformUninstall(pluginPath);
+                            continue;
+                        }
                     }
                     ResultItem item = new ResultItem();
                     item.setPlugin(plugin);
@@ -164,14 +176,26 @@ public class PluginService {
             installPluginMonitor.done();
     
             pluginPrefStore.setInstalledPlugins(latestPlugins);
-    
+            
+            SubMonitor refreshClasspathMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
+            
+            ProjectController projectController = ProjectController.getInstance();
+            ProjectEntity currentProject = projectController.getCurrentProject();
+            if (currentProject != null) {
+                GroovyUtil.initGroovyProjectClassPath(currentProject,
+                        projectController.getCustomKeywordPlugins(currentProject), false, refreshClasspathMonitor);
+                KeywordController.getInstance().parseAllCustomKeywords(currentProject, null);
+                if (ApplicationRunningMode.get() == RunningMode.GUI) {
+                    eventBroker.post(EventConstants.KEYWORD_BROWSER_REFRESH, null);
+                }
+            }
+
             monitor.done();
     
             return results;
         } catch (InterruptedException e) {
             throw e;
         } catch (Exception e) {
-            System.out.println("Exception here");
         	if(StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_UNAUTHORIZED_SINGAL)){
                 throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins due to invalid API Key", e);
         	}
@@ -282,6 +306,10 @@ public class PluginService {
 
     private void savePluginLocation(KStorePlugin plugin, String path) throws IOException {
         pluginPrefStore.setPluginLocation(plugin, path);
+    }
+    
+    private boolean isCustomKeywordPlugin(KStorePlugin plugin) {
+        return plugin.getProduct().getProductType().getName().equalsIgnoreCase(KStoreProductType.CUSTOM_KEYWORD);
     }
 
     private void markWork(int work, int totalWork, SubMonitor monitor) {
