@@ -42,6 +42,7 @@ import com.kms.katalon.plugin.models.KStoreProductType;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
+import com.kms.katalon.plugin.util.PluginFactory;
 import com.kms.katalon.plugin.util.PluginHelper;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -91,12 +92,11 @@ public class PluginService {
             SubMonitor uninstallMonitor = subMonitor.split(20, SubMonitor.SUPPRESS_NONE);
             uninstallMonitor.beginTask("Uninstalling plugins...", 100);
     
-            List<KStorePlugin> localPlugins = pluginPrefStore.getInstalledPlugins();
-            List<KStorePlugin> uninstalledPlugins = getUninstalledPlugins(localPlugins, latestPlugins);
+            List<KStorePlugin> localPlugins = PluginFactory.getInstance().getPlugins();
     
-            int totalUninstallWork = uninstalledPlugins.size();
+            int totalUninstallWork = localPlugins.size();
             int uninstallWork = 0;
-            for (KStorePlugin plugin : uninstalledPlugins) {
+            for (KStorePlugin plugin : localPlugins) {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
                 }
@@ -119,12 +119,20 @@ public class PluginService {
             int totalInstallWork = latestPlugins.size();
             int installWork = 0;
             CustomKeywordPluginFactory.getInstance().clear();
+            PluginFactory.getInstance().clear();
             for (KStorePlugin plugin : latestPlugins) {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
                 }
 
                 if (plugin.isExpired()) {
+                    ResultItem item = new ResultItem();
+                    item.setPlugin(plugin);
+                    results.add(item);
+                    continue;
+                }
+                
+                if (plugin.getLatestCompatibleVersion() == null) {
                     ResultItem item = new ResultItem();
                     item.setPlugin(plugin);
                     results.add(item);
@@ -145,22 +153,13 @@ public class PluginService {
                         String location = getPluginLocation(plugin);
                         CustomKeywordPluginFactory.getInstance().addPluginFile(new File(location));
                     } else {
-                        Bundle bundle = platformInstall(pluginPath);
-                        if (bundle != null && existBundleWithSameSymbolicName(bundle)) {
-                            platformUninstall(pluginPath);
-                            continue;
-                        }
+                        platformInstall(pluginPath);
                     }
                     ResultItem item = new ResultItem();
                     item.setPlugin(plugin);
                     item.markPluginInstalled(true);
-                    if (VersionUtil.isNewer(plugin.getLatestVersion().getNumber(),
-                        plugin.getCurrentVersion().getNumber())) {
-                        item.setNewVersionAvailable(true);
-                    } else {
-                        item.setNewVersionAvailable(false);
-                    }
                     results.add(item);
+                    PluginFactory.getInstance().addPlugin(plugin);
                 } catch (BundleException e) {
                     if (!StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_DUPLICATED_BUNDLE_SIGNAL)
                             && !StringUtils.containsIgnoreCase(e.getMessage(),
@@ -174,8 +173,6 @@ public class PluginService {
             }
     
             installPluginMonitor.done();
-    
-            pluginPrefStore.setInstalledPlugins(latestPlugins);
             
             SubMonitor refreshClasspathMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
             
@@ -211,36 +208,9 @@ public class PluginService {
 
     private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientException {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
-        List<KStorePlugin> latestPlugins = restClient.getLatestPlugins();
+        String appVersion = VersionUtil.getCurrentVersion().getVersion();
+        List<KStorePlugin> latestPlugins = restClient.getLatestPlugins(appVersion);
         return latestPlugins;
-    }
-
-    private List<KStorePlugin> getUninstalledPlugins(List<KStorePlugin> localPlugins,
-            List<KStorePlugin> latestPlugins) {
-        Map<Long, KStorePlugin> updatedPluginLookup = toMap(latestPlugins);
-        List<KStorePlugin> uninstalledPlugins = new ArrayList<>();
-        for (KStorePlugin plugin : localPlugins) {
-            if (!updatedPluginLookup.containsKey(plugin.getId())) {
-                uninstalledPlugins.add(plugin);
-                continue;
-            }
-            KStorePlugin latestPluginInfo = updatedPluginLookup.get(plugin.getId());
-            if (!latestPluginInfo.getCurrentVersion().getNumber().equals(
-                    plugin.getCurrentVersion().getNumber())) {
-                uninstalledPlugins.add(plugin);
-                continue;
-            }
-            if (latestPluginInfo.isExpired()) {
-                uninstalledPlugins.add(plugin);
-            }
-        }
-        return uninstalledPlugins;
-    }
-
-    private Map<Long, KStorePlugin> toMap(List<KStorePlugin> plugins) {
-        Map<Long, KStorePlugin> pluginMap = plugins.stream()
-                .collect(Collectors.toMap(KStorePlugin::getId, Function.identity()));
-        return pluginMap;
     }
     
     private Bundle platformInstall(String pluginPath) throws BundleException {
@@ -329,7 +299,8 @@ public class PluginService {
         downloadFile.createNewFile();
 
         KStoreRestClient restClient = getRestClient(credentials);
-        restClient.downloadPlugin(plugin.getProduct().getId(), downloadFile);
+        restClient.downloadPlugin(plugin.getProduct().getId(), downloadFile,
+                plugin.getLatestCompatibleVersion().getNumber());
 
         File pluginInstallDir = getPluginInstallDir(plugin);
         pluginInstallDir.mkdirs();
@@ -350,7 +321,7 @@ public class PluginService {
             apiKey,
             plugin.getProduct().getId(),
             plugin.getProduct().getName(),
-            plugin.getCurrentVersion().getNumber(),
+            plugin.getLatestCompatibleVersion().getNumber(),
             ApplicationRunningMode.get());
     }
 
@@ -363,7 +334,7 @@ public class PluginService {
         return new File(getRepoInstallDir(), 
                 plugin.getId() +
                 File.separator +
-                plugin.getCurrentVersion().getNumber());
+                plugin.getLatestCompatibleVersion().getNumber());
     }
     
     private File getPluginDownloadFileInfo(KStorePlugin plugin) {
