@@ -209,7 +209,7 @@ public class PluginService {
     private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientException {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
-        List<KStorePlugin> latestPlugins = restClient.getLatestPlugins("6.0.1");
+        List<KStorePlugin> latestPlugins = restClient.getLatestPlugins(appVersion);
         return latestPlugins;
     }
     

@@ -273,7 +273,6 @@ public class KStoreRestClient {
     }
     
     private String getPluginDownloadAPIUrl(long pluginId, String pluginVersion) {
-        System.out.println("Plugin ID: " + pluginId + " - Version: " + pluginVersion);
         return getKatalonStoreAPIUrl() + "/download/source/" + pluginId + "?version=" + pluginVersion;
     }
     
