@@ -137,7 +137,6 @@ public class RecordedLogView {
         } else if (TestStatusValue.INCOMPLETE.equals(value)) {
             return ColorUtil.getIncompleteLogColor();
         }
-        return null;
         return ColorUtil.getDefaultBackgroundColor();
     }
 }
