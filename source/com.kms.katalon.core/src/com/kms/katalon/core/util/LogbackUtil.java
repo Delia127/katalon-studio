@@ -14,8 +14,7 @@ import com.kms.katalon.core.model.RunningMode;
 public class LogbackUtil {
 
     public static File getLogbackConfigFile() throws IOException {
-        Path path;
-        path =  new Path("/resources/logback/logback-console.xml");
+        Path path =  new Path("/resources/logback/logback-console.xml");
 
         URL logbackConfigFileUrl = FileLocator.find(FrameworkUtil.getBundle(LogbackUtil.class), path, null);
         return FileUtils.toFile(FileLocator.toFileURL(logbackConfigFileUrl));
