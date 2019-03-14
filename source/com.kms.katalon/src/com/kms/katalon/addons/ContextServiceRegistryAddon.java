@@ -21,9 +21,9 @@ public class ContextServiceRegistryAddon {
     @PostConstruct
     public void registerHandlers() {
         ContextInjectionFactory.make(CheckForUpdateOnStartupHandler.class, context);
-        ContextInjectionFactory.make(ShowUserFeedbackDialogHandler.class, context);
+//        ContextInjectionFactory.make(ShowUserFeedbackDialogHandler.class, context);
         ContextInjectionFactory.make(ProjectToolbarHandler.class, context);
-        ContextInjectionFactory.make(ShowInAppSurveyDialogHandler.class, context);
+//        ContextInjectionFactory.make(ShowInAppSurveyDialogHandler.class, context);
         ContextInjectionFactory.make(ActiveEventLogPartHandler.class, context);
     }
     
