@@ -28,7 +28,7 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
-
+@Deprecated
 public class UserFeedbackDialog extends Dialog {
     
     private static final String[] TWITTER_REDIRECT_URLS = new String[] {
