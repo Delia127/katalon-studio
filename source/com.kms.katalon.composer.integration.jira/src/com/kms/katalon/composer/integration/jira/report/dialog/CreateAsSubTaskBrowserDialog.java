@@ -35,7 +35,7 @@ public class CreateAsSubTaskBrowserDialog extends JiraIssueBrowserDialog {
         }
     }
 
-    protected String updateField(String id, String value) {
+    private String updateField(String id, String value) {
         return "document.getElementById(\"" + id + "\").value = \"" + StringEscapeUtils.escapeEcmaScript(value) + "\";\n";
     }
 }
