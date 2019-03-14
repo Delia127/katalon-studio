@@ -13,7 +13,7 @@ public class Tweetaboutus extends AbstractHandler {
 
     @Override
     public void execute() {
-        Program.launch("https://www.katalon.com/love-katalon-1");
+        Program.launch("https://www.katalon.com/love-katalon");
         Trackings.trackQuickDiscussion();
     }
 }

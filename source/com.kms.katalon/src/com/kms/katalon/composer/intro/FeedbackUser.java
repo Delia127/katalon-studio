@@ -12,7 +12,7 @@ public class FeedbackUser extends AbstractHandler{
 
     @Override
     public void execute() {
-        Program.launch("https://www.surveymonkey.com/r/Y5T9L6M");
+        Program.launch("https://www.katalon.com/nps-in-app-survey");
         Trackings.trackQuickDiscussion();
     }
 }
