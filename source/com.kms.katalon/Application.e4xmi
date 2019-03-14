@@ -212,9 +212,9 @@
         <children xsi:type="menu:HandledToolItem" xmi:id="_27TkYAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.toolitem" label="Plugin Store" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/katalon_store_32x24.png" tooltip="Plugin Store" command="_5x1PkB7BEemVq49wBuyKyg">
           <tags>FORCE_TEXT</tags>
           <menu xmi:id="_UvQVUAbGEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.menu">
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_kqH2kAbGEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.menu.reload" label="Reload Plugins" iconURI="" tooltip="" command="_VUn2wAbHEemu-rQeuokE_A"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_gsFroAjzEemqvpskrRucLw" elementId="com.kms.katalon.composer.toolbar.plugin.menu.search" label="Visit Plugin Store" tooltip="" command="_1KbioAj0EemqvpskrRucLw"/>
             <children xsi:type="menu:MenuSeparator" xmi:id="_gW1-8Aj0EemqvpskrRucLw" elementId="com.kms.katalon.menuseparator.2"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_gsFroAjzEemqvpskrRucLw" elementId="com.kms.katalon.composer.toolbar.plugin.menu.search" label="Search Plugins" tooltip="" command="_1KbioAj0EemqvpskrRucLw"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_kqH2kAbGEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.menu.reload" label="Reload Plugins" iconURI="" tooltip="" command="_VUn2wAbHEemu-rQeuokE_A"/>
             <children xsi:type="menu:HandledMenuItem" xmi:id="_EYdBcAj0EemqvpskrRucLw" elementId="com.kms.katalon.composer.toolbar.plugin.menu.manage" label="Manage Plugins" tooltip="" command="_TKym4AhQEemdRPhm8aXnZw"/>
             <children xsi:type="menu:HandledMenuItem" xmi:id="_7_t30CRxEem3k_cDce2KKQ" elementId="com.kms.katalon.composer.toolbar.plugin.menu.manageclikeys" label="Manage API Keys" tooltip="" command="_TIr-gCRyEem3k_cDce2KKQ"/>
             <children xsi:type="menu:MenuSeparator" xmi:id="_S48o8DHREemAoL-JB9vDaQ" elementId="com.kms.katalon.menuseparator.3"/>
