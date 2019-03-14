@@ -175,26 +175,29 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     }
 
     public static Map<String, String> getIosAdditionalEnvironmentVariables() throws IOException, InterruptedException {
-        makeIosDeployExecutable();
-        makeDeviceConsoleExecutable();
-        makeAllIMobileDeviceBinaryExecutable();
-        makeAllFilesInFolderExecutable(getCarthageDirectory());
+//        makeIosDeployExecutable();
+//        makeDeviceConsoleExecutable();
+//        makeAllIMobileDeviceBinaryExecutable();
+//        makeAllFilesInFolderExecutable(getCarthageDirectory());
 
         Map<String, String> additionalEnvironmentVariables = new HashMap<String, String>();
-        String iMobileDeviceDirectory = getIMobileDeviceDirectoryAsString();
-        if (StringUtils.isNotEmpty(iMobileDeviceDirectory)) {
-            additionalEnvironmentVariables.put(DYLD_LIBRARY_PATH,
-                    StringUtils.defaultString(System.getenv(DYLD_LIBRARY_PATH)) + ":"
-                            + iMobileDeviceDirectory);
-            additionalEnvironmentVariables.put(DYLD_FALLBACK_LIBRARY_PATH,
-                    StringUtils.defaultString(System.getenv(DYLD_FALLBACK_LIBRARY_PATH)) + ":"
-                            + iMobileDeviceDirectory);
-            additionalEnvironmentVariables.put(PATH,
-                    StringUtils.defaultString(System.getenv(PATH)) + ":" 
-                            + iMobileDeviceDirectory + ":"
-                            + getIosDeployDirectory().getAbsolutePath() + ":"
-                            + getCarthageDirectory().getAbsolutePath());
-        }
+//        String iMobileDeviceDirectory = getIMobileDeviceDirectoryAsString();
+//        if (StringUtils.isNotEmpty(iMobileDeviceDirectory)) {
+//            additionalEnvironmentVariables.put(DYLD_LIBRARY_PATH,
+//                    StringUtils.defaultString(System.getenv(DYLD_LIBRARY_PATH)) + ":"
+//                            + iMobileDeviceDirectory);
+//            additionalEnvironmentVariables.put(DYLD_FALLBACK_LIBRARY_PATH,
+//                    StringUtils.defaultString(System.getenv(DYLD_FALLBACK_LIBRARY_PATH)) + ":"
+//                            + iMobileDeviceDirectory);
+//            additionalEnvironmentVariables.put(PATH,
+//                    StringUtils.defaultString(System.getenv(PATH)) + ":" 
+//                            + iMobileDeviceDirectory + ":"
+//                            + getIosDeployDirectory().getAbsolutePath() + ":"
+//                            + getCarthageDirectory().getAbsolutePath());
+//            
+//            additionalEnvironmentVariables.put(PATH, StringUtils.defaultString(System.getenv(PATH)) + ":user/local/bin");
+//        }
+        additionalEnvironmentVariables.put(PATH, StringUtils.defaultString(System.getenv(PATH)) + ":/usr/local/bin");
         return additionalEnvironmentVariables;
     }
 
