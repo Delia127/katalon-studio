@@ -193,7 +193,7 @@
       <children xsi:type="menu:ToolBar" xmi:id="_vDJ6II_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support">
         <tags>NoMove</tags>
         <children xsi:type="menu:HandledToolItem" xmi:id="_qlBqcEVeEem5YYH0D7Rhiw" elementId="com.kms.katalon.handledtoolitem.0" iconURI="platform:/plugin/com.kms.katalon/icons/search_icon_24.png" tooltip="Forum" command="_S1u1gEVcEem5YYH0D7Rhiw"/>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_v1hLMI_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support.chatsupport" iconURI="platform:/plugin/com.kms.katalon/icons/chat_support_24.png" tooltip="Support Chat" command="_Wci7UI_aEeifVM5dtK86vQ">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_v1hLMI_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support.chatsupport" iconURI="platform:/plugin/com.kms.katalon/icons/chat_support_24.png" tooltip="Chat" command="_Wci7UI_aEeifVM5dtK86vQ">
           <tags>FORCE_TEXT</tags>
         </children>
         <children xsi:type="menu:HandledToolItem" xmi:id="_aJWZ0EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handledtoolitem.1" iconURI="platform:/plugin/com.kms.katalon/icons/tweetaboutus_24.png" tooltip="Tweet about us" command="_QJZX0EVsEem5YYH0D7Rhiw"/>

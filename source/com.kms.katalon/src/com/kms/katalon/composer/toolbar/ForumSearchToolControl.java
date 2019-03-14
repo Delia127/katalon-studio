@@ -13,7 +13,7 @@ public class ForumSearchToolControl extends AbstractHandler {
 
     @Override
     public void execute() {
-        Program.launch("https://forum.katalon.com/search");
+        Program.launch("https://forum.katalon.com");
         Trackings.trackQuickDiscussion();
     }
 }
