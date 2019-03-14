@@ -219,7 +219,9 @@ public class JiraSettingsComposite implements JiraUIComponent {
         glMainComposite.marginWidth = 0;
         glMainComposite.marginHeight = 0;
         mainComposite.setLayout(glMainComposite);
-
+        
+        createjiraPlugin();
+        
         createAuthenticationGroup();
 
         createSubmitOptionsGroup();
@@ -234,6 +236,23 @@ public class JiraSettingsComposite implements JiraUIComponent {
         return gl;
     }
 
+    private void createjiraPlugin(){
+        Group grpjiraPlugin = new Group(mainComposite, SWT.NONE);
+        grpjiraPlugin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glGrpgrpjiraPlugin = new GridLayout(2, false);
+        glGrpgrpjiraPlugin.horizontalSpacing = 15;
+        grpjiraPlugin.setLayout(glGrpgrpjiraPlugin);
+        grpjiraPlugin.setText("");
+        Label lblOverriedSetting = new Label(grpjiraPlugin, SWT.NONE);
+        lblOverriedSetting.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_DEPRECATED);
+        GridData ldOverrideMessage = new GridData(SWT.FILL, SWT.TOP, true, false);
+        Button btngetplugin = new Button(grpjiraPlugin, SWT.NONE);
+        btngetplugin.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btngetplugin.setText(ComposerJiraIntegrationMessageConstant.PREF_LBL_GETJIRAPLUGIN);
+        new Label(grpjiraPlugin, SWT.NONE);
+        ldOverrideMessage.widthHint = 300;
+        lblOverriedSetting.setLayoutData(ldOverrideMessage);
+    }
     private void createAuthenticationGroup() {
         Group grpAuthentication = new Group(mainComposite, SWT.NONE);
         grpAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
