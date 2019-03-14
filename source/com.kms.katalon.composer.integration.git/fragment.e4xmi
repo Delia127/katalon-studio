@@ -29,7 +29,7 @@
     <elements xsi:type="commands:Command" xmi:id="_mAJbMKVlEeaLHqsq9YYXMA" elementId="com.kms.katalon.composer.integration.git.toolbar.command" commandName="Git Toolbar Command" description="Git Toolbar Command"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_X2rbkKVkEeaLHqsq9YYXMA" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:2">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_vDvYEKVkEeaLHqsq9YYXMA" elementId="com.kms.katalon.composer.integration.git.handledtoolitem" label="Git" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/git_16.png" tooltip="" command="_mAJbMKVlEeaLHqsq9YYXMA">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_vDvYEKVkEeaLHqsq9YYXMA" elementId="com.kms.katalon.composer.integration.git.handledtoolitem" label="Git" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/git_24.png" tooltip="" command="_mAJbMKVlEeaLHqsq9YYXMA">
       <persistedState key="index" value="16"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/git_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
