@@ -106,8 +106,6 @@ public class ProjectController extends EntityController {
             LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
 
-            GroovyUtil.openGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project));
-
             LogUtil.printOutputLine("Parsing custom keywords...");
             KeywordController.getInstance().parseAllCustomKeywords(project, null);
             LogUtil.printOutputLine(MessageFormat.format("Project ''{0}'' opened", project.getName()));
