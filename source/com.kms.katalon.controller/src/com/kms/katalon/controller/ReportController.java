@@ -5,8 +5,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
@@ -28,6 +31,9 @@ public class ReportController extends EntityController {
     public static String EXECUTION_SETTING_FILE_NAME = "execution.properties";
 
     private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    
+    // synchronizedSet - just in case
+    private static Set<String> REPORT_SUB_FOLDER_NAMES = Collections.synchronizedSet(new HashSet<>());
 
     private ReportController() {
         super();
@@ -58,15 +64,25 @@ public class ReportController extends EntityController {
     private String generateReportFolder(String reportRootFolderPath) throws InterruptedException {
         // create report folder if it doesn't exist
         long current = Calendar.getInstance().getTimeInMillis();
-        File reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
+        File reportFolderAtRuntime = new File(reportRootFolderPath, getReportSubFolderName());
         while (reportFolderAtRuntime.exists() && (Calendar.getInstance().getTimeInMillis() - current) < 30 * 1000) {
             Thread.sleep(1000);
-            reportFolderAtRuntime = new File(reportRootFolderPath, dateFormat.format(new Date()));
+            reportFolderAtRuntime = new File(reportRootFolderPath, getReportSubFolderName());
         }
-       
         reportFolderAtRuntime.mkdir();
-       // if(reportFolderAtRuntime.getName())
+
         return reportFolderAtRuntime.getAbsolutePath();
+    }
+
+    private synchronized String getReportSubFolderName() throws InterruptedException {
+        long current = Calendar.getInstance().getTimeInMillis();
+        String name = dateFormat.format(new Date());
+        while (REPORT_SUB_FOLDER_NAMES.contains(name) && (Calendar.getInstance().getTimeInMillis() - current) < 30 * 1000) {
+            Thread.sleep(1000);
+            name = dateFormat.format(new Date());
+        }
+        REPORT_SUB_FOLDER_NAMES.add(name);
+        return name;
     }
 
     public File getLogFile(TestCaseEntity testCase, String reportFolderName) throws Exception {
