@@ -128,16 +128,16 @@ pipeline {
             }
         }
 
-        // stage('Package .DMG file') {
-        //     steps {
-        //     script {
-        //             // For release branches, execute codesign command to package .DMG file for macOS
-        //     if (BRANCH_NAME ==~ /.*release.*/) {
-        //                sh "./package.sh ${env.tmpDir}"
-        //     }
-        // }
-        //     }
-        // }
+        stage('Package .DMG file') {
+            steps {
+            script {
+                    // For release branches, execute codesign command to package .DMG file for macOS
+            if (BRANCH_NAME ==~ /.*release.*/) {
+                       sh "./package.sh ${env.tmpDir}"
+            }
+        }
+            }
+        }
 
         stage ('Success') {
             steps {
