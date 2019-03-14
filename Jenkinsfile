@@ -6,15 +6,15 @@ import jenkins.model.CauseOfInterruption.UserInterruption
 
 pipeline {
     agent any
-   
+
     tools {
         maven 'default'
     }
-    
+
     environment {
         tmpDir = "/tmp/katabuild/${BRANCH_NAME}_${BUILD_TIMESTAMP}"
     }
-    
+
     stages {
         stage('Prepare') {
             steps {
@@ -52,9 +52,9 @@ pipeline {
 
                     script {
                         dir("source") {
-                // Generate Katalon builds   
+                // Generate Katalon builds
                 // If branch name contains "release", build production mode for non-qTest package
-                // else build development mode for qTest package    
+                // else build development mode for qTest package
                             if (BRANCH_NAME ==~ /.*release.*/) {
                                 if (BRANCH_NAME ==~ /.*qtest.*/) {
                                     echo "Building: qTest Prod"
@@ -64,11 +64,11 @@ pipeline {
                                     sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
                                 }
 
-                            } else {      
-                                echo "Building: qTest Dev"                
+                            } else {
+                                echo "Building: qTest Dev"
                                 sh 'mvn -pl \\!com.kms.katalon.product clean verify -P dev'
                             }
-                
+
                             // Generate API docs
                             sh "cd com.kms.katalon.apidocs && mvn clean verify && cp -R 'target/resources/apidocs' ${env.tmpDir}"
                         }
@@ -76,7 +76,7 @@ pipeline {
                 }
             }
         }
-        
+
         /*
         stage('Testing') {
             steps {
@@ -88,13 +88,13 @@ pipeline {
                 }
             }
         }
-        */ 
-        
+        */
+
         stage('Copy builds') {
             // Copy generated builds and changelogs to shared folder on server
             steps {
                 dir("source/com.kms.katalon.product/target/products") {
-                    script { 
+                    script {
                         if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/)) {
                             sh "cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
@@ -127,17 +127,17 @@ pipeline {
                 }
             }
         }
-        
-        stage('Package .DMG file') {
-            steps {
-            script {   
-                    // For release branches, execute codesign command to package .DMG file for macOS
-            if (BRANCH_NAME ==~ /.*release.*/) {
-                       sh "./package.sh ${env.tmpDir}"
-            }       
-        }    
-            }
-        }
+
+        // stage('Package .DMG file') {
+        //     steps {
+        //     script {
+        //             // For release branches, execute codesign command to package .DMG file for macOS
+        //     if (BRANCH_NAME ==~ /.*release.*/) {
+        //                sh "./package.sh ${env.tmpDir}"
+        //     }
+        // }
+        //     }
+        // }
 
         stage ('Success') {
             steps {
@@ -156,7 +156,7 @@ pipeline {
                 recipientProviders: [brokenBuildSuspects(), developers()],
                 subject: "Build $BUILD_NUMBER - " + currentBuild.currentResult + " ($JOB_NAME)",
                 attachLog: true
-        }      
+        }
         success {
             mail(
                     from: 'build-ci@katalon.com',
@@ -181,7 +181,7 @@ pipeline {
 
 def abortPreviousBuilds() {
     Run previousBuild = currentBuild.rawBuild.getPreviousBuildInProgress()
-    
+
     while (previousBuild != null) {
         if (previousBuild.isInProgress()) {
             def executor = previousBuild.getExecutor()
