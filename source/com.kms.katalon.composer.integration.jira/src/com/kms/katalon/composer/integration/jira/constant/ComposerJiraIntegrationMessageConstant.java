@@ -31,8 +31,6 @@ public class ComposerJiraIntegrationMessageConstant extends NLS {
     public static String PREF_LBL_CONNECT;
     
     public static String PREF_LBL_GETJIRAPLUGIN;
-    
-    public static String PREF_LBL_GETSLACKPLUGIN;
 
     public static String PREF_LBL_DF_JIRA_PROJECT;
 
