@@ -271,7 +271,7 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
         grpSlackPlugin.setText("");
         Label deprecatedMessage = new Label(grpSlackPlugin, SWT.WRAP); 
         deprecatedMessage.setLayoutData(layoutData);
-        deprecatedMessage.setText(ComposerJiraIntegrationMessageConstant.SlackSettingsComposite_MSG_DEPRECATED);
+        deprecatedMessage.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_DEPRECATED);
         deprecatedMessage.setBackground(ColorUtil.getWarningLogBackgroundColor());
         new Label(grpSlackPlugin, SWT.NONE);
         btnGetSlackPlugin = new Button(grpSlackPlugin, SWT.NONE);
