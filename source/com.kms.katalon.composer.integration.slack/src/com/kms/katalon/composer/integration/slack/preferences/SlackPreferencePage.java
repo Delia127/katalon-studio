@@ -39,6 +39,7 @@ import com.kms.katalon.composer.integration.slack.util.SlackUtil.SlackMsgStatus;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.tracking.service.Trackings;
 
+
 public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
     private Composite fieldEditorParent;
 
@@ -95,7 +96,7 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
 
     private BooleanFieldEditor sendDeleteItem;
     
-    Button btngetplugin;
+    Button btnGetSlackPlugin;
 
     private boolean isValid = isValid();
 
@@ -121,7 +122,7 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
 
         fieldEditorParent = new Composite(getFieldEditorParent(), SWT.NONE);
         fieldEditorParent.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
-        createjiraPlugin(fieldEditorParent);
+        createSlackPlugin(fieldEditorParent);
         enabled = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_ENABLED,
                 StringConstants.PREF_LBL_SLACK_ENABLED, fieldEditorParent);
         enabled.getDescriptionControl(fieldEditorParent).setToolTipText(StringConstants.PREF_LBL_TIP_SLACK_ENABLED);
@@ -155,7 +156,7 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
                 testSlackConnection();
             }
         });
-        btngetplugin.addSelectionListener(new SelectionAdapter() {
+        btnGetSlackPlugin.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch("https://store.katalon.com/product/4/Slack-Integration");
@@ -250,32 +251,32 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
     private GridLayout noneMarginGridLayout() {
         GridLayout gl = new GridLayout();
         gl.marginHeight = 0;
-        gl.marginTop = 0;
+        gl.marginWidth = 0;
         return gl;
     }
-    private void createjiraPlugin(Composite parent){
+    private void createSlackPlugin(Composite parent){
         Composite deprecatedComposite = new Composite(parent, SWT.NONE);
         deprecatedComposite.setLayout(noneMarginGridLayout());
         deprecatedComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         deprecatedComposite.setLayout(new GridLayout());
-        Group grpjiraPlugin = new Group(deprecatedComposite, SWT.NONE);
-        grpjiraPlugin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glGrpgrpjiraPlugin = new GridLayout(1, false);
-        glGrpgrpjiraPlugin.horizontalSpacing = 10;
-        glGrpgrpjiraPlugin.marginWidth = 10;
+        Group grpSlackPlugin = new Group(deprecatedComposite, SWT.NONE);
+        grpSlackPlugin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glGrpSlackPlugin  = new GridLayout(1, false);
+        glGrpSlackPlugin.horizontalSpacing = 10;
+        glGrpSlackPlugin.marginWidth = 10;
         GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
         layoutData.widthHint = 300;
         
-        grpjiraPlugin.setLayout(glGrpgrpjiraPlugin);
-        grpjiraPlugin.setText("");
-        Label deprecatedMessage = new Label(grpjiraPlugin, SWT.WRAP); 
+        grpSlackPlugin.setLayout(glGrpSlackPlugin);
+        grpSlackPlugin.setText("");
+        Label deprecatedMessage = new Label(grpSlackPlugin, SWT.WRAP); 
         deprecatedMessage.setLayoutData(layoutData);
         deprecatedMessage.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_DEPRECATED);
         deprecatedMessage.setBackground(ColorUtil.getWarningLogBackgroundColor());
-        new Label(grpjiraPlugin, SWT.NONE);
-        btngetplugin = new Button(grpjiraPlugin, SWT.NONE);
-        btngetplugin.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true, 1, 1));
-        btngetplugin.setText(ComposerJiraIntegrationMessageConstant.PREF_LBL_GETSLACKPLUGIN);
+        new Label(grpSlackPlugin, SWT.NONE);
+        btnGetSlackPlugin = new Button(grpSlackPlugin, SWT.NONE);
+        btnGetSlackPlugin.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true, 1, 1));
+        btnGetSlackPlugin.setText(ComposerJiraIntegrationMessageConstant.PREF_LBL_GETSLACKPLUGIN);
     }
     @Override
     protected void initialize() {

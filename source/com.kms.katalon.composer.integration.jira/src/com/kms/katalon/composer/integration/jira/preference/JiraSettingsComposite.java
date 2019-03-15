@@ -71,7 +71,7 @@ public class JiraSettingsComposite implements JiraUIComponent {
 
     private Button chckEncrypt;
     
-    Button btngetplugin;
+    Button btnGetPlugin;
 
     private Composite settingComposite;
 
@@ -116,7 +116,7 @@ public class JiraSettingsComposite implements JiraUIComponent {
                                 result.getUser().getDisplayName()));
             }
         });
-        btngetplugin.addSelectionListener(new SelectionAdapter() {
+        btnGetPlugin.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch("https://store.katalon.com/product/3/Jira-Integration");
@@ -234,7 +234,7 @@ public class JiraSettingsComposite implements JiraUIComponent {
     private GridLayout noneMarginGridLayout() {
         GridLayout gl = new GridLayout();
         gl.marginHeight = 0;
-        gl.marginTop = 0;
+        gl.marginWidth = 0 ;
         return gl;
     }
 
@@ -243,25 +243,25 @@ public class JiraSettingsComposite implements JiraUIComponent {
         deprecatedComposite.setLayout(noneMarginGridLayout());
         deprecatedComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         deprecatedComposite.setLayout(new GridLayout());
-        Group grpjiraPlugin = new Group(deprecatedComposite, SWT.NONE);
-        grpjiraPlugin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glGrpgrpjiraPlugin = new GridLayout(1, false);
-        glGrpgrpjiraPlugin.horizontalSpacing = 10;
-        glGrpgrpjiraPlugin.marginWidth = 10;
+        Group grpJiraPlugin = new Group(deprecatedComposite, SWT.NONE);
+        grpJiraPlugin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glGrpJiraPlugin = new GridLayout(1, false);
+        glGrpJiraPlugin.horizontalSpacing = 10;
+        glGrpJiraPlugin.marginWidth = 10;
         GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
         layoutData.widthHint = 300;
         
-        grpjiraPlugin.setLayout(glGrpgrpjiraPlugin);
-        grpjiraPlugin.setText("");
-        Label deprecatedMessage = new Label(grpjiraPlugin, SWT.WRAP); 
+        grpJiraPlugin.setLayout(glGrpJiraPlugin);
+        grpJiraPlugin.setText("");
+        Label deprecatedMessage = new Label(grpJiraPlugin, SWT.WRAP); 
         deprecatedMessage.setLayoutData(layoutData);
         deprecatedMessage.setImage(ImageConstants.IMG_20_WARNING_MSG);
         deprecatedMessage.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_DEPRECATED);
         deprecatedMessage.setBackground(ColorUtil.getWarningLogBackgroundColor());
-        new Label(grpjiraPlugin, SWT.NONE);
-        btngetplugin = new Button(grpjiraPlugin, SWT.NONE);
-        btngetplugin.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true, 1, 1));
-        btngetplugin.setText(ComposerJiraIntegrationMessageConstant.PREF_LBL_GETJIRAPLUGIN);
+        new Label(grpJiraPlugin, SWT.NONE);
+        btnGetPlugin = new Button(grpJiraPlugin, SWT.NONE);
+        btnGetPlugin.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true, 1, 1));
+        btnGetPlugin.setText(ComposerJiraIntegrationMessageConstant.PREF_LBL_GETJIRAPLUGIN);
     }
     private void createAuthenticationGroup() {
         Group grpAuthentication = new Group(mainComposite, SWT.NONE);
