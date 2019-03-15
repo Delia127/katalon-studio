@@ -186,21 +186,22 @@ public class JiraSettingsComposite implements JiraUIComponent {
     }
 
     public Composite createContainer(Composite parent) {
-        
         container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout());
+        
         Composite contentComposite = new Composite(container, SWT.NONE);
         contentComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         stackLayout = new StackLayout();
         contentComposite.setLayout(stackLayout);
 
-//        overridedComposite = new Composite(contentComposite, SWT.NONE);
-//        overridedComposite.setLayout(new GridLayout());
-//        Label lblOverriedSetting = new Label(overridedComposite, SWT.WRAP);
-//        lblOverriedSetting.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_MOVE_SETTINGS);
-//        GridData ldOverrideMessage = new GridData(SWT.FILL, SWT.TOP, true, false);
-//        ldOverrideMessage.widthHint = 300;
-//        lblOverriedSetting.setLayoutData(ldOverrideMessage);
+        overridedComposite = new Composite(contentComposite, SWT.NONE);
+        overridedComposite.setLayout(new GridLayout());
+        Label lblOverriedSetting = new Label(overridedComposite, SWT.WRAP);
+        lblOverriedSetting.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_MOVE_SETTINGS);    
+        lblOverriedSetting.setBackground(ColorUtil.getWarningLogBackgroundColor());
+        GridData ldOverrideMessage = new GridData(SWT.FILL, SWT.TOP, true, false);
+        ldOverrideMessage.widthHint = 300;
+        lblOverriedSetting.setLayoutData(ldOverrideMessage);
 
         settingComposite = new Composite(contentComposite, SWT.NONE);
         settingComposite.setLayout(noneMarginGridLayout());
