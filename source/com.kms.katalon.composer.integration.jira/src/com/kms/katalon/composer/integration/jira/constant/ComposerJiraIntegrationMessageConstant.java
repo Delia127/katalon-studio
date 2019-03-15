@@ -4,6 +4,8 @@ import org.eclipse.osgi.util.NLS;
 
 public class ComposerJiraIntegrationMessageConstant extends NLS {
     private static final String MESSAGE_FILE_NAME = "com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessage";
+
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(MESSAGE_FILE_NAME, ComposerJiraIntegrationMessageConstant.class);
@@ -132,4 +134,6 @@ public class ComposerJiraIntegrationMessageConstant extends NLS {
     public static String JiraSettingsComposite_MSG_DEPRECATED;
     
     public static String JiraSettingsComposite_MSG_MOVE_SETTINGS;
+    
+    public static String SlackSettingsComposite_MSG_DEPRECATED;
 }
