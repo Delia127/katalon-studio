@@ -67,7 +67,8 @@ public class ApplicationInfo {
     }
 
     public static String profile() {
-        return getAboutMappingsProperties().getProperty(ABOUT_PROFILE_KEY, DEV_PROFILE);
+//        return getAboutMappingsProperties().getProperty(ABOUT_PROFILE_KEY, DEV_PROFILE);
+        return System.getProperty("katalonProfile");
     }
 
     public static String installLocation() {
