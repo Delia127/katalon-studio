@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.BuildInfo;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchWindowException;
@@ -37,7 +39,6 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.ie.InternetExplorerOptions;
-import org.openqa.selenium.BuildInfo;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.CommandExecutor;
@@ -47,8 +48,8 @@ import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient;
+import org.openqa.selenium.remote.http.HttpClient.Builder;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
-import org.openqa.selenium.remote.internal.ApacheHttpClient;
 import org.openqa.selenium.safari.SafariDriver;
 
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
@@ -61,6 +62,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
@@ -342,18 +344,33 @@ public class DriverFactory {
         
         URL url = new URL(remoteWebServerUrl);
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        HttpClientBuilder clientBuilder = HttpClientProxyBuilder.create(proxyInfo).getClientBuilder();
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(clientBuilder);
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo));
         HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>() ,
                 url, clientFactory);
         return executor;
     }
     
-    private static Factory getClientFactoryForRemoteDriverExecutor(HttpClientBuilder clientBuilder) {
+    private static Factory getClientFactoryForRemoteDriverExecutor(Proxy proxy) {
         return new Factory() {
+            
+            private org.openqa.selenium.remote.internal.OkHttpClient.Factory factory;
+            {
+                factory = new org.openqa.selenium.remote.internal.OkHttpClient.Factory();
+            }
+
             @Override
             public HttpClient createClient(URL url) {
-                return new ApacheHttpClient(clientBuilder.build(), url);
+                return Factory.super.createClient(url);
+            }
+            
+            @Override
+            public void cleanupIdleClients() {
+                factory.cleanupIdleClients();
+            }
+            
+            @Override
+            public org.openqa.selenium.remote.internal.OkHttpClient.Builder builder() {
+                return factory.builder().proxy(proxy);
             }
         };
     }
