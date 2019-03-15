@@ -35,6 +35,7 @@ import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelPr
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreClientException;
+import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.service.KStoreRestClient;
@@ -85,11 +86,16 @@ public class KStorePluginsDialog extends Dialog {
             @Override
             public String getText(Object element) {
                 ResultItem item = (ResultItem) element;
+                KStorePlugin plugin = item.getPlugin();
                 if (item.isPluginInstalled()) {
                     return StringConstants.KStorePluginsDialog_STATUS_INSTALLED;
-                } 
-                return StringConstants.KStorePluginsDialog_STATUS_EXPIRED; // just display installed and expired
-                                                                           // plugins only
+                }
+                
+                if (plugin.isExpired()) {
+                    return StringConstants.KStorePluginsDialog_STATUS_EXPIRED;
+                }
+                
+                return StringConstants.KStorePluginsDialog_STATUS_INCOMPATIBLE;
             }
         });
         
@@ -101,7 +107,7 @@ public class KStorePluginsDialog extends Dialog {
             @Override
             public String getText(Object element) {
                 ResultItem item = (ResultItem) element;
-                return item.getPlugin().getCurrentVersion().getNumber();
+                return item.getPlugin().getLatestCompatibleVersion().getNumber();
             }
         });
         

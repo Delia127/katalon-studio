@@ -43,7 +43,7 @@ public class ObjectRepositoryService {
             }
             WebPage page = (WebPage) webPageWrapper.getOriginalWebElement();
             for (ConflictWebElementWrapper webElementChildWrapper : webPageWrapper.getChildren()) {
-                if (webPageWrapper.isConflicted()) {
+                if (webElementChildWrapper.isConflicted()) {
                     addConflictedWebElement(page, (ConflictWebElementWrapper) webElementChildWrapper, dialogResult, testObjectIds);
                 } else {
                     newSelectionOnExplorer = addNonConflictedWebElement(page, ((ConflictWebElementWrapper) webElementChildWrapper).getOriginalWebElement(), dialogResult);
