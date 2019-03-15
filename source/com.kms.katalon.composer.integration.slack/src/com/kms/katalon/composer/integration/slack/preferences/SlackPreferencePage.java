@@ -30,7 +30,7 @@ import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
+import com.kms.katalon.composer.integration.slack.constants.ComposerIntegrationSlackMessageConstants;
 import com.kms.katalon.composer.integration.slack.constants.ImageConstants;
 import com.kms.katalon.composer.integration.slack.constants.SlackPreferenceConstants;
 import com.kms.katalon.composer.integration.slack.constants.StringConstants;
@@ -271,12 +271,12 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
         grpSlackPlugin.setText("");
         Label deprecatedMessage = new Label(grpSlackPlugin, SWT.WRAP); 
         deprecatedMessage.setLayoutData(layoutData);
-        deprecatedMessage.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_DEPRECATED);
+        deprecatedMessage.setText(ComposerIntegrationSlackMessageConstants.SlackSettingsComposite_MSG_DEPRECATED);
         deprecatedMessage.setBackground(ColorUtil.getWarningLogBackgroundColor());
         new Label(grpSlackPlugin, SWT.NONE);
         btnGetSlackPlugin = new Button(grpSlackPlugin, SWT.NONE);
         btnGetSlackPlugin.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true, 1, 1));
-        btnGetSlackPlugin.setText(ComposerJiraIntegrationMessageConstant.PREF_LBL_GETSLACKPLUGIN);
+        btnGetSlackPlugin.setText(ComposerIntegrationSlackMessageConstants.PREF_LBL_GETSLACKPLUGIN);
     }
     @Override
     protected void initialize() {
