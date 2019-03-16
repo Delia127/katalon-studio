@@ -103,6 +103,22 @@
       <children xsi:type="menu:Menu" xmi:id="_0yMVUAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.menu.project" label="Project">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oiLmoAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handledmenuitem.searchFile" label="Search..." tooltip="" command="_N5ChkARIEeWyKYoESvUc1g"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_1lwroEVsEemrfdWg5nXJug" elementId="com.kms.katalon.menu.integration" label="TestOps">
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_2-ob8EdBEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.katalonanalytics" label="Katalon Analytics" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenKatalonAnalyticsPageHandler"/>
+        <children xsi:type="menu:Menu" xmi:id="_MwX0gEdDEem6k_LppvmRLg" elementId="com.kms.katalon.menu.alm" label="ALM - Test Management">
+          <children xsi:type="menu:DirectMenuItem" xmi:id="__A-o4EVsEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.jiraIntegration" label="Jira" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenJiraPluginPageHandler"/>
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_-9-wIEeZEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.qtest" label="qTest" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenQTestPageHandler"/>
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_IibJ8EVtEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.testRailIntegratiion" label="TestRail" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenTestRailPluginPageHandler"/>
+        </children>
+        <children xsi:type="menu:Menu" xmi:id="_cbnlYEdDEem6k_LppvmRLg" elementId="com.kms.katalon.menu.ci" label="Continuous Integration">
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_F-ZNQEY5Eem09KIuHvs7hg" elementId="com.kms.katalon.directmenuitem.jenkins" label="Jenkins" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenJenkinsPluginPageHandler"/>
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_IRFooEY5Eem09KIuHvs7hg" elementId="com.kms.katalon.directmenuitem.bamboo" label="Bamboo" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenBambooPluginPageHandler"/>
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_20YrwEY5Eem09KIuHvs7hg" elementId="com.kms.katalon.directmenuitem.ciSamples" label="Others" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenCISamplesPageHandler"/>
+        </children>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_FUzXYEVtEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.slackIntegration" label="Slack" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenSlackPluginPageHandler"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_jyDU4EeaEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.docker" label="Docker" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenDockerPageHandler"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_-m9sYEebEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.pluginrequest" label="Request" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenPluginRequestPageHandler"/>
+      </children>
       <children xsi:type="menu:Menu" xmi:id="_IjUoUNnnEeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window" label="Window">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_xoCTINn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window.resetPerspective" label="Reset Perspective..." tooltip="" command="_oilxkNn4EeWQyuuwTERZYg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="__AZwYO9jEeaEL7_gfQD4GQ" elementId="com.kms.katalon.handledmenuitem.commandpalette" label="Command Palette..." mnemonics="" command="_nGeSINxwEeaEL7_gfQD4GQ"/>
@@ -123,14 +139,6 @@
       <children xsi:type="menu:Menu" xmi:id="_kCdBsOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.menu.plugin" label="Plugin">
         <children xsi:type="menu:DirectMenuItem" xmi:id="_nemYcOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.installPlugin" label="Install Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.InstallPluginHandler"/>
         <children xsi:type="menu:DirectMenuItem" xmi:id="_X471sOJsEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.uninstallPlugin" label="Uninstall Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UninstallPluginHandler"/>
-      </children>
-      <children xsi:type="menu:Menu" xmi:id="_1lwroEVsEemrfdWg5nXJug" elementId="com.kms.katalon.menu.integration" label="Integration">
-        <children xsi:type="menu:DirectMenuItem" xmi:id="__A-o4EVsEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.jiraIntegration" label="Jira" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenJiraPluginPageHandler"/>
-        <children xsi:type="menu:DirectMenuItem" xmi:id="_FUzXYEVtEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.slackIntegration" label="Slack" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenSlackPluginPageHandler"/>
-        <children xsi:type="menu:DirectMenuItem" xmi:id="_IibJ8EVtEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.testRailIntegratiion" label="TestRail" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenTestRailPluginPageHandler"/>
-        <children xsi:type="menu:DirectMenuItem" xmi:id="_F-ZNQEY5Eem09KIuHvs7hg" elementId="com.kms.katalon.directmenuitem.jenkins" label="Jenkins" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenJenkinsPluginPageHandler"/>
-        <children xsi:type="menu:DirectMenuItem" xmi:id="_IRFooEY5Eem09KIuHvs7hg" elementId="com.kms.katalon.directmenuitem.bamboo" label="Bamboo" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenBambooPluginPageHandler"/>
-        <children xsi:type="menu:DirectMenuItem" xmi:id="_20YrwEY5Eem09KIuHvs7hg" elementId="com.kms.katalon.directmenuitem.ciSamples" label="Other Continuous Integration Systems" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenCISamplesPageHandler"/>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
