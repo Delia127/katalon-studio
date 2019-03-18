@@ -36,6 +36,8 @@ public class ApplicationInfo {
     private static final String ABOUT_BUILD_NUMBER_KEY = "0";
     private static final String ABOUT_VERSION_NUMBER_KEY = "1";
     private static final String ABOUT_PROFILE_KEY = "2";
+    
+    private static final String PROFILE_PROPERTY_KEY = "katalonProfile";
 
     private static Properties aboutMappingsProperties;
 
@@ -68,7 +70,7 @@ public class ApplicationInfo {
 
     public static String profile() {
 //        return getAboutMappingsProperties().getProperty(ABOUT_PROFILE_KEY, DEV_PROFILE);
-        return System.getProperty("katalonProfile");
+        return System.getProperty(PROFILE_PROPERTY_KEY);
     }
 
     public static String installLocation() {
