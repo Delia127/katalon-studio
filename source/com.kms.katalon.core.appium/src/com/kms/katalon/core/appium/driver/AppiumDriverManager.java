@@ -37,6 +37,7 @@ import com.kms.katalon.core.util.internal.ProcessUtil;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.MobileCapabilityType;
 import io.appium.java_client.service.local.InvalidNodeJSInstance;
 import io.appium.java_client.service.local.flags.AndroidServerFlag;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
