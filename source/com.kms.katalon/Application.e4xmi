@@ -114,9 +114,14 @@
           <children xsi:type="menu:DirectMenuItem" xmi:id="_F-ZNQEY5Eem09KIuHvs7hg" elementId="com.kms.katalon.directmenuitem.jenkins" label="Jenkins" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenJenkinsPluginPageHandler"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_IRFooEY5Eem09KIuHvs7hg" elementId="com.kms.katalon.directmenuitem.bamboo" label="Bamboo" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenBambooPluginPageHandler"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_20YrwEY5Eem09KIuHvs7hg" elementId="com.kms.katalon.directmenuitem.ciSamples" label="Others" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenCISamplesPageHandler"/>
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_jyDU4EeaEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.docker" label="Docker" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenDockerPageHandler"/>
         </children>
-        <children xsi:type="menu:DirectMenuItem" xmi:id="_FUzXYEVtEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.slackIntegration" label="Slack" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenSlackPluginPageHandler"/>
-        <children xsi:type="menu:DirectMenuItem" xmi:id="_jyDU4EeaEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.docker" label="Docker" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenDockerPageHandler"/>
+        <children xsi:type="menu:Menu" xmi:id="_uiJ58EklEem4Ae4Ck4UkxA" elementId="com.kms.katalon.menu.dependencymanagement" label="Dependency Management">
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_PmN7UEknEemv1YtyYWbkCQ" elementId="com.kms.katalon.directmenuitem.gradle" label="Gradle Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenGradlePluginPageHandler"/>
+        </children>
+        <children xsi:type="menu:Menu" xmi:id="_kiYeIEklEem4Ae4Ck4UkxA" elementId="com.kms.katalon.menu.chatops" label="ChatOps">
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_FUzXYEVtEemrfdWg5nXJug" elementId="com.kms.katalon.directmenuitem.slackIntegration" label="Slack" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenSlackPluginPageHandler"/>
+        </children>
         <children xsi:type="menu:DirectMenuItem" xmi:id="_-m9sYEebEem6k_LppvmRLg" elementId="com.kms.katalon.directmenuitem.pluginrequest" label="Request" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenPluginRequestPageHandler"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_IjUoUNnnEeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window" label="Window">
