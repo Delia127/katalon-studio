@@ -2278,11 +2278,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 updateVariableManualView();
             }
 
-            if (invalidScheme == true) {
-                MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                        StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
-                return;
-            }
             saveVariables();
             saveVerificationScript();
             preSaving();
