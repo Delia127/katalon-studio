@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.out</target>
+    <filter class="com.kms.katalon.core.logging.logback.SystemOutFilter" />
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-40.40logger{39} - %msg{}%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.err</target>
+    <filter class="com.kms.katalon.core.logging.logback.SystemErrFilter" />
     <encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-40.40logger{39} - %msg{}%n</pattern>
     </encoder>
@@ -23,5 +32,6 @@
   
   <root level="error">
     <appender-ref ref="STDOUT" />
+    <appender-ref ref="STDERR" />
   </root>
 </configuration>

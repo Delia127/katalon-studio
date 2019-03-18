@@ -16,6 +16,7 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
 
+@Deprecated
 public class ShowUserFeedbackDialogHandler {
 
     private static final int APP_CLOSES_LIMIT = 4;

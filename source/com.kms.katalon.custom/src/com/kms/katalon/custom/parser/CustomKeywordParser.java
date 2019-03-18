@@ -3,6 +3,7 @@ package com.kms.katalon.custom.parser;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -11,16 +12,19 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -43,6 +47,7 @@ import groovyjarjarasm.asm.ClassVisitor;
 import groovyjarjarasm.asm.Label;
 import groovyjarjarasm.asm.MethodVisitor;
 import groovyjarjarasm.asm.Opcodes;
+import groovyjarjarasm.asm.Type;
 
 public class CustomKeywordParser {
 
@@ -77,39 +82,39 @@ public class CustomKeywordParser {
         generateCustomKeywordLibFile(libFolder);
     }
     
-    public void parsePluginKeywords(ClassLoader projectClassLoader, IFolder srcfolder, IFolder libFolder) throws Exception {
-        File srcDir = srcfolder.getRawLocation().toFile();
-        File[] jarFiles = srcDir.listFiles();
-        boolean devMode = false;
-        for (File pluginFile : jarFiles) {
-            if (!devMode && pluginFile.getName().endsWith(".jar")) {
+    public void parsePluginKeywords(ClassLoader projectClassLoader, List<File> pluginFiles, IFolder libFolder)
+            throws Exception {
+        for (File pluginFile : pluginFiles) {
+            if (pluginFile.getName().endsWith(".jar")) {
                 JarFile jar = new JarFile(pluginFile);
                 try {
                     ZipEntry jsonEntry = jar.getEntry("katalon-plugin.json");
-                    devMode = true;
-                    
+
                     if (jsonEntry != null) {
                         Reader reader = new InputStreamReader(jar.getInputStream(jsonEntry));
                         KeywordsManifest manifest = JsonUtil.fromJson(reader, KeywordsManifest.class);
-                        
+
                         List<String> keywords = manifest.getKeywords();
                         for (String keyword : keywords) {
                             String filePath = pluginFile.getAbsolutePath();
                             Class clazz = projectClassLoader.loadClass(keyword);
                             ClassNode classNode = new ClassNode(clazz);
-                            
-                            InputStream stream = projectClassLoader.getResourceAsStream(keyword.replace('.', '/') + ".class");
+
+                            InputStream stream = projectClassLoader
+                                    .getResourceAsStream(keyword.replace('.', '/') + ".class");
                             ClassReader classReader = new ClassReader(stream);
                             NamingMethodVisitor visitor = new NamingMethodVisitor(clazz);
                             classReader.accept(visitor, ClassReader.SKIP_FRAMES);
-                            
+
                             Map<String, List<String>> parametersMap = new HashMap<>();
                             classNode.getMethods().forEach(methodNode -> {
-                                List<String> paramNames = visitor.getParameterNames(methodNode.getName());
-                                parametersMap.put(methodNode.getName(), paramNames);
+                                String typesClassName = MethodUtils.getParametersDescriptor(methodNode);
+                                String methodName = methodNode.getName() + "#" + typesClassName;
+                                List<String> paramNames = visitor.getParameterNames(methodName);
+                                parametersMap.put(methodName, paramNames);
                             });
-                            CustomMethodNodeFactory.getInstance().addPluginMethodNodes(classNode.getName(), classNode.getMethods(),
-                                    filePath, parametersMap);
+                            CustomMethodNodeFactory.getInstance().addPluginMethodNodes(classNode.getName(),
+                                    classNode.getMethods(), filePath, parametersMap);
                         }
                     }
                 } catch (Exception e) {
