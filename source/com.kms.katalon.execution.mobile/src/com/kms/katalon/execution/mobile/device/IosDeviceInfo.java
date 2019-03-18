@@ -29,7 +29,7 @@ public class IosDeviceInfo extends MobileDeviceInfo {
 
     public static final String DEVICECONSOLE = "deviceconsole";
 
-    private static final String DEVICE_CONSOLE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + DEVICECONSOLE;
+    public static final String DEVICE_CONSOLE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + DEVICECONSOLE;
 
     protected String deviceClass = "";
 
@@ -133,12 +133,12 @@ public class IosDeviceInfo extends MobileDeviceInfo {
                 .isEquals();
     }
 
-    public static File getResourcesFolder() throws IOException {
+    public static File getToolsFolder() throws IOException {
         return getResourceFolder(RELATIVE_PATH_TO_TOOLS_FOLDER);
     }
 
     public static File getDeviceConsoleExecutablePath() throws IOException {
-        return new File(getResourceFolder(DEVICE_CONSOLE_FOLDER_RELATIVE_PATH), DEVICECONSOLE + "/deviceconsole");
+        return new File(getResourceFolder(DEVICE_CONSOLE_FOLDER_RELATIVE_PATH), DEVICECONSOLE + "/" + DEVICECONSOLE);
     }
 
     @Override
