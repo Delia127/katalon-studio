@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class ClassPathResolver {
@@ -50,7 +51,7 @@ public class ClassPathResolver {
         return pfBuildPathLocs;
     }
     
-    public static String[] getClassPaths(ProjectEntity project) throws IOException {
+    public static String[] getClassPaths(ProjectEntity project) throws IOException, ControllerException {
         ProjectBuildPath prjBuildpath = new ProjectBuildPath(project);
         List<String> classPathLocs = prjBuildpath.getClassPaths();
         classPathLocs.addAll(getPlatformBuildPathLocs());

@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -105,12 +106,12 @@ public class AnalyticsReportService implements AnalyticsComponent {
     private List<Path> scanFiles(String path) {
         List<Path> files = new ArrayList<>();
         try {
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
             addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_REPORT_FILE_EXTENSION_PATTERN));
             addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachScreenshot(), AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
             addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachLog(), AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
             addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachCapturedVideos(), AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
             addToList(files, scanHarFiles(path));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
         } catch (IOException e) {
             LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
         }
@@ -119,6 +120,9 @@ public class AnalyticsReportService implements AnalyticsComponent {
     
     private List<Path> scanHarFiles(String path) {
         List<Path> harFiles = scanFilesWithFilter(path, true,  AnalyticsStringConstants.ANALYTICS_HAR_FILE_EXTENSION_PATTERN);
+        if (harFiles == null || harFiles.isEmpty()) {
+            return Collections.emptyList();
+        }
         try {
             Path zipFile = FileUtils.createTemporaryFile(StringUtils.appendIfMissing(path, File.separator) + "katalon-analitics-tmp", "hars-", ".zip");
             Path harsZipFile = ZipUtil.compress(harFiles, zipFile);

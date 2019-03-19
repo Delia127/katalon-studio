@@ -18,11 +18,11 @@ public class KStorePlugin {
     
     private KStoreLicense licenseType;
     
-    private KStorePluginVersion currentVersion;
-    
-    private KStorePluginVersion latestVersion;
+    private KStorePluginVersion latestCompatibleVersion;
     
     private boolean expired;
+    
+    private String location;
 
     public long getId() {
         return id;
@@ -88,20 +88,12 @@ public class KStorePlugin {
         this.licenseType = licenseType;
     }
 
-    public KStorePluginVersion getCurrentVersion() {
-        return currentVersion;
+    public KStorePluginVersion getLatestCompatibleVersion() {
+        return latestCompatibleVersion;
     }
 
-    public void setCurrentVersion(KStorePluginVersion currentVersion) {
-        this.currentVersion = currentVersion;
-    }
-
-    public KStorePluginVersion getLatestVersion() {
-        return latestVersion;
-    }
-
-    public void setLatestVersion(KStorePluginVersion latestVersion) {
-        this.latestVersion = latestVersion;
+    public void setLatestCompatibleVersion(KStorePluginVersion latestCompatibleVersion) {
+        this.latestCompatibleVersion = latestCompatibleVersion;
     }
 
     public boolean isExpired() {
@@ -110,5 +102,13 @@ public class KStorePlugin {
 
     public void setExpired(boolean expired) {
         this.expired = expired;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

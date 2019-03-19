@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -36,6 +37,7 @@ import com.kms.katalon.integration.jira.JiraCredential;
 import com.kms.katalon.integration.jira.entity.JiraIssueType;
 import com.kms.katalon.integration.jira.entity.JiraProject;
 import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class JiraSettingsComposite implements JiraUIComponent {
 
@@ -68,6 +70,8 @@ public class JiraSettingsComposite implements JiraUIComponent {
     private Button chckAutoSubmitTestResult;
 
     private Button chckEncrypt;
+    
+    Button btnGetPlugin;
 
     private Composite settingComposite;
 
@@ -110,6 +114,13 @@ public class JiraSettingsComposite implements JiraUIComponent {
                 MessageDialog.openInformation(shell, StringConstants.INFO,
                         MessageFormat.format(ComposerJiraIntegrationMessageConstant.PREF_MSG_ACCOUNT_CONNECTED,
                                 result.getUser().getDisplayName()));
+            }
+        });
+        btnGetPlugin.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch("https://store.katalon.com/product/3/Jira-Integration");
+                Trackings.trackQuickDiscussion();
             }
         });
     }
@@ -177,17 +188,6 @@ public class JiraSettingsComposite implements JiraUIComponent {
     public Composite createContainer(Composite parent) {
         container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout());
-
-        Composite deprecatedComposite = new Composite(container, SWT.NONE);
-        deprecatedComposite.setLayout(noneMarginGridLayout());
-
-        Label deprecatedMessage = new Label(container, SWT.WRAP);
-        GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
-        layoutData.widthHint = 300;
-        deprecatedMessage.setLayoutData(layoutData);
-        deprecatedMessage.setImage(ImageConstants.IMG_20_WARNING_MSG);
-        deprecatedMessage.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_DEPRECATED);
-        deprecatedMessage.setBackground(ColorUtil.getWarningLogBackgroundColor());
         
         Composite contentComposite = new Composite(container, SWT.NONE);
         contentComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -197,18 +197,20 @@ public class JiraSettingsComposite implements JiraUIComponent {
         overridedComposite = new Composite(contentComposite, SWT.NONE);
         overridedComposite.setLayout(new GridLayout());
         Label lblOverriedSetting = new Label(overridedComposite, SWT.WRAP);
-        lblOverriedSetting.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_MOVE_SETTINGS);
+        lblOverriedSetting.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_MOVE_SETTINGS);    
+        lblOverriedSetting.setBackground(ColorUtil.getWarningLogBackgroundColor());
         GridData ldOverrideMessage = new GridData(SWT.FILL, SWT.TOP, true, false);
         ldOverrideMessage.widthHint = 300;
         lblOverriedSetting.setLayoutData(ldOverrideMessage);
 
         settingComposite = new Composite(contentComposite, SWT.NONE);
         settingComposite.setLayout(noneMarginGridLayout());
+        
+        createjiraPlugin(settingComposite);
 
         enablerComposite = new Composite(settingComposite, SWT.NONE);
         enablerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         enablerComposite.setLayout(new GridLayout());
-
         chckEnableIntegration = new Button(enablerComposite, SWT.CHECK);
         chckEnableIntegration.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         chckEnableIntegration.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_ENABLE_INTEGRATION);
@@ -219,7 +221,9 @@ public class JiraSettingsComposite implements JiraUIComponent {
         glMainComposite.marginWidth = 0;
         glMainComposite.marginHeight = 0;
         mainComposite.setLayout(glMainComposite);
-
+        
+        
+        
         createAuthenticationGroup();
 
         createSubmitOptionsGroup();
@@ -230,10 +234,35 @@ public class JiraSettingsComposite implements JiraUIComponent {
     private GridLayout noneMarginGridLayout() {
         GridLayout gl = new GridLayout();
         gl.marginHeight = 0;
-        gl.marginTop = 0;
+        gl.marginWidth = 0 ;
         return gl;
     }
 
+    private void createjiraPlugin(Composite parent){
+        Composite deprecatedComposite = new Composite(parent, SWT.NONE);
+        deprecatedComposite.setLayout(noneMarginGridLayout());
+        deprecatedComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        deprecatedComposite.setLayout(new GridLayout());
+        Group grpJiraPlugin = new Group(deprecatedComposite, SWT.NONE);
+        grpJiraPlugin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glGrpJiraPlugin = new GridLayout(1, false);
+        glGrpJiraPlugin.horizontalSpacing = 10;
+        glGrpJiraPlugin.marginWidth = 10;
+        GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
+        layoutData.widthHint = 300;
+        
+        grpJiraPlugin.setLayout(glGrpJiraPlugin);
+        grpJiraPlugin.setText("");
+        Label deprecatedMessage = new Label(grpJiraPlugin, SWT.WRAP); 
+        deprecatedMessage.setLayoutData(layoutData);
+        deprecatedMessage.setImage(ImageConstants.IMG_20_WARNING_MSG);
+        deprecatedMessage.setText(ComposerJiraIntegrationMessageConstant.JiraSettingsComposite_MSG_DEPRECATED);
+        deprecatedMessage.setBackground(ColorUtil.getWarningLogBackgroundColor());
+        new Label(grpJiraPlugin, SWT.NONE);
+        btnGetPlugin = new Button(grpJiraPlugin, SWT.NONE);
+        btnGetPlugin.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true, 1, 1));
+        btnGetPlugin.setText(ComposerJiraIntegrationMessageConstant.PREF_LBL_GETJIRAPLUGIN);
+    }
     private void createAuthenticationGroup() {
         Group grpAuthentication = new Group(mainComposite, SWT.NONE);
         grpAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));

@@ -31,7 +31,7 @@ public class ProjectFileServiceManager {
     private static final String MIGRATE_LEGACY_GLOBALVARIABLE_VS = "5.4.0";
 
     private static final String MIGRATE_SOURCE_CONTENT_VS = "5.7.0";
-    
+
     private static final String MIGRATE_INTERNAL_LOGGING_VS = "5.9.0";
 
     public static ProjectEntity addNewProject(String name, String description, short pageLoadTimeout,
@@ -52,13 +52,9 @@ public class ProjectFileServiceManager {
 
         GlobalVariableFileServiceManager.newProfile(ExecutionProfileEntity.DF_PROFILE_NAME, true,
                 Collections.emptyList(), project);
-        
+
         migrateNewIncludeFolder(project);
         migrateNewConfigFolder(project);
-
-        GroovyUtil.initGroovyProject(project,
-                FolderFileServiceManager.loadAllTestCaseDescendants(FolderFileServiceManager.getTestCaseRoot(project)),
-                null);
         return project;
     }
 
@@ -73,15 +69,6 @@ public class ProjectFileServiceManager {
         return null;
     }
 
-    public static ProjectEntity openProject(String projectFileLocation) throws Exception {
-        ProjectEntity project = openProjectWithoutClasspath(projectFileLocation);
-        if (project != null) {
-            GroovyUtil.openGroovyProject(project, FolderFileServiceManager
-                    .loadAllTestCaseDescendants(FolderFileServiceManager.getTestCaseRoot(project)));
-        }
-        return project;
-    }
-
     public static ProjectEntity openProjectWithoutClasspath(String projectFileLocation) throws Exception {
         File projectFile = new File(projectFileLocation);
         if (projectFile.isFile() && projectFile.exists()) {
@@ -91,21 +78,21 @@ public class ProjectFileServiceManager {
             FolderFileServiceManager.initRootEntityFolders(project);
 
             String migratedVersion = project.getMigratedVersion();
-            if (StringUtils.isEmpty(migratedVersion) ||
-                    VersionUtil.isNewer(MIGRATE_LEGACY_GLOBALVARIABLE_VS, migratedVersion)) {
+            if (StringUtils.isEmpty(migratedVersion)
+                    || VersionUtil.isNewer(MIGRATE_LEGACY_GLOBALVARIABLE_VS, migratedVersion)) {
                 migrateLegacyGlobalVariable(project);
                 project.setMigratedVersion(MIGRATE_LEGACY_GLOBALVARIABLE_VS);
 
                 EntityService.getInstance().saveEntity(project);
             }
 
-            if (StringUtils.isEmpty(migratedVersion) || 
-                    VersionUtil.isNewer(MIGRATE_SOURCE_CONTENT_VS, migratedVersion)) {
+            if (StringUtils.isEmpty(migratedVersion)
+                    || VersionUtil.isNewer(MIGRATE_SOURCE_CONTENT_VS, migratedVersion)) {
                 migrateNewIncludeFolder(project);
             }
-            
-            if (StringUtils.isEmpty(migratedVersion) ||
-                    VersionUtil.isNewer(MIGRATE_INTERNAL_LOGGING_VS, migratedVersion)) {
+
+            if (StringUtils.isEmpty(migratedVersion)
+                    || VersionUtil.isNewer(MIGRATE_INTERNAL_LOGGING_VS, migratedVersion)) {
                 migrateNewConfigFolder(project);
             }
 
@@ -120,31 +107,31 @@ public class ProjectFileServiceManager {
     }
 
     private static void migrateNewIncludeFolder(ProjectEntity project) throws Exception {
-        project.getSourceContent().addSourceFolder(
-                new SourceFolderConfiguration(FileServiceConstant.GROOVY_SCRIPTS_INCLUDE_FOLDER));
+        project.getSourceContent()
+                .addSourceFolder(new SourceFolderConfiguration(FileServiceConstant.GROOVY_SCRIPTS_INCLUDE_FOLDER));
 
-        project.getSourceContent().addSystemFolder(
-                new SystemFolderConfiguration(FileServiceConstant.GROOVY_SCRIPTS_INCLUDE_FOLDER));
-        project.getSourceContent().addSystemFolder(
-                new SystemFolderConfiguration(FileServiceConstant.FEATURES_INCLUDE_FOLDER));
+        project.getSourceContent()
+                .addSystemFolder(new SystemFolderConfiguration(FileServiceConstant.GROOVY_SCRIPTS_INCLUDE_FOLDER));
+        project.getSourceContent()
+                .addSystemFolder(new SystemFolderConfiguration(FileServiceConstant.FEATURES_INCLUDE_FOLDER));
 
         project.setMigratedVersion(MIGRATE_SOURCE_CONTENT_VS);
-        
+
         EntityService.getInstance().saveEntity(project);
     }
-    
+
     private static void migrateNewConfigFolder(ProjectEntity project) throws Exception {
-        project.getSourceContent().addSystemFolder(
-                new SystemFolderConfiguration(FileServiceConstant.CONFIG_INCLUDE_FOLDER));
-        
+        project.getSourceContent()
+                .addSystemFolder(new SystemFolderConfiguration(FileServiceConstant.CONFIG_INCLUDE_FOLDER));
+
         String projectLocation = project.getFolderLocation();
         File configFolder = new File(FileServiceConstant.getConfigFolderLocation(projectLocation));
         createDefaultLogConfigFile(configFolder);
-        
+
         project.setMigratedVersion(MIGRATE_INTERNAL_LOGGING_VS);
         EntityService.getInstance().saveEntity(project);
     }
-    
+
     private static void createDefaultLogConfigFile(File configFolder) {
         if (configFolder == null || !configFolder.exists()) {
             return;
@@ -158,8 +145,7 @@ public class ProjectFileServiceManager {
                 URL templateFileUrl = FileLocator.find(bundle, templateFilePath, null);
                 FileUtils.copyURLToFile(FileLocator.toFileURL(templateFileUrl), configFile);
             }
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
     }
 
     private static void migrateLegacyGlobalVariable(ProjectEntity project) throws Exception {
@@ -223,8 +209,8 @@ public class ProjectFileServiceManager {
         }
     }
 
-    public static ProjectEntity newProjectEntity(String name, String description, String projectLocation, boolean legacy)
-            throws DALException {
+    public static ProjectEntity newProjectEntity(String name, String description, String projectLocation,
+            boolean legacy) throws DALException {
         // remove the "\\" post-fix
         if (projectLocation.endsWith(File.separator)) {
             projectLocation = projectLocation.substring(0, projectLocation.length() - 1);

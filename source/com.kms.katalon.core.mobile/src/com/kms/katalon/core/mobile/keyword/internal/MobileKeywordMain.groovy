@@ -20,7 +20,7 @@ public class MobileKeywordMain {
         try {
             return closure.call();
         } catch (Throwable e) {
-            stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e), takeScreenShot);
+            stepFailed(errorMessage, flowControl, e, takeScreenShot);
         }
     }
     
@@ -29,13 +29,13 @@ public class MobileKeywordMain {
         try {
             return (int) closure.call();
         } catch (Throwable e) {
-            stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e), takeScreenShot);
+            stepFailed(errorMessage, flowControl, e, takeScreenShot);
         }
         return -1;
     }
 
     @CompileStatic
-    public static stepFailed(String message, FailureHandling flHandling, String reason, boolean takeScreenShot)
+    public static stepFailed(String message, FailureHandling flHandling, Throwable e, boolean takeScreenShot)
             throws StepFailedException {
         KeywordMain.stepFailed(message, flHandling, null, new MobileScreenCaptor().takeScreenshotAndGetAttributes(takeScreenShot));
     }

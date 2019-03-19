@@ -3,6 +3,7 @@ package com.kms.katalon.execution.classpath;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +12,8 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
@@ -20,6 +23,8 @@ import com.kms.katalon.util.CryptoUtil;
 
 public class ProjectBuildPath {
     private static final String EXTERNAL_DRIVERS_FOLDER = "Drivers";
+    
+    private static final String PLUGINS_FOLDER = "Plugins";
 
     public static final String DF_OUT_PUT_LOC = "bin";
 
@@ -66,6 +71,39 @@ public class ProjectBuildPath {
             }
         };
     }
+    
+    public List<IBuildPath> getCustomKeywordPaths() throws ControllerException {
+        List<File> customKeywordPluginFiles = ProjectController.getInstance().getCustomKeywordPlugins(project);
+        List<IBuildPath> customKeywordBuildPaths = new ArrayList<>();
+        for (File jarFile : customKeywordPluginFiles) {
+            BuildPathEntry jarFileEntry = new BuildPathEntry(jarFile.getAbsolutePath());
+            customKeywordBuildPaths.add(jarFileEntry);
+        }
+        return customKeywordBuildPaths;
+    }
+    
+    public List<String> getCustomKeywordPathLocations() throws ControllerException, IOException {
+        List<String> customKeywordPluginPaths = new ArrayList<>();
+        for (IBuildPath entryBuildPath : getCustomKeywordPaths()) {
+            customKeywordPluginPaths.add(entryBuildPath.getBuildPathLocation());
+        }
+        return customKeywordPluginPaths;
+    }
+    
+    public List<String> getCustomKeywordPluginPathLocations() {
+        List<String> pluginPaths = new ArrayList<>();
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        File pluginDirectory = new File(project.getFolderLocation(), PLUGINS_FOLDER);
+        if (pluginDirectory.exists()) {
+            File[] jarFiles = pluginDirectory.listFiles();
+            Arrays.asList(jarFiles)
+                .stream()
+                .filter(f -> f.getName().endsWith(".jar"))
+                .findFirst()
+                .ifPresent(f -> pluginPaths.add(f.getAbsolutePath()));
+        }
+        return pluginPaths;
+    }
 
     public List<BundleBuildPath> getBundleBuildpaths() {
         List<BundleBuildPath> bundlePaths = new ArrayList<BundleBuildPath>();
@@ -107,10 +145,12 @@ public class ProjectBuildPath {
         return bundleBpLocs;
     }
     
-    public List<String> getClassPaths() throws IOException {
+    public List<String> getClassPaths() throws IOException, ControllerException {
         List<String> classPaths = new ArrayList<String>();
         classPaths.addAll(getBundleBuildPathLoc());
         classPaths.addAll(getExternalBuildPathLoc());
+        classPaths.addAll(getCustomKeywordPathLocations());
+        classPaths.addAll(getCustomKeywordPluginPathLocations());
         return classPaths;
     }
 

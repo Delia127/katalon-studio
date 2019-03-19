@@ -26,7 +26,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
-
+@Deprecated
 public class InAppSurveyDialog extends Dialog {
 	protected boolean shouldShowDialogAgain;
     

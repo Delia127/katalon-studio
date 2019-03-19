@@ -209,8 +209,6 @@ import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 
-import mnita.ansiconsole.participants.AnsiConsoleStyleListener;
-
 public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent,
         VerificationScriptEventHandler {
 
@@ -1782,7 +1780,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         txtVerificationLog.setEditable(false);
         txtVerificationLog.setBackground(ColorUtil.getWhiteBackgroundColor());
         txtVerificationLog.setFont(FONT_CONSOLAS_10);
-        txtVerificationLog.addLineStyleListener(new AnsiConsoleStyleListener());
     }
 
     private void createResponseStatusComposite() {
