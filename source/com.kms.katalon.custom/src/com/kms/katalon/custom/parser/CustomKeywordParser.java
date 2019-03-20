@@ -38,6 +38,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
+import com.kms.katalon.custom.factory.PluginTestListenerFactory;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
 
 import groovy.lang.GroovyClassLoader;
@@ -115,6 +116,11 @@ public class CustomKeywordParser {
                             });
                             CustomMethodNodeFactory.getInstance().addPluginMethodNodes(classNode.getName(),
                                     classNode.getMethods(), filePath, parametersMap);
+                        }
+                        
+                        List<String> listeners = manifest.getListeners();
+                        for (String listener : listeners) {
+                            PluginTestListenerFactory.getInstance().addListener(listener);
                         }
                     }
                 } catch (Exception e) {
