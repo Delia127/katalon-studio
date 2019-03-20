@@ -132,13 +132,17 @@ public class IosDeviceInfo extends MobileDeviceInfo {
                 .append(this.deviceType, other.deviceType)
                 .isEquals();
     }
+    
+    public static File getDeviceConsoleFolder() throws IOException {
+        return getResourceFolder(DEVICE_CONSOLE_FOLDER_RELATIVE_PATH);
+    }
 
     public static File getToolsFolder() throws IOException {
         return getResourceFolder(RELATIVE_PATH_TO_TOOLS_FOLDER);
     }
 
     public static File getDeviceConsoleExecutablePath() throws IOException {
-        return new File(getResourceFolder(DEVICE_CONSOLE_FOLDER_RELATIVE_PATH), DEVICECONSOLE + "/" + DEVICECONSOLE);
+        return new File(getResourceFolder(DEVICE_CONSOLE_FOLDER_RELATIVE_PATH), DEVICECONSOLE);
     }
 
     @Override
