@@ -92,7 +92,7 @@ public class MobileDeviceProvider {
             return Collections.emptyList();
         }
         List<IosDeviceInfo> iosDevices = new ArrayList<>();
-        List<String> deviceIds = IosDeviceInfo.executeCommand("./idevice_id -l");
+        List<String> deviceIds = IosDeviceInfo.executeCommand("idevice_id -l");
 
         for (String deviceId : deviceIds) {
             iosDevices.add(new IosDeviceInfo(deviceId));
