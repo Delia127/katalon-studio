@@ -6,7 +6,6 @@ import java.io.PrintStream;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.Proxy;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -20,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Alert;
-import org.openqa.selenium.BuildInfo;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchWindowException;
@@ -31,6 +29,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
+import org.openqa.selenium.firefox.ExtensionConnection;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -39,6 +38,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.ie.InternetExplorerOptions;
+import org.openqa.selenium.internal.BuildInfo;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.CommandExecutor;
@@ -48,8 +48,8 @@ import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient;
-import org.openqa.selenium.remote.http.HttpClient.Builder;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
+import org.openqa.selenium.remote.internal.ApacheHttpClient;
 import org.openqa.selenium.safari.SafariDriver;
 
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
@@ -62,7 +62,6 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.network.ProxyInformation;
-import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
@@ -344,33 +343,18 @@ public class DriverFactory {
         
         URL url = new URL(remoteWebServerUrl);
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo));
+        HttpClientBuilder clientBuilder = HttpClientProxyBuilder.create(proxyInfo).getClientBuilder();
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(clientBuilder);
         HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>() ,
                 url, clientFactory);
         return executor;
     }
     
-    private static Factory getClientFactoryForRemoteDriverExecutor(Proxy proxy) {
+    private static Factory getClientFactoryForRemoteDriverExecutor(HttpClientBuilder clientBuilder) {
         return new Factory() {
-            
-            private org.openqa.selenium.remote.internal.OkHttpClient.Factory factory;
-            {
-                factory = new org.openqa.selenium.remote.internal.OkHttpClient.Factory();
-            }
-
             @Override
             public HttpClient createClient(URL url) {
-                return Factory.super.createClient(url);
-            }
-            
-            @Override
-            public void cleanupIdleClients() {
-                factory.cleanupIdleClients();
-            }
-            
-            @Override
-            public org.openqa.selenium.remote.internal.OkHttpClient.Builder builder() {
-                return factory.builder().proxy(proxy);
+                return new ApacheHttpClient(clientBuilder.build(), url);
             }
         };
     }
@@ -497,6 +481,9 @@ public class DriverFactory {
         CommandExecutor commandExecutor = remoteWebDriver.getCommandExecutor();
         if (commandExecutor instanceof HttpCommandExecutor) {
             return ((HttpCommandExecutor) commandExecutor).getAddressOfRemoteServer().toString();
+        }
+        if (commandExecutor instanceof ExtensionConnection) {
+            return ((ExtensionConnection) commandExecutor).getAddressOfRemoteServer().toString();
         }
         return StringUtils.EMPTY;
     }

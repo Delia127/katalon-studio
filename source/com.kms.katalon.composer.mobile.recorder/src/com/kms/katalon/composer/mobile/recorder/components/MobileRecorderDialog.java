@@ -260,7 +260,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         return container;
     }
-
+    
     @Override
     protected Control createButtonBar(Composite parent) {
         Control buttonBar = super.createButtonBar(parent);
@@ -276,7 +276,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 break;
             }
         }
-
+        
         return buttonBar;
     }
 
@@ -307,11 +307,11 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             return;
         }
         targetFolderEntity = dialog.getSelectedFolderTreeEntity();
-
+        
         int recordedActionCount = getRecordedActions().size();
-
+        
         super.okPressed();
-
+        
         Trackings.trackCloseRecord("mobile", "ok", recordedActionCount);
     }
 
@@ -866,8 +866,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             targetElementChanged(null);
             recordedActions.add(buildStartAppActionMapping());
             actionTableViewer.refresh();
-
-            // send event for tracking
+            
+            //send event for tracking
             Trackings.trackRecord("mobile");
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
@@ -875,13 +875,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 Throwable targetException = ((InvocationTargetException) ex).getTargetException();
                 String message = (targetException instanceof java.util.concurrent.ExecutionException)
                         ? targetException.getCause().getMessage() : targetException.getMessage();
-                UISynchronizeService.syncExec(() -> {
-                    MessageDialogWithLink.openError(Display.getCurrent().getActiveShell(),
-                            MobileRecorderStringConstants.ERROR,
-                            MobileRecoderMessagesConstants.MSG_ERR_CANNOT_START_APP + ": " + message + "\n<a href=\""
-                                    + MobileRecorderStringConstants.URL_TROUBLESHOOTING_MOBILE_TESTING + "\">"
-                                    + MobileRecorderStringConstants.APPIUM_INSTALLATION_GUIDE_MSG + "</a>");
-                });
+                MessageDialogWithLink.openError(Display.getCurrent().getActiveShell(), MobileRecorderStringConstants.ERROR, MobileRecoderMessagesConstants.MSG_ERR_CANNOT_START_APP + ": " + message + "\n<a href=\"" + MobileRecorderStringConstants.URL_TROUBLESHOOTING_MOBILE_TESTING + "\">" + MobileRecorderStringConstants.APPIUM_INSTALLATION_GUIDE_MSG + "</a>");
             }
 
             // Enable start button and show error dialog if application cannot start

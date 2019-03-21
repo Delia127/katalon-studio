@@ -45,7 +45,11 @@ public class IosDriverConnector extends MobileDriverConnector {
 	@Override
     public Map<String, Object> getSystemProperties() {
         Map<String, Object> systemProperties = super.getSystemProperties();
-        systemProperties.put(StringConstants.XML_LOG_DEVICE_CONSOLE_PATH_PROPERTY, IosDeviceInfo.DEVICE_CONSOLE_FOLDER_RELATIVE_PATH);
+        try {
+            systemProperties.put(StringConstants.XML_LOG_DEVICE_CONSOLE_PATH_PROPERTY, IosDeviceInfo.getDeviceConsoleExecutablePath().getAbsolutePath());
+        } catch (IOException e) {
+            LogUtil.logError(e);;
+        }
         return systemProperties;
     }
 }
