@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.Properties;
+import java.util.logging.Logger;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -22,7 +24,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
-import org.seleniumhq.jetty9.util.log.Log;
 
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -121,7 +122,7 @@ public class ConsoleMain {
 
             ProjectEntity project = findProject(options);
             if (System.getProperty("user.dir").equals(project.getFolderLocation())) {
-                Log.getLogger("Warning! Please run katalon command execution outside of project folder");
+                Logger.getLogger("Warning! Please run katalon command execution outside of project folder");
                 return 0;
             }
 //            Trackings.trackOpenApplication(project,
