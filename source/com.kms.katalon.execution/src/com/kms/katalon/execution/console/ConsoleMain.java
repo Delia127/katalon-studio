@@ -118,30 +118,37 @@ public class ConsoleMain {
                     applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
                 }
             }
-
+            
             ProjectEntity project = findProject(options);
+            LogUtil.printErrorLine(System.getProperty("user.dir"));
             if (System.getProperty("user.dir").equals(project.getFolderLocation())) {
                 LogUtil.printErrorLine("Warning! Please run katalon command execution outside of the project folder");
                 return LauncherResult.RETURN_CODE_ERROR;
             }
-//            Trackings.trackOpenApplication(project,
-//                    !ActivationInfoCollector.isActivated(), "console");
-            setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
-            
-            // Project information is necessary to accept overriding parameters for that project
-            acceptConsoleOptionList(parser, 
-            		new OverridingParametersConsoleOptionContributor(project).getConsoleOptionList());
-            
-            // Parse all arguments before execute
-            options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
-            
-            consoleExecutor.execute(project, options);
-            
-            waitForExecutionToFinish(options);
+           
+            else{
+                
+                // Trackings.trackOpenApplication(project,
+                // !ActivationInfoCollector.isActivated(), "console");
+                setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
 
-            List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
-            int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
-            return exitCode;
+                // Project information is necessary to accept overriding
+                // parameters for that project
+                acceptConsoleOptionList(parser,
+                        new OverridingParametersConsoleOptionContributor(project).getConsoleOptionList());
+
+                // Parse all arguments before execute
+                options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
+
+                consoleExecutor.execute(project, options);
+
+                waitForExecutionToFinish(options);
+
+                List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
+                int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
+                return exitCode;
+            }
+
         } catch (InvalidConsoleArgumentException e) {
             LogUtil.printErrorLine(e.getMessage());
             return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
