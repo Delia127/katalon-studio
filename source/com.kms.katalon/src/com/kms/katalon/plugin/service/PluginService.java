@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -23,6 +24,7 @@ import org.osgi.framework.BundleException;
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -31,9 +33,11 @@ import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.util.ZipManager;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreCredentials;
@@ -210,7 +214,21 @@ public class PluginService {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
         List<KStorePlugin> latestPlugins = restClient.getLatestPlugins(appVersion);
+        latestPlugins.stream().forEach(p -> logPluginInfo(p));
         return latestPlugins;
+    }
+    
+    private void logPluginInfo(KStorePlugin plugin) {
+        Map<String, Object> infoMap = new HashMap<>(); 
+        infoMap.put("id", plugin.getId());
+        infoMap.put("productId", plugin.getProduct().getId());
+        infoMap.put("name", plugin.getProduct().getName());
+        infoMap.put("expired", plugin.isExpired());
+        if (ApplicationRunningMode.get() == RunningMode.GUI) {
+            LoggerSingleton.logInfo("Plugin info: " + JsonUtil.toJson(infoMap));
+        } else {
+            LogUtil.printOutputLine("Plugin info: " + JsonUtil.toJson(infoMap));
+        }
     }
     
     private Bundle platformInstall(String pluginPath) throws BundleException {
