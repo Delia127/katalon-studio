@@ -219,16 +219,18 @@ public class PluginService {
     }
     
     private void logPluginInfo(KStorePlugin plugin) {
-        Map<String, Object> infoMap = new HashMap<>(); 
-        infoMap.put("id", plugin.getId());
-        infoMap.put("productId", plugin.getProduct().getId());
-        infoMap.put("name", plugin.getProduct().getName());
-        infoMap.put("expired", plugin.isExpired());
-        if (ApplicationRunningMode.get() == RunningMode.GUI) {
-            LoggerSingleton.logInfo("Plugin info: " + JsonUtil.toJson(infoMap));
-        } else {
-            LogUtil.printOutputLine("Plugin info: " + JsonUtil.toJson(infoMap));
-        }
+        try {
+            Map<String, Object> infoMap = new HashMap<>(); 
+            infoMap.put("id", plugin.getId());
+            infoMap.put("productId", plugin.getProduct().getId());
+            infoMap.put("name", plugin.getProduct().getName());
+            infoMap.put("expired", plugin.isExpired());
+            if (ApplicationRunningMode.get() == RunningMode.GUI) {
+                LoggerSingleton.logInfo("Plugin info: " + JsonUtil.toJson(infoMap));
+            } else {
+                LogUtil.printOutputLine("Plugin info: " + JsonUtil.toJson(infoMap));
+            }
+        } catch (Exception ignored) {}
     }
     
     private Bundle platformInstall(String pluginPath) throws BundleException {
