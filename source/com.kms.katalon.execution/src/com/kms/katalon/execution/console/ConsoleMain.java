@@ -22,6 +22,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
+import org.seleniumhq.jetty9.util.log.Log;
 
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -119,6 +120,10 @@ public class ConsoleMain {
             }
 
             ProjectEntity project = findProject(options);
+            if (System.getProperty("user.dir").equals(project.getFolderLocation())) {
+                Log.getLogger("Warning! Please run katalon command execution outside of project folder");
+                return 0;
+            }
 //            Trackings.trackOpenApplication(project,
 //                    !ActivationInfoCollector.isActivated(), "console");
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
