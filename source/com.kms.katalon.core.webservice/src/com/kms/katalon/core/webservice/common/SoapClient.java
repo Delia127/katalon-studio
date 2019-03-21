@@ -154,7 +154,6 @@ public class SoapClient extends BasicRequestor {
         }
         con.setRequestMethod(POST);
         con.setDoOutput(true);
-
         con.setRequestProperty(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
         con.setRequestProperty(SOAP_ACTION, actionUri);
         
