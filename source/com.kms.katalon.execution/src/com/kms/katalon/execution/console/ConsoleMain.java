@@ -119,9 +119,11 @@ public class ConsoleMain {
                 }
             }
             
+            System.out.println(System.getProperty("user.dir"));
             ProjectEntity project = findProject(options);
-            LogUtil.printErrorLine(System.getProperty("user.dir"));
-            if (System.getProperty("user.dir").equals(project.getFolderLocation())) {
+
+            String system = System.getProperty("user.dir");
+            if (system.equals(project.getFolderLocation())) {
                 LogUtil.printErrorLine("Warning! Please run katalon command execution outside of the project folder");
                 return LauncherResult.RETURN_CODE_ERROR;
             }
