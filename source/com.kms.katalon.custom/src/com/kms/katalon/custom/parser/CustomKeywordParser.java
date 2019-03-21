@@ -1,18 +1,14 @@
 package com.kms.katalon.custom.parser;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.net.URLClassLoader;
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,12 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -39,18 +33,16 @@ import org.eclipse.jdt.core.JavaCore;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 import com.kms.katalon.custom.factory.PluginTestListenerFactory;
+import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
+import com.kms.katalon.logging.LogUtil;
 
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 import groovyjarjarasm.asm.ClassReader;
-import groovyjarjarasm.asm.ClassVisitor;
-import groovyjarjarasm.asm.Label;
-import groovyjarjarasm.asm.MethodVisitor;
-import groovyjarjarasm.asm.Opcodes;
-import groovyjarjarasm.asm.Type;
 
 public class CustomKeywordParser {
 
@@ -64,7 +56,7 @@ public class CustomKeywordParser {
     private static CustomKeywordParser _instance;
 
     private static List<MethodNode> methodNodes = new ArrayList<MethodNode>();
-    
+
     private CustomKeywordParser() {
     }
 
@@ -75,18 +67,18 @@ public class CustomKeywordParser {
         return _instance;
     }
 
-    public void parseAllCustomKeywords(IFolder srcfolder, IFolder libFolder) throws Exception {
+    public void parseProjectCustomKeywords(IFolder srcfolder, IFolder libFolder) throws Exception {
         CustomMethodNodeFactory.getInstance().reset();
-        List<IFile> customKeywordFiles = getAllCustomKeywordFiles(srcfolder);
+        List<IFile> customKeywordFiles = getProjectCustomKeywordFiles(srcfolder);
         for (IFile file : customKeywordFiles) {
             parseCustomKeywordFile(file, libFolder, false);
         }
 
         generateCustomKeywordLibFile(libFolder);
     }
-    
-    public void parsePluginKeywords(ClassLoader projectClassLoader, List<File> pluginFiles, IFolder libFolder)
-            throws Exception {
+
+    public void parsePluginKeywords(ClassLoader projectClassLoader, List<File> pluginFiles, IFolder libFolder,
+            boolean isDev) throws Exception {
         for (File pluginFile : pluginFiles) {
             if (pluginFile.getName().endsWith(".jar")) {
                 JarFile jar = new JarFile(pluginFile);
@@ -96,12 +88,36 @@ public class CustomKeywordParser {
                     if (jsonEntry != null) {
                         Reader reader = new InputStreamReader(jar.getInputStream(jsonEntry));
                         KeywordsManifest manifest = JsonUtil.fromJson(reader, KeywordsManifest.class);
+                        CustomKeywordPlugin plugin = null;
+                        if (isDev) {
+                            plugin = CustomKeywordPluginFactory.getInstance().getDevPlugin();
+
+                            LogUtil.printOutputLine(
+                                    MessageFormat.format("Custom keyword plugin found: {0}. Manifest content:\n{1}",
+                                            pluginFile.getName(), JsonUtil.toJson(manifest)));
+                        } else {
+                            plugin = CustomKeywordPluginFactory.getInstance().getByPath(pluginFile.getCanonicalPath());
+                        }
+                        if (plugin == null) {
+                            LogUtil.logErrorMessage(
+                                    "Could not load Custom Keywords for plugin: " + pluginFile.getName());
+                            return;
+                        }
+                        plugin.setKeywordsManifest(manifest);
 
                         Set<String> keywords = new LinkedHashSet<String>();
                         keywords.addAll(manifest.getKeywords());
                         for (String keyword : keywords) {
                             String filePath = pluginFile.getAbsolutePath();
-                            Class clazz = projectClassLoader.loadClass(keyword);
+                            Class<?> clazz = null;
+                            try {
+                                clazz = projectClassLoader.loadClass(keyword);
+                            } catch (ClassNotFoundException e) {
+                                LogUtil.logError(e,
+                                        MessageFormat.format("Could not load class: {0} of custom plugin keyword: {1}",
+                                                keyword, pluginFile.getName()));
+                                continue;
+                            }
                             ClassNode classNode = new ClassNode(clazz);
 
                             InputStream stream = projectClassLoader
@@ -127,7 +143,7 @@ public class CustomKeywordParser {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.printAndLogError(e);
                 } finally {
                     jar.close();
                 }
@@ -137,10 +153,11 @@ public class CustomKeywordParser {
         generateCustomKeywordLibFile(libFolder);
     }
 
-    public List<Method> parseAllCustomKeywordsIntoAst(URLClassLoader classLoader, IFolder srcfolder) throws Exception {
-        CustomMethodNodeFactory.getInstance().reset();
+    public List<Method> parseProjectCustomKeywordsIntoAst(URLClassLoader classLoader, IFolder srcfolder)
+            throws Exception {
+
         List<Method> allMethods = new ArrayList<Method>();
-        List<IFile> customKeywordFiles = getAllCustomKeywordFiles(srcfolder);
+        List<IFile> customKeywordFiles = getProjectCustomKeywordFiles(srcfolder);
         for (IFile file : customKeywordFiles) {
             allMethods.addAll(parseCustomKeywordFileIntoAst(classLoader, file));
         }
@@ -185,8 +202,8 @@ public class CustomKeywordParser {
         }
         return Collections.emptyList();
     }
-    
-    public List<Method> parsePluginKeywordsIntoAst(URLClassLoader classLoader, IFolder srcfolder)throws Exception {
+
+    public List<Method> parsePluginKeywordsIntoAst(URLClassLoader classLoader, IFolder srcfolder) throws Exception {
         File srcDir = srcfolder.getRawLocation().toFile();
         File[] jarFiles = srcDir.listFiles();
         List<Method> methods = new ArrayList<>();
@@ -203,14 +220,14 @@ public class CustomKeywordParser {
         });
         return methods;
     }
-    
+
     public List<Method> parsePluginKeywordJarIntoAst(URLClassLoader classLoader, File pluginFile) throws Exception {
         List<Method> methods = new ArrayList<>();
         if (pluginFile.exists() && pluginFile.getName().endsWith(".jar") && classLoader instanceof GroovyClassLoader) {
             JarFile jar = new JarFile(pluginFile);
             try {
                 ZipEntry jsonEntry = jar.getEntry("katalon-plugin.json");
-                
+
                 if (jsonEntry != null) {
                     Reader reader = new InputStreamReader(jar.getInputStream(jsonEntry));
                     KeywordsManifest manifest = JsonUtil.fromJson(reader, KeywordsManifest.class);
@@ -288,7 +305,7 @@ public class CustomKeywordParser {
         generateCustomKeywordLibFile(libFolder);
     }
 
-    private List<IFile> getAllCustomKeywordFiles(IFolder folder) throws Exception {
+    private List<IFile> getProjectCustomKeywordFiles(IFolder folder) throws Exception {
         List<IFile> children = new ArrayList<IFile>();
         for (IResource resource : folder.members()) {
             if (resource instanceof IFile) {
@@ -297,7 +314,7 @@ public class CustomKeywordParser {
                     children.add((IFile) resource);
                 }
             } else if (resource instanceof IFolder) {
-                children.addAll(getAllCustomKeywordFiles((IFolder) resource));
+                children.addAll(getProjectCustomKeywordFiles((IFolder) resource));
             }
         }
         return children;

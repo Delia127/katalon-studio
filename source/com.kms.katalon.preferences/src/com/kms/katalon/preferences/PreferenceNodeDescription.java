@@ -8,6 +8,8 @@ public interface PreferenceNodeDescription {
     String getNodeName();
 
     String getParentNodeId();
-    
-    String getPreferencePageClassName();
+
+    boolean hasPage();
+
+    PreferencePageBuilder getBuilder();
 }

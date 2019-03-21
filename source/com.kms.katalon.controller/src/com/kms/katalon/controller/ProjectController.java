@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -20,6 +19,8 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.controller.exception.ControllerException;
+import com.kms.katalon.core.annotation.Keyword;
+import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.state.DataProviderState;
@@ -74,6 +75,9 @@ public class ProjectController extends EntityController {
                 }
                 SubMonitor progress = SubMonitor.convert(monitor, 100);
                 DataProviderState.getInstance().setCurrentProject(project);
+
+                KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+
                 GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project),
                         progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 addRecentProject(project);
@@ -107,6 +111,10 @@ public class ProjectController extends EntityController {
                 .openProjectWithoutClasspath(projectPk);
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
+            
+            LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
+            KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+
             GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
             addRecentProject(project);
             LogUtil.printOutputLine("Generating global variables...");
@@ -312,6 +320,6 @@ public class ProjectController extends EntityController {
     }
 
     public List<File> getCustomKeywordPlugins(ProjectEntity project) throws ControllerException {
-        return CustomKeywordPluginFactory.getInstance().getPluginFiles();
+        return CustomKeywordPluginFactory.getInstance().getAllPluginFiles();
     }
 }
