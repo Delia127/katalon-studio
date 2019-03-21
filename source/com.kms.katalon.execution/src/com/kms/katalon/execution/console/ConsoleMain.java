@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -122,8 +121,8 @@ public class ConsoleMain {
 
             ProjectEntity project = findProject(options);
             if (System.getProperty("user.dir").equals(project.getFolderLocation())) {
-                Logger.getLogger("Warning! Please run katalon command execution outside of project folder");
-                return 0;
+                LogUtil.printErrorLine("Warning! Please run katalon command execution outside of the project folder");
+                return LauncherResult.RETURN_CODE_ERROR;
             }
 //            Trackings.trackOpenApplication(project,
 //                    !ActivationInfoCollector.isActivated(), "console");
