@@ -199,6 +199,7 @@ public class MobileDriverFactory {
             driverPreferences.remove(MobileCapabilityType.BROWSER_NAME);
         }
         if (driverPreferences != null && osType == MobileDriverType.IOS_DRIVER) {
+            AppiumDriverManager.pairDevice(deviceId);
             capabilities
                     .merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
