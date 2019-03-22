@@ -40,7 +40,6 @@ import org.openqa.selenium.support.ui.Select;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
-import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
@@ -893,6 +892,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 	 *         otherwise
 	 * @throws IOException
 	 *             If an exception during I/O occurs
+	 * @throws InterruptedException 
 	 */
 	public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
 			throws IOException {
@@ -903,12 +903,13 @@ public class WebUiCommonHelper extends KeywordHelper {
 		// Get the location of element on the page
 		Point point = ele.getLocation();
 
-		// Get width and height of the element
-		int eleWidth = ele.getSize().getWidth();
-		int eleHeight = ele.getSize().getHeight();
-
 		// Crop the entire page screenshot to get only element screenshot
-		BufferedImage eleScreenshot = fullImg.getSubimage(point.getX(), point.getY(), eleWidth, eleHeight);
+		double devicePixelRatio = getDevicePixelRatio(driver);
+		int eleX = (int) Math.round(point.getX() * devicePixelRatio);
+		int eleY = (int) Math.round(point.getY() * devicePixelRatio);
+		int eleWidth = (int) Math.round(ele.getSize().getWidth() * devicePixelRatio);
+        int eleHeight = (int) Math.round(ele.getSize().getHeight() * devicePixelRatio);
+		BufferedImage eleScreenshot = fullImg.getSubimage(eleX, eleY, eleWidth, eleHeight);
 		ImageIO.write(eleScreenshot, "png", screenshot);
 		// Copy the element screenshot to internal folder
 		String screenshotPath = path;
@@ -925,6 +926,20 @@ public class WebUiCommonHelper extends KeywordHelper {
 		// Delete temporary image
 		screenshot.deleteOnExit();
 		return screenshotPath;
+	}
+	
+	private static double getDevicePixelRatio(WebDriver driver) {
+	    JavascriptExecutor js = (JavascriptExecutor) driver;
+        Object executeScriptValue = js.executeScript("return window.devicePixelRatio;");
+        double devicePixelRatio = 1;
+        try {
+            if (executeScriptValue != null) {
+                devicePixelRatio = Double.valueOf(executeScriptValue.toString());
+            }
+        } catch (NumberFormatException e) {
+            devicePixelRatio = 1;
+        }
+        return devicePixelRatio;
 	}
 	    
     @SuppressWarnings("unused")
