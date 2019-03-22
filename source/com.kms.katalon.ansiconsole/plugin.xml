@@ -5,4 +5,9 @@
          <enablement />
       </consolePatternMatchListener>
    </extension>
+   <extension point="org.eclipse.ui.console.consolePatternMatchListeners">
+      <consolePatternMatchListener class="com.kms.katalon.ansiconsole.listeners.SmartXPathPatternMatchListenerDelegate" id="com.kms.katalon.ansiconsole.smartXPathLinkyConsolePatternMatchListener" regex="\[SMART_XPATH\]\sScreenshot:\s(.*)">
+         <enablement />
+      </consolePatternMatchListener>
+   </extension>
 </plugin>
