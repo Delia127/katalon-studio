@@ -558,11 +558,11 @@ public class RunConfiguration {
     }
     
     public static List<String> getPluginTestListeners() {
-        List<String> testListeners = (List<String>) getProperty(PLUGIN_TEST_LISTENERS);
-        if (testListeners == null) {
-            testListeners = new ArrayList<>();
+        Object testListeners = getProperty(PLUGIN_TEST_LISTENERS);
+        if (testListeners != null) {
+            return (List<String>) testListeners;
         }
-        return testListeners;
+        return Collections.emptyList();
     }
     
     public static String getOverridingGlobalVariable(String globalVariableName){
