@@ -896,40 +896,40 @@ public class WebUiCommonHelper extends KeywordHelper {
 	 */
 	public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
 			throws IOException {
-		// Get entire page screenshot
-		File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-		BufferedImage fullImg = ImageIO.read(screenshot);
+        // Get entire page screenshot
+        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        BufferedImage fullImg = ImageIO.read(screenshot);
 
-		// Get the location of element on the page
-		Point point = ele.getLocation();
+        // Get the location of element on the page
+        Point point = ele.getLocation();
 
-		// Crop the entire page screenshot to get only element screenshot
-		double devicePixelRatio = getDevicePixelRatio(driver);
-		int eleX = (int) Math.round(point.getX() * devicePixelRatio);
-		int eleY = (int) Math.round(point.getY() * devicePixelRatio);
-		int eleWidth = (int) Math.round(ele.getSize().getWidth() * devicePixelRatio);
+        // Crop the entire page screenshot to get only element screenshot
+        double devicePixelRatio = getDevicePixelRatio(driver);
+        int eleX = (int) Math.round(point.getX() * devicePixelRatio);
+        int eleY = (int) Math.round(point.getY() * devicePixelRatio);
+        int eleWidth = (int) Math.round(ele.getSize().getWidth() * devicePixelRatio);
         int eleHeight = (int) Math.round(ele.getSize().getHeight() * devicePixelRatio);
-		BufferedImage eleScreenshot = fullImg.getSubimage(eleX, eleY, eleWidth, eleHeight);
-		ImageIO.write(eleScreenshot, "png", screenshot);
-		// Copy the element screenshot to internal folder
-		String screenshotPath = path;
+        BufferedImage eleScreenshot = fullImg.getSubimage(eleX, eleY, eleWidth, eleHeight);
+        ImageIO.write(eleScreenshot, "png", screenshot);
+        // Copy the element screenshot to internal folder
+        String screenshotPath = path;
 
-		screenshotPath = screenshotPath.replaceAll("\\\\", "/");
-		if (screenshotPath.endsWith("/")) {
-			screenshotPath += name;
-		} else {
-			screenshotPath += "/" + name;
-		}
-		screenshotPath += ".png";
-		File fileScreenshot = new File(screenshotPath);
-		FileUtils.copyFile(screenshot, fileScreenshot);
-		// Delete temporary image
-		screenshot.deleteOnExit();
-		return screenshotPath;
+        screenshotPath = screenshotPath.replaceAll("\\\\", "/");
+        if (screenshotPath.endsWith("/")) {
+            screenshotPath += name;
+        } else {
+            screenshotPath += "/" + name;
+        }
+        screenshotPath += ".png";
+        File fileScreenshot = new File(screenshotPath);
+        FileUtils.copyFile(screenshot, fileScreenshot);
+        // Delete temporary image
+        screenshot.deleteOnExit();
+        return screenshotPath;
 	}
 	
-	private static double getDevicePixelRatio(WebDriver driver) {
-	    JavascriptExecutor js = (JavascriptExecutor) driver;
+    private static double getDevicePixelRatio(WebDriver driver) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         Object executeScriptValue = js.executeScript("return window.devicePixelRatio;");
         double devicePixelRatio = 1;
         try {
@@ -940,7 +940,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             devicePixelRatio = 1;
         }
         return devicePixelRatio;
-	}
+    }
 	    
     @SuppressWarnings("unused")
 	private static List<WebElement> findWebElementsUsingHeuristicMethod(
