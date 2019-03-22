@@ -16,8 +16,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -95,7 +97,8 @@ public class CustomKeywordParser {
                         Reader reader = new InputStreamReader(jar.getInputStream(jsonEntry));
                         KeywordsManifest manifest = JsonUtil.fromJson(reader, KeywordsManifest.class);
 
-                        List<String> keywords = manifest.getKeywords();
+                        Set<String> keywords = new LinkedHashSet<String>();
+                        keywords.addAll(manifest.getKeywords());
                         for (String keyword : keywords) {
                             String filePath = pluginFile.getAbsolutePath();
                             Class clazz = projectClassLoader.loadClass(keyword);
@@ -211,8 +214,8 @@ public class CustomKeywordParser {
                 if (jsonEntry != null) {
                     Reader reader = new InputStreamReader(jar.getInputStream(jsonEntry));
                     KeywordsManifest manifest = JsonUtil.fromJson(reader, KeywordsManifest.class);
-                    
-                    List<String> keywords = manifest.getKeywords();
+                    Set<String> keywords = new LinkedHashSet<String>();
+                    keywords.addAll(manifest.getKeywords());
                     for (String keyword : keywords) {
                         Class clazz = classLoader.loadClass(keyword);
                         if (clazz != null) {

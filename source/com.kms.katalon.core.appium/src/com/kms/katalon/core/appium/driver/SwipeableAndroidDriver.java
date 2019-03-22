@@ -1,5 +1,7 @@
 package com.kms.katalon.core.appium.driver;
 
+import io.appium.java_client.android.AndroidDriver;
+
 import java.net.URL;
 
 import org.openqa.selenium.Capabilities;
@@ -9,9 +11,7 @@ import org.openqa.selenium.remote.CommandExecutor;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteTouchScreen;
 
-import io.appium.java_client.android.AndroidDriver;
-
-@SuppressWarnings({ "rawtypes" })
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class SwipeableAndroidDriver extends AndroidDriver implements HasTouchScreen {
     private RemoteTouchScreen touch;
 

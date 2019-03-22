@@ -12,6 +12,7 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.os.ExecutableFinder;
+import org.openqa.selenium.os.WindowsUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.google.common.collect.ImmutableList;
@@ -123,7 +124,7 @@ public class FirefoxExecutable {
 
         Platform current = Platform.getCurrent();
         if (current.is(WINDOWS)) {
-            binary = new File(new ExecutableFinder().find("Mozilla Firefox\\firefox.exe"));
+            binary = findExistingBinary(WindowsUtils.getPathsInProgramFiles("Mozilla Firefox\\firefox.exe"));
 
         } else if (current.is(MAC)) {
             binary = new File("/Applications/Firefox.app/Contents/MacOS/firefox-bin");

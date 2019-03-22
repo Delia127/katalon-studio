@@ -60,6 +60,7 @@ public class ExistingRemoteWebDriver extends RemoteWebDriver implements IExistin
                 //ignore
             }
         }
+        startClient();
         startSession(new DesiredCapabilities());
     }
     
@@ -93,9 +94,11 @@ public class ExistingRemoteWebDriver extends RemoteWebDriver implements IExistin
     }
     
     @Override
-    public Response createResponseForNewSession(String oldSessionId) {
-        this.oldSessionId = oldSessionId;
-        return IExistingRemoteWebDriver.super.createResponseForNewSession(oldSessionId);
+    protected void startClient() {
+        if (this.oldSessionId == null) {
+            return;
+        }
+        super.startClient();
     }
 
     @Override

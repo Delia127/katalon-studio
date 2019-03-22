@@ -8,8 +8,6 @@ import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
 import io.appium.java_client.remote.HideKeyboardStrategy
-import io.appium.java_client.touch.TapOptions
-import io.appium.java_client.touch.offset.ElementOption
 
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
@@ -74,14 +72,13 @@ public class TapKeyword extends MobileAbstractKeyword {
             KeywordHelper.checkTestObjectParameter(to)
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
-
+            
             if (element == null){
                 MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null, true)
                 return
             }
-            TouchAction tap = new TouchAction(MobileDriverFactory.getDriver())
-                        .tap(TapOptions.tapOptions().withElement(ElementOption.element(element, 1, 1)))
-            tap.release().perform();
+            TouchAction tap = new TouchAction(MobileDriverFactory.getDriver()).tap(element, 1, 1);
+            tap.perform();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_ON_ELEMENT, to.getObjectId()))
         }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT)
     }

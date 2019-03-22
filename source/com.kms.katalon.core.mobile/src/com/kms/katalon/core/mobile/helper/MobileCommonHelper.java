@@ -3,8 +3,6 @@ package com.kms.katalon.core.mobile.helper;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.PointOption;
 
 import java.text.MessageFormat;
 import java.time.Duration;
@@ -31,9 +29,9 @@ public class MobileCommonHelper {
 
     @SuppressWarnings("rawtypes")
     public static void swipe(AppiumDriver driver, int startX, int startY, int endX, int endY) {
-        TouchAction swipe = new TouchAction(driver).press(PointOption.point(startX, startY))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(500L)))
-                .moveTo(PointOption.point(endX, endY)).release();
+        TouchAction swipe = new TouchAction(driver).press(startX, startY)
+                .waitAction(Duration.ofMillis(500))
+                .moveTo(endX, endY).release();
         swipe.perform();
     }
 
