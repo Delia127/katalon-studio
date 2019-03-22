@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -55,7 +54,7 @@ public class ConsoleMain {
     public static final String PROJECT_PK_OPTION = "projectPath";
 
     public final static String TESTSUITE_ID_OPTION = "testSuitePath";
-    
+
     public final static String INSTALL_PLUGIN_OPTION = "installPlugin";
 
     public final static String TESTSUITE_COLLECTION_ID_OPTION = "testSuiteCollectionPath";
@@ -67,7 +66,7 @@ public class ConsoleMain {
     public final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
 
     public final static String TESTSUITE_QUERY = "testSuiteQuery";
-  
+
     public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
 
     private ConsoleMain() {
@@ -76,7 +75,7 @@ public class ConsoleMain {
 
     /**
      * Launch the console execution process
-     * 
+     *
      * @param arguments
      * @return the exit code for the console execution
      */
@@ -85,7 +84,7 @@ public class ConsoleMain {
         ApplicationConfigOptions applicationConfigOptions = new ApplicationConfigOptions();
         OptionParser parser = createParser(consoleExecutor, applicationConfigOptions);
         try {
-        	List<String> addedArguments = Arrays.asList(arguments);
+            List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
@@ -96,15 +95,15 @@ public class ConsoleMain {
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
-           
+
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if(options.has(INSTALL_PLUGIN_OPTION)){
-            	installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
+                installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
-    				.map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                    .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
-            
+
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
@@ -118,39 +117,26 @@ public class ConsoleMain {
                     applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
                 }
             }
-            
-            System.out.println(System.getProperty("user.dir"));
+
             ProjectEntity project = findProject(options);
+//            Trackings.trackOpenApplication(project,
+//                    !ActivationInfoCollector.isActivated(), "console");
+            setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
 
-            String system = System.getProperty("user.dir");
-            if (system.equals(project.getFolderLocation())) {
-                LogUtil.printErrorLine("Warning! Please run katalon command execution outside of the project folder");
-                return LauncherResult.RETURN_CODE_ERROR;
-            }
-           
-            else{
-                
-                // Trackings.trackOpenApplication(project,
-                // !ActivationInfoCollector.isActivated(), "console");
-                setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
+            // Project information is necessary to accept overriding parameters for that project
+            acceptConsoleOptionList(parser,
+                    new OverridingParametersConsoleOptionContributor(project).getConsoleOptionList());
 
-                // Project information is necessary to accept overriding
-                // parameters for that project
-                acceptConsoleOptionList(parser,
-                        new OverridingParametersConsoleOptionContributor(project).getConsoleOptionList());
+            // Parse all arguments before execute
+            options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
 
-                // Parse all arguments before execute
-                options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
+            consoleExecutor.execute(project, options);
 
-                consoleExecutor.execute(project, options);
+            waitForExecutionToFinish(options);
 
-                waitForExecutionToFinish(options);
-
-                List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
-                int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
-                return exitCode;
-            }
-
+            List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
+            int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
+            return exitCode;
         } catch (InvalidConsoleArgumentException e) {
             LogUtil.printErrorLine(e.getMessage());
             return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
@@ -161,7 +147,7 @@ public class ConsoleMain {
             LauncherManager.getInstance().removeAllTerminated();
         }
     }
-    
+
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> reloadPluginsHandlerClass = katalonBundle
@@ -176,14 +162,14 @@ public class ConsoleMain {
         }
     }
 
-	private static void installPlugin(String filePath) throws InterruptedException, BundleException {
-		BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
-		ServiceReference<PluginInstaller> serviceReference = context
+    private static void installPlugin(String filePath) throws InterruptedException, BundleException {
+        BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
+        ServiceReference<PluginInstaller> serviceReference = context
                 .getServiceReference(PluginInstaller.class);
-		PluginInstaller pluginInstaller = context.getService(serviceReference);
-		if (!filePath.equals("")) {
-			pluginInstaller.installPlugin(context, new File(filePath).toURI().toString());
-		}
+        PluginInstaller pluginInstaller = context.getService(serviceReference);
+        if (!filePath.equals("")) {
+            pluginInstaller.installPlugin(context, new File(filePath).toURI().toString());
+        }
     }
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,
@@ -195,7 +181,7 @@ public class ConsoleMain {
         return addedArguments;
     }
 
-    private static OptionParser createParser(ConsoleExecutor executor, ApplicationConfigOptions 
+    private static OptionParser createParser(ConsoleExecutor executor, ApplicationConfigOptions
             applicationConfigOptions) {
         OptionParser parser = new OptionParser(false);
         parser.allowsUnrecognizedOptions();
@@ -317,9 +303,19 @@ public class ConsoleMain {
     private static ProjectEntity getProject(String projectPk) throws Exception {
         File projectFile = new File(projectPk);
         if (projectFile.isDirectory()) {
-            for (File file : projectFile.listFiles()) {
-                if (file.isFile() && file.getName().endsWith(ProjectEntity.getProjectFileExtension())) {
-                    projectPk = file.getAbsolutePath();
+            LogUtil.printOutputLine(StringConstants.MNG_PRT_PROJECT_PATH_IS_FOLDER);
+            File[] projectFiles = projectFile.listFiles();
+            if (projectFiles != null) {
+                for (File file : projectFiles) {
+                    if (file.isFile()) {
+                        LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PR_EXAMINE_FILE, file.getName()));
+                    } else {
+                        LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PR_EXAMINE_FOLDER, file.getName()));
+                    }
+                    if (file.isFile() && file.getName().endsWith(ProjectEntity.getProjectFileExtension())) {
+                        projectPk = file.getAbsolutePath();
+                        LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PRT_FOUND_PROJECT_FILE, projectPk));
+                    }
                 }
             }
         }
@@ -332,7 +328,7 @@ public class ConsoleMain {
         }
         return projectEntity;
     }
-    
+
     private static void deleteLibFolders(String projectPk) {
         try {
             File projectFile = new File(projectPk);
@@ -347,7 +343,7 @@ public class ConsoleMain {
             LogUtil.printAndLogError(t, "Unable to delete lib folders");
         }
     }
-    
+
     private static void deleteLibFolder(File projectFolder, String libFolderName) {
         File libFolder = new File(projectFolder, libFolderName);
         if (libFolder.exists()) {
