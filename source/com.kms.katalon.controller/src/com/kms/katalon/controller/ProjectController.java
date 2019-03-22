@@ -97,6 +97,13 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity openProject(String projectPk) throws Exception {
         LogUtil.printOutputLine("Opening project file: " + projectPk);
+        File file = new File(projectPk);
+        String name = File.separator + file.getName();
+        String projectPath = projectPk.replace(name, "");
+        String system = System.getProperty("user.dir");
+        if (system.equals(projectPath)) {
+            LogUtil.printErrorLine("Warning! Please run katalon command execution outside of the project folder");
+        }
         ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
                 .openProjectWithoutClasspath(projectPk);
         if (project != null) {

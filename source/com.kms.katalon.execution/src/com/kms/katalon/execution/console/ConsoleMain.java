@@ -118,18 +118,7 @@ public class ConsoleMain {
                     applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
                 }
             }
-            
-            System.out.println(System.getProperty("user.dir"));
             ProjectEntity project = findProject(options);
-
-            String system = System.getProperty("user.dir");
-            if (system.equals(project.getFolderLocation())) {
-                LogUtil.printErrorLine("Warning! Please run katalon command execution outside of the project folder");
-                return LauncherResult.RETURN_CODE_ERROR;
-            }
-           
-            else{
-                
                 // Trackings.trackOpenApplication(project,
                 // !ActivationInfoCollector.isActivated(), "console");
                 setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
@@ -149,8 +138,6 @@ public class ConsoleMain {
                 List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
                 int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
                 return exitCode;
-            }
-
         } catch (InvalidConsoleArgumentException e) {
             LogUtil.printErrorLine(e.getMessage());
             return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
