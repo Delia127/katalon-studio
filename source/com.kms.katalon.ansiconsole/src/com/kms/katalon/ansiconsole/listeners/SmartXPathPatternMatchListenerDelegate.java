@@ -61,7 +61,7 @@ public class SmartXPathPatternMatchListenerDelegate implements IPatternMatchList
                 try {
                     if (Desktop.isDesktopSupported()) {
                         File screenshotFile = new File(screenshotPath);
-                        Desktop.getDesktop().open(screenshotFile.getParentFile());
+                        Desktop.getDesktop().open(screenshotFile);
                     }
                 } catch (IOException e) {
                     MultiStatusErrorDialog.showErrorDialog(e,
