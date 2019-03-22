@@ -55,7 +55,7 @@ public class ConsoleMain {
     public static final String PROJECT_PK_OPTION = "projectPath";
 
     public final static String TESTSUITE_ID_OPTION = "testSuitePath";
-    
+
     public final static String INSTALL_PLUGIN_OPTION = "installPlugin";
 
     public final static String TESTSUITE_COLLECTION_ID_OPTION = "testSuiteCollectionPath";
@@ -67,7 +67,7 @@ public class ConsoleMain {
     public final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
 
     public final static String TESTSUITE_QUERY = "testSuiteQuery";
-  
+
     public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
 
     private ConsoleMain() {
@@ -76,7 +76,7 @@ public class ConsoleMain {
 
     /**
      * Launch the console execution process
-     * 
+     *
      * @param arguments
      * @return the exit code for the console execution
      */
@@ -96,7 +96,7 @@ public class ConsoleMain {
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
-           
+
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if(options.has(INSTALL_PLUGIN_OPTION)){
             	installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
@@ -104,7 +104,7 @@ public class ConsoleMain {
     				.map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
-            
+
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
@@ -148,7 +148,7 @@ public class ConsoleMain {
             LauncherManager.getInstance().removeAllTerminated();
         }
     }
-    
+
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> reloadPluginsHandlerClass = katalonBundle
@@ -182,7 +182,7 @@ public class ConsoleMain {
         return addedArguments;
     }
 
-    private static OptionParser createParser(ConsoleExecutor executor, ApplicationConfigOptions 
+    private static OptionParser createParser(ConsoleExecutor executor, ApplicationConfigOptions
             applicationConfigOptions) {
         OptionParser parser = new OptionParser(false);
         parser.allowsUnrecognizedOptions();
@@ -304,9 +304,19 @@ public class ConsoleMain {
     private static ProjectEntity getProject(String projectPk) throws Exception {
         File projectFile = new File(projectPk);
         if (projectFile.isDirectory()) {
-            for (File file : projectFile.listFiles()) {
-                if (file.isFile() && file.getName().endsWith(ProjectEntity.getProjectFileExtension())) {
-                    projectPk = file.getAbsolutePath();
+            LogUtil.printOutputLine(StringConstants.MNG_PRT_PROJECT_PATH_IS_FOLDER);
+            File[] projectFiles = projectFile.listFiles();
+            if (projectFiles != null) {
+                for (File file : projectFiles) {
+                    if (file.isFile()) {
+                        LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PR_EXAMINE_FILE, file.getName()));
+                    } else {
+                        LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PR_EXAMINE_FOLDER, file.getName()));
+                    }
+                    if (file.isFile() && file.getName().endsWith(ProjectEntity.getProjectFileExtension())) {
+                        projectPk = file.getAbsolutePath();
+                        LogUtil.printOutputLine(MessageFormat.format(StringConstants.MNG_PRT_FOUND_PROJECT_FILE, projectPk));
+                    }
                 }
             }
         }
@@ -319,7 +329,7 @@ public class ConsoleMain {
         }
         return projectEntity;
     }
-    
+
     private static void deleteLibFolders(String projectPk) {
         try {
             File projectFile = new File(projectPk);
@@ -334,7 +344,7 @@ public class ConsoleMain {
             LogUtil.printAndLogError(t, "Unable to delete lib folders");
         }
     }
-    
+
     private static void deleteLibFolder(File projectFolder, String libFolderName) {
         File libFolder = new File(projectFolder, libFolderName);
         if (libFolder.exists()) {

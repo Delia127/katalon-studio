@@ -18,20 +18,27 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.integration.slack.constants.ComposerIntegrationSlackMessageConstants;
 import com.kms.katalon.composer.integration.slack.constants.ImageConstants;
 import com.kms.katalon.composer.integration.slack.constants.SlackPreferenceConstants;
 import com.kms.katalon.composer.integration.slack.constants.StringConstants;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil.SlackMsgStatus;
 import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.tracking.service.Trackings;
+
 
 public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
     private Composite fieldEditorParent;
@@ -88,6 +95,8 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
     private BooleanFieldEditor sendRenameItem;
 
     private BooleanFieldEditor sendDeleteItem;
+    
+    Button btnGetSlackPlugin;
 
     private boolean isValid = isValid();
 
@@ -110,9 +119,10 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
 
     @Override
     protected void createFieldEditors() {
+
         fieldEditorParent = new Composite(getFieldEditorParent(), SWT.NONE);
         fieldEditorParent.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
-
+        createSlackPlugin(fieldEditorParent);
         enabled = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_ENABLED,
                 StringConstants.PREF_LBL_SLACK_ENABLED, fieldEditorParent);
         enabled.getDescriptionControl(fieldEditorParent).setToolTipText(StringConstants.PREF_LBL_TIP_SLACK_ENABLED);
@@ -144,6 +154,13 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 testSlackConnection();
+            }
+        });
+        btnGetSlackPlugin.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch("https://store.katalon.com/product/4/Slack-Integration");
+                Trackings.trackQuickDiscussion();
             }
         });
 
@@ -231,7 +248,36 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
         addField(sendDeleteItem);
         loaded = true;
     }
-
+    private GridLayout noneMarginGridLayout() {
+        GridLayout gl = new GridLayout();
+        gl.marginHeight = 0;
+        gl.marginWidth = 0;
+        return gl;
+    }
+    private void createSlackPlugin(Composite parent){
+        Composite deprecatedComposite = new Composite(parent, SWT.NONE);
+        deprecatedComposite.setLayout(noneMarginGridLayout());
+        deprecatedComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        deprecatedComposite.setLayout(new GridLayout());
+        Group grpSlackPlugin = new Group(deprecatedComposite, SWT.NONE);
+        grpSlackPlugin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glGrpSlackPlugin  = new GridLayout(1, false);
+        glGrpSlackPlugin.horizontalSpacing = 10;
+        glGrpSlackPlugin.marginWidth = 10;
+        GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
+        layoutData.widthHint = 300;
+        
+        grpSlackPlugin.setLayout(glGrpSlackPlugin);
+        grpSlackPlugin.setText("");
+        Label deprecatedMessage = new Label(grpSlackPlugin, SWT.WRAP); 
+        deprecatedMessage.setLayoutData(layoutData);
+        deprecatedMessage.setText(ComposerIntegrationSlackMessageConstants.SlackSettingsComposite_MSG_DEPRECATED);
+        deprecatedMessage.setBackground(ColorUtil.getWarningLogBackgroundColor());
+        new Label(grpSlackPlugin, SWT.NONE);
+        btnGetSlackPlugin = new Button(grpSlackPlugin, SWT.NONE);
+        btnGetSlackPlugin.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true, 1, 1));
+        btnGetSlackPlugin.setText(ComposerIntegrationSlackMessageConstants.PREF_LBL_GETSLACKPLUGIN);
+    }
     @Override
     protected void initialize() {
         super.initialize();

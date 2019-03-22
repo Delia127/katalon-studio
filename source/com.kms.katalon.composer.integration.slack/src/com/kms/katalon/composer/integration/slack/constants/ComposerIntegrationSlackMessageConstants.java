@@ -98,6 +98,8 @@ public class ComposerIntegrationSlackMessageConstants extends NLS {
     public static String EMOJI_MSG_UPDATE;
 
     public static String EMOJI_MSG_RENAME;
+    
+    public static String PREF_LBL_GETSLACKPLUGIN;
 
     public static String EMOJI_MSG_COPY;
 
@@ -120,6 +122,8 @@ public class ComposerIntegrationSlackMessageConstants extends NLS {
     public static String SLACK_ERROR_MSG_INVALID_AUTH;
 
     public static String SLACK_ERROR_MSG_ACCOUNT_INACTIVE;
+    
+    public static String SlackSettingsComposite_MSG_DEPRECATED;
 
     static {
         // initialize resource bundle

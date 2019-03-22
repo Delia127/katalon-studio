@@ -79,7 +79,6 @@ public class AddonSocket {
     
     protected void seleniumSocketResponder(){    	
     	sendMessage(new StartInspectAddonMessage());
-        System.out.println("WS: Start inspecting");        
     }
     
     private void setupSession() {

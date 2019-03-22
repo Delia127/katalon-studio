@@ -300,6 +300,12 @@ public class CoreMessageConstants extends NLS {
     
     //Web Service Verification
     public static String WS_VERIFICATION_SUCCESS;
+    
+    //TestCaseExecutor
+	
+	public static String SMART_XPATH_VISIT_BELOW_LINK;
+
+	public static String SMART_XPATH_DOCUMENT;
 
     static {
         // initialize resource bundle

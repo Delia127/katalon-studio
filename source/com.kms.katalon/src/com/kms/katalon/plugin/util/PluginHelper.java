@@ -6,7 +6,7 @@ public class PluginHelper {
 
     public static String idAndVersionKey(KStorePlugin plugin) {
         long pluginId = plugin.getId();
-        String version = plugin.getCurrentVersion().getNumber();
+        String version = plugin.getLatestCompatibleVersion().getNumber();
         return pluginId + "-" + version;
     }
 }

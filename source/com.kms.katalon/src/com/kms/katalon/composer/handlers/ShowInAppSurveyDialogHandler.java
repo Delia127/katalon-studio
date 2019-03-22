@@ -18,7 +18,7 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
-
+@Deprecated
 public class ShowInAppSurveyDialogHandler {
     @Inject
     private IEventBroker eventBroker;
