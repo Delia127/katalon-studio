@@ -1,7 +1,9 @@
 package com.kms.katalon.core.keyword.internal
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils
 
+import com.google.common.base.Throwables
 import com.kms.katalon.core.exception.StepErrorException
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.logging.ErrorCollector
@@ -24,6 +26,13 @@ public class KeywordMain {
     @CompileStatic
     public static stepFailed(String message, FailureHandling flHandling, Throwable t, Map<String, String> attributes = null) throws StepFailedException {
         String failedMessage = buildReasonMessage(message, t != null ? ExceptionsUtil.getStackTraceForThrowable(t) : EMPTY_REASON).toString()
+        Throwable rootCause = ExceptionUtils.getRootCause(t);
+        if (rootCause == null) {
+            rootCause = t;
+        }
+        attributes.put("failed.exception.class", rootCause.getClass().getName());
+        attributes.put("failed.exception.message", rootCause.getMessage());
+        attributes.put("failed.exception.stacktrace", Throwables.getStackTraceAsString(t));
         switch (flHandling) {
             case FailureHandling.OPTIONAL:
                 logger.logWarning(failedMessage, attributes);
