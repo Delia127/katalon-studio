@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
+import com.kms.katalon.custom.factory.PluginTestListenerFactory;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.parser.CustomKeywordParser;
@@ -127,6 +128,7 @@ public class KeywordController extends EntityController {
             if (monitor != null) {
                 monitor.beginTask("Parsing custom keywords...", 1);
             }
+            PluginTestListenerFactory.getInstance().clear();
             IFolder srcFolder = GroovyUtil.getCustomKeywordSourceFolder(project);
             IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
             CustomKeywordParser.getInstance().parseAllCustomKeywords(srcFolder, libFolder);
