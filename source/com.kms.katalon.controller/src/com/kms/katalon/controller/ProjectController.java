@@ -144,7 +144,7 @@ public class ProjectController extends EntityController {
     }
 
     public void addRecentProject(ProjectEntity project) throws Exception {
-        List<ProjectEntity> recentProjects = getRecentProjects();
+        List<ProjectEntity> recentProjects = new ArrayList<>(getRecentProjects());
         int existedProjectIndex = -1;
         for (int i = 0; i < recentProjects.size(); i++) {
             if (getDataProviderSetting().getEntityPk(project)
@@ -202,7 +202,7 @@ public class ProjectController extends EntityController {
             inputStream = new ObjectInputStream(new FileInputStream(RECENT_PROJECT_FILE_LOCATION));
             projects = (List<ProjectEntity>) inputStream.readObject();
         } catch (Exception e) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         } finally {
             if (inputStream != null) {
                 inputStream.close();
