@@ -516,7 +516,7 @@ public class DriverFactory {
         logger.logRunData("proxyInformation", RunConfiguration.getProxyInformation().toString());
     }
 
-    private static String getBrowserVersion(WebDriver webDriver) {
+    public static String getBrowserVersion(WebDriver webDriver) {
         try {
             return WebUiCommonHelper.getBrowserAndVersion(webDriver);
         } catch (Exception e) {
