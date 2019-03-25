@@ -202,7 +202,7 @@ public class ProjectController extends EntityController {
             inputStream = new ObjectInputStream(new FileInputStream(RECENT_PROJECT_FILE_LOCATION));
             projects = (List<ProjectEntity>) inputStream.readObject();
         } catch (Exception e) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         } finally {
             if (inputStream != null) {
                 inputStream.close();
