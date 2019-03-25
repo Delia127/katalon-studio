@@ -44,6 +44,24 @@ pipeline {
                 }
             }
         }
+
+         stage('Update version') {
+            steps {
+                echo "Version: ${config.version}"
+                dir('source/com.kms.katalon') {
+                    script {
+                        def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
+                        versionMapping = versionMapping.replaceAll(/1=.*/, "1=${config.version}")
+                        writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
+                        if (!fileExists('buildNumber.properties')) {
+                            sh 'touch buildNumber.properties'
+                        }
+                        writeFile(encoding: 'UTF-8', file: 'buildNumber.properties', text: "buildNumber0=0")
+                    }
+                }
+            }
+        }
+        
         stage('Building') {
                 // Start maven commands to get dependencies
             steps {
