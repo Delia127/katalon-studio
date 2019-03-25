@@ -3,6 +3,7 @@
 import hudson.model.Result
 import hudson.model.Run
 import jenkins.model.CauseOfInterruption.UserInterruption
+import groovy.json.JsonOutput
 
 def config = [:]
 
@@ -32,7 +33,7 @@ pipeline {
                 }   
             }
         }
-        
+
         stage('Prepare') {
             steps {
                 script {
