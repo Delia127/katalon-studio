@@ -144,7 +144,7 @@ public class ProjectController extends EntityController {
     }
 
     public void addRecentProject(ProjectEntity project) throws Exception {
-        List<ProjectEntity> recentProjects = getRecentProjects();
+        List<ProjectEntity> recentProjects = new ArrayList<>(getRecentProjects());
         int existedProjectIndex = -1;
         for (int i = 0; i < recentProjects.size(); i++) {
             if (getDataProviderSetting().getEntityPk(project)
