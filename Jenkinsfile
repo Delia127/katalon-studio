@@ -4,6 +4,8 @@ import hudson.model.Result
 import hudson.model.Run
 import jenkins.model.CauseOfInterruption.UserInterruption
 
+def config = [:]
+
 pipeline {
     agent any
 
@@ -16,6 +18,21 @@ pipeline {
     }
 
     stages {
+        stage('Input') {
+            steps {
+                script {
+                    if (BRANCH_NAME ==~ /.*release.*/) {
+                        def input = input(id: 'buildConfig', message: 'Release?', parameters: [
+                            string(name: "version", description: "Release version", defaultValue: "3.0.5")
+                        ])
+                        config.version = input
+                    } else {
+                        config.version = "3.0.5"
+                    }
+                }   
+            }
+        }
+        
         stage('Prepare') {
             steps {
                 script {
