@@ -32,7 +32,6 @@ import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
-import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
@@ -90,8 +89,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
 
                     launchRemoved = false;
 
-                    ILaunch expectedLaunch = new IDELaunchShorcut().launch(scriptFile, mode,
-                            runConfig.getAdditionalEnvironmentVariables());
+                    ILaunch expectedLaunch = new IDELaunchShorcut().launch(scriptFile, mode, runConfig);
 
                     launch = (launchRemoved) ? null : expectedLaunch;
                 }
@@ -154,7 +152,6 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
 
         // update status of "Run" and "Stop" buttons
         eventBroker.post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
-
 
         updateReport();
 
@@ -310,9 +307,9 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
                 : getStatus().toString();
         return "<" + displayMessage + ">" + " - " + getRunConfig().getName();
     }
-    
+
     @Override
     protected void onStartExecution() {
-    	super.onStartExecution();
+        super.onStartExecution();
     }
 }

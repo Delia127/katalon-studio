@@ -2,6 +2,7 @@ package com.kms.katalon.execution.launcher;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -282,5 +283,9 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
 
         return eventObject;
+    }
+
+    public List<ReportableLauncher> getSubLaunchers() {
+        return Collections.unmodifiableList(subLaunchers);
     }
 }

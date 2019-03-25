@@ -2,8 +2,12 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -44,6 +48,12 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     
     private Map<String, Object> overridingParameters = new HashMap<>();
     
+    private Map<String, String> environmentVariables = new HashMap<>();
+    
+    private List<String> vmArgs = new ArrayList<>();
+    
+    private Map<String, String> additionalData = new HashMap<>();
+
     public AbstractRunConfiguration() {
         initExecutionSetting();
     }
@@ -234,7 +244,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     @Override
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
-        return new HashMap<>();
+        return Collections.unmodifiableMap(environmentVariables);
     }
 
     @Override
@@ -254,5 +264,37 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     public void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables) {
     	if(overridingGlobalVariables == null) return;
     	overridingParameters.putAll(overridingGlobalVariables);
+    }
+    
+    @Override
+    public Map<String, String> getTestSuiteAdditionalData() {
+        return Collections.unmodifiableMap(additionalData);
+    }
+
+    @Override
+    public void setTestSuiteAdditionalData(Map<String, String> data) {
+        if (data != null) {
+            this.additionalData.putAll(data);
+        }
+    }
+    
+    @Override
+    public String[] getVmArgs() {
+        return vmArgs.toArray(new String[0]);
+    }
+    
+    @Override
+    public void setVmArgs(String[] args) {
+        if (args == null) {
+            return;
+        }
+        vmArgs.addAll(Arrays.asList(args));
+    }
+    
+    @Override
+    public void setAdditionalEnvironmentVariables(Map<String, String> addtionalEnv) {
+        if (addtionalEnv != null) {
+            this.environmentVariables.putAll(addtionalEnv);
+        }
     }
 }

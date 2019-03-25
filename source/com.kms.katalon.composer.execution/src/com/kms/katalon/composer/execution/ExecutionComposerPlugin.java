@@ -11,7 +11,9 @@ import org.eclipse.core.runtime.spi.RegistryContributor;
 import org.osgi.framework.BundleContext;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.launcher.provider.IDELauncherProviderImpl;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.execution.launcher.provider.IDELauncherProvider;
 
 @SuppressWarnings("restriction")
 public class ExecutionComposerPlugin extends Plugin {
@@ -22,6 +24,9 @@ public class ExecutionComposerPlugin extends Plugin {
 
     public void start(BundleContext context) throws Exception {
         super.start(context);
+
+        context.registerService(IDELauncherProvider.class, new IDELauncherProviderImpl(),
+                null);
 
         activeDebugExtension();
     }

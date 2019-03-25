@@ -1,6 +1,5 @@
-package com.kms.katalon.composer.testsuite.collection.part.launcher;
+package com.kms.katalon.composer.execution.launcher;
 
-import com.kms.katalon.composer.execution.launcher.IDELauncher;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
