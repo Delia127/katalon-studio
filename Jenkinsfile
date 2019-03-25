@@ -139,6 +139,26 @@ pipeline {
             }
         }
 
+        stage('Generate update packages') {
+            steps {
+                script {
+                    if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/) && !(BRANCH_NAME ==~ /.*beta.*/)) {
+                        dir("tools/updater") {
+                            def updateInfo = [
+                                buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
+                                destDir: "${tmpDir}/update",
+                                version: "${config.version}"
+                            ]
+                            def json = JsonOutput.toJson(updateInfo)
+                            json = JsonOutput.prettyPrint(json)
+                            writeFile(file: 'scan_info.json', text: json)
+                            sh 'java -jar json-map-builder-1.0.0.jar'
+                        }
+                    }
+                }
+            }
+        }
+
         stage ('Success') {
             steps {
                 script {
