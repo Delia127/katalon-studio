@@ -3,7 +3,6 @@ package com.kms.katalon.util;
 import java.util.Random;
 
 import org.eclipse.core.commands.common.CommandException;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.activation.ActivationService;
@@ -86,8 +85,8 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         int result = new SignupDialog(null).open();
         switch (result) {
             case SignupDialog.OK:
-//                SignupSurveyDialog dialog = new SignupSurveyDialog(null);
-//                dialog.open();
+                // SignupSurveyDialog dialog = new SignupSurveyDialog(null);
+                // dialog.open();
                 return true;
             case SignupDialog.REQUEST_ACTIVATION_CODE:
                 return checkActivationDialog();
@@ -99,36 +98,29 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static void showFunctionsIntroductionForTheFirstTime() {
-//        FunctionsIntroductionDialog dialog = new FunctionsIntroductionDialog(null);
-//        dialog.open();
-//        FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
-//        finishDialog.open();
         QuickStartDialog dialog = new QuickStartDialog(null);
-        
+
         // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
-        if(dialog.open() == Dialog.CANCEL) {
-        	try {
-				new CommandCaller().call(CommandId.PROJECT_OPEN);
-			} catch (CommandException e) {
-				 LogUtil.logError(e);
-			}
-        }else {
-            
-            try {
-                new CommandCaller().call(CommandId.PROJECT_ADD);
-            } catch (CommandException e) {
-                LogUtil.logError(e);
+        switch (dialog.open()) {
+            case QuickStartDialog.OPEN_PROJECT_ID: {
+                try {
+                    new CommandCaller().call(CommandId.PROJECT_OPEN);
+                } catch (CommandException e) {
+                    LogUtil.logError(e);
+                }
+                break;
             }
-            
+            case QuickStartDialog.NEW_PROJECT_ID: {
+                try {
+                    new CommandCaller().call(CommandId.PROJECT_ADD);
+                } catch (CommandException e) {
+                    LogUtil.logError(e);
+                }
+                break;
+            }
+            default:
+                break;
         }
-        
-//        if (finishDialog.open() == Dialog.OK) {
-//            try {
-//                new CommandCaller().call(CommandId.PROJECT_ADD);
-//            } catch (CommandException e) {
-//                LogUtil.logError(e);
-//            }
-//        }
     }
 
     public static String genRequestActivationInfo() {
