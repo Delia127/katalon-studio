@@ -2,7 +2,6 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -97,11 +96,18 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity openProject(String projectPk) throws Exception {
         LogUtil.printOutputLine("Opening project file: " + projectPk);
+        File projectFile = new File(projectPk);
+        String projectFolderLocation = projectFile.getParent();
+        String userDirLocation = System.getProperty("user.dir");
+        if (userDirLocation.equals(projectFolderLocation)) {
+            LogUtil.printErrorLine("Warning! Please run Katalon execution command outside of the project folder.");
+        }
         ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
                 .openProjectWithoutClasspath(projectPk);
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
-            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
+            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project),
+                    null);
             addRecentProject(project);
             LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
@@ -138,7 +144,7 @@ public class ProjectController extends EntityController {
     }
 
     public void addRecentProject(ProjectEntity project) throws Exception {
-        List<ProjectEntity> recentProjects = getRecentProjects();
+        List<ProjectEntity> recentProjects = new ArrayList<>(getRecentProjects());
         int existedProjectIndex = -1;
         for (int i = 0; i < recentProjects.size(); i++) {
             if (getDataProviderSetting().getEntityPk(project)
@@ -195,8 +201,8 @@ public class ProjectController extends EntityController {
         try {
             inputStream = new ObjectInputStream(new FileInputStream(RECENT_PROJECT_FILE_LOCATION));
             projects = (List<ProjectEntity>) inputStream.readObject();
-        } catch (FileNotFoundException fileNotFoundException) {} catch (Exception e) {
-            throw e;
+        } catch (Exception e) {
+            return new ArrayList<>();
         } finally {
             if (inputStream != null) {
                 inputStream.close();

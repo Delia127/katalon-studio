@@ -40,6 +40,8 @@ import com.kms.katalon.plugin.util.KStoreTokenService;
 
 public class KStoreRestClient {
     
+    private static final String STORE_URL_PROPERTY_KEY = "storeUrl";
+    
     private static final String DEVELOPMENT_URL = "https://store-staging.katalon.com";
     
     private static final String PRODUCTION_URL = "https://store.katalon.com";
@@ -281,11 +283,18 @@ public class KStoreRestClient {
     }
     
     private String getKatalonStoreUrl() {
-        if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
+        String storeUrlArgument = getStoreUrlArgument();
+        if (!StringUtils.isBlank(storeUrlArgument)) {
+            return storeUrlArgument;
+        } else if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
             return DEVELOPMENT_URL;
         } else {
             return PRODUCTION_URL;
         }
+    }
+    
+    private String getStoreUrlArgument() {
+        return System.getProperty(STORE_URL_PROPERTY_KEY);
     }
     
     private interface OnRequestSuccessHandler {

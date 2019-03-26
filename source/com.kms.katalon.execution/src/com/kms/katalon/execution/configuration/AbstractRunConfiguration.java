@@ -16,6 +16,7 @@ import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.LogbackUtil;
+import com.kms.katalon.custom.factory.PluginTestListenerFactory;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -170,6 +171,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         }
         
         propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
+        
+        propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
         
         initializePluginPresence("com.katalon.katalon-studio-smart-xpath", propertyMap);
         

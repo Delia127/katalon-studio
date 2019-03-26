@@ -104,6 +104,8 @@ public class RunConfiguration {
     
     public static final String AUTO_APPLY_NEIGHBOR_XPATHS = "autoApplyNeighborXpaths";
     
+    public static final String PLUGIN_TEST_LISTENERS = "pluginTestListeners";
+    
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new InheritableThreadLocal<Map<String, Object>>(){
@@ -553,6 +555,14 @@ public class RunConfiguration {
     		return new HashMap<String, Object>();
     	}
     	return overridingParameters;
+    }
+    
+    public static List<String> getPluginTestListeners() {
+        Object testListeners = getProperty(PLUGIN_TEST_LISTENERS);
+        if (testListeners != null) {
+            return (List<String>) testListeners;
+        }
+        return Collections.emptyList();
     }
     
     public static String getOverridingGlobalVariable(String globalVariableName){
