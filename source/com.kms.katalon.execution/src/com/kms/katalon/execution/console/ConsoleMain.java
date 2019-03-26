@@ -84,7 +84,7 @@ public class ConsoleMain {
         ApplicationConfigOptions applicationConfigOptions = new ApplicationConfigOptions();
         OptionParser parser = createParser(consoleExecutor, applicationConfigOptions);
         try {
-        	List<String> addedArguments = Arrays.asList(arguments);
+            List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
@@ -98,9 +98,9 @@ public class ConsoleMain {
 
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if(options.has(INSTALL_PLUGIN_OPTION)){
-            	installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
+                installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
-    				.map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                    .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
 
@@ -125,7 +125,7 @@ public class ConsoleMain {
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,
-            		new OverridingParametersConsoleOptionContributor(project).getConsoleOptionList());
+                    new OverridingParametersConsoleOptionContributor(project).getConsoleOptionList());
 
             // Parse all arguments before execute
             options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
@@ -162,14 +162,14 @@ public class ConsoleMain {
         }
     }
 
-	private static void installPlugin(String filePath) throws InterruptedException, BundleException {
-		BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
-		ServiceReference<PluginInstaller> serviceReference = context
+    private static void installPlugin(String filePath) throws InterruptedException, BundleException {
+        BundleContext context = Platform.getBundle("com.katalon.platform").getBundleContext();
+        ServiceReference<PluginInstaller> serviceReference = context
                 .getServiceReference(PluginInstaller.class);
-		PluginInstaller pluginInstaller = context.getService(serviceReference);
-		if (!filePath.equals("")) {
-			pluginInstaller.installPlugin(context, new File(filePath).toURI().toString());
-		}
+        PluginInstaller pluginInstaller = context.getService(serviceReference);
+        if (!filePath.equals("")) {
+            pluginInstaller.installPlugin(context, new File(filePath).toURI().toString());
+        }
     }
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,

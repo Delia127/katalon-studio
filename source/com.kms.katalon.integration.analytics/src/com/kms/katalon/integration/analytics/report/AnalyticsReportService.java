@@ -124,7 +124,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
             return Collections.emptyList();
         }
         try {
-            Path zipFile = FileUtils.createTemporaryFile(StringUtils.appendIfMissing(path, File.separator) + "katalon-analitics-tmp", "hars-", ".zip");
+            Path zipFile = FileUtils.createTemporaryFile(StringUtils.appendIfMissing(path, File.separator) + "katalon-analytics-tmp", "hars-", ".zip");
             Path harsZipFile = ZipUtil.compress(harFiles, zipFile);
             return Arrays.asList(harsZipFile);
         } catch (IOException e) {
