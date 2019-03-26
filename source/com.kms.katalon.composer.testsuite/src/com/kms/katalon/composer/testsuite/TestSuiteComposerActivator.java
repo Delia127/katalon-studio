@@ -7,9 +7,14 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
 import com.kms.katalon.composer.testsuite.platform.PlatformTestSuiteUIViewBuilder;
+import com.kms.katalon.composer.testsuite.integration.TestSuiteIntegrationFactory;
+import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegrationPlatformBuilder;
 import com.kms.katalon.composer.view.TestSuiteViewFactory;
 
 public class TestSuiteComposerActivator implements BundleActivator {
+
+public class TestSuiteComposerActivator implements BundleActivator {
+
     @Override
     public void start(BundleContext context) throws Exception {
         context.addServiceListener(new ServiceListener() {
@@ -20,6 +25,11 @@ public class TestSuiteComposerActivator implements BundleActivator {
                     ServiceReference<PlatformTestSuiteUIViewBuilder> serviceReference = context
                             .getServiceReference(PlatformTestSuiteUIViewBuilder.class);
                     TestSuiteViewFactory.getInstance().setPlatformBuilder(context.getService(serviceReference));
+                }
+                if (context.getService(event.getServiceReference()) instanceof TestSuiteIntegrationPlatformBuilder) {
+                    ServiceReference<TestSuiteIntegrationPlatformBuilder> serviceReference = context
+                            .getServiceReference(TestSuiteIntegrationPlatformBuilder.class);
+                    TestSuiteIntegrationFactory.getInstance().setPlatformBuilder(context.getService(serviceReference));
                     context.removeServiceListener(this);
                 }
             }
@@ -29,5 +39,4 @@ public class TestSuiteComposerActivator implements BundleActivator {
     @Override
     public void stop(BundleContext context) throws Exception {
     }
-
 }

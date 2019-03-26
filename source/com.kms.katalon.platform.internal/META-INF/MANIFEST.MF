@@ -31,7 +31,9 @@ Require-Bundle: com.katalon.platform,
  com.kms.katalon.execution,
  com.kms.katalon.dal,
  org.apache.commons.io,
- com.kms.katalon.logging
+ com.kms.katalon.logging,
+ com.kms.katalon.composer.testsuite,
+ net.sf.jopt-simple.jopt-simple
 Bundle-Activator: com.kms.katalon.platform.internal.InternalPlatformPlugin
 Bundle-ActivationPolicy: lazy
 

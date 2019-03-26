@@ -18,6 +18,8 @@ import com.kms.katalon.execution.console.entity.TestSuiteCollectionLauncherOptio
 import com.kms.katalon.execution.console.entity.TestSuiteLauncherOptionParser;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
+import com.kms.katalon.execution.launcher.ILauncher;
+import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -75,16 +77,21 @@ public class ConsoleExecutor {
         launcherManager.addLauncher(launcherOption.getConsoleLauncher(projectEntity, launcherManager));
         
         trackExecution(launcherOption);
+    }
+
+    public ILauncher getUILauncher(ProjectEntity projectEntity, OptionSet optionSet) throws Exception {
+        setValueForOptionalOptions(optionalOptions, optionSet);
         
-//        Executors.newSingleThreadExecutor().submit(() -> {
-//            if (ActivationInfoCollector.isActivated()) {
-//                UsageInfoCollector.collect(
-//                        UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.CONSOLE));
-//            } else {
-//                UsageInfoCollector.collect(
-//                        UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.CONSOLE));
-//            }
-//        });
+        LauncherOptionParser launcherOption = new LauncherOptionSelector().getSelectedOption(optionSet);
+        List<ConsoleOption<?>> listConsoleOption = launcherOption.getConsoleOptionList();
+        for (ConsoleOption<?> consoleOption : listConsoleOption) {
+            String option = consoleOption.getOption();
+            if (optionSet.has(option)) {
+                launcherOption.setArgumentValue(consoleOption,
+                        String.valueOf(optionSet.valueOf(consoleOption.getOption())));
+            }
+        }
+        return launcherOption.getIDELauncher(projectEntity, LauncherManager.getInstance());
     }
 
 

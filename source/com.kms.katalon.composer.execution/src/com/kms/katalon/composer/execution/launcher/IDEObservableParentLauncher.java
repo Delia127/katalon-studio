@@ -7,5 +7,5 @@ import java.util.List;
  *
  */
 public interface IDEObservableParentLauncher extends IDEObservableLauncher {
-    public List<IDEObservableLauncher> getSubLaunchers();
+    public List<IDEObservableLauncher> getObservableLaunchers();
 }

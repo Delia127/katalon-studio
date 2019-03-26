@@ -20,6 +20,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
+import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunable;
@@ -39,7 +40,8 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
     }
 
     public static TestSuiteCollectionConsoleLauncher newInstance(TestSuiteCollectionEntity testSuiteCollection,
-            LauncherManager parentManager, Reportable reportable, Rerunable rerunable,Map<String,Object> globalVariables) throws ExecutionException {
+            LauncherManager parentManager, Reportable reportable, Rerunable rerunable,
+            Map<String, Object> globalVariables) throws ExecutionException {
         TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
         executedEntity.setReportable(reportable);
         executedEntity.setRerunable(rerunable);
@@ -49,8 +51,8 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
                     .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executedEntity.getId());
 
             TestSuiteCollectionConsoleLauncher testSuiteCollectionConsoleLauncher = new TestSuiteCollectionConsoleLauncher(
-                    executedEntity, parentManager,
-                    buildSubLaunchers(testSuiteCollection, executedEntity, parentManager, reportCollection, globalVariables),
+                    executedEntity, parentManager, buildSubLaunchers(testSuiteCollection, executedEntity, parentManager,
+                            reportCollection, globalVariables, true),
                     reportCollection);
 
             ReportController.getInstance().updateReportCollection(reportCollection);
@@ -60,15 +62,43 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         }
     }
 
+    public static TestSuiteCollectionLauncher newIDEInstance(TestSuiteCollectionEntity testSuiteCollection,
+            LauncherManager parentManager, DefaultReportSetting reportable, DefaultRerunSetting rerunable,
+            Map<String, Object> globalVariables) throws ExecutionException {
+        TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
+        executedEntity.setReportable(reportable);
+        executedEntity.setRerunable(rerunable);
+
+        try {
+            ReportCollectionEntity reportCollection = ReportController.getInstance()
+                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executedEntity.getId());
+
+            List<ReportableLauncher> subLaunchers = buildSubLaunchers(testSuiteCollection, executedEntity,
+                    parentManager, reportCollection, globalVariables, false);
+            TestSuiteCollectionLauncher testSuiteCollectionLauncher = LauncherProviderFactory.getInstance()
+                    .getIdeLauncherProvider()
+                    .getTestSuiteCollectionIDELauncher(executedEntity, parentManager, subLaunchers,
+                            executedEntity.getEntity().getExecutionMode(), reportCollection);
+
+            ReportController.getInstance().updateReportCollection(reportCollection);
+            return testSuiteCollectionLauncher;
+        } catch (DALException e) {
+            throw new ExecutionException(e);
+        }
+    }
+
     private static List<ReportableLauncher> buildSubLaunchers(TestSuiteCollectionEntity testSuiteCollection,
             TestSuiteCollectionExecutedEntity executedEntity, LauncherManager launcherManager,
-            ReportCollectionEntity reportCollection,Map<String,Object> globalVariables) throws ExecutionException {
+            ReportCollectionEntity reportCollection, Map<String, Object> globalVariables, boolean isConsole)
+            throws ExecutionException {
         List<ReportableLauncher> tsLaunchers = new ArrayList<>();
         for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollection.getTestSuiteRunConfigurations()) {
             if (!tsRunConfig.isRunEnabled()) {
                 continue;
             }
-            ConsoleLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,globalVariables);
+            ReportableLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,
+                    globalVariables, isConsole);
+
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
                     .getExecutedEntity();
@@ -84,8 +114,9 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         return tsLaunchers;
     }
 
-    private static ConsoleLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
-            LauncherManager launcherManager, ReportCollectionEntity reportCollection,Map<String,Object> globalVariables) throws ExecutionException {
+    private static ReportableLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
+            LauncherManager launcherManager, ReportCollectionEntity reportCollection,
+            Map<String, Object> globalVariables, boolean isConsole) throws ExecutionException {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
             RunConfigurationDescription configDescription = tsRunConfig.getConfiguration();
@@ -96,7 +127,14 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             executedEntity.prepareTestCases();
             runConfig.setOverridingGlobalVariables(globalVariables);
             runConfig.build(testSuiteEntity, executedEntity);
-            SubConsoleLauncher launcher = new SubConsoleLauncher(launcherManager, runConfig, configDescription);
+            ReportableLauncher launcher = null;
+            if (isConsole) {
+                launcher = new SubConsoleLauncher(launcherManager, runConfig, configDescription);
+            } else {
+                launcher = LauncherProviderFactory.getInstance()
+                        .getIdeLauncherProvider()
+                        .getSubIDELauncher(launcherManager, runConfig, configDescription);
+            }
             reportCollection.getReportItemDescriptions()
                     .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configDescription));
             return launcher;

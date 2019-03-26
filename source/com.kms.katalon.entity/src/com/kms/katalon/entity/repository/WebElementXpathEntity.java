@@ -1,11 +1,9 @@
 package com.kms.katalon.entity.repository;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 
-public class WebElementXpathEntity implements Serializable {
+public class WebElementXpathEntity extends WebElementPropertyEntity {
 
     public static final String ref_element = "ref_element";
     
@@ -101,44 +99,5 @@ public class WebElementXpathEntity implements Serializable {
         // Compare BOTH names and values, otherwise it will causes very obscure behaviors
         return new EqualsBuilder().append(this.getName(), other.getName())
         		.append(this.getValue(), other.getValue()).isEquals();
-    }
-    
-    public enum MATCH_CONDITION {
-        EQUAL("equals"), NOT_EQUAL("not equal"), CONTAINS("contains"), NOT_CONTAIN("not contain"), STARTS_WITH(
-                "starts with"), ENDS_WITH("ends with"), MATCH_REGEX("matches regex"), NOT_MATCH_REGEX("not match regex");
-
-        private String text;
-
-        private MATCH_CONDITION(String value) {
-            this.text = value;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        @Override
-        public String toString() {
-            return this.text;
-        }
-
-        public static String[] getTextVlues() {
-            String[] values = new String[MATCH_CONDITION.values().length];
-            for (int i = 0; i < MATCH_CONDITION.values().length; i++) {
-                MATCH_CONDITION con = MATCH_CONDITION.values()[i];
-                values[i] = con.getText();
-            }
-            return values;
-        }
-
-        public static int indexOf(String text) {
-            for (int i = 0; i < MATCH_CONDITION.values().length; i++) {
-                MATCH_CONDITION con = MATCH_CONDITION.values()[i];
-                if (con.getText().equals(text)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
     }
 }

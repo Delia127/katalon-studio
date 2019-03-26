@@ -13,6 +13,7 @@ import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.IConsoleLauncher;
+import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.TestSuiteCollectionConsoleLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
@@ -52,6 +53,15 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
         Map<String,Object> globalVariables = super.getOverridingGlobalVariables();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,
                 rerunSetting,globalVariables);
+    }
+
+    @Override
+    public ILauncher getIDELauncher(ProjectEntity projectEntity, LauncherManager manager)
+            throws ExecutionException, InvalidConsoleArgumentException {
+        TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity, testSuiteCollectionOption.getValue());
+        Map<String,Object> globalVariables = super.getOverridingGlobalVariables();
+        return TestSuiteCollectionConsoleLauncher.newIDEInstance(testSuiteCollection, manager, reportableSetting,
+                rerunSetting, globalVariables);
     }
 
     private TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity projectEntity, String testSuiteCollectionID)

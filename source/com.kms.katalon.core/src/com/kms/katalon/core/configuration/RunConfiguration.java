@@ -35,6 +35,8 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 @SuppressWarnings("unchecked")
 public class RunConfiguration {
 	
+	public static final String SMART_XPATH_BUNDLE_ID = "com.katalon.katalon-studio-smart-xpath";
+
 	public static final String OVERRIDING_GLOBAL_VARIABLES = "overridingGlobalVariables";
 
     public static final String REPORT_FOLDER_PATH_PROPERTY = "reportFolder";
@@ -101,6 +103,8 @@ public class RunConfiguration {
     public static final String RECORD_CAPTURED_OBJECTS_FILE = "recordCapturedObjectsCache";
     
     public static final String AUTO_APPLY_NEIGHBOR_XPATHS = "autoApplyNeighborXpaths";
+    
+    public static final String PLUGIN_TEST_LISTENERS = "pluginTestListeners";
     
     private static String settingFilePath;
 
@@ -529,17 +533,17 @@ public class RunConfiguration {
         return getStringProperty(RECORD_CAPTURED_OBJECTS_FILE);
     }
     
-    public static Boolean getAutoApplyNeighborXpaths(){
-    	if(getProperty("com.katalon.katalon-studio-smart-xpath") != null){
-        	try {
-    			return (Boolean) new BundleSettingStore(getProjectDir(), "com.katalon.katalon-studio-smart-xpath", true).
-    					getBoolean("SmartXPathEnabled", false);
-    		} catch (IOException e) {
-    			KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
-    		}
-    	}
-    	return false;
-    }
+	public static Boolean shouldApplySmartXPath() {
+		if (getProperty(SMART_XPATH_BUNDLE_ID) != null) {
+			try {
+				return (Boolean) new BundleSettingStore(getProjectDir(), SMART_XPATH_BUNDLE_ID, true)
+						.getBoolean("SmartXPathEnabled", false);
+			} catch (IOException e) {
+				KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
+			}
+		}
+		return false;
+	}
     
     public static RunningMode getRunningMode() {
         return RunningMode.valueOf(getStringProperty(RUNNING_MODE));
@@ -551,6 +555,14 @@ public class RunConfiguration {
     		return new HashMap<String, Object>();
     	}
     	return overridingParameters;
+    }
+    
+    public static List<String> getPluginTestListeners() {
+        Object testListeners = getProperty(PLUGIN_TEST_LISTENERS);
+        if (testListeners != null) {
+            return (List<String>) testListeners;
+        }
+        return Collections.emptyList();
     }
     
     public static String getOverridingGlobalVariable(String globalVariableName){

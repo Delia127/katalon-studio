@@ -24,6 +24,7 @@ import com.kms.katalon.core.annotation.TearDownIfError;
 import com.kms.katalon.core.annotation.TearDownIfFailed;
 import com.kms.katalon.core.annotation.TearDownIfPassed;
 import com.kms.katalon.core.annotation.TearDownTestCase;
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.context.internal.ExecutionEventManager;
 import com.kms.katalon.core.context.internal.ExecutionListenerEvent;
@@ -182,6 +183,16 @@ public class TestCaseExecutor {
     }
 
     private void postExecution() {
+    	
+		if (RunConfiguration.getProperty(RunConfiguration.SMART_XPATH_BUNDLE_ID) != null) {
+
+			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_OPENING);
+			logger.logInfo(StringConstants.SMART_XPATH_VISIT_BELOW_LINK);
+			logger.logInfo(StringConstants.SMART_XPATH_DOCUMENT);
+			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_ENDING);
+			
+		}
+
         errorCollector.clearErrors();
         errorCollector.getErrors().addAll(0, parentErrors);
         if (testCaseContext.isMainTestCase()) {
