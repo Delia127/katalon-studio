@@ -172,23 +172,6 @@ pipeline {
             }
         }
 
-        stage('Repackage') {
-            steps {
-                script {
-                    if (BRANCH_NAME ==~ /.*release.*/) {
-                        dir("tools/repackage") {
-                            nodejs(nodeJSInstallationName: 'nodejs') {
-                                sh 'npm install'
-                                sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${config.version}"
-                                sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${config.version}"
-                                sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${config.version}"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Package .DMG file') {
             steps {
             script {
@@ -214,6 +197,23 @@ pipeline {
                             json = JsonOutput.prettyPrint(json)
                             writeFile(file: 'scan_info.json', text: json)
                             sh 'java -jar json-map-builder-1.0.0.jar'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Repackage') {
+            steps {
+                script {
+                    if (BRANCH_NAME ==~ /.*release.*/) {
+                        dir("tools/repackage") {
+                            nodejs(nodeJSInstallationName: 'nodejs') {
+                                sh 'npm install'
+                                sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${config.version}"
+                                sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${config.version}"
+                                sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${config.version}"
+                            }
                         }
                     }
                 }
