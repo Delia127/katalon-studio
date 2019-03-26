@@ -53,6 +53,12 @@ public class QuickStartDialog extends Dialog {
         createButton(parent, OPEN_PROJECT_ID, StringConstants.DIA_OPEN_PROJECT, false);
         createButton(parent, NEW_PROJECT_ID, StringConstants.DIA_NEW_PROJECT, true);
     }
+    
+    @Override
+    protected void buttonPressed(int buttonId) {
+        setReturnCode(buttonId);
+        close();
+    }
 
     @Override
     public void create() {
