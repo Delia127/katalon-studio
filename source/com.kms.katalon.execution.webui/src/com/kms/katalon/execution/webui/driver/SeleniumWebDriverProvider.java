@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.core.webui.util.FileExcutableUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 
 public class SeleniumWebDriverProvider {
@@ -56,6 +55,17 @@ public class SeleniumWebDriverProvider {
         return new File(ClassPathResolver.getConfigurationFolder() + File.separator + DRIVERS_FOLDER_NAME);
     }
 
+    private static void makeFileExecutable(String filePath) throws IOException {
+        File file = new File(filePath);
+        if (file.exists() && file.isFile()) {
+            Set<PosixFilePermission> perms = new HashSet<>();
+            for (PosixFilePermission permission : PosixFilePermission.values()) {
+                perms.add(permission);
+            }
+            Files.setPosixFilePermissions(file.toPath(), perms);
+        }
+    }
+
     public static String getChromeDriverPath() {
         try {
             switch (getOS()) {
@@ -90,7 +100,7 @@ public class SeleniumWebDriverProvider {
     private static String getChromeDriverPathForMac() throws IOException {
         String chromeDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "chromedriver_mac"
                 + File.separator + "chromedriver";
-        FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+        makeFileExecutable(chromeDriverPath);
         return chromeDriverPath;
     }
 
@@ -134,13 +144,13 @@ public class SeleniumWebDriverProvider {
             case OS_LINUX: {
                 String geckoDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "firefox_linux64" + File.separator
                         + "geckodriver";
-                FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                makeFileExecutable(geckoDriverPath);
                 return geckoDriverPath;
             }
             case OS_MACOSX: {
                 String geckoDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "firefox_mac"
                         + File.separator + "geckodriver";
-                FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                makeFileExecutable(geckoDriverPath);
                 return geckoDriverPath;
             }
         }

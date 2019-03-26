@@ -69,7 +69,6 @@ import com.kms.katalon.core.webui.driver.firefox.CFirefoxDriver47;
 import com.kms.katalon.core.webui.driver.firefox.CGeckoDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
-import com.kms.katalon.core.webui.util.FileExcutableUtil;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.core.webui.util.WebDriverProxyUtil;
@@ -876,9 +875,9 @@ public class DriverFactory {
             if (customeChromeLocationMac.exists()) {
                 try {
                     logger.logInfo("Custom chrome detected at location: " + customeChromeLocationMac.getAbsolutePath());
-                    FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+                    makeFileExecutable(chromeDriverPath);
                 } catch (IOException e) {
-                    logger.logInfo("Cannot make file chromedriver excutable" + customeChromeLocationMac.getAbsolutePath());
+                    logger.logInfo("Can't make file excutable");
                 }
                 return customeChromeLocationMac.getAbsolutePath();
             }
@@ -892,9 +891,9 @@ public class DriverFactory {
                     try {
                         logger.logInfo(
                                 "Custom chrome detected at location: " + customeChromeLocationLinux.getAbsolutePath());
-                        FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+                        makeFileExecutable(chromeDriverPath);
                     } catch (IOException e) {
-                        logger.logInfo("Cannot make file chromedriver excutable " + customeChromeLocationLinux.getAbsolutePath());
+                        logger.logInfo("Can't make file excutable");
                     }
                     return customeChromeLocationLinux.getAbsolutePath();
                 }
@@ -906,9 +905,9 @@ public class DriverFactory {
                     try {
                         logger.logInfo(
                                 "Custom chrome detected at location: " + customChromeLocationLinux32.getAbsolutePath());
-                        FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+                        makeFileExecutable(chromeDriverPath);
                     } catch (IOException e) {
-                        logger.logInfo("Cannot make file chromedriver excutable " + customChromeLocationLinux32.getAbsolutePath() );
+                        logger.logInfo("Can't make file excutable");
                     }
                     return customChromeLocationLinux32.getAbsolutePath();
                 }
@@ -947,9 +946,9 @@ public class DriverFactory {
             if (customeGeckoLocationMac.exists()) {
                 try {
                     logger.logInfo("Custom gecko detected at location: " + customeGeckoLocationMac.getAbsolutePath());
-                    FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                    makeFileExecutable(geckoDriverPath);
                 } catch (IOException e) {
-                    logger.logInfo("Cannot make file geckodriver excutable" + customeGeckoLocationMac.getAbsolutePath());
+                    logger.logInfo("Can't make file excutable");
                 }
                 return customeGeckoLocationMac.getAbsolutePath();
             }
@@ -962,9 +961,9 @@ public class DriverFactory {
                 if (customeGeckoLocationLinux.exists()) {
                     try {
                         logger.logInfo("Custom gecko detected at location: " + customeGeckoLocationLinux.getAbsolutePath());
-                        FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                        makeFileExecutable(geckoDriverPath);
                     } catch (IOException e) {
-                        logger.logInfo("Cannot make file geckodriver excutable" + customeGeckoLocationLinux.getAbsolutePath());
+                        logger.logInfo("Can't make file excutable");
                     }
                     return customeGeckoLocationLinux.getAbsolutePath();
                 }
@@ -976,9 +975,9 @@ public class DriverFactory {
                     try {
                         logger.logInfo(
                                 "Custom gecko detected at location: " + customGeckoLocationLinux32.getAbsolutePath());
-                        FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                        makeFileExecutable(geckoDriverPath);
                     } catch (IOException e) {
-                        logger.logInfo("Cannot make file geckodriver excutable" +customGeckoLocationLinux32.getAbsolutePath());
+                        logger.logInfo("Can't make file excutable");
                     }
                     return customGeckoLocationLinux32.getAbsolutePath();
 
@@ -987,6 +986,17 @@ public class DriverFactory {
         }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
                 StringConstants.CONF_PROPERTY_GECKO_DRIVER_PATH);
+    }
+
+    private static void makeFileExecutable(String filePath) throws IOException {
+        File file = new File(filePath);
+        if (file.exists() && file.isFile()) {
+            Set<PosixFilePermission> perms = new HashSet<>();
+            for (PosixFilePermission permission : PosixFilePermission.values()) {
+                perms.add(permission);
+            }
+            Files.setPosixFilePermissions(file.toPath(), perms);
+        }
     }
     private static int getWaitForIEHanging() {
         if (getExecutedBrowser() != WebUIDriverType.IE_DRIVER) {
