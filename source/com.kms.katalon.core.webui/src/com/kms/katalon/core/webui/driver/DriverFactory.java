@@ -10,15 +10,16 @@ import java.net.Proxy;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
+import java.nio.file.Files;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.BuildInfo;
 import org.openqa.selenium.Capabilities;
@@ -48,7 +49,6 @@ import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient;
-import org.openqa.selenium.remote.http.HttpClient.Builder;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.safari.SafariDriver;
 
@@ -60,7 +60,6 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
-import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
@@ -70,6 +69,7 @@ import com.kms.katalon.core.webui.driver.firefox.CFirefoxDriver47;
 import com.kms.katalon.core.webui.driver.firefox.CGeckoDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
+import com.kms.katalon.core.webui.util.FileExcutableUtil;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.core.webui.util.WebDriverProxyUtil;
@@ -81,9 +81,10 @@ import com.kms.katalon.selenium.driver.CRemoteWebDriver;
 import com.kms.katalon.selenium.driver.CSafariDriver;
 
 import io.appium.java_client.ios.IOSDriver;
+import com.kms.katalon.core.webui.util.OSUtil;
 
 public class DriverFactory {
-    
+
     private static final KeywordLogger logger = KeywordLogger.getInstance(DriverFactory.class);
 
     private static final int USING_MARIONETTEE_VERSION = 47;
@@ -165,8 +166,7 @@ public class DriverFactory {
         @Override
         protected EdgeDriverService initialValue() {
             return new EdgeDriverService.Builder().usingDriverExecutable(new File(getEdgeDriverPath()))
-                    .usingAnyFreePort()
-                    .build();
+                    .usingAnyFreePort().build();
         }
     };
 
@@ -231,44 +231,44 @@ public class DriverFactory {
 
         WebDriver webDriver = null;
         switch (driver) {
-            case FIREFOX_DRIVER:
-                webDriver = createNewFirefoxDriver(desireCapibilities);
-                break;
-            case IE_DRIVER:
-                webDriver = createNewIEDriver(desireCapibilities);
-                break;
-            case SAFARI_DRIVER:
-                webDriver = createNewSafariDriver(desireCapibilities);
-                break;
-            case CHROME_DRIVER:
-                webDriver = createNewChromeDriver(desireCapibilities);
-                break;
-            case REMOTE_WEB_DRIVER:
-            case KOBITON_WEB_DRIVER:
-                webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities);
-                break;
-            case ANDROID_DRIVER:
-            case IOS_DRIVER:
-                webDriver = WebMobileDriverFactory.createMobileDriver(driver);
-                break;
-            case EDGE_DRIVER:
-                webDriver = createNewEdgeDriver(driverPreferenceProps);
-                break;
-            case REMOTE_FIREFOX_DRIVER:
-                webDriver = createNewRemoteFirefoxDriver(desireCapibilities);
-                break;
-            case REMOTE_CHROME_DRIVER:
-                webDriver = createNewRemoteChromeDriver(desireCapibilities);
-                break;
-            case HEADLESS_DRIVER:
-                webDriver = createHeadlessChromeDriver(desireCapibilities);
-                break;
-            case FIREFOX_HEADLESS_DRIVER:
-                webDriver = createHeadlessFirefoxDriver(desireCapibilities);
-                break;
-            default:
-                throw new StepFailedException(
-                        MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
+        case FIREFOX_DRIVER:
+            webDriver = createNewFirefoxDriver(desireCapibilities);
+            break;
+        case IE_DRIVER:
+            webDriver = createNewIEDriver(desireCapibilities);
+            break;
+        case SAFARI_DRIVER:
+            webDriver = createNewSafariDriver(desireCapibilities);
+            break;
+        case CHROME_DRIVER:
+            webDriver = createNewChromeDriver(desireCapibilities);
+            break;
+        case REMOTE_WEB_DRIVER:
+        case KOBITON_WEB_DRIVER:
+            webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities);
+            break;
+        case ANDROID_DRIVER:
+        case IOS_DRIVER:
+            webDriver = WebMobileDriverFactory.createMobileDriver(driver);
+            break;
+        case EDGE_DRIVER:
+            webDriver = createNewEdgeDriver(driverPreferenceProps);
+            break;
+        case REMOTE_FIREFOX_DRIVER:
+            webDriver = createNewRemoteFirefoxDriver(desireCapibilities);
+            break;
+        case REMOTE_CHROME_DRIVER:
+            webDriver = createNewRemoteChromeDriver(desireCapibilities);
+            break;
+        case HEADLESS_DRIVER:
+            webDriver = createHeadlessChromeDriver(desireCapibilities);
+            break;
+        case FIREFOX_HEADLESS_DRIVER:
+            webDriver = createHeadlessFirefoxDriver(desireCapibilities);
+            break;
+        default:
+            throw new StepFailedException(
+                    MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
         }
         saveWebDriverSessionData(webDriver);
         return webDriver;
@@ -287,11 +287,12 @@ public class DriverFactory {
 
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
         if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
-            WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
+            WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities,
+                    "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
         } else {
             desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
-        
+
         return desireCapibilities;
     }
 
@@ -314,11 +315,11 @@ public class DriverFactory {
             remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
         }
         desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
-        
+
         HttpCommandExecutor executor = getExecutorForRemoteDriver(remoteWebServerUrl);
-        
+
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
-                        remoteWebServerUrl, remoteWebServerType));
+                remoteWebServerUrl, remoteWebServerType));
         if (!remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
             return new CRemoteWebDriver(executor, desireCapibilities, getActionDelay());
         }
@@ -332,13 +333,13 @@ public class DriverFactory {
             return new SwipeableAndroidDriver(executor, WebDriverPropertyUtil
                     .toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.android(), false));
         } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
-            return new IOSDriver(executor, WebDriverPropertyUtil
-                    .toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.iphone(), false));
+            return new IOSDriver(executor, WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
+                    DesiredCapabilities.iphone(), false));
         }
         throw new StepFailedException(MessageFormat.format(
                 StringConstants.DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER, platformName));
     }
-    
+
     private static HttpCommandExecutor getExecutorForRemoteDriver(String remoteWebServerUrl) 
             throws URISyntaxException, IOException, GeneralSecurityException {
         
@@ -349,6 +350,7 @@ public class DriverFactory {
                 url, clientFactory);
         return executor;
     }
+
     
     private static Factory getClientFactoryForRemoteDriverExecutor(Proxy proxy) {
         return new Factory() {
@@ -500,7 +502,6 @@ public class DriverFactory {
         }
         return StringUtils.EMPTY;
     }
-
     protected static WebDriver startExistingBrowser()
             throws MalformedURLException, MobileDriverInitializeException, ConnectException {
         String remoteDriverType = RunConfiguration.getExisingSessionDriverType();
@@ -547,41 +548,42 @@ public class DriverFactory {
             WebDriver webDriver = null;
             WebUIDriverType webUIDriver = (WebUIDriverType) driver;
             switch (webUIDriver) {
-                case FIREFOX_DRIVER:
-                    if (options instanceof FirefoxProfile) {
-                        DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
-                        desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
-                        webDriver = createNewFirefoxDriver(desiredCapabilities);
-                    } else if (options instanceof DesiredCapabilities) {
-                        System.setProperty("webdriver.gecko.driver", DriverFactory.getGeckoDriverPath());
-                        webDriver = new CFirefoxDriver(GeckoDriverService.createDefaultService(), (DesiredCapabilities) options);
-                    } else {
-                        webDriver = new CFirefoxDriver(DesiredCapabilities.firefox(), getActionDelay());
-                    }
+            case FIREFOX_DRIVER:
+                if (options instanceof FirefoxProfile) {
+                    DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
+                    desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
+                    webDriver = createNewFirefoxDriver(desiredCapabilities);
+                } else if (options instanceof DesiredCapabilities) {
+                    System.setProperty("webdriver.gecko.driver", DriverFactory.getGeckoDriverPath());
+                    webDriver = new CFirefoxDriver(GeckoDriverService.createDefaultService(),
+                            (DesiredCapabilities) options);
+                } else {
+                    webDriver = new CFirefoxDriver(DesiredCapabilities.firefox(), getActionDelay());
+                }
+                break;
+            case IE_DRIVER:
+                System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
+                if (options instanceof DesiredCapabilities) {
+                    webDriver = new InternetExplorerDriver(new InternetExplorerOptions((Capabilities) options));
                     break;
-                case IE_DRIVER:
-                    System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
-                    if (options instanceof DesiredCapabilities) {
-                        webDriver = new InternetExplorerDriver(new InternetExplorerOptions((Capabilities) options));
-                        break;
-                    }
-                    webDriver = new InternetExplorerDriver();
-                    break;
-                case SAFARI_DRIVER:
-                    if (options instanceof DesiredCapabilities) {
-                        webDriver = createNewSafariDriver((DesiredCapabilities) options);
-                    }
-                    break;
-                case CHROME_DRIVER:
-                    System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-                    if (options instanceof DesiredCapabilities) {
-                        ChromeDriver chromeDriver = new ChromeDriver((DesiredCapabilities) options);
-                        return chromeDriver;
-                    }
-                    break;
-                default:
-                    throw new StepFailedException(
-                            MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
+                }
+                webDriver = new InternetExplorerDriver();
+                break;
+            case SAFARI_DRIVER:
+                if (options instanceof DesiredCapabilities) {
+                    webDriver = createNewSafariDriver((DesiredCapabilities) options);
+                }
+                break;
+            case CHROME_DRIVER:
+                System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+                if (options instanceof DesiredCapabilities) {
+                    ChromeDriver chromeDriver = new ChromeDriver((DesiredCapabilities) options);
+                    return chromeDriver;
+                }
+                break;
+            default:
+                throw new StepFailedException(
+                        MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
             }
             localWebServerStorage.set(webDriver);
             setTimeout();
@@ -649,7 +651,8 @@ public class DriverFactory {
     /**
      * Get the current alert if there is one popped up
      * 
-     * @return the current alert if there is one popped up, or null it there is none
+     * @return the current alert if there is one popped up, or null it there is
+     *         none
      * @throws WebDriverException
      */
     public static Alert getAlert() throws WebDriverException {
@@ -713,7 +716,8 @@ public class DriverFactory {
     /**
      * Wait for an alert to pop up for a specific time
      * 
-     * @param timeOut the timeout to wait for the alert (in milliseconds)
+     * @param timeOut
+     *            the timeout to wait for the alert (in milliseconds)
      * @return
      */
     public static boolean waitForAlert(int timeOut) {
@@ -804,21 +808,115 @@ public class DriverFactory {
     }
 
     private static String getIEDriverPath() {
+        if (RunConfiguration.getOS().contains("64bit")) {
+            File customIELocation = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/iedriver_win64/IEDriverServer.exe");
+            if (customIELocation.exists()) {
+                logger.logInfo("Custom IEDriverServer detected at location: " + customIELocation.getAbsolutePath());
+                return customIELocation.getAbsolutePath();
+            }
+        } else {
+            File customIELocationWin32 = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/iedriver_win32/IEDriverServer.exe");
+            if (customIELocationWin32.exists()) {
+                logger.logInfo(
+                        "Custom IEDriverServer detected at location: " + customIELocationWin32.getAbsolutePath());
+                return customIELocationWin32.getAbsolutePath();
+            }
+        }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, IE_DRIVER_PATH_PROPERTY);
     }
 
     private static String getEdgeDriverPath() {
+        if (RunConfiguration.getOS().contains("64bit")) {
+            File customEdgeLocation = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/edgedriver_win64/MicrosoftWebDriver.exe");
+            if (customEdgeLocation.exists()) {
+                logger.logInfo("Custom edgedriver detected at location: " + customEdgeLocation.getAbsolutePath());
+                return customEdgeLocation.getAbsolutePath();
+            }
+        } else {
+            File customEdgeLocationWin32 = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/edgedriver_win32/MicrosoftWebDriver.exe");
+            if (customEdgeLocationWin32.exists()) {
+                logger.logInfo("Custom edgedriver detected at location: " + customEdgeLocationWin32.getAbsolutePath());
+                return customEdgeLocationWin32.getAbsolutePath();
+            }
+        }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EDGE_DRIVER_PATH_PROPERTY);
     }
-
     /**
      * Get the absolute path of the current ChromeDriver
      * 
      * @return the absolute path of the current ChromeDriver
      */
     public static String getChromeDriverPath() {
+        String os = RunConfiguration.getOS();
+        if (OSUtil.isWindows()) {
+            if (os.contains("64bit")) {
+                File customeChromeLocation = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/chromedriver_win64/chromedriver.exe");
+                if (customeChromeLocation.exists()) {
+                    logger.logInfo("Custom chrome detected at location: " + customeChromeLocation.getAbsolutePath());
+                    return customeChromeLocation.getAbsolutePath();
+                }
+            } else {
+                File customChromeLocationWin32 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/chromedriver_win32/chromedriver.exe");
+                if (customChromeLocationWin32.exists()) {
+                    logger.logInfo(
+                            "Custom chrome detected at location: " + customChromeLocationWin32.getAbsolutePath());
+                    return customChromeLocationWin32.getAbsolutePath();
+                }
+            }
+        }  else if (OSUtil.isMac()) {
+            File customeChromeLocationMac = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/chromedriver_mac64/chromedriver");
+            String chromeDriverPath = customeChromeLocationMac.getAbsolutePath();
+            if (customeChromeLocationMac.exists()) {
+                try {
+                    logger.logInfo("Custom chrome detected at location: " + customeChromeLocationMac.getAbsolutePath());
+                    FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+                } catch (IOException e) {
+                    logger.logInfo("Cannot make file chromedriver excutable" + customeChromeLocationMac.getAbsolutePath());
+                }
+                return customeChromeLocationMac.getAbsolutePath();
+            }
+        }
+        else {
+            if (os.contains("64bit")) {
+                File customeChromeLocationLinux = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/chromedriver_linux64/chromedriver");
+                String chromeDriverPath = customeChromeLocationLinux.getAbsolutePath();
+                if (customeChromeLocationLinux.exists()) {
+                    try {
+                        logger.logInfo(
+                                "Custom chrome detected at location: " + customeChromeLocationLinux.getAbsolutePath());
+                        FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+                    } catch (IOException e) {
+                        logger.logInfo("Cannot make file chromedriver excutable " + customeChromeLocationLinux.getAbsolutePath());
+                    }
+                    return customeChromeLocationLinux.getAbsolutePath();
+                }
+            } else {
+                File customChromeLocationLinux32 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/chromedriver_linux32/chromedriver");
+                String chromeDriverPath = customChromeLocationLinux32.getAbsolutePath();
+                if (customChromeLocationLinux32.exists()) {
+                    try {
+                        logger.logInfo(
+                                "Custom chrome detected at location: " + customChromeLocationLinux32.getAbsolutePath());
+                        FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+                    } catch (IOException e) {
+                        logger.logInfo("Cannot make file chromedriver excutable " + customChromeLocationLinux32.getAbsolutePath() );
+                    }
+                    return customChromeLocationLinux32.getAbsolutePath();
+                }
+            }
+        }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, CHROME_DRIVER_PATH_PROPERTY);
     }
+
 
     /**
      * Get the absolute path of the current GeckoDriver
@@ -826,10 +924,70 @@ public class DriverFactory {
      * @return the absolute path of the current GeckoDriver
      */
     public static String getGeckoDriverPath() {
+        if (OSUtil.isWindows()) {
+            if (RunConfiguration.getOS().contains("64bit")) {
+                File customeGeckoLocation = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/geckodriver_win64/geckodriver.exe");
+                if (customeGeckoLocation.exists()) {
+                    logger.logInfo("Custom gecko detected at location: " + customeGeckoLocation.getAbsolutePath());
+                    return customeGeckoLocation.getAbsolutePath();
+                }
+            } else {
+                File customChromeLocationWin32 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/geckodriver_win32/geckodriver.exe");
+                if (customChromeLocationWin32.exists()) {
+                    logger.logInfo("Custom gecko detected at location: " + customChromeLocationWin32.getAbsolutePath());
+                    return customChromeLocationWin32.getAbsolutePath();
+                }
+            }
+        }  else if (OSUtil.isMac()) {
+            File customeGeckoLocationMac = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/geckodriver_mac64/geckodriver");
+            String geckoDriverPath = customeGeckoLocationMac.getAbsolutePath();
+            if (customeGeckoLocationMac.exists()) {
+                try {
+                    logger.logInfo("Custom gecko detected at location: " + customeGeckoLocationMac.getAbsolutePath());
+                    FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                } catch (IOException e) {
+                    logger.logInfo("Cannot make file geckodriver excutable" + customeGeckoLocationMac.getAbsolutePath());
+                }
+                return customeGeckoLocationMac.getAbsolutePath();
+            }
+        }
+        else{
+            if (RunConfiguration.getOS().contains("64bit")) {
+                File customeGeckoLocationLinux = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/geckodriver_linux64/geckodriver");
+                String geckoDriverPath = customeGeckoLocationLinux.getAbsolutePath();
+                if (customeGeckoLocationLinux.exists()) {
+                    try {
+                        logger.logInfo("Custom gecko detected at location: " + customeGeckoLocationLinux.getAbsolutePath());
+                        FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                    } catch (IOException e) {
+                        logger.logInfo("Cannot make file geckodriver excutable" + customeGeckoLocationLinux.getAbsolutePath());
+                    }
+                    return customeGeckoLocationLinux.getAbsolutePath();
+                }
+            } else {
+                File customGeckoLocationLinux32 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/geckodriver_linux32/geckodriver");
+                String geckoDriverPath = customGeckoLocationLinux32.getAbsolutePath();
+                if (customGeckoLocationLinux32.exists()) {
+                    try {
+                        logger.logInfo(
+                                "Custom gecko detected at location: " + customGeckoLocationLinux32.getAbsolutePath());
+                        FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                    } catch (IOException e) {
+                        logger.logInfo("Cannot make file geckodriver excutable" +customGeckoLocationLinux32.getAbsolutePath());
+                    }
+                    return customGeckoLocationLinux32.getAbsolutePath();
+
+                }
+            }
+        }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
                 StringConstants.CONF_PROPERTY_GECKO_DRIVER_PATH);
     }
-
     private static int getWaitForIEHanging() {
         if (getExecutedBrowser() != WebUIDriverType.IE_DRIVER) {
             throw new IllegalArgumentException(StringConstants.XML_LOG_ERROR_BROWSER_NOT_IE);
@@ -872,7 +1030,7 @@ public class DriverFactory {
             }
 
             if (RunConfiguration.getPort() > 0) {
-            	logger.logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
+                logger.logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
             }
         }
         return actionDelay;
@@ -919,20 +1077,24 @@ public class DriverFactory {
     }
 
     /**
-     * Get the url of the remove web driver is the current web driver type is remote
+     * Get the url of the remove web driver is the current web driver type is
+     * remote
      * 
-     * @return the url of the remove web driver is the current web driver type is remote, or null if it is not
+     * @return the url of the remove web driver is the current web driver type
+     *         is remote, or null if it is not
      */
     public static String getRemoteWebDriverServerUrl() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_URL);
     }
 
     /**
-     * Get the type of the remove web driver is the current web driver type is remote
+     * Get the type of the remove web driver is the current web driver type is
+     * remote
      * <p>
      * Possible values: "Selenium", "Appium"
      * 
-     * @return the type of the remove web driver is the current web driver type is remote, or null if it is not
+     * @return the type of the remove web driver is the current web driver type
+     *         is remote, or null if it is not
      */
     public static String getRemoteWebDriverServerType() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_TYPE);
@@ -954,18 +1116,18 @@ public class DriverFactory {
                 webDriver.quit();
                 if (driverType instanceof WebUIDriverType) {
                     switch ((WebUIDriverType) driverType) {
-                        case ANDROID_DRIVER:
-                        case IOS_DRIVER:
-                            WebMobileDriverFactory.closeDriver();
-                            break;
-                        case EDGE_DRIVER:
-                            EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
-                            if (edgeDriverService.isRunning()) {
-                                edgeDriverService.stop();
-                            }
-                            break;
-                        default:
-                            break;
+                    case ANDROID_DRIVER:
+                    case IOS_DRIVER:
+                        WebMobileDriverFactory.closeDriver();
+                        break;
+                    case EDGE_DRIVER:
+                        EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
+                        if (edgeDriverService.isRunning()) {
+                            edgeDriverService.stop();
+                        }
+                        break;
+                    default:
+                        break;
 
                     }
                 }
@@ -1015,7 +1177,8 @@ public class DriverFactory {
 
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 
