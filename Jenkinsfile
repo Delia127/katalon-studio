@@ -3,6 +3,7 @@
 import hudson.model.Result
 import hudson.model.Run
 import jenkins.model.CauseOfInterruption.UserInterruption
+import groovy.json.JsonOutput
 
 pipeline {
     agent any
@@ -16,6 +17,21 @@ pipeline {
     }
 
     stages {
+        stage('Input') {
+            steps {
+                script {
+                    if (BRANCH_NAME ==~ /.*release.*/) {
+                        def input = input(id: 'buildConfig', message: 'Release?', parameters: [
+                            string(name: "version", description: "Release version", defaultValue: "3.0.5")
+                        ])
+                        config.version = input
+                    } else {
+                        config.version = "3.0.5"
+                    }
+                }   
+            }
+        }
+
         stage('Prepare') {
             steps {
                 script {
@@ -26,6 +42,28 @@ pipeline {
                 }
             }
         }
+
+        stage('Update version') {
+            steps {
+                script {
+                    echo "Version: ${config.version}"
+                    dir('source/com.kms.katalon') {
+                        script {
+                            if (BRANCH_NAME ==~ /.*release.*/) {
+                                def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
+                                versionMapping = versionMapping.replaceAll(/1=.*/, "1=${config.version}")
+                                writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
+                                if (!fileExists('buildNumber.properties')) {
+                                    sh 'touch buildNumber.properties'
+                                }
+                                writeFile(encoding: 'UTF-8', file: 'buildNumber.properties', text: "buildNumber0=0")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Building') {
                 // Start maven commands to get dependencies
             steps {
@@ -65,8 +103,13 @@ pipeline {
                                 }
 
                             } else {
-                                echo "Building: qTest Dev"
-                                sh 'mvn -pl \\!com.kms.katalon.product clean verify -P dev'
+                                if (BRANCH_NAME ==~ /.*qtest.*/) {
+                                    echo "Building: qTest Prod"
+                                    sh 'mvn -pl \\!com.kms.katalon.product clean verify -P dev'
+                                } else {
+                                    echo "Building: Standard Prod"
+                                    sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P dev'
+                                }
                             }
 
                             // Generate API docs
@@ -95,7 +138,7 @@ pipeline {
             steps {
                 dir("source/com.kms.katalon.product/target/products") {
                     script {
-                        if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/)) {
+                        if (!(BRANCH_NAME ==~ /.*qtest.*/)) {
                             sh "cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -106,12 +149,12 @@ pipeline {
                                         flattenFiles: true,
                                         targetLocation: "${env.tmpDir}")
                             ])
-            }
+                        }
                     }
                 }
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
-                        if (!(BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/))) {
+                        if (BRANCH_NAME ==~ /.*qtest.*/) {
                             sh "cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -128,6 +171,23 @@ pipeline {
             }
         }
 
+        stage('Repackage') {
+            steps {
+                script {
+                    if (BRANCH_NAME ==~ /.*release.*/) {
+                        dir("tools/repackage") {
+                            nodejs(nodeJSInstallationName: 'nodejs') {
+                                sh 'npm install'
+                                sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${config.version}"
+                                sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${config.version}"
+                                sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${config.version}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Package .DMG file') {
             steps {
             script {
@@ -136,6 +196,26 @@ pipeline {
                        sh "./package.sh ${env.tmpDir}"
             }
         }
+            }
+        }
+
+        stage('Generate update packages') {
+            steps {
+                script {
+                    if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/) && !(BRANCH_NAME ==~ /.*beta.*/)) {
+                        dir("tools/updater") {
+                            def updateInfo = [
+                                buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
+                                destDir: "${tmpDir}/update",
+                                version: "${config.version}"
+                            ]
+                            def json = JsonOutput.toJson(updateInfo)
+                            json = JsonOutput.prettyPrint(json)
+                            writeFile(file: 'scan_info.json', text: json)
+                            sh 'java -jar json-map-builder-1.0.0.jar'
+                        }
+                    }
+                }
             }
         }
 
