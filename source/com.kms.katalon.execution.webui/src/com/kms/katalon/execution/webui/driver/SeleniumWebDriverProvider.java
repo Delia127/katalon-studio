@@ -55,7 +55,6 @@ public class SeleniumWebDriverProvider {
         // run as product
         return new File(ClassPathResolver.getConfigurationFolder() + File.separator + DRIVERS_FOLDER_NAME);
     }
-
     public static String getChromeDriverPath() {
         try {
             switch (getOS()) {

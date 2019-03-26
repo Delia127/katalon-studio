@@ -125,12 +125,13 @@ public class AnalyticsAuthorizationHandler {
     public static int getDefaultTeamIndex(AnalyticsSettingStore analyticsSettingStore, List<AnalyticsTeam> teams) {
         int selectionIndex = 0;
         try {
-            AnalyticsTeam storedProject = analyticsSettingStore.getTeam();
-            if (storedProject != null && storedProject.getId() != null && teams != null) {
+            AnalyticsTeam storedTeam = analyticsSettingStore.getTeam();
+            if (storedTeam != null && storedTeam.getId() != null && teams != null) {
                 for (int i = 0; i < teams.size(); i++) {
                     AnalyticsTeam p = teams.get(i);
-                    if (p.getId() == storedProject.getId()) {
+                    if (storedTeam.getId().equals(p.getId())) {
                         selectionIndex = i;
+                        return selectionIndex;
                     }
                 }
             }

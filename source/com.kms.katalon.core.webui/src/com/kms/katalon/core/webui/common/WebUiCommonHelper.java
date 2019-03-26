@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
@@ -817,7 +818,12 @@ public class WebUiCommonHelper extends KeywordHelper {
 		for (int i = 0; i < allXPaths.size(); i++) {
 			TestObjectXpath thisXPath = allXPaths.get(i);
 			By byThisXPath = By.xpath(thisXPath.getValue());
-			List<WebElement> elementsFoundByThisXPath = webDriver.findElements(byThisXPath);
+			List<WebElement> elementsFoundByThisXPath = null;
+			try {
+				elementsFoundByThisXPath = webDriver.findElements(byThisXPath);
+			} catch (InvalidSelectorException e) {
+				// do nothing
+			}
 			if (elementsFoundByThisXPath != null && elementsFoundByThisXPath.size() > 0) {
 
 				SmartXPathController.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FOUND_WEB_ELEMENT_WITH_THIS_SMART_XPATH,

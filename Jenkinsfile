@@ -3,6 +3,9 @@
 import hudson.model.Result
 import hudson.model.Run
 import jenkins.model.CauseOfInterruption.UserInterruption
+import groovy.json.JsonOutput
+
+def config = [:]
 
 pipeline {
     agent any
@@ -16,6 +19,21 @@ pipeline {
     }
 
     stages {
+        stage('Input') {
+            steps {
+                script {
+                    if (BRANCH_NAME ==~ /.*release.*/) {
+                        def input = input(id: 'buildConfig', message: 'Release?', parameters: [
+                            string(name: "version", description: "Release version", defaultValue: "3.0.5")
+                        ])
+                        config.version = input
+                    } else {
+                        config.version = "3.0.5"
+                    }
+                }   
+            }
+        }
+
         stage('Prepare') {
             steps {
                 script {
@@ -26,6 +44,24 @@ pipeline {
                 }
             }
         }
+
+         stage('Update version') {
+            steps {
+                echo "Version: ${config.version}"
+                dir('source/com.kms.katalon') {
+                    script {
+                        def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
+                        versionMapping = versionMapping.replaceAll(/1=.*/, "1=${config.version}")
+                        writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
+                        if (!fileExists('buildNumber.properties')) {
+                            sh 'touch buildNumber.properties'
+                        }
+                        writeFile(encoding: 'UTF-8', file: 'buildNumber.properties', text: "buildNumber0=0")
+                    }
+                }
+            }
+        }
+        
         stage('Building') {
                 // Start maven commands to get dependencies
             steps {
@@ -136,6 +172,26 @@ pipeline {
                        sh "./package.sh ${env.tmpDir}"
             }
         }
+            }
+        }
+
+        stage('Generate update packages') {
+            steps {
+                script {
+                    if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/) && !(BRANCH_NAME ==~ /.*beta.*/)) {
+                        dir("tools/updater") {
+                            def updateInfo = [
+                                buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
+                                destDir: "${tmpDir}/update",
+                                version: "${config.version}"
+                            ]
+                            def json = JsonOutput.toJson(updateInfo)
+                            json = JsonOutput.prettyPrint(json)
+                            writeFile(file: 'scan_info.json', text: json)
+                            sh 'java -jar json-map-builder-1.0.0.jar'
+                        }
+                    }
+                }
             }
         }
 
