@@ -8,14 +8,26 @@ import java.util.Map;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.entity.DefaultReportSetting;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
-import com.kms.katalon.execution.exception.ExecutionException;
 
 public abstract class ReportableLauncherOptionParser implements LauncherOptionParser {
     protected DefaultReportSetting reportableSetting;
 
     protected DefaultRerunSetting rerunSetting;
+    
+    protected StringConsoleOption executionUUIDOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return ConsoleMain.EXECUTION_UUID_OPTION;
+        }
+
+        @Override
+        public boolean isRequired() {
+            return false;
+        }
+    };
     
     private static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
 
@@ -43,11 +55,15 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
                 allOptions.addAll(overridingOptions);
             }
         }
+        allOptions.add(executionUUIDOption);
         return allOptions;
     }
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
+            if (consoleOption == executionUUIDOption){
+                consoleOption.setValue(argumentValue);
+            }
             for (ConsoleOption<?> option : overridingOptions) {
                 if (option.getOption().equals(consoleOption.getOption())) {
                     option.setValue(argumentValue);

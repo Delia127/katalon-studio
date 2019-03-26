@@ -8,9 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.katalon.platform.api.exception.PlatformException;
-import com.katalon.platform.api.service.ApplicationManager;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -110,7 +107,6 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 			return false;
 		}
 	};
-
     
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
@@ -176,6 +172,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             }
             runConfig.setExecutionProfile(executionProfile);
             runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
+            runConfig.setExecutionUUID(executionUUIDOption.getValue());
             runConfig.build(testSuite, executedEntity);
             GlobalVariableController.getInstance().
             generateGlobalVariableLibFile(project, null);

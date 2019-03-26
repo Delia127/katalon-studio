@@ -38,8 +38,14 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
                 reportCollection);
     }
 
-    public static TestSuiteCollectionConsoleLauncher newInstance(TestSuiteCollectionEntity testSuiteCollection,
-            LauncherManager parentManager, Reportable reportable, Rerunable rerunable,Map<String,Object> globalVariables) throws ExecutionException {
+    public static TestSuiteCollectionConsoleLauncher newInstance(
+            TestSuiteCollectionEntity testSuiteCollection,
+            LauncherManager parentManager,
+            Reportable reportable,
+            Rerunable rerunable,
+            Map<String,Object> globalVariables,
+            String executionUUID) throws ExecutionException {
+        
         TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
         executedEntity.setReportable(reportable);
         executedEntity.setRerunable(rerunable);
@@ -50,7 +56,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
             TestSuiteCollectionConsoleLauncher testSuiteCollectionConsoleLauncher = new TestSuiteCollectionConsoleLauncher(
                     executedEntity, parentManager,
-                    buildSubLaunchers(testSuiteCollection, executedEntity, parentManager, reportCollection, globalVariables),
+                    buildSubLaunchers(testSuiteCollection, executedEntity, parentManager, reportCollection, globalVariables, executionUUID),
                     reportCollection);
 
             ReportController.getInstance().updateReportCollection(reportCollection);
@@ -60,15 +66,20 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         }
     }
 
-    private static List<ReportableLauncher> buildSubLaunchers(TestSuiteCollectionEntity testSuiteCollection,
-            TestSuiteCollectionExecutedEntity executedEntity, LauncherManager launcherManager,
-            ReportCollectionEntity reportCollection,Map<String,Object> globalVariables) throws ExecutionException {
+    private static List<ReportableLauncher> buildSubLaunchers(
+            TestSuiteCollectionEntity testSuiteCollection,
+            TestSuiteCollectionExecutedEntity executedEntity, 
+            LauncherManager launcherManager,
+            ReportCollectionEntity reportCollection,
+            Map<String,Object> globalVariables,
+            String executionUUID) throws ExecutionException {
+        
         List<ReportableLauncher> tsLaunchers = new ArrayList<>();
         for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollection.getTestSuiteRunConfigurations()) {
             if (!tsRunConfig.isRunEnabled()) {
                 continue;
             }
-            ConsoleLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,globalVariables);
+            ConsoleLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection, globalVariables, executionUUID);
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
                     .getExecutedEntity();
@@ -84,8 +95,13 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         return tsLaunchers;
     }
 
-    private static ConsoleLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
-            LauncherManager launcherManager, ReportCollectionEntity reportCollection,Map<String,Object> globalVariables) throws ExecutionException {
+    private static ConsoleLauncher buildLauncher(
+            final TestSuiteRunConfiguration tsRunConfig,
+            LauncherManager launcherManager, 
+            ReportCollectionEntity reportCollection, 
+            Map<String,Object> globalVariables,
+            String executionUUID) throws ExecutionException {
+        
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
             RunConfigurationDescription configDescription = tsRunConfig.getConfiguration();
@@ -95,6 +111,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuiteEntity);
             executedEntity.prepareTestCases();
             runConfig.setOverridingGlobalVariables(globalVariables);
+            runConfig.setExecutionUUID(executionUUID);
             runConfig.build(testSuiteEntity, executedEntity);
             SubConsoleLauncher launcher = new SubConsoleLauncher(launcherManager, runConfig, configDescription);
             reportCollection.getReportItemDescriptions()
