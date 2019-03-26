@@ -444,7 +444,7 @@ public class DriverFactory {
         if (firefoxMajorVersion >= USING_MARIONETTEE_VERSION) {
             return CFirefoxDriver47.from(desiredCapabilities, actionDelay);
         }
-        return new CFirefoxDriver(desiredCapabilities, actionDelay);
+        return new CGeckoDriver(desiredCapabilities, actionDelay);
     }
 
     private static WebDriver createHeadlessFirefoxDriver(DesiredCapabilities desiredCapibilities) {

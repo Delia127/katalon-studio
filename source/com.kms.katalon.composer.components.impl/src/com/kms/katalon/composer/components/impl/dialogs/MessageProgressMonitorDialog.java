@@ -63,6 +63,9 @@ public class MessageProgressMonitorDialog extends ProgressMonitorDialogWithThrea
     }
 
     public void appendDetails(String text) {
+        if (txtDetails.isDisposed()) {
+            return;
+        }
         txtDetails.append(text);
         txtDetails.setTopIndex(txtDetails.getLineCount() - 1);
     }
