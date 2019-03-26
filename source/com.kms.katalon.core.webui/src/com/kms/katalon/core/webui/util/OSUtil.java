@@ -18,5 +18,12 @@ public class OSUtil {
     public static boolean isSolaris() {
         return (OS.indexOf("sunos") >= 0);
     }
+    public static boolean is64Bit(){
+        String pFilesX86 = System.getenv("ProgramFiles(X86)");
+        if (pFilesX86 !=(null)){
+          return true;
+        }
+        return false;
+        }
 
 }

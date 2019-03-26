@@ -10,15 +10,12 @@ import java.net.Proxy;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.attribute.PosixFilePermission;
 import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.nio.file.Files;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.BuildInfo;
@@ -808,7 +805,7 @@ public class DriverFactory {
     }
 
     private static String getIEDriverPath() {
-        if (RunConfiguration.getOS().contains("64bit")) {
+        if (OSUtil.is64Bit()) {
             File customIELocation = new File(RunConfiguration.getProjectDir(),
                     "Include/drivers/iedriver_win64/IEDriverServer.exe");
             if (customIELocation.exists()) {
@@ -828,7 +825,7 @@ public class DriverFactory {
     }
 
     private static String getEdgeDriverPath() {
-        if (RunConfiguration.getOS().contains("64bit")) {
+        if (OSUtil.is64Bit()) {
             File customEdgeLocation = new File(RunConfiguration.getProjectDir(),
                     "Include/drivers/edgedriver_win64/MicrosoftWebDriver.exe");
             if (customEdgeLocation.exists()) {
@@ -851,9 +848,8 @@ public class DriverFactory {
      * @return the absolute path of the current ChromeDriver
      */
     public static String getChromeDriverPath() {
-        String os = RunConfiguration.getOS();
         if (OSUtil.isWindows()) {
-            if (os.contains("64bit")) {
+            if (OSUtil.is64Bit()) {
                 File customeChromeLocation = new File(RunConfiguration.getProjectDir(),
                         "Include/drivers/chromedriver_win64/chromedriver.exe");
                 if (customeChromeLocation.exists()) {
@@ -884,7 +880,7 @@ public class DriverFactory {
             }
         }
         else {
-            if (os.contains("64bit")) {
+            if (OSUtil.is64Bit()) {
                 File customeChromeLocationLinux = new File(RunConfiguration.getProjectDir(),
                         "Include/drivers/chromedriver_linux64/chromedriver");
                 String chromeDriverPath = customeChromeLocationLinux.getAbsolutePath();
@@ -925,7 +921,7 @@ public class DriverFactory {
      */
     public static String getGeckoDriverPath() {
         if (OSUtil.isWindows()) {
-            if (RunConfiguration.getOS().contains("64bit")) {
+            if (OSUtil.is64Bit()) {
                 File customeGeckoLocation = new File(RunConfiguration.getProjectDir(),
                         "Include/drivers/geckodriver_win64/geckodriver.exe");
                 if (customeGeckoLocation.exists()) {
@@ -955,7 +951,7 @@ public class DriverFactory {
             }
         }
         else{
-            if (RunConfiguration.getOS().contains("64bit")) {
+            if (OSUtil.is64Bit()) {
                 File customeGeckoLocationLinux = new File(RunConfiguration.getProjectDir(),
                         "Include/drivers/geckodriver_linux64/geckodriver");
                 String geckoDriverPath = customeGeckoLocationLinux.getAbsolutePath();
