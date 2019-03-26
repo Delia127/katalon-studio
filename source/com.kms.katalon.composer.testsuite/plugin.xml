@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
    <extension-point id="integration" name="com.kms.katalon.composer.testsuite" schema="schema/integration.exsd"/>
+   <extension-point id="view" name="com.kms.katalon.composer.testsuite" schema="schema/view.exsd"/>
 
    <extension
          id="com.kms.katalon.composer.testsuite.fragment"
@@ -13,6 +14,13 @@
          point="com.kms.katalon.composer.explorer.delete">
       <client
             handler="com.kms.katalon.composer.testsuite.handlers.DeleteTestSuiteHandler">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.testsuite.view">
+      <client
+            product="com.kms.katalon.composer.testsuite.view.contributor.KatalonTestSuiteViewContributor"
+            view="com.kms.katalon.composer.testsuite.view.builder.KatalonTestSuiteUIViewBuilder">
       </client>
    </extension>
 

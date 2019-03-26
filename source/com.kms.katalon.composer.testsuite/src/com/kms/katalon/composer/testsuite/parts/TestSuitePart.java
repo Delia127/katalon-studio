@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.testsuite.parts;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -49,6 +51,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.TestSuiteEventConstants;
+import com.kms.katalon.composer.view.TestSuiteViewFactory;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
@@ -116,6 +119,8 @@ public class TestSuitePart implements EventHandler {
 			layoutExecutionInfo();
 		}
 	};
+	
+	private Map<String, Composite> viewCompositeMap = new HashMap<>();
 
 	@PostConstruct
 	public void createControls(Composite parent, MPart mpart) {
@@ -143,6 +148,7 @@ public class TestSuitePart implements EventHandler {
 		registerControlListeners();
 
 		layoutExecutionInfo();
+		
 		childrenView.layout();
 	}
 
@@ -195,7 +201,7 @@ public class TestSuitePart implements EventHandler {
             }
         });
     }
-
+    
     private void registerControlListeners() {
         btnAddMailRcp.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -385,11 +391,23 @@ public class TestSuitePart implements EventHandler {
         compositeMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         createExecutionInformationComposite();
+        
+        createViewsFromViewFactory(compositeMain);
 
         compositeTablePart = childrenView.createCompositeTestCase(compositeMain);
     }
 
-    private void redrawBtnExpandExecutionInfo() {
+    private void createViewsFromViewFactory(Composite parent) {
+		TestSuiteViewFactory.getInstance().getSortedBuilders().forEach(entryBuilder -> {
+			String name = entryBuilder.getName();
+			AbstractTestSuiteUIDescriptionView descView = entryBuilder.getView(getTestSuite(), getMPart(), parentTestSuiteCompositePart);
+			Composite view = new VisibilityControlledComposite(name, descView)
+					.createComposite(parent);
+			viewCompositeMap.put(name, view);
+		});
+	}
+
+	private void redrawBtnExpandExecutionInfo() {
         btnExpandExecutionComposite.getParent().setRedraw(false);
         if (isExecutionCompositeExpanded) {
             btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN);

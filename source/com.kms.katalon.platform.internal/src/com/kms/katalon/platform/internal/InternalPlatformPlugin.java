@@ -19,6 +19,7 @@ import org.osgi.service.event.EventHandler;
 import com.katalon.platform.internal.console.LauncherOptionParserPlatformBuilderImpl;
 import com.kms.katalon.composer.report.platform.PlatformReportIntegrationViewBuilder;
 import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationPlatformBuilder;
+import com.kms.katalon.composer.testsuite.platform.PlatformTestSuiteUIViewBuilder;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.execution.platform.DynamicQueryingTestSuiteExtensionProvider;
 import com.kms.katalon.execution.platform.PlatformLauncherOptionParserBuilder;
@@ -26,6 +27,7 @@ import com.kms.katalon.platform.internal.event.ProjectEventPublisher;
 import com.kms.katalon.platform.internal.report.ReportIntegrationPlatformBuilderImpl;
 import com.kms.katalon.platform.internal.testcase.TestCaseIntegrationPlatformBuilderImpl;
 import com.kms.katalon.platform.internal.testsuite.DynamicQueryingTestSuiteProviderImpl;
+import com.kms.katalon.platform.internal.testsuite.TestSuiteUIViewPlatformBuilderImpl;
 
 public class InternalPlatformPlugin implements BundleActivator {
 
@@ -72,6 +74,11 @@ public class InternalPlatformPlugin implements BundleActivator {
                         .make(ReportIntegrationPlatformBuilderImpl.class, workbenchEclipseContext);
                 bundleContext.registerService(PlatformReportIntegrationViewBuilder.class, reportIntegrationViewBuilder,
                         null);
+                
+                PlatformTestSuiteUIViewBuilder testSuiteUiViewBuilder = ContextInjectionFactory
+                		.make(TestSuiteUIViewPlatformBuilderImpl.class, workbenchEclipseContext);
+                bundleContext.registerService(com.kms.katalon.composer.testsuite.platform.PlatformTestSuiteUIViewBuilder.class, testSuiteUiViewBuilder, 
+                		null);
             }
         });
         
