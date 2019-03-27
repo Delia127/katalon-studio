@@ -36,14 +36,12 @@ pipeline {
         stage('Get version') {
             steps {
                 script {
-                    dir('source/com.kms.katalon') {
-                        Properties properties = new Properties()
-                        File propertiesFile = new File('about.mappings')
-                        propertiesFile.withInputStream {
-                            properties.load(it)
-                        }
-                        config.version = properties.'1'
+                    Properties properties = new Properties()
+                    File propertiesFile = new File('${WORKSPACE}/source/com.kms.katalon/about.mappings')
+                    propertiesFile.withInputStream {
+                        properties.load(it)
                     }
+                    config.version = properties.'1'
                 }
             }
         }
