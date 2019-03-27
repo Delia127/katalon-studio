@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.intro;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -13,10 +14,6 @@ import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 
 public class QuickStartDialog extends Dialog {
-    
-    public static final int NEW_PROJECT_ID = 1025;
-    
-    public static final int OPEN_PROJECT_ID = 1026;
 
     private static final Point IMG_SIZE = new Point(960, 610);
 
@@ -50,15 +47,8 @@ public class QuickStartDialog extends Dialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, OPEN_PROJECT_ID, StringConstants.DIA_OPEN_PROJECT, false);
-        createButton(parent, NEW_PROJECT_ID, StringConstants.DIA_NEW_PROJECT, true);
-    }
-    
-    
-    @Override
-    protected void buttonPressed(int buttonId) {
-        setReturnCode(buttonId);
-        close();
+        createButton(parent, IDialogConstants.CANCEL_ID, StringConstants.DIA_OPEN_PROJECT, false);
+        createButton(parent, IDialogConstants.OK_ID, StringConstants.DIA_NEW_PROJECT, true);
     }
 
     @Override
