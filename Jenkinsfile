@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     Properties properties = new Properties()
-                    File propertiesFile = new File('${WORKSPACE}/source/com.kms.katalon/about.mappings')
+                    File propertiesFile = new File("${env.WORKSPACE}/source/com.kms.katalon/about.mappings")
                     propertiesFile.withInputStream {
                         properties.load(it)
                     }
