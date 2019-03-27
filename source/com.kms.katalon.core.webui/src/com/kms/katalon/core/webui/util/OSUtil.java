@@ -20,12 +20,12 @@ public class OSUtil {
     public static boolean isSolaris() {
         return (OS.indexOf("sunos") >= 0);
     }
-    public static boolean is64Bit(){
-        if (SystemUtils.OS_ARCH.endsWith("64")){
-          return true;
-        }
-        else if(SystemUtils.OS_ARCH.endsWith("86")){
-        return false;
+
+    public static boolean is64Bit() {
+        if (SystemUtils.OS_ARCH.endsWith("64")) {
+            return true;
+        } else if (SystemUtils.OS_ARCH.endsWith("86")) {
+            return false;
         }
         return false;
     }
