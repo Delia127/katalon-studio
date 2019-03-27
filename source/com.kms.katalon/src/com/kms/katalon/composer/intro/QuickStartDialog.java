@@ -59,12 +59,6 @@ public class QuickStartDialog extends Dialog {
         setReturnCode(buttonId);
         close();
     }
-    
-    @Override
-    protected void buttonPressed(int buttonId) {
-        setReturnCode(buttonId);
-        close();
-    }
 
     @Override
     public void create() {
