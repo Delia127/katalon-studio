@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationViewBuilder;
 import com.kms.katalon.composer.testsuite.platform.PlatformTestSuiteUIViewBuilder;
 import com.kms.katalon.composer.testsuite.view.builder.TestSuiteUIViewBuilder;
 import com.kms.katalon.controller.ProjectController;
 
-@SuppressWarnings("unused")
+
 public class TestSuiteViewFactory {
 	
 	private static TestSuiteViewFactory _instance;

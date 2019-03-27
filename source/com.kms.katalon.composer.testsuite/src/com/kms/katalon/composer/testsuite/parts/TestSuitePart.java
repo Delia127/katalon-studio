@@ -401,7 +401,7 @@ public class TestSuitePart implements EventHandler {
 		TestSuiteViewFactory.getInstance().getSortedBuilders().forEach(entryBuilder -> {
 			String name = entryBuilder.getName();
 			AbstractTestSuiteUIDescriptionView descView = entryBuilder.getView(getTestSuite(), getMPart(), parentTestSuiteCompositePart);
-			Composite view = new VisibilityControlledComposite(name, descView)
+			Composite view = new ExpandableTestSuiteComposite(name, descView)
 					.createComposite(parent);
 			viewCompositeMap.put(name, view);
 		});

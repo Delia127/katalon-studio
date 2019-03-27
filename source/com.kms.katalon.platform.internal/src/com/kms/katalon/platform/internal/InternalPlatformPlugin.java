@@ -18,7 +18,9 @@ import org.osgi.service.event.EventHandler;
 
 import com.katalon.platform.internal.console.LauncherOptionParserPlatformBuilderImpl;
 import com.kms.katalon.composer.report.platform.PlatformReportIntegrationViewBuilder;
+import com.kms.katalon.composer.testcase.parts.integration.TestCaseIntegrationPlatformBuilder;
 import com.kms.katalon.composer.testsuite.platform.PlatformTestSuiteUIViewBuilder;
+import com.kms.katalon.composer.testsuite.collection.platform.PlatformTestSuiteCollectionUIViewBuilder;
 import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegrationPlatformBuilder;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.execution.platform.DynamicQueryingTestSuiteExtensionProvider;
@@ -27,6 +29,7 @@ import com.kms.katalon.platform.internal.event.ProjectEventPublisher;
 import com.kms.katalon.platform.internal.report.ReportIntegrationPlatformBuilderImpl;
 import com.kms.katalon.platform.internal.testcase.TestCaseIntegrationPlatformBuilderImpl;
 import com.kms.katalon.platform.internal.testsuite.DynamicQueryingTestSuiteProviderImpl;
+import com.kms.katalon.platform.internal.testsuite.TestSuiteCollectionUIViewPlatformBuilderImpl;
 import com.kms.katalon.platform.internal.testsuite.TestSuiteUIViewPlatformBuilderImpl;
 import com.kms.katalon.platform.internal.testsuite.TestSuiteIntegrationPlatformBuilderImpl;
 
@@ -82,7 +85,12 @@ public class InternalPlatformPlugin implements BundleActivator {
                 
                 PlatformTestSuiteUIViewBuilder testSuiteUiViewBuilder = ContextInjectionFactory
                 		.make(TestSuiteUIViewPlatformBuilderImpl.class, workbenchEclipseContext);
-                bundleContext.registerService(com.kms.katalon.composer.testsuite.platform.PlatformTestSuiteUIViewBuilder.class, testSuiteUiViewBuilder, 
+                bundleContext.registerService(PlatformTestSuiteUIViewBuilder.class, testSuiteUiViewBuilder, 
+                		null);
+                
+                PlatformTestSuiteCollectionUIViewBuilder testSuiteCollectionUiViewBuilder = ContextInjectionFactory
+                		.make(TestSuiteCollectionUIViewPlatformBuilderImpl.class, workbenchEclipseContext);
+                bundleContext.registerService(PlatformTestSuiteCollectionUIViewBuilder.class, testSuiteCollectionUiViewBuilder, 
                 		null);
             }
         });

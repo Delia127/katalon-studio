@@ -100,7 +100,10 @@ public class TestSuiteUIViewPlatformBuilderImpl implements PlatformTestSuiteUIVi
 
 		
 		public PluginTestSuiteUIView(String name, TestSuiteEntity testSuiteEntity, MPart mpart, TestSuiteUIView testSuiteUIView, SavableCompositePart parentPart) {
-			super(testSuiteEntity, mpart);			
+			super(testSuiteEntity, mpart);
+			this.testSuiteUiView = testSuiteUIView;
+			this.parentPart = parentPart;
+			this.mpart = mpart;
 		}
 
 		@Override
@@ -116,7 +119,12 @@ public class TestSuiteUIViewPlatformBuilderImpl implements PlatformTestSuiteUIVi
 	            }
 
 	            return container;
-		}		
+		}
+
+		@Override
+		public void postContainerCreated() {
+			testSuiteUiView.onPostCreateView();
+		}
 	}
 	
 	private static class PartActionServiceImpl implements PartActionService {

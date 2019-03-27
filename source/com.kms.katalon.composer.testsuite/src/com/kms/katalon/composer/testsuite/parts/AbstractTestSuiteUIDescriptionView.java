@@ -18,14 +18,25 @@ public abstract class AbstractTestSuiteUIDescriptionView {
 	
 	public abstract Composite createContainer(Composite parent);
 	
+	/**
+	 * This method should be called after {@link AbstractTestSuiteUIDescriptionView#createContainer} has returned
+	 * in order to initialize data for your controls
+	 */
+	public abstract void postContainerCreated();
+	
 	public void setDirty(boolean dirty) {
 		TestSuitePart testSuitePart = (TestSuitePart) mpart.getObject();
-		testSuitePart.setDirty(dirty);
+		if(testSuitePart != null){
+			testSuitePart.setDirty(dirty);
+		}
 	}
 	
 	public boolean isDirty() {
 		TestSuitePart testSuitePart = (TestSuitePart) mpart.getObject();
-		return testSuitePart.getMPart().isDirty();
+		if(testSuitePart != null){
+			return testSuitePart.getMPart().isDirty();
+		}
+		return false;
 	}
 	
 	public boolean hasDocumentation() {

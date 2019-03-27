@@ -13,7 +13,7 @@ import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 
-public class VisibilityControlledComposite {
+public class ExpandableTestSuiteComposite {
 	
 	private String name;
 	private AbstractTestSuiteUIDescriptionView descView;
@@ -33,7 +33,7 @@ public class VisibilityControlledComposite {
 		}
 	};
 	
-	public VisibilityControlledComposite(String name, AbstractTestSuiteUIDescriptionView descView) {
+	public ExpandableTestSuiteComposite(String name, AbstractTestSuiteUIDescriptionView descView) {
 		this.name = name;
 		this.descView = descView;
 		this.isExecutionCompositeExpanded = false;
@@ -62,7 +62,7 @@ public class VisibilityControlledComposite {
         lblExecutionInformation.setText(name);
 
         view = descView.createContainer(parent);
-        
+        descView.postContainerCreated();
         registerControlListener();
         
         layoutExecutionInfo();

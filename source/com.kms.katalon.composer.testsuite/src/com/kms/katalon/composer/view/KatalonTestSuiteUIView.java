@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.view;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -24,8 +27,11 @@ import org.eclipse.swt.widgets.Text;
 
 
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.parts.AbstractTestSuiteUIDescriptionView;
+import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class KatalonTestSuiteUIView extends AbstractTestSuiteUIDescriptionView {
 
@@ -56,6 +62,9 @@ public class KatalonTestSuiteUIView extends AbstractTestSuiteUIDescriptionView {
 	private Label lblMailRecipients;
 	
 	private MPart mpart;
+	
+    @Inject
+    private IEventBroker eventBroker;
 
 	public KatalonTestSuiteUIView(com.kms.katalon.entity.testsuite.TestSuiteEntity testSuiteEntity,
 			MPart mpart) {
@@ -109,7 +118,7 @@ public class KatalonTestSuiteUIView extends AbstractTestSuiteUIDescriptionView {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 txtUserDefinePageLoadTimeout.setEnabled(false);
-                // testSuiteEntity.setPageLoadTimeoutDefault(true);
+                testSuiteEntity.setPageLoadTimeoutDefault(true);
                 setDirty(true);
             }
         });
@@ -119,7 +128,7 @@ public class KatalonTestSuiteUIView extends AbstractTestSuiteUIDescriptionView {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 txtUserDefinePageLoadTimeout.setEnabled(true);
-                // testSuiteEntity.setPageLoadTimeoutDefault(false);
+                testSuiteEntity.setPageLoadTimeoutDefault(false);
                 setDirty(true);
             }
         });
@@ -165,7 +174,7 @@ public class KatalonTestSuiteUIView extends AbstractTestSuiteUIDescriptionView {
                         rerun = 100;
                         ((Text) e.getSource()).setText(String.valueOf(rerun));
                     }
-                    // getTestSuite().setNumberOfRerun(rerun);
+                    testSuiteEntity.setNumberOfRerun(rerun);
                 } catch (NumberFormatException ex) {}
             }
         });
@@ -174,7 +183,7 @@ public class KatalonTestSuiteUIView extends AbstractTestSuiteUIDescriptionView {
         rerunTestCaseOnly.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	// testSuiteEntity.setRerunFailedTestCasesOnly(rerunTestCaseOnly.getSelection());
+            	testSuiteEntity.setRerunFailedTestCasesOnly(rerunTestCaseOnly.getSelection());
             	setDirty(true);
             }
         });
@@ -295,10 +304,42 @@ public class KatalonTestSuiteUIView extends AbstractTestSuiteUIDescriptionView {
         btnClearMailRcp = new Button(compositeMailRcpButtons, SWT.FLAT);
         btnClearMailRcp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         btnClearMailRcp.setText(StringConstants.PA_BTN_CLEAR);
-        
+
         registerControlListeners();
         
         return compositeExecutionDetails;
 	}
+	
+	@Override
+	public void postContainerCreated() {
+        try {
+            loadTestSuiteInfo(super.testSuiteEntity);
+        } catch(Exception ex) {
+        	LoggerSingleton.logError(ex);
+        }
+	}
+	
+	
+    private void loadTestSuiteInfo(TestSuiteEntity testSuite) throws Exception {
+        txtRerun.setText(String.valueOf(testSuite.getNumberOfRerun()));
+        rerunTestCaseOnly.setSelection(testSuite.isRerunFailedTestCasesOnly());
+
+        // binding mailRecipient
+        listMailRcpViewer
+                .setInput(TestSuiteController.getInstance().mailRcpStringToArray(testSuite.getMailRecipient()));
+
+        // binding page load timeout values
+        short pageLoadTimeOut = testSuite.getPageLoadTimeout();
+        if (testSuite.isPageLoadTimeoutDefault()) {
+            radioUseDefaultPageLoadTimeout.setSelection(true);
+            radioUserDefinePageLoadTimeout.setSelection(false);
+            txtUserDefinePageLoadTimeout.setEnabled(false);
+        } else {
+            radioUseDefaultPageLoadTimeout.setSelection(false);
+            radioUserDefinePageLoadTimeout.setSelection(true);
+            txtUserDefinePageLoadTimeout.setEnabled(true);
+            txtUserDefinePageLoadTimeout.setText(Integer.toString(pageLoadTimeOut));
+        }
+    }
 
 }

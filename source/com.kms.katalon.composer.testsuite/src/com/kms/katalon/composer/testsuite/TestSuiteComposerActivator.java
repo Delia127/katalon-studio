@@ -13,8 +13,6 @@ import com.kms.katalon.composer.view.TestSuiteViewFactory;
 
 public class TestSuiteComposerActivator implements BundleActivator {
 
-public class TestSuiteComposerActivator implements BundleActivator {
-
     @Override
     public void start(BundleContext context) throws Exception {
         context.addServiceListener(new ServiceListener() {

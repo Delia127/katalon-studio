@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testsuite.collection.part;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.annotation.PostConstruct;
@@ -96,6 +97,7 @@ import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurati
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransfer;
+import com.kms.katalon.composer.testsuite.collection.view.TestSuiteCollectionViewFactory;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -148,7 +150,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     private Composite toolbarComposite, testSuiteTableComposite, compositeExecution, compositeExecutionHeader,
             compositeExecutionInformation;
-
+    
     private boolean isExecutionInfoCompositeExpanded;
 
     private Button btnSequential, btnParallel;
@@ -169,6 +171,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     };
 
     private Spinner spnMaxConcurrentThread;
+    
+	private Map<String, Composite> viewCompositeMap = new HashMap<>();
 
     @PostConstruct
     public void initialize(Composite parent, MPart mpart) {
@@ -292,12 +296,26 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
         createGeneralInformationComposite(parent);
 
+        createViewsFromViewFactory(parent);
+        
         createToolbarComposite(parent);
 
         createTableComposite(parent);
     }
 
-    private void createGeneralInformationComposite(Composite parent) {
+    private void createViewsFromViewFactory(Composite parent) {
+
+		TestSuiteCollectionViewFactory.getInstance().getSortedBuilders().forEach(entryBuilder -> {
+			String name = entryBuilder.getName();
+			AbstractTestSuiteCollectionUIDescriptionView descView 
+			= entryBuilder.getView(getTestSuiteCollection(), getMPart(), getMPart());
+			Composite view = new ExpandableTestSuiteCollectionComposite(name, descView)
+					.createComposite(parent);
+			viewCompositeMap.put(name, view);
+		});
+	}
+
+	private void createGeneralInformationComposite(Composite parent) {
         compositeExecution = new Composite(parent, SWT.NONE);
         compositeExecution.setBackground(ColorUtil.getCompositeBackgroundColor());
         compositeExecution.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -593,6 +611,10 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     public void markDirty() {
         mpart.setDirty(true);
     }
+    
+    public void setDirty(boolean dirty) {
+    	mpart.setDirty(dirty);
+    }
 
     @Override
     public boolean containsTestSuite(TestSuiteEntity testSuite) {
@@ -844,6 +866,10 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @PreDestroy
     public void onClose() {
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+    }
+    
+    public MPart getMPart() {
+    	return mpart;
     }
 
 }

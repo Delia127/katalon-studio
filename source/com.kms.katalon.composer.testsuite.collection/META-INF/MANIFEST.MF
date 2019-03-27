@@ -44,5 +44,8 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.composer.testsuite.collection.dialog,
- com.kms.katalon.composer.testsuite.collection.part.provider
+ com.kms.katalon.composer.testsuite.collection.part,
+ com.kms.katalon.composer.testsuite.collection.part.provider,
+ com.kms.katalon.composer.testsuite.collection.platform,
+ com.kms.katalon.composer.testsuite.collection.view.builder
 
