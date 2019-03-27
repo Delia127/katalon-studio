@@ -18,18 +18,33 @@ pipeline {
     }
 
     stages {
-        stage('Input') {
+        // stage('Input') {
+        //     steps {
+        //         script {
+        //             if (BRANCH_NAME ==~ /.*release.*/) {
+        //                 def input = input(id: 'buildConfig', message: 'Release?', parameters: [
+        //                     string(name: "version", description: "Release version", defaultValue: "3.0.5")
+        //                 ])
+        //                 config.version = input
+        //             } else {
+        //                 config.version = "3.0.5"
+        //             }
+        //         }
+        //     }
+        // }
+
+        stage('Get version') {
             steps {
                 script {
-                    if (BRANCH_NAME ==~ /.*release.*/) {
-                        def input = input(id: 'buildConfig', message: 'Release?', parameters: [
-                            string(name: "version", description: "Release version", defaultValue: "3.0.5")
-                        ])
-                        config.version = input
-                    } else {
-                        config.version = "3.0.5"
+                    dir('source/com.kms.katalon') {
+                        Properties properties = new Properties()
+                        File propertiesFile = new File('about.mappings')
+                        propertiesFile.withInputStream {
+                            properties.load(it)
+                        }
+                        config.version = properties.'1'
                     }
-                }   
+                }
             }
         }
 
@@ -44,26 +59,26 @@ pipeline {
             }
         }
 
-        stage('Update version') {
-            steps {
-                script {
-                    echo "Version: ${config.version}"
-                    dir('source/com.kms.katalon') {
-                        script {
-                            if (BRANCH_NAME ==~ /.*release.*/) {
-                                def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
-                                versionMapping = versionMapping.replaceAll(/1=.*/, "1=${config.version}")
-                                writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
-                                if (!fileExists('buildNumber.properties')) {
-                                    sh 'touch buildNumber.properties'
-                                }
-                                writeFile(encoding: 'UTF-8', file: 'buildNumber.properties', text: "buildNumber0=0")
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Update version') {
+        //     steps {
+        //         script {
+        //             echo "Version: ${config.version}"
+        //             dir('source/com.kms.katalon') {
+        //                 script {
+        //                     if (BRANCH_NAME ==~ /.*release.*/) {
+        //                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
+        //                         versionMapping = versionMapping.replaceAll(/1=.*/, "1=${config.version}")
+        //                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
+        //                         if (!fileExists('buildNumber.properties')) {
+        //                             sh 'touch buildNumber.properties'
+        //                         }
+        //                         writeFile(encoding: 'UTF-8', file: 'buildNumber.properties', text: "buildNumber0=0")
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Building') {
                 // Start maven commands to get dependencies
@@ -91,26 +106,15 @@ pipeline {
 
                     script {
                         dir("source") {
-                // Generate Katalon builds
-                // If branch name contains "release", build production mode for non-qTest package
-                // else build development mode for qTest package
-                            if (BRANCH_NAME ==~ /.*release.*/) {
-                                if (BRANCH_NAME ==~ /.*qtest.*/) {
-                                    echo "Building: qTest Prod"
-                                    sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
-                                } else {
-                                    echo "Building: Standard Prod"
-                                    sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
-                                }
-
+                            // Generate Katalon builds
+                            // If branch name contains "release", build production mode for non-qTest package
+                            // else build development mode for qTest package
+                            if (BRANCH_NAME ==~ /.*qtest.*/) {
+                                echo "Building: qTest Prod"
+                                sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
                             } else {
-                                if (BRANCH_NAME ==~ /.*qtest.*/) {
-                                    echo "Building: qTest Prod"
-                                    sh 'mvn -pl \\!com.kms.katalon.product clean verify -P dev'
-                                } else {
-                                    echo "Building: Standard Prod"
-                                    sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P dev'
-                                }
+                                echo "Building: Standard Prod"
+                                sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
                             }
 
                             // Generate API docs
@@ -172,21 +176,32 @@ pipeline {
             }
         }
 
-        stage('Package .DMG file') {
+        stage('Sign file') {
             steps {
-            script {
+                script {
                     // For release branches, execute codesign command to package .DMG file for macOS
-            if (BRANCH_NAME ==~ /.*release.*/) {
-                       sh "./package.sh ${env.tmpDir}"
+                    if (BRANCH_NAME ==~ /.*release.*/) {
+                        sh "./codesign.sh ${env.tmpDir}"
+                    }
+                }
             }
         }
-            }
-        }
+
+        // stage('Package .DMG file') {
+        //     steps {
+        //         script {
+        //             // For release branches, execute codesign command to package .DMG file for macOS
+        //             if (BRANCH_NAME ==~ /.*release.*/) {
+        //                 sh "./dropdmg.sh ${env.tmpDir}"
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Generate update packages') {
             steps {
                 script {
-                    if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/) && !(BRANCH_NAME ==~ /.*beta.*/)) {
+                    if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/)) {
                         dir("tools/updater") {
                             def updateInfo = [
                                 buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
@@ -212,7 +227,7 @@ pipeline {
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${config.version}"
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${config.version}"
                     }
-                }    
+                }
             }
         }
 
