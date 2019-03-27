@@ -1,5 +1,7 @@
 package com.kms.katalon.core.webui.util;
 
+import org.apache.commons.lang.SystemUtils;
+
 public class OSUtil {
     private static String OS = System.getProperty("os.name").toLowerCase();
 
@@ -19,11 +21,13 @@ public class OSUtil {
         return (OS.indexOf("sunos") >= 0);
     }
     public static boolean is64Bit(){
-        String pFilesX86 = System.getenv("ProgramFiles(X86)");
-        if (pFilesX86 !=(null)){
+        if (SystemUtils.OS_ARCH.endsWith("64")){
           return true;
         }
+        else if(SystemUtils.OS_ARCH.endsWith("86")){
         return false;
         }
+        return false;
+    }
 
 }
