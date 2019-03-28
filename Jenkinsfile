@@ -199,13 +199,20 @@ pipeline {
             steps {
                 dir("tools/repackage") {
                     nodejs(nodeJSInstallationName: 'nodejs') {
-                        sh 'npm install'
+                        sh 'npm prune && npm install'
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${version}"
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${version}"
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}"
+
+                        sh "rm -rf ${env.tmpDir}/*.zip"
+                        sh "rm -rf ${env.tmpDir}/*.tar.gz"
+                        sh "mv ${env.tmpDir}/output/*.zip ${env.tmpDir}/"
+                        sh "mv ${env.tmpDir}/output/*.tar.gz ${env.tmpDir}/"
+                        sh "rm -rf ${env.tmpDir}/output"
                     }
-                    sh 'zip -r "Katalon Studio.app.zip" "Katalon Studio.app"'
                 }
+                sh "zip -r 'Katalon Studio.app.zip' '${env.tmpDir}/Katalon Studio.app'"
+                sh "rm -rf '${env.tmpDir}/Katalon Studio.app'"
             }
         }
 
