@@ -29,8 +29,10 @@ pipeline {
                     File propertiesFile = new File("${env.WORKSPACE}/source/com.kms.katalon/about.mappings")
                     properties.load(propertiesFile.newDataInputStream())
                     version = properties.'1'
+                    println("Version ${version}.")
 
                     def branch = env.BRANCH_NAME
+                    println("Branch ${branch}.")
 
                     if (branch.endsWith(version)) {
                         throw new IllegalStateException('Please update version in about.mappings.')
@@ -39,6 +41,8 @@ pipeline {
                     isQtest = branch ==~ /.*qtest.*/;
 
                     tag = sh(returnStdout: true, script: "git tag --contains | head -1").trim()
+                    println("Tag ${tag}.")
+
                     isRelease = tag != null && !tag.isEmpty()
                 }
             }
