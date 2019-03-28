@@ -339,19 +339,6 @@ public class PluginService {
         return jar;
     }
     
-    private String getPluginInfoForLogging(KStorePlugin plugin) {
-        try {
-            Map<String, Object> infoMap = new HashMap<>(); 
-            infoMap.put("id", plugin.getId());
-            infoMap.put("productId", plugin.getProduct().getId());
-            infoMap.put("name", plugin.getProduct().getName());
-            infoMap.put("expired", plugin.isExpired());
-            return JsonUtil.toJson(infoMap);
-        } catch (Exception e) {
-            return StringUtils.EMPTY;
-        }
-    }
-    
     private void trackDownloadPlugin(KStorePlugin plugin, KStoreCredentials credentials) {
         String apiKey = credentials instanceof KStoreApiKeyCredentials
             ? ((KStoreApiKeyCredentials) credentials).getApiKey() 
