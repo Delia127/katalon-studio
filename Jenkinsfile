@@ -33,8 +33,7 @@ pipeline {
                     isQtest = env.BRANCH_NAME ==~ /.*qtest.*/;
 
                     tag = sh(returnStdout: true, script: "git tag --contains | head -1").trim()
-                    println tag
-                    isRelease = tag ==~ /.*rc.*/
+                    isRelease = tag != null && !tag.isEmpty()
                 }
             }
         }
