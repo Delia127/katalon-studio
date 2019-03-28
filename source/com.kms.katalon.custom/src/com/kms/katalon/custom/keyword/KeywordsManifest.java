@@ -1,16 +1,17 @@
 package com.kms.katalon.custom.keyword;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class KeywordsManifest {
-    
+
     private String id;
 
     private String name;
 
-    private List<String> keywords;
-    
-    private List<String> listeners;
+    private List<String> keywords = new ArrayList<>();
+
+    private List<String> listeners = new ArrayList<>();
 
     private CustomKeywordConfiguration configuration;
 
