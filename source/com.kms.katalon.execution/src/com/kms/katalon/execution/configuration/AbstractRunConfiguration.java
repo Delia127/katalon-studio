@@ -44,6 +44,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     
     private Map<String, Object> overridingParameters = new HashMap<>();
     
+    private String executionUUID;
+    
     public AbstractRunConfiguration() {
         initExecutionSetting();
     }
@@ -254,5 +256,15 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     public void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables) {
     	if(overridingGlobalVariables == null) return;
     	overridingParameters.putAll(overridingGlobalVariables);
+    }
+    
+    @Override
+    public String getExecutionUUID() {
+        return executionUUID;
+    }
+    
+    @Override
+    public void setExecutionUUID(String executionUUID) {
+        this.executionUUID = executionUUID;
     }
 }

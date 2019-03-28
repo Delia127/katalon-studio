@@ -13,6 +13,10 @@ public interface IRunConfiguration {
     
     public String getProjectFolderLocation();
     
+    public String getExecutionUUID();
+    
+    public void setExecutionUUID(String executionUUID);
+    
     public Map<String, IDriverConnector> getDriverConnectors();
 	
 	public IExecutionSetting build(FileEntity fileEntity, IExecutedEntity entity) throws IOException, ExecutionException;

@@ -51,7 +51,7 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity, testSuiteCollectionOption.getValue());
         Map<String,Object> globalVariables = super.getOverridingGlobalVariables();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting,globalVariables);
+                rerunSetting, globalVariables, executionUUIDOption.getValue());
     }
 
     private TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity projectEntity, String testSuiteCollectionID)
