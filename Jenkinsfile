@@ -6,6 +6,9 @@ import jenkins.model.CauseOfInterruption.UserInterruption
 import groovy.json.JsonOutput
 
 def config = [:]
+def isRelease
+def isQtest
+
 pipeline {
     agent any
 
@@ -18,20 +21,6 @@ pipeline {
     }
 
     stages {
-        // stage('Input') {
-        //     steps {
-        //         script {
-        //             if (BRANCH_NAME ==~ /.*release.*/) {
-        //                 def input = input(id: 'buildConfig', message: 'Release?', parameters: [
-        //                     string(name: "version", description: "Release version", defaultValue: "3.0.5")
-        //                 ])
-        //                 config.version = input
-        //             } else {
-        //                 config.version = "3.0.5"
-        //             }
-        //         }
-        //     }
-        // }
 
         stage('Get version') {
             steps {
@@ -40,6 +29,11 @@ pipeline {
                     File propertiesFile = new File("${env.WORKSPACE}/source/com.kms.katalon/about.mappings")
                     properties.load(propertiesFile.newDataInputStream())
                     config.version = properties.'1'
+
+                    isQtest = env.BRANCH_NAME ==~ /.*qtest.*/;
+
+                    tag = sh(returnStdout: true, script: "git tag --contains | head -1").trim()
+                    isRelease = tag ==~ /.*rc.*/
                 }
             }
         }
@@ -54,27 +48,6 @@ pipeline {
                 }
             }
         }
-
-        // stage('Update version') {
-        //     steps {
-        //         script {
-        //             echo "Version: ${config.version}"
-        //             dir('source/com.kms.katalon') {
-        //                 script {
-        //                     if (BRANCH_NAME ==~ /.*release.*/) {
-        //                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
-        //                         versionMapping = versionMapping.replaceAll(/1=.*/, "1=${config.version}")
-        //                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
-        //                         if (!fileExists('buildNumber.properties')) {
-        //                             sh 'touch buildNumber.properties'
-        //                         }
-        //                         writeFile(encoding: 'UTF-8', file: 'buildNumber.properties', text: "buildNumber0=0")
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
 
         stage('Building') {
                 // Start maven commands to get dependencies
@@ -105,7 +78,7 @@ pipeline {
                             // Generate Katalon builds
                             // If branch name contains "release", build production mode for non-qTest package
                             // else build development mode for qTest package
-                            if (BRANCH_NAME ==~ /.*qtest.*/) {
+                            if (isQtest) {
                                 echo "Building: qTest Prod"
                                 sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
                             } else {
@@ -139,7 +112,7 @@ pipeline {
             steps {
                 dir("source/com.kms.katalon.product/target/products") {
                     script {
-                        if (!(BRANCH_NAME ==~ /.*qtest.*/)) {
+                        if (!isQtest) {
                             sh "cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -155,7 +128,7 @@ pipeline {
                 }
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
-                        if (BRANCH_NAME ==~ /.*qtest.*/) {
+                        if (isQtest) {
                             sh "cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -176,28 +149,26 @@ pipeline {
             steps {
                 script {
                     // For release branches, execute codesign command to package .DMG file for macOS
-                    if (BRANCH_NAME ==~ /.*release.*/) {
-                        sh "./codesign.sh ${env.tmpDir}"
+                    sh "./codesign.sh ${env.tmpDir}"
+                }
+            }
+        }
+
+        stage('Package .DMG file') {
+            steps {
+                script {
+                    // For release branches, execute codesign command to package .DMG file for macOS
+                    if (isRelease) {
+                        sh "./dropdmg.sh ${env.tmpDir}"
                     }
                 }
             }
         }
 
-        // stage('Package .DMG file') {
-        //     steps {
-        //         script {
-        //             // For release branches, execute codesign command to package .DMG file for macOS
-        //             if (BRANCH_NAME ==~ /.*release.*/) {
-        //                 sh "./dropdmg.sh ${env.tmpDir}"
-        //             }
-        //         }
-        //     }
-        // }
-
         stage('Generate update packages') {
             steps {
                 script {
-                    if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/)) {
+                    if (isRelease && !isQtest) {
                         dir("tools/updater") {
                             def updateInfo = [
                                 buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
