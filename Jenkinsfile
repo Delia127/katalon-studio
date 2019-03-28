@@ -34,7 +34,7 @@ pipeline {
                     def branch = env.BRANCH_NAME
                     println("Branch ${branch}.")
 
-                    if (branch.endsWith(version)) {
+                    if (!branch.endsWith(version)) {
                         throw new IllegalStateException('Please update version in about.mappings.')
                     }
 
@@ -204,6 +204,7 @@ pipeline {
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${version}"
                         sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}"
                     }
+                    sh 'zip -r "Katalon Studio.app.zip" "Katalon Studio.app"'
                 }
             }
         }
