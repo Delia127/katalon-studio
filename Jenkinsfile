@@ -45,6 +45,14 @@ pipeline {
 
                     isRelease = tag != null && !tag.isEmpty()
                 }
+
+                dir('source/com.kms.katalon') {
+                    script {
+                        def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
+                        versionMapping = versionMapping.replaceAll(/3=.*/, "3=${tag}")
+                        writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
+                    }
+                }
             }
         }
 
