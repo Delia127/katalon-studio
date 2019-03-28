@@ -211,7 +211,7 @@ pipeline {
                         sh "rm -rf ${env.tmpDir}/output"
                     }
                 }
-                sh "zip -r 'Katalon Studio.app.zip' '${env.tmpDir}/Katalon Studio.app'"
+                sh "zip -r '${env.tmpDir}/Katalon Studio.app.zip' '${env.tmpDir}/Katalon Studio.app'"
                 sh "rm -rf '${env.tmpDir}/Katalon Studio.app'"
             }
         }
