@@ -2,13 +2,11 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -20,6 +18,8 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.controller.exception.ControllerException;
+import com.kms.katalon.core.annotation.Keyword;
+import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.state.DataProviderState;
@@ -74,6 +74,9 @@ public class ProjectController extends EntityController {
                 }
                 SubMonitor progress = SubMonitor.convert(monitor, 100);
                 DataProviderState.getInstance().setCurrentProject(project);
+
+                KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+
                 GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project),
                         progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 addRecentProject(project);
@@ -101,12 +104,16 @@ public class ProjectController extends EntityController {
         String projectFolderLocation = projectFile.getParent();
         String userDirLocation = System.getProperty("user.dir");
         if (userDirLocation.equals(projectFolderLocation)) {
-            LogUtil.printErrorLine("Warning! Please run katalon command execution outside of the project folder");
+            LogUtil.printErrorLine("Warning! Please run Katalon execution command outside of the project folder.");
         }
         ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
                 .openProjectWithoutClasspath(projectPk);
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
+
+            LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
+            KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+
             GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
             addRecentProject(project);
             LogUtil.printOutputLine("Generating global variables...");
@@ -144,7 +151,7 @@ public class ProjectController extends EntityController {
     }
 
     public void addRecentProject(ProjectEntity project) throws Exception {
-        List<ProjectEntity> recentProjects = getRecentProjects();
+        List<ProjectEntity> recentProjects = new ArrayList<>(getRecentProjects());
         int existedProjectIndex = -1;
         for (int i = 0; i < recentProjects.size(); i++) {
             if (getDataProviderSetting().getEntityPk(project)
@@ -201,8 +208,8 @@ public class ProjectController extends EntityController {
         try {
             inputStream = new ObjectInputStream(new FileInputStream(RECENT_PROJECT_FILE_LOCATION));
             projects = (List<ProjectEntity>) inputStream.readObject();
-        } catch (FileNotFoundException fileNotFoundException) {} catch (Exception e) {
-            throw e;
+        } catch (Exception e) {
+            return new ArrayList<>();
         } finally {
             if (inputStream != null) {
                 inputStream.close();
@@ -312,6 +319,6 @@ public class ProjectController extends EntityController {
     }
 
     public List<File> getCustomKeywordPlugins(ProjectEntity project) throws ControllerException {
-        return CustomKeywordPluginFactory.getInstance().getPluginFiles();
+        return CustomKeywordPluginFactory.getInstance().getAllPluginFiles();
     }
 }

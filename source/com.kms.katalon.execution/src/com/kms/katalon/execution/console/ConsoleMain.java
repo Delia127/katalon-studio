@@ -68,6 +68,8 @@ public class ConsoleMain {
     public final static String TESTSUITE_QUERY = "testSuiteQuery";
 
     public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
+    
+    public static final String EXECUTION_UUID_OPTION = "executionUUID";
 
     private ConsoleMain() {
         // hide constructor

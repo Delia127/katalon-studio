@@ -47,12 +47,14 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private ExecutionProfileEntity executionProfile;
     
     private Map<String, Object> overridingParameters = new HashMap<>();
-    
+
     private Map<String, String> environmentVariables = new HashMap<>();
     
     private List<String> vmArgs = new ArrayList<>();
     
     private Map<String, String> additionalData = new HashMap<>();
+
+    private String executionUUID;
 
     public AbstractRunConfiguration() {
         initExecutionSetting();
@@ -296,5 +298,14 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         if (addtionalEnv != null) {
             this.environmentVariables.putAll(addtionalEnv);
         }
+    }
+
+    public String getExecutionUUID() {
+        return executionUUID;
+    }
+    
+    @Override
+    public void setExecutionUUID(String executionUUID) {
+        this.executionUUID = executionUUID;
     }
 }

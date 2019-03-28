@@ -3,6 +3,11 @@
 import hudson.model.Result
 import hudson.model.Run
 import jenkins.model.CauseOfInterruption.UserInterruption
+import groovy.json.JsonOutput
+
+def config = [:]
+def isRelease
+def isQtest
 
 pipeline {
     agent any
@@ -16,6 +21,23 @@ pipeline {
     }
 
     stages {
+
+        stage('Get version') {
+            steps {
+                script {
+                    Properties properties = new Properties()
+                    File propertiesFile = new File("${env.WORKSPACE}/source/com.kms.katalon/about.mappings")
+                    properties.load(propertiesFile.newDataInputStream())
+                    config.version = properties.'1'
+
+                    isQtest = env.BRANCH_NAME ==~ /.*qtest.*/;
+
+                    tag = sh(returnStdout: true, script: "git tag --contains | head -1").trim()
+                    isRelease = tag ==~ /.*rc.*/
+                }
+            }
+        }
+
         stage('Prepare') {
             steps {
                 script {
@@ -26,6 +48,7 @@ pipeline {
                 }
             }
         }
+
         stage('Building') {
                 // Start maven commands to get dependencies
             steps {
@@ -52,21 +75,15 @@ pipeline {
 
                     script {
                         dir("source") {
-                // Generate Katalon builds
-                // If branch name contains "release", build production mode for non-qTest package
-                // else build development mode for qTest package
-                            if (BRANCH_NAME ==~ /.*release.*/) {
-                                if (BRANCH_NAME ==~ /.*qtest.*/) {
-                                    echo "Building: qTest Prod"
-                                    sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
-                                } else {
-                                    echo "Building: Standard Prod"
-                                    sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
-                                }
-
+                            // Generate Katalon builds
+                            // If branch name contains "release", build production mode for non-qTest package
+                            // else build development mode for qTest package
+                            if (isQtest) {
+                                echo "Building: qTest Prod"
+                                sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
                             } else {
-                                echo "Building: qTest Dev"
-                                sh 'mvn -pl \\!com.kms.katalon.product clean verify -P dev'
+                                echo "Building: Standard Prod"
+                                sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
                             }
 
                             // Generate API docs
@@ -95,7 +112,7 @@ pipeline {
             steps {
                 dir("source/com.kms.katalon.product/target/products") {
                     script {
-                        if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/)) {
+                        if (!isQtest) {
                             sh "cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -106,12 +123,12 @@ pipeline {
                                         flattenFiles: true,
                                         targetLocation: "${env.tmpDir}")
                             ])
-            }
+                        }
                     }
                 }
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
-                        if (!(BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/))) {
+                        if (isQtest) {
                             sh "cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -128,14 +145,56 @@ pipeline {
             }
         }
 
-        stage('Package .DMG file') {
+        stage('Sign file') {
             steps {
-            script {
+                script {
                     // For release branches, execute codesign command to package .DMG file for macOS
-            if (BRANCH_NAME ==~ /.*release.*/) {
-                       sh "./package.sh ${env.tmpDir}"
+                    sh "./codesign.sh ${env.tmpDir}"
+                }
             }
         }
+
+        stage('Package .DMG file') {
+            steps {
+                script {
+                    // For release branches, execute codesign command to package .DMG file for macOS
+                    if (isRelease) {
+                        sh "./dropdmg.sh ${env.tmpDir}"
+                    }
+                }
+            }
+        }
+
+        stage('Generate update packages') {
+            steps {
+                script {
+                    if (isRelease && !isQtest) {
+                        dir("tools/updater") {
+                            def updateInfo = [
+                                buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
+                                destDir: "${tmpDir}/update",
+                                version: "${config.version}"
+                            ]
+                            def json = JsonOutput.toJson(updateInfo)
+                            json = JsonOutput.prettyPrint(json)
+                            writeFile(file: 'scan_info.json', text: json)
+                            sh 'java -jar json-map-builder-1.0.0.jar'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Repackage') {
+            steps {
+                dir("tools/repackage") {
+                    nodejs(nodeJSInstallationName: 'nodejs') {
+                        sh 'npm install'
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${config.version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${config.version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${config.version}"
+                    }
+                }
             }
         }
 

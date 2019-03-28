@@ -360,6 +360,7 @@ public class TestCaseExecutor {
         testProperties.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, testCase.getDescription());
         testProperties.put(StringConstants.XML_LOG_ID_PROPERTY, testCase.getTestCaseId());
         testProperties.put(StringConstants.XML_LOG_SOURCE_PROPERTY, testCase.getMetaFilePath());
+        testProperties.put(StringConstants.XML_LOG_TAG_PROPERTY, testCase.getTag());
         testProperties.put(StringConstants.XML_LOG_IS_OPTIONAL,
                 String.valueOf(flowControl == FailureHandling.OPTIONAL));
         return testProperties;

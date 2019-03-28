@@ -65,6 +65,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
+        this.setExecutionUUID(runConfig.getExecutionUUID());
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);

@@ -20,12 +20,12 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherOptionParser {
 
     private ConsoleOption<String> testSuiteCollectionOption = new StringConsoleOption() {
-        
+
         @Override
         public String getOption() {
             return ConsoleMain.TESTSUITE_COLLECTION_ID_OPTION;
         }
-        
+
         public boolean isRequired() {
             return true;
         };
@@ -49,19 +49,21 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
     @Override
     public IConsoleLauncher getConsoleLauncher(ProjectEntity projectEntity, LauncherManager manager)
             throws ExecutionException, InvalidConsoleArgumentException {
-        TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity, testSuiteCollectionOption.getValue());
-        Map<String,Object> globalVariables = super.getOverridingGlobalVariables();
+        TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity,
+                testSuiteCollectionOption.getValue());
+        Map<String, Object> globalVariables = super.getOverridingGlobalVariables();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting,globalVariables);
+                rerunSetting, globalVariables, executionUUIDOption.getValue());
     }
 
     @Override
     public ILauncher getIDELauncher(ProjectEntity projectEntity, LauncherManager manager)
             throws ExecutionException, InvalidConsoleArgumentException {
-        TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity, testSuiteCollectionOption.getValue());
-        Map<String,Object> globalVariables = super.getOverridingGlobalVariables();
+        TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity,
+                testSuiteCollectionOption.getValue());
+        Map<String, Object> globalVariables = super.getOverridingGlobalVariables();
         return TestSuiteCollectionConsoleLauncher.newIDEInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting, globalVariables);
+                rerunSetting, globalVariables, executionUUIDOption.getValue());
     }
 
     private TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity projectEntity, String testSuiteCollectionID)

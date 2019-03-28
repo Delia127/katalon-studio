@@ -27,7 +27,6 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.ConsoleLauncher;
 import com.kms.katalon.execution.launcher.IConsoleLauncher;
-import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.LauncherProviderFactory;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -198,6 +197,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         }
         runConfig.setExecutionProfile(executionProfile);
         runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
+        runConfig.setExecutionUUID(executionUUIDOption.getValue());
         runConfig.build(testSuite, executedEntity);
         GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
         return runConfig;

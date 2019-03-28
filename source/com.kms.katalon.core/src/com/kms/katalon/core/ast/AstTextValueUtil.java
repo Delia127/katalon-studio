@@ -249,7 +249,7 @@ public class AstTextValueUtil {
     }
     
     public String getTextValue(StaticMethodCallExpression methodCallExpression) {
-        String fullyQualifiedObject = methodCallExpression.getOwnerType().getTypeClass().getName();
+        String fullyQualifiedObject = methodCallExpression.getOwnerType().getPlainNodeReference().getName();
         String meth = methodCallExpression.getMethod();
         String args = getTextValue(methodCallExpression.getArguments());
         return getMethodCallTextValue(fullyQualifiedObject, meth, args);

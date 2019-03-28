@@ -36,22 +36,24 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     @Inject
     private IEventBroker eventBroker;
-    
+
     private static final long DIALOG_CLOSED_DELAY_MILLIS = 500L;
 
     private PluginPreferenceStore store;
-    
+
     private Job reloadPluginsJob;
-    
+
     @PostConstruct
     public void registerEventListener() {
         store = new PluginPreferenceStore();
-        //auto reload on startup
+        // auto reload on startup
         eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, new EventServiceAdapter() {
             @Override
             public void handleEvent(Event event) {
                 if (store.hasReloadedPluginsBefore()) {
                     reloadPlugins(true);
+                } else {
+                    eventBroker.post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
                 }
             }
         });
@@ -93,27 +95,28 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     return Status.CANCEL_STATUS;
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    return new Status(Status.ERROR, "com.kms.katalon",
-                            "Error reloading plugins", e);
+                    return new Status(Status.ERROR, "com.kms.katalon", "Error reloading plugins", e);
                 }
                 return Status.OK_STATUS;
             }
         };
-        
+
         reloadPluginsJob.addJobChangeListener(new JobChangeAdapter() {
             @Override
             public void done(IJobChangeEvent event) {
+                eventBroker.post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
+
                 if (!reloadPluginsJob.getResult().isOK()) {
                     return;
                 }
-                
+
                 if (silenceMode) {
                     return;
                 }
-                
+
                 Executors.newSingleThreadExecutor().submit(() -> {
                     try {
-                        //wait for Reloading Plugins dialog to close 
+                        // wait for Reloading Plugins dialog to close
                         TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
                     } catch (InterruptedException ignored) {}
                     UISynchronizeService.syncExec(() -> openResultDialog(resultHolder[0]));
