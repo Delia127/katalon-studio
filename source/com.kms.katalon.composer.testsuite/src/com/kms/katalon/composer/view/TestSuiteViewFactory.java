@@ -23,7 +23,7 @@ public class TestSuiteViewFactory {
 		return viewMap;
 	}
 	
-	public TestSuiteViewFactory() { 
+	private TestSuiteViewFactory() { 
 		viewMap = new HashMap<String, TestSuiteUIViewBuilder>();
 	}
 	
@@ -31,7 +31,7 @@ public class TestSuiteViewFactory {
 		if(_instance == null) {
 			_instance = new TestSuiteViewFactory();
 		}
-		return _instance;		
+		return _instance;
 	}
 	
 	public void addNewView(String productName, TestSuiteUIViewBuilder view) {

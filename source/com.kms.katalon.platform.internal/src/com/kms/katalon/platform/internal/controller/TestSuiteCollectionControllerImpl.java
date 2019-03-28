@@ -43,8 +43,8 @@ public class TestSuiteCollectionControllerImpl implements TestSuiteCollectionCon
 			throws ResourceException {
 		com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity entity;
 		try {
-			entity = com.kms.katalon.controller.TestSuiteCollectionController.getInstance().getTestSuiteCollection(arg1);
-			TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuite(arg2);
+			entity = com.kms.katalon.controller.TestSuiteCollectionController.getInstance().getTestRunByDisplayId(arg2);
+			TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(arg1, ProjectController.getInstance().getProject(arg0.getId()));
 			TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration.newInstance(
 					testSuite, TestExecutionGroupCollector.getInstance().getDefaultConfiguration(
                             ProjectController.getInstance().getCurrentProject()));

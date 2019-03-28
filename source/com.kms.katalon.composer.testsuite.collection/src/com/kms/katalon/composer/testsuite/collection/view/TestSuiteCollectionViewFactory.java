@@ -22,7 +22,7 @@ public class TestSuiteCollectionViewFactory {
 		return viewMap;
 	}
 	
-	public TestSuiteCollectionViewFactory() { 
+	private TestSuiteCollectionViewFactory() {
 		viewMap = new HashMap<String, TestSuiteCollectionUIViewBuilder>();
 	}
 	

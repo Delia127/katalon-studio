@@ -10,6 +10,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import com.katalon.platform.api.extension.TestSuiteUIViewDescription;
@@ -108,9 +109,8 @@ public class TestSuiteUIViewPlatformBuilderImpl implements PlatformTestSuiteUIVi
 
 		@Override
 		public Composite createContainer(Composite parent) {
-			 Composite container = new Composite(parent, SWT.NONE);
-	            container.setLayout(new FillLayout());
-
+			 	Composite container = new Composite(parent, SWT.NONE);
+			 	container.setLayout(new GridLayout());
 	            partActionService = new PartActionServiceImpl(testSuiteEntity, mpart, parentPart);
 	            try {
 	            	testSuiteUiView.onCreateView(container, partActionService, new TestSuiteEntityImpl(testSuiteEntity));

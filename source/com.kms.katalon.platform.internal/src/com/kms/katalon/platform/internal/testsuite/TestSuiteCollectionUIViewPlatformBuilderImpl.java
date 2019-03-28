@@ -10,6 +10,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import com.katalon.platform.api.extension.TestSuiteCollectionUIViewDescription;
@@ -107,9 +108,9 @@ public class TestSuiteCollectionUIViewPlatformBuilderImpl implements PlatformTes
 
 		@Override
 		public Composite createContainer(Composite parent) {
-			 Composite container = new Composite(parent, SWT.NONE);
-	            container.setLayout(new FillLayout());
-
+			 	Composite container = new Composite(parent, SWT.NONE);
+			 	container.setLayout(new GridLayout());
+			 	
 	            partActionService = new PartActionServiceImpl(testSuiteCollectionEntity, mpart, parentPart);
 	            try {
 	            	testSuiteCollectionUiView.onCreateView(container, partActionService
@@ -117,7 +118,6 @@ public class TestSuiteCollectionUIViewPlatformBuilderImpl implements PlatformTes
 	            } catch (Exception e) {
 	                LogUtil.printAndLogError(e, "Unable to create Test Suite Collection UI view for: " + name);
 	            }
-
 	            return container;
 		}
 

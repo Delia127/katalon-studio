@@ -108,6 +108,8 @@ public class TestSuitePart implements EventHandler {
 	private List<Thread> uiThreads;
 
 	private Composite parent;
+	
+	private Composite customViews;
 
     private boolean isLoading;
 
@@ -120,7 +122,7 @@ public class TestSuitePart implements EventHandler {
 		}
 	};
 	
-	private Map<String, Composite> viewCompositeMap = new HashMap<>();
+	private Map<String, ExpandableTestSuiteComposite> viewCompositeMap = new HashMap<>();
 
 	@PostConstruct
 	public void createControls(Composite parent, MPart mpart) {
@@ -355,6 +357,8 @@ public class TestSuitePart implements EventHandler {
         uiThreads.add(loadTestSuiteThread);
 
         loadTestSuiteThread.start();
+        
+        createViewsFromViewFactory();
     }
 
     private void loadTestSuiteInfo(final TestSuiteEntity testSuite) throws Exception {
@@ -392,18 +396,30 @@ public class TestSuitePart implements EventHandler {
 
         createExecutionInformationComposite();
         
-        createViewsFromViewFactory(compositeMain);
+        createCustomViewComposite();
 
         compositeTablePart = childrenView.createCompositeTestCase(compositeMain);
     }
 
-    private void createViewsFromViewFactory(Composite parent) {
+    private void createCustomViewComposite() {
+        customViews = new Composite(compositeMain, SWT.NONE);
+        customViews.setBackground(ColorUtil.getCompositeBackgroundColor());
+        GridLayout glCustomViews = new GridLayout(1, true);
+        glCustomViews.marginHeight = 0;
+        glCustomViews.marginWidth = 0;
+        customViews.setLayout(glCustomViews);
+        customViews.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+	}
+
+	private void createViewsFromViewFactory() {
 		TestSuiteViewFactory.getInstance().getSortedBuilders().forEach(entryBuilder -> {
 			String name = entryBuilder.getName();
-			AbstractTestSuiteUIDescriptionView descView = entryBuilder.getView(getTestSuite(), getMPart(), parentTestSuiteCompositePart);
-			Composite view = new ExpandableTestSuiteComposite(name, descView)
-					.createComposite(parent);
-			viewCompositeMap.put(name, view);
+			if(viewCompositeMap.get(name) == null) {
+				AbstractTestSuiteUIDescriptionView descView = entryBuilder.getView(getTestSuite(), getMPart(),
+						parentTestSuiteCompositePart);
+				ExpandableTestSuiteComposite view = new ExpandableTestSuiteComposite(customViews, name, descView);
+				viewCompositeMap.put(name, view);
+			}
 		});
 	}
 

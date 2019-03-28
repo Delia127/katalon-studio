@@ -32,15 +32,16 @@ public class ExpandableTestSuiteCollectionComposite {
 			}
 		};
 		
-		public ExpandableTestSuiteCollectionComposite(String name, AbstractTestSuiteCollectionUIDescriptionView descView) {
+		public ExpandableTestSuiteCollectionComposite(Composite parent, String name, AbstractTestSuiteCollectionUIDescriptionView descView) {
 			this.name = name;
 			this.descView = descView;
 			this.isExecutionCompositeExpanded = false;
-		}
-		
-		public Composite createComposite(Composite parent) {
 			this.parent = parent;
 			
+			createComposite();
+		}
+		
+		public Composite createComposite() {
 			Composite compositeExecutionCompositeHeader = new Composite(parent, SWT.NONE);
 	        compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 	        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(2, false);

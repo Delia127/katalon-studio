@@ -19,15 +19,23 @@ public class TestSuiteComposerActivator implements BundleActivator {
 
             @Override
             public void serviceChanged(ServiceEvent event) {
-                if (context.getService(event.getServiceReference()) instanceof PlatformTestSuiteUIViewBuilder) {
-                    ServiceReference<PlatformTestSuiteUIViewBuilder> serviceReference = context
-                            .getServiceReference(PlatformTestSuiteUIViewBuilder.class);
-                    TestSuiteViewFactory.getInstance().setPlatformBuilder(context.getService(serviceReference));
-                }
                 if (context.getService(event.getServiceReference()) instanceof TestSuiteIntegrationPlatformBuilder) {
                     ServiceReference<TestSuiteIntegrationPlatformBuilder> serviceReference = context
                             .getServiceReference(TestSuiteIntegrationPlatformBuilder.class);
                     TestSuiteIntegrationFactory.getInstance().setPlatformBuilder(context.getService(serviceReference));
+                    context.removeServiceListener(this);
+                }
+            }
+        });
+        
+        context.addServiceListener(new ServiceListener() {
+
+            @Override
+            public void serviceChanged(ServiceEvent event) {
+                if (context.getService(event.getServiceReference()) instanceof PlatformTestSuiteUIViewBuilder) {
+                    ServiceReference<PlatformTestSuiteUIViewBuilder> serviceReference = context
+                            .getServiceReference(PlatformTestSuiteUIViewBuilder.class);
+                    TestSuiteViewFactory.getInstance().setPlatformBuilder(context.getService(serviceReference));
                     context.removeServiceListener(this);
                 }
             }

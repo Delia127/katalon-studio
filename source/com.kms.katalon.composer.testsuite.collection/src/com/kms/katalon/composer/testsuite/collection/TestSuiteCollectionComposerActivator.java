@@ -9,7 +9,7 @@ import org.osgi.framework.ServiceReference;
 import com.kms.katalon.composer.testsuite.collection.platform.PlatformTestSuiteCollectionUIViewBuilder;
 import com.kms.katalon.composer.testsuite.collection.view.TestSuiteCollectionViewFactory;
 
-public class TestSuiteCollectionBundleActivator implements BundleActivator {
+public class TestSuiteCollectionComposerActivator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -21,6 +21,7 @@ public class TestSuiteCollectionBundleActivator implements BundleActivator {
                     ServiceReference<PlatformTestSuiteCollectionUIViewBuilder> serviceReference = context
                             .getServiceReference(PlatformTestSuiteCollectionUIViewBuilder.class);
                     TestSuiteCollectionViewFactory.getInstance().setPlatformBuilder(context.getService(serviceReference));
+                    context.removeServiceListener(this);
                 }
             }
         });

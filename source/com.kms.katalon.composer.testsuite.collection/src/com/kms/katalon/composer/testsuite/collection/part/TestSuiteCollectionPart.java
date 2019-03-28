@@ -172,16 +172,21 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     private Spinner spnMaxConcurrentThread;
     
-	private Map<String, Composite> viewCompositeMap = new HashMap<>();
+    private Composite customViews;
+    
+    private Composite parent;
+    
+	private Map<String, ExpandableTestSuiteCollectionComposite> viewCompositeMap = new HashMap<>();
 
     @PostConstruct
     public void initialize(Composite parent, MPart mpart) {
         this.mpart = mpart;
         this.isExecutionInfoCompositeExpanded = true;
+        this.parent = parent;
         registerEventListeners();
 
         new HelpToolBarForMPart(mpart, DocumentationMessageConstants.TEST_SUITE_COLLECTION);
-        createControls(parent);
+        createControls();
         registerControlModifyListeners();
         updateTestSuiteCollections((TestSuiteCollectionEntity) mpart.getObject());
     }
@@ -210,6 +215,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         updateInput();
 
         lastModified = getFileInfo(originalTestSuite).getLastModified();
+        
+        createViewsFromViewFactory();
     }
 
     private void updateInput() {
@@ -291,31 +298,43 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         });
     }
 
-    private void createControls(Composite parent) {
+    private void createControls() {
         parent.setLayout(new GridLayout(1, false));
 
-        createGeneralInformationComposite(parent);
+        createGeneralInformationComposite();
 
-        createViewsFromViewFactory(parent);
+        createCustomViewComposite();
         
-        createToolbarComposite(parent);
+        createToolbarComposite();
 
-        createTableComposite(parent);
+        createTableComposite();
     }
+    
+    private void createCustomViewComposite() {
+        customViews = new Composite(parent, SWT.NONE);
+        customViews.setBackground(ColorUtil.getCompositeBackgroundColor());
+        GridLayout glCustomViews = new GridLayout(1, true);
+        glCustomViews.marginHeight = 0;
+        glCustomViews.marginWidth = 0;
+        customViews.setLayout(glCustomViews);
+        customViews.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+	}
 
-    private void createViewsFromViewFactory(Composite parent) {
+	private void createViewsFromViewFactory() {
 
 		TestSuiteCollectionViewFactory.getInstance().getSortedBuilders().forEach(entryBuilder -> {
 			String name = entryBuilder.getName();
-			AbstractTestSuiteCollectionUIDescriptionView descView 
-			= entryBuilder.getView(getTestSuiteCollection(), getMPart(), getMPart());
-			Composite view = new ExpandableTestSuiteCollectionComposite(name, descView)
-					.createComposite(parent);
-			viewCompositeMap.put(name, view);
+			if(viewCompositeMap.get(name) == null) {
+				AbstractTestSuiteCollectionUIDescriptionView descView = entryBuilder.getView(getTestSuiteCollection(),
+						getMPart(), getMPart());
+				ExpandableTestSuiteCollectionComposite view = new ExpandableTestSuiteCollectionComposite(customViews, name,
+						descView);
+				viewCompositeMap.put(name, view);
+			}
 		});
 	}
 
-	private void createGeneralInformationComposite(Composite parent) {
+	private void createGeneralInformationComposite() {
         compositeExecution = new Composite(parent, SWT.NONE);
         compositeExecution.setBackground(ColorUtil.getCompositeBackgroundColor());
         compositeExecution.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -425,7 +444,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         btnExpandExecutionInformation.getParent().setRedraw(true);
     }
 
-    private void createToolbarComposite(Composite parent) {
+    private void createToolbarComposite() {
         toolbarComposite = new Composite(parent, SWT.NONE);
         toolbarComposite.setLayout(new GridLayout(1, false));
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -454,7 +473,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         return toolItem;
     }
 
-    private void createTableComposite(Composite parent) {
+    private void createTableComposite() {
         testSuiteTableComposite = new Composite(parent, SWT.NONE);
         testSuiteTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 

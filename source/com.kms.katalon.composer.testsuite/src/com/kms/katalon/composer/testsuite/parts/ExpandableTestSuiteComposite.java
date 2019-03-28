@@ -10,19 +10,18 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
 import com.kms.katalon.composer.components.impl.control.ImageButton;
-import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 
 public class ExpandableTestSuiteComposite {
 	
 	private String name;
 	private AbstractTestSuiteUIDescriptionView descView;
-	private Composite view;
 	private ImageButton btnExpandExecutionComposite;
 	private Label lblExecutionInformation;
 	private boolean isExecutionCompositeExpanded;
 	private Composite container;
 	private Composite parent;
+	private Composite view;
 	
 	private Listener layoutExecutionCompositeListener = new Listener() {
 
@@ -33,15 +32,16 @@ public class ExpandableTestSuiteComposite {
 		}
 	};
 	
-	public ExpandableTestSuiteComposite(String name, AbstractTestSuiteUIDescriptionView descView) {
+	public ExpandableTestSuiteComposite(Composite parent, String name, AbstractTestSuiteUIDescriptionView descView) {
 		this.name = name;
 		this.descView = descView;
+		this.parent = parent;
 		this.isExecutionCompositeExpanded = false;
+		
+		createComposite();
 	}
 	
-	public Composite createComposite(Composite parent) {
-		this.parent = parent;
-		
+	public void createComposite() {
 		Composite compositeExecutionCompositeHeader = new Composite(parent, SWT.NONE);
         compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         GridLayout glCompositeExecutionCompositeHeader = new GridLayout(2, false);
@@ -66,8 +66,6 @@ public class ExpandableTestSuiteComposite {
         registerControlListener();
         
         layoutExecutionInfo();
-        
-		return container;
 	}
 	
     private void registerControlListener() {
