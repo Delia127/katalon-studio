@@ -50,7 +50,7 @@ pipeline {
                     script {
                         def titleVersion = isRelease ? tag : "${version} (DEV)"
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
-                        versionMapping = versionMapping.replaceAll(/3=.*/, "3=${tag}")
+                        versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
                     }
                 }
