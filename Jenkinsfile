@@ -48,6 +48,7 @@ pipeline {
 
                 dir('source/com.kms.katalon') {
                     script {
+                        def titleVersion = isRelease ? tag : "${version} (DEV)"
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${tag}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
