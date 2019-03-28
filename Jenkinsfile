@@ -5,7 +5,7 @@ import hudson.model.Run
 import jenkins.model.CauseOfInterruption.UserInterruption
 import groovy.json.JsonOutput
 
-def config = [:]
+def version
 def isRelease
 def isQtest
 
@@ -28,9 +28,15 @@ pipeline {
                     Properties properties = new Properties()
                     File propertiesFile = new File("${env.WORKSPACE}/source/com.kms.katalon/about.mappings")
                     properties.load(propertiesFile.newDataInputStream())
-                    config.version = properties.'1'
+                    version = properties.'1'
 
-                    isQtest = env.BRANCH_NAME ==~ /.*qtest.*/;
+                    def branch = env.BRANCH_NAME
+
+                    if (branch.endsWith(version)) {
+                        throw new IllegalStateException('Please update version in about.mappings.')
+                    }
+
+                    isQtest = branch ==~ /.*qtest.*/;
 
                     tag = sh(returnStdout: true, script: "git tag --contains | head -1").trim()
                     isRelease = tag != null && !tag.isEmpty()
@@ -173,7 +179,7 @@ pipeline {
                             def updateInfo = [
                                 buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
                                 destDir: "${tmpDir}/update",
-                                version: "${config.version}"
+                                version: "${version}"
                             ]
                             def json = JsonOutput.toJson(updateInfo)
                             json = JsonOutput.prettyPrint(json)
@@ -190,9 +196,9 @@ pipeline {
                 dir("tools/repackage") {
                     nodejs(nodeJSInstallationName: 'nodejs') {
                         sh 'npm install'
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${config.version}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${config.version}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${config.version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}"
                     }
                 }
             }
