@@ -28,9 +28,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStorePlugin;
@@ -61,6 +65,7 @@ public class KStoreRestClient {
                     if (entity != null) {
                         String responseContent = EntityUtils.toString(response.getEntity());
                         responseContent = responseContent.replace("{}", "null");
+                        LogService.getInstance().logInfo("Latest plugins responses: " + responseContent);
                         plugins.set(parsePluginListJson(responseContent));
                     } else {
                         throw new KStoreClientException("Failed to get latest plugin. No content returned from server.");

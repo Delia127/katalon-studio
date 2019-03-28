@@ -152,6 +152,9 @@ public class PluginService {
                     }
                 }
                 
+                LogService.getInstance().logInfo(String.format("Plugin ID: %s. Plugin location: %s",
+                    plugin.getId(), pluginPath));
+                
                 try {
                     if (isCustomKeywordPlugin(plugin)) {
                         String location = getPluginLocation(plugin);
@@ -169,6 +172,8 @@ public class PluginService {
                             && !StringUtils.containsIgnoreCase(e.getMessage(),
                                     EXCEPTION_ANOTHER_SINGLETON_BUNDLE_SELECTED_SIGNAL)) {
                         throw e;
+                    } else {
+                        LogService.getInstance().logError(e);
                     }
                 }
 
@@ -309,6 +314,7 @@ public class PluginService {
 
     private File downloadAndExtractPlugin(KStorePlugin plugin, KStoreCredentials credentials) throws Exception {
 
+        LogService.getInstance().logInfo("Downloaded plugin ID: " + plugin.getId());
         trackDownloadPlugin(plugin, credentials);
         
         File downloadDir = getRepoDownloadDir();
@@ -331,6 +337,19 @@ public class PluginService {
             return name.endsWith(".jar") && !name.endsWith("-javadoc.jar") && !name.endsWith("-sources.jar");
         }).findAny().orElse(null);
         return jar;
+    }
+    
+    private String getPluginInfoForLogging(KStorePlugin plugin) {
+        try {
+            Map<String, Object> infoMap = new HashMap<>(); 
+            infoMap.put("id", plugin.getId());
+            infoMap.put("productId", plugin.getProduct().getId());
+            infoMap.put("name", plugin.getProduct().getName());
+            infoMap.put("expired", plugin.isExpired());
+            return JsonUtil.toJson(infoMap);
+        } catch (Exception e) {
+            return StringUtils.EMPTY;
+        }
     }
     
     private void trackDownloadPlugin(KStorePlugin plugin, KStoreCredentials credentials) {
