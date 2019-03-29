@@ -9,6 +9,7 @@ def version
 def isRelease
 def isBeta
 def isQtest
+def titleVersion
 
 pipeline {
     agent any
@@ -63,7 +64,7 @@ pipeline {
 
                 dir('source/com.kms.katalon') {
                     script {
-                        def titleVersion = isRelease ? tag : "${version} (DEV)"
+                        titleVersion = isRelease ? tag : "${version}.DEV"
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
@@ -190,10 +191,12 @@ pipeline {
 
         stage('Package .DMG file') {
             steps {
-                script {
-                    // For release branches, execute codesign command to package .DMG file for macOS
-                    if (isRelease) {
-                        sh "./dropdmg.sh ${env.tmpDir}"
+                lock('dropdmg') {
+                    script {
+                        // For release branches, execute codesign command to package .DMG file for macOS
+                        if (isRelease) {
+                            sh "./dropdmg.sh ${env.tmpDir}"
+                        }
                     }
                 }
             }
@@ -224,9 +227,9 @@ pipeline {
                 dir("tools/repackage") {
                     nodejs(nodeJSInstallationName: 'nodejs') {
                         sh 'npm prune && npm install'
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${version}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${version}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${titleVersion}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${titleVersion}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${titleVersion}"
 
                         sh "rm -rf ${env.tmpDir}/*.zip"
                         sh "rm -rf ${env.tmpDir}/*.tar.gz"
@@ -235,10 +238,10 @@ pipeline {
                         sh "rm -rf ${env.tmpDir}/output"
                     }
                 }
-                sh "zip -r '${env.tmpDir}/Katalon Studio.app.zip' '${env.tmpDir}/Katalon Studio.app'"
+                sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'"
                 sh "rm -rf '${env.tmpDir}/Katalon Studio.app'"
 
-                sh "zip -r '${env.tmpDir}/apidocs.zip' '${env.tmpDir}/apidocs'"
+                sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/apidocs.zip' 'apidocs'"
                 sh "rm -rf '${env.tmpDir}/apidocs'"
             }
         }
