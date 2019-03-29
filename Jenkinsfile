@@ -66,7 +66,7 @@ pipeline {
                     println("With update ${withUpdate}.")
 
                     if (isRelease) {
-                        tag = branch.replace('release-')
+                        tag = branch.replace('release-', '')
                     } else {
                         tag = "${version}.DEV"
                     }
