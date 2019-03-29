@@ -273,7 +273,7 @@
 			<artifactId>jansi</artifactId>
 			<version>1.11</version>
 		</dependency>
-	</dependencies>	
+	</dependencies>
 	<!-- Used to distinguish between staging and production build -->
    	<profiles>
         	<profile>
@@ -292,5 +292,5 @@
            		</properties>
         	</profile>
    	</profiles>
-</project> 
+</project>
 
