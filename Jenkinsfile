@@ -58,14 +58,9 @@ pipeline {
                     isRelease = branch.startsWith('release-')
                     println("Is release ${isRelease}.")
 
-                    if (isRelease) {
-                        tag = branch.replace('release-')
-                    }
-                    println("Tag ${tag}.")
-
-                    if (isRelease && !tag.equals(version) && !tag.startsWith("${version}.rc")) {
-                        println 'Tag is incorrect.'
-                        throw new IllegalStateException('Tag is incorrect.')
+                    if (!(branch.endsWith(version) || branch.contains("${version}.rc"))) {
+                        println 'Branch or version is incorrect.'
+                        throw new IllegalStateException('Branch or version is incorrect.')
                     }
 
                     isBeta = isRelease && tag.contains('rc')
@@ -78,8 +73,8 @@ pipeline {
                 dir('source/com.kms.katalon') {
                     script {
                         def commitId = sh(returnStdout: true, script: 'git rev-parse --short HEAD')
-                        titleVersion = isRelease ? tag : "${version}.DEV"
-                        titleVersion = "${titleVersion} (${commitId})"
+                        def devTag = isRelease ? ' ' : ' (DEV) '
+                        titleVersion = "${version}${devTag}(${commitId})"
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
