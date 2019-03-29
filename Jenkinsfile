@@ -36,6 +36,7 @@ pipeline {
                     println("Branch ${branch}.")
 
                     if (!branch.endsWith(version)) {
+                        println 'Branch is incorrect.'
                         throw new IllegalStateException('Please update version in about.mappings.')
                     }
 
@@ -49,6 +50,7 @@ pipeline {
                     println("Is release ${isRelease}.")
 
                     if (isRelease && !tag.equals(version) && !tag.startsWith("${version}.rc")) {
+                        println 'Tag is incorrect.'
                         throw new IllegalStateException('Tag is incorrect.')
                     }
 
