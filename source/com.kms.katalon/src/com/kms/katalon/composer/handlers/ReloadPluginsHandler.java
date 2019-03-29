@@ -82,11 +82,13 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                         }
                     });
                     if (credentials[0] != null) {
+                        LoggerSingleton.logInfo("Credentials found. Reloading plugins.");
                         resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
                         if (!store.hasReloadedPluginsBefore()) {
                             store.markFirstTimeReloadPlugins();
                         }
                     } else {
+                        LoggerSingleton.logError("Credentials not found.");
                         return Status.CANCEL_STATUS;
                     }
                 } catch (InterruptedException e) {
@@ -96,6 +98,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     return new Status(Status.ERROR, "com.kms.katalon",
                             "Error reloading plugins", e);
                 }
+                LoggerSingleton.logInfo("Reloaded plugins successfully.");
                 return Status.OK_STATUS;
             }
         };
@@ -104,6 +107,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             @Override
             public void done(IJobChangeEvent event) {
                 if (!reloadPluginsJob.getResult().isOK()) {
+                    LoggerSingleton.logError("Failed to reload plugins.");
                     return;
                 }
                 
