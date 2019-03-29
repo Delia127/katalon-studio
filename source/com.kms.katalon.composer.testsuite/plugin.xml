@@ -16,12 +16,4 @@
             handler="com.kms.katalon.composer.testsuite.handlers.DeleteTestSuiteHandler">
       </client>
    </extension>
-   <extension
-         point="com.kms.katalon.composer.testsuite.view">
-      <client
-            product="com.kms.katalon.composer.testsuite.view.contributor.KatalonTestSuiteViewContributor"
-            view="com.kms.katalon.composer.testsuite.view.builder.KatalonTestSuiteUIViewBuilder">
-      </client>
-   </extension>
-
 </plugin>
