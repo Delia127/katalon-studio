@@ -229,7 +229,7 @@ public class AnalyticsApiProvider {
         if (statusCode != HttpStatus.SC_OK) {
             LogUtil.logError(MessageFormat.format(
                     "KA: Unexpected response code from KA server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
-                    httpRequest.getURI().toString(), HttpStatus.SC_OK, statusCode));
+                    httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
             throw new AnalyticsApiExeception(new Throwable(responseString));
         }
         Gson gson = new GsonBuilder().create();
