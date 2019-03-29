@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
-import com.kms.katalon.execution.entity.ExecutedEntity;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
@@ -99,6 +98,9 @@ import com.kms.katalon.logging.LogUtil;
     }
     
     public void setExecutionUUID(String executionUUID) {
+        if (StringUtils.isEmpty(executionUUID)) {
+            return;
+        }
     	this.executionUUID = executionUUID;
     }
 }

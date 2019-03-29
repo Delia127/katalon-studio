@@ -102,7 +102,7 @@
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		<platform.version>1.0.9</platform.version>
+		<platform.version>1.0.10</platform.version>
 
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
 		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>
@@ -273,7 +273,7 @@
 			<artifactId>jansi</artifactId>
 			<version>1.11</version>
 		</dependency>
-	</dependencies>	
+	</dependencies>
 	<!-- Used to distinguish between staging and production build -->
    	<profiles>
         	<profile>
@@ -292,5 +292,5 @@
            		</properties>
         	</profile>
    	</profiles>
-</project> 
+</project>
 

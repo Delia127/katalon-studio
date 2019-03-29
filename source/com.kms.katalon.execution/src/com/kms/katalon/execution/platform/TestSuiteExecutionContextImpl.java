@@ -25,6 +25,12 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
     }
 
     @Override
+    public String getReportLocation() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public long getStartTime() {
         return builder.startTime;
     }

@@ -59,11 +59,24 @@ import com.kms.katalon.logging.LogUtil;
 public abstract class ReportableLauncher extends LoggableLauncher {
     private ReportEntity reportEntity;
 
+    private Date startTime;
+
+    private Date endTime;
+
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
+        this.setExecutionUUID(runConfig.getExecutionUUID());
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
+
+    @Override
+    protected void onStartExecution() {
+        super.onStartExecution();
+
+        startTime = new Date();
+        fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
+    }
 
     @Override
     protected void preExecutionComplete() {
@@ -77,10 +90,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
         try {
             setStatus(LauncherStatus.PREPARE_REPORT);
-            Date startTime = ReportController.getInstance()
-                    .getDateFromReportFolderName(getRunConfig().getExecutionSetting().getName());
-
-            updateLastRun(startTime);
+            this.endTime = new Date();
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
 
@@ -410,34 +420,43 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     protected TestSuiteExecutionEvent fireTestSuiteExecutionEvent(String eventName) {
-        IExecutedEntity executedEntity = getExecutedEntity();
         if (executedEntity instanceof TestSuiteExecutedEntity) {
-            TestSuiteExecutedEntity testSuiteEx = (TestSuiteExecutedEntity) executedEntity;
-
-            List<TestCaseExecutionContext> testCaseContexts = new ArrayList<>();
-            int iterationIndex = 0;
-            for (int index = 0; index < testSuiteEx.getExecutedItems().size(); index++) {
-                TestCaseExecutedEntity testCaseExecutedEntity = (TestCaseExecutedEntity) testSuiteEx.getExecutedItems()
-                        .get(index);
-                for (int loopTime = 0; loopTime < testCaseExecutedEntity.getLoopTimes(); loopTime++) {
-                    TestStatus testStatus = getResult().getStatuses()[iterationIndex];
-                    testCaseContexts.add(TestCaseExecutionContextImpl.Builder
-                            .create(testCaseExecutedEntity.getSourceId(), testCaseExecutedEntity.getSourceId())
-                            .withTestCaseStatus(testStatus.getStatusValue().name())
-                            .withMessage(testStatus.getStackTrace())
-                            .build());
-                    iterationIndex++;
-                }
-            }
-
-            TestSuiteExecutionContextImpl executionContext = TestSuiteExecutionContextImpl.Builder
-                    .create(getId(), testSuiteEx.getSourceId())
-                    .withReportId(getReportEntity().getIdForDisplay())
-                    .withTestCaseContext(testCaseContexts)
-                    .build();
+            TestSuiteExecutionContextImpl executionContext = getTestSuiteExecutionContext();
             TestSuiteExecutionEvent eventObject = new TestSuiteExecutionEvent(eventName, executionContext);
             EventBrokerSingleton.getInstance().getEventBroker().post(eventName, eventObject);
         }
         return null;
+    }
+
+    public TestSuiteExecutionContextImpl getTestSuiteExecutionContext() {
+        if (!(executedEntity instanceof TestSuiteExecutedEntity)) {
+            return null;
+        }
+        TestSuiteExecutedEntity testSuiteEx = (TestSuiteExecutedEntity) executedEntity;
+
+        List<TestCaseExecutionContext> testCaseContexts = new ArrayList<>();
+        int iterationIndex = 0;
+        for (int index = 0; index < testSuiteEx.getExecutedItems().size(); index++) {
+            TestCaseExecutedEntity testCaseExecutedEntity = (TestCaseExecutedEntity) testSuiteEx.getExecutedItems()
+                    .get(index);
+            for (int loopTime = 0; loopTime < testCaseExecutedEntity.getLoopTimes(); loopTime++) {
+                TestStatus testStatus = getResult().getStatuses()[iterationIndex];
+                testCaseContexts.add(TestCaseExecutionContextImpl.Builder
+                        .create(testCaseExecutedEntity.getSourceId(), testCaseExecutedEntity.getSourceId())
+                        .withTestCaseStatus(testStatus.getStatusValue().name())
+                        .withMessage(testStatus.getStackTrace())
+                        .build());
+                iterationIndex++;
+            }
+        }
+
+        TestSuiteExecutionContextImpl executionContext = TestSuiteExecutionContextImpl.Builder
+                .create(getId(), testSuiteEx.getSourceId(), testSuiteEx.getEntity().getProject().getFolderLocation())
+                .withReportId(getReportEntity().getIdForDisplay())
+                .withTestCaseContext(testCaseContexts)
+                .withStartTime(startTime != null ? startTime.getTime() : 0L)
+                .withEndTime(endTime != null ? endTime.getTime() : 0L)
+                .build();
+        return executionContext;
     }
 }

@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.collection.part.launcher;
+package com.kms.katalon.composer.execution.launcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.UIEvents;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.execution.launcher.IDEObservableLauncher;
-import com.kms.katalon.composer.execution.launcher.IDEObservableParentLauncher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
@@ -128,7 +126,7 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
     }
 
     @Override
-    public List<IDEObservableLauncher> getSubLaunchers() {
+    public List<IDEObservableLauncher> getObservableLaunchers() {
         List<IDEObservableLauncher> subIDEObservableLaunchers = new ArrayList<>();
         for (ReportableLauncher subLauncher : subLaunchers) {
             if (subLauncher instanceof IDEObservableLauncher) {

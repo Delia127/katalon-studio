@@ -47,6 +47,7 @@ import org.osgi.service.event.EventHandler;
 import com.katalon.platform.api.exception.PlatformException;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
@@ -101,9 +102,6 @@ public abstract class AbstractExecutionHandler {
 
     @Inject
     protected static IEventBroker eventBroker;
-
-    @Inject
-    protected static UISynchronize sync;
 
     /**
      * Cleans all run configuration before any execution is started
@@ -329,7 +327,7 @@ public abstract class AbstractExecutionHandler {
                 } catch (JobCancelException e) {
                     return Status.CANCEL_STATUS;
                 } catch (final Exception e) {
-                    sync.syncExec(() -> {
+                    UISynchronizeService.syncExec(() -> {
                         MultiStatusErrorDialog.showErrorDialog(e,
                                 ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_MSG_UNABLE_TO_EXECUTE_FEATURE_FILE,
                                 e.getMessage());
@@ -349,7 +347,7 @@ public abstract class AbstractExecutionHandler {
             return;
         }
         Job job = new ExecuteTestCaseJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, runConfig, testCase, launchMode,
-                sync);
+                UISynchronizeService.getInstance().getSync());
         job.setUser(true);
         job.schedule();
     }
@@ -403,7 +401,7 @@ public abstract class AbstractExecutionHandler {
                         monitor.done();
                         return Status.OK_STATUS;
                     } else {
-                        sync.syncExec(new Runnable() {
+                        UISynchronizeService.syncExec(new Runnable() {
                             @Override
                             public void run() {
                                 MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
@@ -441,7 +439,7 @@ public abstract class AbstractExecutionHandler {
             public void done(IJobChangeEvent event) {
                 super.done(event);
                 if (event.getResult() != null && event.getResult().matches(Status.WARNING)) {
-                    sync.asyncExec(() -> {
+                    UISynchronizeService.asyncExec(() -> {
                         if (event.getResult().getException() == null) {
                             MessageDialog.openInformation(null, StringConstants.WARN_TITLE,
                                     event.getResult().getMessage());
@@ -475,7 +473,7 @@ public abstract class AbstractExecutionHandler {
         debugUIPreferences.setValue(IDebugPreferenceConstants.CONSOLE_OPEN_ON_OUT, false);
         debugUIPreferences.setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES, false);
 
-        sync.syncExec(new Runnable() {
+        UISynchronizeService.asyncExec(new Runnable() {
             @Override
             public void run() {
                 // set console partStack is visible
@@ -519,7 +517,7 @@ public abstract class AbstractExecutionHandler {
     }
 
     public UISynchronize getSync() {
-        return sync;
+        return UISynchronizeService.getInstance().getSync();
     }
 
     void validateJobProgressMonitor(IProgressMonitor monitor) throws JobCancelException {

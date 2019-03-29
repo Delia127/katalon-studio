@@ -253,6 +253,8 @@ public class StringConstants {
 
     // XML LOG
     public static final String XML_LOG_DESCRIPTION_PROPERTY = "description";
+    
+    public static final String XML_LOG_TAG_PROPERTY = "tag";
 
     public static final String XML_LOG_ATTACHMENT_PROPERTY = "attachment";
 

@@ -99,7 +99,7 @@ public class GroovyUtil {
 
     private static final String DRIVERS_FOLDER_NAME = "Drivers";
 
-    private static final String PLUGINS_FOLDER_NAME = "Plugins";
+    public static final String PLUGINS_FOLDER_NAME = "Plugins";
 
     private static final String JDT_LAUNCHING = "org.eclipse.jdt.launching.JRE_CONTAINER";
 

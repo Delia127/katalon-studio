@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,12 +26,13 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.CustomKeywordPluginFactory;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
+import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.util.ZipManager;
 import com.kms.katalon.groovy.util.GroovyUtil;
@@ -79,7 +78,7 @@ public class PluginService {
 
     public List<ResultItem> reloadPlugins(KStoreCredentials credentials, IProgressMonitor monitor)
             throws ReloadPluginsException, InterruptedException {
-        
+        CustomKeywordPluginFactory.getInstance().clearPluginInStore();
         try {
             List<ResultItem> results = new ArrayList<>();
 
@@ -122,7 +121,8 @@ public class PluginService {
     
             int totalInstallWork = latestPlugins.size();
             int installWork = 0;
-            CustomKeywordPluginFactory.getInstance().clear();
+
+            CustomKeywordPluginFactory.getInstance().clearPluginInStore();
             PluginFactory.getInstance().clear();
             for (KStorePlugin plugin : latestPlugins) {
                 if (monitor.isCanceled()) {
@@ -155,7 +155,12 @@ public class PluginService {
                 try {
                     if (isCustomKeywordPlugin(plugin)) {
                         String location = getPluginLocation(plugin);
-                        CustomKeywordPluginFactory.getInstance().addPluginFile(new File(location));
+                        CustomKeywordPlugin customKeywordPlugin = new CustomKeywordPlugin();
+                        customKeywordPlugin.setId(Long.toString(plugin.getId()));
+                        File pluginFile = new File(location);
+                        customKeywordPlugin.setPluginFile(pluginFile);
+
+                        CustomKeywordPluginFactory.getInstance().addPluginFile(pluginFile, customKeywordPlugin);
                     } else {
                         platformInstall(pluginPath);
                     }

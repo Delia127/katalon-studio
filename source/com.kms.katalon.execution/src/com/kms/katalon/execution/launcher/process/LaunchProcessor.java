@@ -2,7 +2,10 @@ package com.kms.katalon.execution.launcher.process;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
@@ -30,21 +33,31 @@ public class LaunchProcessor implements ILaunchProcessor {
 
     private Map<String, String> environmentVariables;
 
+    private String[] vmArgs;
+
     public LaunchProcessor(String[] classPaths) {
-        this(classPaths, new HashMap<String, String>());
+        this(classPaths, new HashMap<String, String>(), new String[0]);
     }
 
-    public LaunchProcessor(String[] classPaths, Map<String, String> environmentVariables) {
-        fClasspaths = classPaths;
+    public LaunchProcessor(String[] classPaths, Map<String, String> environmentVariables, String[] vmArgs) {
+        this.fClasspaths = classPaths;
         this.environmentVariables = environmentVariables;
+        this.vmArgs = vmArgs;
     }
 
     @Override
     public Process execute(File scripFile) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder(getInstalledJRE(), "-cp",
+        List<String> args = new ArrayList<>();
+        String[] commands = new String[] { getInstalledJRE(), "-cp",
                 File.pathSeparator + FilenameUtils.separatorsToSystem(getGroovyLibs()) + File.pathSeparator
                         + getClasspaths(),
-                STARTER_CLASS, "--main", MAIN_CLASS, FilenameUtils.separatorsToSystem(scripFile.getAbsolutePath()));
+                STARTER_CLASS, "--main", MAIN_CLASS, FilenameUtils.separatorsToSystem(scripFile.getAbsolutePath()) };
+        
+        args.addAll(Arrays.asList(commands));
+        if (vmArgs != null) {
+            args.addAll(Arrays.asList(vmArgs));
+        }
+        ProcessBuilder pb = new ProcessBuilder(args.toArray(new String[0]));
         pb.environment().putAll(getEnviromentVariables());
         pb.directory(new File(ProjectController.getInstance().getCurrentProject().getFolderLocation()));
         return pb.start();

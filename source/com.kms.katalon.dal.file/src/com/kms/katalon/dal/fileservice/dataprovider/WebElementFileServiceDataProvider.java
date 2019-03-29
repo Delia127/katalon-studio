@@ -72,8 +72,8 @@ public class WebElementFileServiceDataProvider implements IWebElementDataProvide
 	}
 
 	@Override
-	public void updateTestObject(WebElementEntity entity) throws Exception {
-		WebElementFileServiceManager.updateTestObject(entity);
+	public WebElementEntity updateTestObject(WebElementEntity entity) throws Exception {
+		return WebElementFileServiceManager.updateTestObject(entity);
 	}
 
 	@Override

@@ -22,6 +22,7 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.launcher.manager,
  com.kms.katalon.execution.launcher.model,
  com.kms.katalon.execution.launcher.process,
+ com.kms.katalon.execution.launcher.provider,
  com.kms.katalon.execution.launcher.result,
  com.kms.katalon.execution.logging,
  com.kms.katalon.execution.platform,
@@ -80,5 +81,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.kms.katalon.tracking,
  com.kms.katalon.core.webservice,
  com.katalon.platform,
- ch.qos.logback.classic
+ ch.qos.logback.classic,
+ org.eclipse.osgi
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator

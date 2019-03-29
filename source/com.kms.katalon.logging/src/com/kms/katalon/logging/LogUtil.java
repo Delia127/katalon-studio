@@ -50,6 +50,16 @@ public class LogUtil {
             }
         }, errorLogger);
     }
+    
+    public static void logInfo(String message) {
+        println(LogManager.getOutputLogger(), message, LogMode.CONSOLE);
+        println(LogManager.getOutputLogger(), message, LogMode.LOG);
+    }
+    
+    public static void logError(String message) {
+        println(LogManager.getErrorLogger(), message, LogMode.CONSOLE);
+        println(LogManager.getErrorLogger(), message, LogMode.LOG);
+    }
 
     public static void printAndLogError(final Throwable t) {
         writeError(LogMode.CONSOLE, t, "");

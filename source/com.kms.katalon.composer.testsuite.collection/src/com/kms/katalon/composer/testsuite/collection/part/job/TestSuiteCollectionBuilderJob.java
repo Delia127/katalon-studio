@@ -15,10 +15,10 @@ import com.kms.katalon.composer.components.impl.dialogs.MissingMobileDriverWarni
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.execution.launcher.IDETestSuiteCollectionLauncher;
+import com.kms.katalon.composer.execution.launcher.SubIDELauncher;
 import com.kms.katalon.composer.execution.util.WebDriverInstallationUtil;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
-import com.kms.katalon.composer.testsuite.collection.part.launcher.IDETestSuiteCollectionLauncher;
-import com.kms.katalon.composer.testsuite.collection.part.launcher.SubIDELauncher;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;

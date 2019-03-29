@@ -9,7 +9,9 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,
  com.kms.katalon.constant,
- org.eclipse.jface
+ org.eclipse.jface,
+ com.kms.katalon.logging,
+ com.kms.katalon.custom
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.kms.katalon.preferences,
  com.kms.katalon.preferences.internal
