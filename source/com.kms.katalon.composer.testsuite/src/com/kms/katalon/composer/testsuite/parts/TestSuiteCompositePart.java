@@ -298,6 +298,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
 
     private void afterSaving() {
         childTestSuiteMainPart.afterSaving();
+        childTestSuiteIntegrationPart.onSaveSuccess(testSuite);
     }
 
     @Override
@@ -306,6 +307,11 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         if (!prepareForSaving()) {
             return;
         }
+        
+        childTestSuiteIntegrationPart.getEditingIntegrated().entrySet().forEach(entry -> {
+            testSuite.updateIntegratedEntity(entry.getValue());
+        });
+
         // back-up
         TestSuiteEntity temp = new TestSuiteEntity();
         TestSuiteEntityUtil.copyTestSuiteProperties(originalTestSuite, temp);
@@ -340,6 +346,8 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         } catch (Exception e) {
             // revert to original test suite
             TestSuiteEntityUtil.copyTestSuiteProperties(temp, originalTestSuite);
+            
+            childTestSuiteIntegrationPart.onSaveFailure(e);
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, e.getMessage());
         }

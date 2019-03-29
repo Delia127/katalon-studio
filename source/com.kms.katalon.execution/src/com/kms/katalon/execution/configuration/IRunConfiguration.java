@@ -36,6 +36,16 @@ public interface IRunConfiguration {
     boolean allowsRecording();
     
     ExecutionProfileEntity getExecutionProfile();
+
+    void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables);
+
+    void setVmArgs(String[] vmArgs);
     
-    public void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables);
+    String[] getVmArgs();
+    
+    void setTestSuiteAdditionalData(Map<String, String> data);
+    
+    Map<String, String> getTestSuiteAdditionalData();
+    
+    void setAdditionalEnvironmentVariables(Map<String, String> environmentVariables);
 }

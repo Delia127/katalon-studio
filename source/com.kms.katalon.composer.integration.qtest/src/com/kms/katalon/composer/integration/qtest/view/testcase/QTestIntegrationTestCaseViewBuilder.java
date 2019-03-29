@@ -18,11 +18,6 @@ public class QTestIntegrationTestCaseViewBuilder implements TestCaseIntegrationV
     }
 
     @Override
-    public int preferredOrder() {
-        return 0;
-    }
-
-    @Override
     public String getName() {
         return "qTest";
     }

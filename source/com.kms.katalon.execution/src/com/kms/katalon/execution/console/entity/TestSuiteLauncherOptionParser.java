@@ -1,5 +1,6 @@
 package com.kms.katalon.execution.console.entity;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -25,17 +27,19 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.ConsoleLauncher;
 import com.kms.katalon.execution.launcher.IConsoleLauncher;
+import com.kms.katalon.execution.launcher.LauncherProviderFactory;
+import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParser {
     private static final String EXECUTION_PROFILE_OPTION = "executionProfile";
-    
+
     private static final String OVERRIDING_GLOBAL_VARIABLE_PREFIX = "g_";
 
     private List<ConsoleOption<?>> overridingOptions = new ArrayList<>();
-    
+
     protected StringConsoleOption testSuitePathOption = new StringConsoleOption() {
-    	
+
         @Override
         public String getOption() {
             return ConsoleMain.TESTSUITE_ID_OPTION;
@@ -58,12 +62,12 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
     };
 
     protected StringConsoleOption executionProfileOption = new StringConsoleOption() {
-		@Override
-		public String getOption() {
-			return EXECUTION_PROFILE_OPTION;
-		}
-		
-    	public boolean isRequired() {
+        @Override
+        public String getOption() {
+            return EXECUTION_PROFILE_OPTION;
+        }
+
+        public boolean isRequired() {
             return false;
         }
 
@@ -72,42 +76,42 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             return ExecutionProfileEntity.DF_PROFILE_NAME;
         }
     };
-    
+
     private StringConsoleOption katalonStoreApiKeyOption = new StringConsoleOption() {
         @Override
         public String getOption() {
             return ConsoleMain.KATALON_STORE_API_KEY_OPTION;
         };
-        
+
         public boolean isRequired() {
             return false;
         };
     };
 
-	protected StringConsoleOption installPluginOption = new StringConsoleOption() {
+    protected StringConsoleOption installPluginOption = new StringConsoleOption() {
 
-		@Override
-		public String getOption() {
-			return ConsoleMain.INSTALL_PLUGIN_OPTION;
-		}
+        @Override
+        public String getOption() {
+            return ConsoleMain.INSTALL_PLUGIN_OPTION;
+        }
 
-		public boolean isRequired() {
-			return false;
-		}
-	};
-	
-	protected StringConsoleOption testSuiteQuery = new StringConsoleOption() {
-		
-		@Override
-		public String getOption() {
-			return ConsoleMain.TESTSUITE_QUERY;
-		}
-		
-		public boolean isRequired() {
-			return false;
-		}
-	};
-    
+        public boolean isRequired() {
+            return false;
+        }
+    };
+
+    protected StringConsoleOption testSuiteQuery = new StringConsoleOption() {
+
+        @Override
+        public String getOption() {
+            return ConsoleMain.TESTSUITE_QUERY;
+        }
+
+        public boolean isRequired() {
+            return false;
+        }
+    };
+
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> allOptions = super.getConsoleOptionList();
@@ -125,74 +129,89 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         return allOptions;
     }
 
-	@Override
+    @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-		super.setArgumentValue(consoleOption, argumentValue);
-		if (consoleOption == testSuiteQuery){
-//		    if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_DYNAMIC_EXECUTION) == null) {
-//                throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
-//            }
-			consoleOption.setValue(argumentValue);
-		} else if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
-				|| consoleOption == executionProfileOption
-				|| consoleOption == installPluginOption
-				|| overridingOptions.contains(consoleOption)) {
-			consoleOption.setValue(argumentValue);
-		}
+        super.setArgumentValue(consoleOption, argumentValue);
+        if (consoleOption == testSuiteQuery) {
+            // if (ApplicationManager.getInstance().getPluginManager().getPlugin(IdConstants.PLUGIN_DYNAMIC_EXECUTION)
+            // == null) {
+            // throw new PlatformException(ExecutionMessageConstants.LAU_TS_REQUIRES_TAGS_PLUGIN_TO_EXECUTE);
+            // }
+            consoleOption.setValue(argumentValue);
+        } else if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
+                || consoleOption == executionProfileOption || consoleOption == installPluginOption
+                || overridingOptions.contains(consoleOption)) {
+            consoleOption.setValue(argumentValue);
+        }
     }
-    
+
     @Override
     public IConsoleLauncher getConsoleLauncher(ProjectEntity project, LauncherManager manager)
             throws InvalidConsoleArgumentException, ExecutionException {
         try {
-            TestSuiteEntity testSuite = getTestSuite(project, testSuitePathOption.getValue());
-            TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuite);
-            executedEntity.setReportLocation(reportableSetting.getReportLocationSetting());
-            executedEntity.setEmailConfig(reportableSetting.getEmailConfig(project));
-            executedEntity.setRerunSetting(rerunSetting);
-            
-            if (testSuiteQuery.getValue() == null){
-                executedEntity.prepareTestCases();
-            } else {
-            	executedEntity.prepareTestCasesWithTestSuiteQuery(testSuiteQuery.getValue());
-            }
-            
-            AbstractRunConfiguration runConfig = (AbstractRunConfiguration) createRunConfiguration(project, testSuite,
-                    browserTypeOption.getValue());
-            
-            String profileName = executionProfileOption.getValue();
-            if (StringUtils.isBlank(profileName)) {
-                profileName = ExecutionProfileEntity.DF_PROFILE_NAME;
-            }
-            ExecutionProfileEntity executionProfile = GlobalVariableController.getInstance()
-                    .getExecutionProfile(profileName, project);
-            if (executionProfile == null) {
-                throw new ExecutionException(
-                        MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
-            }
-            runConfig.setExecutionProfile(executionProfile);
-            runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
-            runConfig.setExecutionUUID(executionUUIDOption.getValue());
-            runConfig.build(testSuite, executedEntity);
-            GlobalVariableController.getInstance().
-            generateGlobalVariableLibFile(project, null);
+            AbstractRunConfiguration runConfig = buildRunConfig(project);
             return new ConsoleLauncher(manager, runConfig);
         } catch (Exception e) {
             throw new ExecutionException(e);
         }
     }
 
-	public Map<String, Object> getOverridingGlobalVariables(){
-    	Map<String, Object> overridingGlobalVariables = new HashMap<>();
-		overridingOptions.forEach(a -> {
-			if (a.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX) 
-					&& a.getValue() != null) {
-				overridingGlobalVariables.put(a.getOption().
-						replace(OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
-						String.valueOf(a.getValue()));
-			}
-		});
-    	return overridingGlobalVariables;
+    @Override
+    public ReportableLauncher getIDELauncher(ProjectEntity project, LauncherManager manager)
+            throws ExecutionException, InvalidConsoleArgumentException {
+        try {
+            AbstractRunConfiguration runConfig = buildRunConfig(project);
+            return LauncherProviderFactory.getInstance().getIdeLauncherProvider().getTestSuiteIDELauncher(manager,
+                    runConfig);
+        } catch (Exception e) {
+            throw new ExecutionException(e);
+        }
+    }
+
+    private AbstractRunConfiguration buildRunConfig(ProjectEntity project)
+            throws InvalidConsoleArgumentException, Exception, ExecutionException, ControllerException, IOException {
+        TestSuiteEntity testSuite = getTestSuite(project, testSuitePathOption.getValue());
+        TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuite);
+        executedEntity.setReportLocation(reportableSetting.getReportLocationSetting());
+        executedEntity.setEmailConfig(reportableSetting.getEmailConfig(project));
+        executedEntity.setRerunSetting(rerunSetting);
+
+        if (testSuiteQuery.getValue() == null) {
+            executedEntity.prepareTestCases();
+        } else {
+            executedEntity.prepareTestCasesWithTestSuiteQuery(testSuiteQuery.getValue());
+        }
+
+        AbstractRunConfiguration runConfig = (AbstractRunConfiguration) createRunConfiguration(project, testSuite,
+                browserTypeOption.getValue());
+
+        String profileName = executionProfileOption.getValue();
+        if (StringUtils.isBlank(profileName)) {
+            profileName = ExecutionProfileEntity.DF_PROFILE_NAME;
+        }
+        ExecutionProfileEntity executionProfile = GlobalVariableController.getInstance()
+                .getExecutionProfile(profileName, project);
+        if (executionProfile == null) {
+            throw new ExecutionException(
+                    MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
+        }
+        runConfig.setExecutionProfile(executionProfile);
+        runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
+        runConfig.setExecutionUUID(executionUUIDOption.getValue());
+        runConfig.build(testSuite, executedEntity);
+        GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
+        return runConfig;
+    }
+
+    public Map<String, Object> getOverridingGlobalVariables() {
+        Map<String, Object> overridingGlobalVariables = new HashMap<>();
+        overridingOptions.forEach(a -> {
+            if (a.getOption().startsWith(OVERRIDING_GLOBAL_VARIABLE_PREFIX) && a.getValue() != null) {
+                overridingGlobalVariables.put(a.getOption().replace(OVERRIDING_GLOBAL_VARIABLE_PREFIX, ""),
+                        String.valueOf(a.getValue()));
+            }
+        });
+        return overridingGlobalVariables;
     }
 
     protected IRunConfiguration createRunConfiguration(ProjectEntity projectEntity, TestSuiteEntity testSuite,
@@ -222,7 +241,6 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             throw throwInvalidTestSuiteIdException(testSuiteID);
         }
     }
-
 
     private static InvalidConsoleArgumentException throwInvalidTestSuiteIdException(String testSuiteID) {
         return new InvalidConsoleArgumentException(

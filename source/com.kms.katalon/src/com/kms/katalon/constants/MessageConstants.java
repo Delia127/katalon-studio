@@ -12,7 +12,7 @@ public class MessageConstants extends NLS {
     public static String HAND_QUIT_DIA_MSG_AUTO_RESTORE_SESSION;
 
     public static String HAND_SAVE_DIA_MSG;
-    
+
     public static String HAND_SAVE_ALL_DIA_MSG;
 
     public static String PAGE_GRP_ON_NEXT_STARTING_APP;
@@ -60,9 +60,9 @@ public class MessageConstants extends NLS {
     public static String PA_URL_GETTING_STARTED;
 
     public static String PA_LBL_USER_GUIDE;
-    
+
     public static String PA_LBL_PLUGIN_STORE;
-    
+
     public static String PA_LBL_BUSINESS_SUPPORT;
 
     public static String PA_LBL_ARTICLES_DESCRIPTION;
@@ -76,7 +76,7 @@ public class MessageConstants extends NLS {
     public static String PA_TOOLTIP_ARTICLES;
 
     public static String PA_URL_USER_GUIDE;
-    
+
     public static String PA_URL_PLUGIN_STORE;
 
     public static String PA_LBL_RECENT_PROJECT;
@@ -248,13 +248,13 @@ public class MessageConstants extends NLS {
     public static String TAB_LBL_SAMPLE_PROJECTS;
 
     public static String TAB_LBL_GETTING_STARTED;
-    
+
     public static String TAB_LBL_WEB_UI;
-    
+
     public static String TAB_LBL_MOBILE;
-    
+
     public static String TAB_LBL_API;
-    
+
     public static String TAB_LBL_SCRIPTING;
 
     public static String RELEASE_NOTE_URL;
@@ -270,7 +270,7 @@ public class MessageConstants extends NLS {
     public static String HAND_IMPORT_SETTINGS_MSG_SUCCESSFULL;
 
     public static String URL_KATALON_DISCUSSION_FORUM;
-    
+
     public static String URL_KATALON_SUPPORT_SERVICE;
 
     public static String HAND_IMPORT_SELENIUM_IDE_MSG_ERROR;
@@ -288,32 +288,32 @@ public class MessageConstants extends NLS {
     public static String DIA_BTN_NO_THANKS;
 
     public static String DIA_TITLE_KS_UPDATE;
-    
+
     public static String MSG_FORUM_SEARCH;
-    
+
     public static String URL_MOBILE_RECORD;
-    
+
     public static String URL_MOBILE_CONFIG_AND_RECORD_STEP_WINDOWS;
-    
+
     public static String URL_MOBILE_CONFIG_AND_RECORD_STEP_MAC;
-    
+
     public static String URL_USE_DRAFT_REQUEST;
-    
+
     public static String URL_SAVE_DRAFT_REQUEST;
-    
+
     public static String URL_API_EXECUTE_TEST_CASE;
-    
+
     public static String URL_USE_WEB_SERVICE_IN_TEST_CASE;
-    
+
     public static String URL_SCRIPT_NEW_TEST_CASE;
-    
+
     public static String URL_ADD_OR_IMPORT_KEYWORDS;
-    
+
     public static String URL_CREATE_TEST_LISTENER;
-    
+
     public static String URL_BUILD_CMD;
-    
-    //ActivationDialogV2
+
+    // ActivationDialogV2
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
 
     public static String ActivationDialogV2_MSG_ACTIVATING;
@@ -324,16 +324,16 @@ public class MessageConstants extends NLS {
 
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
 
-    //ActivationOfflineDialogV2
+    // ActivationOfflineDialogV2
     public static String ActivationOfflineDialogV2_LNK_BACK;
-    
+
     public static String ActivationOfflineDialogV2_ACTIVATION_URL;
 
     public static String ActivationOfflineDialogV2_LBL_ACTIVATION_URL;
 
     public static String ActivationOfflineDialogV2_LBL_ACTIVATION_CODE;
 
-    //SignupDialog
+    // SignupDialog
     public static String SignupDialog_LBL_FULL_NAME;
 
     public static String SignupDialog_LBL_EMAIL_HINT;
@@ -351,14 +351,14 @@ public class MessageConstants extends NLS {
     public static String SignupDialog_MSG_CREATING_NEW_ACCOUNT;
 
     public static String SignupDialog_MSG_ACTIVATING_NEW_ACCOUNT;
-    
+
     public static String SignupDialog_MSG_NETWORK_ERROR;
-    
+
     public static String SignupDialog_MSG_SIGNUP_REQUEST_FAILED;
-    
+
     public static String SignupDialog_LNK_OFFLINE_ACTIVATION;
 
-    //SignupSurveyDialog
+    // SignupSurveyDialog
     public static String SignupSurveyDialog_DIA_TITLE;
 
     public static String SignupSurveyDialog_BTN_EXPLORE_KATALON;
@@ -370,28 +370,28 @@ public class MessageConstants extends NLS {
     public static String SignupSurveyDialog_LBL_QUESTION_FOR_DOWNLOAD_PURPOSE;
 
     public static String SignupSurveyDialog_CBX_DEFAULT_OPTION;
-    
-    //UserFeedbackDialog
+
+    // UserFeedbackDialog
     public static String UserFeedbackDialog_MSG_USER_TWEET;
-    
-    //KStoreCredentialsDialog
+
+    // KStoreCredentialsDialog
     public static String KStoreLoginDialog_DIA_TITLE;
-    
+
     public static String KStoreLoginDialog_LBL_INSTRUCTION;
-    
+
     public static String KStoreLoginDialog_LBL_USERNAME;
-    
+
     public static String KStoreLoginDialog_LBL_PASSWORD;
-    
+
     public static String KStoreLoginDialog_BTN_CONNECT;
-    
+
     public static String KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
-    
+
     public static String KStoreLoginDialog_FAILED_TO_AUTHENTICATE_MSG;
-    
+
     public static String KStoreLoginDialog_LICENSE_AGREEMENT_MSG;
-    
-    //ReloadPluginsResultDialog
+
+    // ReloadPluginsResultDialog
     public static String KStorePluginsDialog_COL_PLUGIN;
 
     public static String KStorePluginsDialog_COL_STATUS;
@@ -401,22 +401,36 @@ public class MessageConstants extends NLS {
     public static String KStorePluginsDialog_STATUS_INSTALLED;
 
     public static String KStorePluginsDialog_STATUS_UNINSTALLED;
-    
+
     public static String KStorePluginsDialog_STATUS_EXPIRED;
     
     public static String KStorePluginsDialog_STATUS_INCOMPATIBLE;
-    
+
     public static String KStorePluginsDialog_COL_VERSION;
-    
+
     public static String KStorePluginsDialog_LBL_UPDATE;
 
-	public static String LBL_DISABLE_MOB_BROWSER_PROXY;
-	
-	public static String HAND_INFO_NO_PLUGINS_FOUND;
-	
-	public static String MSG_PLUGIN_HAS_BEEN_INSTALLED;
-	
-	public static String MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
+    public static String LBL_DISABLE_MOB_BROWSER_PROXY;
+
+    public static String HAND_INFO_NO_PLUGINS_FOUND;
+
+    public static String MSG_PLUGIN_HAS_BEEN_INSTALLED;
+
+    public static String MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
+
+    public static String ACTIVATED_PROP_NAME;
+
+    public static String ACTIVATE_INFO_INVALID;
+
+    public static String ACTIVATION_CODE_INVALID;
+
+    public static String ACTIVATION_COLLECT_FAIL_MESSAGE;
+
+    public static String DIA_TITLE_FUNCTIONS_INTRODUCTION;
+
+    public static String ERR_CONSOLE_MODE;
+
+    public static String REQUEST_CODE_PROP_NAME;
 
     static {
         // initialize resource bundle
