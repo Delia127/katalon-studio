@@ -243,32 +243,33 @@ pipeline {
             }
         }
 
+        stage('Upload update packages to S3') {
+            steps {
+                script {
+                    if (withUpdate) {
+                        withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
+                            s3Upload(file: "${env.tmpDir}/update/${version}", bucket:'katalon', path: "update/${version}", acl:'PublicRead')
+                        }
+                        sh "rm -rf '${env.tmpDir}/update'"
+                    }
+                }
+            }
+        }
+
         stage('Upload build packages to S3') {
             steps {
                 script {
                     if (isRelease) {
                         def s3Location
                         if (isQtest) {
-                            s3Location = "s3://katalon/${version}/qTest"
+                            s3Location = "${version}/qTest"
                         } else if (isBeta) {
-                            s3Location = "s3://katalon/release-beta/${version}"
+                            s3Location = "release-beta/${version}"
                         } else {
-                            s3Location = "s3://katalon/${version}"
+                            s3Location = "${version}"
                         }
                         withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
-                            sh "/usr/local/bin/aws s3 cp ${env.tmpDir} ${s3Location} --exclude='update/*'"
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Upload update packages to S3') {
-            steps {
-                script {
-                    if (withUpdate) {
-                        withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
-                            sh "/usr/local/bin/aws s3 cp ${env.tmpDir}/update/${version} s3://katalon/update/${version} --recursive"
+                            s3Upload(file: "${env.tmpDir}", bucket:'katalon', path: "${s3Location}", acl:'PublicRead')
                         }
                     }
                 }
