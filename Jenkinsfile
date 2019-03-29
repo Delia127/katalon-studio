@@ -190,10 +190,12 @@ pipeline {
 
         stage('Package .DMG file') {
             steps {
-                script {
-                    // For release branches, execute codesign command to package .DMG file for macOS
-                    if (isRelease) {
-                        sh "./dropdmg.sh ${env.tmpDir}"
+                lock('dropdmg') {
+                    script {
+                        // For release branches, execute codesign command to package .DMG file for macOS
+                        if (isRelease) {
+                            sh "./dropdmg.sh ${env.tmpDir}"
+                        }
                     }
                 }
             }
