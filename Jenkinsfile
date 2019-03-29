@@ -224,9 +224,9 @@ pipeline {
                 dir("tools/repackage") {
                     nodejs(nodeJSInstallationName: 'nodejs') {
                         sh 'npm prune && npm install'
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${version}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${version}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${tag}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${tag}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${tag}"
 
                         sh "rm -rf ${env.tmpDir}/*.zip"
                         sh "rm -rf ${env.tmpDir}/*.tar.gz"
@@ -235,10 +235,10 @@ pipeline {
                         sh "rm -rf ${env.tmpDir}/output"
                     }
                 }
-                sh "zip -r '${env.tmpDir}/Katalon Studio.app.zip' '${env.tmpDir}/Katalon Studio.app'"
+                sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'"
                 sh "rm -rf '${env.tmpDir}/Katalon Studio.app'"
 
-                sh "zip -r '${env.tmpDir}/apidocs.zip' '${env.tmpDir}/apidocs'"
+                sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/apidocs.zip' 'apidocs'"
                 sh "rm -rf '${env.tmpDir}/apidocs'"
             }
         }
