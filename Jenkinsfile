@@ -248,7 +248,7 @@ pipeline {
                 script {
                     if (withUpdate) {
                         withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
-                            s3Upload(file: "${env.tmpDir}/update/${version}", bucket:'katalon', path: "update/${version}", acl:'PublicRead')
+                            s3Upload(file: "${env.tmpDir}/update/${tag}", bucket:'katalon', path: "update/${tag}", acl:'PublicRead')
                         }
                         sh "rm -rf '${env.tmpDir}/update'"
                     }
@@ -262,11 +262,11 @@ pipeline {
                     if (isRelease) {
                         def s3Location
                         if (isQtest) {
-                            s3Location = "${version}/qTest"
+                            s3Location = "${tag}/qTest"
                         } else if (isBeta) {
-                            s3Location = "release-beta/${version}"
+                            s3Location = "release-beta/${tag}"
                         } else {
-                            s3Location = "${version}"
+                            s3Location = "${tag}"
                         }
                         withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
                             s3Upload(file: "${env.tmpDir}", bucket:'katalon', path: "${s3Location}", acl:'PublicRead')
