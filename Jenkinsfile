@@ -24,6 +24,17 @@ pipeline {
 
     stages {
 
+        stage('Prepare') {
+            steps {
+                script {
+                    // Terminate running builds of the same job
+                    abortPreviousBuilds()
+                    sh "mkdir -p ${env.tmpDir}"
+                    sh 'chmod -R 777 ${WORKSPACE}'
+                }
+            }
+        }
+
         stage('Get version') {
             steps {
                 script {
@@ -44,15 +55,12 @@ pipeline {
                     isQtest = branch.contains('qtest')
                     println("Is qTest ${isQtest}.")
 
-                    tag = sh(returnStdout: true, script: "git tag --contains | head -1").trim()
-                    println("Tag ${tag}.")
-
-                    isRelease = tag != null && !tag.isEmpty()
+                    isRelease = branch.startsWith('release-')
                     println("Is release ${isRelease}.")
 
-                    if (isRelease && !tag.equals(version) && !tag.startsWith("${version}.rc")) {
-                        println 'Tag is incorrect.'
-                        throw new IllegalStateException('Tag is incorrect.')
+                    if (!(branch.endsWith(version) || branch.contains("${version}.rc"))) {
+                        println 'Branch or version is incorrect.'
+                        throw new IllegalStateException('Branch or version is incorrect.')
                     }
 
                     isBeta = isRelease && tag.contains('rc')
@@ -64,22 +72,13 @@ pipeline {
 
                 dir('source/com.kms.katalon') {
                     script {
-                        titleVersion = isRelease ? tag : "${version}.DEV"
+                        def commitId = sh(returnStdout: true, script: 'git rev-parse --short HEAD')
+                        def devTag = isRelease ? ' ' : ' (DEV) '
+                        titleVersion = "${version}${devTag}(${commitId})"
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
                     }
-                }
-            }
-        }
-
-        stage('Prepare') {
-            steps {
-                script {
-                    // Terminate running builds of the same job
-                    abortPreviousBuilds()
-                    sh "mkdir -p ${env.tmpDir}"
-                    sh 'chmod -R 777 ${WORKSPACE}'
                 }
             }
         }
@@ -227,9 +226,9 @@ pipeline {
                 dir("tools/repackage") {
                     nodejs(nodeJSInstallationName: 'nodejs') {
                         sh 'npm prune && npm install'
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${titleVersion}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${titleVersion}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${titleVersion}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}"
 
                         sh "rm -rf ${env.tmpDir}/*.zip"
                         sh "rm -rf ${env.tmpDir}/*.tar.gz"
