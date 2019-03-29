@@ -58,7 +58,7 @@ pipeline {
                     isRelease = branch.startsWith('release-')
                     println("Is release ${isRelease}.")
 
-                    isBeta = isRelease && tag.contains('rc')
+                    isBeta = isRelease && branch.contains('.rc')
                     println("Is beta ${isBeta}.")
 
                     withUpdate = isRelease && !isQtest && !isBeta
