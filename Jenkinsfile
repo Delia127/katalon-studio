@@ -7,6 +7,7 @@ import groovy.json.JsonOutput
 
 def version
 def isRelease
+def isBeta
 def isQtest
 
 pipeline {
@@ -44,6 +45,14 @@ pipeline {
                     println("Tag ${tag}.")
 
                     isRelease = tag != null && !tag.isEmpty()
+
+                    if (isRelease && !tag.equals(version) && !tag.startsWith("${version}.rc")) {
+                        throw new IllegalStateException('Tag is incorrect.')
+                    }
+
+                    isBeta = isRelease && tag.contains('rc')
+
+                    withUpdate = isRelease && !isQtest && !isBeta
                 }
 
                 dir('source/com.kms.katalon') {
@@ -187,7 +196,7 @@ pipeline {
         stage('Generate update packages') {
             steps {
                 script {
-                    if (isRelease && !isQtest) {
+                    if (withUpdate) {
                         dir("tools/updater") {
                             def updateInfo = [
                                 buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
@@ -222,6 +231,41 @@ pipeline {
                 }
                 sh "zip -r '${env.tmpDir}/Katalon Studio.app.zip' '${env.tmpDir}/Katalon Studio.app'"
                 sh "rm -rf '${env.tmpDir}/Katalon Studio.app'"
+
+                sh "zip -r '${env.tmpDir}/apidocs.zip' '${env.tmpDir}/apidocs'"
+                sh "rm -rf '${env.tmpDir}/apidocs'"
+            }
+        }
+
+        stage('Upload build packages to S3') {
+            steps {
+                script {
+                    if (isRelease) {
+                        def s3Location
+                        if (isQtest) {
+                            s3Location = "s3://katalon/${version}/qTest"
+                        } else if (isBeta) {
+                            s3Location = "s3://katalon/release-beta/${version}"
+                        } else {
+                            s3Location = "s3://katalon/${version}"
+                        }
+                        withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
+                            sh "/usr/local/bin/aws s3 cp ${env.tmpDir} ${s3Location} --exclude='update/*'"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Upload update packages to S3') {
+            steps {
+                script {
+                    if (withUpdate) {
+                        withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
+                            sh "/usr/local/bin/aws s3 cp ${env.tmpDir}/update/${version} s3://katalon/update/${version} --recursive"
+                        }
+                    }
+                }
             }
         }
 
