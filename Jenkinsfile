@@ -24,6 +24,17 @@ pipeline {
 
     stages {
 
+        stage('Prepare') {
+            steps {
+                script {
+                    // Terminate running builds of the same job
+                    abortPreviousBuilds()
+                    sh "mkdir -p ${env.tmpDir}"
+                    sh 'chmod -R 777 ${WORKSPACE}'
+                }
+            }
+        }
+
         stage('Get version') {
             steps {
                 script {
@@ -44,11 +55,13 @@ pipeline {
                     isQtest = branch.contains('qtest')
                     println("Is qTest ${isQtest}.")
 
-                    tag = sh(returnStdout: true, script: "git tag --contains | head -1").trim()
-                    println("Tag ${tag}.")
-
-                    isRelease = tag != null && !tag.isEmpty()
+                    isRelease = branch.startsWith('release-')
                     println("Is release ${isRelease}.")
+
+                    if (isRelease) {
+                        tag = branch.replace('release-')
+                    }
+                    println("Tag ${tag}.")
 
                     if (isRelease && !tag.equals(version) && !tag.startsWith("${version}.rc")) {
                         println 'Tag is incorrect.'
@@ -64,22 +77,13 @@ pipeline {
 
                 dir('source/com.kms.katalon') {
                     script {
+                        def commitId = sh(returnStdout: true, script: 'git rev-parse --short HEAD')
                         titleVersion = isRelease ? tag : "${version}.DEV"
+                        titleVersion = "${titleVersion} (${commitId})"
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
                     }
-                }
-            }
-        }
-
-        stage('Prepare') {
-            steps {
-                script {
-                    // Terminate running builds of the same job
-                    abortPreviousBuilds()
-                    sh "mkdir -p ${env.tmpDir}"
-                    sh 'chmod -R 777 ${WORKSPACE}'
                 }
             }
         }
