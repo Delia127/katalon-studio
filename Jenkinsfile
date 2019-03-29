@@ -47,9 +47,9 @@ pipeline {
                     def branch = env.BRANCH_NAME
                     println("Branch ${branch}.")
 
-                    if (!branch.endsWith(version)) {
-                        println 'Branch is incorrect.'
-                        throw new IllegalStateException('Please update version in about.mappings.')
+                    if (!(branch.endsWith(version) || branch.contains("${version}.rc"))) {
+                        println 'Branch or version is incorrect.'
+                        throw new IllegalStateException('Branch or version is incorrect.')
                     }
 
                     isQtest = branch.contains('qtest')
@@ -57,11 +57,6 @@ pipeline {
 
                     isRelease = branch.startsWith('release-')
                     println("Is release ${isRelease}.")
-
-                    if (!(branch.endsWith(version) || branch.contains("${version}.rc"))) {
-                        println 'Branch or version is incorrect.'
-                        throw new IllegalStateException('Branch or version is incorrect.')
-                    }
 
                     isBeta = isRelease && tag.contains('rc')
                     println("Is beta ${isBeta}.")
