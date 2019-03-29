@@ -9,6 +9,7 @@ def version
 def isRelease
 def isBeta
 def isQtest
+def titleVersion
 
 pipeline {
     agent any
@@ -63,7 +64,7 @@ pipeline {
 
                 dir('source/com.kms.katalon') {
                     script {
-                        def titleVersion = isRelease ? tag : "${version} (DEV)"
+                        titleVersion = isRelease ? tag : "${version}.DEV"
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
@@ -226,9 +227,9 @@ pipeline {
                 dir("tools/repackage") {
                     nodejs(nodeJSInstallationName: 'nodejs') {
                         sh 'npm prune && npm install'
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${version}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${version}"
-                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${titleVersion}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${titleVersion}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${titleVersion}"
 
                         sh "rm -rf ${env.tmpDir}/*.zip"
                         sh "rm -rf ${env.tmpDir}/*.tar.gz"
