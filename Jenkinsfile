@@ -55,7 +55,7 @@ pipeline {
                     }
 
                     isBeta = isRelease && tag.contains('rc')
-                    println("Is beta ${beta}.")
+                    println("Is beta ${isBeta}.")
 
                     withUpdate = isRelease && !isQtest && !isBeta
                     println("With update ${withUpdate}.")
