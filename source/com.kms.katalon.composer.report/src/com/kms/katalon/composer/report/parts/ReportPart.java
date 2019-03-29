@@ -903,10 +903,12 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         monitor.worked(1);
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
                         monitor.worked(2);
-                    } catch (AnalyticsApiExeception ex) {
+                    } catch (final AnalyticsApiExeception ex) {
                         LoggerSingleton.logError(ex);
-                        MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
-                                ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
+                        UISynchronizeService.syncExec(() -> {
+                            MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
+                                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
+                        });
                     }
                 }
             });
