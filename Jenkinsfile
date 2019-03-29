@@ -10,6 +10,7 @@ def isRelease
 def isBeta
 def isQtest
 def titleVersion
+def tag
 
 pipeline {
     agent any
@@ -63,13 +64,19 @@ pipeline {
 
                     withUpdate = isRelease && !isQtest && !isBeta
                     println("With update ${withUpdate}.")
+
+                    if (isRelease) {
+                        tag = branch.replace('release-')
+                    } else {
+                        tag = "${version}.DEV"
+                    }
+                    println("Tag ${tag}.")
                 }
 
                 dir('source/com.kms.katalon') {
                     script {
                         def commitId = sh(returnStdout: true, script: 'git rev-parse --short HEAD')
-                        def devTag = isRelease ? ' ' : ' (DEV) '
-                        titleVersion = "${version}${devTag}(${commitId})"
+                        titleVersion = "${tag}-${commitId}"
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
