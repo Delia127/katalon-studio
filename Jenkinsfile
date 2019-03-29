@@ -39,20 +39,24 @@ pipeline {
                         throw new IllegalStateException('Please update version in about.mappings.')
                     }
 
-                    isQtest = branch ==~ /.*qtest.*/;
+                    isQtest = branch.contains('qtest')
+                    println("Is qTest ${isQtest}.")
 
                     tag = sh(returnStdout: true, script: "git tag --contains | head -1").trim()
                     println("Tag ${tag}.")
 
                     isRelease = tag != null && !tag.isEmpty()
+                    println("Is release ${isRelease}.")
 
                     if (isRelease && !tag.equals(version) && !tag.startsWith("${version}.rc")) {
                         throw new IllegalStateException('Tag is incorrect.')
                     }
 
                     isBeta = isRelease && tag.contains('rc')
+                    println("Is beta ${beta}.")
 
                     withUpdate = isRelease && !isQtest && !isBeta
+                    println("With update ${withUpdate}.")
                 }
 
                 dir('source/com.kms.katalon') {
