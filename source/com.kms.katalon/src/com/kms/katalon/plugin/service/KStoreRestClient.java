@@ -65,6 +65,8 @@ public class KStoreRestClient {
                     if (entity != null) {
                         String responseContent = EntityUtils.toString(response.getEntity());
                         responseContent = responseContent.replace("{}", "null");
+                        LogService.getInstance().logInfo("Katalon version: " + appVersion);
+                        LogService.getInstance().logInfo("Plugin info URL: " + getPluginsAPIUrl(appVersion));
                         LogService.getInstance().logInfo("Latest plugins responses: " + responseContent);
                         plugins.set(parsePluginListJson(responseContent));
                     } else {
