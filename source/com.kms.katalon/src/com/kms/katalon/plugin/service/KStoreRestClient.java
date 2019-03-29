@@ -64,10 +64,10 @@ public class KStoreRestClient {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
                         String responseContent = EntityUtils.toString(response.getEntity());
+                        LogService.getInstance().logInfo("Latest plugins responses: " + responseContent);
                         responseContent = responseContent.replace("{}", "null");
                         LogService.getInstance().logInfo("Katalon version: " + appVersion);
                         LogService.getInstance().logInfo("Plugin info URL: " + getPluginsAPIUrl(appVersion));
-                        LogService.getInstance().logInfo("Latest plugins responses: " + responseContent);
                         plugins.set(parsePluginListJson(responseContent));
                     } else {
                         throw new KStoreClientException("Failed to get latest plugin. No content returned from server.");
