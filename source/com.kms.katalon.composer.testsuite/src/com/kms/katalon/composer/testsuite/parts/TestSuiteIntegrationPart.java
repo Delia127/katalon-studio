@@ -35,9 +35,9 @@ public class TestSuiteIntegrationPart {
 
     // Used to store the products that is integrating with test suite view.
     // The key represents for product name
-    private Map<String, AbstractTestSuiteIntegrationView> integratingCompositeMap;
+    private Map<String, AbstractTestSuiteIntegrationView> integratingCompositeMap = new HashMap<>();
 
-    private Map<String, IntegratedEntity> editingIntegratedEntities;
+    private Map<String, IntegratedEntity> editingIntegratedEntities = new HashMap<>();
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
