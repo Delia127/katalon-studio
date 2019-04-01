@@ -216,9 +216,6 @@ public class MobileDriverFactory {
             if (deviceId == null) {
                 capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
             }
-            if (StringUtils.isNotEmpty(platformVersion)) {
-                capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
-            }
         } else if (driverPreferences != null && osType == MobileDriverType.ANDROID_DRIVER) {
             capabilities.setCapability("autoGrantPermissions", true);
             capabilities.merge(
@@ -228,6 +225,9 @@ public class MobileDriverFactory {
             if (isUsingAndroid7OrBigger()) {
                 capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.UIAUTOMATOR2);
             }
+        }
+        if (StringUtils.isNotEmpty(platformVersion)) {
+            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
         }
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.APP, appFile);

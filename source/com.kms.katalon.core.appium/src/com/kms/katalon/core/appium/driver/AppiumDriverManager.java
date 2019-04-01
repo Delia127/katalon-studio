@@ -224,6 +224,8 @@ public class AppiumDriverManager {
             } catch (IOException | InterruptedException | IOSWebkitStartException e) {
                 logger.logWarning(e.getMessage());
             }
+
+            AppiumDriverManager.pairDevice(deviceId);
         }
         startAppiumServerJS(RunConfiguration.getTimeOut());
     }
