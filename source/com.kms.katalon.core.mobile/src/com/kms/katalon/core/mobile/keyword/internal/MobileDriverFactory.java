@@ -227,7 +227,7 @@ public class MobileDriverFactory {
             }
         }
         if (StringUtils.isNotEmpty(platformVersion)) {
-            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
+            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, platformVersion);
         }
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.APP, appFile);
