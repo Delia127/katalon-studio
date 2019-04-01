@@ -11,10 +11,13 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -79,6 +82,9 @@ public class KStorePluginsDialog extends Dialog {
         tableColumnPluginName.setText(StringConstants.KStorePluginsDialog_COL_PLUGIN);
         tableViewerColumnPluginName.setLabelProvider(new PluginNameColumnLabelProvider(CLMN_PLUGIN_NAME_IDX));
        
+        tableViewerColumnPluginName.getColumn().setToolTipText("");
+        ColumnViewerToolTipSupport.enableFor(tableViewerColumnPluginName.getViewer(), ToolTip.NO_RECREATE);
+        
         TableViewerColumn tableViewerColumnStatus = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
         TableColumn tableColumnStatus = tableViewerColumnStatus.getColumn();
         tableColumnStatus.setText(StringConstants.KStorePluginsDialog_COL_STATUS);
@@ -123,7 +129,7 @@ public class KStorePluginsDialog extends Dialog {
         tableComposite.setLayout(tableLayout);
         
         pluginTableViewer.setInput(collectInstalledAndExpiredPluginResults(results));
-        
+
         Button btnClose = new Button(body, SWT.NONE);
         btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
         btnClose.setText(IDialogConstants.CLOSE_LABEL);
@@ -201,6 +207,12 @@ public class KStorePluginsDialog extends Dialog {
 
         @Override
         protected String getText(ResultItem element) {
+            return element.getPlugin().getProduct().getName();
+        }
+        
+        @Override
+        protected String getElementToolTipText(ResultItem element) {
+            // TODO Auto-generated method stub
             return element.getPlugin().getProduct().getName();
         }
     }

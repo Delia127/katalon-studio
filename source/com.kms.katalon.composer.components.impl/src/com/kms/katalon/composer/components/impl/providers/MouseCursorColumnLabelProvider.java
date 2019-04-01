@@ -89,7 +89,6 @@ public abstract class MouseCursorColumnLabelProvider <T> extends TypeCheckedStyl
                 return;
             }
             if (!isPlacedMouseHover(cell) || !shouldShowCursor(cell, currentMouseLocation)) {
-                table.setToolTipText(cell.getText());
                 int cellIndex = cell.getColumnIndex();
                 if (!(getViewer().getLabelProvider(cellIndex) instanceof MouseCursorColumnLabelProvider)
                         || cellIndex == columnIndex) {
