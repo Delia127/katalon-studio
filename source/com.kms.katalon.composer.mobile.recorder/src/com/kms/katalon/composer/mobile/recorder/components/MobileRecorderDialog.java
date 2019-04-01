@@ -872,6 +872,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {
+                LoggerSingleton.logError(ex);
                 Throwable targetException = ((InvocationTargetException) ex).getTargetException();
                 String message = (targetException instanceof java.util.concurrent.ExecutionException)
                         ? targetException.getCause().getMessage() : targetException.getMessage();
