@@ -70,6 +70,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PA_LBL_FAILURES;
 
     public static String PA_LBL_ERRORS;
+    
+    public static String PA_LBL_SKIPS;
 
     public static String PA_LBL_NAME;
 

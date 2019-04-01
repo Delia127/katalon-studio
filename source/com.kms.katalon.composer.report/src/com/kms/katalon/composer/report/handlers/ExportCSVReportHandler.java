@@ -1,7 +1,7 @@
 package com.kms.katalon.composer.report.handlers;
 
 import java.io.File;
-import java.util.Arrays;
+import java.net.URLClassLoader;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -14,11 +14,17 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
+import com.kms.katalon.composer.report.platform.ExportReportProviderPlugin;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
-import com.kms.katalon.core.reporting.ReportUtil;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.report.ReportEntity;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 
 public class ExportCSVReportHandler {
     @CanExecute
@@ -56,8 +62,24 @@ public class ExportCSVReportHandler {
 
                         File exportedFile = new File(exportDirectory,
                                 report.getDisplayName() + ReportEntity.EXTENSION_CSV_REPORT);
-                        ReportUtil.writeLogRecordToCSVFile(suiteLogRecord, exportedFile,
-                                Arrays.asList(suiteLogRecord.getChildRecords()), !isSummaryReport);
+                        
+                        URLClassLoader projectClassLoader = ProjectController.getInstance()
+                                .getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
+                        
+                        Object reportFormatType = projectClassLoader.loadClass(ReportFormatType.class.getName())
+                                .getMethod("valueOf", String.class)
+                                .invoke(null, "CSV");
+
+                        Binding binding = new Binding();
+                        ExportReportProviderPlugin exportReportProviderPlugin = ReportComposerIntegrationFactory
+                                .getInstance().getExportReportPluginProviders().get(0);
+                        binding.setVariable("exportProvider", exportReportProviderPlugin.getProvider());
+                        binding.setVariable("fileLocation", exportedFile);
+                        binding.setVariable("reportId", report.getId());
+                        binding.setVariable("formatType", reportFormatType);
+                        GroovyShell groovyShell = new GroovyShell(projectClassLoader, binding);
+                        groovyShell.evaluate("exportProvider.exportTestSuite(fileLocation, reportId, formatType)");
+
                         Program.launch(exportedFile.toURI().toString());
                     }
                 } catch (Exception e) {

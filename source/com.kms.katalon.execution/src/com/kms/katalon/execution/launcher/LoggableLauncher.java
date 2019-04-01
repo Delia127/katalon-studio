@@ -77,7 +77,11 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                             case FAILED:
                                 launcherResult.increaseFailures();
                                 break;
+                            case INCOMPLETE:
+                                launcherResult.increaseIncompletes();
+                                break;
                             default:
+                                launcherResult.increaseSkips();
                                 break;
                         }
                         TestStatusValue statusValue = TestStatusValue.valueOf(currentTestCaseResult.name());
@@ -94,11 +98,6 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                     }
                     logDepth--;
                     startRecords.pop();
-
-                    if (logDepth == 0) {
-                        watchdog.stop();
-                        loggingFinished = true;
-                    }
                     break;
                 default:
                     if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel(runConfig, logDepth)
@@ -134,5 +133,10 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
     @Override
     protected void postExecutionComplete() {
         super.postExecutionComplete();
+    }
+
+    @Override
+    public void finish() {
+        loggingFinished = true;
     }
 }
