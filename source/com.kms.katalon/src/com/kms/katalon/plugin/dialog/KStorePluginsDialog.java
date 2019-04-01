@@ -211,7 +211,6 @@ public class KStorePluginsDialog extends Dialog {
         
         @Override
         protected String getElementToolTipText(ResultItem element) {
-            // TODO Auto-generated method stub
             return element.getPlugin().getProduct().getName();
         }
     }
