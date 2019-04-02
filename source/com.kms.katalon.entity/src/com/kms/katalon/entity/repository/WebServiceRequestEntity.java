@@ -74,6 +74,8 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     private String migratedVersion;
     
+    private boolean followRedirects = false;
+    
     private List<VariableEntity> variables = new ArrayList<>();
 
     public String getSoapRequestMethod() {
@@ -221,10 +223,19 @@ public class WebServiceRequestEntity extends WebElementEntity {
         this.variables = variables;
     }
     
+    public boolean isFollowRedirects() {
+        return followRedirects;
+    }
+
+    public void setFollowRedirects(boolean followRedirects) {
+        this.followRedirects = followRedirects;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
+        result = prime * result + (followRedirects ? 1231 : 1237);
         result = prime * result + ((httpBody == null) ? 0 : httpBody.hashCode());
         result = prime * result + ((httpBodyContent == null) ? 0 : httpBodyContent.hashCode());
         result = prime * result + ((httpBodyType == null) ? 0 : httpBodyType.hashCode());
@@ -249,10 +260,13 @@ public class WebServiceRequestEntity extends WebElementEntity {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (!(obj instanceof WebServiceRequestEntity)) {
+        if (!super.equals(obj))
             return false;
-        }
+        if (getClass() != obj.getClass())
+            return false;
         WebServiceRequestEntity other = (WebServiceRequestEntity) obj;
+        if (followRedirects != other.followRedirects)
+            return false;
         if (httpBody == null) {
             if (other.httpBody != null)
                 return false;

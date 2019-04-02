@@ -80,6 +80,10 @@ public class WebServiceController extends EntityController {
         }
         
         requestObject.setVariables(variables);
+        
+        boolean followRedirects = entity.isFollowRedirects();
+        requestObject.setFollowRedirects(followRedirects);
+        
         return requestObject;
     }
 
