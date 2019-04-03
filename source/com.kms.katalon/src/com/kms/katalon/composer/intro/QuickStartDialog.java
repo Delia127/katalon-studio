@@ -18,7 +18,7 @@ public class QuickStartDialog extends Dialog {
     
     public static final int OPEN_PROJECT_ID = 1026;
 
-    private static final Point IMG_SIZE = new Point(960, 610);
+    private static final Point IMG_SIZE = new Point(1409, 895);
 
     public QuickStartDialog(Shell parentShell) {
         super(parentShell);
