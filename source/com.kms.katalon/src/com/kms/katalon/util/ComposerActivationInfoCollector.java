@@ -54,17 +54,18 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static boolean checkActivationDialog() {
-        int result = new ActivationDialogV2(null).open();
-        switch (result) {
-            case ActivationDialogV2.OK:
-                return true;
-            case ActivationDialogV2.REQUEST_SIGNUP_CODE:
-                return checkSignupDialog();
-            case ActivationDialogV2.REQUEST_OFFLINE_CODE:
-                return checkOfflineActivationDialog(false);
-            default:
-                return false;
-        }
+        return true;
+//        int result = new ActivationDialogV2(null).open();
+//        switch (result) {
+//            case ActivationDialogV2.OK:
+//                return true;
+//            case ActivationDialogV2.REQUEST_SIGNUP_CODE:
+//                return checkSignupDialog();
+//            case ActivationDialogV2.REQUEST_OFFLINE_CODE:
+//                return checkOfflineActivationDialog(false);
+//            default:
+//                return false;
+//        }
     }
 
     private static boolean checkOfflineActivationDialog(boolean navigateFromSignUp) {

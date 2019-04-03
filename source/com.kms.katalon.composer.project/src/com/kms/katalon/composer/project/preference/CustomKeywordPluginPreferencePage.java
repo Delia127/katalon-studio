@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -26,7 +27,7 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
     private final KeywordsManifest keywordsManifest;
 
-    private Map<String, Text> componentCollection = new HashMap<>();
+    private Map<String, Pair<SettingPageComponent, Text>> componentCollection = new HashMap<>();
 
     public CustomKeywordPluginPreferencePage(KeywordsManifest keywordsManifest) {
         this.keywordsManifest = keywordsManifest;
@@ -56,14 +57,14 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                     Text txtComponentText = new Text(container, SWT.BORDER);
                     txtComponentText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-                    componentCollection.put(key, txtComponentText);
+                    componentCollection.put(key, Pair.of(entry, txtComponentText));
                     break;
                 }
                 case "secret": {
                     Text txtComponentSecret = new Text(container, SWT.BORDER);
                     txtComponentSecret.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
                     txtComponentSecret.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
-                    componentCollection.put(key, txtComponentSecret);
+                    componentCollection.put(key, Pair.of(entry, txtComponentSecret));
                 }
             }
         }
@@ -79,14 +80,15 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
     private void setInput() {
         BundleSettingStore settingStore = getSettingStore();
-        for (Entry<String, Text> componentEntry : componentCollection.entrySet()) {
+        for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : componentCollection.entrySet()) {
             try {
                 String key = componentEntry.getKey();
-                String storedValue = settingStore.getString(key, StringUtils.EMPTY);
+                String storedValue = settingStore.getString(key, 
+                        StringUtils.defaultString(componentEntry.getValue().getLeft().getDefaultValue()));
                 if (StringUtils.isEmpty(storedValue)) {
                     continue;
                 }
-                componentEntry.getValue().setText(storedValue);
+                componentEntry.getValue().getRight().setText(storedValue);
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
             }
@@ -100,9 +102,9 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
         }
 
         BundleSettingStore settingStore = getSettingStore();
-        for (Entry<String, Text> componentEntry : componentCollection.entrySet()) {
+        for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : componentCollection.entrySet()) {
             try {
-                settingStore.setProperty(componentEntry.getKey(), componentEntry.getValue().getText());
+                settingStore.setProperty(componentEntry.getKey(), componentEntry.getValue().getRight().getText());
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
             }
