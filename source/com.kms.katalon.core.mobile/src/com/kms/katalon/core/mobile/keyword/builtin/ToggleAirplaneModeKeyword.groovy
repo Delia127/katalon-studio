@@ -2,7 +2,7 @@ package com.kms.katalon.core.mobile.keyword.builtin
 
 import java.text.MessageFormat
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.codehaus.groovy.transform.tailrec.VariableReplacedListener.*
 import org.openqa.selenium.Dimension
 
@@ -14,6 +14,7 @@ import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
 import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 import com.kms.katalon.core.model.FailureHandling
 
@@ -65,13 +66,47 @@ public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
                     IOSDriver iOSDriver = (IOSDriver) driver
                     Dimension size = driver.manage().window().getSize()
 
-                    MobileCommonHelper.swipe(driver,
-                            (size.getWidth() / 2) as int,
-                            size.getHeight(),
-                            (size.getWidth() / 2) as int,
-                            (size.getHeight() / 2) as int)
+                    String deviceModel = MobileDriverFactory.getDeviceModel()
+                    String deviceOSVersion = MobileDriverFactory.getDeviceOSVersion()
+                    if (StringUtils.containsIgnoreCase(deviceModel, "simulator")) {
+                        logger.logWarning("Toggle Airplane Mode is not available for Simulator")
+                        return
+                    }
+                    
+                    logger.logDebug("Device model: " + deviceModel)
+                    logger.logDebug("Device version: " + deviceOSVersion)
+                    boolean swipeUpToOpenControlCenter = true
 
-                    MobileElement airplaneButton = iOSDriver.findElementsByXPath("//XCUIElementTypeSwitch[@visible='true' and @label='Airplane Mode']").get(0);
+                    if ((getMajorVersion(deviceOSVersion) >= 12)
+                        && (isIPhoneXOrLater(deviceModel) || isIPad(deviceModel))) {
+                        swipeUpToOpenControlCenter = false
+                    }
+
+                    /**
+                     * https://support.apple.com/en-vn/HT202769#open
+                     */
+                    if (swipeUpToOpenControlCenter) {
+                        logger.logDebug("Swipe up from the bottom middle of the screen")
+                        MobileCommonHelper.swipe(driver,
+                                (size.getWidth() / 2) as int,
+                                size.getHeight(),
+                                (size.getWidth() / 2) as int,
+                                (size.getHeight() / 2) as int)
+                    } else {
+                        logger.logDebug("Swipe down from the upper-right corner of the screen")
+                        MobileCommonHelper.swipe(driver,
+                            size.getWidth(),
+                            0,
+                            size.getWidth(),
+                            (size.getHeight() / 2) as int)
+                    }
+
+                    List toggleAirplaneButtonList = iOSDriver.findElementsByXPath("//XCUIElementTypeSwitch[@visible='true' and @label='Airplane Mode']")
+                    if (toggleAirplaneButtonList == null || toggleAirplaneButtonList.isEmpty()) {
+                        logger.logFailed("Could not find Airplane Mode button at XPATH: //XCUIElementTypeSwitch[@visible='true' and @label='Airplane Mode']")
+                        return
+                    }
+                    MobileElement airplaneButton = toggleAirplaneButtonList.get(0);
                     boolean isEnabled = airplaneButton.getAttribute("value") == "1" ? true : false
                     if (isTurnOn != isEnabled) {
                         TouchAction tapAtAirPlaneButton = new TouchAction(driver)
@@ -98,5 +133,29 @@ public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
     @CompileStatic
     String getSwitchStatus(boolean status) {
         return status ? "ON" : "OFF"
+    }
+
+    @CompileStatic
+    int getMajorVersion(String version) {
+        return Integer.parseInt(version.split("\\.")[0])
+    }
+
+    @CompileStatic
+    boolean isIPhoneXOrLater(String deviceModel) {
+        if (!deviceModel.contains("iPhone")) {
+            return false
+        }
+        String[] versionNumbers = deviceModel.replace("iPhone", "").split(",")
+        int majorVersion = Integer.parseInt(versionNumbers[0])
+        int minorVersion = Integer.parseInt(versionNumbers[1])
+        
+        //https://www.theiphonewiki.com/wiki/Models
+        return (majorVersion >= 11 ||
+            (majorVersion == 10 && (minorVersion == 3 || minorVersion == 6)))
+    }
+
+    @CompileStatic
+    boolean isIPad(String deviceModel) {
+        return deviceModel.contains("iPad")
     }
 }
