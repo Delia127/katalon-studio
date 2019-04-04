@@ -26,6 +26,7 @@ import io.appium.java_client.android.connection.ConnectionState
 import io.appium.java_client.ios.IOSDriver
 import io.appium.java_client.touch.TapOptions
 import io.appium.java_client.touch.offset.ElementOption
+import io.appium.java_client.touch.offset.PointOption
 
 @Action(value = "toggleAirplaneMode")
 public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
@@ -81,10 +82,11 @@ public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
                     } else {
                         logger.logInfo("Airplane Mode already switched to " + getSwitchStatus(isEnabled))
                     }
-                    MobileElement backButton = iOSDriver.findElementsByXPath("//XCUIElementTypeOther[@visible='true' and @name='ControlCenterView']/XCUIElementTypeOther[@visible='true']").get(0);
-                    TouchAction tapAtBackButton = new TouchAction(driver)
-                            .tap(TapOptions.tapOptions().withElement(ElementOption.element(backButton, backButton.center)))
-                    tapAtBackButton.release().perform()
+
+                    PointOption topScreenPoint = PointOption.point(0, 0)
+                    TouchAction touchAtTopScreenAction = new TouchAction(driver)
+                            .tap(TapOptions.tapOptions().withPosition(topScreenPoint))
+                    touchAtTopScreenAction.release().perform()
                 }
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TOGGLE_AIRPLANE_MODE, mode))
             } finally {
