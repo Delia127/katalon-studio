@@ -961,7 +961,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         Composite configurationComposite = new Composite(configurationPartComposite, SWT.NONE);
         configurationComposite.setLayout(new GridLayout(1, false));
         
-        cbFollowRedirects = new Button(configurationComposite, SWT.CHECK | SWT.BORDER);
+        cbFollowRedirects = new Button(configurationComposite, SWT.CHECK);
         cbFollowRedirects.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         cbFollowRedirects.setText(StringConstants.CB_FOLLOW_REDIRECTS);
         cbFollowRedirects.addSelectionListener(new SelectionAdapter() {
