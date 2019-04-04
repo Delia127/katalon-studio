@@ -1111,7 +1111,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 }
                 waitForNotBusy();
                 IDEObservableLauncher watchedLauncher = getWatchedLauncherFromEvent();
-                if (watchedLauncher != null && watchedLauncher.equals(rootLauncherWatched)) {
+                if (watchedLauncher != null && watchedLauncher.equals(rootLauncherWatched)
+                        && rootLauncherWatched instanceof IDEObservableParentLauncher) {
                     launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getObservableLaunchers();
                     return;
                 }
