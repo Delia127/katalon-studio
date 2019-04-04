@@ -401,6 +401,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected CTabItem tabVariable;
 
     protected CTabItem tabVariableEditor;
+    
+    protected CTabItem tabConfiguration;
 
     protected Composite responseComposite;
 
@@ -443,6 +445,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     private Text txtAuthorizationCode;
 
     private Text txtScope;
+    
+    private Button cbFollowRedirects;
 
     protected CCombo ccbOAuth1SignatureMethod;
 
@@ -537,6 +541,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         createVariableComposite();
 
         createVariableEditorComposite();
+        
+        createConfigurationComposite();
 
         createTabsComposite();
 
@@ -558,6 +564,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         populateDataToUI();
         updatePartImage();
         registerListeners();
+        
+        cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
+        
         createHarFile();
     }
     
@@ -897,6 +906,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         addTabBody(tabFolder);
         addTabVariable(tabFolder);
         addTabVariableEditor(tabFolder);
+        addTabConfiguration(tabFolder);
 
         tabFolder.addSelectionListener(new SelectionAdapter() {
             @SuppressWarnings("unused")
@@ -961,6 +971,23 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         Composite variableEditorPartComposite = ui.getVariableEditorPartComposite();
 
         variableEditorView = new TestCaseVariableEditorView(this, variableEditorPartComposite);
+    }
+    
+    private void createConfigurationComposite() {
+        Composite configurationPartComposite = ui.getConfigurationPartComposite();
+        
+        Composite configurationComposite = new Composite(configurationPartComposite, SWT.NONE);
+        configurationComposite.setLayout(new GridLayout(1, false));
+        
+        cbFollowRedirects = new Button(configurationComposite, SWT.CHECK | SWT.BORDER);
+        cbFollowRedirects.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        cbFollowRedirects.setText(StringConstants.CB_FOLLOW_REDIRECTS);
+        cbFollowRedirects.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setDirty(true);
+            }
+        });
     }
 
     @Override
@@ -1702,6 +1729,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected void addTabVariableEditor(CTabFolder parent) {
         tabVariableEditor = ui.getVariableEditorTab();
     }
+    
+    protected void addTabConfiguration(CTabFolder parent) {
+        tabConfiguration = ui.getConfigurationTab();
+    }
 
     protected void createResponseComposite(Composite parent) {
 
@@ -2328,6 +2359,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             }
             saveVariables();
             saveVerificationScript();
+            saveConfiguration();
+            
             preSaving();
 
             if (originalWsObject instanceof DraftWebServiceRequestEntity) {
@@ -2376,6 +2409,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             originalWsObject.setVerificationScript(script);
         }
         editor.saveEditor(scriptEditorPart);
+    }
+    
+    private void saveConfiguration() {
+        originalWsObject.setFollowRedirects(cbFollowRedirects.getSelection());
     }
 
     private void setInvalidScheme(boolean value) {

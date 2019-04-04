@@ -14,6 +14,8 @@ public class CustomKeywordSettingPage {
         private String type;
         
         private String label;
+        
+        private String defaultValue;
 
         public String getType() {
             return type;
@@ -37,6 +39,14 @@ public class CustomKeywordSettingPage {
 
         public void setKey(String key) {
             this.key = key;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
+        }
+
+        public void setDefaultValue(String defaultValue) {
+            this.defaultValue = defaultValue;
         }
     }
 

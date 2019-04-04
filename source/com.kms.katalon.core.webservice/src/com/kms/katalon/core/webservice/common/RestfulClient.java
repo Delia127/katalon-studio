@@ -35,6 +35,8 @@ public class RestfulClient extends BasicRequestor {
 
     private static final String HTTP_USER_AGENT = RequestHeaderConstants.USER_AGENT;
     
+    private static final int MAX_REDIRECTS = 5;
+    
     private static final String[] BODY_UNSUPPORTED_METHODS = new String[] {
         RequestHeaderConstants.GET, RequestHeaderConstants.HEAD
     };
@@ -83,7 +85,26 @@ public class RestfulClient extends BasicRequestor {
             os.close();
         }
 
-        return response(httpConnection);
+        ResponseObject responseObject = response(httpConnection);
+        boolean redirect = false;
+        int statusCode = responseObject.getStatusCode();
+        if (statusCode == HttpURLConnection.HTTP_MOVED_TEMP
+            || statusCode == HttpURLConnection.HTTP_MOVED_PERM
+            || statusCode == HttpURLConnection.HTTP_SEE_OTHER) {
+            redirect = true;
+        }
+        
+        if (redirect) {
+            String newUrl = httpConnection.getHeaderField("location");
+            if (!StringUtils.isBlank(newUrl)) {
+                request.setRestUrl(newUrl);
+                request.setRedirectTimes(request.getRedirectTimes() + 1);
+                if (request.isFollowRedirects() && request.getRedirectTimes() <= MAX_REDIRECTS) {
+                    responseObject = sendRequest(request);
+                }
+            }
+        }
+        return responseObject;
     }
     
     private boolean isBodySupported(String requestMethod) {
