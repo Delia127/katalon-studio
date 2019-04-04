@@ -29,52 +29,20 @@ namespace RecorderExtension
         private static String addonDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KMS", "qAutomate", "Recorder");
 
         #region Handle Document Events
+
         private void OnDocumentComplete(object pDisp, ref object URL)
         {
-            if (pDisp == this.site)
-            {
-                return;
-            }
+            OnDocumentComplete();
+        }
+
+        private void OnDocumentComplete()
+        {
             try
             {
-                IWebBrowser2 childBrowser = GetBrowser(pDisp);
-                if (childBrowser == null)
-                {
-                    return;
-                }
                 serverUrl = GetKatalonServerUrl();
                 if (serverUrl != null)
                 {
-                    RunScriptOnDocument(childBrowser.Document as IHTMLDocument2);
-                }
-            }
-            catch (Exception ex)
-            {
-                logError(ex);
-            }
-
-        }
-
-        private void OnDownloadComplete()
-        {
-            IHTMLDocument2 doc = browser.Document as IHTMLDocument2;
-            if (doc == null || doc.parentWindow == null)
-            {
-                return;
-            }
-            try
-            {
-                IHTMLWindow2 tmpWindow = doc.parentWindow;
-                HTMLWindowEvents2_Event events = (tmpWindow as HTMLWindowEvents2_Event);
-                if (events == null)
-                {
-                    return;
-                }
-                events.onload -= new HTMLWindowEvents2_onloadEventHandler(OnLoad);
-                serverUrl = GetKatalonServerUrl();
-                if (serverUrl != null)
-                {
-                    events.onload += new HTMLWindowEvents2_onloadEventHandler(OnLoad);
+                    RunScriptOnWindow();
                 }
             }
             catch (Exception ex)
@@ -83,42 +51,20 @@ namespace RecorderExtension
             }
         }
 
-        public void OnLoad(IHTMLEventObj e)
+        private void RunScriptOnWindow()
         {
-            try
-            {
-                RunScriptOnDocument(browser.Document as IHTMLDocument2);
-            }
-            catch (Exception ex)
-            {
-                logError(ex);
-            }
-        }
 
-        private void RunScriptOnDocument(IHTMLDocument2 document)
-        {
-            IHTMLWindow2 window = document.parentWindow;
-            RunScriptOnWindow(window, this);
-        }
+            HTMLDocument document = (HTMLDocument)browser.Document;
+            dynamic window = document.parentWindow;
+            IExpando ScriptObject = (IExpando)window;
+            PropertyInfo propertyInfo = ScriptObject.GetProperty("httpRequestExtension", BindingFlags.Default);
+            if (propertyInfo == null)
+            {
+                propertyInfo = ScriptObject.AddProperty("httpRequestExtension");
+            }
+            propertyInfo.SetValue(ScriptObject, this, null);
 
-        private void RunScriptOnWindow(IHTMLWindow2 window, IHttpRequestExtension extensionClass)
-        {
-            IExpando windowEx = (IExpando)window;
-            PropertyInfo propertyInfo = null;
-            try
-            {
-                propertyInfo = windowEx.GetProperty("httpRequestExtension", System.Reflection.BindingFlags.IgnoreCase);
-                if (propertyInfo == null)
-                {
-                    propertyInfo = windowEx.AddProperty("httpRequestExtension");
-                }
-            }
-            catch (AmbiguousMatchException e)
-            {
-                // Ambiguous match error, ignored
-                propertyInfo = windowEx.AddProperty("httpRequestExtension");
-            }
-            propertyInfo.SetValue(windowEx, extensionClass, null);
+            serverUrl = "http://localhost:57080/";
 
             window.execScript(Properties.Resources.jquery_1_11_2_min);
             window.execScript(Properties.Resources.json3_min);
@@ -270,7 +216,9 @@ namespace RecorderExtension
             ((DWebBrowserEvents2_Event)browser).DocumentComplete -=
                 new DWebBrowserEvents2_DocumentCompleteEventHandler(this.OnDocumentComplete);
             ((DWebBrowserEvents2_Event)browser).DownloadComplete -=
-                new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDownloadComplete);
+                new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDocumentComplete);
+            ((DWebBrowserEvents2_Event)browser).NavigateComplete2 -=
+                new DWebBrowserEvents2_NavigateComplete2EventHandler(this.OnDocumentComplete);
         }
 
         private void Setup()
@@ -278,7 +226,9 @@ namespace RecorderExtension
             ((DWebBrowserEvents2_Event)browser).DocumentComplete +=
                 new DWebBrowserEvents2_DocumentCompleteEventHandler(this.OnDocumentComplete);
             ((DWebBrowserEvents2_Event)browser).DownloadComplete +=
-                new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDownloadComplete);
+                new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDocumentComplete);
+            ((DWebBrowserEvents2_Event)browser).NavigateComplete2 +=
+                new DWebBrowserEvents2_NavigateComplete2EventHandler(this.OnDocumentComplete);
         }
 
         int IObjectWithSite.GetSite(ref Guid guid, out IntPtr ppvSite)
