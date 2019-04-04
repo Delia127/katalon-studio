@@ -36,3 +36,6 @@ source/com.kms.katalon.composer.webui.objectspy/extensions/IE/ObjectSpyExtension
 source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/RecorderExtension/obj/*
 source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/RecorderExtension/Setup/Debug/*
 source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/RecorderExtension/Setup/Release/*
+source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/Setup/Release/Setup.msi
+source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/Setup/Release/setup.exe
+source/com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension/Setup/Release.7z
