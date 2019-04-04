@@ -18,20 +18,21 @@ import com.kms.katalon.platform.internal.entity.TestSuiteCollectionEntityImpl;
 
 public class TestSuiteCollectionControllerImpl implements TestSuiteCollectionController {
 
-	private static com.kms.katalon.controller.TestSuiteCollectionController testSuiteCollectionController = com.kms.katalon.controller.TestSuiteCollectionController.getInstance();
-	
+	private static com.kms.katalon.controller.TestSuiteCollectionController testSuiteCollectionController = com.kms.katalon.controller.TestSuiteCollectionController
+			.getInstance();
+
 	@Override
-	public List<TestSuiteCollectionEntity> getAllTestSuiteCollectionsInProject(ProjectEntity arg0)
+	public List<TestSuiteCollectionEntity> getAllTestSuiteCollectionsInProject(ProjectEntity projectEntity)
 			throws ResourceException {
 		List<TestSuiteCollectionEntity> retEntities = new ArrayList<>();
 		try {
-			com.kms.katalon.entity.project.ProjectEntity projectEntity 
-				= ProjectController.getInstance().getProject(arg0.getId());
-			List<com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity> entities = 
-					testSuiteCollectionController.getAllTestSuiteCollectionsInProject(projectEntity);
-		entities.forEach(entity -> {
-			retEntities.add(new TestSuiteCollectionEntityImpl(entity));
-		});
+			com.kms.katalon.entity.project.ProjectEntity currentProjectEntity = ProjectController.getInstance()
+					.getProject(projectEntity.getId());
+			List<com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity> entities = testSuiteCollectionController
+					.getAllTestSuiteCollectionsInProject(currentProjectEntity);
+			entities.forEach(entity -> {
+				retEntities.add(new TestSuiteCollectionEntityImpl(entity));
+			});
 		} catch (ControllerException | DALException e) {
 			throw new ResourceException(ExceptionsUtil.getMessageForThrowable(e));
 		}
@@ -39,15 +40,16 @@ public class TestSuiteCollectionControllerImpl implements TestSuiteCollectionCon
 	}
 
 	@Override
-	public TestSuiteCollectionEntity addTestSuiteToTestSuiteCollection(ProjectEntity arg0, String arg1, String arg2)
+	public TestSuiteCollectionEntity addTestSuiteToTestSuiteCollection(ProjectEntity projectEntity, String testSuiteId, String testSuiteCollectionId)
 			throws ResourceException {
 		com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity entity;
 		try {
-			entity = com.kms.katalon.controller.TestSuiteCollectionController.getInstance().getTestRunByDisplayId(arg2);
-			TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(arg1, ProjectController.getInstance().getProject(arg0.getId()));
-			TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration.newInstance(
-					testSuite, TestExecutionGroupCollector.getInstance().getDefaultConfiguration(
-                            ProjectController.getInstance().getCurrentProject()));
+			entity = com.kms.katalon.controller.TestSuiteCollectionController.getInstance().getTestRunByDisplayId(testSuiteCollectionId);
+			TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteId,
+					ProjectController.getInstance().getProject(projectEntity.getId()));
+			TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration.newInstance(testSuite,
+					TestExecutionGroupCollector.getInstance()
+							.getDefaultConfiguration(ProjectController.getInstance().getCurrentProject()));
 			entity.getTestSuiteRunConfigurations().add(newTestSuiteRunConfig);
 			return new TestSuiteCollectionEntityImpl(entity);
 		} catch (Exception e) {
@@ -56,10 +58,11 @@ public class TestSuiteCollectionControllerImpl implements TestSuiteCollectionCon
 	}
 
 	@Override
-	public TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity arg0, String arg1) throws ResourceException {
+	public TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity projectEntity, String testSuiteCollectionId) throws ResourceException {
 		com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity entity;
 		try {
-			entity = com.kms.katalon.controller.TestSuiteCollectionController.getInstance().getTestSuiteCollection(arg1);
+			entity = com.kms.katalon.controller.TestSuiteCollectionController.getInstance()
+					.getTestSuiteCollection(testSuiteCollectionId);
 			return new TestSuiteCollectionEntityImpl(entity);
 		} catch (DALException e) {
 			throw new ResourceException(ExceptionsUtil.getMessageForThrowable(e));
