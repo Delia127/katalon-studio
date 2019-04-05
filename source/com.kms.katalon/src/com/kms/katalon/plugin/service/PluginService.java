@@ -133,7 +133,7 @@ public class PluginService {
                     ResultItem item = new ResultItem();
                     item.setPlugin(plugin);
                     results.add(item);
-                    LogService.getInstance().logInfo(String.format("Expired plugin: %s.", plugin.getId()));
+                    LogService.getInstance().logInfo(String.format("Expired plugin: %d.", plugin.getId()));
                     continue;
                 }
                 
@@ -141,7 +141,7 @@ public class PluginService {
                     ResultItem item = new ResultItem();
                     item.setPlugin(plugin);
                     results.add(item);
-                    LogService.getInstance().logInfo(String.format("Plugin with latest compatible version: %s.", plugin.getId()));
+                    LogService.getInstance().logInfo(String.format("Plugin with latest compatible version: %d.", plugin.getId()));
                     continue;
                 }
                 
@@ -154,7 +154,7 @@ public class PluginService {
                     }
                 }
                 
-                LogService.getInstance().logInfo(String.format("Plugin ID: %s. Plugin location: %s.",
+                LogService.getInstance().logInfo(String.format("Plugin ID: %d. Plugin location: %s.",
                     plugin.getId(), pluginPath));
                 
                 try {
