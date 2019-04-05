@@ -33,7 +33,7 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
     public IDETestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity,
             LauncherManager parentManager, List<ReportableLauncher> subLaunchers, ExecutionMode executionMode,
             ReportCollectionEntity reportCollection) {
-        super(executedEntity, parentManager, subLaunchers, executionMode, reportCollection);
+        super(executedEntity, parentManager, subLaunchers, executionMode, reportCollection, null);
         this.observed = false;
 
         logRecords = new ArrayList<>();

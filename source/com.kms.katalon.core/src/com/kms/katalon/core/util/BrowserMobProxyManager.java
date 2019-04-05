@@ -12,12 +12,10 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
-import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.core.har.Har;
 import net.lightbody.bmp.core.har.HarEntry;
 import net.lightbody.bmp.core.har.HarLog;
@@ -38,7 +36,7 @@ public class BrowserMobProxyManager {
     public static final Proxy getWebServiceProxy(Proxy systemProxy) {
         try {
             BrowserMobProxy browserMobProxy = getOrCreateBrowserMobProxy(systemProxy);
-            InetAddress connectableAddress = ClientUtil.getConnectableAddress();
+            InetAddress connectableAddress = InetAddress.getByName("localhost");
             int browserMobProxyPort = browserMobProxy.getPort();
             Proxy proxy = new Proxy(
                     Type.HTTP,
@@ -79,18 +77,9 @@ public class BrowserMobProxyManager {
     public static final void endHar(RequestInformation requestInformation) {
         try {
             BrowserMobProxy browserMobProxy = browserMobProxyLookup.get();
-            if (browserMobProxy != null) {
-                
+            if (browserMobProxy != null) {               
                 requestInformation.setName(String.valueOf(requestNumber.getAndIncrement()));
-                String threadName = Thread.currentThread().getName();
-                String directoryPath = RunConfiguration.getReportFolder();
-                File directory = new File(directoryPath, "requests" + File.separator + threadName);
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-                File file = new File(directory, requestInformation.getName() + ".har");
-                file.createNewFile();
-                
+                File file = requestInformation.getHarFile();
                 String path = file.getAbsolutePath();
                 Map<String, String> attributes = new HashMap<>();
                 String harId = UUID.randomUUID().toString();

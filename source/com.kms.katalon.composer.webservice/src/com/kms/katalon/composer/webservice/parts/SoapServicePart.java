@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.wsdl.WSDLException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.dom4j.DocumentException;
@@ -65,6 +66,8 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
+import com.kms.katalon.core.util.BrowserMobProxyManager;
+import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
@@ -229,10 +232,18 @@ public class SoapServicePart extends WebServicePart {
 
                         Map<String, String> evaluatedVariables = evaluateRequestVariables();
 
+                        BrowserMobProxyManager.newHar();
+                        
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
                                 projectDir, ProxyPreferences.getProxyInformation(),
                                 Collections.<String, Object> unmodifiableMap(evaluatedVariables), false);
 
+                        RequestInformation requestInformation = new RequestInformation();
+                        requestInformation.setTestObjectId(requestEntity.getId());
+                        requestInformation.setHarFile(harFile);
+                        FileUtils.write(harFile, ""); //delete current content of HAR file
+                        BrowserMobProxyManager.endHar(requestInformation);
+                        
                         if (monitor.isCanceled()) {
                             return;
                         }
