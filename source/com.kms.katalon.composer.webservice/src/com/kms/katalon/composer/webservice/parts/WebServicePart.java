@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
+import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -99,6 +101,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -111,6 +114,9 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.json.JSONObject;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
@@ -453,6 +459,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
 
     protected ScriptSnippet verificationScriptImport;
+    
+    protected File harFile;
 
     @Inject
     protected MDirtyable dirtyable;
@@ -558,6 +566,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         registerListeners();
         
         cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
+        
+        createHarFile();
+    }
+    
+    private void createHarFile() {
+        try {
+            harFile = Files.createTempFile("request-", ".har").toFile();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private void insertImportsForVerificationScript() {
@@ -1721,10 +1739,27 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         responseComposite = new Composite(parent, SWT.NONE);
         responseComposite.setLayout(new GridLayout());
         responseComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        Composite header = new Composite(responseComposite, SWT.NONE);
+        GridLayout glHeader = new GridLayout(2, false);
+        glHeader.marginWidth = 0;
+        glHeader.marginHeight = 0;
+        header.setLayout(glHeader);
+        header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        Label lblResponse = new Label(responseComposite, SWT.NONE);
+        Label lblResponse = new Label(header, SWT.NONE);
         lblResponse.setText(ComposerWebserviceMessageConstants.TAB_RESPONSE);
         ControlUtils.setFontToBeBold(lblResponse);
+        
+        Link lnkViewHarFile = new Link(header, SWT.NONE);
+        lnkViewHarFile.setText("<a>HAR</a>");
+        lnkViewHarFile.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false));
+        lnkViewHarFile.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                showHarFile();
+            }
+        });
 
         createResponseStatusComposite();
 
@@ -1741,6 +1776,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         ControlUtils.setFontToBeBold(lblSendingRequest);
 
         displayResponseContentBasedOnSendingState(false);
+    }
+    
+    private void showHarFile() {
+        try {
+            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+            IDE.openEditorOnFileStore(page, EFS.getStore(harFile.toURI()));
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private void createResponseDetailsTabs() {
@@ -2426,6 +2470,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Override
     @PreDestroy
     public void onClose() {
+        deleteHarFile();
         deleteTempScriptFile();
         try {
             editor.clearEditorProblems(verificationScriptEditor);
@@ -2443,6 +2488,16 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         try {
             tempScriptFile.delete(true, null);
         } catch (CoreException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+    
+    private void deleteHarFile() {
+        try {
+            if (harFile != null) {
+                FileUtils.forceDelete(harFile);
+            }
+        } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
     }
