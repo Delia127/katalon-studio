@@ -64,15 +64,15 @@ public class LaunchProcessor implements ILaunchProcessor {
     }
 
     private String getInstalledJRE() {
-        File vmInstallLocation = JavaRuntime.getDefaultVMInstall().getInstallLocation();
-        for (int i = 0; i < CANDIDATES_JAVA_FILES.length; i++) {
-            for (int j = 0; j < CANDIDATE_JAVA_LOCATIONS.length; j++) {
-                File javaFile = new File(vmInstallLocation, CANDIDATE_JAVA_LOCATIONS[j] + CANDIDATES_JAVA_FILES[i]);
-                if (javaFile.isFile()) {
-                    return javaFile.getAbsolutePath();
-                }
-            }
-        }
+//        File vmInstallLocation = JavaRuntime.getDefaultVMInstall().getInstallLocation();
+//        for (int i = 0; i < CANDIDATES_JAVA_FILES.length; i++) {
+//            for (int j = 0; j < CANDIDATE_JAVA_LOCATIONS.length; j++) {
+//                File javaFile = new File(vmInstallLocation, CANDIDATE_JAVA_LOCATIONS[j] + CANDIDATES_JAVA_FILES[i]);
+//                if (javaFile.isFile()) {
+//                    return javaFile.getAbsolutePath();
+//                }
+//            }
+//        }
         return "java";
     }
 

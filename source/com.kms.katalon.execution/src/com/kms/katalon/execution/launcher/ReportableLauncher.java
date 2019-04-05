@@ -65,13 +65,15 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
-        this.setExecutionUUID(runConfig.getExecutionUUID());
+        this.setExecutionUUID(this.getRunConfig().getExecutionUUID());
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
 
     @Override
     protected void onStartExecution() {
+        this.setExecutionUUID(this.getRunConfig().getExecutionUUID());
+        
         super.onStartExecution();
 
         startTime = new Date();
