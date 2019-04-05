@@ -44,7 +44,10 @@ public class ServerAPICommunicationUtil {
     private static final String HTTP ="http";
 
     public static String post(String function, String jsonData) throws IOException, GeneralSecurityException {
-        return invoke(POST, function, jsonData);
+        return invoke(POST, function, jsonData,true);
+    }
+    public static String post(String function, String jsonData,boolean post) throws IOException, GeneralSecurityException {
+        return invoke(POST, function, jsonData,post);
     }
 
     public static String put(String function, String jsonData) throws IOException, GeneralSecurityException {
@@ -104,8 +107,12 @@ public class ServerAPICommunicationUtil {
         int getStatusCode();
         String getResponseBody();
     }
+    
+    public static String invoke(String method, String function, String jsonData) throws IOException, GeneralSecurityException {
+        return invoke(method, function, jsonData, true);
+    }
 
-    public static String invoke(String method, String function, String jsonData)
+    public static String invoke(String method, String function, String jsonData, boolean retry)
             throws IOException, GeneralSecurityException {
         HttpURLConnection connection = null;
         try {
@@ -113,8 +120,16 @@ public class ServerAPICommunicationUtil {
             String result = sendAndReceiveData(connection, jsonData);
             return result;
         } catch (Exception ex) {
-            LogUtil.logError(ex);
-            return retryInvoke(method, function, jsonData);
+            
+            if(retry ==true){
+                LogUtil.logError(ex);
+                return retryInvoke(method,function,jsonData);
+            }
+            else{
+                LogUtil.logError(ex);
+                return null;
+            }
+
         } finally {
             if (connection != null) {
                 connection.disconnect();
