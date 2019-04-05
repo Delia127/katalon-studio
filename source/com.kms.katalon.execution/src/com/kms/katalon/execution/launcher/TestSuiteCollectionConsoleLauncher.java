@@ -34,9 +34,9 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
     public TestSuiteCollectionConsoleLauncher(TestSuiteCollectionExecutedEntity executedEntity,
             LauncherManager parentManager, List<ReportableLauncher> subLaunchers,
-            ReportCollectionEntity reportCollection) {
+            ReportCollectionEntity reportCollection, String executionUUID) {
         super(executedEntity, parentManager, subLaunchers, executedEntity.getEntity().getExecutionMode(),
-                reportCollection);
+                reportCollection, executionUUID);
     }
 
     public static TestSuiteCollectionConsoleLauncher newInstance(TestSuiteCollectionEntity testSuiteCollection,
@@ -53,7 +53,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             TestSuiteCollectionConsoleLauncher testSuiteCollectionConsoleLauncher = new TestSuiteCollectionConsoleLauncher(
                     executedEntity, parentManager, buildSubLaunchers(testSuiteCollection, executedEntity, parentManager,
                             reportCollection, globalVariables, executionUUID, true),
-                    reportCollection);
+                    reportCollection, executionUUID);
 
             ReportController.getInstance().updateReportCollection(reportCollection);
             return testSuiteCollectionConsoleLauncher;
