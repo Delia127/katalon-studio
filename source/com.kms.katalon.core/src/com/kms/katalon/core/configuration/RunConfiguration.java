@@ -537,7 +537,7 @@ public class RunConfiguration {
 		if (getProperty(SMART_XPATH_BUNDLE_ID) != null) {
 			try {
 				return (Boolean) new BundleSettingStore(getProjectDir(), SMART_XPATH_BUNDLE_ID, true)
-						.getBoolean("SmartXPathEnabled", false);
+						.getBoolean("SmartXPathEnabled", true);
 			} catch (IOException e) {
 				KeywordLogger.getInstance(RunConfiguration.class).logError(e.getMessage());
 			}
