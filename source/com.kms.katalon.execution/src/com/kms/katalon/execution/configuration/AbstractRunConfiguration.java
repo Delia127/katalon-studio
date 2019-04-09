@@ -122,7 +122,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     protected String getLogFolderLocation(TestSuiteEntity testSuite) {
         try {
-            return ReportController.getInstance().generateReportFolder(testSuite);
+            return ReportController.getInstance().generateReportFolder(testSuite, executionUUID);
         } catch (Exception e) {
             return "";
         }
