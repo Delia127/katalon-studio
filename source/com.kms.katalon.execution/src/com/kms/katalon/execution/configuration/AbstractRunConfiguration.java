@@ -141,7 +141,6 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         if (fileEntity instanceof TestCaseEntity || fileEntity instanceof SystemFileEntity) {
             logFolderPath = getTemporaryLogFolderLocation(fileEntity);
         } else if (fileEntity instanceof TestSuiteEntity) {
-        	((TestSuiteEntity)fileEntity).setSessionId(this.executionSessionId);
             logFolderPath = getLogFolderLocation((TestSuiteEntity) fileEntity);
         }
 
