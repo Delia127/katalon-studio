@@ -50,12 +50,15 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         executedEntity.setRerunable(rerunable);
 
         try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String executionSessionId =  dateFormat.format(new Date());
+            
             ReportCollectionEntity reportCollection = ReportController.getInstance()
-                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executionUUID, executedEntity.getId());
+                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executionSessionId, executedEntity.getId());
 
             TestSuiteCollectionConsoleLauncher testSuiteCollectionConsoleLauncher = new TestSuiteCollectionConsoleLauncher(
                     executedEntity, parentManager, buildSubLaunchers(testSuiteCollection, executedEntity, parentManager,
-                            reportCollection, globalVariables, executionUUID, true),
+                            reportCollection, globalVariables, executionUUID, executionSessionId, true),
                     reportCollection, executionUUID);
 
             ReportController.getInstance().updateReportCollection(reportCollection);
@@ -73,11 +76,14 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         executedEntity.setRerunable(rerunable);
 
         try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String executionSessionId =  dateFormat.format(new Date());
+            
             ReportCollectionEntity reportCollection = ReportController.getInstance()
-                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executionUUID, executedEntity.getId());
+                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executionSessionId, executedEntity.getId());
 
             List<ReportableLauncher> subLaunchers = buildSubLaunchers(testSuiteCollection, executedEntity,
-                    parentManager, reportCollection, globalVariables, executionUUID, false);
+                    parentManager, reportCollection, globalVariables, executionUUID, executionSessionId, false);
             TestSuiteCollectionLauncher testSuiteCollectionLauncher = LauncherProviderFactory.getInstance()
                     .getIdeLauncherProvider()
                     .getTestSuiteCollectionIDELauncher(executedEntity, parentManager, subLaunchers,
@@ -93,11 +99,8 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
     private static List<ReportableLauncher> buildSubLaunchers(TestSuiteCollectionEntity testSuiteCollection,
             TestSuiteCollectionExecutedEntity executedEntity, LauncherManager launcherManager,
             ReportCollectionEntity reportCollection, Map<String, Object> globalVariables, String executionUUID,
-            boolean isConsole) throws ExecutionException {
+            String executionSessionId, boolean isConsole) throws ExecutionException {
         List<ReportableLauncher> tsLaunchers = new ArrayList<>();
-        
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String executionSessionId =  dateFormat.format(new Date());
         
         for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollection.getTestSuiteRunConfigurations()) {
             if (!tsRunConfig.isRunEnabled()) {
