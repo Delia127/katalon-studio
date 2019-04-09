@@ -184,7 +184,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
                 return;
             }
 
-            ReportEntity report = ReportController.getInstance().getReportEntity(getTestSuite(), getId(), getRunConfig().getExecutionUUID());
+            ReportEntity report = ReportController.getInstance().getReportEntity(getTestSuite(), getId(), getRunConfig().getExecutionSessionId());
 
             // refresh report item on tree explorer
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);

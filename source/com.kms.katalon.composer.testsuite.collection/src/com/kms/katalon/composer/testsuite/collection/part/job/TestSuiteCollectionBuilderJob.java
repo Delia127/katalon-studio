@@ -64,15 +64,14 @@ public class TestSuiteCollectionBuilderJob extends Job {
 
             ProjectEntity project = testSuiteCollectionEntity.getProject();
             ReportController reportController = ReportController.getInstance();
-            String executionUUID = UUID.randomUUID().toString();
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String executionSessionId =  dateFormat.format(new Date());
             ReportCollectionEntity reportCollection = reportController.newReportCollection(project,
-                    testSuiteCollectionEntity, executionUUID, executedEntity.getId());
+                    testSuiteCollectionEntity, executionSessionId, executedEntity.getId());
 
             List<ReportableLauncher> tsLaunchers = new ArrayList<>();
             boolean cancelInstallWebDriver = false;
             
-            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-            String executionSessionId =  dateFormat.format(new Date());
             
             for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollectionEntity.getTestSuiteRunConfigurations()) {
                 if (!cancelInstallWebDriver) {
