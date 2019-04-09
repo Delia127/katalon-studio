@@ -1,7 +1,10 @@
 package com.kms.katalon.composer.testsuite.collection.part.job;
 
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -65,6 +68,10 @@ public class TestSuiteCollectionBuilderJob extends Job {
 
             List<ReportableLauncher> tsLaunchers = new ArrayList<>();
             boolean cancelInstallWebDriver = false;
+            
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String executionSessionId =  dateFormat.format(new Date());
+            
             for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollectionEntity.getTestSuiteRunConfigurations()) {
                 if (!cancelInstallWebDriver) {
                     cancelInstallWebDriver = !checkInstallWebDriver(tsRunConfig);
@@ -81,7 +88,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
                     continue;
                 }
 
-                SubIDELauncher subLauncher = buildLauncher(tsRunConfig, reportCollection);
+                SubIDELauncher subLauncher = buildLauncher(tsRunConfig, reportCollection, executionSessionId);
                 if (subLauncher == null) {
                     return Status.CANCEL_STATUS;
                 }
@@ -148,7 +155,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
     }
 
     private SubIDELauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
-            ReportCollectionEntity reportCollection) {
+            ReportCollectionEntity reportCollection, String executionSessionId) {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
             RunConfigurationDescription configuration = tsRunConfig.getConfiguration();
@@ -157,6 +164,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuiteEntity);
             executedEntity.prepareTestCases();
+            runConfig.setExecutionSessionId(executionSessionId);
             runConfig.build(testSuiteEntity, executedEntity);
             SubIDELauncher launcher = new SubIDELauncher(runConfig, LaunchMode.RUN, configuration);
             reportCollection.getReportItemDescriptions()

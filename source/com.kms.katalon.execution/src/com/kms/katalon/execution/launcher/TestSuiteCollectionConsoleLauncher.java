@@ -1,7 +1,10 @@
 package com.kms.katalon.execution.launcher;
 
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -92,12 +95,16 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             ReportCollectionEntity reportCollection, Map<String, Object> globalVariables, String executionUUID,
             boolean isConsole) throws ExecutionException {
         List<ReportableLauncher> tsLaunchers = new ArrayList<>();
+        
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String executionSessionId =  dateFormat.format(new Date());
+        
         for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollection.getTestSuiteRunConfigurations()) {
             if (!tsRunConfig.isRunEnabled()) {
                 continue;
             }
             ReportableLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection,
-                    globalVariables, executionUUID, isConsole);
+                    globalVariables, executionUUID, isConsole, executionSessionId);
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
                     .getExecutedEntity();
@@ -115,7 +122,8 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
     private static ReportableLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
             LauncherManager launcherManager, ReportCollectionEntity reportCollection,
-            Map<String, Object> globalVariables, String executionUUID, boolean isConsole) throws ExecutionException {
+            Map<String, Object> globalVariables, String executionUUID, boolean isConsole,
+            String executionSessionId) throws ExecutionException {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
             RunConfigurationDescription configDescription = tsRunConfig.getConfiguration();
@@ -126,6 +134,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
             executedEntity.prepareTestCases();
             runConfig.setOverridingGlobalVariables(globalVariables);
             runConfig.setExecutionUUID(executionUUID);
+            runConfig.setExecutionSessionId(executionSessionId);
             runConfig.build(testSuiteEntity, executedEntity);
             ReportableLauncher launcher = null;
             if (isConsole) {

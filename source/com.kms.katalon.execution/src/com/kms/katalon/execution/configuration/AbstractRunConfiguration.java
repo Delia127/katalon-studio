@@ -2,13 +2,17 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
+import java.text.DateFormat;
 
 import org.apache.commons.io.FileUtils;
 
@@ -55,6 +59,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private Map<String, String> additionalData = new HashMap<>();
 
     private String executionUUID;
+    
+    private String executionSessionId;
 
     public AbstractRunConfiguration() {
         initExecutionSetting();
@@ -110,6 +116,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     protected void initExecutionSetting() {
         executionSetting = new DefaultExecutionSetting();
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        this.executionSessionId =  dateFormat.format(new Date());
     }
 
     protected String getTemporaryLogFolderLocation(FileEntity testCase) {
@@ -133,6 +141,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         if (fileEntity instanceof TestCaseEntity || fileEntity instanceof SystemFileEntity) {
             logFolderPath = getTemporaryLogFolderLocation(fileEntity);
         } else if (fileEntity instanceof TestSuiteEntity) {
+        	((TestSuiteEntity)fileEntity).setSessionId(this.executionSessionId);
             logFolderPath = getLogFolderLocation((TestSuiteEntity) fileEntity);
         }
 
@@ -308,4 +317,12 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     public void setExecutionUUID(String executionUUID) {
         this.executionUUID = executionUUID;
     }
+
+	public String getExecutionSessionId() {
+		return executionSessionId;
+	}
+
+	public void setExecutionSessionId(String executionSessionId) {
+		this.executionSessionId = executionSessionId;
+	}
 }
