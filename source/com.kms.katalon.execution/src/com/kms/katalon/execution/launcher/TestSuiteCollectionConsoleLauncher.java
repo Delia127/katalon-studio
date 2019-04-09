@@ -51,7 +51,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
         try {
             ReportCollectionEntity reportCollection = ReportController.getInstance()
-                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executedEntity.getId());
+                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executionUUID, executedEntity.getId());
 
             TestSuiteCollectionConsoleLauncher testSuiteCollectionConsoleLauncher = new TestSuiteCollectionConsoleLauncher(
                     executedEntity, parentManager, buildSubLaunchers(testSuiteCollection, executedEntity, parentManager,
@@ -74,7 +74,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
         try {
             ReportCollectionEntity reportCollection = ReportController.getInstance()
-                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executedEntity.getId());
+                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executionUUID, executedEntity.getId());
 
             List<ReportableLauncher> subLaunchers = buildSubLaunchers(testSuiteCollection, executedEntity,
                     parentManager, reportCollection, globalVariables, executionUUID, false);
