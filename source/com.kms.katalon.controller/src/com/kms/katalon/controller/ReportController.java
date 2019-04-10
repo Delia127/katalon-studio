@@ -14,6 +14,7 @@ import java.util.Set;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.constants.StringConstants;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -202,11 +203,12 @@ public class ReportController extends EntityController {
         if (reportFolderId == null) {
             return null;
         }
-        return reportFolderId.replaceFirst("Reports", "Test Suites");
+        String[] groupName = reportFolderId.split(StringConstants.ENTITY_ID_SEPARATOR);
+        return "Test Suites" + StringConstants.ENTITY_ID_SEPARATOR + groupName[groupName.length - 1];
     }
 
     public TestSuiteEntity getTestSuiteByReportParentFolder(FolderEntity parentReportFolder) throws Exception {
-        String testSuiteDisplayId = parentReportFolder.getIdForDisplay().replaceFirst("Reports", "Test Suites");
+        String testSuiteDisplayId = "Test Suites" + StringConstants.ENTITY_ID_SEPARATOR + parentReportFolder.getName();
         return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteDisplayId,
                 parentReportFolder.getProject());
     }
