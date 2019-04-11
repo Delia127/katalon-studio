@@ -124,7 +124,7 @@ public class ServerAPICommunicationUtil {
             return result;
         } catch (Exception ex) {
 
-            if (retry == true) {
+            if (retry) {
                 LogUtil.logError(ex);
                 return retryInvoke(method, function, jsonData);
             } else {
