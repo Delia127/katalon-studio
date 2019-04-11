@@ -123,12 +123,10 @@ public class ServerAPICommunicationUtil {
             String result = sendAndReceiveData(connection, jsonData);
             return result;
         } catch (Exception ex) {
-
+            LogUtil.logError(ex);
             if (retry) {
-                LogUtil.logError(ex);
                 return retryInvoke(method, function, jsonData);
             } else {
-                LogUtil.logError(ex);
                 return null;
             }
 
