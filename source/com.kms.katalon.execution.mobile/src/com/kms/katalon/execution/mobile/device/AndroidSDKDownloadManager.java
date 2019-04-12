@@ -88,6 +88,8 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
         private int minor;
 
         private int micro;
+        
+        private int preview;
 
         private List<SDKArchive> archives;
 
@@ -229,6 +231,9 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
         archPack.major = Integer.valueOf(revElement.elementText("major"));
         archPack.minor = Integer.valueOf(revElement.elementText("minor"));
         archPack.micro = Integer.valueOf(revElement.elementText("micro"));
+        if (revElement.elementText("preview") != null) {
+            archPack.preview = Integer.valueOf(revElement.elementText("preview"));
+        }
 
         List<SDKArchive> archiveLst = new ArrayList<>();
         @SuppressWarnings("unchecked")
@@ -297,7 +302,7 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
         downloadAndExtract(platformArchive.url, REPO_ROOT_URL + platformArchive.url, downloadFolder, platformToolFolder,
                 ignoredFragement);
 
-        SDKArchivePack buildToolPack = urlHolder.buildToolPacks.get(0);
+        SDKArchivePack buildToolPack = getSuitableBuildToolPack(urlHolder.buildToolPacks);
         SDKArchive buildToolArchive = buildToolPack.getSuitableArchive();
         File buildToolsFolder = sdkLocator.getBuildToolsFolder();
         File buildToolRevFolder = new File(buildToolsFolder, buildToolPack.version());
@@ -308,5 +313,15 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
                 buildToolRevFolder, ignoredFragement);
 
         logAndInvoke(create(ExecutionMobileMessageConstants.MSG_SDK_DOWNLOAD_AND_INSTALL_SDK_COMPELTED, 0));
+    }
+    
+    private SDKArchivePack getSuitableBuildToolPack(List<SDKArchivePack> buildToolPacks) {
+        for (SDKArchivePack archivePack : buildToolPacks) {
+            if (archivePack.preview > 0) {
+                continue;
+            }
+            return archivePack;
+        }
+        return buildToolPacks.get(0);
     }
 }
