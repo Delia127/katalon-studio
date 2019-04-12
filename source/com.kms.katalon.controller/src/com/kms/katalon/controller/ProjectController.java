@@ -16,9 +16,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.jdt.core.JavaModelException;
 
 import com.kms.katalon.controller.exception.ControllerException;
-import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 import com.kms.katalon.dal.exception.DALException;
@@ -60,8 +60,9 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity openProjectForUI(String projectPk, IProgressMonitor monitor) throws Exception {
         try {
-            if (monitor == null)
+            if (monitor == null) {
                 monitor = new NullProgressMonitor();
+            }
 
             ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
                     .openProjectWithoutClasspath(projectPk);
@@ -77,8 +78,17 @@ public class ProjectController extends EntityController {
 
                 KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
 
-                GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project),
-                        progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
+                try {
+                    GroovyUtil.initGroovyProject(project,
+                            ProjectController.getInstance().getCustomKeywordPlugins(project),
+                            progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
+                } catch (JavaModelException e) {
+                    monitor.beginTask("Trying cleaning up Groovy project...", 10);
+                    cleanupGroovyProject(project);
+                    GroovyUtil.initGroovyProject(project,
+                            ProjectController.getInstance().getCustomKeywordPlugins(project),
+                            progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
+                }
                 addRecentProject(project);
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
                         progress.newChild(20, SubMonitor.SUPPRESS_SUBTASK));
@@ -90,6 +100,23 @@ public class ProjectController extends EntityController {
             if (monitor != null) {
                 monitor.done();
             }
+        }
+    }
+
+    private void cleanupGroovyProject(ProjectEntity project) {
+        File classpathFile = new File(project.getFolderLocation(), ".classpath");
+        if (classpathFile.exists()) {
+            classpathFile.delete();
+        }
+
+        File binFolder = new File(project.getFolderLocation(), "bin");
+        if (binFolder.exists()) {
+            binFolder.delete();
+        }
+
+        File projectFile = new File(project.getFolderLocation(), ".project");
+        if (projectFile.exists()) {
+            projectFile.delete();
         }
     }
 
@@ -113,8 +140,8 @@ public class ProjectController extends EntityController {
 
             LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
             KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
-
             GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
+
             addRecentProject(project);
             LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
