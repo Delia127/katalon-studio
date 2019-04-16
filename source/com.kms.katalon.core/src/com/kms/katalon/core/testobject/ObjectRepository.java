@@ -238,6 +238,13 @@ public class ObjectRepository {
             testObject.setSelectorMethod(SelectorMethod.valueOf(dfSelectorMethodElement.getText()));
         }
 
+        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+        for (Entry<String, Object> entry : variables.entrySet()) {
+            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+
+        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
+        
         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
         if (propertySelectorCollection != null) {
             List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
@@ -245,7 +252,7 @@ public class ObjectRepository {
                 selectorEntry.forEach(entry -> {
                     Element selectorMethodElement = ((Element) entry);
                     SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
-                    String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+                    String entryValue = strSubtitutor.replace(selectorMethodElement.elementText(PROPERTY_VALUE));
                     testObject.setSelectorValue(entryKey, entryValue);
                 });
             }
@@ -308,12 +315,7 @@ public class ObjectRepository {
         if (testObject == null || variables == null || variables.isEmpty()) {
             return testObject;
         }
-        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
-        for (Entry<String, Object> entry : variables.entrySet()) {
-            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
-        }
-
-        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
+        
         for (TestObjectProperty objectProperty : testObject.getProperties()) {
             objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue()));
         }
