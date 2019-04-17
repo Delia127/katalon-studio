@@ -16,6 +16,16 @@ public class CustomKeywordSettingPage {
         private String label;
         
         private String defaultValue;
+        
+        private String implementationClassPath;
+        
+        public String getImplementationClassPath() {
+        	return implementationClassPath;
+        }
+        
+        public void setImplementationClassPath(String classPath) {
+        	this.implementationClassPath = classPath;
+        }
 
         public String getType() {
             return type;

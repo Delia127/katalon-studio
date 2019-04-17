@@ -8,6 +8,7 @@ Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.execution.webui.configuration,
  com.kms.katalon.execution.webui.configuration.contributor,
  com.kms.katalon.execution.webui.driver,
+ com.kms.katalon.execution.webui.keyword,
  com.kms.katalon.execution.webui.setting,
  com.kms.katalon.execution.webui.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -16,7 +17,13 @@ Import-Package: com.kms.katalon.util.collections,
  javax.inject;version="1.0.0",
  org.eclipse.core.commands,
  org.eclipse.core.runtime,
- org.osgi.framework
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.services.events,
+ org.eclipse.ui,
+ org.eclipse.e4.core.di,
+ org.osgi.framework,
+ org.osgi.service.event;version="1.3.1"
+Bundle-Activator: com.kms.katalon.execution.webui.addon.WebUiExecutionBundleActivator
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.swt,
  com.kms.katalon.constant,

@@ -43,6 +43,7 @@ import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.webui.keyword.CustomKeywordRunConfigurationCollector;
 
 public class CustomExecutionSettingPage extends PreferencePageWithHelp {
     private static final String DEFAULT_CUSTOM_CONFIGURATION_NAME = "custom";
@@ -334,6 +335,8 @@ public class CustomExecutionSettingPage extends PreferencePageWithHelp {
                 LoggerSingleton.logError(e);
             }
         }
+		customRunConfigurationList
+				.addAll(CustomKeywordRunConfigurationCollector.getInstance().getCustomKeywordRunConfigurations());
         for (CustomRunConfiguration customRunConfiguration : customRunConfigurationList) {
             try {
                 customRunConfiguration.save();

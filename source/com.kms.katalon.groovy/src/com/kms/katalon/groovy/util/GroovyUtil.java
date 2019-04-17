@@ -851,6 +851,18 @@ public class GroovyUtil {
         }
         return groovyClassLoader;
     }
+    
+	public static URLClassLoader getClassLoaderFromParent(IJavaProject project, ClassLoader parent, String[] classPathEntries)
+			throws MalformedURLException {
+		GroovyClassLoader groovyClassLoader = new GroovyClassLoader(parent);
+		for (int i = 0; i < classPathEntries.length; i++) {
+			String entry = classPathEntries[i];
+			IPath path = new Path(entry);
+			URL url = path.toFile().toURI().toURL();
+			groovyClassLoader.addURL(url);
+		}
+		return groovyClassLoader;
+	}
 
     public static void loadScriptContentIntoTestCase(TestCaseEntity testCase) throws CoreException, IOException {
         if (testCase == null) {
@@ -983,6 +995,13 @@ public class GroovyUtil {
         IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
         return GroovyUtil.getProjectClasLoader(project, JavaRuntime.computeDefaultRuntimeClassPath(project));
     }
+    
+	public static URLClassLoader getClassLoaderFromParent(ProjectEntity projectEntity, ClassLoader parent)
+			throws MalformedURLException, CoreException {
+		IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
+		return GroovyUtil.getClassLoaderFromParent(project, parent,
+				JavaRuntime.computeDefaultRuntimeClassPath(project));
+	}
 
     public static IFolder getPluginsFolder(ProjectEntity project) {
         IProject groovyProject = getGroovyProject(project);
