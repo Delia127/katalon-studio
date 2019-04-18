@@ -42,11 +42,9 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
 	private final KeywordsManifest keywordsManifest;
 
-	private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "checkbox", "generator" });
+	private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "generator" });
 
 	private Map<String, Pair<SettingPageComponent, Text>> txtComponentCollection = new HashMap<>();
-	
-	private Map<String, Pair<SettingPageComponent, Button>> btnComponentCollection = new HashMap<>();
 
 	private ClassLoader classLoader;
 
@@ -99,17 +97,6 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
 				txtComponentSecret.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 				txtComponentSecret.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
 				txtComponentCollection.put(key, Pair.of(entry, txtComponentSecret));
-				break;
-			}
-			case "checkbox": {
-				Label lblComponentLabel = new Label(container, SWT.NONE);
-				lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-				lblComponentLabel.setText(label);
-				
-				Button chckBtn = new Button(container, SWT.CHECK);
-				lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-				chckBtn.setSelection(Boolean.valueOf(entry.getDefaultValue()));
-				btnComponentCollection.put(key, Pair.of(entry, chckBtn));
 				break;
 			}
 			}
