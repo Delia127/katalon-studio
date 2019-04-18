@@ -62,106 +62,106 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuitePart implements EventHandler {
 
-	private static final int MINIMUM_COMPOSITE_SIZE = 300;
+    private static final int MINIMUM_COMPOSITE_SIZE = 300;
 
-	@Inject
-	protected EModelService modelService;
+    @Inject
+    protected EModelService modelService;
 
-	@Inject
-	protected MApplication application;
+    @Inject
+    protected MApplication application;
 
-	@Inject
-	private IEventBroker eventBroker;
+    @Inject
+    private IEventBroker eventBroker;
 
-	private Composite compositeExecution, compositeMain;
+    private Composite compositeExecution, compositeMain;
 
-	private ScrolledComposite compositeTablePart;
+    private ScrolledComposite compositeTablePart;
 
-	private boolean isExecutionCompositeExpanded;
+    private boolean isExecutionCompositeExpanded;
 
-	private Text txtRerun, txtUserDefinePageLoadTimeout;
+    private Text txtRerun, txtUserDefinePageLoadTimeout;
 
-	private MPart mpart;
+    private MPart mpart;
 
-	private Composite compositeExecutionDetails;
+    private Composite compositeExecutionDetails;
 
-	private org.eclipse.swt.widgets.List listMailRcp;
+    private org.eclipse.swt.widgets.List listMailRcp;
 
-	private ListViewer listMailRcpViewer;
+    private ListViewer listMailRcpViewer;
 
-	private Button btnAddMailRcp, btnDeleteMailRcp, btnClearMailRcp;
+    private Button btnAddMailRcp, btnDeleteMailRcp, btnClearMailRcp;
 
-	private Button radioUseDefaultPageLoadTimeout, radioUserDefinePageLoadTimeout;
+    private Button radioUseDefaultPageLoadTimeout, radioUserDefinePageLoadTimeout;
 
-	private Composite compositeLastRunAndReRun;
+    private Composite compositeLastRunAndReRun;
 
-	private ImageButton btnExpandExecutionComposite;
+    private ImageButton btnExpandExecutionComposite;
 
-	private Button rerunTestCaseOnly;
+    private Button rerunTestCaseOnly;
 
-	private TestSuiteCompositePart parentTestSuiteCompositePart;
+    private TestSuiteCompositePart parentTestSuiteCompositePart;
 
-	private Label lblExecutionInformation;
+    private Label lblExecutionInformation;
 
-	private TestSuitePartTestCaseView childrenView;
+    private TestSuitePartTestCaseView childrenView;
 
-	private List<Thread> uiThreads;
+    private List<Thread> uiThreads;
 
-	private Composite parent;
-	
-	private Composite customViews;
+    private Composite parent;
+
+    private Composite customViews;
 
     private boolean isLoading;
 
-	private Listener layoutExecutionCompositeListener = new Listener() {
+    private Listener layoutExecutionCompositeListener = new Listener() {
 
-		@Override
-		public void handleEvent(org.eclipse.swt.widgets.Event event) {
-			isExecutionCompositeExpanded = !isExecutionCompositeExpanded;
-			layoutExecutionInfo();
-		}
-	};
-	
-	private Map<String, ExpandableTestSuiteComposite> viewCompositeMap = new HashMap<>();
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            isExecutionCompositeExpanded = !isExecutionCompositeExpanded;
+            layoutExecutionInfo();
+        }
+    };
 
-	@PostConstruct
-	public void createControls(Composite parent, MPart mpart) {
-		this.parent = parent;
-		this.mpart = mpart;
+    private Map<String, ExpandableTestSuiteComposite> viewCompositeMap = new HashMap<>();
 
-		if (mpart.getParent().getParent() instanceof MGenericTile
-				&& ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
-			MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
-			if (compositePart.getObject() instanceof TestSuiteCompositePart) {
-				parentTestSuiteCompositePart = ((TestSuiteCompositePart) compositePart.getObject());
-			}
-		}
+    @PostConstruct
+    public void createControls(Composite parent, MPart mpart) {
+        this.parent = parent;
+        this.mpart = mpart;
 
-		childrenView = new TestSuitePartTestCaseView(this);
-		uiThreads = new LinkedList<Thread>();
-		isLoading = false;
+        if (mpart.getParent().getParent() instanceof MGenericTile
+                && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
+            MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
+            if (compositePart.getObject() instanceof TestSuiteCompositePart) {
+                parentTestSuiteCompositePart = ((TestSuiteCompositePart) compositePart.getObject());
+            }
+        }
 
-		initExpandedState();
+        childrenView = new TestSuitePartTestCaseView(this);
+        uiThreads = new LinkedList<Thread>();
+        isLoading = false;
 
-		registerEventBrokerListerners();
+        initExpandedState();
 
-		createComponents(parent);
+        registerEventBrokerListerners();
 
-		registerControlListeners();
+        createComponents(parent);
 
-		layoutExecutionInfo();
-		
-		childrenView.layout();
-	}
+        registerControlListeners();
 
-	public MPart getMPart() {
-		return mpart;
-	}
+        layoutExecutionInfo();
 
-	private void initExpandedState() {
-		isExecutionCompositeExpanded = false;
-		childrenView.initExpandedState();
-	}
+        childrenView.layout();
+    }
+
+    public MPart getMPart() {
+        return mpart;
+    }
+
+    private void initExpandedState() {
+        isExecutionCompositeExpanded = false;
+        childrenView.initExpandedState();
+    }
 
     @Focus
     public void setFocus() {
@@ -179,8 +179,8 @@ public class TestSuitePart implements EventHandler {
         eventBroker.subscribe(TestSuiteEventConstants.TESTSUITE_UPDATE_IS_RUN_COLUMN_HEADER, this);
         eventBroker.subscribe(EventConstants.TESTCASE_UPDATED, this);
         eventBroker.subscribe(EventConstants.TEST_SUITE_UPDATED, this);
-		eventBroker.subscribe(EventConstants.TEST_DATA_UPDATED, this);
-		eventBroker.subscribe(EventConstants.ADD_TEST_CASE_FROM_TEST_CASE, this);
+        eventBroker.subscribe(EventConstants.TEST_DATA_UPDATED, this);
+        eventBroker.subscribe(EventConstants.ADD_TEST_CASE_FROM_TEST_CASE, this);
         // eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM,
         // this);
     }
@@ -192,8 +192,8 @@ public class TestSuitePart implements EventHandler {
                 compositeExecutionDetails.setVisible(isExecutionCompositeExpanded);
                 if (!isExecutionCompositeExpanded) {
                     ((GridData) compositeExecutionDetails.getLayoutData()).exclude = true;
-                    compositeExecution.setSize(compositeExecution.getSize().x, compositeExecution.getSize().y
-                            - compositeTablePart.getSize().y);
+                    compositeExecution.setSize(compositeExecution.getSize().x,
+                            compositeExecution.getSize().y - compositeTablePart.getSize().y);
                 } else {
                     ((GridData) compositeExecutionDetails.getLayoutData()).exclude = false;
                 }
@@ -203,14 +203,14 @@ public class TestSuitePart implements EventHandler {
             }
         });
     }
-    
+
     private void registerControlListeners() {
         btnAddMailRcp.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Shell shell = Display.getDefault().getActiveShell();
-                AddMailRecipientDialog addMailDialog = new AddMailRecipientDialog(shell, listMailRcpViewer.getList()
-                        .getItems());
+                AddMailRecipientDialog addMailDialog = new AddMailRecipientDialog(shell,
+                        listMailRcpViewer.getList().getItems());
                 addMailDialog.open();
 
                 if (addMailDialog.getReturnCode() == Dialog.OK) {
@@ -357,7 +357,7 @@ public class TestSuitePart implements EventHandler {
         uiThreads.add(loadTestSuiteThread);
 
         loadTestSuiteThread.start();
-        
+
         createViewsFromViewFactory();
     }
 
@@ -395,7 +395,7 @@ public class TestSuitePart implements EventHandler {
         compositeMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         createExecutionInformationComposite();
-        
+
         createCustomViewComposite();
 
         compositeTablePart = childrenView.createCompositeTestCase(compositeMain);
@@ -409,21 +409,21 @@ public class TestSuitePart implements EventHandler {
         glCustomViews.marginWidth = 0;
         customViews.setLayout(glCustomViews);
         customViews.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-	}
+    }
 
-	private void createViewsFromViewFactory() {
-		TestSuiteViewFactory.getInstance().getSortedBuilders().forEach(entryBuilder -> {
-			String name = entryBuilder.getName();
-			if(viewCompositeMap.get(name) == null) {
-				AbstractTestSuiteUIDescriptionView descView = entryBuilder.getView(getTestSuite(), getMPart(),
-						parentTestSuiteCompositePart);
-				ExpandableTestSuiteComposite view = new ExpandableTestSuiteComposite(customViews, name, descView);
-				viewCompositeMap.put(name, view);
-			}
-		});
-	}
+    private void createViewsFromViewFactory() {
+        TestSuiteViewFactory.getInstance().getSortedBuilders().forEach(entryBuilder -> {
+            String name = entryBuilder.getName();
+            if (viewCompositeMap.get(name) == null) {
+                AbstractTestSuiteUIDescriptionView descView = entryBuilder.getView(getTestSuite(), getMPart(),
+                        parentTestSuiteCompositePart);
+                ExpandableTestSuiteComposite view = new ExpandableTestSuiteComposite(customViews, name, descView);
+                viewCompositeMap.put(name, view);
+            }
+        });
+    }
 
-	private void redrawBtnExpandExecutionInfo() {
+    private void redrawBtnExpandExecutionInfo() {
         btnExpandExecutionComposite.getParent().setRedraw(false);
         if (isExecutionCompositeExpanded) {
             btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN);
@@ -450,10 +450,10 @@ public class TestSuitePart implements EventHandler {
         glCompositeExecutionCompositeHeader.marginHeight = 0;
         glCompositeExecutionCompositeHeader.marginWidth = 0;
         compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
-        compositeExecutionCompositeHeader.setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(
-                SWT.CURSOR_HAND));
-        compositeExecutionCompositeHeader.setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(
-                SWT.CURSOR_HAND));
+        compositeExecutionCompositeHeader
+                .setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+        compositeExecutionCompositeHeader
+                .setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
         btnExpandExecutionComposite = new ImageButton(compositeExecutionCompositeHeader, SWT.NONE);
         redrawBtnExpandExecutionInfo();
@@ -599,30 +599,30 @@ public class TestSuitePart implements EventHandler {
                     String projectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
                     String oldTestDataId = TestDataController.getInstance().getTestDataDisplayIdByPk(oldTestDataPk,
                             projectLocation);
-                    String newTestDataId = TestDataController.getInstance().getTestDataDisplayIdByPk(
-                            newTestData.getId(), projectLocation);
+                    String newTestDataId = TestDataController.getInstance()
+                            .getTestDataDisplayIdByPk(newTestData.getId(), projectLocation);
                     childrenView.refreshTestSuiteAfterTestDataChanged(oldTestDataId, newTestDataId);
                 }
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }
         } else if (event.getTopic().equals(EventConstants.ADD_TEST_CASE_FROM_TEST_CASE)) {
-			try {
-				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+            try {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
 
-				if (object != null) {
-					try {
-						String nameTestSuite = (String) ((Object[]) object)[1];
-						TestCaseEntity testCase = (TestCaseEntity) ((Object[]) object)[0];
-						childrenView.addNewTestCase(nameTestSuite, testCase);
-					} catch (Exception e) {
-						LoggerSingleton.logError(e);
-					}
-				}
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
+                if (object != null) {
+                    try {
+                        String nameTestSuite = (String) ((Object[]) object)[1];
+                        TestCaseEntity testCase = (TestCaseEntity) ((Object[]) object)[0];
+                        childrenView.addNewTestCase(nameTestSuite, testCase);
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                    }
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
     }
 
     public void dispose() {
@@ -676,7 +676,7 @@ public class TestSuitePart implements EventHandler {
     public void openAddTestCaseDialog() {
         childrenView.openAddTestCaseDialog();
     }
-    
+
     public void openAddedTestCase(TestCaseEntity testCaseEntity) {
         eventBroker.post(EventConstants.TESTCASE_OPEN, testCaseEntity);
     }
