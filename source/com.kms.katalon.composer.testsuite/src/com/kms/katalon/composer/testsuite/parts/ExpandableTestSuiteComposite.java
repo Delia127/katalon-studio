@@ -13,47 +13,54 @@ import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 
 public class ExpandableTestSuiteComposite {
-	
-	private String name;
-	private AbstractTestSuiteUIDescriptionView descView;
-	private ImageButton btnExpandExecutionComposite;
-	private Label lblExecutionInformation;
-	private boolean isExecutionCompositeExpanded;
-	private Composite container;
-	private Composite parent;
-	private Composite view;
-	
-	private Listener layoutExecutionCompositeListener = new Listener() {
 
-		@Override
-		public void handleEvent(org.eclipse.swt.widgets.Event event) {
-			isExecutionCompositeExpanded = !isExecutionCompositeExpanded;
-			layoutExecutionInfo();
-		}
-	};
-	
-	public ExpandableTestSuiteComposite(Composite parent, String name, AbstractTestSuiteUIDescriptionView descView) {
-		this.name = name;
-		this.descView = descView;
-		this.parent = parent;
-		this.isExecutionCompositeExpanded = false;
-		
-		createComposite();
-	}
-	
-	public void createComposite() {
-		Composite compositeExecutionCompositeHeader = new Composite(parent, SWT.NONE);
+    private String name;
+
+    private AbstractTestSuiteUIDescriptionView descView;
+
+    private ImageButton btnExpandExecutionComposite;
+
+    private Label lblExecutionInformation;
+
+    private boolean isExecutionCompositeExpanded;
+
+    private Composite container;
+
+    private Composite parent;
+
+    private Composite view;
+
+    private Listener layoutExecutionCompositeListener = new Listener() {
+
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            isExecutionCompositeExpanded = !isExecutionCompositeExpanded;
+            layoutExecutionInfo();
+        }
+    };
+
+    public ExpandableTestSuiteComposite(Composite parent, String name, AbstractTestSuiteUIDescriptionView descView) {
+        this.name = name;
+        this.descView = descView;
+        this.parent = parent;
+        this.isExecutionCompositeExpanded = false;
+
+        createComposite();
+    }
+
+    public void createComposite() {
+        Composite compositeExecutionCompositeHeader = new Composite(parent, SWT.NONE);
         compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         GridLayout glCompositeExecutionCompositeHeader = new GridLayout(2, false);
         glCompositeExecutionCompositeHeader.marginHeight = 0;
         glCompositeExecutionCompositeHeader.marginWidth = 0;
         compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
-        compositeExecutionCompositeHeader.setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(
-                SWT.CURSOR_HAND));
-        compositeExecutionCompositeHeader.setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(
-                SWT.CURSOR_HAND));
+        compositeExecutionCompositeHeader
+                .setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+        compositeExecutionCompositeHeader
+                .setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
-		btnExpandExecutionComposite = new ImageButton(compositeExecutionCompositeHeader, SWT.NONE);
+        btnExpandExecutionComposite = new ImageButton(compositeExecutionCompositeHeader, SWT.NONE);
         redrawBtnExpandExecutionInfo();
 
         lblExecutionInformation = new Label(compositeExecutionCompositeHeader, SWT.NONE);
@@ -64,20 +71,20 @@ public class ExpandableTestSuiteComposite {
         view = descView.createContainer(parent);
         descView.postContainerCreated();
         registerControlListener();
-        
+
         layoutExecutionInfo();
-	}
-	
+    }
+
     private void registerControlListener() {
         lblExecutionInformation.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
         btnExpandExecutionComposite.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
-	}
+    }
 
-	private void layoutExecutionInfo() {
+    private void layoutExecutionInfo() {
         Display.getDefault().timerExec(10, new Runnable() {
             @Override
             public void run() {
-            	view.setVisible(isExecutionCompositeExpanded);
+                view.setVisible(isExecutionCompositeExpanded);
                 if (!isExecutionCompositeExpanded) {
                     ((GridData) view.getLayoutData()).exclude = true;
                     parent.setSize(parent.getSize().x, 0);
@@ -90,7 +97,7 @@ public class ExpandableTestSuiteComposite {
             }
         });
     }
-    
+
     private void redrawBtnExpandExecutionInfo() {
         btnExpandExecutionComposite.getParent().setRedraw(false);
         if (isExecutionCompositeExpanded) {
