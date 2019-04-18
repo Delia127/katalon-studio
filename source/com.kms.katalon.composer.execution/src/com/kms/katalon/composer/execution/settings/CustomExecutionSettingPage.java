@@ -47,29 +47,33 @@ import com.kms.katalon.execution.webui.keyword.CustomKeywordRunConfigurationColl
 
 public class CustomExecutionSettingPage extends PreferencePageWithHelp {
     private static final String DEFAULT_CUSTOM_CONFIGURATION_NAME = "custom";
+
     private List<CustomRunConfiguration> customRunConfigurationList;
 
     private Table table;
+
     private TableViewer tableViewer;
 
     private ToolItem tltmAddProperty;
+
     private ToolItem tltmRemoveProperty;
+
     private ToolItem tltmClearProperty;
 
-	public CustomExecutionSettingPage() {
-		customRunConfigurationList = new ArrayList<CustomRunConfiguration>();
-		String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-		for (String customRunConfigurationId : RunConfigurationCollector.getInstance()
-				.getAllCustomRunConfigurationIds()) {
-			try {
-				customRunConfigurationList.add(new CustomRunConfiguration(projectDir, customRunConfigurationId));
-			} catch (IOException | ExecutionException e) {
-				LoggerSingleton.logError(e);
-			}
-		}
+    public CustomExecutionSettingPage() {
+        customRunConfigurationList = new ArrayList<CustomRunConfiguration>();
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        for (String customRunConfigurationId : RunConfigurationCollector.getInstance()
+                .getAllCustomRunConfigurationIds()) {
+            try {
+                customRunConfigurationList.add(new CustomRunConfiguration(projectDir, customRunConfigurationId));
+            } catch (IOException | ExecutionException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
 
-		noDefaultAndApplyButton();
-	}
+        noDefaultAndApplyButton();
+    }
 
     @Override
     protected Control createContents(Composite parent) {
@@ -178,8 +182,8 @@ public class CustomExecutionSettingPage extends PreferencePageWithHelp {
                     protected CellEditor getCellEditor(Object element) {
                         if (element instanceof CustomRunConfiguration) {
                             CustomRunConfiguration customRunConfig = (CustomRunConfiguration) element;
-                            return new DriverConnectorListCellEditor(tableViewer.getTable(),
-                                    customRunConfig.toString(), customRunConfig);
+                            return new DriverConnectorListCellEditor(tableViewer.getTable(), customRunConfig.toString(),
+                                    customRunConfig);
                         }
                         return null;
                     }
@@ -216,8 +220,8 @@ public class CustomExecutionSettingPage extends PreferencePageWithHelp {
                             try {
                                 for (IDriverConnector driverConnector : driverConnectorList) {
 
-                                    String name = DriverConnectorCollector.getInstance().getContributorName(
-                                            driverConnector, configFolderPath);
+                                    String name = DriverConnectorCollector.getInstance()
+                                            .getContributorName(driverConnector, configFolderPath);
 
                                     runConfiguration.addDriverConnector(name, driverConnector);
                                 }
@@ -254,8 +258,8 @@ public class CustomExecutionSettingPage extends PreferencePageWithHelp {
         tableColumn.getColumn().setText(headerText);
         tableColumn.setLabelProvider(labelProvider);
         tableColumn.setEditingSupport(editingSupport);
-        tableColumnLayout.setColumnData(tableColumn.getColumn(), new ColumnWeightData(weight, tableColumn.getColumn()
-                .getWidth()));
+        tableColumnLayout.setColumnData(tableColumn.getColumn(),
+                new ColumnWeightData(weight, tableColumn.getColumn().getWidth()));
     }
 
     private void addToolItemListeners() {
@@ -263,8 +267,9 @@ public class CustomExecutionSettingPage extends PreferencePageWithHelp {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    customRunConfigurationList.add(new CustomRunConfiguration(ProjectController.getInstance()
-                            .getCurrentProject().getFolderLocation(), generateNewCustomConfigurationName()));
+                    customRunConfigurationList.add(new CustomRunConfiguration(
+                            ProjectController.getInstance().getCurrentProject().getFolderLocation(),
+                            generateNewCustomConfigurationName()));
                     tableViewer.refresh();
                 } catch (IOException | ExecutionException exception) {
                     LoggerSingleton.logError(exception);
@@ -335,8 +340,8 @@ public class CustomExecutionSettingPage extends PreferencePageWithHelp {
                 LoggerSingleton.logError(e);
             }
         }
-		customRunConfigurationList
-				.addAll(CustomKeywordRunConfigurationCollector.getInstance().getCustomKeywordRunConfigurations());
+        customRunConfigurationList
+                .addAll(CustomKeywordRunConfigurationCollector.getInstance().getCustomKeywordRunConfigurations());
         for (CustomRunConfiguration customRunConfiguration : customRunConfigurationList) {
             try {
                 customRunConfiguration.save();
@@ -346,7 +351,7 @@ public class CustomExecutionSettingPage extends PreferencePageWithHelp {
         }
         return true;
     }
-    
+
     @Override
     public boolean hasDocumentation() {
         return true;

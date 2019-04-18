@@ -7,26 +7,27 @@ import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 
 public class CustomKeywordRunConfigurationCollector {
 
-	private static CustomKeywordRunConfigurationCollector _instance;
-	private List<CustomRunConfiguration> customKeywordRunConfigurations;
+    private static CustomKeywordRunConfigurationCollector _instance;
 
-	public CustomKeywordRunConfigurationCollector() {
-		customKeywordRunConfigurations = new ArrayList<>();
-	}
+    private List<CustomRunConfiguration> customKeywordRunConfigurations;
 
-	public static CustomKeywordRunConfigurationCollector getInstance() {
-		if (_instance == null) {
-			_instance = new CustomKeywordRunConfigurationCollector();
-		}
-		return _instance;
-	}
+    public CustomKeywordRunConfigurationCollector() {
+        customKeywordRunConfigurations = new ArrayList<>();
+    }
 
-	public void addCustomKeywordRunConfiguration(CustomRunConfiguration runConfig) {
-		customKeywordRunConfigurations.add(runConfig);
-	}
+    public static CustomKeywordRunConfigurationCollector getInstance() {
+        if (_instance == null) {
+            _instance = new CustomKeywordRunConfigurationCollector();
+        }
+        return _instance;
+    }
 
-	public List<CustomRunConfiguration> getCustomKeywordRunConfigurations() {
-		return customKeywordRunConfigurations;
-	}
+    public void addCustomKeywordRunConfiguration(CustomRunConfiguration runConfig) {
+        customKeywordRunConfigurations.add(runConfig);
+    }
+
+    public List<CustomRunConfiguration> getCustomKeywordRunConfigurations() {
+        return customKeywordRunConfigurations;
+    }
 
 }

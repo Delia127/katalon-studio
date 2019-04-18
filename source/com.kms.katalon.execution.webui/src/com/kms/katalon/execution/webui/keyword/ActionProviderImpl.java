@@ -16,25 +16,25 @@ import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 
 public class ActionProviderImpl implements IActionProvider {
 
-	public void saveCustomProfile(ICustomProfile customProfile) {
-		String strPluginDriverType = customProfile.getWebDriverType();
-		WebUIDriverType driverType = WebUIDriverType.fromStringValue(strPluginDriverType);
-		ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-		try {
-			CustomRunConfiguration runConfig = new CustomRunConfiguration(projectEntity.getFolderLocation(),
-					customProfile.getName());
-			IDriverConnector driverConnector = WebUIExecutionUtil.getDriverConnector(driverType,
-					runConfig.getConfigFolder().getAbsolutePath());
-			driverConnector.setUserConfigProperties(customProfile.getDesiredCapabilities());
-			runConfig.addDriverConnector(customProfile.getName(), driverConnector);
-			runConfig.save();
-			CustomKeywordRunConfigurationCollector.getInstance().addCustomKeywordRunConfiguration(runConfig);
+    public void saveCustomProfile(ICustomProfile customProfile) {
+        String strPluginDriverType = customProfile.getWebDriverType();
+        WebUIDriverType driverType = WebUIDriverType.fromStringValue(strPluginDriverType);
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        try {
+            CustomRunConfiguration runConfig = new CustomRunConfiguration(projectEntity.getFolderLocation(),
+                    customProfile.getName());
+            IDriverConnector driverConnector = WebUIExecutionUtil.getDriverConnector(driverType,
+                    runConfig.getConfigFolder().getAbsolutePath());
+            driverConnector.setUserConfigProperties(customProfile.getDesiredCapabilities());
+            runConfig.addDriverConnector(customProfile.getName(), driverConnector);
+            runConfig.save();
+            CustomKeywordRunConfigurationCollector.getInstance().addCustomKeywordRunConfiguration(runConfig);
 
-			MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Operation status",
-					"Operation has been executed successfully");
-		} catch (IOException | ExecutionException e) {
-			MessageDialog.openError(Display.getDefault().getActiveShell(), "Operation status",
-					"Operation has failed to execute due to " + e.getMessage());
-		}
-	}
+            MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Operation status",
+                    "Operation has been executed successfully");
+        } catch (IOException | ExecutionException e) {
+            MessageDialog.openError(Display.getDefault().getActiveShell(), "Operation status",
+                    "Operation has failed to execute due to " + e.getMessage());
+        }
+    }
 }

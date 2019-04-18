@@ -4,75 +4,75 @@ import java.util.List;
 
 public class CustomKeywordSettingPage {
 
-	private String name;
+    private String name;
 
-	private List<SettingPageComponent> components;
+    private List<SettingPageComponent> components;
 
-	public static class SettingPageComponent {
-		private String key;
+    public static class SettingPageComponent {
+        private String key;
 
-		private String type;
+        private String type;
 
-		private String label;
+        private String label;
 
-		private String defaultValue;
+        private String defaultValue;
 
-		private String implementationClassPath;
+        private String implementationClassPath;
 
-		public String getImplementationClassPath() {
-			return implementationClassPath;
-		}
+        public String getImplementationClassPath() {
+            return implementationClassPath;
+        }
 
-		public void setImplementationClassPath(String classPath) {
-			this.implementationClassPath = classPath;
-		}
+        public void setImplementationClassPath(String classPath) {
+            this.implementationClassPath = classPath;
+        }
 
-		public String getType() {
-			return type;
-		}
+        public String getType() {
+            return type;
+        }
 
-		public void setType(String type) {
-			this.type = type;
-		}
+        public void setType(String type) {
+            this.type = type;
+        }
 
-		public String getLabel() {
-			return label;
-		}
+        public String getLabel() {
+            return label;
+        }
 
-		public void setLabel(String label) {
-			this.label = label;
-		}
+        public void setLabel(String label) {
+            this.label = label;
+        }
 
-		public String getKey() {
-			return key;
-		}
+        public String getKey() {
+            return key;
+        }
 
-		public void setKey(String key) {
-			this.key = key;
-		}
+        public void setKey(String key) {
+            this.key = key;
+        }
 
-		public String getDefaultValue() {
-			return defaultValue;
-		}
+        public String getDefaultValue() {
+            return defaultValue;
+        }
 
-		public void setDefaultValue(String defaultValue) {
-			this.defaultValue = defaultValue;
-		}
-	}
+        public void setDefaultValue(String defaultValue) {
+            this.defaultValue = defaultValue;
+        }
+    }
 
-	public List<SettingPageComponent> getComponents() {
-		return components;
-	}
+    public List<SettingPageComponent> getComponents() {
+        return components;
+    }
 
-	public void setComponents(List<SettingPageComponent> components) {
-		this.components = components;
-	}
+    public void setComponents(List<SettingPageComponent> components) {
+        this.components = components;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 }

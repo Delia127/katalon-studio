@@ -40,148 +40,152 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
-	private final KeywordsManifest keywordsManifest;
+    private final KeywordsManifest keywordsManifest;
 
-	private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "generator" });
+    private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "generator" });
 
-	private Map<String, Pair<SettingPageComponent, Text>> txtComponentCollection = new HashMap<>();
+    private Map<String, Pair<SettingPageComponent, Text>> txtComponentCollection = new HashMap<>();
 
-	private ClassLoader classLoader;
+    private ClassLoader classLoader;
 
-	private IActionProvider actionProvider = ActionProviderFactory.getInstance().getActionProvider();
+    private IActionProvider actionProvider = ActionProviderFactory.getInstance().getActionProvider();
 
-	public CustomKeywordPluginPreferencePage(KeywordsManifest keywordsManifest) {
-		this.keywordsManifest = keywordsManifest;
-		ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-		try {
-			classLoader = GroovyUtil.getClassLoaderFromParent(projectEntity, BuiltinKeywords.class.getClassLoader());
-		} catch (MalformedURLException | CoreException e2) {
-			LoggerSingleton.logError(e2);
-		}
-	}
+    public CustomKeywordPluginPreferencePage(KeywordsManifest keywordsManifest) {
+        this.keywordsManifest = keywordsManifest;
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        try {
+            classLoader = GroovyUtil.getClassLoaderFromParent(projectEntity, BuiltinKeywords.class.getClassLoader());
+        } catch (MalformedURLException | CoreException e2) {
+            LoggerSingleton.logError(e2);
+        }
+    }
 
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite container = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.horizontalSpacing = 15;
-		container.setLayout(gridLayout);
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite container = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.horizontalSpacing = 15;
+        container.setLayout(gridLayout);
 
-		for (SettingPageComponent entry : keywordsManifest.getConfiguration().getSettingPage().getComponents()) {
-			String key = entry.getKey();
-			String type = entry.getType();
-			String label = entry.getLabel();
+        for (SettingPageComponent entry : keywordsManifest.getConfiguration().getSettingPage().getComponents()) {
+            String key = entry.getKey();
+            String type = entry.getType();
+            String label = entry.getLabel();
 
-			if (acceptedTypes.indexOf(type) == -1) {
-				continue;
-			}
+            if (acceptedTypes.indexOf(type) == -1) {
+                continue;
+            }
 
-			switch (type) {
-			case "text": {
-				Label lblComponentLabel = new Label(container, SWT.NONE);
-				lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-				lblComponentLabel.setText(label);
+            switch (type) {
+                case "text": {
+                    Label lblComponentLabel = new Label(container, SWT.NONE);
+                    lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+                    lblComponentLabel.setText(label);
 
-				Text txtComponentText = new Text(container, SWT.BORDER);
-				txtComponentText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+                    Text txtComponentText = new Text(container, SWT.BORDER);
+                    txtComponentText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-				txtComponentCollection.put(key, Pair.of(entry, txtComponentText));
-				break;
-			}
-			case "secret": {
-				Label lblComponentLabel = new Label(container, SWT.NONE);
-				lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-				lblComponentLabel.setText(label);
+                    txtComponentCollection.put(key, Pair.of(entry, txtComponentText));
+                    break;
+                }
+                case "secret": {
+                    Label lblComponentLabel = new Label(container, SWT.NONE);
+                    lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+                    lblComponentLabel.setText(label);
 
-				Text txtComponentSecret = new Text(container, SWT.BORDER);
-				txtComponentSecret.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-				txtComponentSecret.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
-				txtComponentCollection.put(key, Pair.of(entry, txtComponentSecret));
-				break;
-			}
-			}
-		}
+                    Text txtComponentSecret = new Text(container, SWT.BORDER);
+                    txtComponentSecret.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+                    txtComponentSecret.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
+                    txtComponentCollection.put(key, Pair.of(entry, txtComponentSecret));
+                    break;
+                }
+            }
+        }
 
-		keywordsManifest.getConfiguration().getSettingPage().getComponents().stream()
-				.filter(entry -> entry.getType().equals("generator")).forEach(entry -> {
-					Button btnOperationExecute = new Button(container, SWT.PUSH);
-					btnOperationExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
-					btnOperationExecute.setText(entry.getLabel());
-					btnOperationExecute.setData(entry.getImplementationClassPath());
-					reigsterListenerForOperationButton(btnOperationExecute);
-				});
+        keywordsManifest.getConfiguration()
+                .getSettingPage()
+                .getComponents()
+                .stream()
+                .filter(entry -> entry.getType().equals("generator"))
+                .forEach(entry -> {
+                    Button btnOperationExecute = new Button(container, SWT.PUSH);
+                    btnOperationExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
+                    btnOperationExecute.setText(entry.getLabel());
+                    btnOperationExecute.setData(entry.getImplementationClassPath());
+                    reigsterListenerForOperationButton(btnOperationExecute);
+                });
 
-		setInput();
+        setInput();
 
-		return container;
-	}
+        return container;
+    }
 
-	private void reigsterListenerForOperationButton(Button btnOperationExecute) {
-		btnOperationExecute.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (classLoader != null) {
-					String implementationClassPath = (String) btnOperationExecute.getData();
+    private void reigsterListenerForOperationButton(Button btnOperationExecute) {
+        btnOperationExecute.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (classLoader != null) {
+                    String implementationClassPath = (String) btnOperationExecute.getData();
 
-					try {
-						// Persist data fields first so that plug-ins can use
-						// them in their implementations
-						persistPluginDataFields();
-						Class<?> clazz = classLoader.loadClass(implementationClassPath);
-						Object pluginRuntimeInstance = clazz.newInstance();
-						if (pluginRuntimeInstance instanceof IPluginEventHandler) {
-							IPluginEventHandler pluginEventHandler = (IPluginEventHandler) pluginRuntimeInstance;
-							pluginEventHandler.handle(actionProvider, getSettingStore());
-						}
-					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
-						LoggerSingleton.logError(e1);
-					}
-				}
-			}
-		});
+                    try {
+                        // Persist data fields first so that plug-ins can use
+                        // them in their implementations
+                        persistPluginDataFields();
+                        Class<?> clazz = classLoader.loadClass(implementationClassPath);
+                        Object pluginRuntimeInstance = clazz.newInstance();
+                        if (pluginRuntimeInstance instanceof IPluginEventHandler) {
+                            IPluginEventHandler pluginEventHandler = (IPluginEventHandler) pluginRuntimeInstance;
+                            pluginEventHandler.handle(actionProvider, getSettingStore());
+                        }
+                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
+                        LoggerSingleton.logError(e1);
+                    }
+                }
+            }
+        });
 
-	}
+    }
 
-	private BundleSettingStore getSettingStore() {
-		return new BundleSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation(),
-				keywordsManifest.getConfiguration().getSettingId(), true);
-	}
+    private BundleSettingStore getSettingStore() {
+        return new BundleSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation(),
+                keywordsManifest.getConfiguration().getSettingId(), true);
+    }
 
-	private void setInput() {
-		BundleSettingStore settingStore = getSettingStore();
-		for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : txtComponentCollection.entrySet()) {
-			try {
-				String key = componentEntry.getKey();
-				String storedValue = settingStore.getString(key,
-						StringUtils.defaultString(componentEntry.getValue().getLeft().getDefaultValue()));
-				if (StringUtils.isEmpty(storedValue)) {
-					continue;
-				}
-				componentEntry.getValue().getRight().setText(storedValue);
-			} catch (IOException e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-	}
+    private void setInput() {
+        BundleSettingStore settingStore = getSettingStore();
+        for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : txtComponentCollection.entrySet()) {
+            try {
+                String key = componentEntry.getKey();
+                String storedValue = settingStore.getString(key,
+                        StringUtils.defaultString(componentEntry.getValue().getLeft().getDefaultValue()));
+                if (StringUtils.isEmpty(storedValue)) {
+                    continue;
+                }
+                componentEntry.getValue().getRight().setText(storedValue);
+            } catch (IOException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+    }
 
-	private void persistPluginDataFields() {
-		BundleSettingStore settingStore = getSettingStore();
-		for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : txtComponentCollection.entrySet()) {
-			try {
-				settingStore.setProperty(componentEntry.getKey(), componentEntry.getValue().getRight().getText());
-			} catch (IOException e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-	}
+    private void persistPluginDataFields() {
+        BundleSettingStore settingStore = getSettingStore();
+        for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : txtComponentCollection.entrySet()) {
+            try {
+                settingStore.setProperty(componentEntry.getKey(), componentEntry.getValue().getRight().getText());
+            } catch (IOException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+    }
 
-	@Override
-	public boolean performOk() {
-		if (!isControlCreated()) {
-			return true;
-		}
-		persistPluginDataFields();
-		return true;
-	}
+    @Override
+    public boolean performOk() {
+        if (!isControlCreated()) {
+            return true;
+        }
+        persistPluginDataFields();
+        return true;
+    }
 
 }
