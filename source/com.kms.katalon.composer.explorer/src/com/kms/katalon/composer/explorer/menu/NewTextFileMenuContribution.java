@@ -36,7 +36,7 @@ public class NewTextFileMenuContribution {
         }
 
         MHandledMenuItem newTextFileMenuItem = MenuFactory.createPopupMenuItem(
-                commandService.createCommand(NEW_TEXT_FILE_COMMAND_ID, null), "Text File",
+                commandService.createCommand(NEW_TEXT_FILE_COMMAND_ID, null), "File",
                 ConstantsHelper.getApplicationURI());
         if (newTextFileMenuItem != null) {
             menuItems.add(newTextFileMenuItem);
