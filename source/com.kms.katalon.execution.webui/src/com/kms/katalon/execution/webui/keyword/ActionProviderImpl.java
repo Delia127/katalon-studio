@@ -31,10 +31,10 @@ public class ActionProviderImpl implements IActionProvider {
 			CustomKeywordRunConfigurationCollector.getInstance().addCustomKeywordRunConfiguration(runConfig);
 
 			MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Operation status",
-					"Operation has been executed");
+					"Operation has been executed successfully");
 		} catch (IOException | ExecutionException e) {
 			MessageDialog.openError(Display.getDefault().getActiveShell(), "Operation status",
-					"Operation has failed due to " + e.getMessage());
+					"Operation has failed to execute due to " + e.getMessage());
 		}
 	}
 }
