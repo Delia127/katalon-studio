@@ -11,25 +11,27 @@ import com.kms.katalon.composer.testsuite.collection.view.TestSuiteCollectionVie
 
 public class TestSuiteCollectionComposerActivator implements BundleActivator {
 
-	@Override
-	public void start(BundleContext context) throws Exception {
+    @Override
+    public void start(BundleContext context) throws Exception {
         context.addServiceListener(new ServiceListener() {
 
             @Override
             public void serviceChanged(ServiceEvent event) {
-                if (context.getService(event.getServiceReference()) instanceof PlatformTestSuiteCollectionUIViewBuilder) {
+                if (context
+                        .getService(event.getServiceReference()) instanceof PlatformTestSuiteCollectionUIViewBuilder) {
                     ServiceReference<PlatformTestSuiteCollectionUIViewBuilder> serviceReference = context
                             .getServiceReference(PlatformTestSuiteCollectionUIViewBuilder.class);
-                    TestSuiteCollectionViewFactory.getInstance().setPlatformBuilder(context.getService(serviceReference));
+                    TestSuiteCollectionViewFactory.getInstance()
+                            .setPlatformBuilder(context.getService(serviceReference));
                     context.removeServiceListener(this);
                 }
             }
         });
-	}
+    }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		
-	}
-	
+    @Override
+    public void stop(BundleContext context) throws Exception {
+
+    }
+
 }

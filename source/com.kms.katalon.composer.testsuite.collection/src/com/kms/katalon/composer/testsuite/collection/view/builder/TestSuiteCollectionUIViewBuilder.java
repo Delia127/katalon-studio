@@ -8,10 +8,11 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 
 public interface TestSuiteCollectionUIViewBuilder {
-	String getName();
-	
-	boolean isEnabled(ProjectEntity project);
-	
-	AbstractTestSuiteCollectionUIDescriptionView getView(TestSuiteCollectionEntity testSuiteCollection, MPart mpart, MPart parentPart);
-	
+    String getName();
+
+    boolean isEnabled(ProjectEntity project);
+
+    AbstractTestSuiteCollectionUIDescriptionView getView(TestSuiteCollectionEntity testSuiteCollection, MPart mpart,
+            MPart parentPart);
+
 }
