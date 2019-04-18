@@ -14,6 +14,7 @@ import com.kms.katalon.dal.ISystemFileDataProvider;
 import com.kms.katalon.dal.ITestCaseDataProvider;
 import com.kms.katalon.dal.ITestListenerDataProvider;
 import com.kms.katalon.dal.ITestSuiteDataProvider;
+import com.kms.katalon.dal.IUserFileDataProvider;
 import com.kms.katalon.dal.IWebElementDataProvider;
 import com.kms.katalon.dal.TestSuiteCollectionDataProvider;
 import com.kms.katalon.entity.Entity;
@@ -61,4 +62,6 @@ public interface IDataProviderSetting {
     public ITestListenerDataProvider getTestListenerDataProvider();
     
     public ISystemFileDataProvider getSystemFileDataProvider();
+    
+    public IUserFileDataProvider getUserFileDataProvider();
 }
