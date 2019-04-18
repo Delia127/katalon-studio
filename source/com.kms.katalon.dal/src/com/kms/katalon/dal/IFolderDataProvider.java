@@ -57,4 +57,6 @@ public interface IFolderDataProvider {
     public FolderEntity saveFolder(FolderEntity folder) throws Exception;
 
     public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception;
+
+    public List<FolderEntity> getUserFolders(ProjectEntity project) throws DALException;
 }

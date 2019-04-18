@@ -18,6 +18,7 @@ import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.UserFileTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
@@ -79,14 +80,16 @@ public class NewFolderPopupMenuContribution {
                         || parentFolder.getFolderType() == FolderType.TESTSUITE
                         || parentFolder.getFolderType() == FolderType.DATAFILE
                         || parentFolder.getFolderType() == FolderType.WEBELEMENT
-                        || parentFolder.getFolderType() == FolderType.CHECKPOINT) {
+                        || parentFolder.getFolderType() == FolderType.CHECKPOINT
+                        || parentFolder.getFolderType() == FolderType.USER) {
                     return true;
                 }
             } else if (parentTreeEntity instanceof TestCaseTreeEntity || parentTreeEntity instanceof TestDataTreeEntity
                     || parentTreeEntity instanceof TestSuiteTreeEntity
                     || parentTreeEntity instanceof WebElementTreeEntity
                     || parentTreeEntity instanceof TestSuiteCollectionTreeEntity
-                    || parentTreeEntity instanceof CheckpointTreeEntity) {
+                    || parentTreeEntity instanceof CheckpointTreeEntity
+                    || parentTreeEntity instanceof UserFileTreeEntity) {
                 return true;
             }
         }
