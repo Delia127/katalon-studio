@@ -56,20 +56,20 @@ public class CustomExecutionSettingPage extends PreferencePageWithHelp {
     private ToolItem tltmRemoveProperty;
     private ToolItem tltmClearProperty;
 
-    public CustomExecutionSettingPage() {
-        customRunConfigurationList = new ArrayList<CustomRunConfiguration>();
-        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-        for (String customRunConfigurationId : RunConfigurationCollector.getInstance()
-                .getAllCustomRunConfigurationIds()) {
-            try {
-                customRunConfigurationList.add(new CustomRunConfiguration(projectDir, customRunConfigurationId));
-            } catch (IOException | ExecutionException e) {
-                LoggerSingleton.logError(e);
-            }
-        }
+	public CustomExecutionSettingPage() {
+		customRunConfigurationList = new ArrayList<CustomRunConfiguration>();
+		String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+		for (String customRunConfigurationId : RunConfigurationCollector.getInstance()
+				.getAllCustomRunConfigurationIds()) {
+			try {
+				customRunConfigurationList.add(new CustomRunConfiguration(projectDir, customRunConfigurationId));
+			} catch (IOException | ExecutionException e) {
+				LoggerSingleton.logError(e);
+			}
+		}
 
-        noDefaultAndApplyButton();
-    }
+		noDefaultAndApplyButton();
+	}
 
     @Override
     protected Control createContents(Composite parent) {

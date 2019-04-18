@@ -5,11 +5,11 @@ import java.util.Map;
 public class CustomProfile implements ICustomProfile {
 
 	private String driverType;
-	
+
 	private String name;
-	
+
 	private Map<String, Object> desiredCapabilities;
-	
+
 	@Override
 	public String getWebDriverType() {
 		return driverType;
@@ -19,11 +19,11 @@ public class CustomProfile implements ICustomProfile {
 	public Map<String, Object> getDesiredCapabilities() {
 		return desiredCapabilities;
 	}
-	
+
 	public void setDriverType(String driverType) {
 		this.driverType = driverType;
 	}
-	
+
 	public void setDesiredCapabilities(Map<String, Object> desiredCapabilities) {
 		this.desiredCapabilities = desiredCapabilities;
 	}
@@ -32,7 +32,7 @@ public class CustomProfile implements ICustomProfile {
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}

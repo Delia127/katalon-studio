@@ -3,76 +3,76 @@ package com.kms.katalon.custom.keyword;
 import java.util.List;
 
 public class CustomKeywordSettingPage {
-    
-    private String name;
 
-    private List<SettingPageComponent> components;
+	private String name;
 
-    public static class SettingPageComponent {        
-        private String key;
+	private List<SettingPageComponent> components;
 
-        private String type;
-        
-        private String label;
-        
-        private String defaultValue;
-        
-        private String implementationClassPath;
-        
-        public String getImplementationClassPath() {
-        	return implementationClassPath;
-        }
-        
-        public void setImplementationClassPath(String classPath) {
-        	this.implementationClassPath = classPath;
-        }
+	public static class SettingPageComponent {
+		private String key;
 
-        public String getType() {
-            return type;
-        }
+		private String type;
 
-        public void setType(String type) {
-            this.type = type;
-        }
+		private String label;
 
-        public String getLabel() {
-            return label;
-        }
+		private String defaultValue;
 
-        public void setLabel(String label) {
-            this.label = label;
-        }
+		private String implementationClassPath;
 
-        public String getKey() {
-            return key;
-        }
+		public String getImplementationClassPath() {
+			return implementationClassPath;
+		}
 
-        public void setKey(String key) {
-            this.key = key;
-        }
+		public void setImplementationClassPath(String classPath) {
+			this.implementationClassPath = classPath;
+		}
 
-        public String getDefaultValue() {
-            return defaultValue;
-        }
+		public String getType() {
+			return type;
+		}
 
-        public void setDefaultValue(String defaultValue) {
-            this.defaultValue = defaultValue;
-        }
-    }
+		public void setType(String type) {
+			this.type = type;
+		}
 
-    public List<SettingPageComponent> getComponents() {
-        return components;
-    }
+		public String getLabel() {
+			return label;
+		}
 
-    public void setComponents(List<SettingPageComponent> components) {
-        this.components = components;
-    }
+		public void setLabel(String label) {
+			this.label = label;
+		}
 
-    public String getName() {
-        return name;
-    }
+		public String getKey() {
+			return key;
+		}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+		public void setKey(String key) {
+			this.key = key;
+		}
+
+		public String getDefaultValue() {
+			return defaultValue;
+		}
+
+		public void setDefaultValue(String defaultValue) {
+			this.defaultValue = defaultValue;
+		}
+	}
+
+	public List<SettingPageComponent> getComponents() {
+		return components;
+	}
+
+	public void setComponents(List<SettingPageComponent> components) {
+		this.components = components;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

@@ -21,14 +21,13 @@ public class WebUiExecutionBundleActivator implements BundleActivator {
 		IEventBroker eventBroker = bundleEclipseContext.get(IEventBroker.class);
 
 		eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, new EventHandler() {
-            @Override
-            public void handleEvent(Event event) {
-            	IActionProvider customKeywordPluginActionProvider = ContextInjectionFactory
-            			.make(ActionProviderImpl.class, bundleEclipseContext);
-            	context.registerService(IActionProvider.class, customKeywordPluginActionProvider,
-                        null);
-            }
-        });
+			@Override
+			public void handleEvent(Event event) {
+				IActionProvider customKeywordPluginActionProvider = ContextInjectionFactory
+						.make(ActionProviderImpl.class, bundleEclipseContext);
+				context.registerService(IActionProvider.class, customKeywordPluginActionProvider, null);
+			}
+		});
 	}
 
 	@Override
