@@ -80,7 +80,9 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.fasterxml.woodstox.woodstox-core,
  stax2-api,
  org.eclipse.osgi.services,
- com.kms.katalon.ansiconsole
+ com.kms.katalon.ansiconsole,
+ org.eclipse.core.filesystem,
+ com.kms.katalon.netlightbody
 Export-Package: com.kms.katalon.composer.webservice.constants,
  com.kms.katalon.composer.webservice.util,
  com.kms.katalon.composer.webservice.editor,

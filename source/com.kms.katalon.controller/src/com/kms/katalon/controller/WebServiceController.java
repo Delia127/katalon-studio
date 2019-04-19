@@ -1,5 +1,7 @@
 package com.kms.katalon.controller;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +21,8 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
+import com.kms.katalon.core.util.BrowserMobProxyManager;
+import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.webservice.common.ServiceRequestFactory;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -80,6 +84,10 @@ public class WebServiceController extends EntityController {
         }
         
         requestObject.setVariables(variables);
+        
+        boolean followRedirects = entity.isFollowRedirects();
+        requestObject.setFollowRedirects(followRedirects);
+        
         return requestObject;
     }
 

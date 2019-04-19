@@ -16,7 +16,7 @@ using System.Diagnostics;
 namespace RecorderExtension
 {
     [ComVisible(true),
-     ClassInterface(ClassInterfaceType.None), 
+     ClassInterface(ClassInterfaceType.None),
      ProgId("KMS.qAutomate.RecorderBHO.Recorder"),
      Guid("FEA8CA38-7979-4F6A-83E4-2949EDEA96EF"),
      ComDefaultInterface(typeof(IHttpRequestExtension))]
@@ -31,6 +31,7 @@ namespace RecorderExtension
         #region Handle Document Events
         private void OnDocumentComplete(object pDisp, ref object URL)
         {
+            AddHttpRequestExtension();
             if (pDisp == this.site)
             {
                 return;
@@ -57,6 +58,7 @@ namespace RecorderExtension
 
         private void OnDownloadComplete()
         {
+            AddHttpRequestExtension();
             IHTMLDocument2 doc = browser.Document as IHTMLDocument2;
             if (doc == null || doc.parentWindow == null)
             {
@@ -85,6 +87,7 @@ namespace RecorderExtension
 
         public void OnLoad(IHTMLEventObj e)
         {
+            AddHttpRequestExtension();
             try
             {
                 RunScriptOnDocument(browser.Document as IHTMLDocument2);
@@ -95,31 +98,40 @@ namespace RecorderExtension
             }
         }
 
+        private void OnNavigateComplete(object pDisp, ref object URL)
+        {
+            AddHttpRequestExtension();
+        }
+
         private void RunScriptOnDocument(IHTMLDocument2 document)
         {
             IHTMLWindow2 window = document.parentWindow;
             RunScriptOnWindow(window, this);
         }
 
-        private void RunScriptOnWindow(IHTMLWindow2 window, IHttpRequestExtension extensionClass)
+        private void AddHttpRequestExtension()
         {
-            IExpando windowEx = (IExpando)window;
-            PropertyInfo propertyInfo = null;
             try
             {
-                propertyInfo = windowEx.GetProperty("httpRequestExtension", System.Reflection.BindingFlags.IgnoreCase);
+                HTMLDocument document = (HTMLDocument)browser.Document;
+                dynamic window = document.parentWindow;
+
+                IExpando ScriptObject = (IExpando)window;
+                PropertyInfo propertyInfo = ScriptObject.GetProperty("httpRequestExtension", BindingFlags.Default);
                 if (propertyInfo == null)
                 {
-                    propertyInfo = windowEx.AddProperty("httpRequestExtension");
+                    propertyInfo = ScriptObject.AddProperty("httpRequestExtension");
                 }
+                propertyInfo.SetValue(ScriptObject, this, null);
             }
-            catch (AmbiguousMatchException e)
+            catch (Exception ex)
             {
-                // Ambiguous match error, ignored
-                propertyInfo = windowEx.AddProperty("httpRequestExtension");
+                logError(ex);
             }
-            propertyInfo.SetValue(windowEx, extensionClass, null);
+        }
 
+        private void RunScriptOnWindow(IHTMLWindow2 window, IHttpRequestExtension extensionClass)
+        {
             window.execScript(Properties.Resources.jquery_1_11_2_min);
             window.execScript(Properties.Resources.json3_min);
             window.execScript("windowId = '" + windowHandle + "';");
@@ -195,7 +207,8 @@ namespace RecorderExtension
                     break;
                 };
             }
-            if (serverSettingFile != null) {
+            if (serverSettingFile != null)
+            {
                 File.Delete(serverSettingFile);
             }
             return null;
@@ -230,7 +243,7 @@ namespace RecorderExtension
             {
                 var serviceProv = (IServiceProvider)site;
                 IntPtr intPtr;
-                Guid guidIWebBrowserApp = Marshal.GenerateGuidForType(typeof(IWebBrowserApp)); 
+                Guid guidIWebBrowserApp = Marshal.GenerateGuidForType(typeof(IWebBrowserApp));
                 Guid guidIWebBrowser2 = Marshal.GenerateGuidForType(typeof(IWebBrowser2));
                 serviceProv.QueryService(ref guidIWebBrowserApp, ref guidIWebBrowser2, out intPtr);
                 object result = Marshal.GetObjectForIUnknown(intPtr);
@@ -271,6 +284,8 @@ namespace RecorderExtension
                 new DWebBrowserEvents2_DocumentCompleteEventHandler(this.OnDocumentComplete);
             ((DWebBrowserEvents2_Event)browser).DownloadComplete -=
                 new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDownloadComplete);
+            ((DWebBrowserEvents2_Event)browser).NavigateComplete2 -=
+                new DWebBrowserEvents2_NavigateComplete2EventHandler(this.OnNavigateComplete);
         }
 
         private void Setup()
@@ -279,6 +294,8 @@ namespace RecorderExtension
                 new DWebBrowserEvents2_DocumentCompleteEventHandler(this.OnDocumentComplete);
             ((DWebBrowserEvents2_Event)browser).DownloadComplete +=
                 new DWebBrowserEvents2_DownloadCompleteEventHandler(this.OnDownloadComplete);
+            ((DWebBrowserEvents2_Event)browser).NavigateComplete2 +=
+                new DWebBrowserEvents2_NavigateComplete2EventHandler(this.OnNavigateComplete);
         }
 
         int IObjectWithSite.GetSite(ref Guid guid, out IntPtr ppvSite)

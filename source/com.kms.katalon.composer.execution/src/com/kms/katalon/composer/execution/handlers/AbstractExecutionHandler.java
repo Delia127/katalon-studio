@@ -138,7 +138,7 @@ public abstract class AbstractExecutionHandler {
                     }
                     if (partElementId.startsWith(IdConstants.COMPABILITY_EDITOR_ID)) {
                         CompatibilityEditor editor = (CompatibilityEditor) part.getObject();
-                        if (IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
+                        if (editor != null && IdConstants.CUCUMBER_EDITOR_ID.equals(editor.getReference().getId())) {
                             return true;
                         }
                     }

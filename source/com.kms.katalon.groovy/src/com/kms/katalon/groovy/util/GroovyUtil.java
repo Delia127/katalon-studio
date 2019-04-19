@@ -189,6 +189,7 @@ public class GroovyUtil {
     public static void initGroovyProjectClassPath(ProjectEntity projectEntity, List<File> pluginFiles, boolean isNew,
             IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         IProject groovyProject = getGroovyProject(projectEntity);
+        groovyProject.clearHistory(new NullProgressMonitor());
         groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
 
         IFolder listenerSourceFolder = groovyProject.getFolder("Test Listeners");
