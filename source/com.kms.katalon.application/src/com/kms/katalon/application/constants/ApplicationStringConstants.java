@@ -9,10 +9,6 @@ public class ApplicationStringConstants extends GlobalStringConstants {
 
     public static final String ARG_PASSWORD = "password";
     
-    public static final String STORE_USERNAME = "kstoreUsername";
-    
-    public static final String STORE_PASSWORD = "kstorePassword";
-    
     public static final String STORE_TOKEN = "kstoreToken";
 
     public static final String REQUEST_CODE_PROP_NAME = "activatedRequestCode";
