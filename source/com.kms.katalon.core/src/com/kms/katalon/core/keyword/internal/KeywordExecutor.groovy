@@ -128,7 +128,7 @@ public class KeywordExecutor {
             }
 
             Action act = (Action) cls.getAnnotation(Action.class)
-            if (act == null || !act.value().equals(keyword)) {
+            if (act == null || !act.value().equalsIgnoreCase(keyword)) {
                 continue
             }
 
