@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.plugin.models.KStoreToken;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 

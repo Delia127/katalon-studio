@@ -210,7 +210,7 @@ public class KStoreRestClient {
     
     private KStoreToken getToken() throws IOException, KStoreClientException {
         KStoreToken token = KStoreTokenService.getInstance().getToken();
-        if (KStoreTokenService.getInstance().isTokenExpired(token)) {
+        if (token == null || KStoreTokenService.getInstance().isTokenExpired(token)) {
             AuthenticationResult authenticateResult = authenticate();
             if (authenticateResult.isAuthenticated()) {
                 String tokenString = authenticateResult.getToken();

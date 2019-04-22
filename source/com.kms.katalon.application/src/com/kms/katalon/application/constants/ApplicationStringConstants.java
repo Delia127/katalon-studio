@@ -8,10 +8,18 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     public static final String ARG_EMAIL = "email";
 
     public static final String ARG_PASSWORD = "password";
+    
+    public static final String STORE_USERNAME = "kstoreUsername";
+    
+    public static final String STORE_PASSWORD = "kstorePassword";
+    
+    public static final String STORE_TOKEN = "kstoreToken";
 
     public static final String REQUEST_CODE_PROP_NAME = "activatedRequestCode";
 
     public static final String UPDATED_VERSION_PROP_NAME = "updatedVersion";
+    
+    public static final String ARG_ACTIVATION_CODE = "activationCode";
 
     // Proxy Configuration
     public static final String PROXY_OPTION = "proxy.option";

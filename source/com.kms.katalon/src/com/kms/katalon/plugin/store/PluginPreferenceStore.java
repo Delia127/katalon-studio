@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreToken;
@@ -59,7 +61,7 @@ public class PluginPreferenceStore {
     }
     
     public KStoreToken getToken() {
-        String tokenJson = store.getString(KATALON_STORE_TOKEN);
+        String tokenJson = ApplicationInfo.getAppProperty(ApplicationStringConstants.STORE_TOKEN);
         if (StringUtils.isBlank(tokenJson)) {
             return null;
         }
@@ -67,8 +69,7 @@ public class PluginPreferenceStore {
     }
     
     public void setToken(KStoreToken token) throws IOException {
-        store.setValue(KATALON_STORE_TOKEN, JsonUtil.toJson(token));
-        store.save();
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, JsonUtil.toJson(token), true);
     }
     
     public boolean hasReloadedPluginsBefore() {
