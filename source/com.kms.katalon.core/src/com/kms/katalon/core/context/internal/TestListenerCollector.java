@@ -11,8 +11,10 @@ import java.util.Map;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.kms.katalon.core.annotation.AfterTestCase;
+import com.kms.katalon.core.annotation.AfterTestExecution;
 import com.kms.katalon.core.annotation.AfterTestSuite;
 import com.kms.katalon.core.annotation.BeforeTestCase;
+import com.kms.katalon.core.annotation.BeforeTestExecution;
 import com.kms.katalon.core.annotation.BeforeTestSuite;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.main.TestCaseMain;
@@ -28,6 +30,9 @@ public class TestListenerCollector implements ExecutionListenerEventHandler {
         LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.AFTER_TEST_SUITE, AfterTestSuite.class.getName());
         LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.BEFORE_TEST_CASE, BeforeTestCase.class.getName());
         LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.AFTER_TEST_CASE, AfterTestCase.class.getName());
+        LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.BEFORE_TEST_EXECUTION,
+                BeforeTestExecution.class.getName());
+        LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.AFTER_TEST_EXECUTION, AfterTestExecution.class.getName());
     }
 
     private String sourceFolder;
@@ -49,29 +54,27 @@ public class TestListenerCollector implements ExecutionListenerEventHandler {
 
         try {
             Files.walk(testListenerFolder.toPath())
-                .filter(p -> p.toString().endsWith(".groovy"))
-                .map(p -> p.toAbsolutePath().toFile())
-                .forEach(file -> {
-                    try {
-                        Class<?> scriptClazz = TestCaseMain.getScriptEngine()
-                            .getExecutingScriptClassLoader()
-                            .parseClass(file);
-                        TestHooker testHooker = new TestHooker(scriptClazz);
-                        testHookers.add(testHooker);
-                    } catch (CompilationFailedException | ClassNotFoundException | IOException e) {
-                        System.err.println(ExceptionsUtil.getMessageForThrowable(e));
-                    }
-                });
+                    .filter(p -> p.toString().endsWith(".groovy"))
+                    .map(p -> p.toAbsolutePath().toFile())
+                    .forEach(file -> {
+                        try {
+                            Class<?> scriptClazz = TestCaseMain.getScriptEngine()
+                                    .getExecutingScriptClassLoader()
+                                    .parseClass(file);
+                            TestHooker testHooker = new TestHooker(scriptClazz);
+                            testHookers.add(testHooker);
+                        } catch (CompilationFailedException | ClassNotFoundException | IOException e) {
+                            System.err.println(ExceptionsUtil.getMessageForThrowable(e));
+                        }
+                    });
         } catch (IOException ignored) {}
     }
-    
+
     private void collectPluginTestListeners() {
         List<String> listeners = RunConfiguration.getPluginTestListeners();
         try {
             for (String listener : listeners) {
-                Class<?> clazz = TestCaseMain.getScriptEngine()
-                    .getExecutingScriptClassLoader()
-                    .loadClass(listener);
+                Class<?> clazz = TestCaseMain.getScriptEngine().getExecutingScriptClassLoader().loadClass(listener);
                 TestHooker testHooker = new TestHooker(clazz);
                 testHookers.add(testHooker);
             }

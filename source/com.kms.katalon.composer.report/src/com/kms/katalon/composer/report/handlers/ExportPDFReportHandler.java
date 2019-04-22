@@ -3,10 +3,12 @@ package com.kms.katalon.composer.report.handlers;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLClassLoader;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -22,12 +24,17 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
+import com.kms.katalon.composer.report.platform.ExportReportProviderPlugin;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.jasper.pdf.TestSuitePdfGenerator;
-import com.kms.katalon.jasper.pdf.exception.JasperReportException;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 
 public class ExportPDFReportHandler {
     @Inject
@@ -60,8 +67,8 @@ public class ExportPDFReportHandler {
                     }
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    MultiStatusErrorDialog.showErrorDialog(e, "Unable to export pdf report ("
-                            + e.getClass().getSimpleName() + ")", e.getMessage());
+                    MultiStatusErrorDialog.showErrorDialog(e,
+                            "Unable to export pdf report (" + e.getClass().getSimpleName() + ")", e.getMessage());
                 }
             }
         }
@@ -76,19 +83,37 @@ public class ExportPDFReportHandler {
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 try {
                     monitor.beginTask("Exporting report to PDF...", IProgressMonitor.UNKNOWN);
-                    TestSuiteLogRecord suiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(
-                            reportEntity);
-                    TestSuitePdfGenerator generator = new TestSuitePdfGenerator(suiteLogRecord);
-                    File exportedFile = generator.exportToPDF(
-                            new File(exportDirectory, FilenameUtils.getBaseName(reportEntity.getDisplayName())
-                                    + ReportEntity.EXTENSION_PDF_REPORT).getAbsolutePath());
+                    TestSuiteLogRecord suiteLogRecord = LogRecordLookup.getInstance()
+                            .getTestSuiteLogRecord(reportEntity);
+                    File exportedFile = new File(exportDirectory,
+                            FilenameUtils.getBaseName(reportEntity.getDisplayName())
+                                    + ReportEntity.EXTENSION_PDF_REPORT);
+
+                    URLClassLoader projectClassLoader = ProjectController.getInstance()
+                            .getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
+
+                    Object reportFormatType = projectClassLoader.loadClass(ReportFormatType.class.getName())
+                            .getMethod("valueOf", String.class)
+                            .invoke(null, "PDF");
+
+                    Binding binding = new Binding();
+                    ExportReportProviderPlugin exportReportProviderPlugin = ReportComposerIntegrationFactory
+                            .getInstance().getExportReportPluginProviders().get(0);
+                    binding.setVariable("exportProvider", exportReportProviderPlugin.getProvider());
+                    binding.setVariable("fileLocation", exportedFile);
+                    binding.setVariable("reportId", reportEntity.getId());
+                    binding.setVariable("formatType", reportFormatType);
+                    GroovyShell groovyShell = new GroovyShell(projectClassLoader, binding);
+                    groovyShell.evaluate("exportProvider.exportTestSuite(fileLocation, reportId, formatType)");
                     Program.launch(exportedFile.toURI().toString());
-                } catch (final JasperReportException | IOException e) {
+                } catch (final IOException | CoreException | IllegalArgumentException
+                        | ReflectiveOperationException e) {
                     sync.syncExec(new Runnable() {
                         @Override
                         public void run() {
-                            MultiStatusErrorDialog.showErrorDialog(e, "Unable to export pdf report ("
-                                    + e.getClass().getSimpleName() + ")", e.getMessage());
+                            MultiStatusErrorDialog.showErrorDialog(e,
+                                    "Unable to export pdf report (" + e.getClass().getSimpleName() + ")",
+                                    e.getMessage());
                             LoggerSingleton.logError(e);
                         }
                     });

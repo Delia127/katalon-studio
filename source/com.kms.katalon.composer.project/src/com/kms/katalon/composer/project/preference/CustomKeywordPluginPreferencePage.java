@@ -43,9 +43,9 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
     private final KeywordsManifest keywordsManifest;
 
-    private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "button" });
+    private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "label", "checkbox", "button" });
 
-    private Map<String, Pair<SettingPageComponent, Text>> txtComponentCollection = new HashMap<>();
+    private Map<String, Pair<SettingPageComponent, Control>> componentCollection = new HashMap<>();
 
     private ClassLoader classLoader;
 
@@ -83,10 +83,10 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                     lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
                     lblComponentLabel.setText(label);
 
-                    Text txtComponentText = new Text(container, SWT.BORDER);
-                    txtComponentText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+                    Text txtComponentTextEntry = new Text(container, SWT.BORDER);
+                    txtComponentTextEntry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-                    txtComponentCollection.put(key, Pair.of(entry, txtComponentText));
+                    componentCollection.put(key, Pair.of(entry, txtComponentTextEntry));
                     break;
                 }
                 case "secret": {
@@ -94,10 +94,24 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                     lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
                     lblComponentLabel.setText(label);
 
-                    Text txtComponentSecret = new Text(container, SWT.BORDER);
-                    txtComponentSecret.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-                    txtComponentSecret.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
-                    txtComponentCollection.put(key, Pair.of(entry, txtComponentSecret));
+                    Text txtComponentSecretEntry = new Text(container, SWT.BORDER);
+                    txtComponentSecretEntry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+                    txtComponentSecretEntry.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
+                    componentCollection.put(key, Pair.of(entry, txtComponentSecretEntry));
+                    break;
+                }
+                case "checkbox": {
+                    Button chckComponentCheckboxEntry = new Button(container, SWT.CHECK);
+                    chckComponentCheckboxEntry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+                    chckComponentCheckboxEntry.setText(label);
+                    componentCollection.put(key, Pair.of(entry, chckComponentCheckboxEntry));
+                    break;
+                }
+                case "label": {
+                    Label lblComponentLabelEntry = new Label(container, SWT.NONE);
+                    lblComponentLabelEntry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+                    lblComponentLabelEntry.setText(label);
+                    componentCollection.put(key, Pair.of(entry, lblComponentLabelEntry));
                     break;
                 }
             }
@@ -153,8 +167,13 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
     protected Map<String, Object> collectDataFieldsWithoutSaving() {
         Map<String, Object> dataFields = new HashMap<>();
-        for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : txtComponentCollection.entrySet()) {
-            dataFields.put(componentEntry.getKey(), componentEntry.getValue().getRight().getText());
+        for (Entry<String, Pair<SettingPageComponent, Control>> componentEntry : componentCollection.entrySet()) {
+            Control control = componentEntry.getValue().getRight();
+            if(control instanceof Text){
+                dataFields.put(componentEntry.getKey(), ((Text) control).getText());
+            } else if(control instanceof Button) {
+                dataFields.put(componentEntry.getKey(), ((Button) control).getSelection());
+            }
         }
         return dataFields;
     }
@@ -166,15 +185,26 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
     private void setInput() {
         BundleSettingStore settingStore = getSettingStore();
-        for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : txtComponentCollection.entrySet()) {
+        for (Entry<String, Pair<SettingPageComponent, Control>> componentEntry : componentCollection.entrySet()) {
             try {
                 String key = componentEntry.getKey();
-                String storedValue = settingStore.getString(key,
-                        StringUtils.defaultString(componentEntry.getValue().getLeft().getDefaultValue()));
-                if (StringUtils.isEmpty(storedValue)) {
-                    continue;
+                Control control = componentEntry.getValue().getRight();
+
+                String defaultString = StringUtils.defaultString(componentEntry.getValue().getLeft().getDefaultValue());
+                if (control instanceof Text) {
+                    String storedValue = settingStore.getString(key, defaultString);
+                    if (StringUtils.isEmpty(storedValue)) {
+                        continue;
+                    }
+                    ((Text) control).setText(storedValue);
                 }
-                componentEntry.getValue().getRight().setText(storedValue);
+                if (control instanceof Button) {
+                    if ((control.getStyle() & SWT.CHECK) != 0) {
+                        Boolean storedValue = settingStore.getBoolean(key,
+                                Boolean.parseBoolean(defaultString));
+                        ((Button) control).setSelection(storedValue);
+                    }
+                }
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
             }
@@ -183,9 +213,17 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
     private void persistPluginDataFields() {
         BundleSettingStore settingStore = getSettingStore();
-        for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : txtComponentCollection.entrySet()) {
+        for (Entry<String, Pair<SettingPageComponent, Control>> componentEntry : componentCollection.entrySet()) {
             try {
-                settingStore.setProperty(componentEntry.getKey(), componentEntry.getValue().getRight().getText());
+                Control control = componentEntry.getValue().getRight();
+                if (control instanceof Text) {
+                    settingStore.setProperty(componentEntry.getKey(), ((Text) control).getText());
+                }
+                if (control instanceof Button) {
+                    if ((control.getStyle() & SWT.CHECK) != 0) {
+                        settingStore.setProperty(componentEntry.getKey(), ((Button) control).getSelection());
+                    }
+                }
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
             }

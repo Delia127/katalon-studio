@@ -144,6 +144,8 @@ public class CustomKeywordParser {
                     }
                 } catch (Exception e) {
                     LogUtil.printAndLogError(e);
+                } catch (NoClassDefFoundError e) {
+                    LogUtil.printAndLogError(e);
                 } finally {
                     jar.close();
                 }

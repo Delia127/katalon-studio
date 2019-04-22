@@ -851,7 +851,7 @@ public class GroovyUtil {
         return groovyClassLoader;
     }
 
-    public static URLClassLoader getClassLoaderFromParent(IJavaProject project, ClassLoader parent,
+    private static URLClassLoader getProjectClassLoader(IJavaProject project, ClassLoader parent,
             String[] classPathEntries) throws MalformedURLException {
         GroovyClassLoader groovyClassLoader = new GroovyClassLoader(parent);
         for (int i = 0; i < classPathEntries.length; i++) {
@@ -994,11 +994,17 @@ public class GroovyUtil {
         IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
         return GroovyUtil.getProjectClasLoader(project, JavaRuntime.computeDefaultRuntimeClassPath(project));
     }
+    
+    public static URLClassLoader getProjectClassLoader(ProjectEntity projectEntity, ClassLoader parent)
+            throws MalformedURLException, CoreException {
+        IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
+        return GroovyUtil.getProjectClassLoader(project, parent, JavaRuntime.computeDefaultRuntimeClassPath(project));
+    }
 
     public static URLClassLoader getClassLoaderFromParent(ProjectEntity projectEntity, ClassLoader parent)
             throws MalformedURLException, CoreException {
         IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
-        return GroovyUtil.getClassLoaderFromParent(project, parent,
+        return GroovyUtil.getProjectClassLoader(project, parent,
                 JavaRuntime.computeDefaultRuntimeClassPath(project));
     }
 

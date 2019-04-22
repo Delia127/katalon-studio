@@ -47,6 +47,7 @@ import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 import com.kms.katalon.plugin.util.PluginFactory;
 import com.kms.katalon.plugin.util.PluginHelper;
+import com.kms.katalon.plugin.util.PluginSettings;
 import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
@@ -176,7 +177,7 @@ public class PluginService {
                     PluginFactory.getInstance().addPlugin(plugin);
                 } catch (BundleException e) {
                     LogService.getInstance().logError(e);
-                    File pluginRepoDir = getPluginRepoDir();
+                    File pluginRepoDir = PluginSettings.getPluginRepoDir();
                     if (pluginRepoDir.exists()) {
                         pluginRepoDir.delete();
                     }
@@ -375,14 +376,10 @@ public class PluginService {
     }
 
     private File getRepoDownloadDir() {
-        return new File(getPluginRepoDir(), "download");
+        return new File(PluginSettings.getPluginRepoDir(), "download");
     }
 
     private File getRepoInstallDir() {
-        return new File(getPluginRepoDir(), "install");
-    }
-
-    private File getPluginRepoDir() {
-        return new File(GlobalStringConstants.APP_USER_DIR_LOCATION, "plugin");
+        return new File(PluginSettings.getPluginRepoDir(), "install");
     }
 }

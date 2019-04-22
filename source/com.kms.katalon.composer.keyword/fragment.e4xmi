@@ -14,6 +14,7 @@
     <elements xsi:type="commands:Command" xmi:id="_YagWMGR_Eeic6ZTVd_CcGw" elementId="com.kms.katalon.composer.keyword.command.exportFolder" commandName="ExportFolder" description="Export Folder"/>
     <elements xsi:type="commands:Command" xmi:id="_A_JQoKa6Eei4YowM8jp05Q" elementId="com.kms.katalon.composer.keyword.command.empty" commandName="Empty"/>
     <elements xsi:type="commands:Command" xmi:id="_JNV-sKm7EeizGOxpUJE6_A" elementId="com.kms.katalon.composer.keyword.command.addFolder" commandName="New Folder"/>
+    <elements xsi:type="commands:Command" xmi:id="_-LyA0GD4EemTu55XJ4w4QQ" elementId="com.kms.katalon.composer.keyword.command.customKeywordPlugin" commandName="Custom Keyword Plugin"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_5zvkkD-1EeSqW-o8jtXO1g" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_5zvkkT-1EeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.keyword.handler.addkeyword" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.NewKeywordHandler" command="_2KeX0T-1EeSqW-o8jtXO1g"/>
@@ -25,6 +26,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_d7D0sGR_Eeic6ZTVd_CcGw" elementId="com.kms.katalon.composer.keyword.handler.exportFolder" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.ExportFolderHandler" command="_YagWMGR_Eeic6ZTVd_CcGw"/>
     <elements xsi:type="commands:Handler" xmi:id="_JRZ2YJq0EeiUoqydjVCwsw" elementId="com.kms.katalon.composer.keyword.handler.addStepDefinition" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.NewStepDefinitionHandler" command="_M_6k8JqzEeiUoqydjVCwsw"/>
     <elements xsi:type="commands:Handler" xmi:id="_dIgsoKm7EeizGOxpUJE6_A" elementId="com.kms.katalon.composer.keyword.handler.newFolder" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.NewFolderHandler" command="_JNV-sKm7EeizGOxpUJE6_A"/>
+    <elements xsi:type="commands:Handler" xmi:id="_JgaWwGD5EemTu55XJ4w4QQ" elementId="com.kms.katalon.composer.keyword.handler.customKeywordPlugin" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.OpenCustomKeywordPluginPageHandler" command="_-LyA0GD4EemTu55XJ4w4QQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__11C0D-1EeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="index:7">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_vMV08EIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.menu.submenu.new.package" label="Package" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/package_16.png" tooltip="" command="_ojWuwEIOEeSPr8gi-fpUXw"/>
@@ -77,5 +79,8 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_CqX3YKmvEeizGOxpUJE6_A" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_IPoPsKmvEeizGOxpUJE6_A" elementId="com.kms.katalon.composer.keyword.dynamicmenucontribution.newFolder" label="Folder" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.NewFolderPopupMenuContribution"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_JolYIGD1EemTu55XJ4w4QQ" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="index:0">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_dHx7wGD1EemTu55XJ4w4QQ" elementId="com.kms.katalon.composer.keyword.dynamicmenucontribution.0" label="Custom Keyword Plugin" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.CustomKeywordPluginMenuContribution"/>
   </fragments>
 </fragment:ModelFragments>

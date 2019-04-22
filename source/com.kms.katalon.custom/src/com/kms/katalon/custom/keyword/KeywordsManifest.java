@@ -14,6 +14,8 @@ public class KeywordsManifest {
     private List<String> listeners = new ArrayList<>();
 
     private CustomKeywordConfiguration configuration;
+    
+    private CustomReportConfiguration report;
 
     public List<String> getKeywords() {
         return keywords;
@@ -53,5 +55,13 @@ public class KeywordsManifest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public CustomReportConfiguration getReport() {
+        return report;
+    }
+
+    public void setReport(CustomReportConfiguration report) {
+        this.report = report;
     }
 }
