@@ -40,7 +40,9 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.kms.katalon.util,
  com.kms.katalon.composer.integration.analytics,
  com.kms.katalon.tracking,
- com.katalon.platform
+ com.katalon.platform,
+ com.kms.katalon.groovy;bundle-version="1.0.0",
+ org.codehaus.groovy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.application.constants,
  com.kms.katalon.application.utils,

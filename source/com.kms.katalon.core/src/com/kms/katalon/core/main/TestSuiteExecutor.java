@@ -74,6 +74,8 @@ public class TestSuiteExecutor {
     }
 
     public void execute(Map<String, String> suiteProperties, List<TestCaseBinding> testCaseBindings) {
+        eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_EXECUTION, new Object[0]);
+
         logger.startSuite(testSuiteId, suiteProperties);
 
         eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_SUITE, new Object[] { testSuiteContext });
@@ -93,6 +95,8 @@ public class TestSuiteExecutor {
         }
 
         logger.endSuite(testSuiteId, Collections.emptyMap());
+
+        eventManger.publicEvent(ExecutionListenerEvent.AFTER_TEST_EXECUTION, new Object[0]);
     }
 
     private void accessTestSuiteMainPhase(List<TestCaseBinding> testCaseBindings) {

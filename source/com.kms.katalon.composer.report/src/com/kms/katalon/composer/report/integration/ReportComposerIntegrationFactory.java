@@ -1,27 +1,30 @@
 package com.kms.katalon.composer.report.integration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
+import com.kms.katalon.composer.report.platform.ExportReportProviderPlugin;
 import com.kms.katalon.composer.report.platform.PlatformReportIntegrationViewBuilder;
 
 public class ReportComposerIntegrationFactory {
     private static ReportComposerIntegrationFactory _instance;
 
-    private Map<String, ReportTestCaseIntegrationViewBuilder> testCaseIntegrationViewMap;
-
     private PlatformReportIntegrationViewBuilder platformViewerBuilder;
+
+    private Map<String, ReportTestCaseIntegrationViewBuilder> testCaseIntegrationViewMap = new LinkedHashMap<>();
+
+    private List<ExportReportProviderPlugin> exportReportPluginProviders = new ArrayList<>();
 
     public Map<String, ReportTestCaseIntegrationViewBuilder> getIntegrationViewMap() {
         return testCaseIntegrationViewMap;
     }
 
     private ReportComposerIntegrationFactory() {
-        testCaseIntegrationViewMap = new LinkedHashMap<String, ReportTestCaseIntegrationViewBuilder>();
     }
 
     public static ReportComposerIntegrationFactory getInstance() {
@@ -52,5 +55,21 @@ public class ReportComposerIntegrationFactory {
 
     public void addPlatformViewerBuilder(PlatformReportIntegrationViewBuilder platformViewerBuilder) {
         this.platformViewerBuilder = platformViewerBuilder;
+    }
+
+    public void addExportReportProvider(ExportReportProviderPlugin exportReportProviderPlugin) {
+        this.exportReportPluginProviders.add(exportReportProviderPlugin);
+    }
+    
+    public void onProjectChanged() {
+        this.exportReportPluginProviders.clear();
+    }
+
+    public List<ExportReportProviderPlugin> getExportReportPluginProviders() {
+        return Collections.unmodifiableList(exportReportPluginProviders);
+    }
+
+    public void setExportReportPluginProviders(List<ExportReportProviderPlugin> exportReportPluginProviders) {
+        this.exportReportPluginProviders = exportReportPluginProviders;
     }
 }
