@@ -205,15 +205,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Katalon Recorder Extension For IE"
-        "ProductCode" = "8:{F031A489-E8E8-48B0-9A38-A5651560632C}"
-        "PackageCode" = "8:{DCAFF44A-2464-4CFD-AD14-C39997A1855B}"
+        "ProductCode" = "8:{207B92C1-1E7D-460D-99D9-637B6817AD18}"
+        "PackageCode" = "8:{A8C31D9D-2F49-4B33-8CA5-34BDC389E423}"
         "UpgradeCode" = "8:{2A29C11F-5689-4928-9A18-8410FA0D6559}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.1.0"
         "Manufacturer" = "8:KMS"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -755,7 +755,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7076F58604EE494D9E68B17DB30C62C1"
             {
-            "SourcePath" = "8:..\\RecorderExtension\\obj\\Debug\\RecorderExtension.dll"
+            "SourcePath" = "8:..\\RecorderExtension\\obj\\Release\\RecorderExtension.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CE34C82D187D4C9FAD4728D75841849B"
@@ -783,7 +783,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_74D7AD9E26954D479A129D15DC5C99C5"
             {
-            "SourcePath" = "8:..\\RecorderExtension\\obj\\Debug\\RecorderExtension.dll"
+            "SourcePath" = "8:..\\RecorderExtension\\obj\\Release\\RecorderExtension.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_437356A97EAD427A9CD24A79DE64959E"

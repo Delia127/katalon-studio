@@ -45,6 +45,10 @@ public class RequestObject extends TestObject implements HttpMessage {
     private String verificationScript;
     
     private Map<String, Object> variables;
+    
+    private boolean followRedirects;
+    
+    private int redirectTimes = 0;
 
     public RequestObject(String objectId) {
         this.objectId = objectId;
@@ -326,5 +330,21 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     public void setVariables(Map<String, Object> variables) {
         this.variables = variables;
+    }
+
+    public boolean isFollowRedirects() {
+        return followRedirects;
+    }
+
+    public void setFollowRedirects(boolean followRedirects) {
+        this.followRedirects = followRedirects;
+    }
+
+    public int getRedirectTimes() {
+        return redirectTimes;
+    }
+
+    public void setRedirectTimes(int redirectTimes) {
+        this.redirectTimes = redirectTimes;
     }
 }

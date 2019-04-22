@@ -222,7 +222,7 @@ public class FilteringTestCaseView {
         cbbExtensions = new Combo(compositeQueryProvider, SWT.READ_ONLY);
         GridData gdCbbPlugins = new GridData(SWT.LEFT, SWT.TOP, false, false);
         gdCbbPlugins.widthHint = 500;
-        gdCbbPlugins.horizontalIndent = 5;
+        gdCbbPlugins.horizontalIndent = 10;
         cbbExtensions.setLayoutData(gdCbbPlugins);
 
         Label lblQuery = new Label(compositeTableSearch, SWT.NONE);

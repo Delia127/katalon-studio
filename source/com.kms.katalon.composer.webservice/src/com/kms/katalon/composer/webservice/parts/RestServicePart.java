@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -54,6 +55,8 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
+import com.kms.katalon.core.util.BrowserMobProxyManager;
+import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
@@ -178,11 +181,19 @@ public class RestServicePart extends WebServicePart {
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
 
                         Map<String, String> evaluatedVariables = evaluateRequestVariables();
-
+                        
+                        BrowserMobProxyManager.newHar();
+                        
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
                                 projectDir, ProxyPreferences.getProxyInformation(),
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables), false);
-
+                        
+                        RequestInformation requestInformation = new RequestInformation();
+                        requestInformation.setTestObjectId(requestEntity.getId());
+                        requestInformation.setHarFile(harFile);
+                        FileUtils.write(harFile, ""); //delete current content of HAR file
+                        BrowserMobProxyManager.endHar(requestInformation);
+                        
                         if (monitor.isCanceled()) {
                             return;
                         }
@@ -314,6 +325,8 @@ public class RestServicePart extends WebServicePart {
                 eventBroker.post(EventConstants.PROJECT_SETTINGS_PAGE,StringConstants.WEBSERVICE_METHOD_SETTING_PAGE);
             }
         });
+        
+       
     }
 
     @Override

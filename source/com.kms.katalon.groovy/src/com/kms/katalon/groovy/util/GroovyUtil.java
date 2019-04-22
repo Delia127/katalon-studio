@@ -99,7 +99,7 @@ public class GroovyUtil {
 
     private static final String DRIVERS_FOLDER_NAME = "Drivers";
 
-    private static final String PLUGINS_FOLDER_NAME = "Plugins";
+    public static final String PLUGINS_FOLDER_NAME = "Plugins";
 
     private static final String JDT_LAUNCHING = "org.eclipse.jdt.launching.JRE_CONTAINER";
 
@@ -189,6 +189,7 @@ public class GroovyUtil {
     public static void initGroovyProjectClassPath(ProjectEntity projectEntity, List<File> pluginFiles, boolean isNew,
             IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         IProject groovyProject = getGroovyProject(projectEntity);
+        groovyProject.clearHistory(new NullProgressMonitor());
         groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
 
         IFolder listenerSourceFolder = groovyProject.getFolder("Test Listeners");

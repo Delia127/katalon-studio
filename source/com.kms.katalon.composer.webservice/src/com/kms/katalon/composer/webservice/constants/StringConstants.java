@@ -28,13 +28,14 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_VERIFICATION = ComposerWebserviceMessageConstants.PA_LBL_VERIFICATION;
     public static final String PA_LBL_VARIABLE = ComposerWebserviceMessageConstants.PA_LBL_VARIABLE;
     public static final String PA_LBL_VARIABLE_EDITOR = ComposerWebserviceMessageConstants.PA_LBL_VARIABLE_EDITOR;
+    public static final String PA_LBL_CONFIGURATION = ComposerWebserviceMessageConstants.PA_LBL_CONFIGURATION;
     public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = ComposerWebserviceMessageConstants.VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
     public static final String PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT = ComposerWebserviceMessageConstants.PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT;
     public static final String PA_URL_W3_HTTP_STATUS = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html";
     public static final String MENU_ITEM_TEST_REQUEST_AND_VERIFY = ComposerWebserviceMessageConstants.MENU_ITEM_TEST_REQUEST_AND_VERIFY;
     public static final String MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE = ComposerWebserviceMessageConstants.MENU_ITEM_ADD_REQUEST_TO_NEW_TEST_CASE;
     public static final String MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE = ComposerWebserviceMessageConstants.MENU_ITEM_ADD_REQUEST_TO_EXISTING_TEST_CASE;
-
+    public static final String CB_FOLLOW_REDIRECTS = ComposerWebserviceMessageConstants.CB_FOLLOW_REDIRECTS;
 	// RestRequestObjectPart
     public static final String PA_TITLE_REST = ComposerWebserviceMessageConstants.PA_TITLE_REST;
     public static final String PA_LBL_URL = ComposerWebserviceMessageConstants.PA_LBL_URL;

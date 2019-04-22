@@ -14,7 +14,7 @@ function treeHTML(element, object, currentWindow) {
 		}
 	}
 	var text = getTextFromNode(element, true);
-	if (text !== '') {
+	if (element.tagName.toLowerCase() != 'textarea' && text !== '') {
 		object["attributes"]["text"] = text;
 	}
 	

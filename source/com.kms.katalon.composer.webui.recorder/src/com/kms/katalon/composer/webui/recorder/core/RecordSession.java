@@ -8,6 +8,7 @@ import java.util.Set;
 import org.openqa.selenium.WebDriverException;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
@@ -61,6 +62,7 @@ public class RecordSession extends InspectSession {
     
     @Override
     protected void handleForFirefoxAddon() throws InterruptedException {
+        LoggerSingleton.logInfo("Connecting Firefox Recorder with socket server...");
         final AddonSocketServer socketServer = AddonSocketServer.getInstance();
         while (socketServer.getAddonSocketByBrowserName(webUiDriverType.toString()) == null && isRunFlag) {
             // wait for web socket to connect
@@ -71,6 +73,7 @@ public class RecordSession extends InspectSession {
         if (firefoxAddonSocket != null) {
             firefoxAddonSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
         }
+        LoggerSingleton.logInfo("Sending Record Session message to Firefox Recorder...");
     }
 
     public interface BrowserStoppedListener {

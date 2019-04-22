@@ -3,9 +3,6 @@ package com.kms.katalon.execution.integration;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
-import com.kms.katalon.execution.entity.ExecutedEntity;
-import com.kms.katalon.execution.entity.IExecutedEntity;
-import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 
 public interface ReportIntegrationContribution extends ConsoleOptionContributor {

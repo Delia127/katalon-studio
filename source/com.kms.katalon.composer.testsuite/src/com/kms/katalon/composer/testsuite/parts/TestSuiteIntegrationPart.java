@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testsuite.parts;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
@@ -22,16 +21,23 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.testsuite.integration.TestSuiteIntegrationFactory;
 import com.kms.katalon.composer.testsuite.parts.integration.AbstractTestSuiteIntegrationView;
 import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegrationViewBuilder;
+import com.kms.katalon.entity.integration.IntegratedEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuiteIntegrationPart {
     private ToolBar toolBar;
+
     private Composite container;
+
     private MPart mpart;
+
     private ParentTestSuiteCompositePart parentTestSuiteCompositePart;
 
     // Used to store the products that is integrating with test suite view.
     // The key represents for product name
-    private Map<String, AbstractTestSuiteIntegrationView> integratingCompositeMap;
+    private Map<String, AbstractTestSuiteIntegrationView> integratingCompositeMap = new HashMap<>();
+
+    private Map<String, IntegratedEntity> editingIntegratedEntities = new HashMap<>();
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
@@ -85,14 +91,12 @@ public class TestSuiteIntegrationPart {
 
         integratingCompositeMap = new HashMap<String, AbstractTestSuiteIntegrationView>();
 
-        for (Entry<String, TestSuiteIntegrationViewBuilder> builderEntry : TestSuiteIntegrationFactory.getInstance()
-                .getIntegrationViewMap().entrySet()) {
+        for (TestSuiteIntegrationViewBuilder builderEntry : TestSuiteIntegrationFactory.getInstance()
+                .getSortedViewBuilders()) {
             ToolItem item = new ToolItem(toolBar, SWT.CHECK);
-            item.setText(builderEntry.getKey());
-            integratingCompositeMap
-                    .put(builderEntry.getKey(),
-                            builderEntry.getValue().getIntegrationView(
-                                    parentTestSuiteCompositePart.getTestSuiteClone(), mpart));
+            item.setText(builderEntry.getName());
+            integratingCompositeMap.put(builderEntry.getName(), builderEntry.getIntegrationView(
+                    parentTestSuiteCompositePart.getTestSuiteClone(), mpart, parentTestSuiteCompositePart));
         }
 
         for (ToolItem item : toolBar.getItems()) {
@@ -134,4 +138,27 @@ public class TestSuiteIntegrationPart {
 
         container.layout(true, true);
     }
+
+    public Map<String, IntegratedEntity> getEditingIntegrated() {
+        integratingCompositeMap.entrySet().stream().forEach(entry -> {
+            if (entry.getValue().needsSaving()) {
+                editingIntegratedEntities.put(entry.getKey(), entry.getValue().getEditingIntegrated());
+            }
+        });
+
+        return editingIntegratedEntities;
+    }
+
+    public void onSaveSuccess(TestSuiteEntity testSuite) {
+        integratingCompositeMap.entrySet().stream().forEach(entry -> {
+            entry.getValue().onSaveSuccess(testSuite);
+        });
+    }
+
+    public void onSaveFailure(Exception e) {
+        integratingCompositeMap.entrySet().stream().forEach(entry -> {
+            entry.getValue().onSaveFailure(e);
+        });
+    }
+
 }

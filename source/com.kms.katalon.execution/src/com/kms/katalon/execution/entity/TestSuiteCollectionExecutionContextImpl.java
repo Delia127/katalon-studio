@@ -1,16 +1,17 @@
-package com.kms.katalon.execution.platform;
+package com.kms.katalon.execution.entity;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import com.katalon.platform.api.execution.TestCaseExecutionContext;
+import com.katalon.platform.api.execution.TestSuiteCollectionExecutionContext;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
 
-public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext {
+public class TestSuiteCollectionExecutionContextImpl implements TestSuiteCollectionExecutionContext {
+
     private final Builder builder;
 
-    private TestSuiteExecutionContextImpl(Builder builder) {
+    private TestSuiteCollectionExecutionContextImpl(Builder builder) {
         this.builder = builder;
     }
 
@@ -35,18 +36,18 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
     }
 
     @Override
+    public String getReportLocation() {
+        return new File(builder.projectLocation, builder.reportId).getAbsolutePath();
+    }
+
+    @Override
     public String getReportId() {
         return builder.reportId;
     }
 
     @Override
-    public List<TestCaseExecutionContext> getTestCaseContexts() {
-        return Collections.unmodifiableList(builder.testCaseContexts);
-    }
-
-    @Override
-    public String toString() {
-        return builder.toString();
+    public List<TestSuiteExecutionContext> getTestSuiteResults() {
+        return builder.testSuiteContexts;
     }
 
     public static class Builder {
@@ -60,7 +61,9 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
 
         private String reportId;
 
-        private List<TestCaseExecutionContext> testCaseContexts = new ArrayList<>();
+        private String projectLocation;
+
+        private List<TestSuiteExecutionContext> testSuiteContexts = new ArrayList<>();
 
         private Builder(String id, String sourceId) {
             this.id = id;
@@ -86,13 +89,18 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
             return this;
         }
 
-        public Builder withTestCaseContext(List<TestCaseExecutionContext> testCaseContexts) {
-            this.testCaseContexts = testCaseContexts;
+        public Builder withProjectLocation(String projectLocation) {
+            this.projectLocation = projectLocation;
             return this;
         }
 
-        public TestSuiteExecutionContextImpl build() {
-            return new TestSuiteExecutionContextImpl(this);
+        public Builder withTestSuiteContexts(List<TestSuiteExecutionContext> testSuiteContexts) {
+            this.testSuiteContexts = testSuiteContexts;
+            return this;
+        }
+
+        public TestSuiteCollectionExecutionContextImpl build() {
+            return new TestSuiteCollectionExecutionContextImpl(this);
         }
     }
 }

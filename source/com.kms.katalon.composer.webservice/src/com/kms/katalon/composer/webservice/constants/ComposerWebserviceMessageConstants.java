@@ -70,6 +70,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PA_LBL_VARIABLE;
     
     public static String PA_LBL_VARIABLE_EDITOR;
+    
+    public static String PA_LBL_CONFIGURATION;
 
     public static String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
 
@@ -274,6 +276,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String DiaEditWSMethod_TITLE_ADD_NEW;
     
     public static String DiaEditWSMethod_TITLE_EDIT;
+    
+    public static String CB_FOLLOW_REDIRECTS; 
     
     static {
         // initialize resource bundle

@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.project.handlers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -46,8 +48,11 @@ import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLa
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.exception.MissingProjectSettingPageException;
+import com.kms.katalon.composer.project.preference.CustomKeywordPluginPreferenceNodeDescription;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
+import com.kms.katalon.custom.keyword.KeywordsManifest;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.preferences.PreferenceNodeDescription;
 import com.kms.katalon.preferences.internal.PreferenceNodeDescriptionImpl;
@@ -56,6 +61,7 @@ import com.kms.katalon.preferences.internal.PreferencesRegistry;
 public class SettingHandler {
 
     private static final String PARENT_PLUGIN_PREFERENCE_PAGE_ID = "com.kms.katalon.composer.project.preference.pluginPreferencePage";
+
     @Inject
     private IEclipseContext eclipseContext;
 
@@ -85,17 +91,31 @@ public class SettingHandler {
         openSettingsDialogToPage(Display.getCurrent().getActiveShell(), preferencesRegistry, pageId);
     }
 
-    private Map<String, List<PreferenceNodeDescription>> getPluginPreferences() {
+    private List<PreferenceNodeDescription> getCustomKeywordPluginPreferences() {
+        return CustomKeywordPluginFactory.getInstance()
+                .getPlugins()
+                .stream()
+                .filter(f -> f.getKeywordsManifest() != null && f.getKeywordsManifest().getConfiguration() != null
+                        && f.getKeywordsManifest().getConfiguration().getSettingPage() != null
+                        && StringUtils.isNotEmpty(f.getKeywordsManifest().getConfiguration().getSettingId()))
+                .map(plugin -> {
+                    KeywordsManifest keywordsManifest = plugin.getKeywordsManifest();
+                    return new CustomKeywordPluginPreferenceNodeDescription(plugin.getId(), plugin.getId(),
+                            StringUtils.defaultIfEmpty(keywordsManifest.getConfiguration().getSettingPage().getName(),
+                                    plugin.getId()),
+                            PARENT_PLUGIN_PREFERENCE_PAGE_ID, keywordsManifest);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<PreferenceNodeDescription> getPluginPreferences() {
         Collection<Extension> extensions = ApplicationManager.getInstance()
                 .getExtensionManager()
                 .getExtensions(PluginPreferencePage.EXTENSION_POINT_ID);
-        List<PreferenceNodeDescription> pluginNodes = extensions.stream()
+        return extensions.stream()
                 .map(e -> getPreferenceNodeDescription(e))
                 .filter(node -> node != null)
                 .collect(Collectors.toList());
-        Map<String, List<PreferenceNodeDescription>> pluginPreferences = new HashMap<>();
-        pluginPreferences.put(PARENT_PLUGIN_PREFERENCE_PAGE_ID, pluginNodes);
-        return pluginPreferences;
     }
 
     private PreferenceNodeDescription getPreferenceNodeDescription(Extension e) {
@@ -112,8 +132,14 @@ public class SettingHandler {
     }
 
     private void openSettingsDialogToPage(Shell shell, PreferencesRegistry preferencesRegistry, String pageId) {
+        List<PreferenceNodeDescription> allNodeDescriptions = new ArrayList<>();
+        allNodeDescriptions.addAll(getPluginPreferences());
+        allNodeDescriptions.addAll(getCustomKeywordPluginPreferences());
+
+        Map<String, List<PreferenceNodeDescription>> pluginPreferences = new HashMap<>();
+        pluginPreferences.put(PARENT_PLUGIN_PREFERENCE_PAGE_ID, allNodeDescriptions);
         PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP,
-                getPluginPreferences());
+                pluginPreferences);
 
         hideIOSPageOnNoneMacOS(pm);
 
@@ -252,7 +278,7 @@ public class SettingHandler {
                 }
             }
             if (executionSettings == null) {
-                throw new MissingProjectSettingPageException(StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID);
+                return;
             }
 
             IPreferenceNode defaultExecutionSettings = executionSettings

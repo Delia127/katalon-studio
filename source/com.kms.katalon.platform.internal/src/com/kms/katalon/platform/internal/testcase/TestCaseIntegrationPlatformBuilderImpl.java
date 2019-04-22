@@ -78,11 +78,6 @@ public class TestCaseIntegrationPlatformBuilderImpl implements TestCaseIntegrati
         }
 
         @Override
-        public int preferredOrder() {
-            return 0;
-        }
-
-        @Override
         public String getName() {
             return name;
         }

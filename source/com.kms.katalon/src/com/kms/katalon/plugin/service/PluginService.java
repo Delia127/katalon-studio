@@ -4,10 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,17 +22,21 @@ import org.osgi.framework.BundleException;
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.CustomKeywordPluginFactory;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
+import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.util.ZipManager;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreCredentials;
@@ -75,7 +78,7 @@ public class PluginService {
 
     public List<ResultItem> reloadPlugins(KStoreCredentials credentials, IProgressMonitor monitor)
             throws ReloadPluginsException, InterruptedException {
-        
+        CustomKeywordPluginFactory.getInstance().clearPluginInStore();
         try {
             List<ResultItem> results = new ArrayList<>();
 
@@ -118,7 +121,8 @@ public class PluginService {
     
             int totalInstallWork = latestPlugins.size();
             int installWork = 0;
-            CustomKeywordPluginFactory.getInstance().clear();
+
+            CustomKeywordPluginFactory.getInstance().clearPluginInStore();
             PluginFactory.getInstance().clear();
             for (KStorePlugin plugin : latestPlugins) {
                 if (monitor.isCanceled()) {
@@ -129,6 +133,7 @@ public class PluginService {
                     ResultItem item = new ResultItem();
                     item.setPlugin(plugin);
                     results.add(item);
+                    LogService.getInstance().logInfo(String.format("Expired plugin: %d.", plugin.getId()));
                     continue;
                 }
                 
@@ -136,6 +141,7 @@ public class PluginService {
                     ResultItem item = new ResultItem();
                     item.setPlugin(plugin);
                     results.add(item);
+                    LogService.getInstance().logInfo(String.format("Plugin with latest compatible version: %d.", plugin.getId()));
                     continue;
                 }
                 
@@ -148,10 +154,18 @@ public class PluginService {
                     }
                 }
                 
+                LogService.getInstance().logInfo(String.format("Plugin ID: %d. Plugin location: %s.",
+                    plugin.getId(), pluginPath));
+                
                 try {
                     if (isCustomKeywordPlugin(plugin)) {
                         String location = getPluginLocation(plugin);
-                        CustomKeywordPluginFactory.getInstance().addPluginFile(new File(location));
+                        CustomKeywordPlugin customKeywordPlugin = new CustomKeywordPlugin();
+                        customKeywordPlugin.setId(Long.toString(plugin.getId()));
+                        File pluginFile = new File(location);
+                        customKeywordPlugin.setPluginFile(pluginFile);
+
+                        CustomKeywordPluginFactory.getInstance().addPluginFile(pluginFile, customKeywordPlugin);
                     } else {
                         platformInstall(pluginPath);
                     }
@@ -161,11 +175,12 @@ public class PluginService {
                     results.add(item);
                     PluginFactory.getInstance().addPlugin(plugin);
                 } catch (BundleException e) {
-                    if (!StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_DUPLICATED_BUNDLE_SIGNAL)
-                            && !StringUtils.containsIgnoreCase(e.getMessage(),
-                                    EXCEPTION_ANOTHER_SINGLETON_BUNDLE_SELECTED_SIGNAL)) {
-                        throw e;
+                    LogService.getInstance().logError(e);
+                    File pluginRepoDir = getPluginRepoDir();
+                    if (pluginRepoDir.exists()) {
+                        pluginRepoDir.delete();
                     }
+                    throw e;
                 }
 
                 installWork++;
@@ -210,7 +225,23 @@ public class PluginService {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
         List<KStorePlugin> latestPlugins = restClient.getLatestPlugins(appVersion);
+        latestPlugins.stream().forEach(p -> logPluginInfo(p));
         return latestPlugins;
+    }
+    
+    private void logPluginInfo(KStorePlugin plugin) {
+        try {
+            Map<String, Object> infoMap = new HashMap<>(); 
+            infoMap.put("id", plugin.getId());
+            infoMap.put("productId", plugin.getProduct().getId());
+            infoMap.put("name", plugin.getProduct().getName());
+            infoMap.put("expired", plugin.isExpired());
+            if (ApplicationRunningMode.get() == RunningMode.GUI) {
+                LoggerSingleton.logInfo("Plugin info: " + JsonUtil.toJson(infoMap));
+            } else {
+                LogUtil.printOutputLine("Plugin info: " + JsonUtil.toJson(infoMap));
+            }
+        } catch (Exception ignored) {}
     }
     
     private Bundle platformInstall(String pluginPath) throws BundleException {
@@ -289,6 +320,7 @@ public class PluginService {
 
     private File downloadAndExtractPlugin(KStorePlugin plugin, KStoreCredentials credentials) throws Exception {
 
+        LogService.getInstance().logInfo("Downloaded plugin ID: " + plugin.getId());
         trackDownloadPlugin(plugin, credentials);
         
         File downloadDir = getRepoDownloadDir();

@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
-import com.kms.katalon.execution.entity.ExecutedEntity;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
@@ -45,7 +44,7 @@ import com.kms.katalon.logging.LogUtil;
     protected void notifyProccess(Object event, IExecutedEntity executedEntity, ExecutionEntityResult result) {
     	result.setExecutedEntity(executedEntity);
     	result.setEvent(event);
-		result.setSessionId(executionUUID);
+    	result.setSessionId(executionUUID);
     	for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
                 .getInstance().getIntegrationContributorMap().entrySet()) {
             ReportIntegrationContribution contribution = reportContributorEntry.getValue();
@@ -99,6 +98,9 @@ import com.kms.katalon.logging.LogUtil;
     }
     
     public void setExecutionUUID(String executionUUID) {
+        if (StringUtils.isEmpty(executionUUID)) {
+            return;
+        }
     	this.executionUUID = executionUUID;
     }
 }

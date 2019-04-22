@@ -61,6 +61,8 @@ public class SoapClient extends BasicRequestor {
 
     private static final String APPLICATION_XML = RequestHeaderConstants.CONTENT_TYPE_APPLICATION_XML;
 
+    private static final int MAX_REDIRECTS = 5;
+    
     private String serviceName;
 
     private String protocol = SOAP; // Default is SOAP
@@ -137,7 +139,7 @@ public class SoapClient extends BasicRequestor {
 
     @Override
     public ResponseObject send(RequestObject request)
-            throws IOException, WSDLException, WebServiceException, GeneralSecurityException {
+            throws Exception {
         this.requestObject = request;
         parseWsdl();
         boolean isHttps = isHttps(request);
@@ -210,9 +212,28 @@ public class SoapClient extends BasicRequestor {
         responseObject.setContentDownloadTime(contentDownloadTime);
         
         setBodyContent(con, sb, responseObject);
+        boolean redirect = false;
+        if (statusCode == HttpURLConnection.HTTP_MOVED_TEMP
+            || statusCode == HttpURLConnection.HTTP_MOVED_PERM
+            || statusCode == HttpURLConnection.HTTP_SEE_OTHER) {
+            redirect = true;
+        }
+        
+        if (redirect) {
+            String newUrl = con.getHeaderField("location");
+            if (!StringUtils.isBlank(newUrl)) {
+                request.setRestUrl(newUrl);
+                request.setRedirectTimes(request.getRedirectTimes() + 1);
+                if (request.isFollowRedirects() && request.getRedirectTimes() <= MAX_REDIRECTS) {
+                    responseObject = send(request);
+                }
+            }
+        }
         
         return responseObject;
     }
+    
+    
 
     public String getServiceName() {
         return serviceName;
