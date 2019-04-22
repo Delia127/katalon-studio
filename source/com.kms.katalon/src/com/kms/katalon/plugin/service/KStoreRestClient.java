@@ -39,7 +39,7 @@ import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreProduct;
-import com.kms.katalon.plugin.models.KStoreToken;
+import com.kms.katalon.plugin.models.KatalonStoreToken;
 import com.kms.katalon.plugin.util.KStoreTokenService;
 
 public class KStoreRestClient {
@@ -158,7 +158,7 @@ public class KStoreRestClient {
 
     public void goToSearchPluginPage() throws KStoreClientException {
         try {
-            KStoreToken token = getToken();
+            KatalonStoreToken token = getToken();
             if (token != null) {
                 String searchPluginPageUrl = getSearchPluginUrl(token.getToken());
                 Program.launch(searchPluginPageUrl);
@@ -171,7 +171,7 @@ public class KStoreRestClient {
     
     public void goToManagePluginsPage() throws KStoreClientException {
         try {
-            KStoreToken token = getToken();
+            KatalonStoreToken token = getToken();
             if (token != null) {
                 String managePluginsPageUrl = getManagePluginUrl(token.getToken());
                 Program.launch(managePluginsPageUrl);
@@ -184,7 +184,7 @@ public class KStoreRestClient {
     
     public void goToManageApiKeysPage() throws KStoreClientException {
         try {
-            KStoreToken token = getToken();
+            KatalonStoreToken token = getToken();
             if (token != null) {
                 String manageApiKeysPageUrl = getManageApiKeysPageUrl(token.getToken());
                 Program.launch(manageApiKeysPageUrl);
@@ -197,7 +197,7 @@ public class KStoreRestClient {
     
     public void goToProductPage(KStoreProduct product) throws KStoreClientException {
         try {
-            KStoreToken token = getToken();
+            KatalonStoreToken token = getToken();
             if (token != null) {
                 String productPageUrl = getProductPageUrl(product, token.getToken());
                 Program.launch(productPageUrl);
@@ -208,8 +208,8 @@ public class KStoreRestClient {
         }
     }
     
-    private KStoreToken getToken() throws IOException, KStoreClientException {
-        KStoreToken token = KStoreTokenService.getInstance().getToken();
+    private KatalonStoreToken getToken() throws IOException, KStoreClientException, GeneralSecurityException {
+        KatalonStoreToken token = KStoreTokenService.getInstance().getToken();
         if (token == null || KStoreTokenService.getInstance().isTokenExpired(token)) {
             AuthenticationResult authenticateResult = authenticate();
             if (authenticateResult.isAuthenticated()) {
