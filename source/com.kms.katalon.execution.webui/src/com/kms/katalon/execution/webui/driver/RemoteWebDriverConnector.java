@@ -82,15 +82,15 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
     }
 
     @Override
-	public void saveUserConfigProperties() throws IOException {
-		if (!driverProperties.containsKey(DriverFactory.REMOTE_WEB_DRIVER_URL)) {
-			driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_URL, getRemoteServerUrl());
-		}
-		if (!driverProperties.containsKey(DriverFactory.REMOTE_WEB_DRIVER_TYPE)) {
-			driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, getRemoteWebDriverConnectorType().name());
-		}
-		super.saveUserConfigProperties();
-	}
+    public void saveUserConfigProperties() throws IOException {
+        if (!driverProperties.containsKey(DriverFactory.REMOTE_WEB_DRIVER_URL)) {
+            driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_URL, getRemoteServerUrl());
+        }
+        if (!driverProperties.containsKey(DriverFactory.REMOTE_WEB_DRIVER_TYPE)) {
+            driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, getRemoteWebDriverConnectorType().name());
+        }
+        super.saveUserConfigProperties();
+    }
 
     @Override
     public String toString() {

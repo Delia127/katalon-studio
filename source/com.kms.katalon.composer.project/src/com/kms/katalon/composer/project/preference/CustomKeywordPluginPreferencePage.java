@@ -31,18 +31,19 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.keyword.BuiltinKeywords;
 import com.kms.katalon.core.keyword.IActionProvider;
-import com.kms.katalon.core.keyword.IPluginEventHandler;
+import com.kms.katalon.core.keyword.IControlSelectionEventHandler;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.custom.keyword.CustomKeywordSettingPage.SettingPageComponent;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.webui.keyword.Context;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
     private final KeywordsManifest keywordsManifest;
 
-    private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "generator" });
+    private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "button" });
 
     private Map<String, Pair<SettingPageComponent, Text>> txtComponentCollection = new HashMap<>();
 
@@ -106,7 +107,7 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                 .getSettingPage()
                 .getComponents()
                 .stream()
-                .filter(entry -> entry.getType().equals("generator"))
+                .filter(entry -> entry.getType().equals("button"))
                 .forEach(entry -> {
                     Button btnOperationExecute = new Button(container, SWT.PUSH);
                     btnOperationExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
@@ -126,16 +127,21 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
             public void widgetSelected(SelectionEvent e) {
                 if (classLoader != null) {
                     String implementationClassPath = (String) btnOperationExecute.getData();
-
+                    
+                    Context context = new Context();
+                    context.add("selectedControl", btnOperationExecute);
+                    context.add("pluginName", keywordsManifest.getName());
+                    context.add("pluginId", keywordsManifest.getId());
+                    context.add("pluginKeywords", keywordsManifest.getKeywords());
+                    context.add("pluginListeners", keywordsManifest.getListeners());
+                    
                     try {
-                        // Persist data fields first so that plug-ins can use
-                        // them in their implementations
-                        persistPluginDataFields();
+                        Map<String, Object> dataFields = collectDataFieldsWithoutSaving();
                         Class<?> clazz = classLoader.loadClass(implementationClassPath);
                         Object pluginRuntimeInstance = clazz.newInstance();
-                        if (pluginRuntimeInstance instanceof IPluginEventHandler) {
-                            IPluginEventHandler pluginEventHandler = (IPluginEventHandler) pluginRuntimeInstance;
-                            pluginEventHandler.handle(actionProvider, getSettingStore());
+                        if (pluginRuntimeInstance instanceof IControlSelectionEventHandler) {
+                            IControlSelectionEventHandler pluginButtonSelectionEventHandler = (IControlSelectionEventHandler) pluginRuntimeInstance;
+                            pluginButtonSelectionEventHandler.handle(actionProvider, dataFields, context);
                         }
                     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
                         LoggerSingleton.logError(e1);
@@ -143,7 +149,14 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                 }
             }
         });
+    }
 
+    protected Map<String, Object> collectDataFieldsWithoutSaving() {
+        Map<String, Object> dataFields = new HashMap<>();
+        for (Entry<String, Pair<SettingPageComponent, Text>> componentEntry : txtComponentCollection.entrySet()) {
+            dataFields.put(componentEntry.getKey(), componentEntry.getValue().getRight().getText());
+        }
+        return dataFields;
     }
 
     private BundleSettingStore getSettingStore() {

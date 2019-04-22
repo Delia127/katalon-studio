@@ -13,8 +13,10 @@ import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
+import com.kms.katalon.logging.LogUtil;
 
 public class ActionProviderImpl implements IActionProvider {
+    private static String SAVE_CUSTOM_PROFILE_TITLE = "Save Custom Profile status";
 
     public void saveCustomProfile(ICustomProfile customProfile) {
         String strPluginDriverType = customProfile.getWebDriverType();
@@ -30,11 +32,12 @@ public class ActionProviderImpl implements IActionProvider {
             runConfig.save();
             CustomKeywordRunConfigurationCollector.getInstance().addCustomKeywordRunConfiguration(runConfig);
 
-            MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Operation status",
-                    "Operation has been executed successfully");
+            MessageDialog.openInformation(Display.getDefault().getActiveShell(), SAVE_CUSTOM_PROFILE_TITLE,
+                    "Custom profile is saved successfully");
         } catch (IOException | ExecutionException e) {
-            MessageDialog.openError(Display.getDefault().getActiveShell(), "Operation status",
-                    "Operation has failed to execute due to " + e.getMessage());
+            MessageDialog.openError(Display.getDefault().getActiveShell(), SAVE_CUSTOM_PROFILE_TITLE,
+                    "Custom profile is not saved due to " + e.getMessage());
+            LogUtil.logError(e);
         }
     }
 }

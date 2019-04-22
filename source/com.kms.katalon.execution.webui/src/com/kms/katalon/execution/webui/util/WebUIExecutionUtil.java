@@ -39,13 +39,13 @@ public class WebUIExecutionUtil {
         }
     }
     
-	public static IDriverConnector getDriverConnector(WebUIDriverType webDriverType, String customRunConfig)
-			throws IOException {
-		switch (webDriverType) {
-		case REMOTE_WEB_DRIVER:
-			return new RemoteWebDriverConnector(customRunConfig);
-		default:
-			return null;
-		}
-	}
+    public static IDriverConnector getDriverConnector(WebUIDriverType webDriverType, String customRunConfig)
+            throws IOException {
+        switch (webDriverType) {
+            case REMOTE_WEB_DRIVER:
+                return new RemoteWebDriverConnector(customRunConfig);
+            default:
+                return null;
+        }
+    }
 }
