@@ -37,6 +37,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_CONFIRM_TITLE_FILE_CHANGED = ComposerObjectRepositoryMessageConstants.PA_CONFIRM_TITLE_FILE_CHANGED;
     public static final String PA_CONFIRM_MSG_RELOAD_FILE = ComposerObjectRepositoryMessageConstants.PA_CONFIRM_MSG_RELOAD_FILE;
 
+    
+    
     // AddPropertyDialog
     public static final String VIEW_LBL_NAME = NAME;
     public static final String VIEW_LBL_VALUE = VALUE;

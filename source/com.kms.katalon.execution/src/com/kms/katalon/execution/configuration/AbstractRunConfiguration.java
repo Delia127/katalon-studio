@@ -2,8 +2,12 @@ package com.kms.katalon.execution.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -16,6 +20,7 @@ import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.LogbackUtil;
+import com.kms.katalon.custom.factory.PluginTestListenerFactory;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -42,7 +47,15 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private ExecutionProfileEntity executionProfile;
     
     private Map<String, Object> overridingParameters = new HashMap<>();
+
+    private Map<String, String> environmentVariables = new HashMap<>();
     
+    private List<String> vmArgs = new ArrayList<>();
+    
+    private Map<String, String> additionalData = new HashMap<>();
+
+    private String executionUUID;
+
     public AbstractRunConfiguration() {
         initExecutionSetting();
     }
@@ -171,6 +184,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         
         propertyMap.put(RunConfiguration.RUNNING_MODE, ApplicationRunningMode.get().name());
         
+        propertyMap.put(RunConfiguration.PLUGIN_TEST_LISTENERS, PluginTestListenerFactory.getInstance().getListeners());
+        
         initializePluginPresence("com.katalon.katalon-studio-smart-xpath", propertyMap);
         
         return propertyMap;
@@ -231,7 +246,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     @Override
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
-        return new HashMap<>();
+        return Collections.unmodifiableMap(environmentVariables);
     }
 
     @Override
@@ -251,5 +266,46 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     public void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables) {
     	if(overridingGlobalVariables == null) return;
     	overridingParameters.putAll(overridingGlobalVariables);
+    }
+    
+    @Override
+    public Map<String, String> getTestSuiteAdditionalData() {
+        return Collections.unmodifiableMap(additionalData);
+    }
+
+    @Override
+    public void setTestSuiteAdditionalData(Map<String, String> data) {
+        if (data != null) {
+            this.additionalData.putAll(data);
+        }
+    }
+    
+    @Override
+    public String[] getVmArgs() {
+        return vmArgs.toArray(new String[0]);
+    }
+    
+    @Override
+    public void setVmArgs(String[] args) {
+        if (args == null) {
+            return;
+        }
+        vmArgs.addAll(Arrays.asList(args));
+    }
+    
+    @Override
+    public void setAdditionalEnvironmentVariables(Map<String, String> addtionalEnv) {
+        if (addtionalEnv != null) {
+            this.environmentVariables.putAll(addtionalEnv);
+        }
+    }
+
+    public String getExecutionUUID() {
+        return executionUUID;
+    }
+    
+    @Override
+    public void setExecutionUUID(String executionUUID) {
+        this.executionUUID = executionUUID;
     }
 }

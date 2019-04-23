@@ -18,6 +18,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.util.PluginHelper;
+import com.kms.katalon.plugin.util.PluginSettings;
 
 public class CachedPluginInfo {
 
@@ -99,7 +100,7 @@ public class CachedPluginInfo {
     }
 
     private static File getPreferenceFile() {
-        File preferenceFile = new File(GlobalStringConstants.APP_USER_DIR_LOCATION, "plugin/preferences.properties");
+        File preferenceFile = new File(PluginSettings.getPluginRepoDir(), "preferences.properties");
         return preferenceFile;
     }
 }

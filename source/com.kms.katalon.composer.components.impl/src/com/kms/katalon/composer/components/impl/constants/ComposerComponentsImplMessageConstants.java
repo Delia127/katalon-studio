@@ -167,6 +167,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK;
     
     public static String BTN_CHOOSE_A_FILE;
+    
+    public static String DIA_MSG_CREATE_NEW_FILE;
 
     static {
         // initialize resource bundle

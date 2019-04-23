@@ -28,9 +28,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStorePlugin;
@@ -39,6 +43,8 @@ import com.kms.katalon.plugin.models.KStoreToken;
 import com.kms.katalon.plugin.util.KStoreTokenService;
 
 public class KStoreRestClient {
+    
+    private static final String STORE_URL_PROPERTY_KEY = "storeUrl";
     
     private static final String DEVELOPMENT_URL = "https://store-staging.katalon.com";
     
@@ -58,7 +64,10 @@ public class KStoreRestClient {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
                         String responseContent = EntityUtils.toString(response.getEntity());
+                        LogService.getInstance().logInfo("Latest plugins responses: " + responseContent);
                         responseContent = responseContent.replace("{}", "null");
+                        LogService.getInstance().logInfo("Katalon version: " + appVersion);
+                        LogService.getInstance().logInfo("Plugin info URL: " + getPluginsAPIUrl(appVersion));
                         plugins.set(parsePluginListJson(responseContent));
                     } else {
                         throw new KStoreClientException("Failed to get latest plugin. No content returned from server.");
@@ -281,11 +290,18 @@ public class KStoreRestClient {
     }
     
     private String getKatalonStoreUrl() {
-        if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
+        String storeUrlArgument = getStoreUrlArgument();
+        if (!StringUtils.isBlank(storeUrlArgument)) {
+            return storeUrlArgument;
+        } else if (VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) {
             return DEVELOPMENT_URL;
         } else {
             return PRODUCTION_URL;
         }
+    }
+    
+    private String getStoreUrlArgument() {
+        return System.getProperty(STORE_URL_PROPERTY_KEY);
     }
     
     private interface OnRequestSuccessHandler {

@@ -1,7 +1,17 @@
 package com.kms.katalon.preferences.internal;
 
-import com.kms.katalon.preferences.PreferenceNodeDescription;
+import java.text.MessageFormat;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.contributions.IContributionFactory;
+import org.eclipse.jface.preference.PreferencePage;
+
+import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.preferences.PreferenceNodeDescription;
+import com.kms.katalon.preferences.PreferencePageBuilder;
+import com.kms.katalon.preferences.constants.StringConstants;
+
+@SuppressWarnings("restriction")
 public class PreferenceNodeDescriptionImpl implements PreferenceNodeDescription {
     private final String bundleId;
 
@@ -13,6 +23,8 @@ public class PreferenceNodeDescriptionImpl implements PreferenceNodeDescription 
 
     private final String preferencePageClassName;
 
+    private final PreferencePageBuilderImpl builder;
+
     public PreferenceNodeDescriptionImpl(String bundleId, String nodeId, String nodeName, String parentNodeId,
             String preferencePageClassName) {
         this.bundleId = bundleId;
@@ -20,6 +32,7 @@ public class PreferenceNodeDescriptionImpl implements PreferenceNodeDescription 
         this.parentNodeId = parentNodeId;
         this.nodeName = nodeName;
         this.preferencePageClassName = preferencePageClassName;
+        this.builder = new PreferencePageBuilderImpl();
     }
 
     @Override
@@ -43,7 +56,42 @@ public class PreferenceNodeDescriptionImpl implements PreferenceNodeDescription 
     }
 
     @Override
-    public String getPreferencePageClassName() {
-        return preferencePageClassName;
+    public PreferencePageBuilder getBuilder() {
+        return builder;
+    }
+
+    @Override
+    public boolean hasPage() {
+        return preferencePageClassName != null && !preferencePageClassName.isEmpty();
+    }
+
+    public class PreferencePageBuilderImpl implements PreferencePageBuilder {
+
+        @Override
+        public PreferencePage build(IContributionFactory factory, IEclipseContext context) {
+            try {
+                String prefPageURI = getClassURI(PreferenceNodeDescriptionImpl.this.bundleId,
+                        PreferenceNodeDescriptionImpl.this.preferencePageClassName);
+                Object object = factory.create(prefPageURI, context);
+                if (object instanceof PreferencePage) {
+                    return (PreferencePage) object;
+                }
+                LogUtil.logErrorMessage(
+                        MessageFormat.format(StringConstants.INL_LOG_ERROR_EXPECTED_INSTANCE_OF_PREF_PAGE,
+                                PreferenceNodeDescriptionImpl.this.preferencePageClassName));
+                return null;
+            } catch (ClassNotFoundException e) {
+                LogUtil.printAndLogError(e);
+                return null;
+            }
+        }
+
+        private String getClassURI(String definingBundleId, String spec) throws ClassNotFoundException {
+            if (spec.startsWith("platform:")) {
+                return spec;
+            } // $NON-NLS-1$
+            return "bundleclass://" + definingBundleId + '/' + spec;
+        }
+
     }
 }

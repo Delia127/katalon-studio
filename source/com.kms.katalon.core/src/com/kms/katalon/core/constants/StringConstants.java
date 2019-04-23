@@ -253,6 +253,8 @@ public class StringConstants {
 
     // XML LOG
     public static final String XML_LOG_DESCRIPTION_PROPERTY = "description";
+    
+    public static final String XML_LOG_TAG_PROPERTY = "tag";
 
     public static final String XML_LOG_ATTACHMENT_PROPERTY = "attachment";
 
@@ -499,4 +501,12 @@ public class StringConstants {
     
     // TestCaseExecutor
 	public static final String TEST_CASE_SKIPPED = CoreMessageConstants.TEST_CASE_SKIPPED;
+
+	public static final String SMART_XPATH_REPORT_AVAILABLE_OPENING = "=================== Smart XPath Report =======================";
+	
+	public static final String SMART_XPATH_REPORT_AVAILABLE_ENDING = "===============================================================";
+
+	public static final String SMART_XPATH_VISIT_BELOW_LINK = CoreMessageConstants.SMART_XPATH_VISIT_BELOW_LINK;
+	
+	public static final String SMART_XPATH_DOCUMENT = CoreMessageConstants.SMART_XPATH_DOCUMENT;
 }

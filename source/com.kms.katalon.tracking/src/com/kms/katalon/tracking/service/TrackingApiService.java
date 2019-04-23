@@ -21,6 +21,6 @@ public class TrackingApiService {
     }
     
     public void post(String payload) throws IOException, GeneralSecurityException {
-        ServerAPICommunicationUtil.post("/product/usage", payload);
+        ServerAPICommunicationUtil.post("/product/usage", payload, false);
     }
 }

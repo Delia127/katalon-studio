@@ -15,6 +15,8 @@ import com.kms.katalon.execution.console.LauncherOptionParserFactory;
 import com.kms.katalon.execution.handler.EvaluateDriverConnectorContributionsHandler;
 import com.kms.katalon.execution.handler.EvaluateRunConfigurationContributionsHandler;
 import com.kms.katalon.execution.integration.EvaluateReportIntegrationContribution;
+import com.kms.katalon.execution.launcher.LauncherProviderFactory;
+import com.kms.katalon.execution.launcher.provider.IDELauncherProvider;
 import com.kms.katalon.execution.platform.DynamicQueryingTestSuiteExtensionProvider;
 import com.kms.katalon.execution.platform.ExecutionPlatformServiceProvider;
 import com.kms.katalon.execution.platform.PlatformLauncherOptionParserBuilder;
@@ -47,6 +49,19 @@ public class ExecutionBundleActivator implements BundleActivator {
                             .getServiceReference(DynamicQueryingTestSuiteExtensionProvider.class);
                     ExecutionPlatformServiceProvider.getInstance().addService(
                             DynamicQueryingTestSuiteExtensionProvider.class, context.getService(serviceReference));
+                    context.removeServiceListener(this);
+                }
+            }
+        });
+        
+        context.addServiceListener(new ServiceListener() {
+
+            @Override
+            public void serviceChanged(ServiceEvent event) {
+                if (context.getService(event.getServiceReference()) instanceof IDELauncherProvider) {
+                    ServiceReference<IDELauncherProvider> serviceReference = context
+                            .getServiceReference(IDELauncherProvider.class);
+                    LauncherProviderFactory.getInstance().setIdeLauncherProvider(context.getService(serviceReference));
                     context.removeServiceListener(this);
                 }
             }

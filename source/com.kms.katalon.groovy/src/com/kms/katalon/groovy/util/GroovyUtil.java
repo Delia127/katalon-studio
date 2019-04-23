@@ -99,7 +99,7 @@ public class GroovyUtil {
 
     private static final String DRIVERS_FOLDER_NAME = "Drivers";
 
-    private static final String PLUGINS_FOLDER_NAME = "Plugins";
+    public static final String PLUGINS_FOLDER_NAME = "Plugins";
 
     private static final String JDT_LAUNCHING = "org.eclipse.jdt.launching.JRE_CONTAINER";
 
@@ -189,6 +189,7 @@ public class GroovyUtil {
     public static void initGroovyProjectClassPath(ProjectEntity projectEntity, List<File> pluginFiles, boolean isNew,
             IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         IProject groovyProject = getGroovyProject(projectEntity);
+        groovyProject.clearHistory(new NullProgressMonitor());
         groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
 
         IFolder listenerSourceFolder = groovyProject.getFolder("Test Listeners");
@@ -851,6 +852,18 @@ public class GroovyUtil {
         return groovyClassLoader;
     }
 
+    private static URLClassLoader getProjectClassLoader(IJavaProject project, ClassLoader parent,
+            String[] classPathEntries) throws MalformedURLException {
+        GroovyClassLoader groovyClassLoader = new GroovyClassLoader(parent);
+        for (int i = 0; i < classPathEntries.length; i++) {
+            String entry = classPathEntries[i];
+            IPath path = new Path(entry);
+            URL url = path.toFile().toURI().toURL();
+            groovyClassLoader.addURL(url);
+        }
+        return groovyClassLoader;
+    }
+
     public static void loadScriptContentIntoTestCase(TestCaseEntity testCase) throws CoreException, IOException {
         if (testCase == null) {
             return;
@@ -981,6 +994,12 @@ public class GroovyUtil {
             throws MalformedURLException, CoreException {
         IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
         return GroovyUtil.getProjectClasLoader(project, JavaRuntime.computeDefaultRuntimeClassPath(project));
+    }
+    
+    public static URLClassLoader getProjectClassLoader(ProjectEntity projectEntity, ClassLoader parent)
+            throws MalformedURLException, CoreException {
+        IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
+        return GroovyUtil.getProjectClassLoader(project, parent, JavaRuntime.computeDefaultRuntimeClassPath(project));
     }
 
     public static IFolder getPluginsFolder(ProjectEntity project) {

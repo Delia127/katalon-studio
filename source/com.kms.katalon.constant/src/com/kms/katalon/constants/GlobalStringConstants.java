@@ -257,6 +257,18 @@ public class GlobalStringConstants {
 
     public static final String ROOT_FOLDER_NAME_INCLUDE = GlobalMessageConstants.ROOT_FOLDER_NAME_INCLUDE;
 
+    public static String SYSTEM_FOLDER_NAME_BIN = GlobalMessageConstants.SYSTEM_FOLDER_NAME_BIN;
+    
+    public static String SYSTEM_FOLDER_NAME_DRIVER = GlobalMessageConstants.SYSTEM_FOLDER_NAME_DRIVER;
+            
+    public static String SYSTEM_FOLDER_NAME_LIB = GlobalMessageConstants.SYSTEM_FOLDER_NAME_LIB;
+            
+    public static String SYSTEM_FOLDER_NAME_PLUGIN = GlobalMessageConstants.SYSTEM_FOLDER_NAME_PLUGIN;
+    
+    public static String SYSTEM_FOLDER_NAME_SETTINGS = GlobalMessageConstants.SYSTEM_FOLDER_NAME_SETTINGS;
+    
+    public static String SYSTEM_FOLDER_NAME_SCRIPT = GlobalMessageConstants.SYSTEM_FOLDER_NAME_SCRIPT;
+    
     public static final String FILE_NAME_GLOBAL_VARIABLE = GlobalMessageConstants.FILE_NAME_GLOBAL_VARIABLE;
     
     // Entity keyword

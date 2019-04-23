@@ -78,4 +78,7 @@
       <parameters xmi:id="_NRexsOi1Eei2Q7mM03p58A" elementId="com.kms.katalon.composer.webservice.parameter.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_WjNQYFHfEem8WJsgtrAkhA" featurename="children" parentElementId="com.kms.katalon.menu.action" positionInList="after:com.kms.katalon.menu.debug">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_jgm68FHfEem8WJsgtrAkhA" elementId="com.kms.katalon.composer.webservice.handledmenuitem.search" label="Search" command="_ldpHAFHtEem8WJsgtrAkhA"/>
+  </fragments>
 </fragment:ModelFragments>

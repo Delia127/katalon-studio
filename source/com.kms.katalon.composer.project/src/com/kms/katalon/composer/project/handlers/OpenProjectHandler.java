@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -218,8 +220,11 @@ public class OpenProjectHandler {
 
     public static void updateProjectTitle(ProjectEntity projectEntity, EModelService modelService, MApplication app) {
         MWindow win = (MWindow) modelService.find(IdConstants.MAIN_WINDOW_ID, app);
+        String versionTag = ApplicationInfo.versionTag();
         if (win != null) {
-            win.setLabel(win.getLabel().split(" - ")[0] + " - " + projectEntity.getName() + " - [Location: "
+            win.setLabel(win.getLabel().split(" - ")[0] + " - " +
+                (!StringUtils.isBlank(versionTag) ? versionTag + " - " : "") +
+                projectEntity.getName() + " - [Location: "
                     + projectEntity.getFolderLocation() + "]");
             win.updateLocalization();
         }

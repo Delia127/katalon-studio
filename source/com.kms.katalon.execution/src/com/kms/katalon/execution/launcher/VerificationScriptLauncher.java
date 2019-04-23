@@ -14,16 +14,14 @@ import com.kms.katalon.execution.launcher.process.LaunchProcessor;
 import com.kms.katalon.execution.launcher.process.VerificationProcess;
 
 public class VerificationScriptLauncher extends ConsoleLauncher {
-    
+
     private Runnable processFinishedRunnable;
-    
+
     private String testObjectId;
-    
-    public VerificationScriptLauncher(String testObjectId,
-            LauncherManager manager, 
-            IRunConfiguration runConfig, 
+
+    public VerificationScriptLauncher(String testObjectId, LauncherManager manager, IRunConfiguration runConfig,
             Runnable processFinishedRunnable) {
-        
+
         super(manager, runConfig);
         this.testObjectId = testObjectId;
         this.processFinishedRunnable = processFinishedRunnable;
@@ -36,15 +34,15 @@ public class VerificationScriptLauncher extends ConsoleLauncher {
             if (systemProcess == null) {
                 throw new ExecutionException(ExecutionMessageConstants.CONSOLE_CANNOT_START_EXECUTION);
             }
-            
+
             Thread thread = new Thread(new Runnable() {
-                
+
                 @Override
                 public void run() {
                     try {
                         systemProcess.waitFor();
                     } catch (InterruptedException e) {
-                       
+
                     } finally {
                         processFinishedRunnable.run();
                     }
@@ -60,14 +58,15 @@ public class VerificationScriptLauncher extends ConsoleLauncher {
     protected ILaunchProcess onCreateLaunchProcess(Process systemProcess) {
         return new VerificationProcess(testObjectId, systemProcess);
     }
-    
+
     @Override
     protected Process executeProcess() throws IOException, ExecutionException {
         try {
-            return new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
-                    .getCurrentProject()), runConfig.getAdditionalEnvironmentVariables()).execute(getRunConfig()
-                    .getExecutionSetting().getScriptFile());
-        }  catch (ControllerException e) {
+            return new LaunchProcessor(
+                    ClassPathResolver.getClassPaths(ProjectController.getInstance().getCurrentProject()),
+                    runConfig.getAdditionalEnvironmentVariables(), runConfig.getVmArgs())
+                            .execute(getRunConfig().getExecutionSetting().getScriptFile());
+        } catch (ControllerException e) {
             throw new ExecutionException(e);
         }
     }

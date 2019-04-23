@@ -66,7 +66,7 @@ public class RecordingScriptLauncher extends ConsoleLauncher {
     protected Process executeProcess() throws IOException, ExecutionException {
         try {
             return new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance().getCurrentProject()),
-                    runConfig.getAdditionalEnvironmentVariables())
+                    runConfig.getAdditionalEnvironmentVariables(), runConfig.getVmArgs())
                             .execute(getRunConfig().getExecutionSetting().getScriptFile());
         } catch (ControllerException e) {
             throw new ExecutionException(e);

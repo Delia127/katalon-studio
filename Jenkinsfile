@@ -3,6 +3,14 @@
 import hudson.model.Result
 import hudson.model.Run
 import jenkins.model.CauseOfInterruption.UserInterruption
+import groovy.json.JsonOutput
+
+def version
+def isRelease
+def isBeta
+def isQtest
+def titleVersion
+def tag
 
 pipeline {
     agent any
@@ -16,6 +24,7 @@ pipeline {
     }
 
     stages {
+
         stage('Prepare') {
             steps {
                 script {
@@ -26,6 +35,56 @@ pipeline {
                 }
             }
         }
+
+        stage('Get version') {
+            steps {
+                script {
+                    Properties properties = new Properties()
+                    File propertiesFile = new File("${env.WORKSPACE}/source/com.kms.katalon/about.mappings")
+                    properties.load(propertiesFile.newDataInputStream())
+                    version = properties.'1'
+                    println("Version ${version}.")
+
+                    def branch = env.BRANCH_NAME
+                    println("Branch ${branch}.")
+
+                    if (!(branch.endsWith(version) || branch.contains("${version}.rc"))) {
+                        println 'Branch or version is incorrect.'
+                        throw new IllegalStateException('Branch or version is incorrect.')
+                    }
+
+                    isQtest = branch.contains('qtest')
+                    println("Is qTest ${isQtest}.")
+
+                    isRelease = branch.startsWith('release-')
+                    println("Is release ${isRelease}.")
+
+                    isBeta = isRelease && branch.contains('.rc')
+                    println("Is beta ${isBeta}.")
+
+                    withUpdate = isRelease && !isQtest && !isBeta
+                    println("With update ${withUpdate}.")
+
+                    if (isRelease) {
+                        tag = branch.replace('release-', '')
+                    } else {
+                        tag = "${version}.DEV"
+                    }
+                    println("Tag ${tag}.")
+                }
+
+                dir('source/com.kms.katalon') {
+                    script {
+                        def commitId = sh(returnStdout: true, script: 'git rev-parse --short HEAD')
+                        titleVersion = "${tag}-${commitId}"
+                        def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
+                        versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
+                        writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
+                    }
+                }
+            }
+        }
+
         stage('Building') {
                 // Start maven commands to get dependencies
             steps {
@@ -52,21 +111,15 @@ pipeline {
 
                     script {
                         dir("source") {
-                // Generate Katalon builds
-                // If branch name contains "release", build production mode for non-qTest package
-                // else build development mode for qTest package
-                            if (BRANCH_NAME ==~ /.*release.*/) {
-                                if (BRANCH_NAME ==~ /.*qtest.*/) {
-                                    echo "Building: qTest Prod"
-                                    sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
-                                } else {
-                                    echo "Building: Standard Prod"
-                                    sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
-                                }
-
+                            // Generate Katalon builds
+                            // If branch name contains "release", build production mode for non-qTest package
+                            // else build development mode for qTest package
+                            if (isQtest) {
+                                echo "Building: qTest Prod"
+                                sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
                             } else {
-                                echo "Building: qTest Dev"
-                                sh 'mvn -pl \\!com.kms.katalon.product clean verify -P dev'
+                                echo "Building: Standard Prod"
+                                sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
                             }
 
                             // Generate API docs
@@ -95,7 +148,7 @@ pipeline {
             steps {
                 dir("source/com.kms.katalon.product/target/products") {
                     script {
-                        if (BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/)) {
+                        if (!isQtest) {
                             sh "cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -106,12 +159,12 @@ pipeline {
                                         flattenFiles: true,
                                         targetLocation: "${env.tmpDir}")
                             ])
-            }
+                        }
                     }
                 }
                 dir("source/com.kms.katalon.product.qtest_edition/target/products") {
                     script {
-                        if (!(BRANCH_NAME ==~ /.*release.*/ && !(BRANCH_NAME ==~ /.*qtest.*/))) {
+                        if (isQtest) {
                             sh "cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${env.tmpDir}"
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/changeLogs.txt", text: getChangeString())
                             writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/commit.txt", text: "${GIT_COMMIT}")
@@ -128,14 +181,102 @@ pipeline {
             }
         }
 
-        stage('Package .DMG file') {
+        stage('Sign file') {
             steps {
-            script {
+                script {
                     // For release branches, execute codesign command to package .DMG file for macOS
-            if (BRANCH_NAME ==~ /.*release.*/) {
-                       sh "./package.sh ${env.tmpDir}"
+                    sh "./codesign.sh ${env.tmpDir}"
+                }
             }
         }
+
+        stage('Package .DMG file') {
+            steps {
+                lock('dropdmg') {
+                    script {
+                        // For release branches, execute codesign command to package .DMG file for macOS
+                        if (isRelease) {
+                            sh "./dropdmg.sh ${env.tmpDir}"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Generate update packages') {
+            steps {
+                script {
+                    if (withUpdate) {
+                        dir("tools/updater") {
+                            def updateInfo = [
+                                buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
+                                destDir: "${tmpDir}/update",
+                                version: "${version}"
+                            ]
+                            def json = JsonOutput.toJson(updateInfo)
+                            json = JsonOutput.prettyPrint(json)
+                            writeFile(file: 'scan_info.json', text: json)
+                            sh 'java -jar json-map-builder-1.0.0.jar'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Repackage') {
+            steps {
+                dir("tools/repackage") {
+                    nodejs(nodeJSInstallationName: 'nodejs') {
+                        sh 'npm prune && npm install'
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_32.zip ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Windows_64.zip ${version}"
+                        sh "node repackage.js ${env.tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}"
+
+                        sh "rm -rf ${env.tmpDir}/*.zip"
+                        sh "rm -rf ${env.tmpDir}/*.tar.gz"
+                        sh "mv ${env.tmpDir}/output/*.zip ${env.tmpDir}/"
+                        sh "mv ${env.tmpDir}/output/*.tar.gz ${env.tmpDir}/"
+                        sh "rm -rf ${env.tmpDir}/output"
+                    }
+                }
+                sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'"
+                sh "rm -rf '${env.tmpDir}/Katalon Studio.app'"
+
+                sh "cd '${env.tmpDir}' && zip -r '${env.tmpDir}/apidocs.zip' 'apidocs'"
+                sh "rm -rf '${env.tmpDir}/apidocs'"
+            }
+        }
+
+        stage('Upload update packages to S3') {
+            steps {
+                script {
+                    if (withUpdate) {
+                        withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
+                            s3Upload(file: "${env.tmpDir}/update/${tag}", bucket:'katalon', path: "update/${tag}", acl:'PublicRead')
+                        }
+                        sh "rm -rf '${env.tmpDir}/update'"
+                    }
+                }
+            }
+        }
+
+        stage('Upload build packages to S3') {
+            steps {
+                script {
+                    if (isRelease) {
+                        def s3Location
+                        if (isQtest) {
+                            s3Location = "${tag}/qTest"
+                        } else if (isBeta) {
+                            s3Location = "release-beta/${tag}"
+                        } else {
+                            s3Location = "${tag}"
+                        }
+                        withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
+                            s3Upload(file: "${env.tmpDir}", bucket:'katalon', path: "${s3Location}", acl:'PublicRead')
+                        }
+                    }
+                }
             }
         }
 

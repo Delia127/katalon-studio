@@ -20,11 +20,6 @@ public class JiraTestCaseIntegrationViewBuilder implements TestCaseIntegrationVi
 	}
 
 	@Override
-	public int preferredOrder() {
-		return 1;
-	}
-
-	@Override
 	public String getName() {
 		return "JIRA";
 	}

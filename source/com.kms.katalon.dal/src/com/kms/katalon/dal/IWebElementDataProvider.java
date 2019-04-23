@@ -27,7 +27,7 @@ public interface IWebElementDataProvider {
 
     public void deleteWebElement(WebElementEntity webElement) throws Exception;
 
-    public void updateTestObject(WebElementEntity webElement) throws Exception;
+    public WebElementEntity updateTestObject(WebElementEntity webElement) throws Exception;
 
     public List<WebElementEntity> getChildWebElementsOfFolder(FolderEntity folder) throws Exception;
 

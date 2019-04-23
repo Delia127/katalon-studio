@@ -25,6 +25,7 @@ import com.kms.katalon.composer.components.impl.tree.TestListenerFolderTreeEntit
 import com.kms.katalon.composer.components.impl.tree.TestListenerTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.UserFileTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -44,6 +45,7 @@ import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.file.TestListenerEntity;
+import com.kms.katalon.entity.file.UserFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -99,6 +101,9 @@ public class TreeEntityUtil {
                             folderTreeEntity));
                 } else if (childrenEntities[i] instanceof SystemFileEntity) {
                     treeEntities.add(new SystemFileTreeEntity((SystemFileEntity) childrenEntities[i],
+                            folderTreeEntity));
+                } else if (childrenEntities[i] instanceof UserFileEntity) {
+                    treeEntities.add(new UserFileTreeEntity((UserFileEntity) childrenEntities[i],
                             folderTreeEntity));
                 }
             }
@@ -505,6 +510,11 @@ public class TreeEntityUtil {
         treeEntities.add(new TestListenerFolderTreeEntity(folderController.getTestListenerRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
         treeEntities.add(new IncludeTreeRootEntity(folderController.getIncludeRoot(project)));
+        
+        List<FolderEntity> userFolders = folderController.getUserFolders(project);
+        for (FolderEntity folder : userFolders) {
+            treeEntities.add(new FolderTreeEntity(folder, null));
+        }
         return treeEntities;
     }
 

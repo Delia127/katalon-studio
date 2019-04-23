@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -59,6 +60,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 @SuppressWarnings("restriction")
@@ -298,6 +300,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
 
     private void afterSaving() {
         childTestSuiteMainPart.afterSaving();
+        childTestSuiteIntegrationPart.onSaveSuccess(testSuite);
     }
 
     @Override
@@ -306,6 +309,13 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         if (!prepareForSaving()) {
             return;
         }
+
+        
+        Map<String, IntegratedEntity> editingIntegrated = childTestSuiteIntegrationPart.getEditingIntegrated();
+        editingIntegrated.entrySet().forEach(entry -> {
+            testSuite.updateIntegratedEntity(entry.getValue());
+        });
+
         // back-up
         TestSuiteEntity temp = new TestSuiteEntity();
         TestSuiteEntityUtil.copyTestSuiteProperties(originalTestSuite, temp);
@@ -340,6 +350,8 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
         } catch (Exception e) {
             // revert to original test suite
             TestSuiteEntityUtil.copyTestSuiteProperties(temp, originalTestSuite);
+            
+            childTestSuiteIntegrationPart.onSaveFailure(e);
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, e.getMessage());
         }
