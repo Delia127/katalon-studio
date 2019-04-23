@@ -15,9 +15,9 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 public class PluginSettings {
 
     public static File getPluginRepoDir() {
-        String pluginDirectory = getPluginDirectory();
-        if (!StringUtils.isBlank(pluginDirectory)) {
-            File directory = new File(pluginDirectory);
+        String directoryLocation = getPluginDirectory();
+        if (!StringUtils.isBlank(directoryLocation)) {
+            File directory = new File(directoryLocation);
             if (directory.exists() && directory.isDirectory()) {
                 return new File(directory, "plugin");
             } else {
