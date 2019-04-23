@@ -1,6 +1,7 @@
 package com.kms.katalon.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
@@ -36,5 +37,19 @@ public class UserFileController extends EntityController {
         } catch (DALException e) {
             throw new ControllerException(e);
         }
+    }
+    
+    public UserFileEntity renameFile(String newName, UserFileEntity userFileEntity) {
+        return getDataProviderSetting().getUserFileDataProvider().renameFile(newName, userFileEntity);
+    }
+    
+    public List<FileEntity> getSiblingFiles(UserFileEntity fileEntity, FolderEntity parentFolder)
+            throws ControllerException {
+        return getChildren(parentFolder).stream().filter(f -> !f.getName().equals(fileEntity.getName()))
+                .collect(Collectors.toList());
+    }
+    
+    public void deleteFile(UserFileEntity userFileEntity) {
+        getDataProviderSetting().getUserFileDataProvider().deleteFile(userFileEntity);
     }
 }

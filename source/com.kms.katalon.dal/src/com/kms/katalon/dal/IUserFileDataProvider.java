@@ -10,4 +10,6 @@ import com.kms.katalon.entity.folder.FolderEntity;
 public interface IUserFileDataProvider {
     List<FileEntity> getChildren(FolderEntity parentFolder) throws DALException;
     UserFileEntity newFile(String name, FolderEntity parentFolder) throws DALException;
+    UserFileEntity renameFile(String newName, UserFileEntity userFileEntity);
+    void deleteFile(UserFileEntity userFileEntity);
 }
