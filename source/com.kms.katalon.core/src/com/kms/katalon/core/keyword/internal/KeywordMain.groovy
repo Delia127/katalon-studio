@@ -26,19 +26,12 @@ public class KeywordMain {
     @CompileStatic
     public static stepFailed(String message, FailureHandling flHandling, Throwable t, Map<String, String> attributes = null) throws StepFailedException {
         String failedMessage = buildReasonMessage(message, t != null ? ExceptionsUtil.getStackTraceForThrowable(t) : EMPTY_REASON).toString()
-        Throwable rootCause = ExceptionUtils.getRootCause(t);
-        if (rootCause == null) {
-            rootCause = t;
-        }
-        attributes.put("failed.exception.class", rootCause.getClass().getName());
-        attributes.put("failed.exception.message", rootCause.getMessage());
-        attributes.put("failed.exception.stacktrace", Throwables.getStackTraceAsString(t));
         switch (flHandling) {
             case FailureHandling.OPTIONAL:
-                logger.logWarning(failedMessage, attributes);
+                logger.logWarning(failedMessage, attributes, t);
                 break;
             case FailureHandling.CONTINUE_ON_FAILURE:
-                logger.logFailed(failedMessage, attributes);
+                logger.logFailed(failedMessage, attributes, t);
                 Exception ex = null;
                 if (ErrorCollector.isErrorFailed(t)) {
                     ex = new StepErrorException(failedMessage, t)
@@ -47,7 +40,7 @@ public class KeywordMain {
                 ErrorCollector.getCollector().addError(ex);
                 break;
             case FailureHandling.STOP_ON_FAILURE:
-                logger.logFailed(failedMessage, attributes);
+                logger.logFailed(failedMessage, attributes, t);
                 if (t instanceof StepFailedException || t instanceof StepErrorException) {
                     throw t;
                 }

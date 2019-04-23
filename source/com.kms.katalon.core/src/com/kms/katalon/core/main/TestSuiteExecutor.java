@@ -181,12 +181,13 @@ public class TestSuiteExecutor {
 
         if (errorCollector.containsErrors()) {
             endAllUnfinishedKeywords(keywordStack);
-            String errorMessage = errorCollector.getFirstError().getMessage();
+            Throwable firstError = errorCollector.getFirstError();
+            String errorMessage = firstError.getMessage();
             if (ignoredIfFailed) {
-                logger.logWarning(errorMessage);
+                logger.logWarning(errorMessage, null, firstError);
             } else {
                 oldErrors.add(errorCollector.getFirstError());
-                logger.logError(errorMessage);
+                logger.logError(errorMessage, null, firstError);
             }
         } else {
             logger.logPassed(MessageFormat.format(StringConstants.MAIN_LOG_PASSED_METHOD_COMPLETED, methodName));
