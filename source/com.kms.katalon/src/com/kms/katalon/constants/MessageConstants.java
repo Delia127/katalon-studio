@@ -395,8 +395,18 @@ public class MessageConstants extends NLS {
     public static String KStorePluginsDialog_COL_PLUGIN;
 
     public static String KStorePluginsDialog_COL_STATUS;
+    
+    public static String KStorePluginsDialog_COL_LICENSE;
 
     public static String KStorePluginsDialog_DIA_TITLE;
+    
+    public static String KStorePluginsDialog_LICENSE_FREE;
+    
+    public static String KStorePluginsDialog_LICENSE_PAID;
+    
+    public static String KStorePluginsDialog_LICENSE_TRIAL;
+    
+    public static String KStorePluginsDialog_LICENSE_EXPIRED;
 
     public static String KStorePluginsDialog_STATUS_INSTALLED;
 
@@ -409,6 +419,10 @@ public class MessageConstants extends NLS {
     public static String KStorePluginsDialog_COL_VERSION;
 
     public static String KStorePluginsDialog_LBL_UPDATE;
+    
+    public static String KStorePluginsDialog_LNK_REVIEW;
+    
+    public static String KStorePluginsDialog_LNK_PURCHASE;
 
     public static String LBL_DISABLE_MOB_BROWSER_PROXY;
 
