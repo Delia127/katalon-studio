@@ -44,6 +44,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
     
 	public static String EXC_INVALID_SWAGGER_FILE;
+	
+	public static String EXC_INVALID_POSTMAN_FILE;
 
 	public static String EXC_INVALID_WSDL_FILE;
 
@@ -96,6 +98,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ;
     
     public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;
+    
+    public static String VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN;
 
     public static String VIEW_DIA_MSG_CREATE_NEW_WEBSERVICE_REQ;
     
@@ -104,6 +108,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
     
     public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER; 
+    
+    public static String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN; 
     
     public static String VIEW_MENU_CONTEXT_INSERT_PROP;
 

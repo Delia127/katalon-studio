@@ -253,12 +253,20 @@ public class Trackings {
         trackUserAction("openImportingSwagger");
     }
 
+    public static void trackOpenImportingPostman() {
+        trackUserAction("openImportingPostman");
+    }
+    
     public static void trackOpenImportingWsdl() {
         trackUserAction("openImportingWSDL");
     }
 
     public static void trackImportSwagger(String importType) {
         trackUserAction("importSwagger", "type", importType);
+    }
+    
+    public static void trackImportPostman(String importType) {
+        trackUserAction("importPostman", "type", importType);
     }
 
     public static void trackImportWSDL(String importType) {
