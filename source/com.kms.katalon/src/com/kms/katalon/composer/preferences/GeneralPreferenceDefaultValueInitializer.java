@@ -2,8 +2,11 @@ package com.kms.katalon.composer.preferences;
 
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -32,13 +35,8 @@ public class GeneralPreferenceDefaultValueInitializer extends AbstractPreference
         prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_WALKTHROUGH_DIALOG, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_NUMBER_OF_APP_CLOSES, 0);
-//        prefStore.setDefault(PreferenceConstants.PLUGIN_REPO_LOCATION, value);
+        prefStore.setDefault(PreferenceConstants.PLUGIN_DIRECTORY, "");
         save();
-    }
-    
-    private String getDefaultPluginRepoLocation() {
-//        return 
-        return null;
     }
 
     public boolean isFirstTimeSetup() {

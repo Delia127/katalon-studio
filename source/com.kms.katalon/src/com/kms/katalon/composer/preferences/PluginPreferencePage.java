@@ -14,30 +14,66 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+
 public class PluginPreferencePage extends PreferencePage {
+
+    private Text txtPluginDirectory;
+
+    private ScopedPreferenceStore prefStore;
+
+    public PluginPreferencePage() {
+        prefStore = getPreferenceStore();
+    }
 
     @Override
     protected Control createContents(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(3, false));
-        
-        Label lblPluginRepoLocation = new Label(composite, SWT.NONE);
-        lblPluginRepoLocation.setText("Repository location ");
-        
-        Text txtPluginRepoLocation = new Text(composite, SWT.BORDER);
-        txtPluginRepoLocation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        Button btnSelectFolder = new Button(composite, SWT.PUSH);
-        btnSelectFolder.setText("Browse");
-        btnSelectFolder.addSelectionListener(new SelectionAdapter() {
+        Label lblPluginDirectory = new Label(composite, SWT.NONE);
+        lblPluginDirectory.setText("Plugin directory ");
+
+        txtPluginDirectory = new Text(composite, SWT.BORDER);
+        txtPluginDirectory.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        txtPluginDirectory.setText(prefStore.getString(PreferenceConstants.PLUGIN_DIRECTORY));
+
+        Button btnBrowseFolder = new Button(composite, SWT.PUSH);
+        btnBrowseFolder.setText("Browse");
+        btnBrowseFolder.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 DirectoryDialog directoryDialog = new DirectoryDialog(Display.getCurrent().getActiveShell());
-                String filePath = directoryDialog.open();
-                txtPluginRepoLocation.setText(filePath);
+                String directoryLocation = directoryDialog.open();
+                txtPluginDirectory.setText(directoryLocation);
             }
         });
+
         return composite;
+    }
+
+    @Override
+    public boolean performOk() {
+        boolean performOk = super.performOk();
+        if (performOk) {
+            prefStore.setValue(PreferenceConstants.PLUGIN_DIRECTORY, txtPluginDirectory.getText());
+        }
+
+        return performOk;
+    }
+
+    @Override
+    protected void performDefaults() {
+        super.performDefaults();
+        getPreferenceStore().setToDefault(PreferenceConstants.PLUGIN_DIRECTORY);
+        txtPluginDirectory.setText(prefStore.getString(PreferenceConstants.PLUGIN_DIRECTORY));
+    }
+
+    public ScopedPreferenceStore getPreferenceStore() {
+        return PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
     }
 
 }

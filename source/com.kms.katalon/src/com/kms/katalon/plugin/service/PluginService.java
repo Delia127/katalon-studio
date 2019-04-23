@@ -99,7 +99,7 @@ public class PluginService {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
                 }
-                String pluginPath = getPluginLocation(plugin);
+                String pluginPath = plugin.getLocation();
                 if (!StringUtils.isBlank(pluginPath)) {
                     platformUninstall(pluginPath);
                 }
@@ -146,9 +146,9 @@ public class PluginService {
                     File download = downloadAndExtractPlugin(plugin, credentials);
                     if (download != null) {
                         pluginPath = download.getAbsolutePath();
-                        savePluginLocation(plugin, pluginPath);
                     }
                 }
+                plugin.setLocation(pluginPath);
                 
                 LogService.getInstance().logInfo(String.format("Plugin ID: %d. Plugin location: %s.",
                     plugin.getId(), pluginPath));
@@ -319,10 +319,6 @@ public class PluginService {
             return name.endsWith(".jar") && !name.endsWith("-javadoc.jar") && !name.endsWith("-sources.jar");
         }).findAny().orElse(null);
         return jar;
-    }
-
-    private void savePluginLocation(KStorePlugin plugin, String path) throws IOException {
-        pluginPrefStore.setPluginLocation(plugin, path);
     }
     
     private boolean isCustomKeywordPlugin(KStorePlugin plugin) {
