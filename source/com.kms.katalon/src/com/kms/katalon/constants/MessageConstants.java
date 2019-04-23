@@ -431,6 +431,11 @@ public class MessageConstants extends NLS {
     public static String ERR_CONSOLE_MODE;
 
     public static String REQUEST_CODE_PROP_NAME;
+    
+    //PluginPreferencePage
+    public static String PAGE_LBL_PLUGIN_DIRECTORY;
+    
+    public static String PAGE_BTN_BROWSE_FOLDER;
 
     static {
         // initialize resource bundle

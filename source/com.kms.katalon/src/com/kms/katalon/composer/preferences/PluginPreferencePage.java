@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -35,14 +36,14 @@ public class PluginPreferencePage extends PreferencePage {
         composite.setLayout(new GridLayout(3, false));
 
         Label lblPluginDirectory = new Label(composite, SWT.NONE);
-        lblPluginDirectory.setText("Plugin directory ");
+        lblPluginDirectory.setText(StringConstants.PAGE_LBL_PLUGIN_DIRECTORY);
 
         txtPluginDirectory = new Text(composite, SWT.BORDER);
         txtPluginDirectory.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         txtPluginDirectory.setText(prefStore.getString(PreferenceConstants.PLUGIN_DIRECTORY));
 
         Button btnBrowseFolder = new Button(composite, SWT.PUSH);
-        btnBrowseFolder.setText("Browse");
+        btnBrowseFolder.setText(StringConstants.PAGE_BTN_BROWSE_FOLDER);
         btnBrowseFolder.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {

@@ -164,4 +164,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_PLUGIN_HAS_BEEN_INSTALLED = MessageConstants.MSG_PLUGIN_HAS_BEEN_INSTALLED;
     
     public static final String MSG_PLUGIN_HAS_BEEN_UNINSTALLED = MessageConstants.MSG_PLUGIN_HAS_BEEN_UNINSTALLED;
+
+    // PluginPreferencePage
+    public static final String PAGE_LBL_PLUGIN_DIRECTORY = MessageConstants.PAGE_LBL_PLUGIN_DIRECTORY;
+    
+    public static final String PAGE_BTN_BROWSE_FOLDER = MessageConstants.PAGE_BTN_BROWSE_FOLDER;
 }
