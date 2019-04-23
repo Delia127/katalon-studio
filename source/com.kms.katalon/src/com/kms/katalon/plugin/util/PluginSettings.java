@@ -1,10 +1,11 @@
 package com.kms.katalon.plugin.util;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.kms.katalon.constants.GlobalStringConstants;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 
 public class PluginSettings {
 
@@ -18,7 +19,15 @@ public class PluginSettings {
                 throw new IllegalArgumentException("Invalid repository location");
             }
         } else {
-            return new File(GlobalStringConstants.APP_USER_DIR_LOCATION, "plugin");
+            return new File(getConfigurationFolder(), "plugin");
         }
+    }
+    
+    private static File getConfigurationFolder() {
+        try {
+            return new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
+        } catch (IOException e) {
+        }
+        return null;
     }
 }
