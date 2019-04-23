@@ -49,17 +49,30 @@ public class ReportInjectionManagerAddon {
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
             @Override
             public void handleEvent(Event event) {
-                ReportComposerIntegrationFactory.getInstance().onProjectChanged();
-                List<CustomKeywordPlugin> plugins = CustomKeywordPluginFactory.getInstance().getPlugins();
-                for (CustomKeywordPlugin plugin : plugins) {
-                    if (plugin.getKeywordsManifest() != null && plugin.getKeywordsManifest().getReport() != null
-                            && plugin.getKeywordsManifest().getReport().getExportProviderClassName() != null) {
-                        loadExportReportProvider(plugin,
-                                plugin.getKeywordsManifest().getReport().getExportProviderClassName());
-                    }
+                collectReportExportProviders();
+            }
+        });
+
+        eventBroker.subscribe(EventConstants.WORKSPACE_PLUGIN_LOADED, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
+                if (ProjectController.getInstance().getCurrentProject() != null) {
+                    collectReportExportProviders();
                 }
             }
         });
+    }
+
+    private void collectReportExportProviders() {
+        ReportComposerIntegrationFactory.getInstance().onProjectChanged();
+        List<CustomKeywordPlugin> plugins = CustomKeywordPluginFactory.getInstance().getPlugins();
+        for (CustomKeywordPlugin plugin : plugins) {
+            if (plugin.getKeywordsManifest() != null && plugin.getKeywordsManifest().getReport() != null
+                    && plugin.getKeywordsManifest().getReport().getExportProviderClassName() != null) {
+                loadExportReportProvider(plugin, plugin.getKeywordsManifest().getReport().getExportProviderClassName());
+            }
+        }
     }
 
     private void loadExportReportProvider(CustomKeywordPlugin plugin, String exportReportProviderClassName) {
