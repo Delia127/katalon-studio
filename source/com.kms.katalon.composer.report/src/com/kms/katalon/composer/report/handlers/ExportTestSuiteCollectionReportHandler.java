@@ -4,6 +4,11 @@ import java.io.File;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.menu.MDirectMenuItem;
@@ -54,16 +59,36 @@ public class ExportTestSuiteCollectionReportHandler {
                         ReportCollectionEntity report = (ReportCollectionEntity) ((ReportCollectionTreeEntity) selectedObject)
                                 .getObject();
 
-                        ExportReportProviderReflection reflection = new ExportReportProviderReflection(
-                                exportReportProviderPlugin);
-                        File exportedFile = (File) reflection.exportTestSuiteCollection(report,
-                                menuItemObject.getFormatType(), exportDirectory);
-                        Program.launch(exportedFile.toURI().toString());
+                        Job job = new Job("Export test suite report") {
+
+                            @Override
+                            protected IStatus run(IProgressMonitor monitor) {
+                                try {
+                                    monitor.beginTask(
+                                            "Exporting report to " + menuItemObject.getFormatType() + " format...",
+                                            SubMonitor.UNKNOWN);
+                                    ExportReportProviderReflection reflection = new ExportReportProviderReflection(
+                                            exportReportProviderPlugin);
+                                    File exportedFile = (File) reflection.exportTestSuiteCollection(report,
+                                            menuItemObject.getFormatType(), exportDirectory);
+                                    UISynchronizeService
+                                            .syncExec(() -> Program.launch(exportedFile.toURI().toString()));
+                                    return Status.OK_STATUS;
+                                } catch (Exception e) {
+                                    LoggerSingleton.logError(e);
+                                    UISynchronizeService.syncExec(() -> MessageDialog.openError(shell, "Error",
+                                            "Unable to export report (" + e.getMessage() + ")"));
+                                    return Status.CANCEL_STATUS;
+                                } finally {
+                                    monitor.done();
+                                }
+                            }
+                        };
+                        job.setUser(true);
+                        job.schedule();
                     }
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    UISynchronizeService.syncExec(() -> MessageDialog.openError(shell, "Error",
-                            "Unable to export report (" + e.getMessage() + ")"));
                 }
             }
         }
