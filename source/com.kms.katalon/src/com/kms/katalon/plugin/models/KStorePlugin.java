@@ -30,7 +30,7 @@ public class KStorePlugin {
     
     private String location;
     
-    private int remaining;
+    private int remainingDay;
 
     public long getId() {
         return id;
@@ -144,11 +144,11 @@ public class KStorePlugin {
         this.location = location;
     }
 
-    public int getRemaining() {
-        return remaining;
+    public int getRemainingDay() {
+        return remainingDay;
     }
 
-    public void setRemaining(int remaining) {
-        this.remaining = remaining;
+    public void setRemainingDay(int remainingDay) {
+        this.remainingDay = remainingDay;
     }
 }

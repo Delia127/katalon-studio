@@ -172,6 +172,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStorePluginsDialog_LNK_REVIEW = MessageConstants.KStorePluginsDialog_LNK_REVIEW;
     
     public static final String KStorePluginsDialog_LNK_PURCHASE = MessageConstants.KStorePluginsDialog_LNK_PURCHASE;
+    
+    public static final String KStorePluginsDialog_LBL_WARNING = MessageConstants.KStorePluginsDialog_LBL_WARNING;
 
     public static final String HAND_INFO_NO_PLUGINS_FOUND = MessageConstants.HAND_INFO_NO_PLUGINS_FOUND;
     

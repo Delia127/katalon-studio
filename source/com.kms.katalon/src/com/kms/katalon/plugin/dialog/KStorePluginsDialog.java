@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -52,6 +53,8 @@ public class KStorePluginsDialog extends Dialog {
     private static final int CLMN_PURCHASE_IDX = 4;
 
     private List<ResultItem> results;
+    
+    private Label lblWarning;
 
     protected KStorePluginsDialog(Shell parentShell) {
         super(parentShell);
@@ -66,7 +69,17 @@ public class KStorePluginsDialog extends Dialog {
     protected Control createDialogArea(Composite parent) { 
         Composite body = new Composite(parent, SWT.BORDER);
         body.setLayout(new GridLayout(1, false));
-        body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        GridData gdBody = new GridData(SWT.FILL, SWT.FILL, true, true);
+        body.setLayoutData(gdBody);
+        
+        lblWarning = new Label(body, SWT.WRAP);
+        GridData gdWarning = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gdWarning.widthHint = 430;
+        lblWarning.setLayoutData(gdWarning);
+        lblWarning.setText(StringConstants.KStorePluginsDialog_LBL_WARNING);
+        boolean visible = shouldShowExpiryWarningMessage();
+        gdWarning.exclude = !visible;
+        lblWarning.setVisible(visible);
         
         Composite tableComposite = new Composite(body, SWT.NONE);
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -99,14 +112,14 @@ public class KStorePluginsDialog extends Dialog {
                     return StringConstants.KStorePluginsDialog_LICENSE_PAID;
                 }
                 
-                if (plugin.isTrial()) {
-                    return StringConstants.KStorePluginsDialog_LICENSE_TRIAL;
-                }
-                
                 if (plugin.isExpired()) {
                     return StringConstants.KStorePluginsDialog_LICENSE_EXPIRED;
                 }
                 
+                if (plugin.isTrial()) {
+                    return StringConstants.KStorePluginsDialog_LICENSE_TRIAL;
+                }
+
                 return StringUtils.EMPTY;
             }
             
@@ -114,8 +127,9 @@ public class KStorePluginsDialog extends Dialog {
             public Color getForeground(Object element) {
                 ResultItem item = (ResultItem) element;
                 KStorePlugin plugin = item.getPlugin();
-                if (plugin.isExpired() || plugin.isTrial()) {
-                    return new Color(Display.getCurrent(), 255, 165, 0);
+                Color colorWarning = new Color(Display.getCurrent(), 255, 165, 0); //orange
+                if (checkExpire(plugin)) {
+                    return colorWarning;
                 }
                 return super.getForeground(element);
             }
@@ -143,9 +157,9 @@ public class KStorePluginsDialog extends Dialog {
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableColumnPluginName, new ColumnWeightData(40, 40));
         tableLayout.setColumnData(tableColumnLicense, new ColumnWeightData(20, 10));
-        tableLayout.setColumnData(tableColumnVersion, new ColumnWeightData(20, 20));
-        tableLayout.setColumnData(tableColumnReview, new ColumnWeightData(10, 30));
-        tableLayout.setColumnData(tableColumnPurchase, new ColumnWeightData(10, 30));
+        tableLayout.setColumnData(tableColumnVersion, new ColumnWeightData(10, 20));
+        tableLayout.setColumnData(tableColumnReview, new ColumnWeightData(15, 30));
+        tableLayout.setColumnData(tableColumnPurchase, new ColumnWeightData(15, 30));
         tableComposite.setLayout(tableLayout);
         
         pluginTableViewer.setInput(collectInstalledAndExpiredPluginResults(results));
@@ -162,6 +176,17 @@ public class KStorePluginsDialog extends Dialog {
         });
         
         return body;
+    }
+    
+    private boolean shouldShowExpiryWarningMessage() {
+        return results.stream()
+            .filter(r -> checkExpire(r.getPlugin()))
+            .findAny()
+            .isPresent();         
+    }
+    
+    private boolean checkExpire(KStorePlugin plugin) {
+         return plugin.isExpired() || (plugin.isTrial() && plugin.getRemainingDay() <= 14);
     }
     
     private List<ResultItem> collectInstalledAndExpiredPluginResults(List<ResultItem> results) {
@@ -281,7 +306,7 @@ public class KStorePluginsDialog extends Dialog {
                 KStoreUsernamePasswordCredentials credentials = pluginPrefStore.getKStoreUsernamePasswordCredentials();
                 
                 KStoreRestClient restClient = new KStoreRestClient(credentials);
-                restClient.goToProductReviewPage(resultItem.getPlugin().getProduct());
+                restClient.goToProductPricingPage(resultItem.getPlugin().getProduct());
             } catch (GeneralSecurityException | IOException | KStoreClientException ex) {
                 LoggerSingleton.logError(ex);
             }
