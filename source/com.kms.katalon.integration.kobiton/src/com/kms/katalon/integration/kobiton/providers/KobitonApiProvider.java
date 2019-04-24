@@ -3,9 +3,12 @@ package com.kms.katalon.integration.kobiton.providers;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.http.HttpResponse;
@@ -109,10 +112,15 @@ public class KobitonApiProvider {
                 .create()
                 .fromJson(responseString, new TypeToken<Map<String, List<KobitonDevice>>>() {}.getType());
 
-        return allDevices.getOrDefault("favoriteDevices", Collections.emptyList())
+        List<KobitonDevice> onlineAndFavouriteDevices = allDevices.getOrDefault("favoriteDevices", Collections.emptyList())
                 .stream()
                 .filter(d -> !d.isHidden() && d.isOnline() && d.isFavorite())
                 .collect(Collectors.toList());
+        Set<KobitonDevice> filteredDuplicatedDevices = new LinkedHashSet<>();
+        for (KobitonDevice device : onlineAndFavouriteDevices) {
+            filteredDuplicatedDevices.add(device);
+        }
+        return new ArrayList<>(filteredDuplicatedDevices);
     }
 
     public static List<KobitonApplication> getKobitionApplications(String token)
