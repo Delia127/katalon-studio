@@ -89,11 +89,12 @@ public class PostmanParseUtils {
                                                     for (int k = 1; k < var.length; k++)
                                                         katalonVariablePath += "/" + var[k];
                                                 }
+                                            } else {
+                                                katalonVariablePath += "${" + variables[1] + "}";
                                             }
                                         }
                                     }
-                                }
-                                else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
+                                } else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
                                     katalonVariablePath += pathAndVariables[i];
                                 }
 
@@ -199,7 +200,7 @@ public class PostmanParseUtils {
                 urlCommonPrefix += request.getURL().getRaw();
                 String urlCommonPrefix2 = urlCommonPrefix;
                 String katalonVariablePath = "";
-                String[] pathAndVariables = oRaw.toString().split("[\\{||\\:}]");
+                String[] pathAndVariables = oRaw.toString().split("[\\{||\\}]");
                 katalonVariablePath += pathAndVariables[0];
 
                 if (pathAndVariables.length > 1) {
@@ -218,7 +219,10 @@ public class PostmanParseUtils {
                                             for (int k = 1; k < var.length; k++)
                                                 katalonVariablePath += "/" + var[k];
                                         }
+                                    } else {
+                                        katalonVariablePath += "${" + variables[1] + "}";
                                     }
+
                                 }
                             }
                         } else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
@@ -227,52 +231,52 @@ public class PostmanParseUtils {
                     }
 
                 }
-            String key = "";
-            String value = "";
+                String key = "";
+                String value = "";
 
-            List<WebElementPropertyEntity> propertiesEntity = new ArrayList<WebElementPropertyEntity>();
-            for (int i = 0; i < header.size(); i++) {
-                WebElementPropertyEntity webElementProperty = new WebElementPropertyEntity();
-                key = header.get(i).getKey();
-                value = header.get(i).getValue();
-                webElementProperty.setName(key);
-                webElementProperty.setValue(value);
-                propertiesEntity.add(i, webElementProperty);
-            }
-
-            String keyVar = "";
-            String valueVar = "";
-            String id = "";
-            String decription = "";
-            List<VariableEntity> variable = new ArrayList<VariableEntity>();
-            if (request.getURL().getVariable() != null) {
-                for (int i = 0; i < request.getURL().getVariable().size(); i++) {
-                    VariableEntity variableEntity = new VariableEntity();
-                    keyVar = request.getURL().getVariable().get(i).getKey();
-                    id = request.getURL().getVariable().get(i).getId();
-                    valueVar = request.getURL().getVariable().get(i).getValue();
-                    decription = request.getURL().getVariable().get(i).getDescription();
-                    variableEntity.setName(keyVar);
-                    variableEntity.setId(id);
-                    variableEntity.setDefaultValue(valueVar);
-                    variableEntity.setDescription(decription);
-                    variable.add(i, variableEntity);
+                List<WebElementPropertyEntity> propertiesEntity = new ArrayList<WebElementPropertyEntity>();
+                for (int i = 0; i < header.size(); i++) {
+                    WebElementPropertyEntity webElementProperty = new WebElementPropertyEntity();
+                    key = header.get(i).getKey();
+                    value = header.get(i).getValue();
+                    webElementProperty.setName(key);
+                    webElementProperty.setValue(value);
+                    propertiesEntity.add(i, webElementProperty);
                 }
+
+                String keyVar = "";
+                String valueVar = "";
+                String id = "";
+                String decription = "";
+                List<VariableEntity> variable = new ArrayList<VariableEntity>();
+                if (request.getURL().getVariable() != null) {
+                    for (int i = 0; i < request.getURL().getVariable().size(); i++) {
+                        VariableEntity variableEntity = new VariableEntity();
+                        keyVar = request.getURL().getVariable().get(i).getKey();
+                        id = request.getURL().getVariable().get(i).getId();
+                        valueVar = request.getURL().getVariable().get(i).getValue();
+                        decription = request.getURL().getVariable().get(i).getDescription();
+                        variableEntity.setName(keyVar);
+                        variableEntity.setId(id);
+                        variableEntity.setDefaultValue(valueVar);
+                        variableEntity.setDescription(decription);
+                        variable.add(i, variableEntity);
+                    }
+                }
+
+                urlCommonPrefix2 = katalonVariablePath;
+                entity.setRestUrl(urlCommonPrefix2);
+                entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
+                entity.setVariables(variable);
+                entity.setHttpBody(request.getBody().getRaw());
+                entity.setHttpHeaderProperties(propertiesEntity);
+
             }
 
-            urlCommonPrefix2 = katalonVariablePath;
-            entity.setRestUrl(urlCommonPrefix2);
-            entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
-            entity.setVariables(variable);
-            entity.setHttpBody(request.getBody().getRaw());
-            entity.setHttpHeaderProperties(propertiesEntity);
+            // TODO: get require properties from request and put into entity
 
+            newWSTestObjects.add(entity);
         }
-
-        // TODO: get require properties from request and put into entity
-
-        newWSTestObjects.add(entity);
-    }
 
     }
 
