@@ -20,9 +20,17 @@ public class KStorePlugin {
     
     private KStorePluginVersion latestCompatibleVersion;
     
+    private boolean free;
+    
+    private boolean trial;
+    
+    private boolean paid;
+    
     private boolean expired;
     
     private String location;
+    
+    private int remainingDay;
 
     public long getId() {
         return id;
@@ -96,6 +104,30 @@ public class KStorePlugin {
         this.latestCompatibleVersion = latestCompatibleVersion;
     }
 
+    public boolean isFree() {
+        return free;
+    }
+
+    public void setFree(boolean free) {
+        this.free = free;
+    }
+
+    public boolean isTrial() {
+        return trial;
+    }
+
+    public void setTrial(boolean trial) {
+        this.trial = trial;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
     public boolean isExpired() {
         return expired;
     }
@@ -110,5 +142,13 @@ public class KStorePlugin {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public int getRemainingDay() {
+        return remainingDay;
+    }
+
+    public void setRemainingDay(int remainingDay) {
+        this.remainingDay = remainingDay;
     }
 }
