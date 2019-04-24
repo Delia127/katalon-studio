@@ -6,10 +6,8 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
-import com.kms.katalon.composer.testsuite.platform.PlatformTestSuiteUIViewBuilder;
 import com.kms.katalon.composer.testsuite.integration.TestSuiteIntegrationFactory;
 import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegrationPlatformBuilder;
-import com.kms.katalon.composer.view.TestSuiteViewFactory;
 
 public class TestSuiteComposerActivator implements BundleActivator {
 
@@ -23,19 +21,6 @@ public class TestSuiteComposerActivator implements BundleActivator {
                     ServiceReference<TestSuiteIntegrationPlatformBuilder> serviceReference = context
                             .getServiceReference(TestSuiteIntegrationPlatformBuilder.class);
                     TestSuiteIntegrationFactory.getInstance().setPlatformBuilder(context.getService(serviceReference));
-                    context.removeServiceListener(this);
-                }
-            }
-        });
-        
-        context.addServiceListener(new ServiceListener() {
-
-            @Override
-            public void serviceChanged(ServiceEvent event) {
-                if (context.getService(event.getServiceReference()) instanceof PlatformTestSuiteUIViewBuilder) {
-                    ServiceReference<PlatformTestSuiteUIViewBuilder> serviceReference = context
-                            .getServiceReference(PlatformTestSuiteUIViewBuilder.class);
-                    TestSuiteViewFactory.getInstance().setPlatformBuilder(context.getService(serviceReference));
                     context.removeServiceListener(this);
                 }
             }

@@ -48,9 +48,7 @@ Export-Package: com.kms.katalon.composer.testsuite.constants,
  com.kms.katalon.composer.testsuite.handlers,
  com.kms.katalon.composer.testsuite.parts,
  com.kms.katalon.composer.testsuite.parts.integration,
- com.kms.katalon.composer.testsuite.platform,
- com.kms.katalon.composer.testsuite.providers,
- com.kms.katalon.composer.testsuite.view.builder
+ com.kms.katalon.composer.testsuite.providers
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"
 Bundle-Activator: com.kms.katalon.composer.testsuite.TestSuiteComposerActivator

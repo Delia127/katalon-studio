@@ -90,7 +90,7 @@ public class TestSuiteIntegrationPart {
         clearToolbar();
 
         integratingCompositeMap = new HashMap<String, AbstractTestSuiteIntegrationView>();
-        editingIntegratedEntities = new HashMap<String, IntegratedEntity>();
+
         for (TestSuiteIntegrationViewBuilder builderEntry : TestSuiteIntegrationFactory.getInstance()
                 .getSortedViewBuilders()) {
             ToolItem item = new ToolItem(toolBar, SWT.CHECK);

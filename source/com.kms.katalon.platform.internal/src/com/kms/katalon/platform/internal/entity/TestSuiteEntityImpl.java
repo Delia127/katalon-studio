@@ -61,29 +61,4 @@ public class TestSuiteEntityImpl implements com.katalon.platform.api.model.TestS
     public String getName() {
         return source.getName();
     }
-
-	@Override
-	public boolean getIsRerun() {
-		return source.getIsRerun();
-	}
-
-	@Override
-	public String getMailRecepient() {
-		return source.getMailRecipient();
-	}
-
-	@Override
-	public boolean isPageLoadTimeoutDefault() {
-		return source.isPageLoadTimeoutDefault();
-	}
-
-	@Override
-	public int numberOfRerun() {
-		return source.getNumberOfRerun();
-	}
-
-	@Override
-	public boolean rerunFailedTestCasesOnly() {
-		return source.isRerunFailedTestCasesOnly();
-	}
 }

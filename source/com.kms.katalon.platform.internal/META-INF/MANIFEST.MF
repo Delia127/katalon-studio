@@ -23,7 +23,6 @@ Require-Bundle: com.katalon.platform,
  com.kms.katalon.composer.util,
  org.eclipse.jdt.core,
  com.kms.katalon.composer.testcase,
- com.kms.katalon.composer.testsuite,
  org.eclipse.e4.ui.model.workbench,
  javax.inject,
  org.eclipse.e4.core.di,
@@ -36,8 +35,3 @@ Require-Bundle: com.katalon.platform,
  net.sf.jopt-simple.jopt-simple
 Bundle-Activator: com.kms.katalon.platform.internal.InternalPlatformPlugin
 Bundle-ActivationPolicy: lazy
-Import-Package: com.kms.katalon.composer.execution.collection.collector,
- com.kms.katalon.composer.testsuite.collection.part,
- com.kms.katalon.composer.testsuite.collection.platform,
- com.kms.katalon.composer.testsuite.collection.view.builder
-

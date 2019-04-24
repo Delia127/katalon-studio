@@ -3,7 +3,6 @@ package com.kms.katalon.composer.testsuite.collection.part;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.annotation.PostConstruct;
@@ -97,7 +96,6 @@ import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurati
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransfer;
-import com.kms.katalon.composer.testsuite.collection.view.TestSuiteCollectionViewFactory;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -172,21 +170,14 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     private Spinner spnMaxConcurrentThread;
 
-    private Composite customViews;
-
-    private Composite parent;
-
-    private Map<String, ExpandableTestSuiteCollectionComposite> viewCompositeMap = new HashMap<>();
-
     @PostConstruct
     public void initialize(Composite parent, MPart mpart) {
         this.mpart = mpart;
         this.isExecutionInfoCompositeExpanded = true;
-        this.parent = parent;
         registerEventListeners();
 
         new HelpToolBarForMPart(mpart, DocumentationMessageConstants.TEST_SUITE_COLLECTION);
-        createControls();
+        createControls(parent);
         registerControlModifyListeners();
         updateTestSuiteCollections((TestSuiteCollectionEntity) mpart.getObject());
     }
@@ -215,15 +206,13 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         updateInput();
 
         lastModified = getFileInfo(originalTestSuite).getLastModified();
-
-        createViewsFromViewFactory();
     }
 
     private void updateInput() {
         tableViewer.setInput(cloneTestSuite.getTestSuiteRunConfigurations());
         updateExecutionInfoInput();
         updateRunColumn();
-
+        
         mpart.setDirty(false);
     }
 
@@ -231,7 +220,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         setStatusForRadioExecutionMode(cloneTestSuite.getExecutionMode());
         spnMaxConcurrentThread.setSelection(cloneTestSuite.getMaxConcurrentInstances());
     }
-
+    
     private void setStatusForRadioExecutionMode(ExecutionMode mode) {
         if (mode == ExecutionMode.PARALLEL) {
             btnParallel.setSelection(true);
@@ -287,9 +276,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
         btnSequential.addSelectionListener(selectionListener);
         btnParallel.addSelectionListener(selectionListener);
-
+        
         spnMaxConcurrentThread.addModifyListener(new ModifyListener() {
-
+            
             @Override
             public void modifyText(ModifyEvent e) {
                 cloneTestSuite.setMaxConcurrentInstances(spnMaxConcurrentThread.getSelection());
@@ -298,43 +287,17 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         });
     }
 
-    private void createControls() {
+    private void createControls(Composite parent) {
         parent.setLayout(new GridLayout(1, false));
 
-        createGeneralInformationComposite();
+        createGeneralInformationComposite(parent);
 
-        createCustomViewComposite();
+        createToolbarComposite(parent);
 
-        createToolbarComposite();
-
-        createTableComposite();
+        createTableComposite(parent);
     }
 
-    private void createCustomViewComposite() {
-        customViews = new Composite(parent, SWT.NONE);
-        customViews.setBackground(ColorUtil.getCompositeBackgroundColor());
-        GridLayout glCustomViews = new GridLayout(1, true);
-        glCustomViews.marginHeight = 0;
-        glCustomViews.marginWidth = 0;
-        customViews.setLayout(glCustomViews);
-        customViews.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-    }
-
-    private void createViewsFromViewFactory() {
-
-        TestSuiteCollectionViewFactory.getInstance().getSortedBuilders().forEach(entryBuilder -> {
-            String name = entryBuilder.getName();
-            if (viewCompositeMap.get(name) == null) {
-                AbstractTestSuiteCollectionUIDescriptionView descView = entryBuilder.getView(getTestSuiteCollection(),
-                        getMPart(), getMPart());
-                ExpandableTestSuiteCollectionComposite view = new ExpandableTestSuiteCollectionComposite(customViews,
-                        name, descView);
-                viewCompositeMap.put(name, view);
-            }
-        });
-    }
-
-    private void createGeneralInformationComposite() {
+    private void createGeneralInformationComposite(Composite parent) {
         compositeExecution = new Composite(parent, SWT.NONE);
         compositeExecution.setBackground(ColorUtil.getCompositeBackgroundColor());
         compositeExecution.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -444,7 +407,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         btnExpandExecutionInformation.getParent().setRedraw(true);
     }
 
-    private void createToolbarComposite() {
+    private void createToolbarComposite(Composite parent) {
         toolbarComposite = new Composite(parent, SWT.NONE);
         toolbarComposite.setLayout(new GridLayout(1, false));
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -473,7 +436,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         return toolItem;
     }
 
-    private void createTableComposite() {
+    private void createTableComposite(Composite parent) {
         testSuiteTableComposite = new Composite(parent, SWT.NONE);
         testSuiteTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -500,6 +463,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.ID_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnId, new ColumnWeightData(50, 300));
 
+        
         TableViewerColumn tbvcRunWith = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnEnviroment = tbvcRunWith.getColumn();
         tblclmnEnviroment.setText(StringConstants.PA_TABLE_COLUMN_RUN_WITH);
@@ -508,6 +472,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
 
+
         TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();
         tblclmnRunWithData.setText(ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_RUN_CONFIGURATION_DATA);
@@ -515,7 +480,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWithData.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(40, 200));
-
+        
         TableViewerColumn tbvcProfile = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnProfile = tbvcProfile.getColumn();
         tblclmnProfile.setText(ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_PROFILE);
@@ -543,10 +508,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         ColumnViewerUtil.setTableActivation(tableViewer);
         hookDropTestSuiteEvent();
         hookDragTestSuiteEvent();
-
-        // KAT-3580: hide the "Run With" and "Run Configuration" columns in test
-        // suite collection view
-        // for API projects
+        
+        //KAT-3580: hide the "Run With" and "Run Configuration" columns in test suite collection view
+        //for API projects
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         if (project.getType() == ProjectType.WEBSERVICE) {
             tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(0, 0));
@@ -628,10 +592,6 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @Override
     public void markDirty() {
         mpart.setDirty(true);
-    }
-
-    public void setDirty(boolean dirty) {
-        mpart.setDirty(dirty);
     }
 
     @Override
@@ -788,7 +748,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             }
         });
     }
-
+    
     private void createDynamicGotoSubMenu() {
         ControlUtils.removeOldOpenMenuItem(menu);
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
@@ -812,8 +772,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                     openSubMenuSelection);
             return;
         }
-        MenuUtils.createOpenTestArtifactsMenu(
-                getMapFileEntityToSelectionAdapter(testSuiteEntities, openSubMenuSelection), menu);
+        MenuUtils.createOpenTestArtifactsMenu(getMapFileEntityToSelectionAdapter(testSuiteEntities, openSubMenuSelection), menu);
     }
 
     private TestSuiteEntity getTestSuiteFromMenuItem(MenuItem selectedMenuItem) {
@@ -838,8 +797,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         return testSuiteEntities;
     }
 
-    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(
-            List<? extends FileEntity> fileEntities, SelectionAdapter openTestSuite) {
+    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(List<? extends FileEntity> fileEntities, SelectionAdapter openTestSuite) {
         HashMap<FileEntity, SelectionAdapter> map = new HashMap<>();
         for (FileEntity fileEntity : fileEntities) {
             if (fileEntity instanceof TestSuiteEntity) {
@@ -886,10 +844,6 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @PreDestroy
     public void onClose() {
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
-    }
-
-    public MPart getMPart() {
-        return mpart;
     }
 
 }
