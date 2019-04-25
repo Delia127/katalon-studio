@@ -1,16 +1,20 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.KeyStore;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,8 +58,24 @@ public class RestfulClient extends BasicRequestor {
 
     private ResponseObject sendRequest(RequestObject request) throws Exception {
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
+            File file = new File("/Users/huynguyen/Downloads/katalon.p12");
+//            System.setProperty("javax.net.ssl.keyStoreType", "pkcs12");
+//            System.setProperty("javax.net.ssl.keyStore", file.getAbsolutePath());
+//            System.setProperty("javax.net.ssl.keyStorePassword", "katalon@123");
+//            System.setProperty("javax.net.debug", "ssl");
+            boolean fileExists = file.exists();
+            
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            
+            InputStream keyInput = new FileInputStream(file);
+            keyStore.load(keyInput, "katalon@123".toCharArray());
+            keyInput.close();
+            
+            keyManagerFactory.init(keyStore, "katalon@123".toCharArray());
             SSLContext sc = SSLContext.getInstance(SSL);
-            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+            
+            sc.init(keyManagerFactory.getKeyManagers(), getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         }
 
