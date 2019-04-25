@@ -22,6 +22,8 @@ public interface PreferenceConstants {
     public static final String GENERAL_SHOW_WALKTHROUGH_DIALOG = "general.showWalkthroughDialog";
     
     public static final String GENERAL_NUMBER_OF_APP_CLOSES = "general.numberOfAppCloses";
+    
+    public static final String PLUGIN_DIRECTORY = "pluginDirectory";
 
     // Composer WebUi
     public static final String WEBUI_QUALIFIER = "com.kms.katalon.composer.webui";
