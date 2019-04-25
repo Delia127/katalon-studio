@@ -58,6 +58,9 @@ public class PluginPreferencePage extends PreferencePage {
 
     @Override
     public boolean performOk() {
+        if (!isControlCreated()) {
+            return super.performOk();
+        }
         boolean performOk = super.performOk();
         if (performOk) {
             prefStore.setValue(PreferenceConstants.PLUGIN_DIRECTORY, txtPluginDirectory.getText());

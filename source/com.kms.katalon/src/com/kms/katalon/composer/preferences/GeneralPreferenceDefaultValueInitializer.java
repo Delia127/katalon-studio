@@ -35,7 +35,7 @@ public class GeneralPreferenceDefaultValueInitializer extends AbstractPreference
         prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_IN_APP_SURVEY_DIALOG_ON_APP_FIRST_CLOSE, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_WALKTHROUGH_DIALOG, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_NUMBER_OF_APP_CLOSES, 0);
-        prefStore.setDefault(PreferenceConstants.PLUGIN_DIRECTORY, "");
+        prefStore.setDefault(PreferenceConstants.PLUGIN_DIRECTORY, new File(getConfigurationFolder(), "plugin").getAbsolutePath());
         save();
     }
 
@@ -45,6 +45,14 @@ public class GeneralPreferenceDefaultValueInitializer extends AbstractPreference
             return prefStore.getBoolean(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED);
         }
         return false;
+    }
+    
+    private File getConfigurationFolder() {
+        try {
+            return new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
+        } catch (IOException e) {
+        }
+        return null;
     }
     
     public void save() {
