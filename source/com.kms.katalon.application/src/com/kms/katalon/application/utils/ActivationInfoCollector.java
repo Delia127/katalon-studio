@@ -16,6 +16,7 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.util.CryptoUtil;
 
 public class ActivationInfoCollector {
 
@@ -107,7 +108,7 @@ public class ActivationInfoCollector {
             String userInfo = collectActivationInfo(userName, pass);
             String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
             if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
-                markActivated(userName);
+                markActivated(userName, pass);
                 activatedResult = true;
             } else if (errorMessage != null) {
                 errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
@@ -147,10 +148,18 @@ public class ActivationInfoCollector {
         return false;
     }
 
-    private static void markActivated(String userName) throws Exception {
+    private static void markActivated(String userName, String password) throws Exception {
         setActivatedVal();
         ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, userName, true);
+        String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
+    }
+    
+    private static void markActivated(String activationCode) throws Exception {
+        setActivatedVal();
+        ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, activationCode, true);
     }
 
     private static void setActivatedVal() throws Exception {
