@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.FrameworkUtil;
 
@@ -100,6 +101,7 @@ public class ProjectBuildPath {
         bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(AppiumDriverManager.class)));
         bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(TempClass.class)));
         bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(CryptoUtil.class)));
+        bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(IProgressMonitor.class)));
         return bundlePaths;
     }
     
