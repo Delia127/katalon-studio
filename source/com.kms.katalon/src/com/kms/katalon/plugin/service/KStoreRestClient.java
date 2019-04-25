@@ -28,15 +28,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.application.utils.VersionUtil;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
-import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
+import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreProduct;
 import com.kms.katalon.plugin.models.KatalonStoreToken;
@@ -208,6 +204,32 @@ public class KStoreRestClient {
         }
     }
     
+    public void goToProductReviewPage(KStoreProduct product) throws KStoreClientException {
+        try {
+            KatalonStoreToken token = getToken();
+            if (token != null) {
+                String productReviewPageUrl = getProductReviewPageUrl(product, token.getToken());
+                Program.launch(productReviewPageUrl);
+            }
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during opening Manage Plugins page", e);
+        }
+    }
+    
+    public void goToProductPricingPage(KStoreProduct product) throws KStoreClientException {
+        try {
+            KatalonStoreToken token = getToken();
+            if (token != null) {
+                String productPricingPageUrl = getProductPricingPageUrl(product, token.getToken());
+                Program.launch(productPricingPageUrl);
+            }
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during opening Manage Plugins page", e);
+        }
+    }
+    
     private KatalonStoreToken getToken() throws IOException, KStoreClientException, GeneralSecurityException {
         KatalonStoreToken token = KStoreTokenService.getInstance().getToken();
         if (token == null || KStoreTokenService.getInstance().isTokenExpired(token)) {
@@ -267,6 +289,14 @@ public class KStoreRestClient {
     
     private String getManageApiKeysPageUrl(String token) {
         return getKatalonStoreUrl() + "/settings?token=" + token;
+    }
+    
+    private String getProductReviewPageUrl(KStoreProduct product, String token) {
+        return getProductPageUrl(product, token) + "#rating-content";
+    }
+    
+    private String getProductPricingPageUrl(KStoreProduct product, String token) {
+        return getProductPageUrl(product, token) + "#pricing-content";
     }
     
     private String getProductPageUrl(KStoreProduct product, String token) {

@@ -144,8 +144,18 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStorePluginsDialog_COL_PLUGIN = MessageConstants.KStorePluginsDialog_COL_PLUGIN;
 
     public static final String KStorePluginsDialog_COL_STATUS = MessageConstants.KStorePluginsDialog_COL_STATUS;
+    
+    public static final String KStorePluginsDialog_COL_LICENSE = MessageConstants.KStorePluginsDialog_COL_LICENSE;
 
     public static final String KStorePluginsDialog_DIA_TITLE = MessageConstants.KStorePluginsDialog_DIA_TITLE;
+    
+    public static final String KStorePluginsDialog_LICENSE_FREE = MessageConstants.KStorePluginsDialog_LICENSE_FREE;
+    
+    public static final String KStorePluginsDialog_LICENSE_PAID = MessageConstants.KStorePluginsDialog_LICENSE_PAID;
+    
+    public static final String KStorePluginsDialog_LICENSE_TRIAL = MessageConstants.KStorePluginsDialog_LICENSE_TRIAL;
+    
+    public static final String KStorePluginsDialog_LICENSE_EXPIRED = MessageConstants.KStorePluginsDialog_LICENSE_EXPIRED;
 
     public static final String KStorePluginsDialog_STATUS_INSTALLED = MessageConstants.KStorePluginsDialog_STATUS_INSTALLED;
 
@@ -158,6 +168,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStorePluginsDialog_COL_VERSION = MessageConstants.KStorePluginsDialog_COL_VERSION;
     
     public static final String KStorePluginsDialog_LBL_UPDATE = MessageConstants.KStorePluginsDialog_LBL_UPDATE;
+    
+    public static final String KStorePluginsDialog_LNK_REVIEW = MessageConstants.KStorePluginsDialog_LNK_REVIEW;
+    
+    public static final String KStorePluginsDialog_LNK_PURCHASE = MessageConstants.KStorePluginsDialog_LNK_PURCHASE;
+    
+    public static final String KStorePluginsDialog_LBL_WARNING = MessageConstants.KStorePluginsDialog_LBL_WARNING;
 
     public static final String HAND_INFO_NO_PLUGINS_FOUND = MessageConstants.HAND_INFO_NO_PLUGINS_FOUND;
     
