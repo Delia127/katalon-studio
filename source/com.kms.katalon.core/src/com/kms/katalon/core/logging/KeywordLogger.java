@@ -233,20 +233,13 @@ public class KeywordLogger {
 
 
     public void logFailed(String message, Map<String, String> attributes, Throwable throwable) {
-        Throwable rootCause = ExceptionUtils.getRootCause(throwable);
-        if (rootCause == null) {
-            rootCause = throwable;
-        }
         if (attributes == null) {
             attributes = new HashMap<>();
         } else {
             attributes = new HashMap<>(attributes);
         }
-        if (rootCause != null) {
-            attributes.put("failed.exception.class", rootCause.getClass().getName());
-            attributes.put("failed.exception.message", rootCause.getMessage());
-            attributes.put("failed.exception.stacktrace", ExceptionsUtil.getStackTraceForThrowable(rootCause));
-        }
+        Map<String, String> exceptionAttributes = xmlKeywordLogger.getAttributesFrom(throwable);
+        attributes.putAll(exceptionAttributes);
         logFailed(message, attributes);
     }
 
