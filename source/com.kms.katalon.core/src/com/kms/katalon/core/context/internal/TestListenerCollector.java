@@ -11,10 +11,8 @@ import java.util.Map;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.kms.katalon.core.annotation.AfterTestCase;
-import com.kms.katalon.core.annotation.AfterTestExecution;
 import com.kms.katalon.core.annotation.AfterTestSuite;
 import com.kms.katalon.core.annotation.BeforeTestCase;
-import com.kms.katalon.core.annotation.BeforeTestExecution;
 import com.kms.katalon.core.annotation.BeforeTestSuite;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.main.TestCaseMain;
@@ -30,9 +28,6 @@ public class TestListenerCollector implements ExecutionListenerEventHandler {
         LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.AFTER_TEST_SUITE, AfterTestSuite.class.getName());
         LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.BEFORE_TEST_CASE, BeforeTestCase.class.getName());
         LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.AFTER_TEST_CASE, AfterTestCase.class.getName());
-        LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.BEFORE_TEST_EXECUTION,
-                BeforeTestExecution.class.getName());
-        LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.AFTER_TEST_EXECUTION, AfterTestExecution.class.getName());
     }
 
     private String sourceFolder;

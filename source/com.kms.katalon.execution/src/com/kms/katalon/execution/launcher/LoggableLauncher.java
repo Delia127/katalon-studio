@@ -98,6 +98,10 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                     }
                     logDepth--;
                     startRecords.pop();
+                    if (logDepth == 0) {
+                        watchdog.stop();
+                        loggingFinished = true;
+                    }
                     break;
                 default:
                     if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel(runConfig, logDepth)
