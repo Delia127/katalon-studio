@@ -208,6 +208,32 @@ public class KStoreRestClient {
         }
     }
     
+    public void goToProductReviewPage(KStoreProduct product) throws KStoreClientException {
+        try {
+            KStoreToken token = getToken();
+            if (token != null) {
+                String productReviewPageUrl = getProductReviewPageUrl(product, token.getToken());
+                Program.launch(productReviewPageUrl);
+            }
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during opening Manage Plugins page", e);
+        }
+    }
+    
+    public void goToProductPricingPage(KStoreProduct product) throws KStoreClientException {
+        try {
+            KStoreToken token = getToken();
+            if (token != null) {
+                String productPricingPageUrl = getProductPricingPageUrl(product, token.getToken());
+                Program.launch(productPricingPageUrl);
+            }
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during opening Manage Plugins page", e);
+        }
+    }
+    
     private KStoreToken getToken() throws IOException, KStoreClientException {
         KStoreToken token = KStoreTokenService.getInstance().getToken();
         if (KStoreTokenService.getInstance().isTokenExpired(token)) {
@@ -267,6 +293,14 @@ public class KStoreRestClient {
     
     private String getManageApiKeysPageUrl(String token) {
         return getKatalonStoreUrl() + "/settings?token=" + token;
+    }
+    
+    private String getProductReviewPageUrl(KStoreProduct product, String token) {
+        return getProductPageUrl(product, token) + "#rating-content";
+    }
+    
+    private String getProductPricingPageUrl(KStoreProduct product, String token) {
+        return getProductPageUrl(product, token) + "#pricing-content";
     }
     
     private String getProductPageUrl(KStoreProduct product, String token) {

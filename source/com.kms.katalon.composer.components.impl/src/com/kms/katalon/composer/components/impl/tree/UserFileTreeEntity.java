@@ -31,7 +31,7 @@ public class UserFileTreeEntity extends AbstractTreeEntity {
 
     @Override
     public String getTypeName() throws Exception {
-        return FolderType.USER.toString();
+        return "File";
     }
 
     @Override

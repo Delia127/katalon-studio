@@ -159,7 +159,7 @@ public class KobitonDevice {
     }
 
     public String getDisplayString() {
-        return (getDeviceDisplayName() + " " + capabilities.getPlatformVersion()).trim();
+        return (getDeviceDisplayName() + ", version=" + capabilities.getPlatformVersion()).trim() + ", id=" + getId();
     }
 
     private String getDeviceDisplayName() {
