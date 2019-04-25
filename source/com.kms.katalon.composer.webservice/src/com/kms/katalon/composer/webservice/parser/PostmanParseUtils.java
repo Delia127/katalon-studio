@@ -90,7 +90,7 @@ public class PostmanParseUtils {
                                                         katalonVariablePath += "/" + var[k];
                                                 }
                                             } else {
-                                                katalonVariablePath += "${" + variables[1] + "}";
+                                                katalonVariablePath += "${" + variables[j] + "}";
                                             }
                                         }
                                     }
@@ -220,7 +220,7 @@ public class PostmanParseUtils {
                                                 katalonVariablePath += "/" + var[k];
                                         }
                                     } else {
-                                        katalonVariablePath += "${" + variables[1] + "}";
+                                        katalonVariablePath += "${" + variables[j] + "}";
                                     }
 
                                 }
