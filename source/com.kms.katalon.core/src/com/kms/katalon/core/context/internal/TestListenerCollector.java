@@ -49,29 +49,27 @@ public class TestListenerCollector implements ExecutionListenerEventHandler {
 
         try {
             Files.walk(testListenerFolder.toPath())
-                .filter(p -> p.toString().endsWith(".groovy"))
-                .map(p -> p.toAbsolutePath().toFile())
-                .forEach(file -> {
-                    try {
-                        Class<?> scriptClazz = TestCaseMain.getScriptEngine()
-                            .getExecutingScriptClassLoader()
-                            .parseClass(file);
-                        TestHooker testHooker = new TestHooker(scriptClazz);
-                        testHookers.add(testHooker);
-                    } catch (CompilationFailedException | ClassNotFoundException | IOException e) {
-                        System.err.println(ExceptionsUtil.getMessageForThrowable(e));
-                    }
-                });
+                    .filter(p -> p.toString().endsWith(".groovy"))
+                    .map(p -> p.toAbsolutePath().toFile())
+                    .forEach(file -> {
+                        try {
+                            Class<?> scriptClazz = TestCaseMain.getScriptEngine()
+                                    .getExecutingScriptClassLoader()
+                                    .parseClass(file);
+                            TestHooker testHooker = new TestHooker(scriptClazz);
+                            testHookers.add(testHooker);
+                        } catch (CompilationFailedException | ClassNotFoundException | IOException e) {
+                            System.err.println(ExceptionsUtil.getMessageForThrowable(e));
+                        }
+                    });
         } catch (IOException ignored) {}
     }
-    
+
     private void collectPluginTestListeners() {
         List<String> listeners = RunConfiguration.getPluginTestListeners();
         try {
             for (String listener : listeners) {
-                Class<?> clazz = TestCaseMain.getScriptEngine()
-                    .getExecutingScriptClassLoader()
-                    .loadClass(listener);
+                Class<?> clazz = TestCaseMain.getScriptEngine().getExecutingScriptClassLoader().loadClass(listener);
                 TestHooker testHooker = new TestHooker(clazz);
                 testHookers.add(testHooker);
             }

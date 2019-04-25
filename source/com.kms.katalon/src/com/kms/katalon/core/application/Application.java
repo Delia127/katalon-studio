@@ -53,7 +53,11 @@ public class Application implements IApplication {
             return IApplication.EXIT_OK;
         }
 
-        preRunInit();
+        try {
+            preRunInit();
+        } catch (Error e) {
+            resolve();
+        }
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));

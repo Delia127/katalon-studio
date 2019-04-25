@@ -91,9 +91,7 @@ public class KeywordLogger {
 
 
     public void startSuite(String name, Map<String, String> attributes) {
-        
         logger.info("START {}", name);
-        
         xmlKeywordLogger.startSuite(name, attributes);
         
         logRunData(RunConfiguration.HOST_NAME, RunConfiguration.getHostName());

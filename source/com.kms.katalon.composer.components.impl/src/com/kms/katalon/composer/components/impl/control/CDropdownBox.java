@@ -278,12 +278,14 @@ public class CDropdownBox extends Composite {
             }
             tableSize.y -= IMG_16_CHECK.getBounds().height;
             // Set table bounds
-            table.setBounds(1, 1, tableSize.x + 8, tableSize.y + 6);
+            int tableHeight = Math.min(500, tableSize.y + 6);
+            table.setBounds(1, 1, tableSize.x + 8, 
+                    tableHeight);
 
             Point comboSize = getSize();
             Display display = getDisplay();
             Rectangle parentRect = display.map(getParent(), null, getBounds());
-            popup.setBounds(parentRect.x - 1, comboSize.y + parentRect.y + 1, tableSize.x + 10, tableSize.y + 8);
+            popup.setBounds(parentRect.x - 1, comboSize.y + parentRect.y + 1, tableSize.x + 10, tableHeight + 2);
             popup.setVisible(true);
 
             table.setFocus();

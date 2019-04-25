@@ -51,7 +51,8 @@ public class FolderEntity extends IntegratedFileEntity {
         TESTLISTENER("Test listener"),
         PROFILE("Profiles"),
         FEATURE("Feature"),
-        INCLUDE("Source");
+        INCLUDE("Source"),
+        USER("User");
 
         private final String text;
 

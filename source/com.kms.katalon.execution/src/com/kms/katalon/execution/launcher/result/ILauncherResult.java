@@ -14,6 +14,8 @@ public interface ILauncherResult {
     
     int getNumIncomplete();
     
+    int getNumSkips();
+
     public int getExecutedTestCases();
     
     public int getReturnCode();

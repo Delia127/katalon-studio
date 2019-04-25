@@ -202,20 +202,20 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
             File reportFolder = getReportFolder();
 
-            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_HTML);
-            ReportUtil.writeHtmlReport(suiteLog, reportFolder);
-
-            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_CSV);
-            ReportUtil.writeCSVReport(suiteLog, reportFolder);
-
-            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_UUID);
-            ReportUtil.writeExecutionUUIDToFile(this.getExecutionUUID(), reportFolder);
+//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_HTML);
+//            ReportUtil.writeHtmlReport(suiteLog, reportFolder);
+//
+//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_CSV);
+//            ReportUtil.writeCSVReport(suiteLog, reportFolder);
+//
+//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_UUID);
+//            ReportUtil.writeExecutionUUIDToFile(this.getExecutionUUID(), reportFolder);
 
             // setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
             // ReportUtil.writeJsonReport(suiteLog, reportFolder);
 
-            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
-            ReportUtil.writeJUnitReport(suiteLog, reportFolder);
+//            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
+//            ReportUtil.writeJUnitReport(suiteLog, reportFolder);
 
             copyReport();
             return suiteLog;
