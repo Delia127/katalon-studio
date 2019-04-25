@@ -210,6 +210,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.preferences.SSLPreferences;
 import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.tracking.service.Trackings;
@@ -566,13 +567,13 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         registerListeners();
         
         cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
-        
-        createHarFile();
     }
     
-    private void createHarFile() {
+    protected void deleteTempHarFile() {
         try {
-            harFile = Files.createTempFile("request-", ".har").toFile();
+            if (harFile != null && harFile.exists()) {
+                FileUtils.forceDelete(harFile);
+            }
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -1557,6 +1558,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(wsObj,
                                 ProjectController.getInstance().getCurrentProject().getFolderLocation(),
                                 ProxyPreferences.getProxyInformation(),
+                                SSLPreferences.getSSLSettings(),
                                 Collections.<String, Object> unmodifiableMap(Collections.emptyMap()), false);
                         String bodyContent = responseObject.getResponseText();
                         Display.getDefault().asyncExec(new Runnable() {

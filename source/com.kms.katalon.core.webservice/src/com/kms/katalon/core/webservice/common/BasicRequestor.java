@@ -1,27 +1,36 @@
 package com.kms.katalon.core.webservice.common;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.ssl.KeyMaterial;
 
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import com.google.api.client.auth.oauth.OAuthParameters;
 import com.google.api.client.auth.oauth.OAuthRsaSigner;
 import com.google.api.client.auth.oauth.OAuthSigner;
 import com.google.api.client.http.GenericUrl;
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.model.SSLSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.RequestObject;
@@ -31,10 +40,13 @@ import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.util.BrowserMobProxyManager;
 import com.kms.katalon.core.util.internal.ProxyUtil;
+import com.kms.katalon.core.webservice.constants.PreferenceConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public abstract class BasicRequestor implements Requestor {
 
@@ -50,13 +62,17 @@ public abstract class BasicRequestor implements Requestor {
     private SSLCertificateOption getSslCertificateOption() throws IOException {
         return WebServiceSettingStore.create(projectDir).getSSLCertificateOption();
     }
+    
+    private SSLSettings getSSLSettings() throws IOException {
+        return WebServiceSettingStore.create(projectDir).getSSLSettings();
+    }
 
     protected TrustManager[] getTrustManagers() throws IOException {
         if (getSslCertificateOption() == SSLCertificateOption.BYPASS) {
             return new TrustManager[] { new X509TrustManager() {
                 @Override
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return new java.security.cert.X509Certificate[0];
+                    return null;
                 }
 
                 @Override
@@ -69,6 +85,24 @@ public abstract class BasicRequestor implements Requestor {
             } };
         }
         return new TrustManager[0];
+    }
+    
+    protected KeyManager[] getKeyManagers() throws GeneralSecurityException, IOException {
+        SSLSettings sslSettings = getSSLSettings();
+        String keyStoreFilePath = sslSettings.getKeyStoreFile();
+        if (!StringUtils.isBlank(keyStoreFilePath)) {
+            File keyStoreFile = new File(keyStoreFilePath);
+            String keyStorePassword = !StringUtils.isBlank(sslSettings.getKeyStorePassword())
+                    ? sslSettings.getKeyStorePassword() : StringUtils.EMPTY;
+            if (keyStoreFile.exists()) {
+                KeyManagerFactory keyManagerFactory = KeyManagerFactory
+                        .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                KeyMaterial km = new KeyMaterial(keyStoreFile, keyStorePassword.toCharArray());
+                keyManagerFactory.init(km.getKeyStore(), keyStorePassword.toCharArray());
+                return keyManagerFactory.getKeyManagers();
+            }
+        }
+        return new KeyManager[0];
     }
 
     public HostnameVerifier getHostnameVerifier() {
@@ -86,11 +120,12 @@ public abstract class BasicRequestor implements Requestor {
 
     public Proxy getProxy() throws WebServiceException {
         Proxy systemProxy = getSystemProxy();
-        if(proxyInformation.getDisableMobBroserProxy()){
-            return systemProxy;
-        }
-        Proxy proxy = BrowserMobProxyManager.getWebServiceProxy(systemProxy);
-        return proxy;
+//        if(proxyInformation.getDisableMobBroserProxy()){
+//            return systemProxy;
+//        }
+//        Proxy proxy = BrowserMobProxyManager.getWebServiceProxy(systemProxy);
+//        return proxy;
+        return systemProxy;
     }
 
     private Proxy getSystemProxy() throws WebServiceException {

@@ -3,6 +3,7 @@ package com.kms.katalon.composer.webservice.parts;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,17 +66,24 @@ import com.kms.katalon.composer.webservice.view.xml.XMLPartitionScanner;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
+import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.BrowserMobProxyManager;
+import com.kms.katalon.core.util.HarFileWriter;
 import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
+import com.kms.katalon.core.webservice.common.HarConverter;
+import com.kms.katalon.core.webservice.common.HarLogUtil;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.preferences.SSLPreferences;
 import com.kms.katalon.tracking.service.Trackings;
+
+import net.lightbody.bmp.core.har.Har;
 
 public class SoapServicePart extends WebServicePart {
 
@@ -231,18 +239,17 @@ public class SoapServicePart extends WebServicePart {
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
 
                         Map<String, String> evaluatedVariables = evaluateRequestVariables();
-
-                        BrowserMobProxyManager.newHar();
                         
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
-                                projectDir, ProxyPreferences.getProxyInformation(),
+                                projectDir, ProxyPreferences.getProxyInformation(), SSLPreferences.getSSLSettings(),
                                 Collections.<String, Object> unmodifiableMap(evaluatedVariables), false);
 
-                        RequestInformation requestInformation = new RequestInformation();
-                        requestInformation.setTestObjectId(requestEntity.getId());
-                        requestInformation.setHarFile(harFile);
-                        FileUtils.write(harFile, ""); //delete current content of HAR file
-                        BrowserMobProxyManager.endHar(requestInformation);
+                        deleteTempHarFile();
+                        
+                        RequestObject requestObject = WebServiceController.getRequestObject(requestEntity, projectDir,
+                                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
+                        String logFolder = Files.createTempDirectory("har").toFile().getAbsolutePath();
+                        harFile = HarLogUtil.logHarFile(requestObject, responseObject, logFolder);
                         
                         if (monitor.isCanceled()) {
                             return;

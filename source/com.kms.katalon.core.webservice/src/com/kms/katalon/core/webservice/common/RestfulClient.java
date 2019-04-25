@@ -12,14 +12,18 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.KeyStore;
+import java.security.cert.Certificate;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.ssl.KeyMaterial;
 
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.core.model.SSLSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
@@ -58,25 +62,10 @@ public class RestfulClient extends BasicRequestor {
 
     private ResponseObject sendRequest(RequestObject request) throws Exception {
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            File file = new File("/Users/huynguyen/Downloads/katalon.p12");
-//            System.setProperty("javax.net.ssl.keyStoreType", "pkcs12");
-//            System.setProperty("javax.net.ssl.keyStore", file.getAbsolutePath());
-//            System.setProperty("javax.net.ssl.keyStorePassword", "katalon@123");
-//            System.setProperty("javax.net.debug", "ssl");
-            boolean fileExists = file.exists();
-            
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-            KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            
-            InputStream keyInput = new FileInputStream(file);
-            keyStore.load(keyInput, "katalon@123".toCharArray());
-            keyInput.close();
-            
-            keyManagerFactory.init(keyStore, "katalon@123".toCharArray());
             SSLContext sc = SSLContext.getInstance(SSL);
-            
-            sc.init(keyManagerFactory.getKeyManagers(), getTrustManagers(), new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            sc.init(getKeyManagers(), getTrustManagers(), null);
+            SSLSocketFactory socketFactory = sc.getSocketFactory();
+            HttpsURLConnection.setDefaultSSLSocketFactory(socketFactory);
         }
 
         // If there are some parameters, they should be append after the Service URL
@@ -124,6 +113,7 @@ public class RestfulClient extends BasicRequestor {
                 }
             }
         }
+        
         return responseObject;
     }
     

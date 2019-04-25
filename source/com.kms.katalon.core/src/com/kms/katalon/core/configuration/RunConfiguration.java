@@ -23,6 +23,7 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.model.SSLSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
@@ -88,6 +89,8 @@ public class RunConfiguration {
     public static final String EXCUTION_DEFAULT_FAILURE_HANDLING = StringConstants.CONF_PROPERTY_DEFAULT_FAILURE_HANDLING;
 
     public static final String PROXY_PROPERTY = StringConstants.CONF_PROPERTY_PROXY;
+    
+    public static final String SSL_PROPERTY = StringConstants.CONF_PROPERTY_SSL;
 
     public static final String TERMINATE_DRIVER_AFTER_TEST_CASE = "terminateDriverAfterTestCase";
 
@@ -477,6 +480,15 @@ public class RunConfiguration {
         }
         Gson gson = new Gson();
         return gson.fromJson((String) generalProperties.get(PROXY_PROPERTY), ProxyInformation.class);
+    }
+    
+    public static SSLSettings getSSLSettings() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (!generalProperties.containsKey(SSL_PROPERTY)) {
+            return null;
+        }
+        Gson gson = new Gson();
+        return gson.fromJson((String) generalProperties.get(SSL_PROPERTY), SSLSettings.class);
     }
 
     public static boolean shouldTerminateDriverAfterTestCase() {

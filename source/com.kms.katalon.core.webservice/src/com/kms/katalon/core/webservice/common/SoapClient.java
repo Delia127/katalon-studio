@@ -33,6 +33,7 @@ import com.ibm.wsdl.extensions.soap.SOAPAddressImpl;
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12AddressImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12BindingImpl;
+import com.kms.katalon.core.model.SSLSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;

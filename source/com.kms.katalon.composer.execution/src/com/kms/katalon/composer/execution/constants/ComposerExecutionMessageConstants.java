@@ -342,6 +342,13 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE;
     
     public static String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
+    
+    // SSLPreferencePage
+    public static String SSLPreferencePage_LBL_KEYSTORE;
+    
+    public static String SSLPreferencePage_BTN_BROWSE_FILE;
+    
+    public static String SSLPreferencePage_LBL_KEYSTORE_PASSWORD;
 
     static {
         // initialize resource bundle

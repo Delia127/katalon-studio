@@ -109,4 +109,13 @@
             processType="com.kms.katalon.composer.execution.consoleColorProvider1">
       </consoleColorProvider>
    </extension>
+    <extension
+       point="com.kms.katalon.preferences.PreferencePages">
+    <page
+          class="com.kms.katalon.composer.execution.preferences.SSLPreferencePage"
+          id="com.kms.katalon.composer.execution.preferences.SSLPreferencePage"
+          category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+          name="SSL Settings">
+    </page>
+ 	</extension> 
 </plugin>
