@@ -57,5 +57,18 @@ public class UserFileServiceDataProvider implements IUserFileDataProvider {
             throw new DALException(e);
         }
     }
+    
+    @Override
+    public UserFileEntity renameFile(String newName, UserFileEntity userFileEntity) {
+        File newFile = new File(userFileEntity.getParentFolder().getLocation(), newName);
+        userFileEntity.getFile().renameTo(newFile);
+        userFileEntity.setFile(newFile);
+        return userFileEntity;
+    }
+
+    @Override
+    public void deleteFile(UserFileEntity userFileEntity) {
+        userFileEntity.getFile().delete();
+    }
 
 }
