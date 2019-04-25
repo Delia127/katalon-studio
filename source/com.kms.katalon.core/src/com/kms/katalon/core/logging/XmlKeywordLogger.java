@@ -420,20 +420,15 @@ class XmlKeywordLogger {
     void logMessage(LogLevel level, String message, Throwable thrown) {
         Logger logger = getLogger();
         Throwable rootCause = ExceptionUtils.getRootCause(thrown);
-        Map<String, String> attributes = new HashMap<>();
         if (rootCause == null) {
             rootCause = thrown;
-        }
-        if (rootCause != null) {
-            attributes.put("failed.exception.class", rootCause.getClass().getName());
-            attributes.put("failed.exception.message", rootCause.getMessage());
-            attributes.put("failed.exception.stacktrace", ExceptionsUtil.getStackTraceForThrowable(rootCause));
         }
         if (message == null) {
             message = "";
         }
         if (logger != null) {
             XmlLogRecord logRecord = new XmlLogRecord(level.getLevel(), message);
+            Map<String, String> attributes = getAttributesFrom(thrown);
             logRecord.setThrown(thrown);
             logRecord.setProperties(attributes);
             logger.log(logRecord);
@@ -454,5 +449,19 @@ class XmlKeywordLogger {
 
     void logNotRun(String message, Map<String, String> attributes) {
         logMessage(null, LogLevel.NOT_RUN, message, attributes);
+    }
+    
+    public Map<String, String> getAttributesFrom(Throwable throwable) {
+        Map<String, String> attributes = new HashMap<>();
+        Throwable rootCause = ExceptionUtils.getRootCause(throwable);
+        if (rootCause == null) {
+            rootCause = throwable;
+        }
+        if (rootCause != null) {
+            attributes.put("failed.exception.class", rootCause.getClass().getName());
+            attributes.put("failed.exception.message", rootCause.getMessage());
+            attributes.put("failed.exception.stacktrace", ExceptionsUtil.getStackTraceForThrowable(rootCause));
+        }
+        return attributes;
     }
 }
