@@ -2,8 +2,10 @@ package com.kms.katalon.dal.fileservice.manager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +39,27 @@ import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class FolderFileServiceManager {
+
+    private static final String[] SYSTEM_FOLDERS = {
+            StringConstants.ROOT_FOLDER_NAME_TEST_CASE,
+            StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY,
+            StringConstants.ROOT_FOLDER_NAME_DATA_FILE,
+            StringConstants.ROOT_FOLDER_NAME_TEST_SUITE,
+            StringConstants.ROOT_FOLDER_NAME_REPORT,
+            StringConstants.ROOT_FOLDER_NAME_KEYWORD,
+            StringConstants.ROOT_FOLDER_NAME_CHECKPOINT,
+            StringConstants.ROOT_FOLDER_NAME_PROFILES,
+            StringConstants.ROOT_FOLDER_NAME_TEST_LISTENER,
+            StringConstants.ROOT_FOLDER_NAME_INCLUDE,
+            StringConstants.SYSTEM_FOLDER_NAME_BIN,
+            StringConstants.SYSTEM_FOLDER_NAME_DRIVER,
+            StringConstants.SYSTEM_FOLDER_NAME_LIB,
+            StringConstants.SYSTEM_FOLDER_NAME_PLUGIN,
+            StringConstants.SYSTEM_FOLDER_NAME_SETTINGS,
+            StringConstants.SYSTEM_FOLDER_NAME_SCRIPT,
+            ".git",
+            ".settings"
+    };
 
     private static void initRootFolder(String folderPath) throws Exception {
         File rootFolder = new File(folderPath);
@@ -226,6 +249,30 @@ public class FolderFileServiceManager {
          } catch (Exception e) {
              throw new DALException(e);
          }
+    }
+    
+    public static List<FolderEntity> getUserFolders(ProjectEntity project) throws DALException {
+        if (project == null) {
+            return null;
+        }
+        List<FolderEntity> folderEntities = new ArrayList<>();
+        List<String> systemFolders = Arrays.asList(SYSTEM_FOLDERS);
+        try {
+            File projectFolder = new File(project.getFolderLocation());
+            File[] files = projectFolder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory() && !systemFolders.contains(file.getName())) {
+                        FolderEntity folderEntity = getFolder(file.getAbsolutePath());
+                        folderEntity.setFolderType(FolderType.USER);
+                        folderEntities.add(folderEntity);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+        return folderEntities;
     }
 
     /**

@@ -149,8 +149,6 @@ public class ReportUtil {
             writeJUnitReport(testSuiteLogRecord, new File(logFolder));
         }
     }
-    
-    
 
     public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
             throws JAXBException, IOException {

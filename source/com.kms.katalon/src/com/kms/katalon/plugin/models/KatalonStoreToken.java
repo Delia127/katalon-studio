@@ -2,7 +2,7 @@ package com.kms.katalon.plugin.models;
 
 import java.util.Date;
 
-public class KStoreToken {
+public class KatalonStoreToken {
     
     private String token;
     

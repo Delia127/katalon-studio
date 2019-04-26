@@ -53,6 +53,7 @@ public class LaunchWatchdog implements Runnable {
                 }
 
                 if (isProcessTerminated) {
+                    stopFlag = true;
                     terminateChildWatchdogs();
                     return;
                 }

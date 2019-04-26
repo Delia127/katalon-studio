@@ -146,7 +146,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private ProgressBar progressBar;
 
-    private Label lblNumTestcases, lblNumFailures, lblNumPasses, lblNumErrors;
+    private Label lblNumTestcases, lblNumFailures, lblNumPasses, lblNumErrors, lblNumSkips;
 
     private Composite parentComposite;
 
@@ -715,7 +715,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
         Composite composite = new Composite(compositeStatus, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        composite.setLayout(new GridLayout(4, true));
+        composite.setLayout(new GridLayout(5, true));
 
         Composite compositeRuns = new Composite(composite, SWT.NONE);
         compositeRuns.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -760,6 +760,17 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
         lblNumErrors = new Label(compositeIncompletes, SWT.NONE);
         lblNumErrors.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        
+        Composite compositeSkips = new Composite(composite, SWT.NONE);
+        compositeSkips.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        compositeSkips.setLayout(new GridLayout(2, false));
+        
+        Label lblSkips = new Label(compositeSkips, SWT.NONE);
+        lblSkips.setText(ComposerExecutionMessageConstants.PA_LBL_SKIPS);
+        lblSkips.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+
+        lblNumSkips = new Label(compositeSkips, SWT.NONE);
+        lblNumSkips.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         progressBar = new ProgressBar(compositeStatus, SWT.SMOOTH);
         progressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -1026,10 +1037,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 lblNumPasses.setText(Integer.toString(result.getNumPasses()));
                 lblNumFailures.setText(Integer.toString(result.getNumFailures()));
                 lblNumErrors.setText(Integer.toString(result.getNumErrors()));
+                lblNumSkips.setText(Integer.toString(result.getNumSkips()));
 
                 lblNumTestcases.getParent().getParent().layout();
                 
-                if (numExecuted == result.getNumPasses()) {
+                if (numExecuted == result.getNumPasses() + result.getNumSkips()) {
                     progressBar.setState(SWT.NORMAL);
                 } else {
                     progressBar.setState(SWT.ERROR);
@@ -1053,6 +1065,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 lblNumFailures.setForeground(ColorUtil.getDefaultTextColor());
                 lblNumErrors.setText(Integer.toString(0));
                 lblNumErrors.setForeground(ColorUtil.getDefaultTextColor());
+                lblNumSkips.setText(Integer.toString(0));
+                lblNumSkips.setForeground(ColorUtil.getDefaultTextColor());
 
                 lblNumTestcases.getParent().getParent().layout();
             }

@@ -60,6 +60,7 @@ public class SocketWatcher extends AbstractLogWatcher {
                     }
                 }
             }
+            logCollection.finish();
 
         } catch (IOException | InterruptedException e) {
             // Don't need to log here
