@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreClientException;
@@ -77,6 +78,7 @@ public class KStorePluginsDialog extends Dialog {
         gdWarning.widthHint = 430;
         lblWarning.setLayoutData(gdWarning);
         lblWarning.setText(StringConstants.KStorePluginsDialog_LBL_WARNING);
+        ControlUtils.setFontStyle(lblWarning, SWT.ITALIC, -1);
         boolean visible = shouldShowExpiryWarningMessage();
         gdWarning.exclude = !visible;
         lblWarning.setVisible(visible);
