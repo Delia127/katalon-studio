@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.webservice.view;
 
-
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -28,38 +27,40 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class ImportWebServiceObjectsFromPostmanDialog  extends CustomTitleAreaDialog {
+public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDialog {
 
     private FolderEntity parentFolder;
+
     private List<WebServiceRequestEntity> webServiceRequestEntities;
+
     private String directory = "";
-    
+
     public ImportWebServiceObjectsFromPostmanDialog(Shell parentShell, FolderEntity parentFolder) {
         super(parentShell);
         Trackings.trackOpenImportingPostman();
         this.parentFolder = parentFolder;
     }
-    
-    public void createWebServiceRequestEntities() throws Exception{  
+
+    public void createWebServiceRequestEntities() throws Exception {
         webServiceRequestEntities = PostmanParseUtils.newWSTestObjectsFromPostman(parentFolder, directory);
     }
-    
-    public List<WebServiceRequestEntity> getWebServiceRequestEntities(){
+
+    public List<WebServiceRequestEntity> getWebServiceRequestEntities() {
         return webServiceRequestEntities;
     }
-    
+
     @Override
     protected void okPressed() {
         Button ok = getButton(IDialogConstants.OK_ID);
         boolean closeTheDialog = true;
-        try{
+        try {
             createWebServiceRequestEntities();
-        } catch(Exception e){
+        } catch (Exception e) {
             closeTheDialog = false;
             setMessage(StringConstants.EXC_INVALID_POSTMAN_FILE, IMessageProvider.ERROR);
             ok.setEnabled(false);
         } finally {
-            if(closeTheDialog == true){
+            if (closeTheDialog == true) {
                 super.okPressed();
             }
         }
@@ -69,12 +70,11 @@ public class ImportWebServiceObjectsFromPostmanDialog  extends CustomTitleAreaDi
     protected boolean isResizable() {
         return false;
     }
-    
+
     @Override
-    protected void configureShell(Shell newShell)
-    {
-      super.configureShell(newShell);
-      newShell.setText(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN);      
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        newShell.setText(StringConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN);
     }
 
     @Override
@@ -92,46 +92,42 @@ public class ImportWebServiceObjectsFromPostmanDialog  extends CustomTitleAreaDi
         layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
         composite.setLayout(layout);
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
- 
-        
+
         Label label = new Label(composite, SWT.NONE);
         label.setText("File location or URL: ");
 
         Text text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        
+
         Composite methodComposite = new Composite(composite, SWT.NONE);
         GridLayout glMethodComposite = new GridLayout();
         methodComposite.setLayout(glMethodComposite);
-        
+
         Button button = new Button(methodComposite, SWT.PUSH);
         button.setText(StringConstants.BROWSE);
-        button.addSelectionListener(new SelectionAdapter()
-        {
+        button.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 FileDialog directoryDialog = new FileDialog(getParentShell());
-                String filePath = directoryDialog.open();          
+                String filePath = directoryDialog.open();
                 text.setText(filePath);
                 directory = filePath;
             }
         });
-        
+
         ModifyListener listener = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 Button ok = getButton(IDialogConstants.OK_ID);
-                if(ok.isEnabled() == false){
+                if (ok.isEnabled() == false) {
                     ok.setEnabled(true);
-                } 
-                
-                
-                
+                }
+
                 directory = ((Text) e.widget).getText();
             }
-          };
-          
+        };
+
         text.addModifyListener(listener);
 
-        messageLabel.addSelectionListener(new SelectionAdapter(){
+        messageLabel.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch("https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md");
@@ -142,26 +138,20 @@ public class ImportWebServiceObjectsFromPostmanDialog  extends CustomTitleAreaDi
 
     @Override
     protected void registerControlModifyListeners() {
-        // TODO Auto-generated method stub
-        
     }
-    
 
     @Override
     protected void setInput() {
-        // TODO Auto-generated method stub
-        
     }
-    
+
     @Override
     protected Point getInitialSize() {
         final Point size = super.getInitialSize();
         size.x = convertWidthInCharsToPixels(75);
         return size;
     }
-    
+
     public String getPostmanSpecLocation() {
         return directory;
     }
 }
-

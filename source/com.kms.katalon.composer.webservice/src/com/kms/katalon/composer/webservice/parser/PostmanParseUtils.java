@@ -30,119 +30,57 @@ public class PostmanParseUtils {
                     false);
             PostmanCollection postman;
             postman = objectMapper.readValue(new File(fileLocationOrUrl), PostmanCollection.class);
+            
             List<Item> rootItems = postman.getItem();
             for (Item root : rootItems) {
                 pushPostManItemToWSTestObjectSet(root, newWSTestObjects);
                 if (root.getRequest() != null) {
-                    ArrayList<Object> listRaw = new ArrayList<>();
-                    ArrayList<Object> listName = new ArrayList<>();
                     WebServiceRequestEntity entity = new WebServiceRequestEntity();
                     Request request = root.getRequest();
                     List<Header> header = root.getRequest().getHeader();
-
-                    String urlCommonPrefix = "";
                     String raw = request.getURL().getRaw();
-
                     Method method = root.getRequest().getMethod();
-
                     String name = root.getName();
-                    listName.add(name);
+                    String nameVariable = collectNameItem(name, root);
+                    String pathVariable = collectPathItem(raw, root);
+                    String key = "";
+                    String value = "";
 
-                    for (Object oName : listName) {
-                        if (oName != null) {
-                            String katalonVariableName = "";
-                            String[] pathAndVariables = oName.toString().split("\\/");
-                            katalonVariableName += pathAndVariables[0];
-
-                            if (pathAndVariables.length > 1) {
-                                for (int i = 1; i < pathAndVariables.length; i++) {
-                                    katalonVariableName += " or " + pathAndVariables[i];
-                                }
-                            }
-                            entity.setName(katalonVariableName);
-                        }
-
+                    List<WebElementPropertyEntity> propertiesEntity = new ArrayList<WebElementPropertyEntity>();
+                    for (int i = 0; i < header.size(); i++) {
+                        WebElementPropertyEntity webElementProperty = new WebElementPropertyEntity();
+                        key = header.get(i).getKey();
+                        value = header.get(i).getValue();
+                        webElementProperty.setName(key);
+                        webElementProperty.setValue(value);
+                        propertiesEntity.add(i, webElementProperty);
                     }
-
-                    listRaw.add(raw);
+                    String keyVar = "";
+                    String valueVar = "";
+                    String id = "";
+                    String decription = "";
+                    List<VariableEntity> variable = new ArrayList<VariableEntity>();
+                    if (request.getURL().getVariable() != null) {
+                        for (int i = 0; i < request.getURL().getVariable().size(); i++) {
+                            VariableEntity variableEntity = new VariableEntity();
+                            keyVar = request.getURL().getVariable().get(i).getKey();
+                            id = request.getURL().getVariable().get(i).getId();
+                            valueVar = request.getURL().getVariable().get(i).getValue();
+                            decription = request.getURL().getVariable().get(i).getDescription();
+                            variableEntity.setName(keyVar);
+                            variableEntity.setId(id);
+                            variableEntity.setDefaultValue(valueVar);
+                            variableEntity.setDescription(decription);
+                            variable.add(i, variableEntity);
+                        }
+                    }
+                    entity.setName(nameVariable);
                     entity.setRestRequestMethod(method.toString());
-                    for (Object oRaw : listRaw) {
-                        urlCommonPrefix += request.getURL().getRaw();
-                        String urlCommonPrefix2 = urlCommonPrefix;
-                        String katalonVariablePath = "";
-                        String[] pathAndVariables = oRaw.toString().split("[\\{||\\}]");
-                        katalonVariablePath += pathAndVariables[0];
-
-                        if (pathAndVariables.length > 1) {
-                            for (int i = 1; i < pathAndVariables.length; i++) {
-                                if (!(pathAndVariables[i].equals("")) && !(pathAndVariables[i].contains("/"))) {
-                                    katalonVariablePath += "${" + pathAndVariables[i] + "}";
-                                } else if (pathAndVariables[i].contains(":")) {
-                                    String[] variables = pathAndVariables[i].split("[\\:]");
-                                    katalonVariablePath += variables[0];
-                                    if (variables.length > 1) {
-                                        for (int j = 1; j < variables.length; j++) {
-                                            if (variables[j].contains("/")) {
-                                                String[] var = variables[j].split("[\\/]");
-                                                katalonVariablePath += "${" + var[0] + "}";
-                                                if (var.length > 1) {
-                                                    for (int k = 1; k < var.length; k++)
-                                                        katalonVariablePath += "/" + var[k];
-                                                }
-                                            } else {
-                                                katalonVariablePath += "${" + variables[j] + "}";
-                                            }
-                                        }
-                                    }
-                                } else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
-                                    katalonVariablePath += pathAndVariables[i];
-                                }
-
-                            }
-                        }
-                        String key = "";
-                        String value = "";
-
-                        List<WebElementPropertyEntity> propertiesEntity = new ArrayList<WebElementPropertyEntity>();
-                        for (int i = 0; i < header.size(); i++) {
-                            WebElementPropertyEntity webElementProperty = new WebElementPropertyEntity();
-                            key = header.get(i).getKey();
-                            value = header.get(i).getValue();
-                            webElementProperty.setName(key);
-                            webElementProperty.setValue(value);
-                            propertiesEntity.add(i, webElementProperty);
-                        }
-
-                        String keyVar = "";
-                        String valueVar = "";
-                        String id = "";
-                        String decription = "";
-                        List<VariableEntity> variable = new ArrayList<VariableEntity>();
-                        if (request.getURL().getVariable() != null) {
-                            for (int i = 0; i < request.getURL().getVariable().size(); i++) {
-                                VariableEntity variableEntity = new VariableEntity();
-                                keyVar = request.getURL().getVariable().get(i).getKey();
-                                id = request.getURL().getVariable().get(i).getId();
-                                valueVar = request.getURL().getVariable().get(i).getValue();
-                                decription = request.getURL().getVariable().get(i).getDescription();
-                                variableEntity.setName(keyVar);
-                                variableEntity.setId(id);
-                                variableEntity.setDefaultValue(valueVar);
-                                variableEntity.setDescription(decription);
-                                variable.add(i, variableEntity);
-                            }
-                        }
-
-                        urlCommonPrefix2 = katalonVariablePath;
-                        entity.setRestUrl(urlCommonPrefix2);
-                        entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
-                        entity.setVariables(variable);
-                        entity.setHttpBody(request.getBody().getRaw());
-                        entity.setHttpHeaderProperties(propertiesEntity);
-
-                    }
-
-                    // TODO: get require properties from request and put into entity
+                    entity.setRestUrl(pathVariable);
+                    entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
+                    entity.setVariables(variable);
+                    entity.setHttpBody(request.getBody().getRaw());
+                    entity.setHttpHeaderProperties(propertiesEntity);
 
                     newWSTestObjects.add(entity);
                 }
@@ -156,7 +94,6 @@ public class PostmanParseUtils {
             } else return null;
         }
     }
-
     public static void pushPostManItemToWSTestObjectSet(Item item, List<WebServiceRequestEntity> newWSTestObjects) {
         if (item.getRequest() == null) {
             for (Item childItem : item.getItem()) {
@@ -164,122 +101,120 @@ public class PostmanParseUtils {
             }
         }
         for (Item childItem : item.getItem()) {
-            ArrayList<Object> listRaw = new ArrayList<>();
-            ArrayList<Object> listName = new ArrayList<>();
             WebServiceRequestEntity entity = new WebServiceRequestEntity();
             Request request = childItem.getRequest();
             List<Header> header = childItem.getRequest().getHeader();
 
-            String urlCommonPrefix = "";
             String raw = request.getURL().getRaw();
-
             Method method = childItem.getRequest().getMethod();
-
             String name = childItem.getName();
-            listName.add(name);
+            String nameVariable = collectNameItem(name, childItem);
+            String pathVariable = collectPathItem(raw, childItem);
+            String key = "";
+            String value = "";
 
-            for (Object oName : listName) {
-                if (oName != null) {
-                    String katalonVariableName = "";
-                    String[] pathAndVariables = oName.toString().split("\\/");
-                    katalonVariableName += pathAndVariables[0];
-
-                    if (pathAndVariables.length > 1) {
-                        for (int i = 1; i < pathAndVariables.length; i++) {
-                            katalonVariableName += " or " + pathAndVariables[i];
-                        }
-                    }
-                    entity.setName(katalonVariableName);
-                }
-
+            List<WebElementPropertyEntity> propertiesEntity = new ArrayList<WebElementPropertyEntity>();
+            for (int i = 0; i < header.size(); i++) {
+                WebElementPropertyEntity webElementProperty = new WebElementPropertyEntity();
+                key = header.get(i).getKey();
+                value = header.get(i).getValue();
+                webElementProperty.setName(key);
+                webElementProperty.setValue(value);
+                propertiesEntity.add(i, webElementProperty);
             }
 
-            listRaw.add(raw);
+            String keyVar = "";
+            String valueVar = "";
+            String id = "";
+            String decription = "";
+            List<VariableEntity> variable = new ArrayList<VariableEntity>();
+            if (request.getURL().getVariable() != null) {
+                for (int i = 0; i < request.getURL().getVariable().size(); i++) {
+                    VariableEntity variableEntity = new VariableEntity();
+                    keyVar = request.getURL().getVariable().get(i).getKey();
+                    id = request.getURL().getVariable().get(i).getId();
+                    valueVar = request.getURL().getVariable().get(i).getValue();
+                    decription = request.getURL().getVariable().get(i).getDescription();
+                    variableEntity.setName(keyVar);
+                    variableEntity.setId(id);
+                    variableEntity.setDefaultValue(valueVar);
+                    variableEntity.setDescription(decription);
+                    variable.add(i, variableEntity);
+                }
+              
+            }
+            entity.setName(nameVariable);
             entity.setRestRequestMethod(method.toString());
-            for (Object oRaw : listRaw) {
-                urlCommonPrefix += request.getURL().getRaw();
-                String urlCommonPrefix2 = urlCommonPrefix;
-                String katalonVariablePath = "";
-                String[] pathAndVariables = oRaw.toString().split("[\\{||\\}]");
-                katalonVariablePath += pathAndVariables[0];
+            entity.setRestUrl(pathVariable);
+            entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
+            entity.setVariables(variable);
+            entity.setHttpBody(request.getBody().getRaw());
+            entity.setHttpHeaderProperties(propertiesEntity);
 
-                if (pathAndVariables.length > 1) {
-                    for (int i = 1; i < pathAndVariables.length; i++) {
-                        if (!(pathAndVariables[i].equals("")) && !(pathAndVariables[i].contains("/"))) {
-                            katalonVariablePath += "${" + pathAndVariables[i] + "}";
-                        } else if (pathAndVariables[i].contains(":")) {
-                            String[] variables = pathAndVariables[i].split("[\\:]");
-                            katalonVariablePath += variables[0];
-                            if (variables.length > 1) {
-                                for (int j = 1; j < variables.length; j++) {
-                                    if (variables[j].contains("/")) {
-                                        String[] var = variables[j].split("[\\/]");
-                                        katalonVariablePath += "${" + var[0] + "}";
-                                        if (var.length > 1) {
-                                            for (int k = 1; k < var.length; k++)
-                                                katalonVariablePath += "/" + var[k];
-                                        }
-                                    } else {
-                                        katalonVariablePath += "${" + variables[j] + "}";
-                                    }
-
-                                }
-                            }
-                        } else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
-                            katalonVariablePath += pathAndVariables[i];
-                        }
-                    }
-
-                }
-                String key = "";
-                String value = "";
-
-                List<WebElementPropertyEntity> propertiesEntity = new ArrayList<WebElementPropertyEntity>();
-                for (int i = 0; i < header.size(); i++) {
-                    WebElementPropertyEntity webElementProperty = new WebElementPropertyEntity();
-                    key = header.get(i).getKey();
-                    value = header.get(i).getValue();
-                    webElementProperty.setName(key);
-                    webElementProperty.setValue(value);
-                    propertiesEntity.add(i, webElementProperty);
-                }
-
-                String keyVar = "";
-                String valueVar = "";
-                String id = "";
-                String decription = "";
-                List<VariableEntity> variable = new ArrayList<VariableEntity>();
-                if (request.getURL().getVariable() != null) {
-                    for (int i = 0; i < request.getURL().getVariable().size(); i++) {
-                        VariableEntity variableEntity = new VariableEntity();
-                        keyVar = request.getURL().getVariable().get(i).getKey();
-                        id = request.getURL().getVariable().get(i).getId();
-                        valueVar = request.getURL().getVariable().get(i).getValue();
-                        decription = request.getURL().getVariable().get(i).getDescription();
-                        variableEntity.setName(keyVar);
-                        variableEntity.setId(id);
-                        variableEntity.setDefaultValue(valueVar);
-                        variableEntity.setDescription(decription);
-                        variable.add(i, variableEntity);
-                    }
-                }
-
-                urlCommonPrefix2 = katalonVariablePath;
-                entity.setRestUrl(urlCommonPrefix2);
-                entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
-                entity.setVariables(variable);
-                entity.setHttpBody(request.getBody().getRaw());
-                entity.setHttpHeaderProperties(propertiesEntity);
-
-            }
-
-            // TODO: get require properties from request and put into entity
 
             newWSTestObjects.add(entity);
         }
+    }
+    public static String collectPathItem(String variablePath, Item item) {
+        List<Object> listRaw = new ArrayList<>();
+        listRaw.add(variablePath);
+        for (Object oRaw : listRaw) {
+            String katalonVariablePath = "";
+            String[] pathAndVariables = oRaw.toString().split("[\\{||\\}]");
+            katalonVariablePath += pathAndVariables[0];
+
+            if (pathAndVariables.length > 1) {
+                for (int i = 1; i < pathAndVariables.length; i++) {
+                    if (!(pathAndVariables[i].equals("")) && !(pathAndVariables[i].contains("/"))) {
+                        katalonVariablePath += "${" + pathAndVariables[i] + "}";
+                    } else if (pathAndVariables[i].contains(":")) {
+                        String[] variables = pathAndVariables[i].split("[\\:]");
+                        katalonVariablePath += variables[0];
+                        if (variables.length > 1) {
+                            for (int j = 1; j < variables.length; j++) {
+                                if (variables[j].contains("/")) {
+                                    String[] var = variables[j].split("[\\/]");
+                                    katalonVariablePath += "${" + var[0] + "}";
+                                    if (var.length > 1) {
+                                        for (int k = 1; k < var.length; k++)
+                                            katalonVariablePath += "/" + var[k];
+                                    }
+                                } else {
+                                    katalonVariablePath += "${" + variables[j] + "}";
+                                }
+
+                            }
+                        }
+                    } else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
+                        katalonVariablePath += pathAndVariables[i];
+                    }
+                }
+
+            }
+            variablePath = katalonVariablePath;
+        }
+        return variablePath;
 
     }
+    public static String collectNameItem(String name , Item item){
+        List<Object> listName = new ArrayList<>();
+        listName.add(name);
+        for (Object oName : listName) {
+            if (oName != null) {
+                String katalonVariableName = "";
+                String[] pathAndVariables = oName.toString().split("\\/");
+                katalonVariableName += pathAndVariables[0];
 
+                if (pathAndVariables.length > 1) {
+                    for (int i = 1; i < pathAndVariables.length; i++) {
+                        katalonVariableName += " or " + pathAndVariables[i];
+                    }
+                }
+                name = katalonVariableName;
+            }
+        }
+        return name;
+    }
     public static List<WebServiceRequestEntity> newWSTestObjectsFromPostman(FolderEntity parentFolder,
             String directoryOfJsonFile) throws Exception {
         if (parentFolder == null) {
@@ -287,7 +222,6 @@ public class PostmanParseUtils {
         }
 
         FolderEntity folderEntity = FolderController.getInstance().addNewFolder(parentFolder, "Postman");
-        @SuppressWarnings("unchecked")
         List<WebServiceRequestEntity> newWSTestObjects = (List<WebServiceRequestEntity>) PostmanParseUtils
                 .parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
         for (WebServiceRequestEntity entity : newWSTestObjects) {
