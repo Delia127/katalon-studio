@@ -3,19 +3,29 @@ package com.kms.katalon.custom.keyword;
 import java.util.List;
 
 public class CustomKeywordSettingPage {
-    
+
     private String name;
 
     private List<SettingPageComponent> components;
 
-    public static class SettingPageComponent {        
+    public static class SettingPageComponent {
         private String key;
 
         private String type;
-        
+
         private String label;
-        
+
         private String defaultValue;
+
+        private String implementationClassPath;
+
+        public String getImplementationClassPath() {
+            return implementationClassPath;
+        }
+
+        public void setImplementationClassPath(String classPath) {
+            this.implementationClassPath = classPath;
+        }
 
         public String getType() {
             return type;

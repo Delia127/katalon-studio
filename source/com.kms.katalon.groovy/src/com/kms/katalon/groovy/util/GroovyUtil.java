@@ -658,8 +658,7 @@ public class GroovyUtil {
         return groovyClassFiles;
     }
 
-    public static void openGroovyProject(ProjectEntity projectEntity,
-            List<File> customKeywordPluginFiles)
+    public static void openGroovyProject(ProjectEntity projectEntity, List<File> customKeywordPluginFiles)
             throws CoreException, IOException, BundleException {
         initGroovyProject(projectEntity, customKeywordPluginFiles, null);
         IProject groovyProject = getGroovyProject(projectEntity);
@@ -1000,6 +999,13 @@ public class GroovyUtil {
             throws MalformedURLException, CoreException {
         IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
         return GroovyUtil.getProjectClassLoader(project, parent, JavaRuntime.computeDefaultRuntimeClassPath(project));
+    }
+
+    public static URLClassLoader getClassLoaderFromParent(ProjectEntity projectEntity, ClassLoader parent)
+            throws MalformedURLException, CoreException {
+        IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
+        return GroovyUtil.getProjectClassLoader(project, parent,
+                JavaRuntime.computeDefaultRuntimeClassPath(project));
     }
 
     public static IFolder getPluginsFolder(ProjectEntity project) {
