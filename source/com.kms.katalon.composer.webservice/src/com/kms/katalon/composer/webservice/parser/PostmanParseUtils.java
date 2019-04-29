@@ -30,7 +30,7 @@ public class PostmanParseUtils {
                     false);
             PostmanCollection postman;
             postman = objectMapper.readValue(new File(fileLocationOrUrl), PostmanCollection.class);
-            
+
             List<Item> rootItems = postman.getItem();
             for (Item root : rootItems) {
                 pushPostManItemToWSTestObjectSet(root, newWSTestObjects);
@@ -51,7 +51,7 @@ public class PostmanParseUtils {
                     entity.setVariables(variable);
                     entity.setHttpBody(request.getBody().getRaw());
                     entity.setHttpHeaderProperties(propertiesEntity);
-                    
+
                     newWSTestObjects.add(entity);
                 }
             }
@@ -64,6 +64,7 @@ public class PostmanParseUtils {
             } else return null;
         }
     }
+
     public static void pushPostManItemToWSTestObjectSet(Item item, List<WebServiceRequestEntity> newWSTestObjects) {
         if (item.getRequest() == null) {
             for (Item childItem : item.getItem()) {
@@ -92,6 +93,7 @@ public class PostmanParseUtils {
             newWSTestObjects.add(entity);
         }
     }
+
     public static String collectPathItem(String variablePath, Item item) {
         List<Object> listRaw = new ArrayList<>();
         listRaw.add(variablePath);
@@ -99,41 +101,47 @@ public class PostmanParseUtils {
             String katalonVariablePath = "";
             String[] pathAndVariables = oRaw.toString().split("[\\{||\\}]");
             katalonVariablePath += pathAndVariables[0];
+            String variables = "";
 
             if (pathAndVariables.length > 1) {
                 for (int i = 1; i < pathAndVariables.length; i++) {
                     if (!(pathAndVariables[i].equals("")) && !(pathAndVariables[i].contains("/"))) {
                         katalonVariablePath += "${" + pathAndVariables[i] + "}";
                     } else if (pathAndVariables[i].contains(":")) {
-                        String[] variables = pathAndVariables[i].split("[\\:]");
-                        katalonVariablePath += variables[0];
-                        if (variables.length > 1) {
-                            for (int j = 1; j < variables.length; j++) {
-                                if (variables[j].contains("/")) {
-                                    String[] var = variables[j].split("[\\/]");
-                                    katalonVariablePath += "${" + var[0] + "}";
-                                    if (var.length > 1) {
-                                        for (int k = 1; k < var.length; k++)
-                                            katalonVariablePath += "/" + var[k];
-                                    }
-                                } else {
-                                    katalonVariablePath += "${" + variables[j] + "}";
-                                }
-
-                            }
-                        }
+                        variables = pathAndVariables[i];
                     } else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
                         katalonVariablePath += pathAndVariables[i];
                     }
                 }
-
+                String[] splitVariables = variables.split("[\\:]");
+                katalonVariablePath += splitVariables[0];
+                if (splitVariables.length > 1) {
+                    for (int j = 1; j < splitVariables.length; j++) {
+                        if (splitVariables[j].contains("/")) {
+                            String[] var = splitVariables[j].split("[\\/]");
+                            if(katalonVariablePath.endsWith("/")){
+                                katalonVariablePath += "${" + var[0] + "}";
+                            }else{
+                                katalonVariablePath += "/"+"${" + var[0] + "}";
+                            }
+                            if (var.length > 1) {
+                                for (int k = 1; k < var.length; k++) {
+                                    katalonVariablePath += "/" + var[k];
+                                }
+                            }
+                        } else {
+                            katalonVariablePath += "/" + "${" + splitVariables[j] + "}";
+                        }
+                    }
+                }
             }
             variablePath = katalonVariablePath;
         }
         return variablePath;
 
     }
-    public static List<WebElementPropertyEntity> collectHttpHeaderItem(Request request , Item childItem){
+
+    public static List<WebElementPropertyEntity> collectHttpHeaderItem(Request request, Item childItem) {
         List<Header> header = childItem.getRequest().getHeader();
         String key = "";
         String value = "";
@@ -150,7 +158,8 @@ public class PostmanParseUtils {
         return propertiesEntity;
 
     }
-    public static String collectNameItem(String name , Item item){
+
+    public static String collectNameItem(String name, Item item) {
         List<Object> listName = new ArrayList<>();
         listName.add(name);
         for (Object oName : listName) {
@@ -169,7 +178,8 @@ public class PostmanParseUtils {
         }
         return name;
     }
-    public static List<VariableEntity> collectVariableItem(Request request){
+
+    public static List<VariableEntity> collectVariableItem(Request request) {
         String keyVar = "";
         String valueVar = "";
         String id = "";
@@ -191,6 +201,7 @@ public class PostmanParseUtils {
         }
         return variable;
     }
+
     public static List<WebServiceRequestEntity> newWSTestObjectsFromPostman(FolderEntity parentFolder,
             String directoryOfJsonFile) throws Exception {
         if (parentFolder == null) {
