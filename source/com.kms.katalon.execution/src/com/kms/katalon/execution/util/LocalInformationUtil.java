@@ -86,24 +86,18 @@ public class LocalInformationUtil {
         String javaVendor = getJavaVendor();
         String javaVersion = getJavaVersion();
 
-        System.out.println("\n");
-        System.out.println(StringUtils.repeat("*", 80));
-        System.out.println("Katalon Version: " + getKatalonVersion());
-        System.out.println("Command-line arguments: " + maskSensitiveArgs());
-        System.out.println("Java vendor: " + javaVendor);
-        System.out.println("Java version: " + javaVersion);
-        System.out.println("Local OS: " + getLocalOS());
-        System.out.println("CPU load: " + getProcessCpuLoad());
-        System.out.println("Total memory: " + getTotalMemoryInMegabyte());
-        System.out.println("Free memory: " + getFreeMemoryInMegabyte());
-        System.out.println("APPIUM_HOME: " + getSystemEnvironment("APPIUM_HOME", "<not set>"));
-        System.out.println(StringUtils.repeat("*", 80));
-        System.out.println("\n");
-
-        if (Platform.OS_LINUX.equals(Platform.getOS()) && (!isJava8(javaVersion) || !isOpenJDKJRE(javaVendor))) {
-            LogUtil.logErrorMessage(
-                    "Error! Katalon Studio requires Open JDK/JRE 1.8 to run on Linux, but your Java version is not compatible. Please install and try again.");
-        }
+        LogUtil.logInfo("\n");
+        LogUtil.logInfo("INFO: Katalon Version: " + getKatalonVersion());
+        LogUtil.logInfo("INFO: Command-line arguments: " + maskSensitiveArgs());
+        LogUtil.logInfo("INFO: User working dir: " + getUserDir());
+        LogUtil.logInfo("INFO: User home: " + getUserHome());
+        LogUtil.logInfo("INFO: Java vendor: " + javaVendor);
+        LogUtil.logInfo("INFO: Java version: " + javaVersion);
+        LogUtil.logInfo("INFO: Local OS: " + getLocalOS());
+        LogUtil.logInfo("INFO: CPU load: " + getProcessCpuLoad());
+        LogUtil.logInfo("INFO: Total memory: " + getTotalMemoryInMegabyte());
+        LogUtil.logInfo("INFO: Free memory: " + getFreeMemoryInMegabyte());
+        LogUtil.logInfo("\n");
     }
 
     private static String maskSensitiveArgs() {
@@ -124,14 +118,5 @@ public class LocalInformationUtil {
             markedArgs.add(arg);
         }
         return StringUtils.join(markedArgs.toArray(new String[0]), " ");
-    }
-
-    private static boolean isJava8(String javaVersion) {
-        return javaVersion.startsWith("1.8.");
-    }
-
-    private static boolean isOpenJDKJRE(String javaVendor) {
-        return StringUtils.containsIgnoreCase(javaVendor, "Open JDK")
-                || StringUtils.containsIgnoreCase(javaVendor, "Open JRE");
     }
 }
