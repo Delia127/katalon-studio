@@ -15,11 +15,13 @@ import java.util.logging.Logger;
 import java.util.logging.SocketHandler;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.CoreMessageConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 class XmlKeywordLogger {
     
@@ -416,12 +418,20 @@ class XmlKeywordLogger {
      */
 
     void logMessage(LogLevel level, String message, Throwable thrown) {
+        Logger logger = getLogger();
+        Throwable rootCause = ExceptionUtils.getRootCause(thrown);
+        if (rootCause == null) {
+            rootCause = thrown;
+        }
         if (message == null) {
             message = "";
         }
-        Logger logger = getLogger();
         if (logger != null) {
-            logger.log(level.getLevel(), message, thrown);
+            XmlLogRecord logRecord = new XmlLogRecord(level.getLevel(), message);
+            Map<String, String> attributes = getAttributesFrom(thrown);
+            logRecord.setThrown(thrown);
+            logRecord.setProperties(attributes);
+            logger.log(logRecord);
         }
     }
 
@@ -439,5 +449,19 @@ class XmlKeywordLogger {
 
     void logNotRun(String message, Map<String, String> attributes) {
         logMessage(null, LogLevel.NOT_RUN, message, attributes);
+    }
+    
+    public Map<String, String> getAttributesFrom(Throwable throwable) {
+        Map<String, String> attributes = new HashMap<>();
+        Throwable rootCause = ExceptionUtils.getRootCause(throwable);
+        if (rootCause == null) {
+            rootCause = throwable;
+        }
+        if (rootCause != null) {
+            attributes.put("failed.exception.class", rootCause.getClass().getName());
+            attributes.put("failed.exception.message", rootCause.getMessage());
+            attributes.put("failed.exception.stacktrace", ExceptionsUtil.getStackTraceForThrowable(rootCause));
+        }
+        return attributes;
     }
 }
