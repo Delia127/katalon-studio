@@ -1111,8 +1111,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 }
                 waitForNotBusy();
                 IDEObservableLauncher watchedLauncher = getWatchedLauncherFromEvent();
-                if (watchedLauncher != null && watchedLauncher.equals(rootLauncherWatched)) {
-                    launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                if (watchedLauncher != null && watchedLauncher.equals(rootLauncherWatched)
+                        && rootLauncherWatched instanceof IDEObservableParentLauncher) {
+                    launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getObservableLaunchers();
                     return;
                 }
                 currentRecords.clear();
@@ -1124,7 +1125,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     launchersWatched = new ArrayList<>();
                 } else {
                     if (rootLauncherWatched instanceof IDEObservableParentLauncher) {
-                        launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                        launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getObservableLaunchers();
                     } else {
                         launchersWatched.add(rootLauncherWatched);
                     }

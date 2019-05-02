@@ -24,6 +24,7 @@ import com.kms.katalon.core.annotation.TearDownIfError;
 import com.kms.katalon.core.annotation.TearDownIfFailed;
 import com.kms.katalon.core.annotation.TearDownIfPassed;
 import com.kms.katalon.core.annotation.TearDownTestCase;
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.context.internal.ExecutionEventManager;
 import com.kms.katalon.core.context.internal.ExecutionListenerEvent;
@@ -114,12 +115,6 @@ public class TestCaseExecutor {
 
     private void onExecutionError(Throwable t) {
         if (!keywordStack.isEmpty()) {
-            String stackTraceForThrowable = ExceptionsUtil.getStackTraceForThrowable(t);
-            String message = MessageFormat.format(
-                    StringConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF, 
-                    keywordStack.firstElement().getKeywordName(),
-                    stackTraceForThrowable);
-            logError(t, message);
             endAllUnfinishedKeywords(keywordStack);
         }
         testCaseResult.setCause(t);
@@ -182,6 +177,16 @@ public class TestCaseExecutor {
     }
 
     private void postExecution() {
+    	
+		if (RunConfiguration.getProperty(RunConfiguration.SMART_XPATH_BUNDLE_ID) != null) {
+
+			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_OPENING);
+			logger.logInfo(StringConstants.SMART_XPATH_VISIT_BELOW_LINK);
+			logger.logInfo(StringConstants.SMART_XPATH_DOCUMENT);
+			logger.logInfo(StringConstants.SMART_XPATH_REPORT_AVAILABLE_ENDING);
+			
+		}
+
         errorCollector.clearErrors();
         errorCollector.getErrors().addAll(0, parentErrors);
         if (testCaseContext.isMainTestCase()) {
@@ -349,6 +354,7 @@ public class TestCaseExecutor {
         testProperties.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, testCase.getDescription());
         testProperties.put(StringConstants.XML_LOG_ID_PROPERTY, testCase.getTestCaseId());
         testProperties.put(StringConstants.XML_LOG_SOURCE_PROPERTY, testCase.getMetaFilePath());
+        testProperties.put(StringConstants.XML_LOG_TAG_PROPERTY, testCase.getTag());
         testProperties.put(StringConstants.XML_LOG_IS_OPTIONAL,
                 String.valueOf(flowControl == FailureHandling.OPTIONAL));
         return testProperties;

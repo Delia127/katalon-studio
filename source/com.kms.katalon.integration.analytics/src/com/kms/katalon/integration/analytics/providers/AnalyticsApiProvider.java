@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.logging.LogUtil;
 
 public class AnalyticsApiProvider {
 
@@ -76,7 +78,7 @@ public class AnalyticsApiProvider {
             String clientCredentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
             httpPost.setHeader(HEADER_AUTHORIZATION,
                     HEADER_AUTHORIZATION_PREFIX + Base64.getEncoder().encodeToString(clientCredentials.getBytes()));
-            
+
             return executeRequest(httpPost, AnalyticsTokenInfo.class);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
@@ -162,7 +164,7 @@ public class AnalyticsApiProvider {
 
             HttpEntity entity = builder.build();
             httpPost.setEntity(entity);
-            
+
             executeRequest(httpPost, Object.class);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
@@ -198,6 +200,7 @@ public class AnalyticsApiProvider {
             String fileName, String uploadedPath, boolean isEnd, String token) throws AnalyticsApiExeception {
 
         try {
+            LogUtil.logInfo("KA: Start uploading report to KA server: " + serverUrl);
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_KATALON_TEST_REPORTS);
             URIBuilder uriBuilder = new URIBuilder(uri);
             uriBuilder.setParameter("projectId", String.valueOf(projectId));
@@ -212,16 +215,21 @@ public class AnalyticsApiProvider {
 
             executeRequest(httpPost, Object.class);
         } catch (Exception e) {
+            LogUtil.logError(e);
             throw new AnalyticsApiExeception(e);
         }
     }
-    
+
     private static <T> T executeRequest(HttpUriRequest httpRequest, Class<T> returnType) throws Exception {
-    	HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
+        HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
         HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
         HttpResponse httpResponse = httpClient.execute(httpRequest);
         String responseString = EntityUtils.toString(httpResponse.getEntity());
-        if (httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+        int statusCode = httpResponse.getStatusLine().getStatusCode();
+        if (statusCode != HttpStatus.SC_OK) {
+            LogUtil.logError(MessageFormat.format(
+                    "KA: Unexpected response code from KA server when sending request to URL: {0}. Actual: {1}, Expected: {2}",
+                    httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
             throw new AnalyticsApiExeception(new Throwable(responseString));
         }
         Gson gson = new GsonBuilder().create();
@@ -231,15 +239,15 @@ public class AnalyticsApiProvider {
     private static URI getApiURI(String host, String path) throws URISyntaxException {
         return new URIBuilder().setPath(host + path).build();
     }
-    
-    public static void updateTestRunResult(String serverUrl, long projectId, String token, AnalyticsTestRun testRun) 
-		throws AnalyticsApiExeception {
-    	try {
-    		URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_KATALON_TEST_RUN_RESULT);
-    		URIBuilder uriBuilder = new URIBuilder(uri);
-    		uriBuilder.setParameter("projectId", String.valueOf(projectId));
-    		
-    		HttpPost httpPost = new HttpPost(uriBuilder.build());
+
+    public static void updateTestRunResult(String serverUrl, long projectId, String token, AnalyticsTestRun testRun)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_KATALON_TEST_RUN_RESULT);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("projectId", String.valueOf(projectId));
+
+            HttpPost httpPost = new HttpPost(uriBuilder.build());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
@@ -247,9 +255,9 @@ public class AnalyticsApiProvider {
             StringEntity entity = new StringEntity(gson.toJson(testRun));
             httpPost.setEntity(entity);
             executeRequest(httpPost, Object.class);
-    	} catch (Exception e) {
-    		throw new AnalyticsApiExeception(e);
-    	}
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
     }
 
 }

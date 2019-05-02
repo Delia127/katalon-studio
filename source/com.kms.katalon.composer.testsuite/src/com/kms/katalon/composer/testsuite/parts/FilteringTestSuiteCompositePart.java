@@ -280,6 +280,7 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
 
     private void afterSaving() {
         childTestSuiteMainPart.afterSaving();
+        childTestSuiteIntegrationPart.onSaveSuccess(testSuite);
     }
 
     @Override
@@ -316,10 +317,14 @@ public class FilteringTestSuiteCompositePart implements EventHandler, ParentTest
                 return;
             }
 
+            afterSaving();
+
             setDirty(false);
         } catch (Exception e) {
             // revert to original test suite
             TestSuiteEntityUtil.copyTestSuiteProperties(temp, originalTestSuite);
+
+            childTestSuiteIntegrationPart.onSaveFailure(e);
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, e.getMessage());
         }

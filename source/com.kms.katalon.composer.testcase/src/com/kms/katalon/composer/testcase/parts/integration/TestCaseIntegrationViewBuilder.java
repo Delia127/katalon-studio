@@ -12,6 +12,4 @@ public interface TestCaseIntegrationViewBuilder {
     boolean isEnabled(ProjectEntity project);
 
     AbstractTestCaseIntegrationView getIntegrationView(TestCaseEntity testCase, MPart mpart, SavableCompositePart parentPart);
-
-    int preferredOrder();
 }

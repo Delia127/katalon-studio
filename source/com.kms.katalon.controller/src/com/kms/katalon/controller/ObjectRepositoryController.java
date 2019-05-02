@@ -8,8 +8,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-
 import com.kms.katalon.controller.constants.StringConstants;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -45,8 +45,12 @@ public class ObjectRepositoryController extends EntityController {
      * @return {@link WebElementEntity}
      * @throws Exception
      */
-    public WebElementEntity newTestObject(FolderEntity parentFolder, String testObjectName) throws Exception {
-        return saveNewTestObject(newTestObjectWithoutSave(parentFolder, testObjectName));
+    public WebElementEntity newTestObject(FolderEntity parentFolder, String testObjectName) throws ControllerException {
+        try {
+            return saveNewTestObject(newTestObjectWithoutSave(parentFolder, testObjectName));
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     /**
@@ -58,9 +62,12 @@ public class ObjectRepositoryController extends EntityController {
      * @return {@link WebServiceRequestEntity}
      * @throws Exception
      */
-    public WebServiceRequestEntity newWSTestObject(FolderEntity parentFolder, String wsTestObjectName) throws Exception {
-        //return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectFromSwagger(parentFolder, wsTestObjectName));
-    	return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
+    public WebServiceRequestEntity newWSTestObject(FolderEntity parentFolder, String wsTestObjectName) throws ControllerException {
+    	try {
+            return (WebServiceRequestEntity) saveNewTestObject(newWSTestObjectWithoutSave(parentFolder, wsTestObjectName));
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     /**
@@ -149,10 +156,14 @@ public class ObjectRepositoryController extends EntityController {
         return getDataProviderSetting().getWebElementDataProvider().getWebElement(elementPk);
     }
 
-    public WebElementEntity getWebElementByDisplayPk(String elementDisplayPk) throws Exception {
-        return getDataProviderSetting().getWebElementDataProvider().getWebElement(
-                ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator
-                        + elementDisplayPk + WebElementEntity.getWebElementFileExtension());
+    public WebElementEntity getWebElementByDisplayPk(String elementDisplayPk) throws ControllerException {
+        try {
+            return getDataProviderSetting().getWebElementDataProvider().getWebElement(
+                    ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator
+                            + elementDisplayPk + WebElementEntity.getWebElementFileExtension());
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public void importWebElement(List<SaveWebElementInfoEntity> entities) throws Exception {
@@ -179,8 +190,12 @@ public class ObjectRepositoryController extends EntityController {
         getDataProviderSetting().getWebElementDataProvider().deleteWebElement(webElement);
     }
 
-    public void updateTestObject(WebElementEntity webElement) throws Exception {
-        getDataProviderSetting().getWebElementDataProvider().updateTestObject(webElement);
+    public WebElementEntity updateTestObject(WebElementEntity webElement) throws ControllerException {
+        try {
+            return getDataProviderSetting().getWebElementDataProvider().updateTestObject(webElement);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public List<String> getSibblingWebElementNames(WebElementEntity webElement) throws Exception {

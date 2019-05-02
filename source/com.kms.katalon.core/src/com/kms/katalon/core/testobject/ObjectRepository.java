@@ -403,7 +403,10 @@ public class ObjectRepository {
 
         String verificationScript = reqElement.elementText("verificationScript");
         requestObject.setVerificationScript(verificationScript);
-
+        
+        boolean followRedirects = Boolean.valueOf(reqElement.elementText("followRedirects"));
+        requestObject.setFollowRedirects(followRedirects);
+        
         return requestObject;
     }
     

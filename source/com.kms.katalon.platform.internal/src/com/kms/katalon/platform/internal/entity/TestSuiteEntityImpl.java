@@ -41,4 +41,24 @@ public class TestSuiteEntityImpl implements com.katalon.platform.api.model.TestS
                 .findFirst()
                 .orElseGet(null);
     }
+
+    @Override
+    public String getFileLocation() {
+        return source.getId();
+    }
+
+    @Override
+    public String getFolderLocation() {
+        return source.getParentFolder().getLocation();
+    }
+
+    @Override
+    public String getId() {
+        return source.getIdForDisplay();
+    }
+
+    @Override
+    public String getName() {
+        return source.getName();
+    }
 }

@@ -129,27 +129,15 @@ public class PreferencesRegistry {
                 }
                 for (PreferenceNodeDescription pnDesc : nodeDescriptionLookup.get(cat)) {
                     IPreferenceNode pn = null;
-                    if (pnDesc.getPreferencePageClassName().isEmpty()) {
+                    if (!pnDesc.hasPage()) {
                         pn = new PreferenceNode(pnDesc.getNodeId(), new EmptyPreferencePage(pnDesc.getNodeName()));
                     } else {
-                        PreferencePage page = null;
-                        try {
-                            String prefPageURI = getClassURI(pnDesc.getBundleId(), pnDesc.getPreferencePageClassName());
-                            Object object = factory.create(prefPageURI, context);
-                            if (!(object instanceof PreferencePage)) {
-                                logger.error(MessageFormat.format(
-                                        StringConstants.INL_LOG_ERROR_EXPECTED_INSTANCE_OF_PREF_PAGE,
-                                        pnDesc.getPreferencePageClassName()));
-                                continue;
-                            }
-                            page = (PreferencePage) object;
-                            if (page.getPreferenceStore() == null) {
-                                setPreferenceStore(pnDesc.getBundleId(), page);
-                            }
-
-                        } catch (ClassNotFoundException e) {
-                            logger.error(e);
+                        PreferencePage page = pnDesc.getBuilder().build(factory, context);
+                        if (page == null) {
                             continue;
+                        }
+                        if (page.getPreferenceStore() == null) {
+                            setPreferenceStore(pnDesc.getBundleId(), page);
                         }
                         ContextInjectionFactory.inject(page, context);
                         if ((page.getTitle() == null || page.getTitle().isEmpty()) && pnDesc.getNodeName() != null) {

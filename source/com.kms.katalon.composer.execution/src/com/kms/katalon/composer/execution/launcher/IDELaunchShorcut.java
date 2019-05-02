@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.execution.launcher;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.groovy.eclipse.launchers.GroovyScriptLaunchShortcut;
@@ -21,6 +23,8 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.JavaRuntime;
 
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 
 public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
@@ -51,7 +55,7 @@ public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
         }
     }
 
-    private ILaunch internallyLaunchGroovy(ICompilationUnit unit, String mode, Map<String, String> environmentVariables)
+    private ILaunch internallyLaunchGroovy(ICompilationUnit unit, String mode, IRunConfiguration runConfiguration)
             throws CoreException {
         IType[] types = unit.getAllTypes();
         IType runType = findClassToRun(types);
@@ -65,6 +69,11 @@ public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
 
         ILaunchConfigurationWorkingCopy workingConfig = findOrCreateLaunchConfig(launchConfigProperties,
                 runType.getElementName());
+        Map<String, String> environmentVariables = new HashMap<>();
+        try {
+            environmentVariables = runConfiguration.getAdditionalEnvironmentVariables();
+        } catch (IOException | ExecutionException ignored) {
+        }
         if (environmentVariables != null && !environmentVariables.isEmpty()) {
             workingConfig.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, environmentVariables);
         }
@@ -72,6 +81,10 @@ public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
         if (!vmArguments.contains(JVM_ARGUMENT_MAX_MEMORY_KEY)) {
             vmArguments += " " + JVM_ARGUMENT_MAX_MEMORY_KEY + byteToMegabytes(Runtime.getRuntime().maxMemory()) + "m";
             workingConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments);
+        }
+        List<String> vmArgs = Arrays.asList(runConfiguration.getVmArgs());
+        for (String eachArg : vmArgs) {
+            vmArguments += " " + eachArg;
         }
         workingConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH,
                 Arrays.asList(JavaRuntime.computeDefaultRuntimeClassPath(javaProject)));
@@ -84,18 +97,14 @@ public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
     private static long byteToMegabytes(long maxMemory) {
         return maxMemory / (1024 * 1024);
     }
-
-    public ILaunch launch(IFile scriptFile, LaunchMode launchMode) throws CoreException {
-        return launch(scriptFile, launchMode, new HashMap<String, String>());
-    }
     
-    public ILaunch launch(IFile scriptFile, LaunchMode launchMode, Map<String, String> environmentVariables) throws CoreException {
+    public ILaunch launch(IFile scriptFile, LaunchMode launchMode, IRunConfiguration runConfiguration) throws CoreException {
         if (scriptFile == null) {
             return null;
         }
 
         ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(scriptFile);
-        return (compilationUnit != null) ? internallyLaunchGroovy(compilationUnit, launchMode.toString(), environmentVariables) : null;
+        return (compilationUnit != null) ? internallyLaunchGroovy(compilationUnit, launchMode.toString(), runConfiguration) : null;
     }
 
 }

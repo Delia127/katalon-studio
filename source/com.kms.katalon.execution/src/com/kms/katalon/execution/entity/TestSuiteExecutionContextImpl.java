@@ -1,5 +1,6 @@
 package com.kms.katalon.execution.entity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +37,12 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
 
     @Override
     public String getReportId() {
-        return builder.withReportId;
+        return builder.reportId;
+    }
+
+    @Override
+    public String getReportLocation() {
+        return new File(builder.projectLocation, builder.reportId).getAbsolutePath();
     }
 
     @Override
@@ -58,17 +64,20 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
 
         private long endTime;
 
-        private String withReportId;
+        private String reportId;
+
+        private String projectLocation;
 
         private List<TestCaseExecutionContext> testCaseContexts = new ArrayList<>();
 
-        private Builder(String id, String sourceId) {
+        private Builder(String id, String sourceId, String projectLocation) {
             this.id = id;
             this.sourceId = sourceId;
+            this.projectLocation = projectLocation;
         }
 
-        public static Builder create(String id, String sourceId) {
-            return new Builder(id, sourceId);
+        public static Builder create(String id, String sourceId, String projectLocation) {
+            return new Builder(id, sourceId, projectLocation);
         }
 
         public Builder withStartTime(long startTime) {
@@ -80,12 +89,12 @@ public class TestSuiteExecutionContextImpl implements TestSuiteExecutionContext 
             this.endTime = endTime;
             return this;
         }
-        
+
         public Builder withReportId(String withReportId) {
-            this.withReportId = withReportId;
+            this.reportId = withReportId;
             return this;
         }
-        
+
         public Builder withTestCaseContext(List<TestCaseExecutionContext> testCaseContexts) {
             this.testCaseContexts = testCaseContexts;
             return this;

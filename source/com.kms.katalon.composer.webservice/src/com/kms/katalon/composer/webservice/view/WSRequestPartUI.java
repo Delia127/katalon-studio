@@ -75,6 +75,8 @@ public class WSRequestPartUI {
     private MPart variablePart;
     
     private MPart variableEditorPart;
+    
+    private MPart configurationPart;
 
     private MCompositePart verificationPart;
 
@@ -226,6 +228,15 @@ public class WSRequestPartUI {
         variableEditorPart.getTags().add(IPresentationEngine.NO_MOVE);
         bottomLeftPartStack.getChildren().add(variableEditorPart);
         
+        String configurationPartId = getConfigurationPartId(requestObject);
+        configurationPart = modelService.createModelElement(MPart.class);
+        configurationPart.setElementId(configurationPartId);
+        configurationPart.setContributionURI(CHILD_PART_OBJECT_URI);
+        configurationPart.setLabel(StringConstants.PA_LBL_CONFIGURATION);
+        configurationPart.setCloseable(false);
+        configurationPart.getTags().add(IPresentationEngine.NO_MOVE);
+        bottomLeftPartStack.getChildren().add(configurationPart);
+        
         String responsePartId = getResponsePartId(requestObject);
         responsePart = modelService.createModelElement(MPart.class);
         responsePart.setElementId(responsePartId);
@@ -243,7 +254,7 @@ public class WSRequestPartUI {
         partService.activate(snippetPart);
         partService.activate(variablePart);
         partService.activate(variableEditorPart);
-        // partService.activate(verificationToolbarPart);
+        partService.activate(configurationPart);
 
         tabFolder = (CTabFolder) bottomLeftPartStack.getWidget();
 
@@ -394,6 +405,10 @@ public class WSRequestPartUI {
     private String getVariableEditorPartID(WebServiceRequestEntity requestObject) {
         return getBottomLeftPartStackId(requestObject) + ".variableEditor";
     }
+    
+    private String getConfigurationPartId(WebServiceRequestEntity requestObject) {
+        return getBottomLeftPartStackId(requestObject) + ".configuration";
+    }
 
     private String getVerificationPartId(WebServiceRequestEntity requestObject) {
         return getBottomLeftPartStackId(requestObject) + ".verification";
@@ -486,6 +501,10 @@ public class WSRequestPartUI {
     public Composite getVariableEditorPartComposite() {
         return getPartComposite(variableEditorPart);
     }
+    
+    public Composite getConfigurationPartComposite() {
+        return getPartComposite(configurationPart);
+    }
 
     public Composite getVerificationPartComposite() {
         return getPartComposite(verificationPart);
@@ -534,6 +553,10 @@ public class WSRequestPartUI {
 
     public CTabItem getVariableTab() {
         return tabFolder.getItem(4);
+    }
+    
+    public CTabItem getConfigurationTab() {
+        return tabFolder.getItem(5);
     }
     
     public CTabItem getVariableEditorTab(){

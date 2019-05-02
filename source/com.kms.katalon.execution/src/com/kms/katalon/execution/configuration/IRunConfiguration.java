@@ -13,6 +13,10 @@ public interface IRunConfiguration {
     
     public String getProjectFolderLocation();
     
+    public String getExecutionUUID();
+    
+    public void setExecutionUUID(String executionUUID);
+    
     public Map<String, IDriverConnector> getDriverConnectors();
 	
 	public IExecutionSetting build(FileEntity fileEntity, IExecutedEntity entity) throws IOException, ExecutionException;
@@ -32,6 +36,16 @@ public interface IRunConfiguration {
     boolean allowsRecording();
     
     ExecutionProfileEntity getExecutionProfile();
+
+    void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables);
+
+    void setVmArgs(String[] vmArgs);
     
-    public void setOverridingGlobalVariables(Map<String, Object> overridingGlobalVariables);
+    String[] getVmArgs();
+    
+    void setTestSuiteAdditionalData(Map<String, String> data);
+    
+    Map<String, String> getTestSuiteAdditionalData();
+    
+    void setAdditionalEnvironmentVariables(Map<String, String> environmentVariables);
 }
