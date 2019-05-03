@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.execution.console.entity.BooleanConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.IntegerConsoleOption;
@@ -13,7 +14,6 @@ import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class WebUIConsoleOptionContributor extends PreferenceOptionContributor {
-    public static final String WEB_UI_QUALIFIER = "com.kms.katalon.execution.webui";
     
     public static final String WEB_UI_AUTO_UPDATE_DRIVERS = "webui.autoUpdateDrivers";
 
@@ -37,7 +37,7 @@ public class WebUIConsoleOptionContributor extends PreferenceOptionContributor {
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
         IPreferenceStore store = PreferenceStoreManager
-                .getPreferenceStore(WEB_UI_QUALIFIER);
+                .getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
         if (consoleOption instanceof StringConsoleOption) {
             store.setValue(consoleOption.getOption(), argumentValue);
             return;
@@ -55,7 +55,7 @@ public class WebUIConsoleOptionContributor extends PreferenceOptionContributor {
 
     @Override
     public String getPreferenceId() {
-        return WEB_UI_QUALIFIER;
+        return IdConstants.KATALON_WEB_UI_BUNDLE_ID;
     }
 
 }
