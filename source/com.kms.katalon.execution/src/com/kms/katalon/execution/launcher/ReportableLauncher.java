@@ -100,7 +100,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
         } catch (Exception e) {
             writeError(MessageFormat.format(StringConstants.LAU_RPT_ERROR_TO_GENERATE_REPORT, e.getMessage()));
-            LogUtil.logError(e);
+            LogUtil.printAndLogError(e);
         }
 
         waitForLoggingFinished();
@@ -198,9 +198,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     protected TestSuiteLogRecord prepareReport() {
         try {
+            File reportFolder = getReportFolder();
+            LogUtil.logInfo("Start writing reports to folder: " + reportFolder.getAbsolutePath()); 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_GENERATE_REPORT);
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
-            File reportFolder = getReportFolder();
 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_HTML);
             ReportUtil.writeHtmlReport(suiteLog, reportFolder);
@@ -216,11 +217,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
             ReportUtil.writeJUnitReport(suiteLog, reportFolder);
+            LogUtil.logInfo("Reports were generated " + reportFolder.getAbsolutePath());
 
             copyReport();
             return suiteLog;
         } catch (Exception e) {
-            LogUtil.logError(e);
+            LogUtil.printAndLogError(e);
             return null;
         }
     }
