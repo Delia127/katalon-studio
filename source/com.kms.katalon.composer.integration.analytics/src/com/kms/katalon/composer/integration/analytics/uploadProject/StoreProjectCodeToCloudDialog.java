@@ -13,7 +13,6 @@ import java.util.zip.ZipOutputStream;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -28,8 +27,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
-import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
@@ -40,6 +37,8 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 
@@ -56,6 +55,8 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
     private List<AnalyticsProject> projects = new ArrayList<>();
 
     private List<AnalyticsTeam> teams = new ArrayList<>();
+    
+    private String serverUrl, email, password;
     
     private ProjectEntity currentProject;
     private ProjectController pController = ProjectController.getInstance();
@@ -141,9 +142,9 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 			
 			boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
 			
-            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
-            String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
-            String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+            serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+            email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
             
             AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
                     analyticsSettingStore.getServerEndpoint(encryptionEnabled),
@@ -195,33 +196,22 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                	String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
-                    String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
-                    String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+//                	password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+//                    serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+//                    email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
                     AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
                     projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
                             teams.get(cbbTeams.getSelectionIndex()), tokenInfo, new ProgressMonitorDialog(getShell()));
                     analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
                     setProjectsBasedOnTeam(teams, projects, serverUrl, email, password);
 
-                } catch (IOException | GeneralSecurityException ex) {
+                } catch (IOException ex) {
                     LoggerSingleton.logError(ex);
                     MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
                 }
             }
         });
     }
-	
-//	@Override
-//	protected void registerControlModifyListeners() {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	protected void setInput() {
-//		txtCodeRepoName.setText(StringUtils.EMPTY);
-//	}
 	
 	private void Compress(String srcFolder, String destZipFile) throws Exception {
 		ZipOutputStream zip = null;
@@ -268,18 +258,33 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 	@Override
 	protected void okPressed() {
 		
-//		String name = txtCodeRepoName.getText();
+		String name = txtCodeRepoName.getText();
 		int currentIndexProject = cbbProjects.getSelectionIndex();
 		AnalyticsProject sellectProject = projects.get(currentIndexProject);
 		
 		currentProject = pController.getCurrentProject();
 		
-		System.out.println(sellectProject.getName());
+		System.out.println("Project" + sellectProject.getName());
+		System.out.println("Name" + name);
 		String folderCurrentProject = currentProject.getFolderLocation();
+		
 		String zipFile = "D:\\Katalon Example\\fileZip.zip";
 		
 		try {
 			Compress(folderCurrentProject, zipFile);
+			AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+			
+			AnalyticsUploadInfo uploadInfo = AnalyticsApiProvider.getUploadInfo(serverUrl, token.getAccess_token(), sellectProject.getId());
+			
+			File file = new File(zipFile);
+			AnalyticsApiProvider.uploadFile(uploadInfo.getUploadUrl(), file);
+			long timestamp = System.currentTimeMillis();
+			AnalyticsApiProvider.uploadTestProject(serverUrl,
+					sellectProject.getId(), 
+					sellectProject.getTeamId(), 
+					timestamp, 
+					name, 
+					zipFile, file.getName().toString(), uploadInfo.getPath(), token.getAccess_token());			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -296,7 +301,5 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 	@Override
 	protected Point getInitialSize() {
 		return new Point(550, 280);
-	}
-	
-	
+	}	
 }
