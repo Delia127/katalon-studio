@@ -1,11 +1,17 @@
 package com.kms.katalon.composer.integration.analytics.uploadProject;
 
-import org.eclipse.jface.dialogs.IDialogConstants;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -13,7 +19,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
+import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+
 
 public class StoreProjectCodeToCloudDialog extends CustomTitleAreaDialog {
 	
@@ -22,7 +38,13 @@ public class StoreProjectCodeToCloudDialog extends CustomTitleAreaDialog {
     private Combo cbbTeams;
     
     private Text txtCodeRepoName;
+    
+    private AnalyticsSettingStore analyticsSettingStore;
+    
+    private List<AnalyticsProject> projects = new ArrayList<>();
 
+    private List<AnalyticsTeam> teams = new ArrayList<>();
+    
 	public StoreProjectCodeToCloudDialog(Shell parentShell) {
 		super(parentShell);
 	}
@@ -71,8 +93,92 @@ public class StoreProjectCodeToCloudDialog extends CustomTitleAreaDialog {
         txtCodeRepoName = new Text(composite, SWT.BORDER);
         txtCodeRepoName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         
+        addListener();
+        fillData();
+        
 		return composite;
 	}
+	
+	private void fillData() {
+		try {
+			cbbTeams.setItems();
+			cbbProjects.setItems();
+			
+			analyticsSettingStore = new AnalyticsSettingStore(
+	                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+			
+			boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
+			
+            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+            String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+            String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            
+            AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
+                    analyticsSettingStore.getServerEndpoint(encryptionEnabled),
+                    analyticsSettingStore.getEmail(encryptionEnabled), 
+                    password, 
+                    analyticsSettingStore);
+            
+            if (tokenInfo == null){
+                return;
+            }
+            
+            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
+                    analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo,
+                    new ProgressMonitorDialog(getShell()));
+            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                    teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
+                    new ProgressMonitorDialog(getShell()));
+            
+            if (teams != null && !teams.isEmpty()) {
+                cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+            }
+
+            if (teams != null && teams.size() > 0) {
+                setProjectsBasedOnTeam(teams, projects, analyticsSettingStore.getServerEndpoint(encryptionEnabled),
+                        analyticsSettingStore.getEmail(encryptionEnabled), password);
+            }
+            
+		} catch (IOException | GeneralSecurityException e) {
+            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
+		}
+	}
+	
+    private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects, String serverUrl,
+            String email, String password) {
+
+        if (projects != null && !projects.isEmpty()) {
+            cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+        } else {
+        	cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+        }
+    }
+    
+    private void addListener() {
+    	cbbTeams.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                	String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+                    String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+                    String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+                    AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                            teams.get(cbbTeams.getSelectionIndex()), tokenInfo, new ProgressMonitorDialog(getShell()));
+                    analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
+                    setProjectsBasedOnTeam(teams, projects, serverUrl, email, password);
+
+                } catch (IOException | GeneralSecurityException ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
+                }
+            }
+        });
+    }
 	
 	@Override
 	protected void registerControlModifyListeners() {

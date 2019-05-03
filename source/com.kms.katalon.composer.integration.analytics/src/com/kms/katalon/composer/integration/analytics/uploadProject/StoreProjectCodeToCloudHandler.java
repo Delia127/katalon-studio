@@ -40,7 +40,6 @@ public class StoreProjectCodeToCloudHandler {
 	
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-		System.out.println("Call here");
 		StoreProjectCodeToCloudDialog dialog = new StoreProjectCodeToCloudDialog(parentShell);
 		dialog.open();
 		return;
