@@ -1,23 +1,34 @@
 package com.kms.katalon.composer.integration.analytics.uploadProject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
-import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -25,13 +36,14 @@ import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalytic
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 
-public class StoreProjectCodeToCloudDialog extends CustomTitleAreaDialog {
+public class StoreProjectCodeToCloudDialog extends Dialog {
 	
 	private Combo cbbProjects;
 
@@ -45,13 +57,22 @@ public class StoreProjectCodeToCloudDialog extends CustomTitleAreaDialog {
 
     private List<AnalyticsTeam> teams = new ArrayList<>();
     
+    private ProjectEntity currentProject;
+    private ProjectController pController = ProjectController.getInstance();
+    
 	public StoreProjectCodeToCloudDialog(Shell parentShell) {
 		super(parentShell);
 	}
 	
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		createButton(parent, IDialogConstants.OK_ID, ComposerIntegrationAnalyticsMessageConstants.BTN_UPLOAD, true);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+	}
+	
     @Override
 	protected boolean isResizable() {
-	    return false;
+	    return true;
 	}
     
 	@Override
@@ -62,40 +83,51 @@ public class StoreProjectCodeToCloudDialog extends CustomTitleAreaDialog {
 	}
 	
 	@Override
-	protected Composite createContentArea(Composite parent) {
+	protected Control createDialogArea(Composite parent) {
+      Composite composite = new Composite(parent, SWT.NONE);
 
-        setDialogTitle(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_TITLE_UPLOAD_CODE);
-        setMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_UPLOAD_CODE, IMessageProvider.INFORMATION);
+      GridLayout layout = new GridLayout(2, false);
+      layout.horizontalSpacing = 15;
+      
+      composite.setLayout(layout);
+      composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
-        Composite composite = new Composite(parent, SWT.NONE);
+      Label lblGetting = new Label(composite, SWT.NONE);
+      lblGetting.setText(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_UPLOAD_CODE);
+      GridData lblGettingGridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 2);
+      lblGetting.setLayoutData(lblGettingGridData);
+      
+      Group grpUploadProject = new Group(composite, SWT.NONE);
+      grpUploadProject.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+      GridLayout glGrpAuthentication = new GridLayout(2, false);
+      glGrpAuthentication.horizontalSpacing = 15;
+      grpUploadProject.setLayout(glGrpAuthentication);
+//      grpUploadProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_AUTHENTICATE_GROUP);
+      
+      Label lblTeam = new Label(grpUploadProject, SWT.NONE);
+      lblTeam.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEAM);
 
-        GridLayout layout = new GridLayout(2, false);
-        layout.horizontalSpacing = 15;
-        
-        composite.setLayout(layout);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
- 
-        Label lblTeam = new Label(composite, SWT.NONE);
-        lblTeam.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEAM);
+      cbbTeams = new Combo(grpUploadProject, SWT.READ_ONLY);
+      GridData cbbTeamsGritData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+      cbbTeams.setLayoutData(cbbTeamsGritData);
+      
+      Label lblProject = new Label(grpUploadProject, SWT.NONE);
+      lblProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PROJECT);
 
-        cbbTeams = new Combo(composite, SWT.READ_ONLY);
-        cbbTeams.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        
-        Label lblProject = new Label(composite, SWT.NONE);
-        lblProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PROJECT);
-
-        cbbProjects = new Combo(composite, SWT.READ_ONLY);
-        cbbProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        
-        Label lblCodeRepoName = new Label(composite, SWT.NONE);
-        lblCodeRepoName.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_CODE_REPO_NAME);
-        
-        txtCodeRepoName = new Text(composite, SWT.BORDER);
-        txtCodeRepoName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        
-        addListener();
-        fillData();
-        
+      cbbProjects = new Combo(grpUploadProject, SWT.READ_ONLY);
+      GridData cbbProjectsGridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+      cbbProjects.setLayoutData(cbbProjectsGridData);
+      
+      Label lblCodeRepoName = new Label(grpUploadProject, SWT.NONE);
+      lblCodeRepoName.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_CODE_REPO_NAME);
+      
+      txtCodeRepoName = new Text(grpUploadProject, SWT.BORDER);
+      GridData txtCodeRepoNameGridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+      txtCodeRepoName.setLayoutData(txtCodeRepoNameGridData);
+      
+      addListener();
+      fillData();
+      
 		return composite;
 	}
 	
@@ -180,25 +212,91 @@ public class StoreProjectCodeToCloudDialog extends CustomTitleAreaDialog {
         });
     }
 	
-	@Override
-	protected void registerControlModifyListeners() {
-		// TODO Auto-generated method stub
+//	@Override
+//	protected void registerControlModifyListeners() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	protected void setInput() {
+//		txtCodeRepoName.setText(StringUtils.EMPTY);
+//	}
+	
+	private void Compress(String srcFolder, String destZipFile) throws Exception {
+		ZipOutputStream zip = null;
+		FileOutputStream fileWrite = null;
 		
+		fileWrite = new FileOutputStream(destZipFile);
+		zip = new ZipOutputStream(fileWrite);
+		
+		addFolderToZip("", srcFolder, zip);
+		zip.flush();
+		zip.close();
 	}
-
-	@Override
-	protected void setInput() {
-		// TODO Auto-generated method stub
+	
+	private void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
+		File folder = new File(srcFile);
 		
+		if (folder.isDirectory()) {
+			addFolderToZip(path, srcFile, zip);
+		} else {
+			byte[] buf = new byte[1024];
+			int len;
+			FileInputStream in = new FileInputStream(srcFile);
+			zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
+			while((len = in.read(buf)) > 0) {
+				zip.write(buf, 0, len);
+			}
+		}
+	}
+	
+	private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
+		File folder = new File(srcFolder);
+		
+		for (String fileName : folder.list()) {
+			if (fileName.equals(".git")) 
+				continue;
+			if (path.equals("")) {
+				addFileToZip(folder.getName(), srcFolder + "/" + fileName, zip);
+			} else {
+				addFileToZip(path + "/" + folder.getName(), srcFolder + "/" + fileName, zip);
+			}
+		}
 	}
 	
 	@Override
 	protected void okPressed() {
-		System.out.println("Ok pressed");
-		String name = txtCodeRepoName.getText();
 		
-		System.out.println(name);
+//		String name = txtCodeRepoName.getText();
+		int currentIndexProject = cbbProjects.getSelectionIndex();
+		AnalyticsProject sellectProject = projects.get(currentIndexProject);
+		
+		currentProject = pController.getCurrentProject();
+		
+		System.out.println(sellectProject.getName());
+		String folderCurrentProject = currentProject.getFolderLocation();
+		String zipFile = "D:\\Katalon Example\\fileZip.zip";
+		
+		try {
+			Compress(folderCurrentProject, zipFile);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		super.okPressed();
 	}
+	
+	@Override
+	protected void cancelPressed() {
+		super.cancelPressed();
+	}
 
+	@Override
+	protected Point getInitialSize() {
+		return new Point(550, 280);
+	}
+	
+	
 }
