@@ -8,8 +8,10 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 
@@ -19,6 +21,11 @@ public class ExistingExecutionHandler extends AbstractExecutionHandler {
     private String remoteServerUrl;
 
     private String driverTypeName;
+
+    private ExistingRunConfiguration existingRunConfig;
+    
+    public ExistingExecutionHandler() {
+    }
 
     @Override
     protected IRunConfiguration getRunConfigurationForExecution(String projectDir)
@@ -51,23 +58,36 @@ public class ExistingExecutionHandler extends AbstractExecutionHandler {
     }
 
     @Override
-    public void executeTestCase(TestCaseEntity testCase, LaunchMode launchMode, IRunConfiguration runConfig)
+    public void executeTestCase(TestCaseEntity testCase, LaunchMode launchMode)
             throws Exception {
-        prepareData(runConfig);
-        super.executeTestCase(testCase, launchMode, runConfig);
+        super.executeTestCase(testCase, launchMode);
     }
 
     @Override
-    public void executeTestSuite(TestSuiteEntity testSuite, LaunchMode launchMode, IRunConfiguration runConfig)
+    public void executeTestSuite(TestSuiteEntity testSuite, LaunchMode launchMode)
             throws Exception {
-        prepareData(runConfig);
-        super.executeTestSuite(testSuite, launchMode, runConfig);
+        super.executeTestSuite(testSuite, launchMode);
     }
 
-    protected void prepareData(IRunConfiguration runConfig) {
-        ExistingRunConfiguration existingRunConfiguration = (ExistingRunConfiguration) runConfig;
+    public ExistingRunConfiguration getExistingRunConfig() {
+        return existingRunConfig;
+    }
+
+    public void setExistingRunConfig(ExistingRunConfiguration existingRunConfig) {
+        this.existingRunConfig = existingRunConfig;
+    }
+
+    @Override
+    public AbstractRunConfiguration buildRunConfiguration(String projectDir)
+            throws IOException, ExecutionException, InterruptedException {
+        ExistingRunConfiguration existingRunConfiguration = new ExistingRunConfiguration(projectDir);
         existingRunConfiguration.setSessionId(sessionId);
         existingRunConfiguration.setRemoteUrl(remoteServerUrl);
         existingRunConfiguration.setDriverName(driverTypeName);
+        if (existingRunConfig != null) {
+            ((DefaultExecutionSetting) existingRunConfiguration.getExecutionSetting())
+            .setRawScript(existingRunConfig.getExecutionSetting().getRawScript());
+        }
+        return existingRunConfiguration;
     }
 }

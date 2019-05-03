@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.osgi.framework.Bundle;
 
 import com.kms.katalon.controller.exception.ControllerException;
@@ -18,6 +19,10 @@ public class ClassPathResolver {
     private static final String KEYWORD_BIN_FOLDER = "keyword";
     private static final String GROOVY_SOURCE_BIN_FOLDER = "groovy";
     private static final String BIN_FOLDER= "bin";
+    private static final String[] CANDIDATES_JAVA_FILES = { "java", "java.exe" };
+
+    private static final String[] CANDIDATE_JAVA_LOCATIONS = { "bin" + File.separatorChar,
+            "jre" + File.separatorChar + "bin" + File.separatorChar };
 
     private ClassPathResolver() {
         // Disable default constructor
@@ -66,5 +71,18 @@ public class ClassPathResolver {
 
     public static String getBundleLocation(Bundle bundle) throws IOException {
         return FileLocator.getBundleFile(bundle).getAbsolutePath();
+    }
+
+    public static String getInstalledJRE() {
+        File vmInstallLocation = JavaRuntime.getDefaultVMInstall().getInstallLocation();
+        for (int i = 0; i < CANDIDATES_JAVA_FILES.length; i++) {
+            for (int j = 0; j < CANDIDATE_JAVA_LOCATIONS.length; j++) {
+                File javaFile = new File(vmInstallLocation, CANDIDATE_JAVA_LOCATIONS[j] + CANDIDATES_JAVA_FILES[i]);
+                if (javaFile.isFile()) {
+                    return javaFile.getAbsolutePath();
+                }
+            }
+        }
+        return "java";
     }
 }
