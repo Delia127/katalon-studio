@@ -92,6 +92,7 @@ public class StoreProjectCodeToCloudDialog extends CustomTitleAreaDialog {
 		String name = txtCodeRepoName.getText();
 		
 		System.out.println(name);
+		super.okPressed();
 	}
 
 }
