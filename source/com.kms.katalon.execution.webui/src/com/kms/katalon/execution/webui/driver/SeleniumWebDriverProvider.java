@@ -89,6 +89,7 @@ public class SeleniumWebDriverProvider {
         } else {
             chromeDriverPath += "chromedriver_linux32" + File.separator + "chromedriver";
         }
+        makeFileExecutable(chromeDriverPath);
         return chromeDriverPath;
     }
 
