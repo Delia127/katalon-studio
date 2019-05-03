@@ -257,22 +257,24 @@ public abstract class AbstractExecutionHandler {
     protected abstract IRunConfiguration getRunConfigurationForExecution(String projectDir)
             throws IOException, ExecutionException, InterruptedException;
 
-    public void execute(LaunchMode launchMode) throws Exception {
-        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
-        try {
-            AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
-                    projectDir);
-
-            if (runConfiguration == null) {
-                return;
-            }
-            runConfiguration.setExecutionProfile(ExecutionProfileManager.getInstance().getSelectedProfile());
-            execute(launchMode, runConfiguration);
-        } catch (InterruptedException ignored) {}
+    private String getProjectDir() {
+        return ProjectController.getInstance().getCurrentProject().getFolderLocation();
     }
 
-    protected void execute(LaunchMode launchMode, IRunConfiguration runConfiguration) throws Exception {
+    public AbstractRunConfiguration buildRunConfiguration(String projectDir)
+            throws IOException, ExecutionException, InterruptedException {
+        AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
+                projectDir);
+
+        if (runConfiguration == null) {
+            return null;
+        }
+        runConfiguration.setExecutionProfile(ExecutionProfileManager.getInstance().getSelectedProfile());
+        return runConfiguration;
+    }
+
+    protected void execute(LaunchMode launchMode) throws Exception {
         Entity targetEntity = getExecutionTarget();
 
         if (targetEntity == null) {
@@ -280,20 +282,19 @@ public abstract class AbstractExecutionHandler {
         }
         if (targetEntity instanceof TestCaseEntity) {
             TestCaseEntity testCase = (TestCaseEntity) targetEntity;
-            executeTestCase(testCase, launchMode, runConfiguration);
+            executeTestCase(testCase, launchMode);
             eventBroker.post(EventConstants.EXECUTE_TEST_CASE, null);
         } else if (targetEntity instanceof TestSuiteEntity) {
             TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
-            executeTestSuite(testSuite, launchMode, runConfiguration);
+            executeTestSuite(testSuite, launchMode);
             eventBroker.post(EventConstants.EXECUTE_TEST_SUITE, null);
         } else if (targetEntity instanceof SystemFileEntity) {
             SystemFileEntity feature = (SystemFileEntity) targetEntity;
-            executeFeatureFile(feature, launchMode, runConfiguration);
+            executeFeatureFile(feature, launchMode);
         }
     }
 
-    public void executeFeatureFile(final SystemFileEntity feature, final LaunchMode launchMode,
-            final IRunConfiguration runConfig) throws Exception {
+    public void executeFeatureFile(final SystemFileEntity feature, final LaunchMode launchMode) throws Exception {
         Job job = new Job(ComposerExecutionMessageConstants.AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE) {
             @Override
             protected IStatus run(final IProgressMonitor monitor) {
@@ -309,6 +310,7 @@ public abstract class AbstractExecutionHandler {
                     monitor.worked(1);
 
                     monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
+                    AbstractRunConfiguration runConfig = buildRunConfiguration(getProjectDir());
                     runConfig.build(feature, testSuiteExecutedEntity);
                     validateJobProgressMonitor(monitor);
                     monitor.worked(1);
@@ -341,13 +343,12 @@ public abstract class AbstractExecutionHandler {
         job.schedule();
     }
 
-    public void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
-            final IRunConfiguration runConfig) throws Exception {
+    public void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode) throws Exception {
         if (testCase == null) {
             return;
         }
-        Job job = new ExecuteTestCaseJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, runConfig, testCase, launchMode,
-                UISynchronizeService.getInstance().getSync());
+        Job job = new ExecuteTestCaseJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, testCase, launchMode,
+                UISynchronizeService.getInstance().getSync(), this);
         job.setUser(true);
         job.schedule();
     }
@@ -356,8 +357,7 @@ public abstract class AbstractExecutionHandler {
     // BrowserType browser,
     // final int pageLoadTimeout, final LaunchMode launchMode) throws Exception
     // {
-    public void executeTestSuite(final TestSuiteEntity testSuite, final LaunchMode launchMode,
-            final IRunConfiguration runConfig) throws Exception {
+    public void executeTestSuite(final TestSuiteEntity testSuite, final LaunchMode launchMode) throws Exception {
         if (testSuite == null) {
             return;
         }
@@ -382,6 +382,7 @@ public abstract class AbstractExecutionHandler {
                         monitor.worked(1);
 
                         monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
+                        AbstractRunConfiguration runConfig = buildRunConfiguration(getProjectDir());
                         runConfig.build(testSuite, testSuiteExecutedEntity);
                         validateJobProgressMonitor(monitor);
                         monitor.worked(1);

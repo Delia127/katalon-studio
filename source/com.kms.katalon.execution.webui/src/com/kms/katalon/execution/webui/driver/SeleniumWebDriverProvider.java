@@ -23,6 +23,10 @@ import com.kms.katalon.execution.classpath.ClassPathResolver;
 
 public class SeleniumWebDriverProvider {
     private static final String DRIVERS_FOLDER_NAME = "resources" + File.separator + "drivers";
+    
+    public static File getTempDriverDirectory() throws IOException {
+        return new File(ClassPathResolver.getConfigurationFolder(), "resources/temp/webdriver");
+    }
 
     public static File getDriverDirectory() throws IOException {
         Bundle bundleExec = Platform.getBundle(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
@@ -66,6 +70,16 @@ public class SeleniumWebDriverProvider {
         }
     }
 
+    public static String getTempChromeDriverPath() throws IOException {
+        File parentFolder = getTempDriverDirectory();
+        switch (getOS()) {
+            case OS_WIN32:
+                return new File(parentFolder, "chromedriver.exe").getAbsolutePath();
+            default:
+                return new File(parentFolder, "chromedriver").getAbsolutePath();
+        }
+    }
+
     public static String getChromeDriverPath() {
         try {
             switch (getOS()) {
@@ -104,6 +118,11 @@ public class SeleniumWebDriverProvider {
         makeFileExecutable(chromeDriverPath);
         return chromeDriverPath;
     }
+    
+    public static String getTempIEDriverPath() throws IOException {
+        File parentFolder = getTempDriverDirectory();
+        return new File(parentFolder, "IEDriverServer.exe").getAbsolutePath();
+    }
 
     public static String getIEDriverPath() {
         try {
@@ -135,6 +154,11 @@ public class SeleniumWebDriverProvider {
             return "";
         }
     }
+    
+    public static String getTempEdgeDriverPath() throws IOException {
+        File parentFolder = getTempDriverDirectory();
+        return new File(parentFolder, "MicrosoftWebDriver.exe").getAbsolutePath();
+    }
 
     public static String getGeckoDriverPath() throws IOException {
         switch (getOS()) {
@@ -156,5 +180,15 @@ public class SeleniumWebDriverProvider {
             }
         }
         return "";
+    }
+    
+    public static String getTempGeckoDriverPath() throws IOException {
+        File parentFolder = getTempDriverDirectory();
+        switch (getOS()) {
+            case OS_WIN32:
+                return new File(parentFolder, "geckodriver.exe").getAbsolutePath();
+            default:
+                return new File(parentFolder, "geckodriver").getAbsolutePath();
+        }
     }
 }
