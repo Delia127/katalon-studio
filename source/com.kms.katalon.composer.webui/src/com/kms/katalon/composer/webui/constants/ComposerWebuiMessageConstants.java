@@ -69,6 +69,8 @@ public class ComposerWebuiMessageConstants extends NLS {
     
     public static String LBL_ATTRIBUTE_SELECTION_METHOD;
 
+    public static String PAGE_PREF_AUTO_UPDATE_WEBDRIVERS;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebuiMessageConstants.class);
