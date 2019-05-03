@@ -10,7 +10,6 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.preferences.WebUIConsoleOptionContributor;
-import com.kms.katalon.execution.webui.driver.ChromeDriverConnector;
 import com.kms.katalon.execution.webui.driver.HeadlessDriverConnector;
 import com.kms.katalon.execution.webui.driver.SeleniumWebDriverProvider;
 import com.kms.katalon.logging.LogUtil;
@@ -59,7 +58,7 @@ public class HeadlessRunConfiguration extends WebUiRunConfiguration {
     public Map<String, IDriverConnector> getDriverConnectors() {
         Map<String, IDriverConnector> driverConnectors = super.getDriverConnectors();
         for (java.util.Map.Entry<String, IDriverConnector> entry : driverConnectors.entrySet()) {
-            if (entry.getValue() instanceof ChromeDriverConnector) {
+            if (entry.getValue() instanceof HeadlessDriverConnector) {
                 HeadlessDriverConnector driverConnector = (HeadlessDriverConnector) entry.getValue();
                 driverConnector.setChromeDriverPath(driverPath);
             }

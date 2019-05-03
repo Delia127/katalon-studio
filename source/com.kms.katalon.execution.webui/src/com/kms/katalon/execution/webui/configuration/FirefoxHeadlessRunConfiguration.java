@@ -68,7 +68,7 @@ public class FirefoxHeadlessRunConfiguration extends WebUiRunConfiguration {
     public Map<String, IDriverConnector> getDriverConnectors() {
         Map<String, IDriverConnector> driverConnectors = super.getDriverConnectors();
         for (java.util.Map.Entry<String, IDriverConnector> entry : driverConnectors.entrySet()) {
-            if (entry.getValue() instanceof FirefoxDriverConnector) {
+            if (entry.getValue() instanceof FirefoxHeadlessDriverConnector) {
                 FirefoxHeadlessDriverConnector driverConnector = (FirefoxHeadlessDriverConnector) entry.getValue();
                 driverConnector.setGeckoDriverPath(driverPath);
             }
