@@ -95,49 +95,48 @@ public class PostmanParseUtils {
     }
 
     public static String collectPathItem(String variablePath, Item item) {
-            String katalonVariablePath = "";
-            String[] pathAndVariables = variablePath.toString().split("[\\{||\\}]");
-            katalonVariablePath += pathAndVariables[0];
-            String variables = "";
+        String katalonVariablePath = "";
+        String[] pathAndVariables = variablePath.toString().split("[\\{||\\}]");
+        katalonVariablePath += pathAndVariables[0];
+        String variables = "";
 
-            if (pathAndVariables.length > 1) {
-                for (int i = 1; i < pathAndVariables.length; i++) {
-                    if (!(pathAndVariables[i].equals("")) && !(pathAndVariables[i].contains("/"))) {
-                        katalonVariablePath += "${" + pathAndVariables[i] + "}";
-                    } else if (pathAndVariables[i].contains(":")) {
-                        variables = pathAndVariables[i];
-                    } else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
-                        katalonVariablePath += pathAndVariables[i];
-                    }
+        if (pathAndVariables.length > 1) {
+            for (int i = 1; i < pathAndVariables.length; i++) {
+                if (!(pathAndVariables[i].equals("")) && !(pathAndVariables[i].contains("/"))) {
+                    katalonVariablePath += "${" + pathAndVariables[i] + "}";
+                } else if (pathAndVariables[i].contains(":")) {
+                    variables = pathAndVariables[i];
+                } else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
+                    katalonVariablePath += pathAndVariables[i];
                 }
-                String[] splitVariables = variables.split("[\\:]");
-                katalonVariablePath += splitVariables[0];
-                if (splitVariables.length > 1) {
-                    for (int j = 1; j < splitVariables.length; j++) {
-                        if (splitVariables[j].contains("/")) {
-                            String[] var = splitVariables[j].split("[\\/]");
-                            if(katalonVariablePath.endsWith("/")){
-                                katalonVariablePath += "${" + var[0] + "}";
-                            }else{
-                                katalonVariablePath += "/"+"${" + var[0] + "}";
-                            }
-                            if (var.length > 1) {
-                                for (int k = 1; k < var.length; k++) {
-                                    katalonVariablePath += "/" + var[k];
-                                }
-                            }
+            }
+            String[] splitVariables = variables.split("[\\:]");
+            katalonVariablePath += splitVariables[0];
+            if (splitVariables.length > 1) {
+                for (int j = 1; j < splitVariables.length; j++) {
+                    if (splitVariables[j].contains("/")) {
+                        String[] var = splitVariables[j].split("[\\/]");
+                        if (katalonVariablePath.endsWith("/")) {
+                            katalonVariablePath += "${" + var[0] + "}";
                         } else {
-                            if(katalonVariablePath.endsWith("/")){
-                                katalonVariablePath += "${" + splitVariables[j] + "}";
+                            katalonVariablePath += "/" + "${" + var[0] + "}";
+                        }
+                        if (var.length > 1) {
+                            for (int k = 1; k < var.length; k++) {
+                                katalonVariablePath += "/" + var[k];
                             }
-                            else{
-                                katalonVariablePath += "/" + "${" + splitVariables[j] + "}";
-                            }
+                        }
+                    } else {
+                        if (katalonVariablePath.endsWith("/")) {
+                            katalonVariablePath += "${" + splitVariables[j] + "}";
+                        } else {
+                            katalonVariablePath += "/" + "${" + splitVariables[j] + "}";
                         }
                     }
                 }
             }
-            variablePath = katalonVariablePath;
+        }
+        variablePath = katalonVariablePath;
         return variablePath;
 
     }
@@ -159,15 +158,15 @@ public class PostmanParseUtils {
     }
 
     public static String collectNameItem(String name, Item item) {
-                String katalonVariableName = "";
-                String[] pathAndVariables = name.toString().split("\\/");
-                katalonVariableName += pathAndVariables[0];
-                if (pathAndVariables.length > 1) {
-                    for (int i = 1; i < pathAndVariables.length; i++) {
-                        katalonVariableName += " or " + pathAndVariables[i];
-                    }
-                }
-                name = katalonVariableName;
+        String katalonVariableName = "";
+        String[] pathAndVariables = name.toString().split("\\/");
+        katalonVariableName += pathAndVariables[0];
+        if (pathAndVariables.length > 1) {
+            for (int i = 1; i < pathAndVariables.length; i++) {
+                katalonVariableName += " or " + pathAndVariables[i];
+            }
+        }
+        name = katalonVariableName;
         return name;
     }
 
