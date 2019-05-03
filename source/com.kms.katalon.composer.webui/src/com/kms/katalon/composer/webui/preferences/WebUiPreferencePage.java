@@ -40,7 +40,7 @@ public class WebUiPreferencePage extends PreferencePage {
     private void initialize() {
         IPreferenceStore prefStore = getPreferenceStore();
         if (!prefStore.contains(PreferenceConstants.AUTO_UPDATE_WEBDRIVERS)) {
-            prefStore.setDefault(PreferenceConstants.AUTO_UPDATE_WEBDRIVERS, true);
+            prefStore.setDefault(PreferenceConstants.AUTO_UPDATE_WEBDRIVERS, false);
         }
         chkAutoUpdateWebDrivers.setSelection(prefStore.getBoolean(PreferenceConstants.AUTO_UPDATE_WEBDRIVERS));
         
