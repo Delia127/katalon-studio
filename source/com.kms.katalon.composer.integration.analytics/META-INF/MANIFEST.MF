@@ -40,4 +40,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.integration.analytics.constants,
  com.kms.katalon.composer.integration.analytics.dialog
-Import-Package: org.eclipse.e4.core.di.annotations
+Import-Package: org.eclipse.e4.core.di.annotations,
+ org.eclipse.e4.ui.services,
+ org.osgi.service.event;version="1.3.1"

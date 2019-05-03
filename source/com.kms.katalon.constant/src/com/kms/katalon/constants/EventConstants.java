@@ -336,6 +336,8 @@ public class EventConstants {
 
     // Analytics Preference Event
     public static final String IS_INTEGRATED = "SETTINGS/INTERGRATION/KATALON_ANALYTICS";
+    
+    public static final String STORE_PROJECT_CODE_TO_CLOUD = "INTERGRATION/KATALON_ANALYTICS/STORE_PROJECT_CODE_TO_CLOUD";
 
     // WS Verification Events
     public static final String WS_VERIFICATION_LOG_UPDATED = "WS_VERIFICATION/LOG_UPDATED";

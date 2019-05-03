@@ -72,15 +72,15 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_N_DHgAC0Eeil_8R9R-MGdw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.execution">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_PgTesOdzEeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.handledtoolitem.generatecommand" label="Build CMD" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/terminal_24.png" tooltip="" command="_V2XzcOd0EeWhlq_ETXxxuQ">
-      <persistedState key="index" value="0"/>
+      <persistedState key="index" value="1"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/terminal_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
     </elements>
     <elements xsi:type="menu:ToolBarSeparator" xmi:id="_L2CzcOdzEeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.toolbarseparator.1">
-      <persistedState key="index" value="1"/>
+      <persistedState key="index" value="2"/>
     </elements>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_hGFVQGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.handledtoolitem.run" label="Run" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/play_24.png" tooltip="" command="_1Vr3wEvpEeWSR5dl8TkM5g">
-      <persistedState key="index" value="2"/>
+      <persistedState key="index" value="3"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/play_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
@@ -88,7 +88,7 @@
       <parameters xmi:id="_Fzs6IKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_h09mMOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handledtoolitem.debug" label="Debug" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/bug_24.png" tooltip="" command="_Z3Hl4OJWEeSyVPtKyNklew">
-      <persistedState key="index" value="3"/>
+      <persistedState key="index" value="4"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/bug_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
@@ -96,7 +96,7 @@
       <parameters xmi:id="_IL-ZEKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_yvXSEG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handledtoolitem.stop" label="Stop" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/stop_24.png" tooltip="" command="_4raZwG74EeSqyYL0pZQV2Q">
-      <persistedState key="index" value="4"/>
+      <persistedState key="index" value="5"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/stop_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
