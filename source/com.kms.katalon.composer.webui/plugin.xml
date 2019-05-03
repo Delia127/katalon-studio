@@ -141,4 +141,28 @@
            name="Test Case">
      </page>
   </extension>
+  <extension
+         point="com.kms.katalon.preferences.PreferencePages">
+      <page
+            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+            class="com.kms.katalon.composer.mobile.preferences.MobileSettingPreferencePage"
+            id="com.kms.katalon.composer.mobile"
+            name="Mobile">
+      </page>   
+   </extension>
+   <extension
+       point="org.eclipse.core.runtime.preferences">
+	    <initializer
+	          class="com.kms.katalon.composer.webui.preferences.WebUiPreferenceDefaultValueInitializer">
+	    </initializer>
+ 	</extension>
+ 	 <extension
+         point="com.kms.katalon.preferences.PreferencePages">
+      <page
+            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+            class="com.kms.katalon.composer.webui.preferences.WebUiPreferencePage"
+            id="com.kms.katalon.composer.webui.preferences.WebUiPreferencePage"
+            name="Web UI">
+      </page>   
+   </extension>
 </plugin>
