@@ -12,6 +12,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String WARN_MSG_NO_PROJECT;
 
     public static String LBL_AUTHENTICATE_GROUP;
+    
+    public static String LBL_CODE_REPO_NAME;
 
     public static String LBL_DLG_AUTHENTICATE_PASSWORD;
 
