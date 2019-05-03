@@ -30,7 +30,7 @@ public class HeadlessRunConfiguration extends WebUiRunConfiguration {
     private String buildChromeDriverPath() {
         String driverPath = SeleniumWebDriverProvider.getChromeDriverPath();
         ScopedPreferenceStore store = PreferenceStoreManager
-                .getPreferenceStore(IdConstants.KATALON_WEB_UI_EXECUTION_ID);
+                .getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
         boolean isUpdateDriverAllowed = store.getBoolean(WebUIConsoleOptionContributor.WEB_UI_AUTO_UPDATE_DRIVERS);
         if (isUpdateDriverAllowed) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
