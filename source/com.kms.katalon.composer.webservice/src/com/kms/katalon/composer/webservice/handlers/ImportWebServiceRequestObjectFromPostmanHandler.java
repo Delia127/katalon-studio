@@ -120,7 +120,6 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
              Paths.get(postmanSpecLocation);
             Trackings.trackImportPostman("file");
         } catch (Throwable e){
-                Trackings.trackImportPostman("url");
         }
     }
     

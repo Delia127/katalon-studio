@@ -95,11 +95,8 @@ public class PostmanParseUtils {
     }
 
     public static String collectPathItem(String variablePath, Item item) {
-        List<Object> listRaw = new ArrayList<>();
-        listRaw.add(variablePath);
-        for (Object oRaw : listRaw) {
             String katalonVariablePath = "";
-            String[] pathAndVariables = oRaw.toString().split("[\\{||\\}]");
+            String[] pathAndVariables = variablePath.toString().split("[\\{||\\}]");
             katalonVariablePath += pathAndVariables[0];
             String variables = "";
 
@@ -130,27 +127,29 @@ public class PostmanParseUtils {
                                 }
                             }
                         } else {
-                            katalonVariablePath += "/" + "${" + splitVariables[j] + "}";
+                            if(katalonVariablePath.endsWith("/")){
+                                katalonVariablePath += "${" + splitVariables[j] + "}";
+                            }
+                            else{
+                                katalonVariablePath += "/" + "${" + splitVariables[j] + "}";
+                            }
                         }
                     }
                 }
             }
             variablePath = katalonVariablePath;
-        }
         return variablePath;
 
     }
 
     public static List<WebElementPropertyEntity> collectHttpHeaderItem(Request request, Item childItem) {
         List<Header> header = childItem.getRequest().getHeader();
-        String key = "";
-        String value = "";
 
         List<WebElementPropertyEntity> propertiesEntity = new ArrayList<WebElementPropertyEntity>();
         for (int i = 0; i < header.size(); i++) {
             WebElementPropertyEntity webElementProperty = new WebElementPropertyEntity();
-            key = header.get(i).getKey();
-            value = header.get(i).getValue();
+            String key = header.get(i).getKey();
+            String value = header.get(i).getValue();
             webElementProperty.setName(key);
             webElementProperty.setValue(value);
             propertiesEntity.add(i, webElementProperty);
@@ -160,38 +159,27 @@ public class PostmanParseUtils {
     }
 
     public static String collectNameItem(String name, Item item) {
-        List<Object> listName = new ArrayList<>();
-        listName.add(name);
-        for (Object oName : listName) {
-            if (oName != null) {
                 String katalonVariableName = "";
-                String[] pathAndVariables = oName.toString().split("\\/");
+                String[] pathAndVariables = name.toString().split("\\/");
                 katalonVariableName += pathAndVariables[0];
-
                 if (pathAndVariables.length > 1) {
                     for (int i = 1; i < pathAndVariables.length; i++) {
                         katalonVariableName += " or " + pathAndVariables[i];
                     }
                 }
                 name = katalonVariableName;
-            }
-        }
         return name;
     }
 
     public static List<VariableEntity> collectVariableItem(Request request) {
-        String keyVar = "";
-        String valueVar = "";
-        String id = "";
-        String decription = "";
         List<VariableEntity> variable = new ArrayList<VariableEntity>();
         if (request.getURL().getVariable() != null) {
             for (int i = 0; i < request.getURL().getVariable().size(); i++) {
                 VariableEntity variableEntity = new VariableEntity();
-                keyVar = request.getURL().getVariable().get(i).getKey();
-                id = request.getURL().getVariable().get(i).getId();
-                valueVar = request.getURL().getVariable().get(i).getValue();
-                decription = request.getURL().getVariable().get(i).getDescription();
+                String keyVar = request.getURL().getVariable().get(i).getKey();
+                String id = request.getURL().getVariable().get(i).getId();
+                String valueVar = request.getURL().getVariable().get(i).getValue();
+                String decription = request.getURL().getVariable().get(i).getDescription();
                 variableEntity.setName(keyVar);
                 variableEntity.setId(id);
                 variableEntity.setDefaultValue(valueVar);
