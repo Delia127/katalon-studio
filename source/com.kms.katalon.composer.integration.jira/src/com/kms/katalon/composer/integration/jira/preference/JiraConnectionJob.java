@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.integration.jira.preference;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -105,9 +107,21 @@ public class JiraConnectionJob extends JiraProgressDialog {
         }
 
         public void setJiraIssueTypes(JiraIssueType[] jiraIssueTypes) {
+
+            Map<String, JiraIssueType> map = new HashMap<>();
+
+            for (int i = 0; i < jiraIssueTypes.length; i++) {
+                JiraIssueType element = jiraIssueTypes[i];
+                map.put(element.getName(), element);
+            }
+
+            JiraIssueType[] noDuplicates = map.entrySet().stream().map(a -> a.getValue()).toArray(JiraIssueType[]::new);
+
             this.jiraIssueTypes = new DisplayedIssueTypeComboboxObject(
-                    new StoredJiraObject<JiraIssueType>(null, jiraIssueTypes));
+                    new StoredJiraObject<JiraIssueType>(null, noDuplicates));
+
         }
+
 
         public DisplayedComboboxObject<JiraProject> getJiraProjects() {
             return jiraProjects;

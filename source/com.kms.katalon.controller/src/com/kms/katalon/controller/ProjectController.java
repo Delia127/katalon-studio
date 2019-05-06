@@ -5,9 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -38,7 +42,9 @@ public class ProjectController extends EntityController {
             + "recent_projects";
 
     public static final int NUMBER_OF_RECENT_PROJECTS = 6;
-
+    
+    private static Map<String, URLClassLoader> classLoaderLookup = new HashMap<>();
+    
     private ProjectController() {
         super();
     }
@@ -162,6 +168,9 @@ public class ProjectController extends EntityController {
             groovyProject.close(monitor);
         }
         DataProviderState.getInstance().setCurrentProject(null);
+        if (classLoaderLookup.containsKey(project.getLocation())) {
+            classLoaderLookup.remove(project.getLocation());
+        }
     }
 
     public void updateProject(String name, String description, String projectPk) throws Exception {
@@ -347,5 +356,15 @@ public class ProjectController extends EntityController {
 
     public List<File> getCustomKeywordPlugins(ProjectEntity project) throws ControllerException {
         return CustomKeywordPluginFactory.getInstance().getAllPluginFiles();
+    }
+    
+    public URLClassLoader getProjectClassLoader(ProjectEntity project) throws MalformedURLException, CoreException {
+        String projectLocation = project.getLocation();
+        if (classLoaderLookup.containsKey(projectLocation)) {
+            return classLoaderLookup.get(projectLocation);
+        }
+        URLClassLoader classLoader = GroovyUtil.getProjectClasLoader(project);
+        classLoaderLookup.put(projectLocation, classLoader);
+        return classLoader;
     }
 }

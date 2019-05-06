@@ -35,6 +35,9 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
             } else if (folder.getFolderType() == FolderType.INCLUDE) {
                 return new FileServiceDataProviderSetting().getSystemFileDataProvider()
                         .getChildren(folder);
+            } else if (folder.getFolderType() == FolderType.USER) {
+                return new FileServiceDataProviderSetting().getUserFileDataProvider()
+                        .getChildren(folder);
             }
             return FolderFileServiceManager.getChildren(folder);
         }
@@ -146,5 +149,10 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
 	@Override
 	public FolderEntity getGroovyScriptRoot(ProjectEntity project) throws DALException {
 		return FolderFileServiceManager.getGroovyScriptRoot(project);
+	}
+	
+	@Override
+	public List<FolderEntity> getUserFolders(ProjectEntity project) throws DALException {
+	    return FolderFileServiceManager.getUserFolders(project);
 	}
 }

@@ -80,7 +80,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.selenium-standalone,
  org.eclipse.swt,
  com.kms.katalon.groovy,
- com.kms.katalon.custom
+ com.kms.katalon.custom,
+ org.eclipse.ui.workbench
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: 

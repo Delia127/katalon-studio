@@ -3,7 +3,7 @@ package com.kms.katalon.custom.keyword;
 public class CustomKeywordConfiguration {
 
     private String settingId;
-    
+
     private CustomKeywordSettingPage settingPage;
 
     public CustomKeywordSettingPage getSettingPage() {

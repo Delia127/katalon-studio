@@ -27,6 +27,8 @@ public class LauncherResult implements ILauncherResult {
     private int numFailures;
 
     private int numErrors;
+    
+    private int numSkips;
 
     private int numIncomplete;
 
@@ -38,6 +40,7 @@ public class LauncherResult implements ILauncherResult {
         setNumFailures(0);
         setNumErrors(0);
         setNumIncomplete(0);
+        setNumSkips(0);
 
         statuses = new ArrayList<>(totalTestCases);
         for (int i = 0; i < totalTestCases; i++) {
@@ -84,7 +87,7 @@ public class LauncherResult implements ILauncherResult {
     }
 
     public int getExecutedTestCases() {
-        return getNumPasses() + getNumFailures() + getNumErrors();
+        return getNumPasses() + getNumFailures() + getNumErrors() + getNumSkips() + getNumIncomplete();
     }
 
     public void increasePasses() {
@@ -100,6 +103,16 @@ public class LauncherResult implements ILauncherResult {
     public void increaseErrors() {
         statuses.get(getExecutedTestCases()).setStatusValue(TestStatusValue.ERROR);
         numErrors++;
+    }
+    
+    public void increaseSkips() {
+        statuses.get(getExecutedTestCases()).setStatusValue(TestStatusValue.SKIPPED);
+        numSkips++;
+    }
+
+    public void increaseIncompletes() {
+        statuses.get(getExecutedTestCases()).setStatusValue(TestStatusValue.INCOMPLETE);
+        numIncomplete++;
     }
 
     public boolean isNotPassed() {
@@ -132,7 +145,8 @@ public class LauncherResult implements ILauncherResult {
     public String toString() {
         return MessageFormat.format(StringConstants.MODEL_TOTAL_PASSED_FAILED_ERRORS,
                 Integer.toString(getTotalTestCases()), Integer.toString(getNumPasses()),
-                Integer.toString(getNumFailures()), Integer.toString(getNumErrors()));
+                Integer.toString(getNumFailures()), Integer.toString(getNumErrors()),
+                Integer.toString(getNumSkips()));
     }
 
     @Override
@@ -151,5 +165,13 @@ public class LauncherResult implements ILauncherResult {
     @Override
     public TestStatus[] getStatuses() {
         return statuses.toArray(new TestStatus[0]);
+    }
+
+    public int getNumSkips() {
+        return numSkips;
+    }
+
+    public void setNumSkips(int numSkips) {
+        this.numSkips = numSkips;
     }
 }
