@@ -25,19 +25,21 @@ import com.kms.katalon.tracking.service.Trackings;
 public class ExecuteTestCaseJob extends Job {
     protected final UISynchronize sync;
 
-    protected final IRunConfiguration runConfig;
+    protected IRunConfiguration runConfig;
 
     protected final TestCaseEntity testCase;
 
     protected final LaunchMode launchMode;
 
-    public ExecuteTestCaseJob(String name, IRunConfiguration runConfig, TestCaseEntity testCase, LaunchMode launchMode,
-            UISynchronize sync) {
+    private AbstractExecutionHandler handler;
+
+    public ExecuteTestCaseJob(String name, TestCaseEntity testCase, LaunchMode launchMode,
+            UISynchronize sync, AbstractExecutionHandler handler) {
         super(name);
-        this.runConfig = runConfig;
         this.testCase = testCase;
         this.launchMode = launchMode;
         this.sync = sync;
+        this.handler = handler;
     }
 
     @Override
@@ -91,7 +93,8 @@ public class ExecuteTestCaseJob extends Job {
         AbstractExecutionHandler.openConsoleLog();
     }
 
-    protected void buildScripts() throws IOException, ExecutionException {
+    protected void buildScripts() throws IOException, ExecutionException, InterruptedException {
+        runConfig = handler.buildRunConfiguration(testCase.getProject().getFolderLocation());
         runConfig.build(testCase, new TestCaseExecutedEntity(testCase));
     }
 
