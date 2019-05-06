@@ -22,7 +22,7 @@
     <elements xsi:type="menu:HandledToolItem" xmi:id="_Tad00EYNEem9yuiaRu88FQ" elementId="com.kms.katalon.composer.integration.analytics.handledtoolitem" label="Katalon Analytics" iconURI="platform:/plugin/com.kms.katalon/icons/KA_32x24px.png" tooltip="Katalon Analytics" command="_-fzYwEYMEem9yuiaRu88FQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__axycG1MEemLsdQmea1a5A" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.execution">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_B_cuoG1NEemLsdQmea1a5A" elementId="com.kms.katalon.composer.integration.analytics.handledtoolitem.uploadProject" label="Store Project Code to Cloud" iconURI="platform:/plugin/com.kms.katalon/icons/KA_32x24px.png" tooltip="Store Project Code to Cloud" command="_vCrYEG1LEemLsdQmea1a5A">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_B_cuoG1NEemLsdQmea1a5A" elementId="com.kms.katalon.composer.integration.analytics.handledtoolitem.uploadProject" label="Store Project Code to Cloud" iconURI="platform:/plugin/com.kms.katalon/icons/upload_16.png" tooltip="Store Project Code to Cloud" command="_vCrYEG1LEemLsdQmea1a5A">
       <persistedState key="index" value="0"/>
     </elements>
   </fragments>
