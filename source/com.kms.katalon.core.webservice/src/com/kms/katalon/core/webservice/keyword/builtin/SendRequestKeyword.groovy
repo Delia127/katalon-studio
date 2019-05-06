@@ -56,15 +56,7 @@ public class SendRequestKeyword extends WebserviceAbstractKeyword {
                 } finally {
                     RequestInformation requestInformation = new RequestInformation();
                     requestInformation.setTestObjectId(request.getObjectId());
-                    String threadName = Thread.currentThread().getName();
-                    String directoryPath = RunConfiguration.getReportFolder();
-                    File directory = new File(directoryPath, "requests" + File.separator + threadName);
-                    if (!directory.exists()) {
-                        directory.mkdirs();
-                    }
-                    File file = new File(directory, requestInformation.getName() + ".har");
-                    file.createNewFile();
-                    requestInformation.setHarFile(file)
+                    requestInformation.setReportFolder(RunConfiguration.getReportFolder());
                     BrowserMobProxyManager.endHar(requestInformation);
                 }
                 logger.logPassed(StringConstants.KW_LOG_PASSED_SEND_REQUEST_SUCCESS)
