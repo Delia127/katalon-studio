@@ -11,6 +11,7 @@ import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.console.entity.PreferenceOptionContributor;
 import com.kms.katalon.execution.preferences.KobitonConsoleOptionContributor;
 import com.kms.katalon.execution.preferences.ProxyConsoleOptionContributor;
+import com.kms.katalon.execution.preferences.WebUIConsoleOptionContributor;
 
 public class ApplicationConfigOptions implements ConsoleOptionContributor {
     private List<PreferenceOptionContributor> preferenceOptions;
@@ -25,6 +26,7 @@ public class ApplicationConfigOptions implements ConsoleOptionContributor {
         preferenceOptions = new ArrayList<>();
         preferenceOptions.add(new ProxyConsoleOptionContributor());
         preferenceOptions.add(new KobitonConsoleOptionContributor());
+        preferenceOptions.add(new WebUIConsoleOptionContributor());
         optionNameIndexedByPreference = new LinkedHashMap<>();
         preferenceOptions.stream().forEach(p -> {
             p.getConsoleOptionList()
