@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.dialog.AndroidDeviceSelectionDialog;
