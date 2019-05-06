@@ -233,13 +233,8 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 			String tempDir= System.getProperty("java.io.tmpdir");
 			
 			File zipTeamFile = new File(tempDir + name + ".zip");
-			
-			List<String> ignoreFileArray = Arrays.asList(".class", ".log",
-							".ctxt", ".jar", ".war", ".ear", ".zip", ".tar.gz", 
-							".rar", ".classpath", ".project", ".mtj.tmp", "hs_err_pid", 
-							"Libs", "bin", ".git");
-			
-			ZipHelper.Compress(folderCurrentProject, zipTeamFile.toString(), ignoreFileArray);
+					
+			ZipHelper.Compress(folderCurrentProject, zipTeamFile.toString());
 			AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
 			
 			AnalyticsUploadInfo uploadInfo = AnalyticsApiProvider.getUploadInfo(serverUrl, token.getAccess_token(), sellectProject.getId());
