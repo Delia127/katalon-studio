@@ -1,15 +1,21 @@
 package com.kms.katalon.composer.integration.analytics.uploadProject;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Files;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -103,7 +109,6 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
       GridLayout glGrpAuthentication = new GridLayout(2, false);
       glGrpAuthentication.horizontalSpacing = 15;
       grpUploadProject.setLayout(glGrpAuthentication);
-//      grpUploadProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_AUTHENTICATE_GROUP);
       
       Label lblTeam = new Label(grpUploadProject, SWT.NONE);
       lblTeam.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEAM);
@@ -213,80 +218,52 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         });
     }
 	
-	private void Compress(String srcFolder, String destZipFile) throws Exception {
-		ZipOutputStream zip = null;
-		FileOutputStream fileWrite = null;
-		
-		fileWrite = new FileOutputStream(destZipFile);
-		zip = new ZipOutputStream(fileWrite);
-		
-		addFolderToZip("", srcFolder, zip);
-		zip.flush();
-		zip.close();
-	}
-	
-	private void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
-		File folder = new File(srcFile);
-		
-		if (folder.isDirectory()) {
-			addFolderToZip(path, srcFile, zip);
-		} else {
-			byte[] buf = new byte[1024];
-			int len;
-			FileInputStream in = new FileInputStream(srcFile);
-			zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
-			while((len = in.read(buf)) > 0) {
-				zip.write(buf, 0, len);
-			}
-		}
-	}
-	
-	private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
-		File folder = new File(srcFolder);
-		
-		for (String fileName : folder.list()) {
-			if (fileName.equals(".git")) 
-				continue;
-			if (path.equals("")) {
-				addFileToZip(folder.getName(), srcFolder + "/" + fileName, zip);
-			} else {
-				addFileToZip(path + "/" + folder.getName(), srcFolder + "/" + fileName, zip);
-			}
-		}
-	}
-	
 	@Override
 	protected void okPressed() {
 		
-		String name = txtCodeRepoName.getText();
+ 		String name = txtCodeRepoName.getText();
 		int currentIndexProject = cbbProjects.getSelectionIndex();
 		AnalyticsProject sellectProject = projects.get(currentIndexProject);
 		
 		currentProject = pController.getCurrentProject();
 		
-		System.out.println("Project" + sellectProject.getName());
-		System.out.println("Name" + name);
 		String folderCurrentProject = currentProject.getFolderLocation();
 		
-		String zipFile = "D:\\Katalon Example\\fileZip.zip";
-		
 		try {
-			Compress(folderCurrentProject, zipFile);
+			String tempDir= System.getProperty("java.io.tmpdir");
+			
+			File zipTeamFile = new File(tempDir + name + ".zip");
+			
+			List<String> ignoreFileArray = Arrays.asList(".class", ".log",
+							".ctxt", ".jar", ".war", ".ear", ".zip", ".tar.gz", 
+							".rar", ".classpath", ".project", ".mtj.tmp", "hs_err_pid", 
+							"Libs", "bin", ".git");
+			
+			ZipHelper.Compress(folderCurrentProject, zipTeamFile.toString(), ignoreFileArray);
 			AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
 			
 			AnalyticsUploadInfo uploadInfo = AnalyticsApiProvider.getUploadInfo(serverUrl, token.getAccess_token(), sellectProject.getId());
 			
-			File file = new File(zipFile);
-			AnalyticsApiProvider.uploadFile(uploadInfo.getUploadUrl(), file);
+			AnalyticsApiProvider.uploadFile(uploadInfo.getUploadUrl(), zipTeamFile);
 			long timestamp = System.currentTimeMillis();
+			
+			Long teamId = sellectProject.getTeamId();
+			Long projectId = sellectProject.getId();
 			AnalyticsApiProvider.uploadTestProject(serverUrl,
-					sellectProject.getId(), 
-					sellectProject.getTeamId(), 
+					projectId, 
+					teamId, 
 					timestamp, 
 					name, 
-					zipFile, file.getName().toString(), uploadInfo.getPath(), token.getAccess_token());			
+					zipTeamFile.toString(), zipTeamFile.getName().toString(), uploadInfo.getPath(), token.getAccess_token());	
+			
+			URIBuilder builder = new URIBuilder(serverUrl);
+			builder.setScheme("https");
+			builder.setPath("/team/" + teamId.toString() + "/project/" + projectId.toString() + "/test-projects");
+			
+			Desktop.getDesktop().browse(new URL(builder.toString()).toURI());	
+			zipTeamFile.deleteOnExit();
+			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
