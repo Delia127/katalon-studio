@@ -64,31 +64,26 @@ public class TestSuiteEntityImpl implements com.katalon.platform.api.model.TestS
 
     @Override
     public boolean getIsRerun() {
-        // TODO Auto-generated method stub
-        return false;
+        return source.getIsRerun();
     }
 
     @Override
     public String getMailRecepient() {
-        // TODO Auto-generated method stub
-        return null;
+        return source.getMailRecipient();
     }
 
     @Override
     public boolean isPageLoadTimeoutDefault() {
-        // TODO Auto-generated method stub
-        return false;
+       return source.isPageLoadTimeoutDefault();
     }
 
     @Override
     public int numberOfRerun() {
-        // TODO Auto-generated method stub
-        return 0;
+       return source.getNumberOfRerun();
     }
 
     @Override
     public boolean rerunFailedTestCasesOnly() {
-        // TODO Auto-generated method stub
-        return false;
+        return source.isRerunFailedTestCasesOnly();
     }
 }

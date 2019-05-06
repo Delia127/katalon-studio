@@ -56,8 +56,8 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         try {
             classLoader = GroovyUtil.getClassLoaderFromParent(projectEntity, BuiltinKeywords.class.getClassLoader());
-        } catch (MalformedURLException | CoreException e2) {
-            LoggerSingleton.logError(e2);
+        } catch (MalformedURLException | CoreException exception) {
+            LoggerSingleton.logError(exception);
         }
     }
 
@@ -165,8 +165,8 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                             IControlSelectionEventHandler pluginButtonSelectionEventHandler = (IControlSelectionEventHandler) pluginRuntimeInstance;
                             pluginButtonSelectionEventHandler.handle(actionProvider, dataFields, context);
                         }
-                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e1) {
-                        LoggerSingleton.logError(e1);
+                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
+                        LoggerSingleton.logError(exception);
                     }
                 }
             }
