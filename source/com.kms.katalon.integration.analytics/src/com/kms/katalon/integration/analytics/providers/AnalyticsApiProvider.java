@@ -284,5 +284,4 @@ public class AnalyticsApiProvider {
             throw new AnalyticsApiExeception(e);
         }
     }
-    
 }
