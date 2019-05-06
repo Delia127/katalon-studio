@@ -51,7 +51,7 @@ public class GeneralPreferencePage extends PreferencePage {
 
         chkCheckNewVersion = new Button(parentComposite, SWT.CHECK);
         chkCheckNewVersion.setText(MessageConstants.PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE);
-
+        
         initialize();
 
         return parentComposite;

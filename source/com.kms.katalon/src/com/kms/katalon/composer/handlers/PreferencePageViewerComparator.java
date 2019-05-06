@@ -14,6 +14,10 @@ public class PreferencePageViewerComparator extends ViewerComparator {
     private static final String KATALON_PAGE_NAME = "Katalon";
 
     private static final String GENERAL_PAGE_NAME = "General";
+    
+    private static final String WEBUI_PAGE_NAME = "Web UI";
+    
+    private static final String MOBILE_PAGE_NAME = "Mobile";
 
     @Override
     public int compare(Viewer viewer, Object e1, Object e2) {
@@ -41,6 +45,14 @@ public class PreferencePageViewerComparator extends ViewerComparator {
         }
         if (KATALON_PAGE_NAME.equals(name2)) {
             return -1;
+        }
+        
+        if (WEBUI_PAGE_NAME.equals(name1) && MOBILE_PAGE_NAME.equals(name2)) {
+            return -1;
+        }
+        
+        if (MOBILE_PAGE_NAME.equals(name1) && WEBUI_PAGE_NAME.equals(name2)) {
+            return 1;
         }
 
         // use the comparator to compare the strings
