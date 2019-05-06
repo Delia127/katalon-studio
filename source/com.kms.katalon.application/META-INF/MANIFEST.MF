@@ -16,11 +16,18 @@ Require-Bundle: com.google.gson,
  com.kms.katalon.util,
  com.kms.katalon.dal,
  org.greenrobot.eventbus,
- org.eclipse.swt
+ org.eclipse.swt,
+ com.kms.katalon.preferences,
+ org.eclipse.jface,
+ org.eclipse.e4.core.services,
+ org.eclipse.osgi.services,
+ org.eclipse.e4.core.contexts
 Export-Package: com.kms.katalon.application,
  com.kms.katalon.application.constants,
+ com.kms.katalon.application.preference,
  com.kms.katalon.application.usagetracking,
  com.kms.katalon.application.utils
 Bundle-ClassPath: resources/lib/proxy-vole-1.0.4-SNAPSHOT-jar-with-dependencies.jar,
  .
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: com.kms.katalon.application.KatalonApplicationActivator
