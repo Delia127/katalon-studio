@@ -4,10 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
@@ -16,6 +21,12 @@ public class AnalyticsConfigutionProject {
 	private String email, password;
 	
     private AnalyticsSettingStore analyticsSettingStore;
+    
+    private String serverUrl = "https://analytics.katalon.com/";
+    
+    private List<AnalyticsProject> projects = new ArrayList<>();
+
+    private List<AnalyticsTeam> teams = new ArrayList<>();
     
     private static Properties appProperties;
     
@@ -35,7 +46,6 @@ public class AnalyticsConfigutionProject {
 		String passwordDecode = appProps.getProperty("password");
 		try {
 			password = CryptoUtil.decode(CryptoUtil.getDefault(passwordDecode));
-			System.out.println(password);
 		} catch (GeneralSecurityException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -44,20 +54,26 @@ public class AnalyticsConfigutionProject {
 	
 	public void updateDataStore() {
 		try {
-			String severEndpoint = "https://analytics.katalon.com/";
+			analyticsSettingStore.enableIntegration(true);
 			analyticsSettingStore.enableEncryption(true);
-			analyticsSettingStore.setServerEndPoint(severEndpoint, true);
-			analyticsSettingStore.setEmail(email, true);
-			analyticsSettingStore.setPassword(password, true);
+//			analyticsSettingStore.setServerEndPoint(serverUrl, true);
+//			analyticsSettingStore.setEmail(email, true);
+//			analyticsSettingStore.setPassword(password, true);
 			
-		} catch (IOException | GeneralSecurityException e) {
+			//set team, project
+			
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
+
+	private void getTeamAndProject() {
+//		AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+	}
 	
-    public static String userDirLocation() {
+    private static String userDirLocation() {
         return ApplicationStringConstants.APP_USER_DIR_LOCATION;
     }
 	
