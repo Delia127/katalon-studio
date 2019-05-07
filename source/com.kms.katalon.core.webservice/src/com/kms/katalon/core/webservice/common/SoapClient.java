@@ -1,14 +1,12 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -33,7 +31,6 @@ import com.ibm.wsdl.extensions.soap.SOAPAddressImpl;
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12AddressImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12BindingImpl;
-import com.kms.katalon.core.model.SSLSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
