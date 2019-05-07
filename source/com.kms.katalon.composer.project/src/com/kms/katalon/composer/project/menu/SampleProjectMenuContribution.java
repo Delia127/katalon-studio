@@ -14,7 +14,6 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuSeparator;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.preference.ProjectSettingPreference;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.ImageConstants;
 import com.kms.katalon.composer.project.sample.SampleLocalProject;
@@ -117,7 +116,7 @@ public class SampleProjectMenuContribution implements EventHandler {
     public void handleEvent(Event event) {
         try {
             recentProjects.clear();
-            recentProjects = new ProjectSettingPreference().getRecentProjects();
+            recentProjects.addAll(ProjectController.getInstance().getRecentProjects());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

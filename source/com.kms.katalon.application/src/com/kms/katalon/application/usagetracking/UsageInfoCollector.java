@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
-import com.kms.katalon.application.preference.ProjectSettingPreference;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.FileUtil;
@@ -165,7 +164,7 @@ public class UsageInfoCollector {
     private static List<String> getRecentProjects() {
         List<String> projectPaths = new ArrayList<>();
         try {
-            for (ProjectEntity prEntity : new ProjectSettingPreference().getRecentProjects()) {
+            for (ProjectEntity prEntity : ProjectController.getInstance().getRecentProjects()) {
                 projectPaths.add(prEntity.getFolderLocation());
             }
         } catch (Exception ex) {
