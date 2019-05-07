@@ -2,9 +2,8 @@ package com.kms.katalon.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
@@ -60,7 +59,6 @@ public class ProjectController extends EntityController {
         ProjectEntity newProject = getDataProviderSetting().getProjectDataProvider().addNewProject(name, description,
                 DEFAULT_PAGELOAD_TIMEOUT, projectLocation);
 
-        addRecentProject(newProject);
         return newProject;
     }
 
@@ -95,7 +93,6 @@ public class ProjectController extends EntityController {
                             ProjectController.getInstance().getCustomKeywordPlugins(project),
                             progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 }
-                addRecentProject(project);
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
                         progress.newChild(20, SubMonitor.SUPPRESS_SUBTASK));
                 KeywordController.getInstance().parseAllCustomKeywords(project,
@@ -148,7 +145,6 @@ public class ProjectController extends EntityController {
             KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
             GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
 
-            addRecentProject(project);
             LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
 
@@ -173,46 +169,37 @@ public class ProjectController extends EntityController {
         }
     }
 
-    public void updateProject(String name, String description, String projectPk) throws Exception {
-        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().updateProject(name, description,
+    public ProjectEntity updateProject(String name, String description, String projectPk) throws Exception {
+        return getDataProviderSetting().getProjectDataProvider().updateProject(name, description,
                 projectPk, (short) 0);
-        if (project != null) {
-            addRecentProject(project);
-            validateRecentProjects(getRecentProjects());
-        }
     }
 
     public void updateProject(ProjectEntity projectEntity) throws Exception {
         getDataProviderSetting().getProjectDataProvider().updateProject(projectEntity);
     }
 
-    public void addRecentProject(ProjectEntity project) throws Exception {
-        List<ProjectEntity> recentProjects = new ArrayList<>(getRecentProjects());
-        int existedProjectIndex = -1;
-        for (int i = 0; i < recentProjects.size(); i++) {
-            if (getDataProviderSetting().getEntityPk(project)
-                    .equals(getDataProviderSetting().getEntityPk(recentProjects.get(i)))) {
-                existedProjectIndex = i;
-                break;
+    public List<ProjectEntity> validateRecentProjectLocations(List<String> recentProjectLocations) {
+        if (recentProjectLocations != null) {
+            List<ProjectEntity> recentProjects = new ArrayList<ProjectEntity>();
+            for (String projectLocation : recentProjectLocations) {
+                try {
+                    ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
+                            .getProject(projectLocation);
+
+                   if (project != null) {
+                       recentProjects.add(project);
+                   }
+                } catch (DALException e) {
+                    LogUtil.logError(e);
+                }
             }
+            return recentProjects;
         }
-
-        if (existedProjectIndex > -1 && existedProjectIndex < recentProjects.size()) {
-            project.setRecentExpandedTreeEntityIds(
-                    recentProjects.get(existedProjectIndex).getRecentExpandedTreeEntityIds());
-            project.setRecentOpenedTreeEntityIds(
-                    recentProjects.get(existedProjectIndex).getRecentOpenedTreeEntityIds());
-            recentProjects.remove(existedProjectIndex);
-        }
-
-        recentProjects.add(0, project);
-        if (recentProjects.size() > NUMBER_OF_RECENT_PROJECTS) {
-            recentProjects = recentProjects.subList(0, NUMBER_OF_RECENT_PROJECTS);
-        }
-        saveRecentProjects(new ArrayList<ProjectEntity>(recentProjects));
+        return new ArrayList<ProjectEntity>();
     }
 
-    private List<ProjectEntity> validateRecentProjects(List<ProjectEntity> recentProjects) throws Exception {
+    @Deprecated
+    private List<ProjectEntity> validateRecentProjects(List<ProjectEntity> recentProjects) {
         if (recentProjects != null) {
             List<ProjectEntity> resultList = new ArrayList<ProjectEntity>();
             for (ProjectEntity recentProject : recentProjects) {
@@ -221,16 +208,18 @@ public class ProjectController extends EntityController {
                     File projectFile = new File(recentProject.getLocation());
                     if (projectFolder.exists() && projectFolder.isDirectory() && projectFile.exists()
                             && projectFile.isFile()) {
-                        ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
-                                .getProject(projectFile.getAbsolutePath());
-                        if (project.getName().equals(recentProject.getName())) {
-                            resultList.add(recentProject);
+                        try {
+                            ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
+                                    .getProject(projectFile.getAbsolutePath());
+
+                            if (project.getName().equals(recentProject.getName())) {
+                                resultList.add(recentProject);
+                            }
+                        } catch (DALException e) {
+                            LogUtil.logError(e);
                         }
                     }
                 }
-            }
-            if (resultList.size() != recentProjects.size()) {
-                saveRecentProjects(resultList);
             }
             return resultList;
         }
@@ -238,34 +227,27 @@ public class ProjectController extends EntityController {
     }
 
     @SuppressWarnings("unchecked")
-    public List<ProjectEntity> getRecentProjects() throws Exception {
-        ObjectInputStream inputStream = null;
-        List<ProjectEntity> projects = null;
-        try {
-            inputStream = new ObjectInputStream(new FileInputStream(RECENT_PROJECT_FILE_LOCATION));
-            projects = (List<ProjectEntity>) inputStream.readObject();
-        } catch (Exception e) {
-            return new ArrayList<>();
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
+    @Deprecated
+    public List<ProjectEntity> getRecentProjects() {
+        File recentProjectFile = new File(RECENT_PROJECT_FILE_LOCATION);
+        if (recentProjectFile.isFile() && recentProjectFile.exists()) {
+            ObjectInputStream inputStream = null;
+            List<ProjectEntity> projects = null;
+            try {
+                inputStream = new ObjectInputStream(new FileInputStream(RECENT_PROJECT_FILE_LOCATION));
+                projects = (List<ProjectEntity>) inputStream.readObject();
+            } catch (Throwable e) {
+                return new ArrayList<>();
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException ignored) {}
+                }
             }
+            return validateRecentProjects(projects);
         }
-        return validateRecentProjects(projects);
-    }
-
-    public void saveRecentProjects(List<ProjectEntity> recentProjects) throws Exception {
-        ObjectOutputStream outputStream = null;
-        try {
-            outputStream = new ObjectOutputStream(new FileOutputStream(RECENT_PROJECT_FILE_LOCATION));
-            outputStream.writeObject(recentProjects);
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
-        }
+        return new ArrayList<>();
     }
 
     public ProjectEntity getCurrentProject() {
@@ -292,45 +274,6 @@ public class ProjectController extends EntityController {
 
     public String getInternalSettingDir() {
         return getDataProviderSetting().getProjectDataProvider().getInternalSettingFolder();
-    }
-
-    public void clearWorkingStateOfRecentProjects() {
-        // Clear working state of recent projects
-        try {
-            List<ProjectEntity> recentProjects = getRecentProjects();
-            if (recentProjects == null || recentProjects.isEmpty()) {
-                return;
-            }
-            for (ProjectEntity project : recentProjects) {
-                project.setRecentExpandedTreeEntityIds(null);
-                project.setRecentOpenedTreeEntityIds(null);
-            }
-            saveRecentProjects(recentProjects);
-        } catch (Exception e) {}
-    }
-
-    public void keepStateOfExpandedTreeEntities(List<String> expandedTreeEntityIds) throws Exception {
-        if (getCurrentProject() == null) {
-            return;
-        }
-        List<ProjectEntity> recentProjects = getRecentProjects();
-        if (recentProjects == null || recentProjects.isEmpty()) {
-            return;
-        }
-        recentProjects.get(0).setRecentExpandedTreeEntityIds(expandedTreeEntityIds);
-        saveRecentProjects(recentProjects);
-    }
-
-    public void keepStateOfOpenedEntities(List<String> openedEntityIds) throws Exception {
-        if (getCurrentProject() == null) {
-            return;
-        }
-        List<ProjectEntity> recentProjects = getRecentProjects();
-        if (recentProjects == null || recentProjects.isEmpty()) {
-            return;
-        }
-        recentProjects.get(0).setRecentOpenedTreeEntityIds(openedEntityIds);
-        saveRecentProjects(recentProjects);
     }
 
     public File getProjectFile(String folderLocation) {

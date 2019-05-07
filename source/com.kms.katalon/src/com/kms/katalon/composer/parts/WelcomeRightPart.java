@@ -49,6 +49,7 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.preference.ProjectSettingPreference;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -906,7 +907,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
 
     private List<ProjectEntity> getRecentProjects() {
         try {
-            return ProjectController.getInstance().getRecentProjects();
+            return new ProjectSettingPreference().getRecentProjects();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             return Collections.emptyList();
