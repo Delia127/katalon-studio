@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.composer.preferences.GeneralPreferenceDefaultValueInitializer;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ApplicationSession {
@@ -30,6 +31,9 @@ public class ApplicationSession {
             if (workbenchXmi.exists()) {
                 workbenchXmi.delete();
             }
+
+            // Clear working state of recent projects
+            ProjectController.getInstance().clearWorkingStateOfRecentProjects();
         } finally {
             prefStore.setValue(PreferenceConstants.GENERAL_APP_CLOSE_SUDDENLY, true);
         }

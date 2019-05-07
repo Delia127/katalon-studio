@@ -169,7 +169,6 @@ public class OpenProjectHandler {
                             }
                         }
                     });
-
                     eventBrokerService.post(EventConstants.GLOBAL_VARIABLE_REFRESH, null);
                     monitor.worked(1);
                     LauncherManager.refresh();
@@ -230,6 +229,8 @@ public class OpenProjectHandler {
             win.updateLocalization();
         }
     }
+    
+
 
 	private static List<WalkthroughItem> getItems() {
 		List<WalkthroughItem> items = new ArrayList<>();
