@@ -31,6 +31,7 @@ Require-Bundle: com.kms.katalon.core,
  com.kms.katalon.composer.components,
  com.kms.katalon.constant
 Export-Package: com.kms.katalon.integration.analytics,
+ com.kms.katalon.integration.analytics.configuration,
  com.kms.katalon.integration.analytics.constants,
  com.kms.katalon.integration.analytics.entity,
  com.kms.katalon.integration.analytics.exceptions,
@@ -40,4 +41,5 @@ Export-Package: com.kms.katalon.integration.analytics,
  com.kms.katalon.integration.analytics.setting,
  com.kms.katalon.integration.analytics.util
 Bundle-ActivationPolicy: lazy
-Import-Package: com.kms.katalon.custom.contribution
+Import-Package: com.kms.katalon.application.constants,
+ com.kms.katalon.custom.contribution

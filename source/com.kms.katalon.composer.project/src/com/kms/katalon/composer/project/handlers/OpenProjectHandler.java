@@ -45,6 +45,8 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.integration.analytics.configuration.AnalyticsConfigutionProject;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
@@ -180,6 +182,22 @@ public class OpenProjectHandler {
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
                     TimeUnit.SECONDS.sleep(1);
+                    
+                    AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                    		ProjectController.getInstance().getCurrentProject().getFolderLocation());;
+
+                    boolean intergrationEnabled = analyticsSettingStore.isIntegrationEnabled();
+                    
+                    if (intergrationEnabled) {
+                    	//Existing KA integration configured
+                    	//Do nothing
+                    } else {
+                    	//New project, project without KA integration configured
+                    	//email, password, team, project, no check auto-submit
+                    	AnalyticsConfigutionProject temp = new AnalyticsConfigutionProject();
+                    	temp.updateDataStore();
+                    }
+                    
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {
