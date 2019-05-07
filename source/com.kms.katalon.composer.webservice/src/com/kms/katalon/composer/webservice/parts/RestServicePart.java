@@ -191,7 +191,7 @@ public class RestServicePart extends WebServicePart {
                         Map<String, String> evaluatedVariables = evaluateRequestVariables();
                         
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
-                                projectDir, ProxyPreferences.getProxyInformation(), SSLPreferences.getSSLSettings(),
+                                projectDir, ProxyPreferences.getProxyInformation(),
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables), false);
                         
                         deleteTempHarFile();

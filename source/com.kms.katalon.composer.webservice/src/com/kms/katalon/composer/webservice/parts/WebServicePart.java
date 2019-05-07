@@ -1558,7 +1558,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(wsObj,
                                 ProjectController.getInstance().getCurrentProject().getFolderLocation(),
                                 ProxyPreferences.getProxyInformation(),
-                                SSLPreferences.getSSLSettings(),
                                 Collections.<String, Object> unmodifiableMap(Collections.emptyMap()), false);
                         String bodyContent = responseObject.getResponseText();
                         Display.getDefault().asyncExec(new Runnable() {

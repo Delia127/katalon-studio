@@ -10,11 +10,11 @@ public class ServiceRequestFactory {
 
     public static Requestor getInstance(RequestObject request) {
         return getInstance(request, RunConfiguration.getProjectDir(), RunConfiguration.getProxyInformation(),
-                RunConfiguration.getSSLSettings(), true);
+                true);
     }
 
     public static Requestor getInstance(RequestObject request, String projectDir, 
-    		ProxyInformation proxyInformation, SSLSettings sslSettings, boolean calledFromKeyword) {
+    		ProxyInformation proxyInformation, boolean calledFromKeyword) {
     	// Overwrite useMobBrowserProxy if it's from WebServicePart/SoapServicePart
 //    	if(!calledFromKeyword){
 //    		proxyInformation.setDisableMobBrowserProxy(true);
