@@ -16,8 +16,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.internal.events.EventBroker;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.preference.IPreferenceStore;
-
-import com.kms.katalon.application.preference.ProjectSettingPreference;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.ProjectPreferenceConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -62,8 +60,7 @@ public class RecentProjectHandler {
         }
 
         try {
-            ProjectSettingPreference projectPreferences = new ProjectSettingPreference();
-            List<ProjectEntity> recentProjects = projectPreferences.getRecentProjects();
+            List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
             if (recentProjects == null || recentProjects.isEmpty())
                 return;
 

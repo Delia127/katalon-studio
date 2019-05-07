@@ -6,6 +6,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
@@ -16,11 +17,6 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 
 public class ExistingExecutionHandler extends AbstractExecutionHandler {
-    private String sessionId;
-
-    private String remoteServerUrl;
-
-    private String driverTypeName;
 
     private ExistingRunConfiguration existingRunConfig;
     
@@ -35,9 +31,14 @@ public class ExistingExecutionHandler extends AbstractExecutionHandler {
 
     @Override
     public void execute(ParameterizedCommand command) {
-        sessionId = getSessionId(command);
-        remoteServerUrl = getServerUrl(command);
-        driverTypeName = getDriverTypeName(command);
+        String sessionId = getSessionId(command);
+        String remoteServerUrl = getServerUrl(command);
+        String driverTypeName = getDriverTypeName(command);
+        
+        existingRunConfig = new ExistingRunConfiguration(ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        existingRunConfig.setSessionId(sessionId);
+        existingRunConfig.setRemoteUrl(remoteServerUrl);
+        existingRunConfig.setDriverName(driverTypeName);
         super.execute(command);
     }
 
@@ -81,9 +82,9 @@ public class ExistingExecutionHandler extends AbstractExecutionHandler {
     public AbstractRunConfiguration buildRunConfiguration(String projectDir)
             throws IOException, ExecutionException, InterruptedException {
         ExistingRunConfiguration existingRunConfiguration = new ExistingRunConfiguration(projectDir);
-        existingRunConfiguration.setSessionId(sessionId);
-        existingRunConfiguration.setRemoteUrl(remoteServerUrl);
-        existingRunConfiguration.setDriverName(driverTypeName);
+        existingRunConfiguration.setSessionId(existingRunConfig.getSessionId());
+        existingRunConfiguration.setRemoteUrl(existingRunConfig.getRemoteUrl());
+        existingRunConfiguration.setDriverName(existingRunConfig.getDriverName());
         if (existingRunConfig != null) {
             ((DefaultExecutionSetting) existingRunConfiguration.getExecutionSetting())
             .setRawScript(existingRunConfig.getExecutionSetting().getRawScript());
