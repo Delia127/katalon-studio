@@ -212,7 +212,7 @@ public class ObjectRepository {
             return null;
         } catch (DocumentException e) {
             logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
-                    testObjectId, ExceptionsUtil.getMessageForThrowable(e)));
+                    testObjectId, ExceptionsUtil.getMessageForThrowable(e)), null, e);
             return null;
         }
     }
@@ -427,7 +427,7 @@ public class ObjectRepository {
             return findRequestObject(requestObjectId, reqElement, RunConfiguration.getProjectDir(), variables);
         } catch (Exception e) {
             logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
-                    requestObjectId, ExceptionsUtil.getMessageForThrowable(e)));
+                    requestObjectId, ExceptionsUtil.getMessageForThrowable(e)), null, e);
             return null;
         }
     }
