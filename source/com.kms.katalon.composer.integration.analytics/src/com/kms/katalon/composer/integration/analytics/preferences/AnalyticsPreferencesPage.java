@@ -243,7 +243,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     @Override
     public boolean performOk() {
-
+    	
         if (!isInitialized()) {
             return true;
         }
@@ -382,12 +382,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbbProjects.setEnabled(isAnalyticsIntegrated);
         btnCreate.setEnabled(isAnalyticsIntegrated);
         cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
-        cbxAutoSubmit.setSelection(isAnalyticsIntegrated);
+//        cbxAutoSubmit.setSelection(isAnalyticsIntegrated);
         cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
-        cbxAttachScreenshot.setSelection(isAnalyticsIntegrated);
+//        cbxAttachScreenshot.setSelection(isAnalyticsIntegrated);
         cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
         chckEncrypt.setEnabled(isAnalyticsIntegrated);
-        chckEncrypt.setSelection(isAnalyticsIntegrated);
+//        chckEncrypt.setSelection(isAnalyticsIntegrated);
     }
 
     private boolean isIntegratedSuccessfully() {
