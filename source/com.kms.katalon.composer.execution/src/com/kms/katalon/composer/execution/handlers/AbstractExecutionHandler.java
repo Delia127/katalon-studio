@@ -264,14 +264,9 @@ public abstract class AbstractExecutionHandler {
 
     public AbstractRunConfiguration buildRunConfiguration(String projectDir)
             throws IOException, ExecutionException, InterruptedException {
-        AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
-                projectDir);
-
-        if (runConfiguration == null) {
-            return null;
-        }
-        runConfiguration.setExecutionProfile(ExecutionProfileManager.getInstance().getSelectedProfile());
-        return runConfiguration;
+        TestSuiteRunnable runnable = new TestSuiteRunnable();
+        UISynchronizeService.syncExec(runnable);
+        return runnable.getRunConfiguration();
     }
 
     protected void execute(LaunchMode launchMode) throws Exception {
@@ -311,6 +306,9 @@ public abstract class AbstractExecutionHandler {
 
                     monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
                     AbstractRunConfiguration runConfig = buildRunConfiguration(getProjectDir());
+                    if (runConfig == null) {
+                        return Status.CANCEL_STATUS;
+                    }
                     runConfig.build(feature, testSuiteExecutedEntity);
                     validateJobProgressMonitor(monitor);
                     monitor.worked(1);
@@ -383,6 +381,9 @@ public abstract class AbstractExecutionHandler {
 
                         monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
                         AbstractRunConfiguration runConfig = buildRunConfiguration(getProjectDir());
+                        if (runConfig == null) {
+                            return Status.CANCEL_STATUS;
+                        }
                         runConfig.build(testSuite, testSuiteExecutedEntity);
                         validateJobProgressMonitor(monitor);
                         monitor.worked(1);
@@ -524,6 +525,34 @@ public abstract class AbstractExecutionHandler {
     void validateJobProgressMonitor(IProgressMonitor monitor) throws JobCancelException {
         if (monitor.isCanceled()) {
             throw new JobCancelException();
+        }
+    }
+    
+    private class TestSuiteRunnable implements Runnable {
+        
+        private AbstractRunConfiguration runConfiguration;
+        private Exception exception;
+
+        @Override
+        public void run() { 
+            try {
+                runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
+                        getProjectDir());
+
+
+                if (runConfiguration == null) {
+                    runConfiguration = null;
+                    return;
+                }
+                runConfiguration.setExecutionProfile(ExecutionProfileManager.getInstance().getSelectedProfile());
+            } catch (IOException | ExecutionException | InterruptedException e) {
+                this.exception = e;
+                runConfiguration = null;
+            }
+        }
+        
+        public AbstractRunConfiguration getRunConfiguration() {
+            return runConfiguration;
         }
     }
 }
