@@ -20,7 +20,7 @@ import io.appium.java_client.android.AndroidDriver
 
 public abstract class MobileAbstractKeyword  extends AbstractKeyword {
 
-    private static final int FIND_ELEMENT_TIME_OUT_IN_MILLIS = 50
+    private static final int FIND_ELEMENT_TIMEOUT_IN_MILLIS = 50
 	    
 	@Override
 	public SupportLevel getSupportLevel(Object ...params) {
@@ -77,7 +77,7 @@ public abstract class MobileAbstractKeyword  extends AbstractKeyword {
         AppiumDriver<?> driver = MobileDriverFactory.getDriver();
         MobileSearchEngine searchEngine = new MobileSearchEngine(driver, to);
         try {
-            driver.manage().timeouts().implicitlyWait(FIND_ELEMENT_TIME_OUT_IN_MILLIS, TimeUnit.MILLISECONDS);
+            driver.manage().timeouts().implicitlyWait(FIND_ELEMENT_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
             Dimension screenSize = driver.manage().window().getSize();
     
             while (span < timeOut) {
