@@ -19,6 +19,7 @@ public class StringConstants extends GlobalStringConstants {
 	
 	// SparserInvalidException
 	public static final String EXC_INVALID_SWAGGER_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_SWAGGER_FILE;	
+	public static final String EXC_INVALID_POSTMAN_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_POSTMAN_FILE;  
 	public static final String EXC_INVALID_WSDL_FILE = ComposerWebserviceMessageConstants.EXC_INVALID_WSDL_FILE;
     
 	// RequestObjectPart
@@ -58,9 +59,11 @@ public class StringConstants extends GlobalStringConstants {
     
     // ImportWebService
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_SWAGGER;   
+    public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_POSTMAN;   
     public static final String VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.VIEW_DIA_TITLE_WEBSERVICE_REQ_WSDL;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_WSDL;
     public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER = ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_SWAGGER;
+    public static final String DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN= ComposerWebserviceMessageConstants.DIA_MSG_IMPORT_WEBSERVICE_REQ_POSTMAN;
  
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;
