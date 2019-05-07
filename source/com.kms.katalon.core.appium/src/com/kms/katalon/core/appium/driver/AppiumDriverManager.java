@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.net.UrlChecker;
@@ -43,9 +44,9 @@ import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import io.appium.java_client.service.local.flags.IOSServerFlag;
 
 public class AppiumDriverManager {
-    
+
     private static final KeywordLogger logger = KeywordLogger.getInstance(AppiumDriverManager.class);
-    
+
     public static final String WDA_LOCAL_PORT = "wdaLocalPort";
 
     public static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
@@ -223,6 +224,8 @@ public class AppiumDriverManager {
             } catch (IOException | InterruptedException | IOSWebkitStartException e) {
                 logger.logWarning(e.getMessage());
             }
+
+            AppiumDriverManager.pairDevice(deviceId);
         }
         startAppiumServerJS(RunConfiguration.getTimeOut());
     }
@@ -250,6 +253,31 @@ public class AppiumDriverManager {
         }
         throw new AppiumStartException(MessageFormat
                 .format(CoreAppiumMessageConstants.ERR_MSG_CANNOT_START_APPIUM_SERVER_AFTER_X_SECONDS, timeout));
+    }
+
+    public static void pairDevice(String deviceId) {
+        try {
+            if (StringUtils.isEmpty(deviceId) || deviceId.contains("-")) {
+                return;
+            }
+            ProcessBuilder pb = new ProcessBuilder("/bin/sh", "-c", "idevice_id -l", "deviceId");
+            Process process = pb.start();
+            String deviceList = IOUtils.toString(process.getInputStream(), "UTF-8");
+            if (deviceList != null && deviceList.contains(deviceId)) {
+                logger.logInfo("Start paring with device: " + deviceId + " ...");
+                ProcessBuilder pairPb = new ProcessBuilder("/bin/sh", "-c", "idevicepair -u " + deviceId + " pair");
+                Process pairProcess = pairPb.start();
+                String pairResult = IOUtils.toString(pairProcess.getInputStream(), "UTF-8");
+                if (pairResult != null && pairResult.contains("SUCCESS")) {
+                    logger.logInfo("Device " + deviceId + " is paired");
+                } else {
+                    logger.logWarning("Could not pair with device " + deviceId);
+                }
+
+            }
+        } catch (IOException e) {
+            logger.logWarning("Cannot pair device: " + deviceId);
+        }
     }
 
     private static void startAppiumServer(Map<String, String> environmentVariables)

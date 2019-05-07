@@ -217,12 +217,6 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	                updateVariableManualView();
 	                updateVariableScriptView();
 	            }
-	            
-	        	if(invalidSchema == true){
-	    			MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-	                        StringConstants.PA_ERROR_MSG_UNABLE_TO_UPDATE_PROFILE);
-	    			return;
-	        	}
 	        	globalVariablePart.updateVariableReferences();
 	            GlobalVariableController.getInstance().updateExecutionProfile(executionProfileEntity);  
 	            setDirty(false);

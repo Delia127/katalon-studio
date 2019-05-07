@@ -15,11 +15,9 @@ import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 
 public class IosDeviceInfo extends MobileDeviceInfo {
-    private static final String RELATIVE_PATH_TO_TOOLS_FOLDER = "resources" + File.separator + "tools" + File.separator;
+    private static final String RELATIVE_PATH_TO_TOOLS_FOLDER = "resources/tools/";
 
     private static final String PATH = "PATH";
-
-    private static final String DYLD_LIBRARY_PATH = "DYLD_LIBRARY_PATH";
 
     private static final String PRODUCT_TYPE_INFO_PREFIX = "ProductType:";
 
@@ -29,18 +27,9 @@ public class IosDeviceInfo extends MobileDeviceInfo {
 
     private static final String DEVICE_CLASS_INFO_PREFIX = "DeviceClass:";
 
-    private static final String IMOBILE_DEVICE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + "imobiledevice";
-
-    private static final String IOS_DEPLOY_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + "ios-deploy";
-
-    private static final String CARTHAGE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + "carthage"
-            + File.separator + "0.18.1" + File.separator + "etc" + File.separator + "bash_completion.d";
-
     public static final String DEVICECONSOLE = "deviceconsole";
 
-    private static final String DEVICE_CONSOLE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + DEVICECONSOLE;
-
-    private static final String DYLD_FALLBACK_LIBRARY_PATH = "DYLD_FALLBACK_LIBRARY_PATH";
+    public static final String DEVICE_CONSOLE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + DEVICECONSOLE;
 
     protected String deviceClass = "";
 
@@ -56,20 +45,15 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     }
 
     public static List<String> executeCommand(String command) throws IOException, InterruptedException {
-        String iMobileDeviceDirectory = IosDeviceInfo.getIMobileDeviceDirectoryAsString();
-        String deviceCommandFile = "../device.sh";
-        IosDeviceInfo.makeFileExecutable(new File(iMobileDeviceDirectory, deviceCommandFile));
-
         Map<String, String> env = new HashMap<>();
-        env.put("KATALON_DEVICE_COMMAND", command);
-        return ConsoleCommandExecutor.runConsoleCommandAndCollectResults(new String[] { deviceCommandFile }, env,
-                iMobileDeviceDirectory);
+        env.putAll(getIosAdditionalEnvironmentVariables());
+        return ConsoleCommandExecutor.runConsoleCommandAndCollectResults(new String[] { "sh", "-c", command }, env, "");
     }
 
     protected void initDeviceInfos(String deviceId) throws IOException, InterruptedException {
-        executeCommand("./idevicepair pair -u " + deviceId);
+        executeCommand("idevicepair pair -u " + deviceId);
 
-        List<String> deviceInfos = executeCommand("./ideviceinfo -u " + deviceId);
+        List<String> deviceInfos = executeCommand("ideviceinfo -u " + deviceId);
         for (String deviceInfo : deviceInfos) {
             if (deviceInfo.contains(DEVICE_CLASS_INFO_PREFIX)) {
                 deviceClass = deviceInfo.substring(DEVICE_CLASS_INFO_PREFIX.length(), deviceInfo.length()).trim();
@@ -89,7 +73,7 @@ public class IosDeviceInfo extends MobileDeviceInfo {
                 continue;
             }
         }
-        executeCommand("./idevicepair unpair -u " + deviceId);
+        executeCommand("idevicepair unpair -u " + deviceId);
     }
 
     @Override
@@ -148,25 +132,17 @@ public class IosDeviceInfo extends MobileDeviceInfo {
                 .append(this.deviceType, other.deviceType)
                 .isEquals();
     }
-
-    public static File getIMobileDeviceDirectory() throws IOException {
-        return getResourceFolder(IMOBILE_DEVICE_FOLDER_RELATIVE_PATH);
+    
+    public static File getDeviceConsoleFolder() throws IOException {
+        return getResourceFolder(DEVICE_CONSOLE_FOLDER_RELATIVE_PATH);
     }
 
-    private static File getIosDeployDirectory() throws IOException {
-        return getResourceFolder(IOS_DEPLOY_FOLDER_RELATIVE_PATH);
-    }
-
-    private static File getCarthageDirectory() throws IOException {
-        return getResourceFolder(CARTHAGE_FOLDER_RELATIVE_PATH);
+    public static File getToolsFolder() throws IOException {
+        return getResourceFolder(RELATIVE_PATH_TO_TOOLS_FOLDER);
     }
 
     public static File getDeviceConsoleExecutablePath() throws IOException {
         return new File(getResourceFolder(DEVICE_CONSOLE_FOLDER_RELATIVE_PATH), DEVICECONSOLE);
-    }
-
-    public static String getIMobileDeviceDirectoryAsString() throws IOException {
-        return getIMobileDeviceDirectory().getAbsolutePath();
     }
 
     @Override
@@ -175,54 +151,10 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     }
 
     public static Map<String, String> getIosAdditionalEnvironmentVariables() throws IOException, InterruptedException {
-        makeIosDeployExecutable();
         makeDeviceConsoleExecutable();
-        makeAllIMobileDeviceBinaryExecutable();
-        makeAllFilesInFolderExecutable(getCarthageDirectory());
-
         Map<String, String> additionalEnvironmentVariables = new HashMap<String, String>();
-        String iMobileDeviceDirectory = getIMobileDeviceDirectoryAsString();
-        if (StringUtils.isNotEmpty(iMobileDeviceDirectory)) {
-            additionalEnvironmentVariables.put(DYLD_LIBRARY_PATH,
-                    StringUtils.defaultString(System.getenv(DYLD_LIBRARY_PATH)) + ":"
-                            + iMobileDeviceDirectory);
-            additionalEnvironmentVariables.put(DYLD_FALLBACK_LIBRARY_PATH,
-                    StringUtils.defaultString(System.getenv(DYLD_FALLBACK_LIBRARY_PATH)) + ":"
-                            + iMobileDeviceDirectory);
-            additionalEnvironmentVariables.put(PATH,
-                    StringUtils.defaultString(System.getenv(PATH)) + ":" 
-                            + iMobileDeviceDirectory + ":"
-                            + getIosDeployDirectory().getAbsolutePath() + ":"
-                            + getCarthageDirectory().getAbsolutePath());
-        }
+        additionalEnvironmentVariables.put(PATH, StringUtils.defaultString(System.getenv(PATH)) + ":/usr/local/bin");
         return additionalEnvironmentVariables;
-    }
-
-    public static void makeAllIMobileDeviceBinaryExecutable() throws IOException, InterruptedException {
-        if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
-            return;
-        }
-        makeAllFilesInFolderExecutable(getIMobileDeviceDirectory());
-    }
-
-    private static void makeAllFilesInFolderExecutable(File iMobileDeviceBinDirectory)
-            throws IOException, InterruptedException {
-        if (!(iMobileDeviceBinDirectory.exists() && iMobileDeviceBinDirectory.isDirectory())) {
-            return;
-        }
-        for (File file : iMobileDeviceBinDirectory.listFiles()) {
-            if (!file.isFile()) {
-                continue;
-            }
-            makeFileExecutable(file);
-        }
-    }
-
-    public static void makeIosDeployExecutable() throws IOException, InterruptedException {
-        if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
-            return;
-        }
-        makeAllFilesInFolderExecutable(getIosDeployDirectory());
     }
 
     public static void makeDeviceConsoleExecutable() throws IOException, InterruptedException {

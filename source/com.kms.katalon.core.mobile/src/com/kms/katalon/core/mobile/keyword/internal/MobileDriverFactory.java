@@ -34,9 +34,9 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 
 public class MobileDriverFactory {
-    
+
     private static final KeywordLogger logger = KeywordLogger.getInstance(MobileDriverFactory.class);
-    
+
     private static final String WAIT_FOR_APP_SCRIPT_TRUE = "true;";
 
     private static final String WAIT_FOR_APP_SCRIPT = "waitForAppScript";
@@ -183,15 +183,15 @@ public class MobileDriverFactory {
             MobileDriverType mobileDriverType) {
         DesiredCapabilities desireCapabilities = new DesiredCapabilities();
         for (Entry<String, Object> property : propertyMap.entrySet()) {
-            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_MOBILE_PROPERTY_SETTING,
-                    property.getKey(), property.getValue()));
+            logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_MOBILE_PROPERTY_SETTING, property.getKey(),
+                    property.getValue()));
             desireCapabilities.setCapability(property.getKey(), property.getValue());
         }
         return desireCapabilities;
     }
 
     private static DesiredCapabilities createCapabilities(MobileDriverType osType, String deviceId, String deviceName,
-            String appFile, boolean uninstallAfterCloseApp) {
+            String platformVersion, String appFile, boolean uninstallAfterCloseApp) {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
         // Running app so no browser name
@@ -214,7 +214,6 @@ public class MobileDriverFactory {
             }
             if (deviceId == null) {
                 capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
-                capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
             }
         } else if (driverPreferences != null && osType == MobileDriverType.ANDROID_DRIVER) {
             capabilities.setCapability("autoGrantPermissions", true);
@@ -225,6 +224,9 @@ public class MobileDriverFactory {
             if (isUsingAndroid7OrBigger()) {
                 capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.UIAUTOMATOR2);
             }
+        }
+        if (StringUtils.isNotEmpty(platformVersion)) {
+            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, platformVersion);
         }
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.APP, appFile);
@@ -278,8 +280,8 @@ public class MobileDriverFactory {
         if (isUsingExistingDriver()) {
             return startExistingBrowser();
         }
-        AppiumDriver<?> driver = startMobileDriver(getMobileDriverType(), getDeviceId(), getDeviceName(), appFile,
-                uninstallAfterCloseApp);
+        AppiumDriver<?> driver = startMobileDriver(getMobileDriverType(), getDeviceId(), getDeviceName(),
+                getDeviceOSVersion(), appFile, uninstallAfterCloseApp);
         saveWebDriverSessionData(driver);
         return driver;
     }
@@ -356,6 +358,27 @@ public class MobileDriverFactory {
     public static AppiumDriver<?> startMobileDriver(MobileDriverType osType, String deviceId, String deviceName,
             String appFile, boolean uninstallAfterCloseApp)
             throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {
+        return startMobileDriver(osType, deviceId, deviceName, "", appFile, uninstallAfterCloseApp);
+    }
+
+    /**
+     * Start a new native app mobile driver
+     * 
+     * @param osType the os type for the new mobile driver with type {@link MobileDriverType}
+     * @param deviceId id of the device
+     * @param deviceName name of the device
+     * @param platformVersion platform version of the device
+     * @param appFile absolute path of the application file
+     * @param uninstallAfterCloseApp true to un-install the app after execution
+     * @return the newly created driver with type {@link AppiumDriver}
+     * @throws MobileDriverInitializeException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws AppiumStartException
+     */
+    public static AppiumDriver<?> startMobileDriver(MobileDriverType osType, String deviceId, String deviceName,
+            String platformVersion, String appFile, boolean uninstallAfterCloseApp)
+            throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {
         Preconditions.checkArgument(osType != null && StringUtils.isNotEmpty(deviceName),
                 CoreMobileMessageConstants.KW_MSG_DEVICE_MISSING);
         Preconditions.checkArgument(StringUtils.isNotEmpty(appFile),
@@ -363,10 +386,10 @@ public class MobileDriverFactory {
         String remoteWebUrl = getRemoteWebDriverServerUrl();
         if (StringUtils.isNotEmpty(remoteWebUrl)) {
             return AppiumDriverManager.createMobileDriver(osType,
-                    createCapabilities(osType, deviceId, deviceName, appFile, uninstallAfterCloseApp),
+                    createCapabilities(osType, deviceId, deviceName, platformVersion, appFile, uninstallAfterCloseApp),
                     new URL(remoteWebUrl));
         }
         return AppiumDriverManager.createMobileDriver(osType, deviceId,
-                createCapabilities(osType, deviceId, deviceName, appFile, uninstallAfterCloseApp));
+                createCapabilities(osType, deviceId, deviceName, platformVersion, appFile, uninstallAfterCloseApp));
     }
 }
