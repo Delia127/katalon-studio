@@ -380,6 +380,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         txtEmail.setEnabled(isAnalyticsIntegrated);
         txtServerUrl.setEnabled(isAnalyticsIntegrated);
         cbbProjects.setEnabled(isAnalyticsIntegrated);
+        cbbTeams.setEnabled(isAnalyticsIntegrated);
         btnCreate.setEnabled(isAnalyticsIntegrated);
         cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
 //        cbxAutoSubmit.setSelection(isAnalyticsIntegrated);
