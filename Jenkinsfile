@@ -102,8 +102,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/apidocs.zip
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/changeLogs.txt
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                      """;
-                    writeFile(encoding: 'UTF-8', file: 'links.txt', text: templateString)
-                    def links_from_file = readFile(file: 'links.txt')
+                    writeFile(encoding: 'UTF-8', file: "${env.tmpDir}/links.txt", text: templateString)
+                    def links_from_file = readFile(file: "${env.tmpDir}/links.txt")
                     println(links_from_file)
                 }
             }
@@ -131,8 +131,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         file: "linux_64"
     }
 ]"""
-                        writeFile(file: 'latest_release.json', text: latestRelease)
-                        def latest_release_from_file = readFile(file: 'latest_release.json')
+                        writeFile(file: "${env.tmpDir}/latest_release.json", text: latestRelease)
+                        def latest_release_from_file = readFile(file: "${env.tmpDir}/latest_release.json")
                         println(latest_release_from_file)
                         
                 }
@@ -175,8 +175,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_64-${version}.zip"
     }
 ]"""
-                        writeFile(file: 'releases.json', text: releases)
-                        def releases_from_file = readFile(file: 'releases.json')
+                        writeFile(file: "${env.tmpDir}/releases.json", text: releases)
+                        def releases_from_file = readFile(file: "${env.tmpDir}/releases.json")
                         println(releases_from_file)
                         
                 }
