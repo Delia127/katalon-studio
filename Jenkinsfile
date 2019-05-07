@@ -80,7 +80,105 @@ pipeline {
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
+                        
                     }
+                }
+            }
+        }
+
+        stage('Generate links.txt') {
+            steps {
+                script {
+                    def releaseBeta = (isBeta) ? "release-beta/" : "";
+                    def firstArg = (isBeta) ? tag : version;
+                    def secondArg = version;
+                    def templateString = """
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon+Studio.app.zip
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon+Studio.dmg
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Linux_64-${secondArg}.tar.gz
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Windows_32-${secondArg}.zip
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Windows_64-${secondArg}.zip
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/apidocs.zip
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/changeLogs.txt
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
+                     """;
+                    writeFile(encoding: 'UTF-8', file: 'links.txt', text: templateString)
+                    def links_from_file = readFile(file: 'links.txt')
+                    println(links_from_file)
+                }
+            }
+        }
+
+        stage('Generate latest_release.json') {
+            steps {
+                script {
+                        def latestRelease = 
+"""[
+    {
+        location: "https://download.katalon.com/${version}/Katalon_Studio_Windows_32-${version}.zip",
+        file: "win_32"
+    },
+    {
+        location: "https://download.katalon.com/${version}/Katalon_Studio_Windows_64-${version}.zip",
+        file: "win_64"
+    },
+    {
+        location: "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
+        file: "mac_64"
+    },
+    {
+        location: "https://download.katalon.com/${version}/Katalon_Studio_Linux_64-${version}.tar.gz",
+        file: "linux_64"
+    }
+]"""
+                        writeFile(file: 'latest_release.json', text: latestRelease)
+                        def latest_release_from_file = readFile(file: 'latest_release.json')
+                        println(latest_release_from_file)
+                        
+                }
+            }
+        }
+
+        stage('Generate releases.json') {
+            steps {
+                script {
+                        def releases = 
+"""[
+    {
+        os: "macOS (app)",
+        version: "${version}",
+        filename: "Katalon.Studio.app.zip",
+        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.app.zip"
+    },
+    {
+        os: "macOS (dmg)",
+        version: "${version}",
+        filename: "Katalon.Studio.dmg",
+        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.dmg"
+    },
+    {
+        os: "Linux",
+        version: "${version}",
+        filename: "Katalon_Studio_Linux_64-${version}.tar.gz",
+        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Linux_64-${version}.tar.gz"
+    },
+    {
+        os: "Windows 32",
+        version: "${version}",
+        filename: "Katalon_Studio_Windows_32-${version}.zip",
+        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_32-${version}.zip"
+    },
+    {
+        os: "Windows 64",
+        version: "${version}",
+        filename: "Katalon_Studio_Windows_64-${version}.zip",
+        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_64-${version}.zip"
+    }
+]"""
+                        writeFile(file: 'releases.json', text: releases)
+                        def releases_from_file = readFile(file: 'releases.json')
+                        println(releases_from_file)
+                        
                 }
             }
         }
