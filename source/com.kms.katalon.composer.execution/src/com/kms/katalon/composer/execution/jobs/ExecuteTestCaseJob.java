@@ -9,6 +9,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.di.UISynchronize;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
@@ -33,6 +35,8 @@ public class ExecuteTestCaseJob extends Job {
 
     private AbstractExecutionHandler handler;
 
+    protected boolean isCanceled;
+
     public ExecuteTestCaseJob(String name, TestCaseEntity testCase, LaunchMode launchMode,
             UISynchronize sync, AbstractExecutionHandler handler) {
         super(name);
@@ -55,10 +59,13 @@ public class ExecuteTestCaseJob extends Job {
             monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
 
             buildScripts();
+            if (isCanceled) {
+                return Status.CANCEL_STATUS;
+            }
             validateJobProgressMonitor(monitor);
 
             startLauncher();
-            
+
             Trackings.trackExecuteTestCase(launchMode.toString(), runConfig.getName());
             
             monitor.worked(1);
@@ -93,9 +100,20 @@ public class ExecuteTestCaseJob extends Job {
         AbstractExecutionHandler.openConsoleLog();
     }
 
-    protected void buildScripts() throws IOException, ExecutionException, InterruptedException {
-        runConfig = handler.buildRunConfiguration(testCase.getProject().getFolderLocation());
-        runConfig.build(testCase, new TestCaseExecutedEntity(testCase));
+    protected void buildScripts() {
+        UISynchronizeService.syncExec(() -> {
+            try {
+                runConfig = handler.buildRunConfiguration(testCase.getProject().getFolderLocation());
+                if (runConfig == null) {
+                    isCanceled = true;
+                    return;
+                }
+                runConfig.build(testCase, new TestCaseExecutedEntity(testCase));
+            } catch (IOException | ExecutionException | InterruptedException e) {
+                LoggerSingleton.logError(e);
+                isCanceled = true;
+            }
+        });
     }
 
     private static void validateJobProgressMonitor(IProgressMonitor monitor) throws JobCancelException {
