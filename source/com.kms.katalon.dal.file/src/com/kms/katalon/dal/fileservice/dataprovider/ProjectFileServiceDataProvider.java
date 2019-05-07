@@ -82,7 +82,13 @@ public class ProjectFileServiceDataProvider implements IProjectDataProvider {
     @Override
     public ProjectEntity getProject(String projectFileLocation) throws DALException {
         try {
-            return (ProjectEntity) EntityService.getInstance().getEntityByPath(projectFileLocation);
+            ProjectEntity project = (ProjectEntity) EntityService.getInstance().getEntityByPath(projectFileLocation);
+
+            if (project != null) {
+                File projectFile = new File(projectFileLocation);
+                project.setFolderLocation(projectFile.getParent());
+            }
+            return project;
         } catch (Exception e) {
             throw new DALException(e);
         }
