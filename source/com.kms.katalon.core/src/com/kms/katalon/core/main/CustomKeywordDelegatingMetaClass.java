@@ -1,6 +1,5 @@
 package com.kms.katalon.core.main;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -53,8 +52,7 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
                 Throwable throwable = errorCollector.getFirstError();
 
                 logger.logMessage(ErrorCollector.fromError(throwable),
-                        ExceptionsUtil.getMessageForThrowable(throwable),
-                        throwable);
+                        ExceptionsUtil.getMessageForThrowable(throwable));
             } else if (!errorCollector.isKeywordPassed()) {
                 logger.logMessage(LogLevel.PASSED, methodName + " is PASSED");
             }
@@ -77,7 +75,7 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
 
     private static void throwError(Throwable error) {
         if (ErrorCollector.isErrorFailed(error)) {
-            logger.logFailed(error.getMessage(), null, error);
+            logger.logFailed(error.getMessage());
             if (error instanceof InvokerInvocationException) {
                 throw (InvokerInvocationException) error;
             }
@@ -89,7 +87,7 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
             }
             throw new StepFailedException(error);
         }
-        logger.logError(error.getMessage(), null, error);
+        logger.logError(error.getMessage());
         if (error instanceof StepErrorException) {
             throw (StepErrorException) error;
         }

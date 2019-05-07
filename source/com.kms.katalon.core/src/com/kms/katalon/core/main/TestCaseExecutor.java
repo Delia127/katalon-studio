@@ -173,7 +173,7 @@ public class TestCaseExecutor {
                 ExceptionsUtil.getMessageForThrowable(t));
         testCaseResult.setMessage(message);
         testCaseResult.getTestStatus().setStatusValue(TestStatusValue.ERROR);
-        logger.logError(message, null, t);
+        logger.logError(message);
     }
 
     private void postExecution() {
@@ -224,9 +224,8 @@ public class TestCaseExecutor {
                 testCaseResult = invokeTestSuiteMethod(SetupTestCase.class.getName(), StringConstants.LOG_SETUP_ACTION,
                         false, testCaseResult);
                 if (ErrorCollector.getCollector().containsErrors()) {
-                    Throwable error = ErrorCollector.getCollector().getFirstError();
-                    testCaseResult.setMessage(ExceptionsUtil.getStackTraceForThrowable(error));
-                    logger.logError(testCaseResult.getMessage(), null, error);
+                    testCaseResult.setMessage(ExceptionsUtil.getStackTraceForThrowable(ErrorCollector.getCollector().getFirstError()));
+                    logger.logError(testCaseResult.getMessage());
                     return testCaseResult;
                 }
 
@@ -393,10 +392,10 @@ public class TestCaseExecutor {
                 variableBinding.setVariable(variableName, defaultValueObject);
             } catch (ExceptionInInitializerError e) {
                 logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF,
-                        variableName, e.getCause().getMessage()), null, e);
+                        variableName, e.getCause().getMessage()));
             } catch (Exception e) {
                 logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF,
-                        variableName, e.getMessage()), null, e);
+                        variableName, e.getMessage()));
             }
         });
         getBindedValues().entrySet()
@@ -465,10 +464,10 @@ public class TestCaseExecutor {
             String message = MessageFormat.format(StringConstants.MAIN_LOG_WARNING_ERROR_OCCURRED_WHEN_RUN_METHOD,
                     methodName, e.getClass().getName(), ExceptionsUtil.getMessageForThrowable(e));
             if (ignoreIfFailed) {
-                logger.logWarning(message, null, e);
+                logger.logWarning(message);
                 return;
             }
-            logger.logError(message, null, e);
+            logger.logError(message);
             errorCollector.addError(e);
         } finally {
             logger.endKeyword(methodName, actionType, Collections.emptyMap(), keywordStack);

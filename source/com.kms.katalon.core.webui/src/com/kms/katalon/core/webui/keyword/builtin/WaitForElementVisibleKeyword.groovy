@@ -85,10 +85,10 @@ public class WaitForElementVisibleKeyword extends WebUIAbstractKeyword {
                     }
                     return true
                 } catch (WebElementNotFoundException e) {
-                    logger.logWarning(e.getMessage(), null, e)
+                    logger.logWarning(e.getMessage())
                     return false
                 } catch (TimeoutException e) {
-                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_VISIBLE_AFTER_X_SEC, [to.getObjectId(), timeOut] as Object[]), null, e)
+                    logger.logWarning(MessageFormat.format(StringConstants.KW_MSG_OBJ_IS_NOT_VISIBLE_AFTER_X_SEC, [to.getObjectId(), timeOut] as Object[]))
                     return false
                 }
             } finally {

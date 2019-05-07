@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.main.ScriptEngine;
-import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 public class KeywordLogger {
     
@@ -226,21 +224,10 @@ public class KeywordLogger {
         logEndKeyword(name, attributes);
         xmlKeywordLogger.endKeyword(name, attributes, keywordStack);
     }
-    
+
+
     public void logFailed(String message) {
         logFailed(message, null);
-    }
-
-
-    public void logFailed(String message, Map<String, String> attributes, Throwable throwable) {
-        if (attributes == null) {
-            attributes = new HashMap<>();
-        } else {
-            attributes = new HashMap<>(attributes);
-        }
-        Map<String, String> exceptionAttributes = xmlKeywordLogger.getAttributesFrom(throwable);
-        attributes.putAll(exceptionAttributes);
-        logFailed(message, attributes);
     }
 
 
@@ -253,17 +240,7 @@ public class KeywordLogger {
     public void logWarning(String message) {
         logWarning(message, null);
     }
-    
-    public void logWarning(String message, Map<String, String> attributes, Throwable throwable) {
-        if (attributes == null) {
-            attributes = new HashMap<>();
-        } else {
-            attributes = new HashMap<>(attributes);
-        }
-        Map<String, String> exceptionAttributes = xmlKeywordLogger.getAttributesFrom(throwable);
-        attributes.putAll(exceptionAttributes);
-        logWarning(message, attributes);
-    }
+
 
     public void logWarning(String message, Map<String, String> attributes) {
         logger.warn(message);
@@ -296,17 +273,6 @@ public class KeywordLogger {
     public void logRunData(String dataKey, String dataValue) {
         logger.info("{} = {}", dataKey, dataValue);
         xmlKeywordLogger.logRunData(dataKey, dataValue);
-    }
-    
-    public void logError(String message, Map<String, String> attributes, Throwable throwable) {
-        if (attributes == null) {
-            attributes = new HashMap<>();
-        } else {
-            attributes = new HashMap<>(attributes);
-        }
-        Map<String, String> exceptionAttributes = xmlKeywordLogger.getAttributesFrom(throwable);
-        attributes.putAll(exceptionAttributes);
-        logError(message, attributes);
     }
 
 
