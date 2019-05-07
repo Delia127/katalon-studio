@@ -115,20 +115,20 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                         def latestRelease = 
 """[
     {
-        location: "https://download.katalon.com/${version}/Katalon_Studio_Windows_32-${version}.zip",
-        file: "win_32"
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_32-${version}.zip",
+        "file": "win_32"
     },
     {
-        location: "https://download.katalon.com/${version}/Katalon_Studio_Windows_64-${version}.zip",
-        file: "win_64"
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_64-${version}.zip",
+        "file": "win_64"
     },
     {
-        location: "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
-        file: "mac_64"
+        "location": "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
+        "file": "mac_64"
     },
     {
-        location: "https://download.katalon.com/${version}/Katalon_Studio_Linux_64-${version}.tar.gz",
-        file: "linux_64"
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Linux_64-${version}.tar.gz",
+        "file": "linux_64"
     }
 ]"""
                         writeFile(file: "${env.tmpDir}/latest_release.json", text: latestRelease)
@@ -145,34 +145,34 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                         def releases = 
 """[
     {
-        os: "macOS (app)",
-        version: "${version}",
-        filename: "Katalon.Studio.app.zip",
-        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.app.zip"
+        "os": "macOS (app)",
+        "version": "${version}",
+        "filename": "Katalon.Studio.app.zip",
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.app.zip"
     },
     {
-        os: "macOS (dmg)",
-        version: "${version}",
-        filename: "Katalon.Studio.dmg",
-        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.dmg"
+        "os": "macOS (dmg)",
+        "version": "${version}",
+        "filename": "Katalon.Studio.dmg",
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.dmg"
     },
     {
-        os: "Linux",
-        version: "${version}",
-        filename: "Katalon_Studio_Linux_64-${version}.tar.gz",
-        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Linux_64-${version}.tar.gz"
+        "os": "Linux",
+        "version": "${version}",
+        "filename": "Katalon_Studio_Linux_64-${version}.tar.gz",
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Linux_64-${version}.tar.gz"
     },
     {
-        os: "Windows 32",
-        version: "${version}",
-        filename: "Katalon_Studio_Windows_32-${version}.zip",
-        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_32-${version}.zip"
+        "os": "Windows 32",
+        "version": "${version}",
+        "filename": "Katalon_Studio_Windows_32-${version}.zip",
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_32-${version}.zip"
     },
     {
-        os: "Windows 64",
-        version: "${version}",
-        filename: "Katalon_Studio_Windows_64-${version}.zip",
-        url: "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_64-${version}.zip"
+        "os": "Windows 64",
+        "version": "${version}",
+        "filename": "Katalon_Studio_Windows_64-${version}.zip",
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_64-${version}.zip"
     }
 ]"""
                         writeFile(file: "${env.tmpDir}/releases.json", text: releases)
