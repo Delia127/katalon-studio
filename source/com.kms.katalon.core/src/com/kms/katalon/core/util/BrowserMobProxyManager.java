@@ -30,7 +30,7 @@ public class BrowserMobProxyManager {
     private static final AtomicLong requestNumber = new AtomicLong(0);
     
     private static void logError(String message, Exception e) {
-        logger.logError(message + ": " + e.getClass().getName() + " - " + e.getMessage(), null, e);
+        logger.logError(message + ": " + e.getClass().getName() + " - " + e.getMessage());
     }
     
     public static final Proxy getWebServiceProxy(Proxy systemProxy) {

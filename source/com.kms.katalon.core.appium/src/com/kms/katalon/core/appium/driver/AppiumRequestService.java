@@ -2,7 +2,6 @@ package com.kms.katalon.core.appium.driver;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -48,7 +47,7 @@ public class AppiumRequestService {
             logger.logRunData(AppiumStringConstants.XML_LOG_APPIUM_VERSION, appiumVersion);
         } catch (UnsupportedOperationException | IOException e) {
             logger.logWarning(MessageFormat.format(AppiumStringConstants.MSG_UNABLE_TO_GET_APPIUM_STATUS,
-                    e.getMessage()), null, e);
+                    e.getMessage()));
         }
     }
 }

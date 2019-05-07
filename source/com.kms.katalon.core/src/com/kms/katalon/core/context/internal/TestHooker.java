@@ -110,7 +110,7 @@ public class TestHooker {
             logger.logDebug(MessageFormat.format(CoreMessageConstants.EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED,
                     listenerAnnotationName, methodDisplayName));
         } catch (Throwable e) {
-            logger.logError(ExceptionsUtil.getMessageForThrowable(e), null, e);
+            logger.logError(ExceptionsUtil.getMessageForThrowable(e));
         } finally {
             while (!keywordStack.isEmpty()) {
                 KeywordStackElement keywordStackElement = keywordStack.pop();

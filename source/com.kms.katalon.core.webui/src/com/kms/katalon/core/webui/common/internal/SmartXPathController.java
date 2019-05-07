@@ -59,17 +59,6 @@ public class SmartXPathController {
 	public static void logError(String message) {
 		logger.logError(smartXPathPrefixify(message));
 	}
-	
-	/**
-     * Log an error with Smart XPath plug-in's internal prefix. Note that a
-     * KeywordLogger must be set first. see {@link #setLogger(KeywordLogger)}
-     * 
-     * @param message
-     * @param throwable
-     */
-    public static void logError(String message, Throwable throwable) {
-        logger.logError(smartXPathPrefixify(message), null, throwable);
-    }
 
 	private static String smartXPathPrefixify(String message) {
 		return SMART_XPATH_PREFIX + " " + message;
@@ -108,7 +97,7 @@ public class SmartXPathController {
 			writer.flush();
 			writer.close();
 		} catch (Exception e) {
-			logError(e.getMessage(), e);
+			logError(e.getMessage());
 		}
 	}
 
@@ -118,7 +107,7 @@ public class SmartXPathController {
 			JsonReader reader = new JsonReader(new FileReader(filePath));
 			return gson.fromJson(reader, BrokenTestObjects.class);
 		} catch (Exception e) {
-			logError(e.getMessage(), e);
+			logError(e.getMessage());
 		}
 		return null;
 	}
@@ -164,7 +153,7 @@ public class SmartXPathController {
 			return fullPath;
 		} catch (Exception ex) {
 			logError(MessageFormat.format(StringConstants.KW_LOG_INFO_COULD_NOT_SAVE_SCREENSHOT, smartXPathFolder,
-					ex.getMessage()), ex);
+					ex.getMessage()));
 		}
 		return StringUtils.EMPTY;
 	}

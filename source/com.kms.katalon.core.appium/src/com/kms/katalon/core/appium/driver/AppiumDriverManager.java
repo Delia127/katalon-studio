@@ -221,7 +221,7 @@ public class AppiumDriverManager {
             try {
                 ensureWebProxyServerStarted(deviceId);
             } catch (IOException | InterruptedException | IOSWebkitStartException e) {
-                logger.logWarning(e.getMessage(), null, e);
+                logger.logWarning(e.getMessage());
             }
         }
         startAppiumServerJS(RunConfiguration.getTimeOut());
@@ -487,7 +487,7 @@ public class AppiumDriverManager {
             try {
                 ProcessUtil.terminateProcess(localStorageAppiumServer.get());
             } catch (ReflectiveOperationException | IOException e) {
-                logger.logWarning("Error when trying to stop Appium Server: " + e.getMessage(), null, e);
+                logger.logWarning("Error when trying to stop Appium Server: " + e.getMessage());
             } finally {
                 localStorageAppiumServer.set(null);
             }
@@ -496,7 +496,7 @@ public class AppiumDriverManager {
             try {
                 ProcessUtil.terminateProcess(localStorageWebProxyProcess.get());
             } catch (ReflectiveOperationException | IOException e) {
-                logger.logWarning("Error when trying to stop Web Proxy Server: " + e.getMessage(), null, e);
+                logger.logWarning("Error when trying to stop Web Proxy Server: " + e.getMessage());
             } finally {
                 localStorageWebProxyProcess.set(null);
             }
