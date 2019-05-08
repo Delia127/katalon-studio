@@ -189,7 +189,7 @@ public class DriverFactory {
             changeWebDriver(webDriver);
             return webDriver;
         } catch (Error e) {
-            logger.logMessage(LogLevel.WARNING, e.getMessage());
+            logger.logMessage(LogLevel.WARNING, e.getMessage(), e);
             throw new StepFailedException(e);
         }
     }
@@ -586,7 +586,7 @@ public class DriverFactory {
             setTimeout();
             return webDriver;
         } catch (Error e) {
-            logger.logMessage(LogLevel.WARNING, e.getMessage());
+            logger.logMessage(LogLevel.WARNING, e.getMessage(), e);
             throw new StepFailedException(e);
         }
     }
@@ -1134,7 +1134,7 @@ public class DriverFactory {
                     }
                 }
             } catch (UnreachableBrowserException e) {
-                logger.logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE);
+                logger.logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE, null, e);
             }
         }
         localWebServerStorage.set(null);

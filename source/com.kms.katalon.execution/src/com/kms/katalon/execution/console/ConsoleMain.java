@@ -12,10 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Properties;
+import java.util.stream.Collectors;
+
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
@@ -38,6 +39,7 @@ import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -82,10 +84,13 @@ public class ConsoleMain {
      * @return the exit code for the console execution
      */
     public static int launch(String[] arguments) {
-        ConsoleExecutor consoleExecutor = new ConsoleExecutor();
-        ApplicationConfigOptions applicationConfigOptions = new ApplicationConfigOptions();
-        OptionParser parser = createParser(consoleExecutor, applicationConfigOptions);
         try {
+            LocalInformationUtil.printSystemInformation();
+
+            ConsoleExecutor consoleExecutor = new ConsoleExecutor();
+            ApplicationConfigOptions applicationConfigOptions = new ApplicationConfigOptions();
+            OptionParser parser = createParser(consoleExecutor, applicationConfigOptions);
+
             List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
@@ -99,7 +104,7 @@ public class ConsoleMain {
             }
 
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
-            if(options.has(INSTALL_PLUGIN_OPTION)){
+            if (options.has(INSTALL_PLUGIN_OPTION)){
                 installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                     .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));

@@ -1,7 +1,9 @@
 package com.kms.katalon.core.keyword.internal
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils
 
+import com.google.common.base.Throwables
 import com.kms.katalon.core.exception.StepErrorException
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.logging.ErrorCollector
@@ -26,10 +28,10 @@ public class KeywordMain {
         String failedMessage = buildReasonMessage(message, t != null ? ExceptionsUtil.getStackTraceForThrowable(t) : EMPTY_REASON).toString()
         switch (flHandling) {
             case FailureHandling.OPTIONAL:
-                logger.logWarning(failedMessage, attributes);
+                logger.logWarning(failedMessage, attributes, t);
                 break;
             case FailureHandling.CONTINUE_ON_FAILURE:
-                logger.logFailed(failedMessage, attributes);
+                logger.logFailed(failedMessage, attributes, t);
                 Exception ex = null;
                 if (ErrorCollector.isErrorFailed(t)) {
                     ex = new StepErrorException(failedMessage, t)
@@ -38,7 +40,7 @@ public class KeywordMain {
                 ErrorCollector.getCollector().addError(ex);
                 break;
             case FailureHandling.STOP_ON_FAILURE:
-                logger.logFailed(failedMessage, attributes);
+                logger.logFailed(failedMessage, attributes, t);
                 if (t instanceof StepFailedException || t instanceof StepErrorException) {
                     throw t;
                 }

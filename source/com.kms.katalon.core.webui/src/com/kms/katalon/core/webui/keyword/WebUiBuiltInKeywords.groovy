@@ -3768,7 +3768,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static Object executeJavaScript(String script, List arguments, FailureHandling flowControl) throws StepFailedException {
-        return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavascript", script, arguments, flowControl)
+        return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavaScript", script, arguments, flowControl)
     }
 
     /**

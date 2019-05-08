@@ -49,6 +49,11 @@ public class CutHandler extends CopyHandler {
                 if (StringUtils.equals(copyTag, FolderType.REPORT.toString())) {
                     return false;
                 }
+                
+                if (StringUtils.equals(copyTag, FolderType.USER.toString())) {
+                    return false;
+                }
+                
                 if (entityTag == null) {
                     entityTag = copyTag;
                     continue;

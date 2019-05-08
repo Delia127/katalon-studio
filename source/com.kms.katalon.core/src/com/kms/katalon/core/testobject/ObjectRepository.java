@@ -212,7 +212,7 @@ public class ObjectRepository {
             return null;
         } catch (DocumentException e) {
             logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
-                    testObjectId, ExceptionsUtil.getMessageForThrowable(e)));
+                    testObjectId, ExceptionsUtil.getMessageForThrowable(e)), null, e);
             return null;
         }
     }
@@ -238,6 +238,13 @@ public class ObjectRepository {
             testObject.setSelectorMethod(SelectorMethod.valueOf(dfSelectorMethodElement.getText()));
         }
 
+        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+        for (Entry<String, Object> entry : variables.entrySet()) {
+            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+
+        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
+        
         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
         if (propertySelectorCollection != null) {
             List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
@@ -245,7 +252,7 @@ public class ObjectRepository {
                 selectorEntry.forEach(entry -> {
                     Element selectorMethodElement = ((Element) entry);
                     SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
-                    String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+                    String entryValue = strSubtitutor.replace(selectorMethodElement.elementText(PROPERTY_VALUE));
                     testObject.setSelectorValue(entryKey, entryValue);
                 });
             }
@@ -308,12 +315,7 @@ public class ObjectRepository {
         if (testObject == null || variables == null || variables.isEmpty()) {
             return testObject;
         }
-        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
-        for (Entry<String, Object> entry : variables.entrySet()) {
-            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
-        }
-
-        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
+        
         for (TestObjectProperty objectProperty : testObject.getProperties()) {
             objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue()));
         }
@@ -425,7 +427,7 @@ public class ObjectRepository {
             return findRequestObject(requestObjectId, reqElement, RunConfiguration.getProjectDir(), variables);
         } catch (Exception e) {
             logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
-                    requestObjectId, ExceptionsUtil.getMessageForThrowable(e)));
+                    requestObjectId, ExceptionsUtil.getMessageForThrowable(e)), null, e);
             return null;
         }
     }

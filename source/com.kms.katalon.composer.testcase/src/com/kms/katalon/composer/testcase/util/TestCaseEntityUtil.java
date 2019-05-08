@@ -147,15 +147,6 @@ public class TestCaseEntityUtil {
         if (projectEntity != null) {
             return GroovyUtil.getGroovyProject(projectEntity);
         }
-        try {
-            List<ProjectEntity> recentProjects = ProjectController.getInstance().getRecentProjects();
-            if (recentProjects.size() > 0) {
-                return GroovyUtil.getGroovyProject(recentProjects.get(0));
-            }
-        } catch (Exception ex) {
-            LoggerSingleton.logError(ex);
-        }
-        
         return null;
     }
 
