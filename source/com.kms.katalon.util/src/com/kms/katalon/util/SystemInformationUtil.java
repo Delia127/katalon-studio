@@ -47,6 +47,16 @@ public class SystemInformationUtil {
         return  value * 100.0; 
     }
     
+    public static long totalPhysicalMemorySizeInByte() throws InstanceNotFoundException, AttributeNotFoundException,
+            MalformedObjectNameException, ReflectionException, MBeanException {
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+
+        Object attribute = mBeanServer.getAttribute(new ObjectName("java.lang", "type", "OperatingSystem"),
+                "TotalPhysicalMemorySize");
+
+        return Long.parseLong(attribute.toString());
+    }
+    
     public static long totalPhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
             MalformedObjectNameException, ReflectionException, MBeanException {
         long totalMemory;
@@ -58,6 +68,16 @@ public class SystemInformationUtil {
         totalMemory = Long.parseLong(attribute.toString()) / ONE_KB ;
 
         return totalMemory;
+    }
+    
+    public static long freePhysicalMemorySizeInByte() throws InstanceNotFoundException, AttributeNotFoundException,
+            MalformedObjectNameException, ReflectionException, MBeanException {
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+
+        Object attribute2 = mBeanServer.getAttribute(new ObjectName("java.lang", "type", "OperatingSystem"),
+                "FreePhysicalMemorySize");
+
+        return Long.parseLong(attribute2.toString());
     }
 
     public static long freePhysicalMemorySize() throws InstanceNotFoundException, AttributeNotFoundException,
