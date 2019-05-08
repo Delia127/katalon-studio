@@ -79,10 +79,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Button chckEncrypt;
     
-    private String password = "123";
-    private String serverUrl = "https://analytics.katalon.com/";
-    private String email = "abc@gmail.com";
-
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
@@ -313,14 +309,10 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
             cbbTeams.setItems();
             cbbProjects.setItems();
-
-            txtEmail.setText(email);
-            txtPassword.setText(password);
-            txtServerUrl.setText(serverUrl);
             
-//            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
-//            String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
-//            String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+            String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+            String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
 
 
             if (enableAnalyticsIntegration.getSelection()) {
@@ -330,8 +322,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         password, 
                         analyticsSettingStore);
                 if (tokenInfo == null){
-//                    txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
-//                    txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
+                    txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
+                    txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
                     maskPasswordField();
                     return;
                 }
@@ -353,11 +345,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 }
             }
 
-//            txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
-//            txtPassword.setText(password);
+            txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
+            txtPassword.setText(password);
             chckEncrypt.setSelection(analyticsSettingStore.isEncryptionEnabled());
             maskPasswordField();
-//            txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
+            txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
             cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
             cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
             cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
@@ -369,9 +361,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     .getString(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD);
 
             if (!StringUtils.isEmpty(preferenceEmail) && !StringUtils.isEmpty(preferencePassword)) {
-//                txtEmail.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail)));
-//                txtPassword.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword)));
-                // empty preference store password
+                txtEmail.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail)));
+                txtPassword.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword)));
+//                 empty preference store password
                 preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);
             }
 
@@ -391,18 +383,15 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         btnConnect.setEnabled(isAnalyticsIntegrated);
 //        txtPassword.setEnabled(isAnalyticsIntegrated);
 //        txtEmail.setEnabled(isAnalyticsIntegrated);
-//        txtServerUrl.setEnabled(isAnalyticsIntegrated);
+        txtServerUrl.setEnabled(isAnalyticsIntegrated);
              
         cbbProjects.setEnabled(isAnalyticsIntegrated);
         cbbTeams.setEnabled(isAnalyticsIntegrated);
         btnCreate.setEnabled(isAnalyticsIntegrated);
         cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
-//        cbxAutoSubmit.setSelection(isAnalyticsIntegrated);
         cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
-//        cbxAttachScreenshot.setSelection(isAnalyticsIntegrated);
         cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
         chckEncrypt.setEnabled(isAnalyticsIntegrated);
-//        chckEncrypt.setSelection(isAnalyticsIntegrated);
     }
 
     private boolean isIntegratedSuccessfully() {
@@ -418,9 +407,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         try {
             boolean encryptionEnabled = chckEncrypt.getSelection();
             analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
-//            analyticsSettingStore.setServerEndPoint(txtServerUrl.getText(), encryptionEnabled);
-//            analyticsSettingStore.setEmail(txtEmail.getText(), encryptionEnabled);
-//            analyticsSettingStore.setPassword(txtPassword.getText(), encryptionEnabled);
+            analyticsSettingStore.setServerEndPoint(txtServerUrl.getText(), encryptionEnabled);
             analyticsSettingStore.enableEncryption(encryptionEnabled);
             if (!teams.isEmpty()) {
                 analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
@@ -434,10 +421,10 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
             eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
-        } catch (IOException e) {
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
-        }
+        } 
     }
 
     private void addListeners() {
