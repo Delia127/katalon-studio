@@ -7,9 +7,14 @@ import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 
 public interface ReportIntegrationContribution extends ConsoleOptionContributor {
     boolean isIntegrationActive(TestSuiteEntity testSuite);
+    
     void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception;
     
     default void notifyProccess(Object event, ExecutionEntityResult executedEntity) {
     	
+    }
+    
+    default void printIntegrateMessage() {
+        
     }
 }

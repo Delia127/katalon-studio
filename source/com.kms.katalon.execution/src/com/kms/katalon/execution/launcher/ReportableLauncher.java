@@ -281,6 +281,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
                 .getInstance().getIntegrationContributorMap().entrySet()) {
             ReportIntegrationContribution contribution = reportContributorEntry.getValue();
+            if (contribution != null && !contribution.isIntegrationActive(getTestSuite())) {
+                contribution.printIntegrateMessage();
+            }
             if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
                 continue;
             }
