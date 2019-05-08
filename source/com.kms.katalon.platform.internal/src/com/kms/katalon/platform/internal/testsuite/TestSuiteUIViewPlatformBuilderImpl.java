@@ -35,15 +35,14 @@ public class TestSuiteUIViewPlatformBuilderImpl implements PlatformTestSuiteUIVi
 
     private TestSuiteUIViewBuilder getViewerBuilder(TestSuiteUIViewDescription pluginViewDescription) {
         String name = pluginViewDescription.getName();
-        TestSuiteUIView testSuiteUIView = ContextInjectionFactory
-                .make(pluginViewDescription.getTestSuiteUIView(), context);
+        TestSuiteUIView testSuiteUIView = ContextInjectionFactory.make(pluginViewDescription.getTestSuiteUIView(),
+                context);
         return new PluginTestSuiteUIViewBuilder(name, testSuiteUIView);
     }
-	
-	
-	@Override
-	public List<TestSuiteUIViewBuilder> getBuilders() {
-		com.katalon.platform.api.model.ProjectEntity project = new ProjectEntityImpl(
+
+    @Override
+    public List<TestSuiteUIViewBuilder> getBuilders() {
+        com.katalon.platform.api.model.ProjectEntity project = new ProjectEntityImpl(
                 ProjectController.getInstance().getCurrentProject());
         return ApplicationManager.getInstance()
                 .getExtensionManager()
@@ -55,79 +54,79 @@ public class TestSuiteUIViewPlatformBuilderImpl implements PlatformTestSuiteUIVi
                 })
                 .map(e -> getViewerBuilder((TestSuiteUIViewDescription) e.getImplementationClass()))
                 .collect(Collectors.toList());
-	}
-	
-	private static class PluginTestSuiteUIViewBuilder implements TestSuiteUIViewBuilder {
+    }
 
-		private TestSuiteUIViewDescription description;
-		
-		private TestSuiteUIView testSuiteUIView;
-		
-		private String name;
-		
-		public PluginTestSuiteUIViewBuilder(String name, TestSuiteUIView testSuiteUIView) {
-			this.testSuiteUIView = testSuiteUIView;
-			this.name = name;
-		}
+    private static class PluginTestSuiteUIViewBuilder implements TestSuiteUIViewBuilder {
 
-		@Override
-		public String getName() {
-			return name;
-		}
+        private TestSuiteUIViewDescription description;
 
-		@Override
-		public boolean isEnabled(ProjectEntity projectEntity) {
+        private TestSuiteUIView testSuiteUIView;
+
+        private String name;
+
+        public PluginTestSuiteUIViewBuilder(String name, TestSuiteUIView testSuiteUIView) {
+            this.testSuiteUIView = testSuiteUIView;
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean isEnabled(ProjectEntity projectEntity) {
             com.katalon.platform.api.model.ProjectEntity project = new ProjectEntityImpl(
                     ProjectController.getInstance().getCurrentProject());
             return description.isEnabled(project);
-		}
+        }
 
-		@Override
-		public AbstractTestSuiteUIDescriptionView getView(TestSuiteEntity testSuite, MPart mpart,
-				SavableCompositePart parentPart) {
-			return new PluginTestSuiteUIView(name, testSuite, mpart, testSuiteUIView, parentPart);
-		}		
-	}
-	
-	private static class PluginTestSuiteUIView extends AbstractTestSuiteUIDescriptionView {
+        @Override
+        public AbstractTestSuiteUIDescriptionView getView(TestSuiteEntity testSuite, MPart mpart,
+                SavableCompositePart parentPart) {
+            return new PluginTestSuiteUIView(name, testSuite, mpart, testSuiteUIView, parentPart);
+        }
+    }
 
-		private TestSuiteUIView testSuiteUiView;
-		
+    private static class PluginTestSuiteUIView extends AbstractTestSuiteUIDescriptionView {
+
+        private TestSuiteUIView testSuiteUiView;
+
         private PartActionServiceImpl partActionService;
 
         private SavableCompositePart parentPart;
 
         private String name;
 
-		
-		public PluginTestSuiteUIView(String name, TestSuiteEntity testSuiteEntity, MPart mpart, TestSuiteUIView testSuiteUIView, SavableCompositePart parentPart) {
-			super(testSuiteEntity, mpart);
-			this.testSuiteUiView = testSuiteUIView;
-			this.parentPart = parentPart;
-			this.mpart = mpart;
-		}
+        public PluginTestSuiteUIView(String name, TestSuiteEntity testSuiteEntity, MPart mpart,
+                TestSuiteUIView testSuiteUIView, SavableCompositePart parentPart) {
+            super(testSuiteEntity, mpart);
+            this.testSuiteUiView = testSuiteUIView;
+            this.parentPart = parentPart;
+            this.mpart = mpart;
+        }
 
-		@Override
-		public Composite createContainer(Composite parent) {
-			 	Composite container = new Composite(parent, SWT.NONE);
-			 	container.setLayout(new GridLayout());
-	            partActionService = new PartActionServiceImpl(testSuiteEntity, mpart, parentPart);
-	            try {
-	            	testSuiteUiView.onCreateView(container, partActionService, new TestSuiteEntityImpl(testSuiteEntity));
-	            } catch (Exception e) {
-	                LogUtil.printAndLogError(e, "Unable to create Test Suite UI view for: " + name);
-	            }
+        @Override
+        public Composite createContainer(Composite parent) {
+            Composite container = new Composite(parent, SWT.NONE);
+            container.setLayout(new GridLayout());
+            partActionService = new PartActionServiceImpl(testSuiteEntity, mpart, parentPart);
+            try {
+                testSuiteUiView.onCreateView(container, partActionService, new TestSuiteEntityImpl(testSuiteEntity));
+            } catch (Exception e) {
+                LogUtil.printAndLogError(e, "Unable to create Test Suite UI view for: " + name);
+            }
 
-	            return container;
-		}
+            return container;
+        }
 
-		@Override
-		public void postContainerCreated() {
-			testSuiteUiView.onPostCreateView();
-		}
-	}
-	
-	private static class PartActionServiceImpl implements PartActionService {
+        @Override
+        public void postContainerCreated() {
+            testSuiteUiView.onPostCreateView();
+        }
+    }
+
+    private static class PartActionServiceImpl implements PartActionService {
 
         private MPart mpart;
 

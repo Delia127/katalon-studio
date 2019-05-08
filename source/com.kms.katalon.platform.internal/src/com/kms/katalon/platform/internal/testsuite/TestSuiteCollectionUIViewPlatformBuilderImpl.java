@@ -32,16 +32,17 @@ public class TestSuiteCollectionUIViewPlatformBuilderImpl implements PlatformTes
     @Inject
     private IEclipseContext context;
 
-    private TestSuiteCollectionUIViewBuilder getViewerBuilder(TestSuiteCollectionUIViewDescription pluginViewDescription) {
+    private TestSuiteCollectionUIViewBuilder getViewerBuilder(
+            TestSuiteCollectionUIViewDescription pluginViewDescription) {
         String name = pluginViewDescription.getName();
         TestSuiteCollectionUIView testSuiteCollectionUIView = ContextInjectionFactory
                 .make(pluginViewDescription.getTestSuiteCollectionUIView(), context);
         return new PluginTestSuiteCollectionUIViewBuilder(name, testSuiteCollectionUIView);
     }
-	
-	@Override
-	public List<TestSuiteCollectionUIViewBuilder> getBuilders() {
-		com.katalon.platform.api.model.ProjectEntity project = new ProjectEntityImpl(
+
+    @Override
+    public List<TestSuiteCollectionUIViewBuilder> getBuilders() {
+        com.katalon.platform.api.model.ProjectEntity project = new ProjectEntityImpl(
                 ProjectController.getInstance().getCurrentProject());
         return ApplicationManager.getInstance()
                 .getExtensionManager()
@@ -53,87 +54,89 @@ public class TestSuiteCollectionUIViewPlatformBuilderImpl implements PlatformTes
                 })
                 .map(e -> getViewerBuilder((TestSuiteCollectionUIViewDescription) e.getImplementationClass()))
                 .collect(Collectors.toList());
-	}
-	
-	private static class PluginTestSuiteCollectionUIViewBuilder implements TestSuiteCollectionUIViewBuilder {
+    }
 
-		private TestSuiteCollectionUIViewDescription description;
-		
-		private TestSuiteCollectionUIView testSuiteCollectionUIView;
-		
-		private String name;
-		
-		public PluginTestSuiteCollectionUIViewBuilder(String name, TestSuiteCollectionUIView testSuiteCollectionUIView) {
-			this.testSuiteCollectionUIView = testSuiteCollectionUIView;
-			this.name = name;
-		}
+    private static class PluginTestSuiteCollectionUIViewBuilder implements TestSuiteCollectionUIViewBuilder {
 
-		@Override
-		public String getName() {
-			return name;
-		}
+        private TestSuiteCollectionUIViewDescription description;
 
-		@Override
-		public boolean isEnabled(ProjectEntity projectEntity) {
+        private TestSuiteCollectionUIView testSuiteCollectionUIView;
+
+        private String name;
+
+        public PluginTestSuiteCollectionUIViewBuilder(String name,
+                TestSuiteCollectionUIView testSuiteCollectionUIView) {
+            this.testSuiteCollectionUIView = testSuiteCollectionUIView;
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean isEnabled(ProjectEntity projectEntity) {
             com.katalon.platform.api.model.ProjectEntity project = new ProjectEntityImpl(
                     ProjectController.getInstance().getCurrentProject());
             return description.isEnabled(project);
-		}
+        }
 
-		@Override
-		public AbstractTestSuiteCollectionUIDescriptionView getView(TestSuiteCollectionEntity testSuiteCollection, MPart mpart,
-				MPart parentPart) {
-			return new PluginTestSuiteCollectionUIView(name, testSuiteCollection, mpart, testSuiteCollectionUIView, parentPart);
-		}
-	}
-	
-	private static class PluginTestSuiteCollectionUIView extends AbstractTestSuiteCollectionUIDescriptionView {
+        @Override
+        public AbstractTestSuiteCollectionUIDescriptionView getView(TestSuiteCollectionEntity testSuiteCollection,
+                MPart mpart, MPart parentPart) {
+            return new PluginTestSuiteCollectionUIView(name, testSuiteCollection, mpart, testSuiteCollectionUIView,
+                    parentPart);
+        }
+    }
 
-		private TestSuiteCollectionUIView testSuiteCollectionUiView;
-		
+    private static class PluginTestSuiteCollectionUIView extends AbstractTestSuiteCollectionUIDescriptionView {
+
+        private TestSuiteCollectionUIView testSuiteCollectionUiView;
+
         private PartActionServiceImpl partActionService;
 
         private MPart parentPart;
 
         private String name;
 
-		
-		public PluginTestSuiteCollectionUIView(String name, TestSuiteCollectionEntity testSuiteCollectionEntity
-				, MPart mpart, TestSuiteCollectionUIView testSuiteCollectionUiView, MPart parentPart) {
-			super(testSuiteCollectionEntity, mpart);
-			this.testSuiteCollectionUiView = testSuiteCollectionUiView;
-			this.parentPart = parentPart;
-			this.mpart = mpart;
-		}
+        public PluginTestSuiteCollectionUIView(String name, TestSuiteCollectionEntity testSuiteCollectionEntity,
+                MPart mpart, TestSuiteCollectionUIView testSuiteCollectionUiView, MPart parentPart) {
+            super(testSuiteCollectionEntity, mpart);
+            this.testSuiteCollectionUiView = testSuiteCollectionUiView;
+            this.parentPart = parentPart;
+            this.mpart = mpart;
+        }
 
-		@Override
-		public Composite createContainer(Composite parent) {
-			 	Composite container = new Composite(parent, SWT.NONE);
-			 	container.setLayout(new GridLayout());
-			 	
-	            partActionService = new PartActionServiceImpl(testSuiteCollectionEntity, mpart, parentPart);
-	            try {
-	            	testSuiteCollectionUiView.onCreateView(container, partActionService
-	            			, new TestSuiteCollectionEntityImpl(testSuiteCollectionEntity));
-	            } catch (Exception e) {
-	                LogUtil.printAndLogError(e, "Unable to create Test Suite Collection UI view for: " + name);
-	            }
-	            return container;
-		}
+        @Override
+        public Composite createContainer(Composite parent) {
+            Composite container = new Composite(parent, SWT.NONE);
+            container.setLayout(new GridLayout());
 
-		@Override
-		public void postContainerCreated() {
-			testSuiteCollectionUiView.onPostCreateView();
-		}
-	}
-	
-	private static class PartActionServiceImpl implements PartActionService {
+            partActionService = new PartActionServiceImpl(testSuiteCollectionEntity, mpart, parentPart);
+            try {
+                testSuiteCollectionUiView.onCreateView(container, partActionService,
+                        new TestSuiteCollectionEntityImpl(testSuiteCollectionEntity));
+            } catch (Exception e) {
+                LogUtil.printAndLogError(e, "Unable to create Test Suite Collection UI view for: " + name);
+            }
+            return container;
+        }
+
+        @Override
+        public void postContainerCreated() {
+            testSuiteCollectionUiView.onPostCreateView();
+        }
+    }
+
+    private static class PartActionServiceImpl implements PartActionService {
 
         private MPart mpart;
 
         private MPart parentPart;
 
-        public PartActionServiceImpl(TestSuiteCollectionEntity testSuiteCollectionEntity, MPart mpart, MPart parentPart) {
+        public PartActionServiceImpl(TestSuiteCollectionEntity testSuiteCollectionEntity, MPart mpart,
+                MPart parentPart) {
             this.mpart = mpart;
             this.parentPart = parentPart;
         }

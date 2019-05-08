@@ -10,58 +10,58 @@ import com.katalon.platform.api.model.TestSuiteEntity;
 
 public class TestSuiteCollectionEntityImpl implements TestSuiteCollectionEntity {
 
-	private com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity source;
-	
-	public TestSuiteCollectionEntityImpl(com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity source) {
-		this.source = source;
-	}
-	
-	@Override
-	public String getFileLocation() {
-		return source.getId() + source.getFileExtension();
-	}
+    private com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity source;
 
-	@Override
-	public String getFolderLocation() {
-		return source.getParentFolder().getId();
-	}
+    public TestSuiteCollectionEntityImpl(com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity source) {
+        this.source = source;
+    }
 
-	@Override
-	public String getId() {
-		return source.getIdForDisplay();
-	}
+    @Override
+    public String getFileLocation() {
+        return source.getId() + source.getFileExtension();
+    }
 
-	@Override
-	public String getName() {
-		return source.getName();
-	}
+    @Override
+    public String getFolderLocation() {
+        return source.getParentFolder().getId();
+    }
 
-	@Override
-	public String getComment() {
-		return StringUtils.EMPTY;
-	}
+    @Override
+    public String getId() {
+        return source.getIdForDisplay();
+    }
 
-	@Override
-	public String getDescription() {
-		return source.getDescription();
-	}
+    @Override
+    public String getName() {
+        return source.getName();
+    }
 
-	@Override
-	public String getParentFolderId() {
-		return source.getParentFolder().getIdForDisplay();
-	}
+    @Override
+    public String getComment() {
+        return StringUtils.EMPTY;
+    }
 
-	@Override
-	public String getTags() {
-		return source.getTag();
-	}
+    @Override
+    public String getDescription() {
+        return source.getDescription();
+    }
 
-	@Override
-	public List<TestSuiteEntity> getTestSuites() {
-		return source.getTestSuiteRunConfigurations().stream().map(runConfig ->
-			new TestSuiteEntityImpl(runConfig.getTestSuiteEntity())
-		).collect(Collectors.toList());
-	}
-	
+    @Override
+    public String getParentFolderId() {
+        return source.getParentFolder().getIdForDisplay();
+    }
+
+    @Override
+    public String getTags() {
+        return source.getTag();
+    }
+
+    @Override
+    public List<TestSuiteEntity> getTestSuites() {
+        return source.getTestSuiteRunConfigurations()
+                .stream()
+                .map(runConfig -> new TestSuiteEntityImpl(runConfig.getTestSuiteEntity()))
+                .collect(Collectors.toList());
+    }
 
 }
