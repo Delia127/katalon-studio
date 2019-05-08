@@ -61,6 +61,7 @@ public class TestHooker {
                 evaluateTestContextMethod(method);
             });
         } catch (MultipleCompilationErrorsException e) {
+            System.out.println("1");
             System.out.println(ExceptionsUtil.getMessageForThrowable(e));
         }
     }
@@ -86,6 +87,7 @@ public class TestHooker {
             try {
                 testContextClassInstance = (GroovyObject) scriptClazz.newInstance();
             } catch (InstantiationException | IllegalAccessException | CompilationFailedException e) {
+                System.out.println("2");
                 System.err.println(ExceptionsUtil.getMessageForThrowable(e));
             }
         }
@@ -110,6 +112,8 @@ public class TestHooker {
             logger.logDebug(MessageFormat.format(CoreMessageConstants.EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED,
                     listenerAnnotationName, methodDisplayName));
         } catch (Throwable e) {
+            System.out.println("3");
+            System.out.println(e.getMessage());
             logger.logError(ExceptionsUtil.getMessageForThrowable(e), null, e);
         } finally {
             while (!keywordStack.isEmpty()) {
