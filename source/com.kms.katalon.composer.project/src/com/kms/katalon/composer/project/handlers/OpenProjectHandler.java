@@ -175,11 +175,10 @@ public class OpenProjectHandler {
                                     } else {
                                     	boolean result = analyticsConfigutionProject.checkUserInTeam();
                                     	if (!result) {
-                                    		System.out.println("");
                                     		MultiStatusErrorDialog.showErrorDialog("Can't open project",
                                                     "", ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT
                                                     );
-                                    		return;
+//                                    		return;
                                     	}
                                     }
                                     

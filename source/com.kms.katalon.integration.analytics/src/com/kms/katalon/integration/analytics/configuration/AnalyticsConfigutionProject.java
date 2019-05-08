@@ -45,12 +45,14 @@ public class AnalyticsConfigutionProject {
 	
 	public void setDataStore() {
 		try {
-			
 			analyticsSettingStore.enableIntegration(true);
 			analyticsSettingStore.enableEncryption(true);
 			analyticsSettingStore.setServerEndPoint(serverUrl, true);
 			analyticsSettingStore.setEmail(email, true);
-			analyticsSettingStore.setPassword(password, true);			
+			analyticsSettingStore.setPassword(password, true);		
+			analyticsSettingStore.setAutoSubmit(false);
+			analyticsSettingStore.setAttachScreenshot(false);
+			analyticsSettingStore.setAttachCapturedVideos(false);
 		} catch (IOException | GeneralSecurityException e) {
 			e.printStackTrace();
 		}

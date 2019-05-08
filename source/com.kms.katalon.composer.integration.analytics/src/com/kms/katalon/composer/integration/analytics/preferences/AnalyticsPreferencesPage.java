@@ -79,9 +79,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Button chckEncrypt;
     
+    private boolean inProject;
+    
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        
+        inProject = true;
     }
 
     @Override
@@ -334,15 +338,37 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
                         new ProgressMonitorDialog(getShell()));
 
-                if (teams != null && !teams.isEmpty()) {
-                    cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-                    cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
-                }
-
                 if (teams != null && teams.size() > 0) {
+                	AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
+                	long currentTeamId = currentTeam.getId();
+                	boolean isInTeam = false;
+                	for(AnalyticsTeam team : teams) {
+        				long teamId = team.getId(); 
+        				if (teamId == currentTeamId) {
+        					isInTeam = true;
+        					break;
+        				}
+        			}
+                	
+                	if (!isInTeam) {
+                		AnalyticsProject currentProject = analyticsSettingStore.getProject();
+                		
+                		teams.clear();
+                		projects.clear();
+                		
+                		teams.add(currentTeam);
+                		projects.add(currentProject);
+                	
+                		inProject = false;
+                	}
+                	
+                	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                    cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    
                     setProjectsBasedOnTeam(teams, projects, analyticsSettingStore.getServerEndpoint(encryptionEnabled),
                             analyticsSettingStore.getEmail(encryptionEnabled), password);
                 }
+
             }
 
             txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
@@ -385,13 +411,19 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 //        txtEmail.setEnabled(isAnalyticsIntegrated);
         txtServerUrl.setEnabled(isAnalyticsIntegrated);
              
-        cbbProjects.setEnabled(isAnalyticsIntegrated);
-        cbbTeams.setEnabled(isAnalyticsIntegrated);
         btnCreate.setEnabled(isAnalyticsIntegrated);
         cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
         cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
         cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
         chckEncrypt.setEnabled(isAnalyticsIntegrated);
+        
+        if (!inProject) {
+        	cbbProjects.setEnabled(false);
+            cbbTeams.setEnabled(false);
+        } else {
+        	cbbProjects.setEnabled(isAnalyticsIntegrated);
+            cbbTeams.setEnabled(isAnalyticsIntegrated);
+        }
     }
 
     private boolean isIntegratedSuccessfully() {
