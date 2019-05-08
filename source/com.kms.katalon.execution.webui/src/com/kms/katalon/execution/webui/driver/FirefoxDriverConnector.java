@@ -10,17 +10,16 @@ import com.kms.katalon.execution.configuration.IDriverConnector;
 
 public class FirefoxDriverConnector extends WebUiDriverConnector {
     private String geckoDriverPath;
-    
+
     public FirefoxDriverConnector(String configurationFolderPath) throws IOException {
         super(configurationFolderPath);
         geckoDriverPath = SeleniumWebDriverProvider.getGeckoDriverPath();
     }
 
-	@Override
-	public DriverType getDriverType() {
-		return WebUIDriverType.FIREFOX_DRIVER;
-	}
-	
+    @Override
+    public DriverType getDriverType() {
+        return WebUIDriverType.FIREFOX_DRIVER;
+    }
 
     @Override
     public Map<String, Object> getSystemProperties() {
@@ -28,17 +27,26 @@ public class FirefoxDriverConnector extends WebUiDriverConnector {
         propertyMap.put(StringConstants.CONF_PROPERTY_GECKO_DRIVER_PATH, geckoDriverPath);
         return propertyMap;
     }
-	
-	@SuppressWarnings("unchecked")
+
+    @SuppressWarnings("unchecked")
     @Override
     public IDriverConnector clone() {
         try {
             FirefoxDriverConnector firefoxDriverConnector = new FirefoxDriverConnector(getParentFolderPath());
-            firefoxDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(getUserConfigProperties());
+            firefoxDriverConnector.driverProperties = (Map<String, Object>) cloneDriverPropertyValue(
+                    getUserConfigProperties());
             return firefoxDriverConnector;
         } catch (IOException e) {
             // do nothing
         }
         return null;
+    }
+
+    public String getGeckoDriverPath() {
+        return geckoDriverPath;
+    }
+
+    public void setGeckoDriverPath(String geckoDriverPath) {
+        this.geckoDriverPath = geckoDriverPath;
     }
 }

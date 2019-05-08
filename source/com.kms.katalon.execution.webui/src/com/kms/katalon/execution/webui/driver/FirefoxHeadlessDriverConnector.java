@@ -11,6 +11,14 @@ import com.kms.katalon.execution.configuration.IDriverConnector;
 public class FirefoxHeadlessDriverConnector extends WebUiDriverConnector {
     private String geckoDriverPath;
 
+    public String getGeckoDriverPath() {
+        return geckoDriverPath;
+    }
+
+    public void setGeckoDriverPath(String geckoDriverPath) {
+        this.geckoDriverPath = geckoDriverPath;
+    }
+
     public FirefoxHeadlessDriverConnector(String configurationFolderPath) throws IOException {
         super(configurationFolderPath);
         geckoDriverPath = SeleniumWebDriverProvider.getGeckoDriverPath();
