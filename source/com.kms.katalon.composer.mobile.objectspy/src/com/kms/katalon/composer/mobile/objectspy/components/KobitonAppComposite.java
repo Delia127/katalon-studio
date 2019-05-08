@@ -148,7 +148,7 @@ public class KobitonAppComposite extends Composite {
     public List<String> getAllKobitonAppsName() {
         List<String> devicesNameList = new ArrayList<String>();
         for (KobitonApplication kobitonApp : kobitonApps) {
-            devicesNameList.add(kobitonApp.getName());
+            devicesNameList.add(kobitonApp.getName() + ", appId=" + kobitonApp.buildAutomationKey());
         }
         return devicesNameList;
     }

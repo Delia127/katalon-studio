@@ -50,7 +50,6 @@ public class HeadlessRunConfiguration extends WebUiRunConfiguration {
                             + " please use this command to update chromdriver: --config -%s=true",
                     driverPath, WebUIConsoleOptionContributor.WEB_UI_AUTO_UPDATE_DRIVERS));
         }
-        LogUtil.printOutputLine("Gecko driver is located at: " + driverPath);
         return driverPath;
     }
 

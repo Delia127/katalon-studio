@@ -27,6 +27,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.plugin.dialog.KStorePluginsDialog;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
+import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.ResultItem;
 import com.kms.katalon.plugin.service.PluginService;
@@ -113,8 +114,10 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     LoggerSingleton.logError("Failed to reload plugins.");
                     return;
                 }
+                
+                List<ResultItem> results = resultHolder[0];
 
-                if (silenceMode) {
+                if (silenceMode && !checkExpire(results)) {
                     return;
                 }
 
@@ -134,6 +137,15 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             reloadPluginsJob.setUser(true);
         }
         reloadPluginsJob.schedule();
+    }
+    
+    private boolean checkExpire(List<ResultItem> reloadItems) {
+        return reloadItems.stream()
+            .filter(i -> {
+                KStorePlugin plugin = i.getPlugin();
+                return plugin.isExpired() || (plugin.isTrial() && plugin.getRemainingDay() <= 14);
+            }).findAny()
+            .isPresent();
     }
 
     private void openResultDialog(List<ResultItem> result) {
