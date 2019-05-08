@@ -34,6 +34,7 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.project.constants.ComposerProjectMessageConstants;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.dialog.WalkthroughDialog;
 import com.kms.katalon.composer.project.dialog.WalkthroughItem;
@@ -162,21 +163,29 @@ public class OpenProjectHandler {
                         public void run() {
                             try {
                                 if (project != null) {
-                                    // Set project name on window title
-                                    OpenProjectHandler.updateProjectTitle(project, modelService, application);
-                                    Trackings.trackOpenProject(project);
-                                    
                                     AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                                     		ProjectController.getInstance().getCurrentProject().getFolderLocation());;
                                     
                                     AnalyticsTeam teamKA = analyticsSettingStore.getTeam();
                                     AnalyticsProject projectKA = analyticsSettingStore.getProject();
+                                    AnalyticsConfigutionProject analyticsConfigutionProject = new AnalyticsConfigutionProject();
                                     
                                     if (teamKA.getId() == null && projectKA.getId() == null) { //New project
-                                    	AnalyticsConfigutionProject analyticsConfigutionNewProject = new AnalyticsConfigutionProject();
-                                    	analyticsConfigutionNewProject.setDataStore();
-//                                    	System.out.println("set success");
-                                    } 
+                                    	analyticsConfigutionProject.setDataStore(); 
+                                    } else {
+                                    	boolean result = analyticsConfigutionProject.checkUserInTeam();
+                                    	if (!result) {
+                                    		System.out.println("");
+                                    		MultiStatusErrorDialog.showErrorDialog("Can't open project",
+                                                    "", ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT
+                                                    );
+                                    		return;
+                                    	}
+                                    }
+                                    
+                                 // Set project name on window title
+                                    OpenProjectHandler.updateProjectTitle(project, modelService, application);
+                                    Trackings.trackOpenProject(project);
                                 }
                                 eventBrokerService.post(EventConstants.EXPLORER_RELOAD_INPUT,
                                         TreeEntityUtil.getAllTreeEntity(project));

@@ -22,7 +22,7 @@ public class IntegrationAnalyticsMessages extends NLS {
     public static String MSG_DLG_PRG_GETTING_TEAMS;
     
     public static String MSG_DLG_PRG_CONNECTING_TO_SERVER;
-    
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, IntegrationAnalyticsMessages.class);

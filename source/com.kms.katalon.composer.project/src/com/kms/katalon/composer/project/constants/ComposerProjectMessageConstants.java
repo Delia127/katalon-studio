@@ -60,6 +60,8 @@ public class ComposerProjectMessageConstants extends NLS {
     public static String VIEW_ERROR_MSG_PROJ_LOC_NOT_READABLE;
 
     public static String VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE;
+    
+    public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
 
     public static String VIEW_NEW_EMPTY_PROJECT_PAGE_NAME;
 
