@@ -143,7 +143,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             steps {
                 script {
                         def releases =
-"""[
+"""
     {
         "os": "macOS (app)",
         "version": "${version}",
@@ -173,8 +173,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         "version": "${version}",
         "filename": "Katalon_Studio_Windows_64-${version}.zip",
         "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_64-${version}.zip"
-    }
-]"""
+    },
+"""
                         writeFile(file: "${env.tmpDir}/releases.json", text: releases)
                         def releases_from_file = readFile(file: "${env.tmpDir}/releases.json")
                         println(releases_from_file)
@@ -198,6 +198,23 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                         writeFile(file: "${env.tmpDir}/latest_release.json", text: latest_release)
                         def latest_releases_from_file = readFile(file: "${env.tmpDir}/latest_release.json")
                         println(latest_releases_from_file)
+                }
+            }
+        }
+
+        stage('Create Github release') {
+            steps {
+                dir("tools/release") {
+                    nodejs(nodeJSInstallationName: 'nodejs') {
+                        sh 'npm prune && npm install'
+                        withCredentials([usernamePassword(credentialsId: 'f72e0305-dfa2-4266-a0b8-55adf09c25f2', passwordVariable: 'GITHUB_PASSWORD', usernameVariable: 'GITHUB_USERNAME')]) {
+                            sh """node app.js ${env.GITHUB_USERNAME} ${env.GITHUB_PASSWORD} ${tag} \
+                                '${env.tmpDir}/lastest_release.json' \
+                                '${env.tmpDir}/latest_release.json' \
+                                '${env.tmpDir}/releases.json'
+                            """
+                        }
+                    }
                 }
             }
         }
