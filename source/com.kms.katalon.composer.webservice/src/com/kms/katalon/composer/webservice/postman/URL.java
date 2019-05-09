@@ -7,10 +7,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class URL {
     private String raw;
     private Protocol protocol;
-    private List<Host> host;
+    private String[] host;
     private String[] path;
     private List<Variable> variable;
-
+    private List<Query> query;
+    
+    @JsonProperty("query")
+    public List<Query> getQuery() {
+        return query;
+    }
+    @JsonProperty("query")
+    public void setQuery(List<Query> query) {
+        this.query = query;
+    }
     @JsonProperty("raw")
     public String getRaw() { return raw; }
     @JsonProperty("raw")
@@ -22,9 +31,9 @@ public class URL {
     public void setProtocol(Protocol value) { this.protocol = value; }
 
     @JsonProperty("host")
-    public List<Host> getHost() { return host; }
+    public String[] getHost() { return host; }
     @JsonProperty("host")
-    public void setHost(List<Host> value) { this.host = value; }
+    public void setHost(String[] value) { this.host = value; }
 
     @JsonProperty("path")
     public String[] getPath() { return path; }

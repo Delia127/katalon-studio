@@ -6,17 +6,23 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kms.katalon.composer.webservice.postman.FormData;
 import com.kms.katalon.composer.webservice.postman.Header;
 import com.kms.katalon.composer.webservice.postman.Item;
-import com.kms.katalon.composer.webservice.postman.Method;
 import com.kms.katalon.composer.webservice.postman.PostmanCollection;
+import com.kms.katalon.composer.webservice.postman.Query;
 import com.kms.katalon.composer.webservice.postman.Request;
+import com.kms.katalon.composer.webservice.postman.Urlencoded;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.entity.webservice.FormDataBodyParameter;
+import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
+import com.kms.katalon.entity.webservice.UrlEncodedBodyParameter;
 
 public class PostmanParseUtils {
 
@@ -38,12 +44,16 @@ public class PostmanParseUtils {
                     WebServiceRequestEntity entity = new WebServiceRequestEntity();
                     Request request = root.getRequest();
                     String raw = request.getURL().getRaw();
-                    Method method = root.getRequest().getMethod();
+                    String method = root.getRequest().getMethod();
                     String name = root.getName();
                     String nameVariable = collectNameItem(name, root);
                     String pathVariable = collectPathItem(raw, root);
                     List<WebElementPropertyEntity> propertiesEntity = collectHttpHeaderItem(request, root);
                     List<VariableEntity> variable = collectVariableItem(request);
+                    // List<WebElementPropertyEntity> parametersInQuery = collectQueryParameter(root);
+                    // if(root.getRequest().getURL().getQuery() != null){
+                    // entity.setRestParameters(parametersInQuery);
+                    // }
                     entity.setName(nameVariable);
                     entity.setRestRequestMethod(method.toString());
                     entity.setRestUrl(pathVariable);
@@ -52,6 +62,18 @@ public class PostmanParseUtils {
                     entity.setHttpBody(request.getBody().getRaw());
                     entity.setHttpHeaderProperties(propertiesEntity);
 
+                    if (root.getRequest().getBody().getFormdata() != null) {
+                        ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(
+                                root);
+                        entity.setHttpBodyType("form-data");
+                        entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
+                    }
+                    if (root.getRequest().getBody().getUrlencoded() != null) {
+                        ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParameters = collectUrlEncodedBody(
+                                root);
+                        entity.setHttpBodyType("x-www-form-urlencoded");
+                        entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
+                    }
                     newWSTestObjects.add(entity);
                 }
             }
@@ -76,12 +98,14 @@ public class PostmanParseUtils {
             Request request = childItem.getRequest();
 
             String raw = request.getURL().getRaw();
-            Method method = childItem.getRequest().getMethod();
+            String method = childItem.getRequest().getMethod();
             String name = childItem.getName();
             String nameVariable = collectNameItem(name, childItem);
             String pathVariable = collectPathItem(raw, childItem);
             List<WebElementPropertyEntity> propertiesEntity = collectHttpHeaderItem(request, childItem);
             List<VariableEntity> variable = collectVariableItem(request);
+            // List<WebElementPropertyEntity> parametersInQuery = collectQueryParameter(childItem);
+
             entity.setName(nameVariable);
             entity.setRestRequestMethod(method.toString());
             entity.setRestUrl(pathVariable);
@@ -89,7 +113,21 @@ public class PostmanParseUtils {
             entity.setVariables(variable);
             entity.setHttpBody(request.getBody().getRaw());
             entity.setHttpHeaderProperties(propertiesEntity);
+            // if(childItem.getRequest().getURL().getQuery() != null){
+            // entity.setRestParameters(parametersInQuery);
+            // }
+            if (childItem.getRequest().getBody().getFormdata() != null) {
+                ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(childItem);
 
+                entity.setHttpBodyType("form-data");
+                entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
+            }
+            if (childItem.getRequest().getBody().getUrlencoded() != null) {
+                ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParameters = collectUrlEncodedBody(
+                        childItem);
+                entity.setHttpBodyType("x-www-form-urlencoded");
+                entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
+            }
             newWSTestObjects.add(entity);
         }
     }
@@ -187,6 +225,55 @@ public class PostmanParseUtils {
             }
         }
         return variable;
+    }
+
+    public static ParameterizedBodyContent<FormDataBodyParameter> collectFormDataBody(Item item) {
+        List<FormData> data = item.getRequest().getBody().getFormdata();
+
+        ParameterizedBodyContent<FormDataBodyParameter> katalonFormParams = new ParameterizedBodyContent<FormDataBodyParameter>();
+        if (data != null) {
+            for (int i = 0; i < data.size(); i++) {
+                FormDataBodyParameter katalonFormParam = new FormDataBodyParameter();
+                katalonFormParam.setName(data.get(i).getKey());
+                katalonFormParam.setValue(data.get(i).getValue());
+                katalonFormParam.setType(data.get(i).getType());
+                katalonFormParams.addParameter(katalonFormParam);
+            }
+
+        }
+        return katalonFormParams;
+
+    }
+
+    public static ParameterizedBodyContent<UrlEncodedBodyParameter> collectUrlEncodedBody(Item item) {
+
+        List<Urlencoded> urlEncoded = item.getRequest().getBody().getUrlencoded();
+        ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParams = new ParameterizedBodyContent<UrlEncodedBodyParameter>();
+        if (urlEncoded != null) {
+            for (int i = 0; i < urlEncoded.size(); i++) {
+                UrlEncodedBodyParameter urlEncodedBodyParam = new UrlEncodedBodyParameter();
+                urlEncodedBodyParam.setName(urlEncoded.get(i).getKey());
+                urlEncodedBodyParam.setValue(urlEncoded.get(i).getValue());
+                urlEncodedBodyParams.addParameter(urlEncodedBodyParam);
+            }
+        }
+        return urlEncodedBodyParams;
+
+    }
+
+    public static List<WebElementPropertyEntity> collectQueryParameter(Item childItem) {
+        List<Query> query = childItem.getRequest().getURL().getQuery();
+        List<WebElementPropertyEntity> propertiesEntity = new ArrayList<WebElementPropertyEntity>();
+        for (int i = 0; i < query.size(); i++) {
+            WebElementPropertyEntity webElementProperty = new WebElementPropertyEntity();
+            String key = query.get(i).getKey();
+            String value = query.get(i).getValue();
+            webElementProperty.setName(key);
+            webElementProperty.setValue(value);
+            propertiesEntity.add(i, webElementProperty);
+        }
+        return propertiesEntity;
+
     }
 
     public static List<WebServiceRequestEntity> newWSTestObjectsFromPostman(FolderEntity parentFolder,
