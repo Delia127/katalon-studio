@@ -58,7 +58,7 @@ public class AnalyticsConfigutionProject {
 		}
 	}
 	
-	public boolean checkUserInTeam() throws IOException {
+	public boolean checkUserAccessProject() throws IOException {
 		List<AnalyticsTeam> teams = new ArrayList<>();
 		AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
                 serverUrl,
@@ -70,15 +70,16 @@ public class AnalyticsConfigutionProject {
 		
 		AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
 		long currentTeamId = currentTeam.getId();
-		
-		if (teams != null && teams.size() > 0) {
-			for(AnalyticsTeam team : teams) {
-				long teamId = team.getId(); 
-				if (teamId == currentTeamId) {
-					return true;
-				}
-			}
-		}
-		return false; 
+    	
+    	boolean userCanAccessProject = false;
+    	
+    	for (AnalyticsTeam team : teams) {
+    		long teamId = team.getId();
+    		if (teamId == currentTeamId) {
+    			userCanAccessProject = true;
+    			break;
+    		}
+    	}
+    	return userCanAccessProject;
 	}
 }

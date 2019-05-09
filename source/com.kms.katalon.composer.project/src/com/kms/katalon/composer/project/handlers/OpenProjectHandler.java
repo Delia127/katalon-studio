@@ -36,6 +36,7 @@ import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.ComposerProjectMessageConstants;
 import com.kms.katalon.composer.project.constants.StringConstants;
+import com.kms.katalon.composer.project.dialog.PermissionAccessAnalyticsDialog;
 import com.kms.katalon.composer.project.dialog.WalkthroughDialog;
 import com.kms.katalon.composer.project.dialog.WalkthroughItem;
 import com.kms.katalon.composer.project.dialog.WalkthroughItem.SecondaryLinkItem;
@@ -173,12 +174,9 @@ public class OpenProjectHandler {
                                     if (teamKA.getId() == null && projectKA.getId() == null) { //New project
                                     	analyticsConfigutionProject.setDataStore(); 
                                     } else {
-                                    	boolean result = analyticsConfigutionProject.checkUserInTeam();
-                                    	if (!result) {
-                                    		MultiStatusErrorDialog.showErrorDialog("Can't open project",
-                                                    "", ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT
-                                                    );
-//                                    		return;
+                                    	if (!analyticsConfigutionProject.checkUserAccessProject()) {
+                                    		PermissionAccessAnalyticsDialog.showErrorDialog("Warring",
+                                                   ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
                                     	}
                                     }
                                     
