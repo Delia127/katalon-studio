@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
@@ -53,10 +54,32 @@ public class AnalyticsConfigutionProject {
 			analyticsSettingStore.setAutoSubmit(false);
 			analyticsSettingStore.setAttachScreenshot(false);
 			analyticsSettingStore.setAttachCapturedVideos(false);
+			getDeaultTeamAndProject();
 		} catch (IOException | GeneralSecurityException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	private void getDeaultTeamAndProject() throws IOException {
+		List<AnalyticsTeam> teams = new ArrayList<>();
+		List<AnalyticsProject> projects = new ArrayList<>();
+		AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
+                serverUrl,
+                email,  
+                password, 
+                analyticsSettingStore);
+		
+		teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
+		
+		AnalyticsTeam team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+		
+		projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+				team, tokenInfo,
+                new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
+		
+		analyticsSettingStore.setTeam(team);
+		analyticsSettingStore.setProject(projects.get(0));
+	}	
 	
 	public boolean checkUserAccessProject() throws IOException {
 		List<AnalyticsTeam> teams = new ArrayList<>();
