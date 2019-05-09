@@ -459,8 +459,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
 
     protected ScriptSnippet verificationScriptImport;
-    
-    protected File harFile;
 
     @Inject
     protected MDirtyable dirtyable;
@@ -483,6 +481,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected TestCaseVariableEditorView variableEditorView;
 
+    protected File harFile;
+    
     public WebServiceRequestEntity getOriginalWsObject() {
         return originalWsObject;
     }
@@ -566,16 +566,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         registerListeners();
         
         cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
-        
-        createHarFile();
-    }
-    
-    private void createHarFile() {
-        try {
-            harFile = Files.createTempFile("request-", ".har").toFile();
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
     }
 
     private void insertImportsForVerificationScript() {
@@ -861,6 +851,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected abstract void sendRequest(boolean runVerificationScript);
 
+    protected void deleteTempHarFile() {
+        try {
+            if (harFile != null && harFile.exists()) {
+                FileUtils.forceDelete(harFile);
+            }
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
     protected Map<String, String> evaluateRequestVariables() throws Exception {
 
         WebServiceRequestEntity requestEntity = getWSRequestObject();
@@ -1780,8 +1779,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     
     private void showHarFile() {
         try {
-            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-            IDE.openEditorOnFileStore(page, EFS.getStore(harFile.toURI()));
+            if (harFile != null && harFile.exists()) {
+                IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                IDE.openEditorOnFileStore(page, EFS.getStore(harFile.toURI()));
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
