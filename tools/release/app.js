@@ -6,7 +6,7 @@ const name = process.argv[4];
 const argsLength = process.argv.length;
 
 const files = [];
-for (const i = 5; i < argsLength; i++) {
+for (let i = 5; i < argsLength; i++) {
   const file = process.argv[i];
   files.push(file);
 }
