@@ -80,7 +80,7 @@ pipeline {
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
-                        
+
                     }
                 }
             }
@@ -112,7 +112,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         stage('Generate latest_release.json') {
             steps {
                 script {
-                        def latestRelease = 
+                        def latestRelease =
 """[
     {
         "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_32-${version}.zip",
@@ -134,7 +134,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                         writeFile(file: "${env.tmpDir}/latest_release.json", text: latestRelease)
                         def latest_release_from_file = readFile(file: "${env.tmpDir}/latest_release.json")
                         println(latest_release_from_file)
-                        
+
                 }
             }
         }
@@ -142,7 +142,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         stage('Generate releases.json') {
             steps {
                 script {
-                        def releases = 
+                        def releases =
 """[
     {
         "os": "macOS (app)",
@@ -178,7 +178,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                         writeFile(file: "${env.tmpDir}/releases.json", text: releases)
                         def releases_from_file = readFile(file: "${env.tmpDir}/releases.json")
                         println(releases_from_file)
-                        
+
                 }
             }
         }
@@ -203,9 +203,9 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         }
 
         stage('Building') {
-                // Start maven commands to get dependencies
-            steps {
-                retry(3) {
+            // Start maven commands to get dependencies
+            lock('p2:site') {
+                steps {
                     sh 'ulimit -c unlimited'
                     sh 'cd source/com.kms.katalon.repo && mvn p2:site'
                     sh 'cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &'
