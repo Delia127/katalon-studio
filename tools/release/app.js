@@ -15,6 +15,7 @@ const options = {
   tag_name: name,
   target_commitish: 'master',
   name: name,
+  body: '',
   assets: files,
   draft: true,
   prerelease: true,
