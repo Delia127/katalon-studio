@@ -31,8 +31,7 @@ Require-Bundle: com.kms.katalon.composer.explorer;bundle-version="1.0.0",
  org.greenrobot.eventbus,
  com.kms.katalon.core,
  com.kms.katalon.tracking,
- com.kms.katalon.selenium-standalone,
- org.apache.commons.io
+ org.apache.commons.lang
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0",

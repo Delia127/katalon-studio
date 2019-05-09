@@ -53,11 +53,8 @@ public class OpenUserFileHandler {
     }
     
     public static IEditorPart openEditor(UserFileEntity object) {
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        IFile iFile = GroovyUtil.getGroovyProject(currentProject).getFile(object.getRelativePath());
         try {
-            iFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
-            IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(iFile.getName());
+            IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(object.toFile().getName());
             if (desc == null) {
                 desc = PlatformUI.getWorkbench().getEditorRegistry().findEditor("org.eclipse.ui.DefaultTextEditor");
             }
@@ -78,11 +75,5 @@ public class OpenUserFileHandler {
             LoggerSingleton.logError(e);
             return null;
         }
-//        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-//        try {
-//            IDE.openEditorOnFileStore(page, EFS.getStore(object.toFile().toURI()));
-//        } catch (Exception exception) {
-//            LoggerSingleton.logError(exception);
-//        }
     }
 }

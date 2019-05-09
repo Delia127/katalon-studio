@@ -566,13 +566,6 @@ public class ExplorerPart {
             }
             
             Object[] visibleExpandedElements = getViewer().getVisibleExpandedElements();
-
-//            getViewer().collapseAll();
-//
-//            getViewer().refresh();
-//
-//            createExplorerTreeViewerIfDisposed();
-            
             
             // wait for r.eseting search field complete
             resetSearchField();

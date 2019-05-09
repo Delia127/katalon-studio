@@ -3,7 +3,6 @@ package com.kms.katalon.composer.folder.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -23,7 +22,6 @@ import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.EntityNameController;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class NewRootFolderDialog extends CustomTitleAreaDialog {
