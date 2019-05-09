@@ -109,7 +109,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
-        stage('Generate latest_release.json') {
+        stage('Generate lastest_release.json') {
             steps {
                 script {
                         def latestRelease =
