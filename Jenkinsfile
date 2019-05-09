@@ -207,8 +207,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                 dir("tools/release") {
                     nodejs(nodeJSInstallationName: 'nodejs') {
                         sh 'npm prune && npm install'
-                        withCredentials([usernamePassword(credentialsId: 'f72e0305-dfa2-4266-a0b8-55adf09c25f2', passwordVariable: 'GITHUB_PASSWORD', usernameVariable: 'GITHUB_USERNAME')]) {
-                            sh """node app.js ${env.GITHUB_USERNAME} ${env.GITHUB_PASSWORD} ${tag} \
+                        withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+                            sh """node app.js ${env.GITHUB_TOKEN} ${tag} \
                                 '${env.tmpDir}/lastest_release.json' \
                                 '${env.tmpDir}/latest_release.json' \
                                 '${env.tmpDir}/releases.json'

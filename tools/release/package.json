@@ -12,7 +12,7 @@
     "author": "none",
     "license": "ISC",
     "dependencies": {
-        "gh-release": "^3.5.0"
+        "publish-release": "^1.6.0"
     },
     "repository": "https://github.com/katalon-studio/katalon-studio"
 }

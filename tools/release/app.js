@@ -1,35 +1,32 @@
-const ghRelease = require('gh-release');
+const ghRelease = require('publish-release');
 
-const username = process.argv[2];
-const password = process.argv[3];
-const name = process.argv[4];
+const token = process.argv[2];
+const name = process.argv[3];
 const argsLength = process.argv.length;
 
 const files = [];
-for (let i = 5; i < argsLength; i++) {
+for (let i = 4; i < argsLength; i++) {
   const file = process.argv[i];
   files.push(file);
 }
 
 const options = {
-  tag_name: name,
-  target_commitish: 'master',
+  owner: 'katalon-studio',
+  repo: 'katalon-studio',
+  tag: name,
   name: name,
-  body: name,
-  assets: files,
+  notes: '',
   draft: true,
   prerelease: true,
-  repo: 'katalon-studio',
-  owner: 'katalon-studio',
-  endpoint: 'https://api.github.com'
+  reuseRelease: true,
+  skipIfPublished: true,
+  target_commitish: 'master',
+  assets: files
 }
 
 console.log(options);
 
-options.auth = {
-  username: username,
-  password: password
-}
+options.token = token;
 
 ghRelease(options, function (err, result) {
   if (err) throw err
