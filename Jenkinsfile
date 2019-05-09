@@ -202,23 +202,6 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
-        stage('Create Github release') {
-            steps {
-                dir("tools/release") {
-                    nodejs(nodeJSInstallationName: 'nodejs') {
-                        sh 'npm prune && npm install'
-                        withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-                            sh """node app.js ${env.GITHUB_TOKEN} ${tag} \
-                                '${env.tmpDir}/lastest_release.json' \
-                                '${env.tmpDir}/latest_release.json' \
-                                '${env.tmpDir}/releases.json'
-                            """
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Building') {
             // Start maven commands to get dependencies
             steps {
@@ -408,6 +391,34 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                         }
                         withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
                             s3Upload(file: "${env.tmpDir}", bucket:'katalon', path: "${s3Location}", acl:'PublicRead')
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Create Github release') {
+            steps {
+                script {
+                    if (isRelease) {
+                        dir("tools/release") {
+                            nodejs(nodeJSInstallationName: 'nodejs') {
+                                sh 'npm prune && npm install'
+                                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+                                    sh """node app.js ${env.GITHUB_TOKEN} ${tag} \
+                                        '${env.tmpDir}/lastest_release.json' \
+                                        '${env.tmpDir}/latest_release.json' \
+                                        '${env.tmpDir}/releases.json' \
+                                        '${env.tmpDir}/apidocs.zip' \
+                                        '${env.tmpDir}/commit.txt' \
+                                        '${env.tmpDir}/Katalon.Studio.app.zip' \
+                                        '${env.tmpDir}/Katalon.Studio.dmg' \
+                                        '${env.tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz' \
+                                        '${env.tmpDir}/Katalon_Studio_Windows_32-${version}.zip' \
+                                        '${env.tmpDir}/Katalon_Studio_Windows_64-${version}.zip'
+                                    """
+                                }
+                            }
                         }
                     }
                 }
