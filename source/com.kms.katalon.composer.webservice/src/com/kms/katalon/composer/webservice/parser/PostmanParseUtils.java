@@ -50,10 +50,10 @@ public class PostmanParseUtils {
                     String pathVariable = collectPathItem(raw, root);
                     List<WebElementPropertyEntity> propertiesEntity = collectHttpHeaderItem(request, root);
                     List<VariableEntity> variable = collectVariableItem(request);
-                    //List<WebElementPropertyEntity> parametersInQuery = collectQueryParameter(root);
-                   // if(root.getRequest().getURL().getQuery() != null){
-                   //     entity.setRestParameters(parametersInQuery);
-                   // }
+                    // List<WebElementPropertyEntity> parametersInQuery = collectQueryParameter(root);
+                    // if(root.getRequest().getURL().getQuery() != null){
+                    // entity.setRestParameters(parametersInQuery);
+                    // }
                     entity.setName(nameVariable);
                     entity.setRestRequestMethod(method.toString());
                     entity.setRestUrl(pathVariable);
@@ -104,7 +104,7 @@ public class PostmanParseUtils {
             String pathVariable = collectPathItem(raw, childItem);
             List<WebElementPropertyEntity> propertiesEntity = collectHttpHeaderItem(request, childItem);
             List<VariableEntity> variable = collectVariableItem(request);
-           // List<WebElementPropertyEntity> parametersInQuery = collectQueryParameter(childItem);
+            // List<WebElementPropertyEntity> parametersInQuery = collectQueryParameter(childItem);
 
             entity.setName(nameVariable);
             entity.setRestRequestMethod(method.toString());
@@ -113,9 +113,9 @@ public class PostmanParseUtils {
             entity.setVariables(variable);
             entity.setHttpBody(request.getBody().getRaw());
             entity.setHttpHeaderProperties(propertiesEntity);
-            //if(childItem.getRequest().getURL().getQuery() != null){
-             //   entity.setRestParameters(parametersInQuery);
-            //}
+            // if(childItem.getRequest().getURL().getQuery() != null){
+            // entity.setRestParameters(parametersInQuery);
+            // }
             if (childItem.getRequest().getBody().getFormdata() != null) {
                 ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(childItem);
 
@@ -164,8 +164,7 @@ public class PostmanParseUtils {
                                 katalonVariablePath += "/" + var[k];
                             }
                         }
-                    }
-                    else {
+                    } else {
                         if (katalonVariablePath.endsWith("/")) {
                             katalonVariablePath += "${" + splitVariables[j] + "}";
                         } else {
@@ -276,7 +275,7 @@ public class PostmanParseUtils {
         return propertiesEntity;
 
     }
-    
+
     public static List<WebServiceRequestEntity> newWSTestObjectsFromPostman(FolderEntity parentFolder,
             String directoryOfJsonFile) throws Exception {
         if (parentFolder == null) {
