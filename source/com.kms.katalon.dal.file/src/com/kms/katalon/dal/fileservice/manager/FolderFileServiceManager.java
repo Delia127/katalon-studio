@@ -272,8 +272,7 @@ public class FolderFileServiceManager {
                         String fileName = file.getName();
                         if (!(fileName.endsWith(".classpath") ||
                             fileName.endsWith(".project") ||
-                            fileName.endsWith(".prj") ||
-                            fileName.equals("console.properties"))) {
+                            fileName.endsWith(".prj"))) {
                             
                             UserFileEntity fileEntity = new UserFileEntity(file);
                             fileEntity.setProject(project);
