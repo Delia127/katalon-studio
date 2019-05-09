@@ -24,6 +24,8 @@ const options = {
   endpoint: 'https://api.github.com'
 }
 
+console.log(options);
+
 options.auth = {
   username: username,
   password: password
