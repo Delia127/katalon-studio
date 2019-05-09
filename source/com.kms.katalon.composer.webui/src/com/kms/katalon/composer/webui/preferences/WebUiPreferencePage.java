@@ -60,7 +60,6 @@ public class WebUiPreferencePage extends PreferencePage {
     @Override
     protected void performApply() {
         if (!isControlCreated()) {
-            super.performApply();
             return;
         }
         getPreferenceStore().setValue(PreferenceConstants.AUTO_UPDATE_WEBDRIVERS,

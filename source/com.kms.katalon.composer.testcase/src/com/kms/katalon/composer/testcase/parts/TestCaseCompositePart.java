@@ -625,12 +625,6 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             updateVariableManualView();
         }
 
-        if (invalidScheme == true) {
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                    StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
-            return;
-        }
-
         if (childTestCasePart.isManualScriptChanged()) {
             setChildEditorContents(scriptNode);
         }
