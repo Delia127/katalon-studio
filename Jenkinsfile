@@ -183,6 +183,25 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
+        stage('Generate latest_release.json') {
+            steps {
+                script {
+                    def latest_release = """
+{
+    "latestVersion": "${version}",
+    "newMechanism": true,
+    "latestUpdateLocation": "https://katalon.s3.amazonaws.com/update/${version}",
+    "releaseNotesLink": "https://docs.katalon.com/katalon-studio/new/index.html",
+    "quickRelease": true
+}
+                    """
+                        writeFile(file: "${env.tmpDir}/latest_release.json", text: latest_release)
+                        def latest_releases_from_file = readFile(file: "${env.tmpDir}/latest_release.json")
+                        println(latest_releases_from_file)
+                }
+            }
+        }
+
         stage('Building') {
                 // Start maven commands to get dependencies
             steps {
