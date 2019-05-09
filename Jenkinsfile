@@ -131,8 +131,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         "file": "linux_64"
     }
 ]"""
-                        writeFile(file: "${env.tmpDir}/latest_release.json", text: latestRelease)
-                        def latest_release_from_file = readFile(file: "${env.tmpDir}/latest_release.json")
+                        writeFile(file: "${env.tmpDir}/lastest_release.json", text: latestRelease)
+                        def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_release.json")
                         println(latest_release_from_file)
 
                 }
