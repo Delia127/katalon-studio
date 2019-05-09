@@ -204,8 +204,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
 
         stage('Building') {
             // Start maven commands to get dependencies
-            lock('p2:site') {
-                steps {
+            steps {
+                lock('p2:site') {
                     sh 'ulimit -c unlimited'
                     sh 'cd source/com.kms.katalon.repo && mvn p2:site'
                     sh 'cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &'
