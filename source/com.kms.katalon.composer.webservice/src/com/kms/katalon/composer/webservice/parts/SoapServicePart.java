@@ -3,6 +3,7 @@ package com.kms.katalon.composer.webservice.parts;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -237,12 +238,13 @@ public class SoapServicePart extends WebServicePart {
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
                                 projectDir, ProxyPreferences.getProxyInformation(),
                                 Collections.<String, Object> unmodifiableMap(evaluatedVariables), false);
-
+                        
+                        deleteTempHarFile();
+                        
                         RequestInformation requestInformation = new RequestInformation();
                         requestInformation.setTestObjectId(requestEntity.getId());
-                        requestInformation.setHarFile(harFile);
-                        FileUtils.write(harFile, ""); //delete current content of HAR file
-                        BrowserMobProxyManager.endHar(requestInformation);
+                        requestInformation.setReportFolder(Files.createTempDirectory("har").toFile().getAbsolutePath());
+                        harFile = BrowserMobProxyManager.endHar(requestInformation);
                         
                         if (monitor.isCanceled()) {
                             return;

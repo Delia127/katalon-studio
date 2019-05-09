@@ -13,6 +13,7 @@ import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
+import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.logging.LogUtil;
 
@@ -43,6 +44,11 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     @Override
     public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {
         reportService.upload(suiteLog.getLogFolder());
+    }
+    
+    @Override
+    public void printIntegrateMessage() {
+        LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_INTEGRATE_WITH_KA);
     }
     
     @Override
