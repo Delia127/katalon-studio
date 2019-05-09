@@ -6,9 +6,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.KStoreToken;
+import com.kms.katalon.plugin.models.KatalonStoreToken;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -58,17 +60,21 @@ public class PluginPreferenceStore {
         store.save();
     }
     
-    public KStoreToken getToken() {
-        String tokenJson = store.getString(KATALON_STORE_TOKEN);
+    public KatalonStoreToken getToken() throws GeneralSecurityException, IOException {
+        String encryptedToken = ApplicationInfo.getAppProperty(ApplicationStringConstants.STORE_TOKEN);
+        if (encryptedToken == null) {
+            return null;
+        }
+        String tokenJson = CryptoUtil.decode(CryptoUtil.getDefault(encryptedToken));
         if (StringUtils.isBlank(tokenJson)) {
             return null;
         }
-        return JsonUtil.fromJson(tokenJson, KStoreToken.class);
+        return JsonUtil.fromJson(tokenJson, KatalonStoreToken.class);
     }
     
-    public void setToken(KStoreToken token) throws IOException {
-        store.setValue(KATALON_STORE_TOKEN, JsonUtil.toJson(token));
-        store.save();
+    public void setToken(KatalonStoreToken token) throws IOException, GeneralSecurityException {
+        String encryptedToken = CryptoUtil.encode(CryptoUtil.getDefault(JsonUtil.toJson(token)));
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, encryptedToken, true);
     }
     
     public boolean hasReloadedPluginsBefore() {

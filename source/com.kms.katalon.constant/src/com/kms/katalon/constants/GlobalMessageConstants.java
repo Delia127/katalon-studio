@@ -186,6 +186,18 @@ public class GlobalMessageConstants extends NLS {
     public static String ROOT_FOLDER_NAME_CONFIG;
     
     public static String ROOT_FOLDER_NAME_INCLUDE;
+    
+    public static String SYSTEM_FOLDER_NAME_BIN;
+    
+    public static String SYSTEM_FOLDER_NAME_DRIVER;
+            
+    public static String SYSTEM_FOLDER_NAME_LIB;
+            
+    public static String SYSTEM_FOLDER_NAME_PLUGIN;
+    
+    public static String SYSTEM_FOLDER_NAME_SETTINGS;
+    
+    public static String SYSTEM_FOLDER_NAME_SCRIPT;
 
     public static String FILE_NAME_GLOBAL_VARIABLE;
 

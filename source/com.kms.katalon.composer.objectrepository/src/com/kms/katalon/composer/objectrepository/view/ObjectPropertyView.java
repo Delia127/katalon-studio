@@ -512,10 +512,11 @@ public class ObjectPropertyView implements EventHandler {
 		compositeTableHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		compositeTableHeader.setLayout(new FillLayout(SWT.HORIZONTAL));
 
+		createSelectorEditor(compositeObjectDetails);
+
 		createObjectPropertiesComposite(compositeObjectDetails);
 		createObjectXpathsComposite(compositeObjectDetails);
 		
-		createSelectorEditor(compositeObjectDetails);
 
 		return compositeObjectDetails;
 	}
@@ -573,6 +574,7 @@ public class ObjectPropertyView implements EventHandler {
 
 		Label lblSelectorEditor = new Label(c, SWT.NONE);
 		lblSelectorEditor.setText(LBL_SELECTOR_EDITOR);
+		ControlUtils.setFontToBeBold(lblSelectorEditor);
 		lblSelectorEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		txtSelectorEditor = new StyledText(c, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
