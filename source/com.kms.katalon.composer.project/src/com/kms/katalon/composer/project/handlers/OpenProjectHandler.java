@@ -36,7 +36,6 @@ import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.ComposerProjectMessageConstants;
 import com.kms.katalon.composer.project.constants.StringConstants;
-import com.kms.katalon.composer.project.dialog.PermissionAccessAnalyticsDialog;
 import com.kms.katalon.composer.project.dialog.WalkthroughDialog;
 import com.kms.katalon.composer.project.dialog.WalkthroughItem;
 import com.kms.katalon.composer.project.dialog.WalkthroughItem.SecondaryLinkItem;
@@ -48,6 +47,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.integration.analytics.configuration.AnalyticsConfigutionProject;
+import com.kms.katalon.integration.analytics.dialog.PermissionAccessAnalyticsDialog;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
@@ -174,10 +174,7 @@ public class OpenProjectHandler {
                                     if (teamKA.getId() == null && projectKA.getId() == null) { //New project
                                     	analyticsConfigutionProject.setDataStore(); 
                                     } else {
-                                    	if (!analyticsConfigutionProject.checkUserAccessProject()) {
-                                    		PermissionAccessAnalyticsDialog.showErrorDialog("Warring",
-                                                   ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
-                                    	}
+                                    	analyticsConfigutionProject.checkUserAccessProject();
                                     }
                                     
                                  // Set project name on window title

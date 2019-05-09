@@ -22,6 +22,8 @@ public class IntegrationAnalyticsMessages extends NLS {
     public static String MSG_DLG_PRG_GETTING_TEAMS;
     
     public static String MSG_DLG_PRG_CONNECTING_TO_SERVER;
+    
+    public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
 
     static {
         // initialize resource bundle

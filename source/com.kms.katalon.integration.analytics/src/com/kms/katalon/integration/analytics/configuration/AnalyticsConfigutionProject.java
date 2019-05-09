@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets.Display;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
+import com.kms.katalon.integration.analytics.dialog.PermissionAccessAnalyticsDialog;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -81,28 +83,34 @@ public class AnalyticsConfigutionProject {
 		analyticsSettingStore.setProject(projects.get(0));
 	}	
 	
-	public boolean checkUserAccessProject() throws IOException {
-		List<AnalyticsTeam> teams = new ArrayList<>();
-		AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
-                serverUrl,
-                email,  
-                password, 
-                analyticsSettingStore);
-		
-		teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
-		
-		AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
-		long currentTeamId = currentTeam.getId();
-    	
-    	boolean userCanAccessProject = false;
-    	
-    	for (AnalyticsTeam team : teams) {
-    		long teamId = team.getId();
-    		if (teamId == currentTeamId) {
-    			userCanAccessProject = true;
-    			break;
-    		}
-    	}
-    	return userCanAccessProject;
+	public void checkUserAccessProject() {
+		try {
+			List<AnalyticsTeam> teams = new ArrayList<>();
+			AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
+	                serverUrl,
+	                email,  
+	                password, 
+	                analyticsSettingStore);
+			
+			teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
+			
+			AnalyticsTeam currentTeam;
+			currentTeam = analyticsSettingStore.getTeam();
+			
+			long currentTeamId = currentTeam.getId();
+	    	
+	    	for (AnalyticsTeam team : teams) {
+	    		long teamId = team.getId();
+	    		if (teamId == currentTeamId) {
+	    			PermissionAccessAnalyticsDialog.showErrorDialog("Warring",
+	    					IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
+	    			break;
+	    		}
+	    	}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }

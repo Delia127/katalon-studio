@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.project.dialog;
+package com.kms.katalon.integration.analytics.dialog;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
