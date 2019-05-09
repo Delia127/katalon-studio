@@ -15,7 +15,6 @@ const options = {
   tag_name: name,
   target_commitish: 'master',
   name: name,
-  body: file.replace(/^.*[\\\/]/, ''),
   assets: files,
   draft: true,
   prerelease: true,
