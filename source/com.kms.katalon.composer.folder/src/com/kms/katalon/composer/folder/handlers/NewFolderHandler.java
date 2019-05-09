@@ -17,13 +17,16 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.folder.constants.StringConstants;
 import com.kms.katalon.composer.folder.dialogs.NewFolderDialog;
+import com.kms.katalon.composer.folder.dialogs.NewRootFolderDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewFolderHandler {
@@ -56,7 +59,7 @@ public class NewFolderHandler {
     public FolderTreeEntity createNewFolderEntity(Shell parentShell, Object[] selectedObjects, IEventBroker eventBroker)
             throws Exception {
         if (!isFirstSelectedObjectValid(selectedObjects)) {
-            return null;
+            return newFolderAtRoot(parentShell);
         }
         FolderEntity parentFolder = null;
         // The entity which is right-clicked on
@@ -70,6 +73,9 @@ public class NewFolderHandler {
         if (!parentTreeEntity.hasChildren()) {
             parentFolder = ((FileEntity) selectedEntity).getParentFolder();
             parentTreeEntity = (ITreeEntity) parentTreeEntity.getParent();
+            if (parentFolder == null) {
+                return newFolderAtRoot(parentShell);
+            }
         }
 
         if (parentFolder == null) {
@@ -102,5 +108,18 @@ public class NewFolderHandler {
 
     private boolean isFirstSelectedObjectValid(Object[] selectedObjects) {
         return selectedObjects != null && selectedObjects.length > 0 && selectedObjects[0] instanceof ITreeEntity;
+    }
+    
+    private FolderTreeEntity newFolderAtRoot(Shell parentShell) throws ControllerException {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        NewRootFolderDialog dialog = new NewRootFolderDialog(parentShell);
+        if (dialog.open() == NewRootFolderDialog.OK) {
+            String newFolderName = dialog.getNewFolderName();
+            FolderEntity newFolder = FolderController.getInstance().addNewRootFolder(project, newFolderName);
+            FolderTreeEntity newFolderTreeEntity = new FolderTreeEntity(newFolder, null);
+            eventBroker.send(EventConstants.EXPLORER_ADD_AND_SELECT_ITEM, newFolderTreeEntity);
+            return newFolderTreeEntity;
+        }
+        return null;
     }
 }

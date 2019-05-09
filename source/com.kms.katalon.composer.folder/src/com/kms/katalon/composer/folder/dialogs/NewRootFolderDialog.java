@@ -1,10 +1,9 @@
-package com.kms.katalon.composer.explorer.dialogs;
+package com.kms.katalon.composer.folder.dialogs;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -19,24 +18,31 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.EntityNameController;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 
-public class RenameUserFileEntityDialog extends CustomTitleAreaDialog {
-
-    private FileEntity currentFile;
-    
-    private List<String> siblingFileNames;
+public class NewRootFolderDialog extends CustomTitleAreaDialog {
     
     private Text txtName;
     
     private String name;
     
-    public RenameUserFileEntityDialog(Shell parentShell, FileEntity userFileEntity, List<String> siblingFileNames) {
+    private List<String> siblingFileNames;
+
+    public NewRootFolderDialog(Shell parentShell) {
         super(parentShell);
-        this.currentFile = userFileEntity;
-        this.siblingFileNames = siblingFileNames;
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        try {
+            siblingFileNames = FolderController.getInstance().getRootFileOrFolderNames(project);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            siblingFileNames = new ArrayList<>();
+        }
     }
 
     @Override
@@ -61,8 +67,8 @@ public class RenameUserFileEntityDialog extends CustomTitleAreaDialog {
             @Override
             public void modifyText(ModifyEvent arg0) {
                 checkNewName(txtName.getText());
-            }            
-        });
+            } 
+        });      
     }
     
     private void checkNewName(String newName) {
@@ -74,7 +80,7 @@ public class RenameUserFileEntityDialog extends CustomTitleAreaDialog {
         
         try {
             EntityNameController.getInstance().validateName(newName);
-            setMessage(StringConstants.DIA_MSG_CREATE_NEW_FILE, IMessageProvider.INFORMATION);
+            setMessage(StringConstants.DIA_MSG_CREATE_NEW_FOLDER, IMessageProvider.INFORMATION);
             getButton(OK).setEnabled(true);
         } catch (Exception e) {
             setMessage(e.getMessage(), IMessageProvider.ERROR);
@@ -84,15 +90,26 @@ public class RenameUserFileEntityDialog extends CustomTitleAreaDialog {
     
     private boolean isNameDuplicated(String newName) {
         return siblingFileNames.stream()
-                .filter(f -> f.equalsIgnoreCase(newName))
+                .filter(n -> n.equalsIgnoreCase(newName))
                 .findAny()
                 .isPresent();
     }
     
     @Override
-    protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    protected void setInput() {
+        txtName.setText(getSuggestion("New Folder"));
+        setMessage(StringConstants.DIA_MSG_CREATE_NEW_FOLDER, IMessageProvider.INFORMATION);
+    }
+
+    private String getSuggestion(String suggestion) {
+        String newName = String.format("%s", suggestion);
+        int index = 0;
+
+        while (isNameDuplicated(newName)) {
+            index += 1;
+            newName = String.format("%s %d", suggestion, index);
+        }
+        return newName;
     }
     
     @Override
@@ -100,17 +117,11 @@ public class RenameUserFileEntityDialog extends CustomTitleAreaDialog {
         name = txtName.getText();
         super.okPressed();
     }
-
-    @Override
-    protected void setInput() {
-        txtName.setText(currentFile.getName());
-        setMessage(StringConstants.DIA_MSG_RENAME_FILE, IMessageProvider.INFORMATION);
-    }
     
-    public String getNewFileName() {
+    public String getNewFolderName() {
         return name;
     }
-
+    
     @Override
     protected Point getInitialSize() {
         return new Point(400, 250);

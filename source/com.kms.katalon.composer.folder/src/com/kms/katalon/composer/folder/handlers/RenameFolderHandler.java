@@ -1,12 +1,15 @@
 package com.kms.katalon.composer.folder.handlers;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -24,8 +27,10 @@ import com.kms.katalon.composer.components.wizard.RenameWizard;
 import com.kms.katalon.composer.folder.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 @SuppressWarnings("restriction")
 public class RenameFolderHandler {
@@ -56,6 +61,10 @@ public class RenameFolderHandler {
         try {
             FolderEntity oldFolder = (FolderEntity) folderTreeEntity.getObject();
             if (oldFolder != null) {
+                if (oldFolder.getParentFolder() == null) {
+                    renameRootFolder(folderTreeEntity);
+                    return;
+                }
                 RenameWizard renameWizard = new RenameWizard(folderTreeEntity, FolderController.getInstance()
                         .getChildrenNames(oldFolder.getParentFolder()));
                 CWizardDialog wizardDialog = new CWizardDialog(parentShell, renameWizard);
@@ -139,5 +148,24 @@ public class RenameFolderHandler {
             LoggerSingleton.getInstance().getLogger().error(e);
         }
 
+    }
+    
+    private void renameRootFolder(FolderTreeEntity folderTreeEntity) throws Exception {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        List<String> existingNames = FolderController.getInstance().getRootFileOrFolderNames(project);
+        FolderEntity oldFolder = folderTreeEntity.getObject();
+        RenameWizard renameWizard = new RenameWizard(folderTreeEntity, existingNames);
+        CWizardDialog wizardDialog = new CWizardDialog(parentShell, renameWizard);
+        if (wizardDialog.open() == Window.OK) {
+            String newNameValue = renameWizard.getNewNameValue();
+            String oldName = oldFolder.getName();
+            if (!StringUtils.isBlank(newNameValue) && !newNameValue.equalsIgnoreCase(oldName)) {
+                File newFolder = new File(project.getFolderLocation(), newNameValue);
+                oldFolder.toFile().renameTo(newFolder);
+                folderTreeEntity.getObject().setName(newNameValue);
+                eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, folderTreeEntity);
+                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, folderTreeEntity);
+            }
+        }
     }
 }

@@ -101,6 +101,7 @@ import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.file.UserFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -564,6 +565,15 @@ public class ExplorerPart {
                 // wait for tree is not busy
             }
             
+            Object[] visibleExpandedElements = getViewer().getVisibleExpandedElements();
+
+//            getViewer().collapseAll();
+//
+//            getViewer().refresh();
+//
+//            createExplorerTreeViewerIfDisposed();
+            
+            
             // wait for r.eseting search field complete
             resetSearchField();
             searchDropDownBox.clearInput();
@@ -578,8 +588,12 @@ public class ExplorerPart {
                 getViewer().setSelection(new TreeSelection(dataProvider.getTreePath(treeEntities.get(0))), true);
                 getViewer().collapseAll();
             }
+            
+            getViewer().setExpandedElements(visibleExpandedElements);
             // --- IMPORTANT for saving and restore session ---
             part.getTransientData().put(CTreeViewer.class.getSimpleName(), treeViewer);
+            
+           
             // --- END ---
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -667,6 +681,30 @@ public class ExplorerPart {
         getViewer().getControl().setRedraw(false);
         // reload input
         getViewer().setInput(getViewer().getInput());
+
+        // restore expanded tree paths
+        getViewer().setExpandedTreePaths(expandedTreePaths);
+        getViewer().getControl().setRedraw(true);
+
+        // set new selection
+        getViewer().setSelection(new StructuredSelection(object));
+        getViewer().setExpandedState(object, true);
+
+        setSelectedPart();
+    }
+    
+    @Inject
+    @Optional
+    private void addAndSelectItem(@UIEventTopic(EventConstants.EXPLORER_ADD_AND_SELECT_ITEM) Object object) {
+        if (object == null || !(object instanceof ITreeEntity)) {
+            return;
+        }
+        TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths();
+        getViewer().getControl().setRedraw(false);
+        // reload input
+        List<ITreeEntity> treeEntities = (List<ITreeEntity>) getViewer().getInput();
+        treeEntities.add((ITreeEntity) object);
+        getViewer().setInput(treeEntities);
 
         // restore expanded tree paths
         getViewer().setExpandedTreePaths(expandedTreePaths);
