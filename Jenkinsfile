@@ -411,8 +411,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                                         '${env.tmpDir}/releases.json' \
                                         '${env.tmpDir}/apidocs.zip' \
                                         '${env.tmpDir}/commit.txt' \
-                                        '${env.tmpDir}/Katalon.Studio.app.zip' \
-                                        '${env.tmpDir}/Katalon.Studio.dmg' \
+                                        '${env.tmpDir}/Katalon Studio.app.zip' \
+                                        '${env.tmpDir}/Katalon Studio.dmg' \
                                         '${env.tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz' \
                                         '${env.tmpDir}/Katalon_Studio_Windows_32-${version}.zip' \
                                         '${env.tmpDir}/Katalon_Studio_Windows_64-${version}.zip'
