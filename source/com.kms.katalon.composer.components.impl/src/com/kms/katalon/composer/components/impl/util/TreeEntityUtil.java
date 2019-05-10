@@ -511,9 +511,13 @@ public class TreeEntityUtil {
         treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
         treeEntities.add(new IncludeTreeRootEntity(folderController.getIncludeRoot(project)));
         
-        List<FolderEntity> userFolders = folderController.getUserFolders(project);
-        for (FolderEntity folder : userFolders) {
-            treeEntities.add(new FolderTreeEntity(folder, null));
+        List<FileEntity> fileEntities = folderController.getRootUserFilesOrFolders(project);
+        for (FileEntity fileEntity : fileEntities) {
+            if (fileEntity instanceof FolderEntity) {
+                treeEntities.add(new FolderTreeEntity((FolderEntity) fileEntity, null));
+            } else if (fileEntity instanceof UserFileEntity) {
+                treeEntities.add(new UserFileTreeEntity((UserFileEntity) fileEntity, null));
+            }
         }
         return treeEntities;
     }
