@@ -14,7 +14,7 @@ import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 public interface JiraComponent {
 
     default boolean isJiraPluginEnabled() {
-        // Disable from Katalon Studio 6.1.5
+        //Disabled since Katalon Studio v6.1.5
         //https://github.com/kms-technology/katalon/issues/2471
         return false;
     }
