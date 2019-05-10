@@ -130,7 +130,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
         messageLabel.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Program.launch("https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md");
+                Program.launch("https://schema.getpostman.com/collection/json/v2.1.0/draft-07/docs/index.html");
             }
         });
         return composite;

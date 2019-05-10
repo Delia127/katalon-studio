@@ -25,6 +25,8 @@ public class IntegrationAnalyticsMessages extends NLS {
     
     public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
 
+    public static String MSG_INTEGRATE_WITH_KA;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, IntegrationAnalyticsMessages.class);

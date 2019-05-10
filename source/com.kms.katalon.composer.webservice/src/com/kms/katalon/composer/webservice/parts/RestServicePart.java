@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.webservice.parts;
 
+import java.io.File;
 //import java.awt.Label;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -188,11 +190,12 @@ public class RestServicePart extends WebServicePart {
                                 projectDir, ProxyPreferences.getProxyInformation(),
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables), false);
                         
+                        deleteTempHarFile();
+                        
                         RequestInformation requestInformation = new RequestInformation();
                         requestInformation.setTestObjectId(requestEntity.getId());
-                        requestInformation.setHarFile(harFile);
-                        FileUtils.write(harFile, ""); //delete current content of HAR file
-                        BrowserMobProxyManager.endHar(requestInformation);
+                        requestInformation.setReportFolder(Files.createTempDirectory("har").toFile().getAbsolutePath());
+                        harFile = BrowserMobProxyManager.endHar(requestInformation);
                         
                         if (monitor.isCanceled()) {
                             return;
