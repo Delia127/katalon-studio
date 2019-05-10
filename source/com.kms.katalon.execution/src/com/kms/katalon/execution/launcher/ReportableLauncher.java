@@ -199,7 +199,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     protected TestSuiteLogRecord prepareReport() {
         try {
             File reportFolder = getReportFolder();
-            LogUtil.logInfo("Start writing ExecutionUUID to folder: " + reportFolder.getAbsolutePath()); 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_GENERATE_REPORT);
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
 
@@ -209,6 +208,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 //            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_CSV);
 //            ReportUtil.writeCSVReport(suiteLog, reportFolder);
 
+            LogUtil.logInfo("Start writing execution.uuid file to folder: " + reportFolder.getAbsolutePath()); 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_UUID);
             ReportUtil.writeExecutionUUIDToFile(this.getExecutionUUID(), reportFolder);
 
