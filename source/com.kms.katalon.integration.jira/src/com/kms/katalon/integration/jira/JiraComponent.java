@@ -16,7 +16,7 @@ import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 public interface JiraComponent {
 
     default boolean isJiraPluginEnabled() {
-        return true;
+        return Platform.getBundle("com.katalon.katalon-studio-jira-plugin") != null;
     }
 
     default ProjectEntity getCurrentProject() {
