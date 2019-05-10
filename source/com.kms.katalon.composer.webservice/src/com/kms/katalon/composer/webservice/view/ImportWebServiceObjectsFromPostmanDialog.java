@@ -1,9 +1,13 @@
 package com.kms.katalon.composer.webservice.view;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -21,6 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.parser.PostmanParseUtils;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -54,7 +59,18 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
         Button ok = getButton(IDialogConstants.OK_ID);
         boolean closeTheDialog = true;
         try {
-            createWebServiceRequestEntities();
+            ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
+            dialog.run(false, false, new IRunnableWithProgress() {
+                
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        createWebServiceRequestEntities();
+                    } catch (Exception e) {
+                        throw new InvocationTargetException(e);
+                    }
+                }
+            });
         } catch (Exception e) {
             closeTheDialog = false;
             setMessage(StringConstants.EXC_INVALID_POSTMAN_FILE, IMessageProvider.ERROR);
