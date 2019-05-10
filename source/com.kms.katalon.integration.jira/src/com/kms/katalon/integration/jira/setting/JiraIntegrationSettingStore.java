@@ -36,7 +36,7 @@ public class JiraIntegrationSettingStore extends BundleSettingStore {
     }
 
     public boolean isIntegrationEnabled() throws IOException {
-        return getBoolean(PREF_INTEGRATION_ENABLED, false);
+        return false;
     }
 
     public void enableIntegration(boolean enabled) throws IOException {

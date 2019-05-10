@@ -32,12 +32,7 @@ public class JiraReportIntegrationBuilder implements ReportTestCaseIntegrationVi
 
     @Override
     public boolean isIntegrationEnabled(ProjectEntity project) {
-        try {
-            return !isJiraPluginEnabled() && getSettingStore().isIntegrationEnabled();
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-            return false;
-        }
+        return false;
     }
 
     @Override

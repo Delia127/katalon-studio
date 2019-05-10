@@ -3,6 +3,8 @@ package com.kms.katalon.integration.jira;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+import org.eclipse.core.runtime.Platform;
+
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -14,9 +16,7 @@ import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 public interface JiraComponent {
 
     default boolean isJiraPluginEnabled() {
-        //Disabled since Katalon Studio v6.1.5
-        //https://github.com/kms-technology/katalon/issues/2471
-        return false;
+        return true;
     }
 
     default ProjectEntity getCurrentProject() {
