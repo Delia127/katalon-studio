@@ -236,7 +236,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                                 sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
                             } else {
                                 echo "Building: Standard Prod"
-                                sh 'mvn -Declipse_update_site=file://$HOME/mirror -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
+                                sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
                             }
 
                             // Generate API docs
