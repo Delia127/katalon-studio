@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
 
-   <extension
+   <!--<extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
             name="JIRA"
@@ -9,7 +9,7 @@
             class="com.kms.katalon.composer.integration.jira.preference.JiraSettingPage"
             id="com.kms.katalon.composer.integration.jira.page">
       </page>
-   </extension>
+   </extension>-->
    <extension
          point="com.kms.katalon.composer.report.testCaseIntegration">
       <client
@@ -24,12 +24,12 @@
             uri="fragment.e4xmi">
       </fragment>
    </extension>
-   <extension
+   <!--<extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="com.kms.katalon.composer.integration.jira.preference.JiraPreferenceInitializer">
       </initializer>
-   </extension>
+   </extension>-->
    <extension
          point="com.kms.katalon.composer.testcase.integration">
       <client
