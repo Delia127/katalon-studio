@@ -2,11 +2,11 @@ package com.kms.katalon.dal.fileservice.manager;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -55,7 +55,6 @@ public class FolderFileServiceManager {
             StringConstants.SYSTEM_FOLDER_NAME_BIN,
             StringConstants.SYSTEM_FOLDER_NAME_DRIVER,
             StringConstants.SYSTEM_FOLDER_NAME_LIB,
-            StringConstants.SYSTEM_FOLDER_NAME_PLUGIN,
             StringConstants.SYSTEM_FOLDER_NAME_SETTINGS,
             StringConstants.SYSTEM_FOLDER_NAME_SCRIPT,
             ".git",
@@ -272,8 +271,9 @@ public class FolderFileServiceManager {
                         String fileName = file.getName();
                         if (!(fileName.endsWith(".classpath") ||
                             fileName.endsWith(".project") ||
-                            fileName.endsWith(".prj"))) {
-                            
+                            fileName.endsWith(".prj") ||
+                            fileName.endsWith(".DS_Store"))) {
+
                             UserFileEntity fileEntity = new UserFileEntity(file);
                             fileEntity.setProject(project);
                             fileEntities.add(fileEntity);
@@ -284,6 +284,19 @@ public class FolderFileServiceManager {
         } catch (Exception e) {
             throw new DALException(e);
         }
+        fileEntities.sort(new Comparator<FileEntity>() {
+
+            @Override
+            public int compare(FileEntity fileA, FileEntity fileB) {
+                if (fileA instanceof FolderEntity && fileB instanceof UserFileEntity) { 
+                    return -1;
+                }
+                if (fileB instanceof FolderEntity && fileA instanceof UserFileEntity) { 
+                    return 1;
+                }
+                return fileA.getName().compareToIgnoreCase(fileB.getName());
+            }
+        });
         return fileEntities;
     }
 

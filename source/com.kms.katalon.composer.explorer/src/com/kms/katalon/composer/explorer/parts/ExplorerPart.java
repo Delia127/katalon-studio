@@ -86,7 +86,6 @@ import com.kms.katalon.composer.explorer.constants.ExplorerPreferenceConstants;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
-import com.kms.katalon.composer.explorer.custom.EntityTooltip;
 import com.kms.katalon.composer.explorer.custom.SearchDropDownBox;
 import com.kms.katalon.composer.explorer.handlers.CopyHandler;
 import com.kms.katalon.composer.explorer.handlers.CutHandler;
@@ -101,7 +100,7 @@ import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.file.UserFileEntity;
+import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -424,7 +423,9 @@ public class ExplorerPart {
                     monitor.beginTask("Indexing...", treeEntities.size());
                     for (ITreeEntity folderEntity : treeEntities) {
                         try {
-                            ((FolderTreeEntity) folderEntity).loadAllDescentdantEntities();
+                            if (folderEntity instanceof FolderTreeEntity) {
+                                ((FolderTreeEntity) folderEntity).loadAllDescentdantEntities();
+                            }
                             monitor.worked(1);
                         } catch (Exception e) {
                             LoggerSingleton.logError(e);
@@ -862,7 +863,21 @@ public class ExplorerPart {
         if (treeEntities == null) {
             treeEntities = new ArrayList<ITreeEntity>();
         }
-        return treeEntities;
+        List<ITreeEntity> searchDropdownEntities = new ArrayList<>();
+        for (ITreeEntity treeEntity : treeEntities) {
+            if (treeEntity instanceof FolderTreeEntity) {
+                try {
+                    FolderEntity folder = (FolderEntity) treeEntity.getObject();
+
+                    if (folder.getFolderType() != FolderType.USER) {
+                        searchDropdownEntities.add(treeEntity);
+                    }
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                }
+            }
+        }
+        return searchDropdownEntities;
     }
 
     private void updateTreeEntities(List<Object> input) {
