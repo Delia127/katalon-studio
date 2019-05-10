@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -65,7 +66,6 @@ import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
-import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.composer.resources.util.ImageUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.FolderController;
@@ -92,6 +92,8 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -164,6 +166,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY = DefaultRerunSetting.RETRY_OPTION;
 
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
+    
+    private static final String ARG_APIKEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
 
     private Group grpPlatform;
 
@@ -185,9 +189,23 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private Button btnChangeProfile;
     
+    private Link linkStatusAccessProject;
+    
     private List<AnalyticsProject> projects = new ArrayList<>();
 
     private List<AnalyticsTeam> teams = new ArrayList<>();
+    
+    private AnalyticsProject selectProject;
+    
+    private AnalyticsTeam selectTeam;
+    
+    private AnalyticsSettingStore analyticsSettingStore;
+    
+    private AnalyticsTokenInfo tokenInfo;
+    
+    private boolean canAccessProject = true;
+    
+    private String serverUrl, email, password; 
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
@@ -218,7 +236,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         createPlatformPart(main);
         createOptionsPart(main);
         changeEnabled();
-        GetConfigurationAnalytics();
+        getConfigurationAnalytics();
         return main;
     }
 
@@ -452,6 +470,9 @@ public class GenerateCommandDialog extends AbstractDialog {
 
 		cbbProjects = new Combo(attachComposite, SWT.READ_ONLY);
 		cbbProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+		
+        linkStatusAccessProject = new Link(attachComposite, SWT.NONE);
+        linkStatusAccessProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
     }
     
     private void changeEnabled() {
@@ -681,6 +702,34 @@ public class GenerateCommandDialog extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 changeEnabled();
+                getConfigurationAnalytics();
+            }
+        });
+        
+        cbbTeams.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+            	int index = cbbTeams.getSelectionIndex();
+                AnalyticsTeam getSelectTeam = teams.get(index);
+				if (!canAccessProject) {
+					
+					if (getSelectTeam.equals(selectTeam)) {
+						return;
+					} else {
+						teams.remove(selectTeam);
+				    	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+				    	int indexSelectTeam = teams.indexOf(getSelectTeam);
+				    	
+				        cbbTeams.select(indexSelectTeam);
+				        linkStatusAccessProject.setText("");
+				        canAccessProject = true;
+					}
+				}				
+				projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+						getSelectTeam, tokenInfo, new ProgressMonitorDialog(getShell()));
+				
+				setProjectsBasedOnTeam();
+				changeEnabled();
             }
         });
     }
@@ -956,6 +1005,10 @@ public class GenerateCommandDialog extends AbstractDialog {
             args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
             return args;
         }
+        
+        if (chkAPIKey.getEnabled()) {
+        	args.put(ARG_APIKEY, wrapArgumentValue(txtAPIKey.getText()));
+        }
 
         return args;
     }
@@ -1112,26 +1165,97 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
     }
     
-    private void GetConfigurationAnalytics() {
-    	AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+    private void getConfigurationAnalytics() {
+    	analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
     	
     	try {
-			String token = analyticsSettingStore.getToken(true);
-			String serverUrl = analyticsSettingStore.getServerEndpoint(true);
-			System.out.println(token);
-			System.out.println(serverUrl);
-			
-			teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                    analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo,
-                    new ProgressMonitorDialog(getShell()));
+			serverUrl = analyticsSettingStore.getServerEndpoint(true);
+			email = analyticsSettingStore.getEmail(true);
+			password = analyticsSettingStore.getPassword(true);
+						
+			selectProject = analyticsSettingStore.getProject();
+    		selectTeam = analyticsSettingStore.getTeam();
+    		
+    		teams.clear();
+    		projects.clear();
+    		
+    		teams.add(selectTeam);
+    		projects.add(selectProject);
+            
+    		cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+    		int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+            cbbTeams.select(indexSelectTeam);
+            setProjectsBasedOnTeam();
+    		
+            if (chkAnlyticsProjectId.getSelection()) {
+                tokenInfo = AnalyticsAuthorizationHandler.getToken(
+                        serverUrl,
+                        email, 
+                        password, 
+                        analyticsSettingStore);
+
+                teams = AnalyticsAuthorizationHandler.getTeams(serverUrl,
+                        email, password, tokenInfo,
+                        new ProgressMonitorDialog(getShell()));
+
+                if (teams != null && teams.size() > 0) {                	                
+                	if (!checkUserCanAccessProject()) {
+
+                		projects.clear();
+                		canAccessProject = false;
+                		teams.add(selectTeam);
+                		projects.add(selectProject);
+                		linkStatusAccessProject.setText(StringConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
+
+                	} else {
+                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                                teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
+                                new ProgressMonitorDialog(getShell()));
+                	}
+                	
+                	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                	
+                	indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                    cbbTeams.select(indexSelectTeam);
+                                        
+                    setProjectsBasedOnTeam();
+                }
+            }
 		} catch (IOException | GeneralSecurityException e) {
 			e.printStackTrace();
 		}
     	
     	return;
     }
+    
+    private boolean checkUserCanAccessProject() throws IOException {
+    	AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
 
+    	if (currentTeam.getId() != null) {
+    		long currentTeamId = currentTeam.getId();
+
+        	for (AnalyticsTeam team : teams) {
+        		long teamId = team.getId();
+        		if (teamId == currentTeamId) {
+        			return true;
+        		}
+        	}
+        	return false;
+    	} 
+    	return true;
+    }
+
+    private void setProjectsBasedOnTeam() {
+        if (projects != null && !projects.isEmpty()) {
+            cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+        } else {
+        	cbbProjects.clearSelection();
+        	cbbProjects.removeAll();
+        }
+    }
+    
     private RunConfigurationDescription getStoredConfigurationDescription() {
         ScopedPreferenceStore prefs = getPreference();
         String runConfigAsJson = prefs

@@ -10,6 +10,9 @@ public class OsgiConsoleOptionContributor implements ConsoleOptionContributor {
     public static final String OSGI_NO_EXIT_OPTION = "noExit";
     public static final String DEFAULT_NO_EXIT_OPTION = Boolean.FALSE.toString();
     
+    public static final String API_KEY_OPTION = "apiKey";
+    public static final String DEFAULT_API_KEY_OPTION = "";
+    
     public static final StringConsoleOption CONSOLE_LOG_CONSOLE_OPTION = new StringConsoleOption() {
         @Override
         public String getOption() {
