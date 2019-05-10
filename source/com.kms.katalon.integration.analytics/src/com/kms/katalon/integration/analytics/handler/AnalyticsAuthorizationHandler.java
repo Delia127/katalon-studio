@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.analytics.handlers;
+package com.kms.katalon.integration.analytics.handler;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -14,8 +14,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
-import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
@@ -41,7 +40,7 @@ public class AnalyticsAuthorizationHandler {
                 LoggerSingleton.logError(e);
             }
             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
-                    ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR);
+            		IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
         }
         return null;    
     } 

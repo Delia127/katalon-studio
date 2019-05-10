@@ -87,6 +87,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String MSG_REQUEST_TOKEN_ERROR;
     
+    public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerIntegrationAnalyticsMessageConstants.class);
