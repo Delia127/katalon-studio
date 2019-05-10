@@ -116,6 +116,10 @@ public class ImageConstants {
 
     public static final Image IMG_16_WS_TEST_OBJECT = ImageManager.getImage(IImageKeys.WS_TEST_OBJECT_16);
     
+    public static final Image IMG_16_GIT_FILE = ImageManager.getImage(IImageKeys.GIT_FILE_16);
+
+    public static final Image IMG_16_JAVA = ImageManager.getImage(IImageKeys.JAVA_16);
+
     //FeatureTreeEntity
     public static final Image IMG_16_FEATURE = ImageManager.getImage(IImageKeys.FEATURE_16);
 

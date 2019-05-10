@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.kms.katalon.dal.IUserFileDataProvider;
@@ -41,6 +42,19 @@ public class UserFileServiceDataProvider implements IUserFileDataProvider {
                 fileEntities.add(childFolder);
             }
         }
+        fileEntities.sort(new Comparator<FileEntity>() {
+
+            @Override
+            public int compare(FileEntity fileA, FileEntity fileB) {
+                if (fileA instanceof FolderEntity && fileB instanceof UserFileEntity) { 
+                    return 1;
+                }
+                if (fileB instanceof FolderEntity && fileA instanceof UserFileEntity) { 
+                    return -1;
+                }
+                return fileA.getName().compareToIgnoreCase(fileB.getName());
+            }
+        });
         return fileEntities;
     }
 
