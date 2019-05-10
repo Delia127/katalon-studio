@@ -268,6 +268,14 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PREF_FAILED_APACHE_MAIL_PREFIX_ERROR_MSG;
 
     public static String PREF_REPLACEMENT_APACHE_MAIL_ERROR_MSG;
+    
+    public static String DIA_API_KEY;
+    
+    public static String DIA_ANALYTICS_PROJECT;
+    
+    public static String DIA_TITLE_TEAM;
+    
+    public static String DIA_TITLE_PROJECT;
 
     // LogViewerPart
     public static String DIA_WARN_TEST_CASE_NOT_FOUND;

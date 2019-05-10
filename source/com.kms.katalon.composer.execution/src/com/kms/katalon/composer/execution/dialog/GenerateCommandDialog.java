@@ -7,6 +7,8 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -33,6 +36,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
@@ -61,6 +65,7 @@ import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.composer.resources.util.ImageUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.FolderController;
@@ -85,6 +90,9 @@ import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
@@ -110,6 +118,12 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Text txtRetry;
 
     private Text txtStatusDelay;
+    
+    private Text txtAPIKey;
+    
+    private Combo cbbProjects;
+
+    private Combo cbbTeams;
 
     private Button btnBrowseTestSuite;
 
@@ -118,6 +132,10 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Button chkKeepConsoleLog;
 
     private Button chkRetryFailedTestCase;
+    
+    private Button chkAPIKey;
+    
+    private Button chkAnlyticsProjectId;
 
     private ProjectEntity project;
 
@@ -166,6 +184,10 @@ public class GenerateCommandDialog extends AbstractDialog {
     private CLabel lblProfileName;
 
     private Button btnChangeProfile;
+    
+    private List<AnalyticsProject> projects = new ArrayList<>();
+
+    private List<AnalyticsTeam> teams = new ArrayList<>();
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
@@ -195,6 +217,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         createTestSuitePart(main);
         createPlatformPart(main);
         createOptionsPart(main);
+        changeEnabled();
+        GetConfigurationAnalytics();
         return main;
     }
 
@@ -386,6 +410,16 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         Label lblSeconds = new Label(grpOptionsContainer, SWT.NONE);
         lblSeconds.setText(StringConstants.DIA_LBL_SECONDS);
+
+        
+        chkAPIKey = new Button(grpOptionsContainer, SWT.CHECK);
+        chkAPIKey.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        chkAPIKey.setText(StringConstants.DIA_API_KEY);
+        
+        txtAPIKey = new Text(grpOptionsContainer, SWT.BORDER);
+        GridData gdTxtAPIKey = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 3, 1);
+        gdTxtAPIKey.widthHint = 500;
+        txtAPIKey.setLayoutData(gdTxtAPIKey);
         
         Composite pluginOptionsComposite = new Composite(grpOptionsContainer, SWT.NONE);
         pluginOptionsComposite.setLayout(new GridLayout(2, false));
@@ -394,8 +428,37 @@ public class GenerateCommandDialog extends AbstractDialog {
         Label lblKStoreApiKeyUsage = new Label(pluginOptionsComposite, SWT.NONE);
         ControlUtils.setFontStyle(lblKStoreApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
         lblKStoreApiKeyUsage.setText(StringConstants.DIA_LBL_KSTORE_API_KEY_USAGE);
-        
+
         new HelpComposite(pluginOptionsComposite, DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
+        
+        chkAnlyticsProjectId = new Button(grpOptionsContainer, SWT.CHECK);
+        chkAnlyticsProjectId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        chkAnlyticsProjectId.setText(StringConstants.DIA_ANALYTICS_PROJECT);
+        
+        Composite attachComposite = new Composite(grpOptionsContainer, SWT.NONE);
+        GridLayout glGrpAttach = new GridLayout(4, false);
+        glGrpAttach.marginLeft = 30;
+        attachComposite.setLayout(glGrpAttach);
+        attachComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        
+		Label lblTeam = new Label(attachComposite, SWT.NONE);
+		lblTeam.setText(StringConstants.DIA_TITLE_TEAM);
+
+		cbbTeams = new Combo(attachComposite, SWT.READ_ONLY);
+		cbbTeams.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+
+		Label lblProject = new Label(attachComposite, SWT.NONE);
+		lblProject.setText(StringConstants.DIA_TITLE_PROJECT);
+
+		cbbProjects = new Combo(attachComposite, SWT.READ_ONLY);
+		cbbProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+    }
+    
+    private void changeEnabled() {
+    	txtAPIKey.setEnabled(chkAPIKey.getSelection());
+    	
+    	cbbTeams.setEnabled(chkAnlyticsProjectId.getSelection());
+		cbbProjects.setEnabled(chkAnlyticsProjectId.getSelection());
     }
 
     @Override
@@ -604,6 +667,20 @@ public class GenerateCommandDialog extends AbstractDialog {
                             ComposerExecutionMessageConstants.PA_MSG_UNABLE_TO_SELECT_EXECUTION_PROFILES,
                             ex.getMessage(), ExceptionsUtil.getMessageForThrowable(ex));
                 }
+            }
+        });
+                
+        chkAPIKey.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                changeEnabled();
+            }
+        });
+        
+        chkAnlyticsProjectId.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                changeEnabled();
             }
         });
     }
@@ -1033,6 +1110,26 @@ public class GenerateCommandDialog extends AbstractDialog {
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
+    }
+    
+    private void GetConfigurationAnalytics() {
+    	AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+    	
+    	try {
+			String token = analyticsSettingStore.getToken(true);
+			String serverUrl = analyticsSettingStore.getServerEndpoint(true);
+			System.out.println(token);
+			System.out.println(serverUrl);
+			
+			teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
+                    analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo,
+                    new ProgressMonitorDialog(getShell()));
+		} catch (IOException | GeneralSecurityException e) {
+			e.printStackTrace();
+		}
+    	
+    	return;
     }
 
     private RunConfigurationDescription getStoredConfigurationDescription() {
