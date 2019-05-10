@@ -92,6 +92,10 @@ public class AnalyticsConfigutionProject {
 	                password, 
 	                analyticsSettingStore);
 			
+			if (tokenInfo == null) {
+				return;
+			}
+			
 			teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
 			
 			AnalyticsTeam currentTeam;
@@ -102,13 +106,12 @@ public class AnalyticsConfigutionProject {
 	    	for (AnalyticsTeam team : teams) {
 	    		long teamId = team.getId();
 	    		if (teamId == currentTeamId) {
-	    			PermissionAccessAnalyticsDialog.showErrorDialog("Warring",
-	    					IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
-	    			break;
+	    			return;
 	    		}
 	    	}
+	    	PermissionAccessAnalyticsDialog.showErrorDialog("Warring",
+					IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

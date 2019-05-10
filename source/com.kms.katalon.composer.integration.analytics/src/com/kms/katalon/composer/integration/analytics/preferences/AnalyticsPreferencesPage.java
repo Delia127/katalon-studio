@@ -319,7 +319,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private void fillData() {
         try {
             boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
+            enableAnalyticsIntegration.setSelection(encryptionEnabled);
 
             cbbTeams.setItems();
             cbbProjects.setItems();
@@ -328,6 +328,29 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
             String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
 
+            txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
+            txtPassword.setText(password);
+            chckEncrypt.setSelection(analyticsSettingStore.isEncryptionEnabled());
+            maskPasswordField();
+            txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
+            cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
+            cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
+            cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
+            
+            selectProject = analyticsSettingStore.getProject();
+    		selectTeam = analyticsSettingStore.getTeam();
+    		
+    		teams.clear();
+    		projects.clear();
+    		
+    		teams.add(selectTeam);
+    		projects.add(selectProject);
+            
+    		cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+    		int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+            cbbTeams.select(indexSelectTeam);
+            setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+    		
             if (enableAnalyticsIntegration.getSelection()) {
                 AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
                         analyticsSettingStore.getServerEndpoint(encryptionEnabled),
@@ -346,8 +369,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
                 if (teams != null && teams.size() > 0) {                	                
                 	if (!checkUserCanAccessProject()) {
-                		selectProject = analyticsSettingStore.getProject();
-                		selectTeam = analyticsSettingStore.getTeam();
+                		
                 		canAccessProject = false;
 
                 		projects.clear();
@@ -364,21 +386,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 	
                 	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
                 	
-                	int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                	indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
                     cbbTeams.select(indexSelectTeam);
                                         
                     setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                 }
             }
-
-            txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
-            txtPassword.setText(password);
-            chckEncrypt.setSelection(analyticsSettingStore.isEncryptionEnabled());
-            maskPasswordField();
-            txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
-            cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
-            cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
-            cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
 
             ScopedPreferenceStore preferenceStore = PreferenceStoreManager
                     .getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
