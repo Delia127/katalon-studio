@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -60,14 +61,17 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
         boolean closeTheDialog = true;
         try {
             ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
-            dialog.run(false, false, new IRunnableWithProgress() {
+            dialog.run(true, false, new IRunnableWithProgress() {
                 
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
+                        monitor.beginTask("Importing Web Service Requests from Postman...", SubMonitor.UNKNOWN);
                         createWebServiceRequestEntities();
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
+                    } finally {
+                        monitor.done();
                     }
                 }
             });
