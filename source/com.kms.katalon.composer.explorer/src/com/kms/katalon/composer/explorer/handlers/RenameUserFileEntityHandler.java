@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.explorer.handlers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,9 +20,13 @@ import com.kms.katalon.composer.components.impl.tree.UserFileTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.dialogs.RenameUserFileEntityDialog;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.UserFileController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.UserFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 public class RenameUserFileEntityHandler {
 
@@ -47,10 +54,19 @@ public class RenameUserFileEntityHandler {
             UserFileController userFileController = UserFileController.getInstance();
             FolderTreeEntity parentTreeFolder = (FolderTreeEntity) userFileTreeEntity.getParent();
             UserFileEntity userFileEntity = (UserFileEntity) userFileTreeEntity.getObject();
-            FolderEntity parentFolder = parentTreeFolder.getObject();
-
+            boolean isRoot = parentTreeFolder == null;
+            List<String> existingFileNames;
+            if (isRoot) {
+                ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+                existingFileNames = FolderController.getInstance().getRootFileOrFolderNames(project);
+            } else { 
+                FolderEntity parentFolder = parentTreeFolder.getObject();
+                existingFileNames = userFileController.getSiblingFiles(userFileEntity, parentFolder).stream()
+                        .map(f -> f.toFile().getName())
+                        .collect(Collectors.toList());
+            }
             RenameUserFileEntityDialog dialog = new RenameUserFileEntityDialog(parentShell, userFileEntity,
-                    userFileController.getSiblingFiles(userFileEntity, parentFolder));
+                    existingFileNames);
             if (dialog.open() == RenameUserFileEntityDialog.OK) {
                 String newName = dialog.getNewFileName();
                 String oldName = userFileEntity.getName();
@@ -65,5 +81,6 @@ public class RenameUserFileEntityHandler {
             MultiStatusErrorDialog.showErrorDialog(e, "Unable to rename file", e.getMessage());
             LoggerSingleton.logError(e);
         }
+    
     }
 }

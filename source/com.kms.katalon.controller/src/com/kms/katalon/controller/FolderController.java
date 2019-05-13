@@ -3,6 +3,7 @@ package com.kms.katalon.controller;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,11 @@ public class FolderController extends EntityController implements Serializable {
         }
 
         return childNames;
+    }
+    
+    public List<String> getRootFileOrFolderNames(ProjectEntity project) {
+        File projectFolder = new File(project.getFolderLocation());
+        return Arrays.asList(projectFolder.listFiles()).stream().map(f -> f.getName()).collect(Collectors.toList());
     }
 
     /**
@@ -131,8 +137,8 @@ public class FolderController extends EntityController implements Serializable {
         return getDataProviderSetting().getFolderDataProvider().getCheckpointRoot(project);
     }
     
-    public List<FolderEntity> getUserFolders(ProjectEntity project) throws Exception {
-        return getDataProviderSetting().getFolderDataProvider().getUserFolders(project);
+    public List<FileEntity> getRootUserFilesOrFolders(ProjectEntity project) throws Exception {
+        return getDataProviderSetting().getFolderDataProvider().getRootUserFilesOrFolders(project);
     }
 
     public void deleteFolder(FolderEntity folder) throws Exception {
@@ -148,6 +154,14 @@ public class FolderController extends EntityController implements Serializable {
             }
         }
         return null;
+    }
+    
+    public FolderEntity addNewRootFolder(ProjectEntity project, String folderName) throws ControllerException {
+        try {
+            return getDataProviderSetting().getFolderDataProvider().addNewRootFolder(project, folderName);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public void updateFolderName(FolderEntity folder, String newName) throws Exception {

@@ -768,6 +768,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 analyticsSettingStore.setPassword(analyticsPassword, encryptionEnabled);
                 analyticsSettingStore.setServerEndPoint(serverUrl, encryptionEnabled);
                 analyticsSettingStore.enableIntegration(true);
+                analyticsSettingStore.setAttachLog(true);
+                analyticsSettingStore.setAttachCapturedVideos(true);
+                analyticsSettingStore.setAttachScreenshot(true);
 
                 // empty preference store password
                 preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);

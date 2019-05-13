@@ -3,6 +3,8 @@ package com.kms.katalon.composer.explorer.handlers;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -12,11 +14,14 @@ import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -48,11 +53,8 @@ public class OpenUserFileHandler {
     }
     
     public static IEditorPart openEditor(UserFileEntity object) {
-        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        IFile iFile = GroovyUtil.getGroovyProject(currentProject).getFile(object.getRelativePath());
         try {
-            iFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
-            IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(iFile.getName());
+            IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(object.toFile().getName());
             if (desc == null) {
                 desc = PlatformUI.getWorkbench().getEditorRegistry().findEditor("org.eclipse.ui.DefaultTextEditor");
             }
@@ -60,12 +62,12 @@ public class OpenUserFileHandler {
             IWorkbenchPage activePage = PlatformUI.getWorkbench()
                     .getActiveWorkbenchWindow()
                     .getActivePage();
-            
-            IEditorPart editor = (IEditorPart) activePage.findEditor(new FileEditorInput(iFile));
+            IFileStore fileStore = EFS.getStore(object.toFile().toURI());
+            IEditorPart editor = (IEditorPart) activePage.findEditor(new FileStoreEditorInput(fileStore));
             if (editor != null) {
                 activePage.activate(editor);
             } else {
-                editor = activePage.openEditor(new FileEditorInput(iFile), desc.getId()); 
+                editor = activePage.openEditor(new FileStoreEditorInput(fileStore), desc.getId()); 
             }
             
             return editor;

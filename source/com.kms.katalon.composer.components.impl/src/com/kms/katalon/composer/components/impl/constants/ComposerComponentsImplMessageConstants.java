@@ -170,6 +170,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     
     public static String DIA_MSG_CREATE_NEW_FILE;
     
+    public static String DIA_MSG_CREATE_NEW_FOLDER;
+    
     public static String DIA_MSG_RENAME_FILE;
 
     static {

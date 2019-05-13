@@ -1,7 +1,5 @@
 package com.kms.katalon.core.util;
 
-import java.io.File;
-
 public class RequestInformation {
 
     private String name;
@@ -10,7 +8,7 @@ public class RequestInformation {
     
     private String harId;
     
-    private File harFile;
+    private String reportFolder;
     
     public String getName() {
 		return name;
@@ -36,11 +34,11 @@ public class RequestInformation {
         this.testObjectId = testObjectId;
     }
 
-    public File getHarFile() {
-        return harFile;
+    public String getReportFolder() {
+        return reportFolder;
     }
 
-    public void setHarFile(File harFile) {
-        this.harFile = harFile;
+    public void setReportFolder(String reportFolder) {
+        this.reportFolder = reportFolder;
     }
 }
