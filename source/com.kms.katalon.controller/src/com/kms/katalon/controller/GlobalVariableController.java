@@ -118,10 +118,15 @@ public class GlobalVariableController extends EntityController {
         return updated;
     }
 
-    public ExecutionProfileEntity updateExecutionProfile(ExecutionProfileEntity profile) throws Exception {
-        ExecutionProfileEntity updated = getDataProviderSetting().getGlobalVariableDataProvider().update(profile);
-        generateGlobalVariableLibFile(ProjectController.getInstance().getCurrentProject(), null);
-        return updated;
+    public ExecutionProfileEntity updateExecutionProfile(ExecutionProfileEntity profile) throws ControllerException {
+        try {
+            ExecutionProfileEntity updated = getDataProviderSetting().getGlobalVariableDataProvider().update(profile);
+
+            generateGlobalVariableLibFile(ProjectController.getInstance().getCurrentProject(), null);
+            return updated;
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public ExecutionProfileEntity getGlobalVariableCollection(String name, ProjectEntity project) throws DALException {
