@@ -26,6 +26,22 @@ public class UserFileTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
+        switch (entity.getFileExtension()) {
+            case ".png":
+            case ".jpg":
+            case ".bmp":
+            case ".jpeg":
+                return ImageConstants.IMG_16_IMG_TEST_OBJECT;
+            case ".feature":
+                return ImageConstants.IMG_16_FEATURE;
+            case ".git":
+            case ".gitignore":
+                return ImageConstants.IMG_16_GIT_FILE;
+            case ".txt":
+                return ImageConstants.IMG_16_TXT_TEST_OBJECT;
+            case ".jar":
+                return ImageConstants.IMG_16_JAVA;
+        }
         return ImageConstants.IMG_16_CONFIG;
     }
 

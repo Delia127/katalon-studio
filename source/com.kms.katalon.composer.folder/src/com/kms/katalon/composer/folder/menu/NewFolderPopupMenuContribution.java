@@ -91,7 +91,11 @@ public class NewFolderPopupMenuContribution {
                     || parentTreeEntity instanceof CheckpointTreeEntity
                     || parentTreeEntity instanceof UserFileTreeEntity) {
                 return true;
+            } else {
+                return false;
             }
+        } else if (selectedObjects == null || selectedObjects.length == 0) { //root-level
+            return true;
         }
         return false;
     }

@@ -35,8 +35,11 @@ public class DeleteUserFileEntityHandler implements IDeleteEntityHandler {
         try {
             UserFileController.getInstance().deleteFile(userFileEntity);
             
-            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, treeEntity.getParent());
-            
+            if (treeEntity.getParent() != null) {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, treeEntity.getParent());
+            } else {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_RELOAD_DATA, null);
+            }
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
