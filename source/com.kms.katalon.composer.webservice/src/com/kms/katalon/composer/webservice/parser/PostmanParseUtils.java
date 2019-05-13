@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -49,20 +52,19 @@ public class PostmanParseUtils {
                 false);
         PostmanCollection postman = objectMapper.readValue(new File(fileLocationOrUrl), PostmanCollection.class);
 
-        List<Item> rootItems = postman.getItem();
+        List<Item> rootItems = postman.getItem().stream().map(i -> flatten(i)).flatMap(List::stream).collect(Collectors.toList());
         ExecutionProfileEntity profileEntity = GlobalVariableController.getInstance().getExecutionProfile("default",
                 ProjectController.getInstance().getCurrentProject());
         List<GlobalVariableEntity> globalVariableEntites = profileEntity.getGlobalVariableEntities();
         List<VariableEntity> allVariables = new ArrayList<>();
         for (Item root : rootItems) {
-            pushPostManItemToWSTestObjectSet(root, newWSTestObjects);
             if (root.getRequest() != null) {
                 WebServiceRequestEntity entity = new WebServiceRequestEntity();
                 Request request = root.getRequest();
                 String rawURL = request.getURL().getRaw();
                 String method = root.getRequest().getMethod();
                 String name = root.getName();
-                String body = request.getBody().getRaw();
+                String body = StringUtils.defaultString(request.getBody().getRaw());
 
                 List<VariableEntity> variablesFromURL = collectVariablesFromRawString(rawURL);
                 List<VariableEntity> variablesFromBody = collectVariablesFromRawString(body);
@@ -111,6 +113,19 @@ public class PostmanParseUtils {
         GlobalVariableController.getInstance().updateExecutionProfile(profileEntity);
         
         return newWSTestObjects;
+    }
+    
+    public static List<Item> flatten(Item item) {
+        List<Item> leafItems = new ArrayList<>();
+        if (item.getRequest() != null) {
+            leafItems.add(item);
+        }
+        if (item.getItem() != null) {
+            for (Item child : item.getItem()) {
+                leafItems.addAll(flatten(child));
+            }
+        }
+        return leafItems;
     }
     
     public static List<GlobalVariableEntity> filterDuplicatedGlobalVariables(List<GlobalVariableEntity> variableEntities) {
@@ -162,7 +177,7 @@ public class PostmanParseUtils {
 
     public static List<VariableEntity> collectVariablesFromRawString(String rawString) {
         List<VariableEntity> variables = new ArrayList<>(); 
-        Pattern pattern = Pattern.compile("\\{\\{(.)*\\}\\}");
+        Pattern pattern = Pattern.compile("\\{\\{((?!\\{).)*\\}\\}");
         Matcher matcher = pattern.matcher(rawString);
         while (matcher.find()) {
             MatchResult matchResult = matcher.toMatchResult();
