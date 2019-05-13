@@ -110,7 +110,6 @@ public class TestHooker {
             logger.logDebug(MessageFormat.format(CoreMessageConstants.EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED,
                     listenerAnnotationName, methodDisplayName));
         } catch (Throwable e) {
-            System.out.println(e.getMessage());
             logger.logError(ExceptionsUtil.getMessageForThrowable(e), null, e);
         } finally {
             while (!keywordStack.isEmpty()) {
