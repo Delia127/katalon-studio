@@ -118,10 +118,12 @@ public class HttpBodyEditorComposite extends Composite {
         selectedBodyType = StringUtils.defaultIfEmpty(webServiceEntity.getHttpBodyType(), "text");
         Button selectedButton = bodySelectionButtons.get(selectedBodyType);
 
-        bodyEditors.get(selectedBodyType).setInput(webServiceEntity.getHttpBodyContent());
+        if (bodyEditors.get(selectedBodyType) != null) {
+            bodyEditors.get(selectedBodyType).setInput(webServiceEntity.getHttpBodyContent());
 
-        selectedButton.setSelection(true);
-        selectedButton.notifyListeners(SWT.Selection, new Event());
+            selectedButton.setSelection(true);
+            selectedButton.notifyListeners(SWT.Selection, new Event());
+        }
 
         isInputReady = true;
     }
