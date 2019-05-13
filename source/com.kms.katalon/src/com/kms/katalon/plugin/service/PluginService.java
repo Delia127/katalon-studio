@@ -212,7 +212,9 @@ public class PluginService {
             if (e instanceof KStoreClientExceptionWithInfo) {
                 KStoreClientExceptionWithInfo castedE = (KStoreClientExceptionWithInfo) e;
                 throw new ReloadPluginsException(
-                        "Unexpected error occurs during executing reload plugins under account: " + castedE.getInfoMessage(), e);
+                        "Unexpected error occurs during executing reload plugins under account: "
+                                + castedE.getInfoMessage(),
+                        e);
 
             }
             throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins", e);

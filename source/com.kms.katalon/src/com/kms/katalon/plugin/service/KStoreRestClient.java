@@ -67,11 +67,12 @@ public class KStoreRestClient {
                         LogService.getInstance().logInfo("Plugin info URL: " + getPluginsAPIUrl(appVersion));
                         plugins.set(parsePluginListJson(responseContent));
                     } else {
-                        throw new KStoreClientException("Failed to get latest plugin. No content returned from server.");
+                        throw new KStoreClientException(
+                                "Failed to get latest plugin. No content returned from server.");
                     }
                 } catch (Exception e) {
                     propagateIfInstanceOf(e, KStoreClientException.class);
-                    throw new KStoreClientException("Unexpected error occurs during executing get latest plugins", e);                    
+                    throw new KStoreClientException("Unexpected error occurs during executing get latest plugins", e);
                 }
             });
         } catch (Exception e) {
