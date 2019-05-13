@@ -168,6 +168,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
     
     private static final String ARG_APIKEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
+    
+    private static final String ARG_ANALYTICS_PROJECT_ID = OsgiConsoleOptionContributor.ANALYTICS_PROJECT_ID;
 
     private Group grpPlatform;
 
@@ -235,8 +237,9 @@ public class GenerateCommandDialog extends AbstractDialog {
         createTestSuitePart(main);
         createPlatformPart(main);
         createOptionsPart(main);
-        changeEnabled();
         getConfigurationAnalytics();
+        changeEnabled();
+        
         return main;
     }
 
@@ -702,7 +705,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 changeEnabled();
-                getConfigurationAnalytics();
+                getTeamAndProject();
             }
         });
         
@@ -1006,8 +1009,13 @@ public class GenerateCommandDialog extends AbstractDialog {
             return args;
         }
         
-        if (chkAPIKey.getEnabled()) {
+        if (chkAPIKey.getSelection()) {
         	args.put(ARG_APIKEY, wrapArgumentValue(txtAPIKey.getText()));
+        }
+        
+        if (chkAnlyticsProjectId.getSelection()) {
+        	AnalyticsProject selectProject = cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null;
+        	args.put(ARG_ANALYTICS_PROJECT_ID, wrapArgumentValue(selectProject.getId().toString()));
         }
 
         return args;
@@ -1170,65 +1178,87 @@ public class GenerateCommandDialog extends AbstractDialog {
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
     	
     	try {
-			serverUrl = analyticsSettingStore.getServerEndpoint(true);
-			email = analyticsSettingStore.getEmail(true);
-			password = analyticsSettingStore.getPassword(true);
-						
-			selectProject = analyticsSettingStore.getProject();
-    		selectTeam = analyticsSettingStore.getTeam();
+    		boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled() && analyticsSettingStore.isAutoSubmit();
     		
-    		teams.clear();
-    		projects.clear();
+    		if (!enableApiKey) {
+    			return;
+    		} 
+    		chkAPIKey.setSelection(enableApiKey);
+    		chkAnlyticsProjectId.setSelection(enableApiKey);
     		
-    		teams.add(selectTeam);
-    		projects.add(selectProject);
+    		getTeamAndProject();
             
-    		cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-    		int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-            cbbTeams.select(indexSelectTeam);
-            setProjectsBasedOnTeam();
-    		
-            if (chkAnlyticsProjectId.getSelection()) {
-                tokenInfo = AnalyticsAuthorizationHandler.getToken(
-                        serverUrl,
-                        email, 
-                        password, 
-                        analyticsSettingStore);
-
-                teams = AnalyticsAuthorizationHandler.getTeams(serverUrl,
-                        email, password, tokenInfo,
-                        new ProgressMonitorDialog(getShell()));
-
-                if (teams != null && teams.size() > 0) {                	                
-                	if (!checkUserCanAccessProject()) {
-
-                		projects.clear();
-                		canAccessProject = false;
-                		teams.add(selectTeam);
-                		projects.add(selectProject);
-                		linkStatusAccessProject.setText(StringConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
-
-                	} else {
-                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-                                teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
-                                new ProgressMonitorDialog(getShell()));
-                	}
-                	
-                	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-                	
-                	indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-                    cbbTeams.select(indexSelectTeam);
-                                        
-                    setProjectsBasedOnTeam();
-                }
-            }
-		} catch (IOException | GeneralSecurityException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
     	
     	return;
     }
-    
+
+	private void getTeamAndProject() {
+		try {
+			if (analyticsSettingStore == null) {
+				analyticsSettingStore = new AnalyticsSettingStore(
+		                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+			}
+			
+			serverUrl = analyticsSettingStore.getServerEndpoint(true);
+			email = analyticsSettingStore.getEmail(true);
+			password = analyticsSettingStore.getPassword(true);
+						
+			selectProject = analyticsSettingStore.getProject();
+			selectTeam = analyticsSettingStore.getTeam();
+			
+			teams.clear();
+			projects.clear();
+			
+			teams.add(selectTeam);
+			projects.add(selectProject);
+	        
+			cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+			int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+	        cbbTeams.select(indexSelectTeam);
+	        setProjectsBasedOnTeam();
+			
+	        if (chkAnlyticsProjectId.getSelection()) {
+	            tokenInfo = AnalyticsAuthorizationHandler.getToken(
+	                    serverUrl,
+	                    email, 
+	                    password, 
+	                    analyticsSettingStore);
+
+	            teams = AnalyticsAuthorizationHandler.getTeams(serverUrl,
+	                    email, password, tokenInfo,
+	                    new ProgressMonitorDialog(getShell()));
+
+	            if (teams != null && teams.size() > 0) {                	                
+	            	if (!checkUserCanAccessProject()) {
+
+	            		projects.clear();
+	            		canAccessProject = false;
+	            		teams.add(selectTeam);
+	            		projects.add(selectProject);
+	            		linkStatusAccessProject.setText(StringConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
+
+	            	} else {
+	                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+	                            teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
+	                            new ProgressMonitorDialog(getShell()));
+	            	}
+	            	
+	            	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+	            	
+	            	indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+	                cbbTeams.select(indexSelectTeam);
+	                                    
+	                setProjectsBasedOnTeam();
+	            }
+	        }
+		} catch (IOException | GeneralSecurityException e) {
+			e.printStackTrace();
+		}
+		
+	}
     private boolean checkUserCanAccessProject() throws IOException {
     	AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
 

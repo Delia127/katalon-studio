@@ -99,6 +99,28 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             return false;
         }
     };
+    
+    private StringConsoleOption katalonAnalyticsApiKeyOption = new StringConsoleOption() {
+    	@Override
+    	public String getOption() {
+    		return ConsoleMain.KATALON_ANALYTICS_API_KEY_OPTIPON;
+    	};
+    	
+    	public boolean isRequired() {
+    		return false;
+    	};
+    };
+    
+    private StringConsoleOption katalonAnalyticsProjectId = new StringConsoleOption() {
+    	@Override
+    	public String getOption() {
+    		return ConsoleMain.KATALON_ANALYTICS_PROJECT_ID;
+    	};
+    	
+    	public boolean isRequired() {
+    		return false;
+    	};
+    };
 
     protected StringConsoleOption testSuiteQuery = new StringConsoleOption() {
 
@@ -120,6 +142,8 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(executionProfileOption);
         allOptions.add(katalonStoreApiKeyOption);
         allOptions.add(installPluginOption);
+        allOptions.add(katalonAnalyticsApiKeyOption);
+        allOptions.add(katalonAnalyticsProjectId);
         allOptions.add(testSuiteQuery);
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject != null && overridingOptions.isEmpty()) {

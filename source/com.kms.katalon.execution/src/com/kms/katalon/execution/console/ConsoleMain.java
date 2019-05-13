@@ -72,6 +72,10 @@ public class ConsoleMain {
     public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
+    
+    public static final String KATALON_ANALYTICS_API_KEY_OPTIPON = "kaApiKey";
+    
+    public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
 
     private ConsoleMain() {
         // hide constructor
@@ -116,7 +120,12 @@ public class ConsoleMain {
                         consoleOptionValueMap);
                 addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
             }
-
+            
+            //Analytics
+            if (options.has(KATALON_ANALYTICS_API_KEY_OPTIPON)) {
+            	String apiKeyValue = String.valueOf(options.valueOf(KATALON_ANALYTICS_API_KEY_OPTIPON));
+            }
+            
             // Set option value to application configuration
             for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
                 String optionName = opt.getOption();
