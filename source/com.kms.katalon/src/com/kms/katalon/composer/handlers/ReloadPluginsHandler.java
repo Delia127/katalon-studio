@@ -149,12 +149,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
     }
 
     private void openResultDialog(List<ResultItem> result) {
-        if (result.size() > 0) {
-            KStorePluginsDialog dialog = new KStorePluginsDialog(Display.getCurrent().getActiveShell(), result);
-            dialog.open();
-        } else {
-            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
-                    StringConstants.HAND_INFO_NO_PLUGINS_FOUND);
-        }
+        KStorePluginsDialog dialog = new KStorePluginsDialog(Display.getCurrent().getActiveShell(), result);
+        dialog.open();
     }
 }
