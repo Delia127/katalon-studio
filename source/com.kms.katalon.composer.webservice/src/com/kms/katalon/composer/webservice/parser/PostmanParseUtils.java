@@ -3,6 +3,7 @@ package com.kms.katalon.composer.webservice.parser;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,9 +19,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kms.katalon.composer.components.impl.constants.TextContentType;
+import com.kms.katalon.composer.webservice.postman.ApiKey;
+import com.kms.katalon.composer.webservice.postman.Auth;
+import com.kms.katalon.composer.webservice.postman.Basic;
 import com.kms.katalon.composer.webservice.postman.FormData;
 import com.kms.katalon.composer.webservice.postman.Header;
 import com.kms.katalon.composer.webservice.postman.Item;
+import com.kms.katalon.composer.webservice.postman.Oauth2;
 import com.kms.katalon.composer.webservice.postman.PostmanCollection;
 import com.kms.katalon.composer.webservice.postman.Query;
 import com.kms.katalon.composer.webservice.postman.Request;
@@ -29,6 +34,7 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.exception.ControllerException;
+import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -65,7 +71,6 @@ public class PostmanParseUtils {
                 String method = root.getRequest().getMethod();
                 String name = root.getName();
                 String body = StringUtils.defaultString(request.getBody().getRaw());
-
                 List<VariableEntity> variablesFromURL = collectVariablesFromRawString(rawURL);
                 List<VariableEntity> variablesFromBody = collectVariablesFromRawString(body);
                 HttpHeaderVariable httpHeaderVariable = collectHttpHeaderVariable(request, root);
@@ -74,6 +79,7 @@ public class PostmanParseUtils {
                 entity.setRestUrl(getVariableString(variablesFromURL, rawURL));
                 entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
                 List<WebElementPropertyEntity> httpHeaders = httpHeaderVariable.getHttpHeaders();
+                httpHeaders.addAll(0, getHttpAuthentication(root.getRequest().getAuth()));
                 entity.setHttpHeaderProperties(httpHeaders);
 
                 List<VariableEntity> collectedVariables = new ArrayList<>();
@@ -113,6 +119,82 @@ public class PostmanParseUtils {
         GlobalVariableController.getInstance().updateExecutionProfile(profileEntity);
         
         return newWSTestObjects;
+    }
+    
+    public static List<WebElementPropertyEntity> getHttpAuthentication(Auth auth) {
+        if (auth == null || StringUtils.isEmpty(auth.getType())) {
+            return Collections.emptyList();
+        }
+        List<WebElementPropertyEntity> authenticationHeaders = new ArrayList<>();
+        switch (auth.getType()) {
+            case "basic": {
+                List<Basic> basicItems = auth.getBasic();
+                String username = "";
+                String password = "";
+                for (Basic b : basicItems) {
+                    if ("username".equals(b.getKey())) {
+                        username = b.getValue();
+                    }
+                    
+                    if ("password".equals(b.getKey())) {
+                        password = b.getValue();
+                    }
+                }
+
+                WebElementPropertyEntity authenticationProp = new WebElementPropertyEntity();
+                authenticationProp.setName("Authorization");
+                authenticationProp.setValue("Basic " + Base64.basicEncode(username, password));
+                authenticationProp.setIsSelected(true);
+                
+                authenticationHeaders.add(authenticationProp);
+                break;
+            }
+            case "oauth2": {
+                List<Oauth2> oath2Items = auth.getOauth2();
+                String accessToken = "";
+                String tokenType = "";
+                for (Oauth2 b : oath2Items) {
+                    if ("accessToken".equals(b.getKey())) {
+                        accessToken = b.getValue();
+                    }
+                    
+                    if ("tokenType".equals(b.getKey())) {
+                        tokenType = b.getValue();
+                    }
+                }
+
+                WebElementPropertyEntity authenticationProp = new WebElementPropertyEntity();
+                authenticationProp.setName("Authorization");
+                authenticationProp.setValue(tokenType + " " + accessToken);
+                authenticationProp.setIsSelected(true);
+
+                authenticationHeaders.add(authenticationProp);
+                break;
+            }
+            case "apikey": {
+                List<ApiKey> oath2Items = auth.getApikey();
+                String key = "";
+                String value = "";
+                for (ApiKey b : oath2Items) {
+                    if ("key".equals(b.getKey())) {
+                        key = b.getValue();
+                    }
+
+                    if ("tokenType".equals(b.getKey())) {
+                        value = b.getValue();
+                    }
+                }
+
+                WebElementPropertyEntity authenticationProp = new WebElementPropertyEntity();
+                authenticationProp.setName(key);
+                authenticationProp.setValue(value);
+                authenticationProp.setIsSelected(true);
+
+                authenticationHeaders.add(authenticationProp);
+                break;
+            }
+        }
+        return authenticationHeaders;
     }
     
     public static List<Item> flatten(Item item) {
