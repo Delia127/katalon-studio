@@ -32,7 +32,11 @@ Require-Bundle: com.kms.katalon.core,
  com.kms.katalon.constant,
  com.kms.katalon.application,
  org.apache.commons.lang,
- com.kms.katalon.composer.components.impl
+ com.kms.katalon.composer.components.impl,
+ org.eclipse.e4.core.di,
+ org.eclipse.e4.core.services,
+ org.eclipse.e4.ui.di,
+ org.eclipse.e4.ui.services
 Export-Package: com.kms.katalon.integration.analytics,
  com.kms.katalon.integration.analytics.configuration,
  com.kms.katalon.integration.analytics.constants,
@@ -45,3 +49,4 @@ Export-Package: com.kms.katalon.integration.analytics,
  com.kms.katalon.integration.analytics.setting,
  com.kms.katalon.integration.analytics.util
 Bundle-ActivationPolicy: lazy
+Import-Package: org.osgi.service.event
