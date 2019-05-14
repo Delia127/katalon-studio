@@ -212,7 +212,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
-        stage('Generate latest_release.json') {
+        stage('Generate latest_version.json') {
             steps {
                 script {
                     def latest_release = """
@@ -224,8 +224,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
     "quickRelease": true
 }
                     """
-                        writeFile(file: "${env.tmpDir}/latest_release.json", text: latest_release)
-                        def latest_releases_from_file = readFile(file: "${env.tmpDir}/latest_release.json")
+                        writeFile(file: "${env.tmpDir}/latest_version.json", text: latest_release)
+                        def latest_releases_from_file = readFile(file: "${env.tmpDir}/latest_version.json")
                         println(latest_releases_from_file)
                 }
             }
@@ -429,14 +429,14 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         stage('Create Github release') {
             steps {
                 script {
-                    if (isRelease) {
+                    if (isRelease && !isQtest) {
                         dir("tools/release") {
                             nodejs(nodeJSInstallationName: 'nodejs') {
                                 sh 'npm prune && npm install'
                                 withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-                                    sh """node app.js ${env.GITHUB_TOKEN} ${tag} \
+                                    sh """node app.js ${env.GITHUB_TOKEN} v${tag} \
                                         '${env.tmpDir}/lastest_release.json' \
-                                        '${env.tmpDir}/latest_release.json' \
+                                        '${env.tmpDir}/latest_version.json' \
                                         '${env.tmpDir}/releases.json' \
                                         '${env.tmpDir}/apidocs.zip' \
                                         '${env.tmpDir}/commit.txt' \
