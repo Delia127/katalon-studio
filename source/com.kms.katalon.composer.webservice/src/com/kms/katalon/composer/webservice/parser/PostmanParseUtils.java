@@ -291,11 +291,6 @@ public class PostmanParseUtils {
     }
 
     public static void pushPostManItemToWSTestObjectSet(Item item, List<WebServiceRequestEntity> newWSTestObjects) {
-        if (item.getRequest() == null) {
-            for (Item childItem : item.getItem()) {
-                pushPostManItemToWSTestObjectSet(childItem, newWSTestObjects);
-            }
-        }
         for (Item childItem : item.getItem()) {
             WebServiceRequestEntity entity = new WebServiceRequestEntity();
             Request request = childItem.getRequest();
