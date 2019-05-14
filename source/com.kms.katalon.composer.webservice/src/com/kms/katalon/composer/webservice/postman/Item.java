@@ -110,7 +110,7 @@ public class Item implements Serializable
     private final static long serialVersionUID = 1907640689380590863L;
 
     @JsonProperty("auth")
-    private Object auth;
+    private Auth auth;
     
     /**
      * Items are entities which contain an actual HTTP request, and sample responses attached to it. Folders may contain many items.
@@ -323,12 +323,12 @@ public class Item implements Serializable
      * 
      */
     @JsonProperty("auth")
-    public Object getAuth() {
+    public Auth getAuth() {
         return auth;
     }
 
     @JsonProperty("auth")
-    public void setAuth(Object auth) {
+    public void setAuth(Auth auth) {
         this.auth = auth;
     }
 

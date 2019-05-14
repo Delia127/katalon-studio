@@ -66,6 +66,8 @@ public class EventConstants {
 	public static final String EXPLORER_RELOAD_MOBILE_INPUT = "EXPLORER/RELOAD_INPUT";
 
     public static final String EXPLORER_SET_SELECTED_ITEM = "EXPLORER/SET_SELECTED_ITEM";
+    
+    public static final String EXPLORER_ADD_AND_SELECT_ITEM = "EXPLORER/ADD_AND_SELECT_ITEM";
 
     public static final String EXPLORER_SET_SELECTED_ITEMS = "EXPLORER/SET_SELECTED_ITEMS";
 
