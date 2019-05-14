@@ -142,9 +142,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
                 if (ok.isEnabled() == false) {
                     ok.setEnabled(true);
                 }
-                if (text.getText().isEmpty()) {
-                    ok.setEnabled(false);
-                }
+                    ok.setEnabled(!text.getText().isEmpty());
                 directory = ((Text) e.widget).getText();
             }
         };

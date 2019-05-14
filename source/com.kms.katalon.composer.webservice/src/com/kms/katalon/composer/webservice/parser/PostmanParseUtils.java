@@ -72,8 +72,6 @@ public class PostmanParseUtils {
                 folder.setChildrenEntities(childrenEntities); 
                 pushPostManItemToWSTestObjectSet(root, newWSTestObjects);
             }
-        }
-        for (Item root : rootItems) {
             if (root.getRequest() != null) {
                 WebServiceRequestEntity entity = new WebServiceRequestEntity();
                 Request request = root.getRequest();
