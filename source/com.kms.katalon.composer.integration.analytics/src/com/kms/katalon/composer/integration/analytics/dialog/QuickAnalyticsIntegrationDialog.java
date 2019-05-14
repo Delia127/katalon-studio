@@ -93,7 +93,7 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
         Label lblRecommend = new Label(recommendComposite, SWT.NONE);
         lblRecommend.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_RECOMMEND);
         
-        new HelpComposite(recommendComposite, "");
+        new HelpComposite(recommendComposite, "https://#top");
         
         Group grpSelect = new Group(container, SWT.NONE);
         grpSelect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -123,7 +123,7 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
         cbxAutoSubmit = new Button(grpTestResult, SWT.CHECK);
         cbxAutoSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAutoSubmit.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_AUTO_SUBMIT);
-        new HelpComposite(grpTestResult, "");
+        new HelpComposite(grpTestResult, "https://#top");
 
         Composite attachComposite = new Composite(grpTestResult, SWT.NONE);
         GridLayout glGrpAttach = new GridLayout(1, false);
