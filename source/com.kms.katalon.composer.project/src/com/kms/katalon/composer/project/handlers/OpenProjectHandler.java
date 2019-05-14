@@ -169,10 +169,10 @@ public class OpenProjectHandler {
                                     AnalyticsProject projectKA = analyticsSettingStore.getProject();
                                     AnalyticsConfigutionProject analyticsConfigutionProject = new AnalyticsConfigutionProject();
                                     
-                                    if (teamKA.getId() == null && projectKA.getId() == null) { //New project
-                                    	analyticsConfigutionProject.setDataStore(); 
-                                    } else {
+                                    if (teamKA.getId() != null && projectKA.getId() != null) { 
                                     	analyticsConfigutionProject.checkUserAccessProject();
+                                    } else {
+//                                    	analyticsConfigutionProject.setDataStore(); //New project
                                     }
                                     
                                  // Set project name on window title
