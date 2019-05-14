@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,9 +24,15 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 
 public class QuickAnalyticsIntegrationDialog extends Dialog{
+	public static final int OK_ID = 2;
+	
 	private Composite container;
+	
+	private Button btnOk;
 	
 	private Button cbxAutoSubmit;
 	
@@ -111,7 +120,55 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
         Label lblDir = new Label(container, SWT.NONE);
         lblDir.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_TO_CONFIG);
         ControlUtils.setFontStyle(lblDir, SWT.BOLD | SWT.ITALIC, -1);
+        
+        initialize();
+        
         return container;
+	}
+	
+    protected void initialize() {
+    	cbxAutoSubmit.setSelection(true);
+    	cbxAttachScreenshot.setSelection(true);
+    }
+	
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		btnOk = createButton(parent, OK_ID, "OK", true);
+		addControlListeners();
+	}
+	
+	private void addControlListeners() {
+		btnOk.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+//                handleUpload();
+            	okPressed();
+            }
+        });
+		
+		cbxAutoSubmit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
+			}
+		});
+		
+		cbbTeams.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+//                AnalyticsTeam getSelectTeam = teams.get(cbbTeams.getSelectionIndex());
+//				
+//				String serverUrl = txtServerUrl.getText();
+//				String email = txtEmail.getText();
+//				String password = txtPassword.getText();
+//				AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+//				projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+//						getSelectTeam, tokenInfo, new ProgressMonitorDialog(getShell()));
+//				
+//				setProjectsBasedOnTeam(getSelectTeam, projects);
+//				changeEnabled();
+            }
+        });
 	}
 	
     @Override
