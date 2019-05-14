@@ -5,13 +5,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.controller.FolderController;
@@ -109,7 +108,8 @@ public class AnalyticsReportService implements AnalyticsComponent {
         if (executions != null && !executions.isEmpty()) {
             executions.stream()
             .filter(execution -> execution != null)
-            .forEach(execution -> LogUtil.printOutputLine("Katalon Analytics - Execution Url: " + execution.getWebUrl()));
+            .forEach(execution -> LogUtil.printOutputLine(
+                    MessageFormat.format(IntegrationAnalyticsMessages.MSG_EXECUTION_URL, execution.getWebUrl())));
         }
     }
     

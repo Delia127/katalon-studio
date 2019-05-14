@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.parser.PostmanParseUtils;
@@ -69,6 +70,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
                         monitor.beginTask("Importing Web Service Requests from Postman...", SubMonitor.UNKNOWN);
                         createWebServiceRequestEntities();
                     } catch (Exception e) {
+                        LoggerSingleton.logError(e);
                         throw new InvocationTargetException(e);
                     } finally {
                         monitor.done();
@@ -77,7 +79,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
             });
         } catch (Exception e) {
             closeTheDialog = false;
-            setMessage(StringConstants.EXC_INVALID_POSTMAN_FILE, IMessageProvider.ERROR);
+            setMessage(e.getMessage(), IMessageProvider.ERROR);
             ok.setEnabled(false);
         } finally {
             if (closeTheDialog == true) {

@@ -163,16 +163,16 @@ public class OpenProjectHandler {
                             try {
                                 if (project != null) {
                                     AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
-                                    		ProjectController.getInstance().getCurrentProject().getFolderLocation());;
+                                    		ProjectController.getInstance().getCurrentProject().getFolderLocation());
                                     
                                     AnalyticsTeam teamKA = analyticsSettingStore.getTeam();
                                     AnalyticsProject projectKA = analyticsSettingStore.getProject();
                                     AnalyticsConfigutionProject analyticsConfigutionProject = new AnalyticsConfigutionProject();
                                     
-                                    if (teamKA.getId() == null && projectKA.getId() == null) { //New project
-                                    	analyticsConfigutionProject.setDataStore(); 
-                                    } else {
+                                    if (teamKA.getId() != null && projectKA.getId() != null) { 
                                     	analyticsConfigutionProject.checkUserAccessProject();
+                                    } else {
+//                                    	analyticsConfigutionProject.setDataStore(); //New project
                                     }
                                     
                                  // Set project name on window title
