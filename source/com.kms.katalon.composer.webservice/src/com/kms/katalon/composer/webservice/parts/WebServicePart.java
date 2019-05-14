@@ -2438,6 +2438,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (mPart == null || originalWsObject == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.equals(part.getElementId(), mPart.getElementId())) {
             return;

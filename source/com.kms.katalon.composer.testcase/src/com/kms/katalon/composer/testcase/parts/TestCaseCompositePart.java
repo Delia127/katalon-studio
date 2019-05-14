@@ -1026,6 +1026,9 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (originalTestCase == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.startsWith(part.getElementId(),
                 EntityPartUtil.getTestCaseCompositePartId(originalTestCase.getId()))) {

@@ -248,6 +248,9 @@ public class ExecutionProfileCompositePart implements IComposerPartEvent, Savabl
 	    @Inject
 	    @Optional
 		public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+	         if (executionProfileEntity == null) {
+	             return;
+	         }
 	    	 MPart part = EventUtil.getPart(event);
 	         if (part == null || !part.getElementId().equals(compositePart.getElementId())) {
 	             return;
