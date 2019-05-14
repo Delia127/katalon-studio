@@ -1,8 +1,11 @@
 package com.kms.katalon.composer.integration.analytics.dialog;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
@@ -20,12 +23,19 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.controls.HelpComposite;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class QuickAnalyticsIntegrationDialog extends Dialog{
 	public static final int OK_ID = 2;
@@ -45,6 +55,14 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
     private List<AnalyticsProject> projects = new ArrayList<>();
 
     private List<AnalyticsTeam> teams = new ArrayList<>();
+    
+    private AnalyticsSettingStore analyticsSettingStore;
+    
+    private String password;
+    
+	private String serverUrl;
+	
+	private String email;
 	
 	public QuickAnalyticsIntegrationDialog(Shell parentShell) {
 		super(parentShell);
@@ -53,6 +71,9 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
+		
+		analyticsSettingStore = new AnalyticsSettingStore(
+        		ProjectController.getInstance().getCurrentProject().getFolderLocation());
 		
 		shell.setText(ComposerIntegrationAnalyticsMessageConstants.TITLE_DLG_QUICK_ANALYTICS_INTEGRATION);
 	}
@@ -126,9 +147,58 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
         return container;
 	}
 	
-    protected void initialize() {
-    	cbxAutoSubmit.setSelection(true);
-    	cbxAttachScreenshot.setSelection(true);
+    private void initialize() {
+    	fillData();
+    	updateDataStore();
+    }
+    
+	private void fillData() {
+		cbbTeams.setItems();
+		cbbProjects.setItems();
+
+		try {
+			password = analyticsSettingStore.getPassword(true);
+			serverUrl = "https://analytics.katalon.com/";
+			email = analyticsSettingStore.getEmail(true);
+
+			cbxAutoSubmit.setSelection(true);
+			cbxAttachScreenshot.setSelection(true);
+
+			teams.clear();
+			projects.clear();
+
+			AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
+					analyticsSettingStore);
+			if (tokenInfo == null) {
+				return;
+			}
+			teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo,
+					new ProgressMonitorDialog(getShell()));
+			projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+					teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
+					tokenInfo, new ProgressMonitorDialog(getShell()));
+
+			if (teams != null && teams.size() > 0) {
+				cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+
+				int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+				cbbTeams.select(indexSelectTeam);
+
+				setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+			}
+		} catch (IOException | GeneralSecurityException e) {
+			e.printStackTrace();
+		}
+	}
+    
+    private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
+        if (projects != null && !projects.isEmpty()) {
+            cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+        } else {
+        	cbbProjects.clearSelection();
+        	cbbProjects.removeAll();
+        }
     }
 	
 	@Override
@@ -141,7 +211,7 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
 		btnOk.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-//                handleUpload();
+                updateDataStore();
             	okPressed();
             }
         });
@@ -156,21 +226,44 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
 		cbbTeams.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-//                AnalyticsTeam getSelectTeam = teams.get(cbbTeams.getSelectionIndex());
-//				
-//				String serverUrl = txtServerUrl.getText();
-//				String email = txtEmail.getText();
-//				String password = txtPassword.getText();
-//				AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
-//				projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-//						getSelectTeam, tokenInfo, new ProgressMonitorDialog(getShell()));
-//				
-//				setProjectsBasedOnTeam(getSelectTeam, projects);
-//				changeEnabled();
+                AnalyticsTeam getSelectTeam = teams.get(cbbTeams.getSelectionIndex());
+				
+				AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+				projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+						getSelectTeam, tokenInfo, new ProgressMonitorDialog(getShell()));
+				
+				setProjectsBasedOnTeam(getSelectTeam, projects);
             }
         });
 	}
 	
+    private void updateDataStore() {
+        try {
+            boolean encryptionEnabled = true;
+            analyticsSettingStore.enableIntegration(encryptionEnabled);
+            analyticsSettingStore.setServerEndPoint(serverUrl, encryptionEnabled);
+            analyticsSettingStore.enableEncryption(encryptionEnabled);
+            if (!teams.isEmpty()) {
+                analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
+            }
+            analyticsSettingStore.setProject(
+                    cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
+            analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());
+            analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
+            analyticsSettingStore.setAttachLog(encryptionEnabled);
+
+            IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+            eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
+        } catch (IOException | GeneralSecurityException e) {
+            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
+        } 
+    }
+	
+    private boolean isIntegratedSuccessfully() {
+        return teams.isEmpty();
+    }
+    
     @Override
     protected Point getInitialSize() {
 //        return getShell().computeSize(450, 370, true);

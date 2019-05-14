@@ -163,7 +163,7 @@ public class OpenProjectHandler {
                             try {
                                 if (project != null) {
                                     AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
-                                    		ProjectController.getInstance().getCurrentProject().getFolderLocation());;
+                                    		ProjectController.getInstance().getCurrentProject().getFolderLocation());
                                     
                                     AnalyticsTeam teamKA = analyticsSettingStore.getTeam();
                                     AnalyticsProject projectKA = analyticsSettingStore.getProject();
