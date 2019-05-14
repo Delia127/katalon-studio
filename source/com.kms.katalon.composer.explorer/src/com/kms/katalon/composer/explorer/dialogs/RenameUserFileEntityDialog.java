@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.explorer.dialogs;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -26,16 +27,16 @@ public class RenameUserFileEntityDialog extends CustomTitleAreaDialog {
 
     private FileEntity currentFile;
     
-    private List<FileEntity> siblingFiles;
+    private List<String> siblingFileNames;
     
     private Text txtName;
     
     private String name;
     
-    public RenameUserFileEntityDialog(Shell parentShell, FileEntity userFileEntity, List<FileEntity> siblingFiles) {
+    public RenameUserFileEntityDialog(Shell parentShell, FileEntity userFileEntity, List<String> siblingFileNames) {
         super(parentShell);
         this.currentFile = userFileEntity;
-        this.siblingFiles = siblingFiles;
+        this.siblingFileNames = siblingFileNames;
     }
 
     @Override
@@ -82,8 +83,8 @@ public class RenameUserFileEntityDialog extends CustomTitleAreaDialog {
     }
     
     private boolean isNameDuplicated(String newName) {
-        return siblingFiles.stream()
-                .filter(f -> FilenameUtils.getName(f.toFile().getName()).equals(newName))
+        return siblingFileNames.stream()
+                .filter(f -> f.equalsIgnoreCase(newName))
                 .findAny()
                 .isPresent();
     }

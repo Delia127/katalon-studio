@@ -11,6 +11,8 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 public interface IFolderDataProvider {
     public FolderEntity addNewFolder(FolderEntity parentFolder, String folderName) throws Exception;
 
+    public FolderEntity addNewRootFolder(ProjectEntity project, String folderName) throws Exception;
+    
     public FolderEntity getFolder(String folderValue) throws Exception;
 
     public List<FileEntity> getChildren(FolderEntity parentFolder) throws Exception;
@@ -58,5 +60,5 @@ public interface IFolderDataProvider {
 
     public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception;
 
-    public List<FolderEntity> getUserFolders(ProjectEntity project) throws DALException;
+    public List<FileEntity> getRootUserFilesOrFolders(ProjectEntity project) throws DALException;
 }
