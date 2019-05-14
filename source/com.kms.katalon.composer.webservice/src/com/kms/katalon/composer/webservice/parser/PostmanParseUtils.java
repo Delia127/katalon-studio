@@ -36,6 +36,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
@@ -49,20 +50,29 @@ import com.kms.katalon.entity.webservice.TextBodyContent;
 import com.kms.katalon.entity.webservice.UrlEncodedBodyParameter;
 
 public class PostmanParseUtils {
-
+    static FolderEntity folder =null;
     public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder,
             String fileLocationOrUrl) throws JsonParseException, JsonMappingException, IOException, ControllerException {
-
+        FolderEntity folderEntity = FolderController.getInstance().addNewFolder(parentFolder, "Postman");
         List<WebServiceRequestEntity> newWSTestObjects = new ArrayList<WebServiceRequestEntity>();
         ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
                 false);
         PostmanCollection postman = objectMapper.readValue(new File(fileLocationOrUrl), PostmanCollection.class);
 
-        List<Item> rootItems = postman.getItem().stream().map(i -> flatten(i)).flatMap(List::stream).collect(Collectors.toList());
+        //List<Item> rootItems = postman.getItem().stream().map(i -> flatten(i)).flatMap(List::stream).collect(Collectors.toList());
         ExecutionProfileEntity profileEntity = GlobalVariableController.getInstance().getExecutionProfile("default",
                 ProjectController.getInstance().getCurrentProject());
         List<GlobalVariableEntity> globalVariableEntites = profileEntity.getGlobalVariableEntities();
         List<VariableEntity> allVariables = new ArrayList<>();
+        List<FileEntity> childrenEntities = new ArrayList<FileEntity>();
+        List<Item> rootItems = postman.getItem();
+        for (Item root : rootItems) {
+            if(root.getRequest() == null){
+                folder = FolderController.getInstance().addNewFolder(folderEntity, root.getName());
+                folder.setChildrenEntities(childrenEntities); 
+                pushPostManItemToWSTestObjectSet(root, newWSTestObjects);
+            }
+        }
         for (Item root : rootItems) {
             if (root.getRequest() != null) {
                 WebServiceRequestEntity entity = new WebServiceRequestEntity();
@@ -108,6 +118,7 @@ public class PostmanParseUtils {
                     textBodyContent.setText(textBody);
                     entity.setHttpBodyContent(JsonUtil.toJson(textBodyContent));
                 }
+                entity.setParentFolder(folderEntity);
                 newWSTestObjects.add(entity);
 
                 allVariables.addAll(entityVariables);
@@ -319,6 +330,7 @@ public class PostmanParseUtils {
                 entity.setHttpBodyType("x-www-form-urlencoded");
                 entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
             }
+            entity.setParentFolder(folder);
             newWSTestObjects.add(entity);
         }
     }
@@ -503,12 +515,10 @@ public class PostmanParseUtils {
             return null;
         }
 
-        FolderEntity folderEntity = FolderController.getInstance().addNewFolder(parentFolder, "Postman");
         List<WebServiceRequestEntity> newWSTestObjects = (List<WebServiceRequestEntity>) PostmanParseUtils
                 .parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
         for (WebServiceRequestEntity entity : newWSTestObjects) {
             entity.setElementGuidId(Util.generateGuid());
-            entity.setParentFolder(folderEntity);
             entity.setProject(parentFolder.getProject());
         }
 
