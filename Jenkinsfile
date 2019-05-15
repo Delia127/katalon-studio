@@ -132,7 +132,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
     }
 ]"""
                         writeFile(file: "${env.tmpDir}/lastest_release_old.json", text: latestRelease)
-                        def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_release_old.json")
+                        def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_release.json")
                         println(latest_release_from_file)
 
                 }
@@ -162,7 +162,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
     }
 ]"""
                         writeFile(file: "${env.tmpDir}/lastest_release.json", text: latestRelease)
-                        def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_release.json")
+                        def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_release_old.json")
                         println(latest_release_from_file)
                 }
             }
