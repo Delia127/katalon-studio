@@ -56,7 +56,7 @@ pipeline {
                     isQtest = branch.contains('qtest')
                     println("Is qTest ${isQtest}.")
 
-                    isRelease = branch.startsWith('release-')
+                    isRelease = branch.startsWith('release-') || branch.contains('-release-')
                     println("Is release ${isRelease}.")
 
                     isBeta = isRelease && branch.contains('.rc')
