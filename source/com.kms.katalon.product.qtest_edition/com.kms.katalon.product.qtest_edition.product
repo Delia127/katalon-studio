@@ -16,7 +16,7 @@
    <launcherArgs>
       <programArgs>-data config
       </programArgs>
-      <programArgsLin>-noSplash
+      <programArgsLin>--launcher.GTK_version 2
       </programArgsLin>
       <programArgsMac>-vm ../../Contents/Eclipse/jre/Contents/Home/jre/lib/jli/libjli.dylib
       </programArgsMac>
@@ -49,7 +49,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
