@@ -56,7 +56,7 @@ pipeline {
                     isQtest = branch.contains('qtest')
                     println("Is qTest ${isQtest}.")
 
-                    isRelease = branch.startsWith('release-')
+                    isRelease = branch.startsWith('release-') || branch.contains('-release-')
                     println("Is release ${isRelease}.")
 
                     isBeta = isRelease && branch.contains('.rc')
@@ -109,7 +109,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
-        stage('Generate lastest_release_old.json') {
+        stage('Generate lastest_release.json') {
             steps {
                 script {
                         def latestRelease =
@@ -131,39 +131,10 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         "file": "linux_64"
     }
 ]"""
-                        writeFile(file: "${env.tmpDir}/lastest_release_old.json", text: latestRelease)
-                        def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_release_old.json")
-                        println(latest_release_from_file)
-
-                }
-            }
-        }
-
-        stage('Generate lastest_release.json') {
-            steps {
-                script {
-                        def latestRelease =
-"""[
-    {
-        "location": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_32-${version}.zip",
-        "file": "win_32"
-    },
-    {
-        "location": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_64-${version}.zip",
-        "file": "win_64"
-    },
-    {
-        "location": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.dmg",
-        "file": "mac_64"
-    },
-    {
-        "location": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Linux_64-${version}.tar.gz",
-        "file": "linux_64"
-    }
-]"""
                         writeFile(file: "${env.tmpDir}/lastest_release.json", text: latestRelease)
                         def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_release.json")
                         println(latest_release_from_file)
+
                 }
             }
         }
