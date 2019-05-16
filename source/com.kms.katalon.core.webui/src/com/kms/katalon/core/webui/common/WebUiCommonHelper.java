@@ -1177,7 +1177,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     
     /**
      * This method first retrieves attribute "outerHTML" of the web element
-     * and build the test object with these information. Default test object ID
+     * and build a test object with attributes inside outerHTML. Default test object ID
      * would be the the tag name of this web element.
      * 
      * @param webElement
@@ -1196,7 +1196,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (outerHtmlContent == null || outerHtmlContent.equals("")) {
             return null;
         }
-        TestObject resultTestObject = new TestObjectBuilder(webElement.getTagName()).withProperties(properties)
+        TestObject resultTestObject = new TestObjectBuilder(webElement.getTagName())
+                .withProperties(properties)
                 .withSelectorMethod(SelectorMethod.BASIC)
                 .build();
 
