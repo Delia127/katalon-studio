@@ -86,8 +86,9 @@ public class AnalyticsConfigutionProject {
 	public void checkUserAccessProject() {
 		try {
 			List<AnalyticsTeam> teams = new ArrayList<>();
+			String server = analyticsSettingStore.getServerEndpoint(true);
 			AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
-	                serverUrl,
+					server,
 	                email,  
 	                password, 
 	                analyticsSettingStore);
@@ -96,7 +97,7 @@ public class AnalyticsConfigutionProject {
 				return;
 			}
 			
-			teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
+			teams = AnalyticsAuthorizationHandler.getTeams(server, email, password, tokenInfo, new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
 			
 			AnalyticsTeam currentTeam;
 			currentTeam = analyticsSettingStore.getTeam();
@@ -111,7 +112,7 @@ public class AnalyticsConfigutionProject {
 	    	}
 	    	PermissionAccessAnalyticsDialog.showErrorDialog("Warring",
 					IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
-		} catch (IOException e) {
+		} catch (IOException | GeneralSecurityException e) {
 			e.printStackTrace();
 		}
 

@@ -511,25 +511,17 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(getShell()));
                 
                 if (teams != null && !teams.isEmpty()) {
-					try {	               
-	                	if (!checkUserCanAccessProject()) {
-	                		teams.add(analyticsSettingStore.getTeam());
-	                		projects.add(analyticsSettingStore.getProject());
-	                	} else {
-	                		projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-	                                teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
-	                                tokenInfo,
-	                                new ProgressMonitorDialog(getShell()));
-	                	}
+					projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+					        teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
+					        tokenInfo,
+					        new ProgressMonitorDialog(getShell()));
 
-	                	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-	                	int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-	                    cbbTeams.select(indexSelectTeam);
-	                                        
-	                    setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
+					cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+					int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+					cbbTeams.select(indexSelectTeam);
+					                    
+					setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+					linkStatusAccessProject.setText("");
                 }
                 changeEnabled();
             }
