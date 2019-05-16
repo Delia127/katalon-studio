@@ -44,20 +44,13 @@ public class PluginPreferenceStore {
     }
     
     public KStoreUsernamePasswordCredentials getKStoreUsernamePasswordCredentials() throws GeneralSecurityException, IOException {
-        String encryptedCredentialsJson = store.getString(KATALON_STORE_CREDENTIALS);
-        if (encryptedCredentialsJson == null) {
-            return null;
-        }
-        String credentialsJson = CryptoUtil.decode(CryptoUtil.getDefault(encryptedCredentialsJson));
-        KStoreUsernamePasswordCredentials credentials = JsonUtil.fromJson(credentialsJson, KStoreUsernamePasswordCredentials.class);
+        String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+        KStoreUsernamePasswordCredentials credentials = new KStoreUsernamePasswordCredentials();
+        credentials.setUsername(username);
+        credentials.setPassword(password);
         return credentials;
-    }
-    
-    public void setKStoreUsernamePasswordCredentials(KStoreUsernamePasswordCredentials credentials) throws GeneralSecurityException, IOException {
-        String credentialsJson = JsonUtil.toJson(credentials);
-        String encryptedCredentialsJson = CryptoUtil.encode(CryptoUtil.getDefault(credentialsJson));
-        store.setValue(KATALON_STORE_CREDENTIALS, encryptedCredentialsJson);
-        store.save();
     }
     
     public KatalonStoreToken getToken() throws GeneralSecurityException, IOException {
