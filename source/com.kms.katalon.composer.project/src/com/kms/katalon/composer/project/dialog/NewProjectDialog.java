@@ -154,17 +154,6 @@ public class NewProjectDialog extends TitleAreaDialog {
         Composite projectTypeComposite = new Composite(container, SWT.NONE);
         projectTypeComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         projectTypeComposite.setLayout(new GridLayout(5, false));
-        // WEBSERVICE
-        rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
-        GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
-        rbWebServiceProjectType.setText(StringConstants.VIEW_OPTION_WEB_SERVICE_PROJECT);
-        rbWebServiceProjectType.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                populateWebServiceProjects();
-            }
-        });
 
         // WEB
         rbWebProjectType = new Button(projectTypeComposite, SWT.RADIO);
@@ -177,6 +166,19 @@ public class NewProjectDialog extends TitleAreaDialog {
                 populateWebProjects();
             }
         });
+
+        // WEBSERVICE
+        rbWebServiceProjectType = new Button(projectTypeComposite, SWT.RADIO);
+        GridData gdWebServiceProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        rbWebServiceProjectType.setLayoutData(gdWebServiceProjectType);
+        rbWebServiceProjectType.setText(StringConstants.VIEW_OPTION_WEB_SERVICE_PROJECT);
+        rbWebServiceProjectType.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                populateWebServiceProjects();
+            }
+        });
+
         // MOBILE
         rbMobileProjectType = new Button(projectTypeComposite, SWT.RADIO);
         GridData gdMobileProjectType = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
@@ -285,8 +287,9 @@ public class NewProjectDialog extends TitleAreaDialog {
             }
             cbProjects.select(cbProjects.indexOf(initialSampleProject.getName()));
         } else {
-            populateWebServiceProjects();
+            populateWebProjects();
             rbWebServiceProjectType.setSelection(true);
+            rbWebProjectType.setSelection(true);
             cbProjects.select(0);
         }
         showRepoUrlBySelectedProject();
