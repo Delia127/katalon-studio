@@ -45,6 +45,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.testobject.TestObjectBuilder;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.TestObjectXpath;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
@@ -1172,5 +1173,39 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     public static boolean switchToParentFrame(TestObject testObject) throws WebElementNotFoundException {
         return switchToParentFrame(testObject, RunConfiguration.getTimeOut());
+    }
+    
+    /**
+     * This method first retrieves attribute "outerHTML" of the web element
+     * and build the test object with these information. Default test object ID
+     * would be the the tag name of this web element.
+     * 
+     * @param webElement
+     * @return
+     */
+    public static TestObject convertWebElementToTestObject(WebElement webElement) {
+        String outerHtmlContent = webElement.getAttribute("outerHTML");
+        String regex = "([a-z]+-?[a-z]+_?)='?\"?([a-z]+-?[a-z]+_?)'?\"";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(outerHtmlContent);
+        List<TestObjectProperty> properties = new ArrayList<>();
+        while (matcher.find()) {
+            properties.add(new TestObjectProperty(matcher.group(1), ConditionType.EQUALS, matcher.group(2), true));
+        }
+
+        if (outerHtmlContent == null || outerHtmlContent.equals("")) {
+            return null;
+        }
+        TestObject resultTestObject = new TestObjectBuilder(webElement.getTagName()).withProperties(properties)
+                .withSelectorMethod(SelectorMethod.BASIC)
+                .build();
+
+        String cssLocatorValue = findActiveEqualsObjectProperty(resultTestObject, CSS_LOCATOR_PROPERTY_NAME);
+        if (cssLocatorValue != null) {
+            resultTestObject.setSelectorValue(SelectorMethod.BASIC, cssLocatorValue);
+        }
+        XPathBuilder xpathBuilder = new XPathBuilder(resultTestObject.getActiveProperties());
+        resultTestObject.setSelectorValue(SelectorMethod.BASIC, xpathBuilder.build());
+        return resultTestObject;
     }
 }
