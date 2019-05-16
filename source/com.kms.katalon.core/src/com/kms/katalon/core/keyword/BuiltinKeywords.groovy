@@ -7,7 +7,7 @@ import java.text.MessageFormat
 import org.apache.commons.lang.ObjectUtils
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.math.NumberUtils
-import org.openqa.selenium.WebElement
+
 import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.checkpoint.Checkpoint
 import com.kms.katalon.core.checkpoint.CheckpointCell
@@ -26,7 +26,6 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCase
 import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.core.testdata.TestData
-import com.kms.katalon.core.testobject.TestObject
 
 @CompileStatic
 public class BuiltinKeywords {

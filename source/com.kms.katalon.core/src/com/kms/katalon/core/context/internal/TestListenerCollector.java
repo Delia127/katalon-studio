@@ -69,7 +69,6 @@ public class TestListenerCollector implements ExecutionListenerEventHandler {
         List<String> listeners = RunConfiguration.getPluginTestListeners();
         try {
             for (String listener : listeners) {
-                System.out.println(listener);
                 Class<?> clazz = TestCaseMain.getScriptEngine().getExecutingScriptClassLoader().loadClass(listener);
                 TestHooker testHooker = new TestHooker(clazz);
                 testHookers.add(testHooker);
