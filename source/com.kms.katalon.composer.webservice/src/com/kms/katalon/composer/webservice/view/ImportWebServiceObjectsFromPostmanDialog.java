@@ -1,9 +1,14 @@
 package com.kms.katalon.composer.webservice.view;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -21,6 +26,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.parser.PostmanParseUtils;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -54,10 +61,25 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
         Button ok = getButton(IDialogConstants.OK_ID);
         boolean closeTheDialog = true;
         try {
-            createWebServiceRequestEntities();
+            ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
+            dialog.run(true, false, new IRunnableWithProgress() {
+                
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask("Importing Web Service Requests from Postman...", SubMonitor.UNKNOWN);
+                        createWebServiceRequestEntities();
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                        throw new InvocationTargetException(e);
+                    } finally {
+                        monitor.done();
+                    }
+                }
+            });
         } catch (Exception e) {
             closeTheDialog = false;
-            setMessage(StringConstants.EXC_INVALID_POSTMAN_FILE, IMessageProvider.ERROR);
+            setMessage(e.getMessage(), IMessageProvider.ERROR);
             ok.setEnabled(false);
         } finally {
             if (closeTheDialog == true) {
@@ -94,7 +116,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Label label = new Label(composite, SWT.NONE);
-        label.setText("File location or URL: ");
+        label.setText("File location : ");
 
         Text text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -120,7 +142,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
                 if (ok.isEnabled() == false) {
                     ok.setEnabled(true);
                 }
-
+                    ok.setEnabled(!text.getText().isEmpty());
                 directory = ((Text) e.widget).getText();
             }
         };
@@ -130,7 +152,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
         messageLabel.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Program.launch("https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md");
+                Program.launch("https://schema.getpostman.com/collection/json/v2.1.0/draft-07/docs/index.html");
             }
         });
         return composite;
@@ -153,5 +175,11 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
 
     public String getPostmanSpecLocation() {
         return directory;
+    }
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        // TODO Auto-generated method stub
+        super.createButtonsForButtonBar(parent);
+        getButton(OK).setEnabled(false);
     }
 }

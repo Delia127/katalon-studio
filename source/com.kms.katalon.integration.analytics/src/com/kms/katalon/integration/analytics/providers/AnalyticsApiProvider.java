@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -31,10 +32,12 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.util.EntityUtils;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
@@ -141,7 +144,7 @@ public class AnalyticsApiProvider {
         }
     }
 
-    public static void sendLog(String serverUrl, long projectId, long timestamp, String folderName, File file,
+    public static List<AnalyticsExecution> sendLog(String serverUrl, long projectId, long timestamp, String folderName, File file,
             boolean isEnd, String token) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_KATALON_TEST_REPORTS);
@@ -165,7 +168,7 @@ public class AnalyticsApiProvider {
             HttpEntity entity = builder.build();
             httpPost.setEntity(entity);
 
-            executeRequest(httpPost, Object.class);
+            return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
@@ -196,7 +199,7 @@ public class AnalyticsApiProvider {
         }
     }
 
-    public static void uploadFileInfo(String serverUrl, long projectId, long timestamp, String folderName,
+    public static List<AnalyticsExecution> uploadFileInfo(String serverUrl, long projectId, long timestamp, String folderName,
             String fileName, String uploadedPath, boolean isEnd, String token) throws AnalyticsApiExeception {
 
         try {
@@ -213,7 +216,7 @@ public class AnalyticsApiProvider {
             HttpPost httpPost = new HttpPost(uriBuilder.build());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
 
-            executeRequest(httpPost, Object.class);
+            return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
         } catch (Exception e) {
             LogUtil.logError(e);
             throw new AnalyticsApiExeception(e);
@@ -257,8 +260,19 @@ public class AnalyticsApiProvider {
                     httpRequest.getURI().toString(), statusCode, HttpStatus.SC_OK));
             throw new AnalyticsApiExeception(new Throwable(responseString));
         }
+        return responseString;
+    }
+
+    private static <T> T executeRequest(HttpUriRequest httpRequest, Class<T> returnType) throws Exception {
+        String responseString = executeRequest(httpRequest);
         Gson gson = new GsonBuilder().create();
         return gson.fromJson(responseString, returnType);
+    }
+    
+    private static <T> T executeRequest(HttpUriRequest httpRequest, TypeToken<T> typeToken) throws Exception {
+        String responseString = executeRequest(httpRequest);
+        Gson gson = new GsonBuilder().create();
+        return gson.fromJson(responseString, typeToken.getType());
     }
 
     private static URI getApiURI(String host, String path) throws URISyntaxException {

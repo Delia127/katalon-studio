@@ -125,8 +125,12 @@ public class DeleteFolderHandler implements IDeleteEntityHandler {
                 removeFromExplorer(childEntitiesPartId);
             }
 
-            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, folderEntity.getIdForDisplay()
+            if (folderEntity.getParentFolder() == null) { //root-level
+                eventBroker.post(EventConstants.EXPLORER_RELOAD_DATA, null);
+            } else {
+                eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, folderEntity.getIdForDisplay()
                     + IPath.SEPARATOR);
+            }
             return true;
         } catch (EntityIsReferencedException | TestCaseIsReferencedByTestSuiteExepception e) {
             openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e.getMessage());

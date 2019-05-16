@@ -23,6 +23,11 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
     }
 
     @Override
+    public FolderEntity addNewRootFolder(ProjectEntity project, String folderName) throws Exception {
+        return FolderFileServiceManager.addNewRootFolder(project, folderName);
+    }
+    
+    @Override
     public FolderEntity getFolder(String folderLocation) throws Exception {
         return FolderFileServiceManager.getFolder(folderLocation);
     }
@@ -152,7 +157,7 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
 	}
 	
 	@Override
-	public List<FolderEntity> getUserFolders(ProjectEntity project) throws DALException {
-	    return FolderFileServiceManager.getUserFolders(project);
+	public List<FileEntity> getRootUserFilesOrFolders(ProjectEntity project) throws DALException {
+	    return FolderFileServiceManager.getRootUserFilesOrFolders(project);
 	}
 }

@@ -4,7 +4,7 @@ import java.util.*;
 import com.fasterxml.jackson.annotation.*;
 
 public class Request {
-    private Method method;
+    private String method;
     private List<Header> header;
     private Body body;
     private URL url;
@@ -12,9 +12,9 @@ public class Request {
     private Auth auth;
 
     @JsonProperty("method")
-    public Method getMethod() { return method; }
+    public String getMethod() { return method; }
     @JsonProperty("method")
-    public void setMethod(Method value) { this.method = value; }
+    public void setMethod(String value) { this.method = value; }
 
     @JsonProperty("header")
     public List<Header> getHeader() { return header; }

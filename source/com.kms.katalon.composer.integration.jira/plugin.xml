@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
 
+   <!--
    <extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
@@ -37,5 +38,5 @@
             view="com.kms.katalon.composer.integration.jira.testcase.JiraTestCaseIntegrationViewBuilder">
       </client>
    </extension>
-
+   -->
 </plugin>

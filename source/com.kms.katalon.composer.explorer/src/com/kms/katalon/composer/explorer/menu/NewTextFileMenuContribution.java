@@ -30,16 +30,20 @@ public class NewTextFileMenuContribution {
 
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
-        FolderTreeEntity parentTreeFolder = getParentTreeFolder();
-        if (parentTreeFolder == null) {
+        try {
+            FolderTreeEntity parentTreeFolder = getParentTreeFolder();
+            if (parentTreeFolder != null && parentTreeFolder.getObject().getFolderType() != FolderType.USER) {
+                return;
+            }
+    
+            MHandledMenuItem newTextFileMenuItem = MenuFactory.createPopupMenuItem(
+                    commandService.createCommand(NEW_TEXT_FILE_COMMAND_ID, null), "File",
+                    ConstantsHelper.getApplicationURI());
+            if (newTextFileMenuItem != null) {
+                menuItems.add(newTextFileMenuItem);
+            }
+        } catch (Exception e) {
             return;
-        }
-
-        MHandledMenuItem newTextFileMenuItem = MenuFactory.createPopupMenuItem(
-                commandService.createCommand(NEW_TEXT_FILE_COMMAND_ID, null), "File",
-                ConstantsHelper.getApplicationURI());
-        if (newTextFileMenuItem != null) {
-            menuItems.add(newTextFileMenuItem);
         }
     }
 
@@ -53,14 +57,15 @@ public class NewTextFileMenuContribution {
 
             if (selectedObjects[0] instanceof FolderTreeEntity) {
                 FolderTreeEntity parentFolder = (FolderTreeEntity) selectedObjects[0];
-                return parentFolder.getObject().getFolderType() == FolderType.USER ? parentFolder : null;
+                return parentFolder;
             } else {
-                ITreeEntity parent = (ITreeEntity) selectedObjects[0];
+                ITreeEntity treeEntity = (ITreeEntity) selectedObjects[0];
+                ITreeEntity parent = treeEntity.getParent();
                 if (!(parent instanceof FolderTreeEntity)) {
                     return null;
                 }
                 FolderTreeEntity parentFolder = (FolderTreeEntity) parent;
-                return parentFolder.getObject().getFolderType() == FolderType.USER ? parentFolder : null;
+                return parentFolder;
             }
         } catch (Exception e) {
             return null;
