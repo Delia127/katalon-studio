@@ -41,6 +41,8 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -98,7 +100,13 @@ public class ConsoleMain {
             List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
-
+           
+          //Analytics
+            if (options.has(KATALON_ANALYTICS_API_KEY_OPTIPON)) {
+            	String apiKeyValue = String.valueOf(options.valueOf(KATALON_ANALYTICS_API_KEY_OPTIPON));
+            	setApiKeyKA(apiKeyValue);
+            }
+            
             if (options.has(KATALON_STORE_API_KEY_OPTION)) {
                 String apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
                 reloadPlugins(apiKeyValue);
@@ -121,11 +129,6 @@ public class ConsoleMain {
                 addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
             }
             
-            //Analytics
-            if (options.has(KATALON_ANALYTICS_API_KEY_OPTIPON)) {
-            	String apiKeyValue = String.valueOf(options.valueOf(KATALON_ANALYTICS_API_KEY_OPTIPON));
-            }
-            
             // Set option value to application configuration
             for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
                 String optionName = opt.getOption();
@@ -138,6 +141,12 @@ public class ConsoleMain {
 //            Trackings.trackOpenApplication(project,
 //                    !ActivationInfoCollector.isActivated(), "console");
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
+            
+            //Analytics
+            if (options.has(KATALON_ANALYTICS_API_KEY_OPTIPON)) {
+            	String apiKeyValue = String.valueOf(options.valueOf(KATALON_ANALYTICS_API_KEY_OPTIPON));
+            	setApiKeyKA(apiKeyValue);
+            }
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,
@@ -151,6 +160,9 @@ public class ConsoleMain {
             waitForExecutionToFinish(options);
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
+            
+            removeApiKeyKA();
+            
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
@@ -161,6 +173,34 @@ public class ConsoleMain {
             return LauncherResult.RETURN_CODE_ERROR;
         } finally {
             LauncherManager.getInstance().removeAllTerminated();
+        }
+    }
+    
+    private static void setApiKeyKA(String apiKey) throws Exception {
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon.integration.analytics");
+        Class<?> setApiKeyKA = katalonBundle
+                .loadClass("com.kms.katalon.integration.analytics.handler.AnalyticsApiKeyHanlder");
+        Object handler = setApiKeyKA.newInstance();
+        Method reloadMethod = Arrays.asList(setApiKeyKA.getMethods()).stream()
+                .filter(method -> method.getName().equals("setApiKeyToProject"))
+                .findAny()
+                .orElse(null);
+        if (reloadMethod != null) {
+            reloadMethod.invoke(handler, apiKey);
+        }
+    }
+    
+    private static void removeApiKeyKA() throws Exception {
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon.integration.analytics");
+        Class<?> setApiKeyKA = katalonBundle
+                .loadClass("com.kms.katalon.integration.analytics.handler.AnalyticsApiKeyHanlder");
+        Object handler = setApiKeyKA.newInstance();
+        Method reloadMethod = Arrays.asList(setApiKeyKA.getMethods()).stream()
+                .filter(method -> method.getName().equals("removeApiKeyAfterDone"))
+                .findAny()
+                .orElse(null);
+        if (reloadMethod != null) {
+            reloadMethod.invoke(handler);
         }
     }
 

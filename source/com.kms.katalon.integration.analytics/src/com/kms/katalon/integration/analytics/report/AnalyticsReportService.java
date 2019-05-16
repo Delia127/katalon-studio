@@ -15,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
@@ -26,6 +28,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.integration.analytics.util.ApiKey;
 import com.kms.katalon.integration.analytics.util.FileUtils;
 import com.kms.katalon.logging.LogUtil;
 
@@ -73,10 +76,22 @@ public class AnalyticsReportService implements AnalyticsComponent {
     
     private AnalyticsTokenInfo getKAToken() throws IOException, GeneralSecurityException, AnalyticsApiExeception {
     	String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
-        String email = getSettingStore().getEmail(isEncryptionEnabled());
+    	
+    	RunningMode runMode = ApplicationRunningMode.get();
+    	if (runMode == RunningMode.CONSOLE) {
+//    		String apiKey = getSettingStore().getApiKey(true);
+    		String apiKey = ApiKey.get();
+    		if (!apiKey.isEmpty()) {
+        		return AnalyticsApiProvider.requestToken(serverUrl, "", apiKey);
+        	} else {
+        		LogUtil.printErrorLine("Pleass specify Katalon API Key for execution.");
+        		return null;
+        	}
+    	}
+    	
+    	String email = getSettingStore().getEmail(isEncryptionEnabled());
         String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
-        AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-        return token;
+        return AnalyticsApiProvider.requestToken(serverUrl, email, password);
     }
 
     private void perform(String token, String path) throws Exception {

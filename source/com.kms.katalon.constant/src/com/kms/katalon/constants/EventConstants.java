@@ -369,6 +369,10 @@ public class EventConstants {
 	public static final String API_QUICK_START_WEB_DIALOG_OPEN = "API/OPEN_QUICK_START_WEB_DIALOG";
 	   
 	public static final String API_QUICK_START_MOBILE_DIALOG_OPEN = "API/OPEN_QUICK_START_MOBILE_DIALOG";
+	
+	// Analytics Quick Configurations Dialog
+	
+	public static final String ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN = "ANALYTIC/OPEN_QUICK_ANALYTICS_INTEGRATION";
 
     // Git Events
     public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";

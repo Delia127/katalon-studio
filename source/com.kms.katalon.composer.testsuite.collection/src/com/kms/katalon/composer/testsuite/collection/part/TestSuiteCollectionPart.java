@@ -858,6 +858,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (mpart == null || originalTestSuite == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.equals(part.getElementId(), mpart.getElementId())) {
             return;

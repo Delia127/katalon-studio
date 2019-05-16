@@ -575,6 +575,10 @@ public class NewProjectDialog extends TitleAreaDialog {
             TimeUnit.SECONDS.sleep(1);
 
             eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
+            
+            eventBroker.post(EventConstants.ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN, null);
+            
+            //2435
 
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -605,6 +609,8 @@ public class NewProjectDialog extends TitleAreaDialog {
             if (!(getSelectedProjectType() == ProjectType.GENERIC)) {
                 eventBroker.post(EventConstants.API_QUICK_START_DIALOG_OPEN, projectType);
             }
+            
+            eventBroker.post(EventConstants.ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN, null);
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     ex.getMessage());

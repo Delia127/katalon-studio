@@ -15,6 +15,8 @@ public interface AnalyticsSettingStoreConstants {
     
     public static final String ANALYTICS_AUTHENTICATION_TOKEN = "analytics.authentication.token";
     
+    public static final String ANALYTICS_AUTHENTICATION_APIKEY = "analytics.authentication.apikey";
+    
     public static final String ANALYTICS_ENCRYPTION_ENABLED = "analytics.authentication.encryptionEnabled";
     
     public static final String ANALYTICS_PROJECT = "analytics.project";

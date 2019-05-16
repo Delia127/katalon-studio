@@ -276,7 +276,7 @@ public class AstTextValueUtil {
     }
     
     public String getTextValue(ClassExpression classExpression) {
-        return classExpression.getType().getTypeClass().getName();
+        return classExpression.getType().getPlainNodeReference().getName();
     }
 
     public String getTextValue(TupleExpression tupleExpression) {

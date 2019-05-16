@@ -25,6 +25,11 @@ public class AndroidSDKLocator {
         File sdkFolder = getSDKFolder();
         return new File(sdkFolder, "build-tools");
     }
+    
+    public File getToolsFolder() {
+        File sdkFolder = getSDKFolder();
+        return new File(sdkFolder, "tools");
+    }
 
     public boolean checkSDKExists() {
         File sdkFolder = getSDKFolder();
