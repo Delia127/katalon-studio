@@ -258,8 +258,10 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 			Desktop.getDesktop().browse(new URL(builder.toString()).toURI());	
 			zipTeamFile.deleteOnExit();
 			
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception exception) {
+			MultiStatusErrorDialog.showErrorDialog(exception,
+                    "Unable to compress project",
+                    exception.getMessage());
 		}
 		
 		super.okPressed();
