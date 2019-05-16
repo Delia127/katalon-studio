@@ -36,6 +36,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
@@ -51,19 +52,29 @@ import com.kms.katalon.entity.webservice.UrlEncodedBodyParameter;
 public class PostmanParseUtils {
 
     public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder,
-            String fileLocationOrUrl) throws JsonParseException, JsonMappingException, IOException, ControllerException {
-
+            String fileLocationOrUrl)
+            throws JsonParseException, JsonMappingException, IOException, ControllerException {
+        FolderEntity folderEntity = FolderController.getInstance().addNewFolder(parentFolder, "Postman");
         List<WebServiceRequestEntity> newWSTestObjects = new ArrayList<WebServiceRequestEntity>();
         ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
                 false);
         PostmanCollection postman = objectMapper.readValue(new File(fileLocationOrUrl), PostmanCollection.class);
 
-        List<Item> rootItems = postman.getItem().stream().map(i -> flatten(i)).flatMap(List::stream).collect(Collectors.toList());
+        // List<Item> rootItems = postman.getItem().stream().map(i ->
+        // flatten(i)).flatMap(List::stream).collect(Collectors.toList());
+        List<Item> rootItems = postman.getItem();
         ExecutionProfileEntity profileEntity = GlobalVariableController.getInstance().getExecutionProfile("default",
                 ProjectController.getInstance().getCurrentProject());
         List<GlobalVariableEntity> globalVariableEntites = profileEntity.getGlobalVariableEntities();
         List<VariableEntity> allVariables = new ArrayList<>();
+        List<FileEntity> childrenEntities = new ArrayList<FileEntity>();
         for (Item root : rootItems) {
+            if (root.getRequest() == null) {
+                FolderEntity folder = FolderController.getInstance().addNewFolder(folderEntity, root.getName());
+                folder.setChildrenEntities(childrenEntities);
+                pushPostManItemToWSTestObjectSet(root, newWSTestObjects, folder);
+            }
+
             if (root.getRequest() != null) {
                 WebServiceRequestEntity entity = new WebServiceRequestEntity();
                 Request request = root.getRequest();
@@ -90,8 +101,7 @@ public class PostmanParseUtils {
                 entity.setVariables(entityVariables);
 
                 if (root.getRequest().getBody().getFormdata() != null) {
-                    ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(
-                            root);
+                    ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(root);
                     entity.setHttpBodyType("form-data");
                     entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
                 } else if (root.getRequest().getBody().getUrlencoded() != null) {
@@ -108,6 +118,7 @@ public class PostmanParseUtils {
                     textBodyContent.setText(textBody);
                     entity.setHttpBodyContent(JsonUtil.toJson(textBodyContent));
                 }
+                entity.setParentFolder(folderEntity);
                 newWSTestObjects.add(entity);
 
                 allVariables.addAll(entityVariables);
@@ -117,10 +128,10 @@ public class PostmanParseUtils {
         globalVariableEntites.addAll(toGlobalVariables(allVariables));
         profileEntity.setGlobalVariableEntities(filterDuplicatedGlobalVariables(globalVariableEntites));
         GlobalVariableController.getInstance().updateExecutionProfile(profileEntity);
-        
+
         return newWSTestObjects;
     }
-    
+
     public static List<WebElementPropertyEntity> getHttpAuthentication(Auth auth) {
         if (auth == null || StringUtils.isEmpty(auth.getType())) {
             return Collections.emptyList();
@@ -135,7 +146,7 @@ public class PostmanParseUtils {
                     if ("username".equals(b.getKey())) {
                         username = b.getValue();
                     }
-                    
+
                     if ("password".equals(b.getKey())) {
                         password = b.getValue();
                     }
@@ -145,7 +156,7 @@ public class PostmanParseUtils {
                 authenticationProp.setName("Authorization");
                 authenticationProp.setValue("Basic " + Base64.basicEncode(username, password));
                 authenticationProp.setIsSelected(true);
-                
+
                 authenticationHeaders.add(authenticationProp);
                 break;
             }
@@ -157,7 +168,7 @@ public class PostmanParseUtils {
                     if ("accessToken".equals(b.getKey())) {
                         accessToken = b.getValue();
                     }
-                    
+
                     if ("tokenType".equals(b.getKey())) {
                         tokenType = b.getValue();
                     }
@@ -196,7 +207,7 @@ public class PostmanParseUtils {
         }
         return authenticationHeaders;
     }
-    
+
     public static List<Item> flatten(Item item) {
         List<Item> leafItems = new ArrayList<>();
         if (item.getRequest() != null) {
@@ -209,8 +220,9 @@ public class PostmanParseUtils {
         }
         return leafItems;
     }
-    
-    public static List<GlobalVariableEntity> filterDuplicatedGlobalVariables(List<GlobalVariableEntity> variableEntities) {
+
+    public static List<GlobalVariableEntity> filterDuplicatedGlobalVariables(
+            List<GlobalVariableEntity> variableEntities) {
         Set<String> currentNames = new LinkedHashSet<>();
         List<GlobalVariableEntity> filtedVariables = new ArrayList<>();
         for (GlobalVariableEntity variable : variableEntities) {
@@ -229,12 +241,12 @@ public class PostmanParseUtils {
             GlobalVariableEntity globalVariable = new GlobalVariableEntity();
             globalVariable.setName(varible.getName());
             globalVariable.setInitValue("''");
-            
+
             globalVariableEntities.add(globalVariable);
         }
         return globalVariableEntities;
     }
-    
+
     public static List<VariableEntity> filterDuplicatedVariables(List<VariableEntity> variableEntities) {
         Set<String> currentNames = new LinkedHashSet<>();
         List<VariableEntity> filtedVariables = new ArrayList<>();
@@ -247,7 +259,7 @@ public class PostmanParseUtils {
         }
         return filtedVariables;
     }
-    
+
     public static String getContentType(List<WebElementPropertyEntity> headerProperties) {
         for (WebElementPropertyEntity property : headerProperties) {
             if ("Content-Type".equals(property.getName())) {
@@ -258,7 +270,7 @@ public class PostmanParseUtils {
     }
 
     public static List<VariableEntity> collectVariablesFromRawString(String rawString) {
-        List<VariableEntity> variables = new ArrayList<>(); 
+        List<VariableEntity> variables = new ArrayList<>();
         Pattern pattern = Pattern.compile("\\{\\{((?!\\{).)*\\}\\}");
         Matcher matcher = pattern.matcher(rawString);
         while (matcher.find()) {
@@ -281,46 +293,79 @@ public class PostmanParseUtils {
         return variableString;
     }
 
-    public static void pushPostManItemToWSTestObjectSet(Item item, List<WebServiceRequestEntity> newWSTestObjects) {
-        if (item.getRequest() == null) {
-            for (Item childItem : item.getItem()) {
-                pushPostManItemToWSTestObjectSet(childItem, newWSTestObjects);
+    public static void pushPostManItemToWSTestObjectSet(Item item, List<WebServiceRequestEntity> newWSTestObjects,
+            FolderEntity parentFolder) throws ControllerException {
+        ExecutionProfileEntity profileEntity = GlobalVariableController.getInstance().getExecutionProfile("default",
+                ProjectController.getInstance().getCurrentProject());
+
+        List<VariableEntity> allVariables = new ArrayList<>();
+        List<GlobalVariableEntity> globalVariableEntites = profileEntity.getGlobalVariableEntities();
+        List<FileEntity> childrenEntities = new ArrayList<FileEntity>();
+
+        for (Item childItem : item.getItem()) {
+            
+            if (childItem.getRequest() == null) {
+                WebServiceRequestEntity entity = new WebServiceRequestEntity();
+                FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolder, childItem.getName());
+                folder.setChildrenEntities(childrenEntities);
+                pushPostManItemToWSTestObjectSet(childItem, newWSTestObjects, folder);
+                entity.setParentFolder(folder);
             }
         }
         for (Item childItem : item.getItem()) {
+            if(childItem.getRequest() != null){
             WebServiceRequestEntity entity = new WebServiceRequestEntity();
-            Request request = childItem.getRequest();
+                Request request = childItem.getRequest();
+                String rawURL = request.getURL().getRaw();
+                String method = childItem.getRequest().getMethod();
+                String name = childItem.getName();
+                String body = StringUtils.defaultString(request.getBody().getRaw());
+                List<VariableEntity> variablesFromURL = collectVariablesFromRawString(rawURL);
+                List<VariableEntity> variablesFromBody = collectVariablesFromRawString(body);
+                HttpHeaderVariable httpHeaderVariable = collectHttpHeaderVariable(request, childItem);
+                entity.setName(name);
+                entity.setRestRequestMethod(method.toString());
+                entity.setRestUrl(getVariableString(variablesFromURL, rawURL));
+                entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
+                List<WebElementPropertyEntity> httpHeaders = httpHeaderVariable.getHttpHeaders();
+                httpHeaders.addAll(0, getHttpAuthentication(childItem.getRequest().getAuth()));
+                entity.setHttpHeaderProperties(httpHeaders);
 
-            String raw = request.getURL().getRaw();
-            String method = childItem.getRequest().getMethod();
-            String name = childItem.getName();
-            String nameVariable = collectNameItem(name, childItem);
-            String pathVariable = collectPathItem(raw, childItem);
-            List<WebElementPropertyEntity> propertiesEntity = collectHttpHeaderItem(request, childItem);
-            List<VariableEntity> variable = collectVariableItem(request);
-            // List<WebElementPropertyEntity> parametersInQuery = collectQueryParameter(childItem);
+                List<VariableEntity> collectedVariables = new ArrayList<>();
+                collectedVariables.addAll(variablesFromURL);
+                collectedVariables.addAll(httpHeaderVariable.getVariables());
+                collectedVariables.addAll(variablesFromBody);
+                List<VariableEntity> entityVariables = filterDuplicatedVariables(collectedVariables);
+                entity.setVariables(entityVariables);
 
-            entity.setName(nameVariable);
-            entity.setRestRequestMethod(method.toString());
-            entity.setRestUrl(pathVariable);
-            entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
-            entity.setVariables(variable);
-            entity.setHttpBody(request.getBody().getRaw());
-            entity.setHttpHeaderProperties(propertiesEntity);
-            if (childItem.getRequest().getBody().getFormdata() != null) {
-                ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(childItem);
-
-                entity.setHttpBodyType("form-data");
-                entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
-            }
-            if (childItem.getRequest().getBody().getUrlencoded() != null) {
-                ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParameters = collectUrlEncodedBody(
-                        childItem);
-                entity.setHttpBodyType("x-www-form-urlencoded");
-                entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
-            }
-            newWSTestObjects.add(entity);
+                if (childItem.getRequest().getBody().getFormdata() != null) {
+                    ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(
+                            childItem);
+                    entity.setHttpBodyType("form-data");
+                    entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
+                } else if (childItem.getRequest().getBody().getUrlencoded() != null) {
+                    ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParameters = collectUrlEncodedBody(
+                            childItem);
+                    entity.setHttpBodyType("x-www-form-urlencoded");
+                    entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
+                } else {
+                    String textBody = getVariableString(variablesFromBody, body);
+                    TextBodyContent textBodyContent = new TextBodyContent();
+                    String contentType = getContentType(httpHeaders);
+                    entity.setHttpBodyType("text");
+                    textBodyContent.setContentType(TextContentType.evaluateContentType(contentType).getContentType());
+                    textBodyContent.setText(textBody);
+                    entity.setHttpBodyContent(JsonUtil.toJson(textBodyContent));
+                   
+                }
+                entity.setParentFolder(parentFolder);
+                allVariables.addAll(entityVariables);
+                newWSTestObjects.add(entity);
         }
+        }
+        globalVariableEntites.addAll(toGlobalVariables(allVariables));
+        profileEntity.setGlobalVariableEntities(filterDuplicatedGlobalVariables(globalVariableEntites));
+        GlobalVariableController.getInstance().updateExecutionProfile(profileEntity);
     }
 
     public static String collectPathItem(String variablePath, Item item) {
@@ -369,27 +414,27 @@ public class PostmanParseUtils {
         return variablePath;
 
     }
-    
+
     public static HttpHeaderVariable collectHttpHeaderVariable(Request request, Item childItem) {
         HttpHeaderVariable httpHeaderVariables = new HttpHeaderVariable();
         List<Header> header = childItem.getRequest().getHeader();
 
         List<WebElementPropertyEntity> propertyEntities = new ArrayList<WebElementPropertyEntity>();
-        
+
         List<VariableEntity> variables = new ArrayList<>();
         for (int i = 0; i < header.size(); i++) {
             WebElementPropertyEntity webElementProperty = new WebElementPropertyEntity();
             String rawKey = header.get(i).getKey();
             String rawValue = header.get(i).getValue();
-            
+
             List<VariableEntity> variablesFromKey = collectVariablesFromRawString(rawKey);
             webElementProperty.setName(getVariableString(variablesFromKey, rawKey));
-            
+
             List<VariableEntity> variablesFromValue = collectVariablesFromRawString(rawValue);
             webElementProperty.setValue(getVariableString(variablesFromValue, rawValue));
 
             propertyEntities.add(i, webElementProperty);
-            
+
             variables.addAll(variablesFromKey);
             variables.addAll(variablesFromValue);
         }
@@ -503,21 +548,19 @@ public class PostmanParseUtils {
             return null;
         }
 
-        FolderEntity folderEntity = FolderController.getInstance().addNewFolder(parentFolder, "Postman");
         List<WebServiceRequestEntity> newWSTestObjects = (List<WebServiceRequestEntity>) PostmanParseUtils
                 .parseFromFileLocationToWSTestObject(parentFolder, directoryOfJsonFile);
         for (WebServiceRequestEntity entity : newWSTestObjects) {
             entity.setElementGuidId(Util.generateGuid());
-            entity.setParentFolder(folderEntity);
             entity.setProject(parentFolder.getProject());
         }
 
         return newWSTestObjects;
     }
-    
+
     public static class HttpHeaderVariable {
         private List<WebElementPropertyEntity> httpHeaders;
-        
+
         private List<VariableEntity> variables;
 
         public List<WebElementPropertyEntity> getHttpHeaders() {
