@@ -3825,6 +3825,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *
      * @since 6.2.0
      * @param webElement the WebElement
+     * @param flowControl failureHandling
      * @return a TestObject with properties from WebElement and name being the WebElement's tag name
      * @throws StepFailedException
      */
@@ -3832,5 +3833,22 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static TestObject webElementToTestObject(WebElement webElement, FailureHandling flowControl) throws StepFailedException {
         return (TestObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "webElementToTestObject", webElement, flowControl)
+    }
+    
+    /**
+     * Convert a WebElement to a TestObject. Note that since WebElement
+     * itself does not contain XPaths, the resulting TestObject will
+     * also not contain any XPath value either. The default name of the
+     * test object will be the tag name of this WebElement
+     *
+     * @since 6.2.0
+     * @param webElement the WebElement
+     * @return a TestObject with properties from WebElement and name being the WebElement's tag name
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static TestObject webElementToTestObject(WebElement webElement) throws StepFailedException {
+        return (TestObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "webElementToTestObject", webElement)
     }
 }
