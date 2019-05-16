@@ -8,7 +8,7 @@ import com.kms.katalon.execution.webui.configuration.ChromeRunConfiguration;
 
 public class ChromeExecutionHandler extends AbstractExecutionHandler {
 
-	protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException {
-		return new ChromeRunConfiguration(projectDir);
-	}
+    protected IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException {
+        return new ChromeRunConfiguration(projectDir);
+    }
 }

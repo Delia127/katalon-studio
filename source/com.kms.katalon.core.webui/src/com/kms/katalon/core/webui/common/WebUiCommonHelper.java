@@ -1119,7 +1119,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             // make it fail, therefore only warn user about the exception
             logger.logWarning(
                     MessageFormat.format(StringConstants.KW_LOG_WARNING_SWITCHING_TO_DEFAULT_CONTENT_FAILED_BC_OF_X,
-                            ExceptionsUtil.getMessageForThrowable(e)));
+                            ExceptionsUtil.getMessageForThrowable(e)), null, e);
         }
     }
 

@@ -44,6 +44,7 @@ import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.debug.CustomSourceLookupService;
 import com.kms.katalon.composer.execution.debug.handler.ToggleBreakpointHandler;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
+import com.kms.katalon.composer.execution.handlers.ExistingExecutionHandler;
 import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
 import com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution;
 import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
@@ -268,8 +269,10 @@ public class TestExecutionAddon implements EventHandler {
             existingRunConfiguration.setDriverName(executeFromTestStepEntity.getDriverTypeName());
             ((DefaultExecutionSetting) existingRunConfiguration.getExecutionSetting())
                     .setRawScript(executeFromTestStepEntity.getRawScript());
-            Job job = new ExecuteTestCaseJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, existingRunConfiguration,
-                    executeFromTestStepEntity.getTestCase(), LaunchMode.RUN, sync);
+            ExistingExecutionHandler handler = new ExistingExecutionHandler();
+            handler.setExistingRunConfig(existingRunConfiguration);
+            Job job = new ExecuteTestCaseJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE,
+                    executeFromTestStepEntity.getTestCase(), LaunchMode.RUN, sync, handler);
             job.setUser(true);
             job.schedule();
         } catch (Exception e) {

@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import javax.wsdl.WSDLException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.dom4j.DocumentException;
@@ -68,22 +67,15 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
-import com.kms.katalon.core.util.BrowserMobProxyManager;
-import com.kms.katalon.core.util.HarFileWriter;
-import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
-import com.kms.katalon.core.webservice.common.HarConverter;
 import com.kms.katalon.core.webservice.common.HarLogUtil;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.execution.preferences.SSLPreferences;
 import com.kms.katalon.tracking.service.Trackings;
-
-import net.lightbody.bmp.core.har.Har;
 
 public class SoapServicePart extends WebServicePart {
 

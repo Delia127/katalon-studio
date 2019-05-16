@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
+import com.kms.katalon.logging.LogUtil;
 
 public class IosDeviceInfo extends MobileDeviceInfo {
     private static final String RELATIVE_PATH_TO_TOOLS_FOLDER = "resources/tools/";
@@ -51,7 +52,11 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     }
 
     protected void initDeviceInfos(String deviceId) throws IOException, InterruptedException {
-        executeCommand("idevicepair pair -u " + deviceId);
+        List<String> pairedInfos = executeCommand("idevicepair pair -u " + deviceId);
+        String pairedString = StringUtils.join(pairedInfos, "\n");
+        if (!StringUtils.containsIgnoreCase(pairedString, "SUCCESS")) {
+            LogUtil.printErrorLine(pairedString);
+        }
 
         List<String> deviceInfos = executeCommand("ideviceinfo -u " + deviceId);
         for (String deviceInfo : deviceInfos) {
@@ -73,6 +78,10 @@ public class IosDeviceInfo extends MobileDeviceInfo {
                 continue;
             }
         }
+        if (StringUtils.isEmpty(deviceName)) {
+            LogUtil.printErrorLine(StringUtils.join(deviceInfos, "\n"));
+        }
+
         executeCommand("idevicepair unpair -u " + deviceId);
     }
 
@@ -83,7 +92,11 @@ public class IosDeviceInfo extends MobileDeviceInfo {
 
     @Override
     public String getDisplayName() {
-        return deviceClass + " " + deviceName + " " + deviceOSVersion;
+        String displayName = deviceClass + " " + deviceName + " " + deviceOSVersion;
+        if (StringUtils.isNoneBlank(displayName)) {
+            return displayName;
+        }
+        return "<unrecognized device>";
     }
 
     @Override

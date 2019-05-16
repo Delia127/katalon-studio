@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -210,7 +209,6 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.execution.preferences.SSLPreferences;
 import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 import com.kms.katalon.tracking.service.Trackings;
@@ -460,8 +458,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
 
     protected ScriptSnippet verificationScriptImport;
-    
-    protected File harFile;
 
     @Inject
     protected MDirtyable dirtyable;
@@ -484,6 +480,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected TestCaseVariableEditorView variableEditorView;
 
+    protected File harFile;
+    
     public WebServiceRequestEntity getOriginalWsObject() {
         return originalWsObject;
     }
@@ -567,16 +565,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         registerListeners();
         
         cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
-    }
-    
-    protected void deleteTempHarFile() {
-        try {
-            if (harFile != null && harFile.exists()) {
-                FileUtils.forceDelete(harFile);
-            }
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
     }
 
     private void insertImportsForVerificationScript() {
@@ -862,6 +850,15 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected abstract void sendRequest(boolean runVerificationScript);
 
+    protected void deleteTempHarFile() {
+        try {
+            if (harFile != null && harFile.exists()) {
+                FileUtils.forceDelete(harFile);
+            }
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
     protected Map<String, String> evaluateRequestVariables() throws Exception {
 
         WebServiceRequestEntity requestEntity = getWSRequestObject();
@@ -1781,8 +1778,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     
     private void showHarFile() {
         try {
-            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-            IDE.openEditorOnFileStore(page, EFS.getStore(harFile.toURI()));
+            if (harFile != null && harFile.exists()) {
+                IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                IDE.openEditorOnFileStore(page, EFS.getStore(harFile.toURI()));
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -2438,6 +2437,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (mPart == null || originalWsObject == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.equals(part.getElementId(), mPart.getElementId())) {
             return;

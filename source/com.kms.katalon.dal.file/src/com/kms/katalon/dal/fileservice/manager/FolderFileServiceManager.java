@@ -2,11 +2,11 @@ package com.kms.katalon.dal.fileservice.manager;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -25,6 +25,7 @@ import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.dal.exception.DuplicatedFolderException;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.file.UserFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -54,7 +55,6 @@ public class FolderFileServiceManager {
             StringConstants.SYSTEM_FOLDER_NAME_BIN,
             StringConstants.SYSTEM_FOLDER_NAME_DRIVER,
             StringConstants.SYSTEM_FOLDER_NAME_LIB,
-            StringConstants.SYSTEM_FOLDER_NAME_PLUGIN,
             StringConstants.SYSTEM_FOLDER_NAME_SETTINGS,
             StringConstants.SYSTEM_FOLDER_NAME_SCRIPT,
             ".git",
@@ -251,11 +251,11 @@ public class FolderFileServiceManager {
          }
     }
     
-    public static List<FolderEntity> getUserFolders(ProjectEntity project) throws DALException {
+    public static List<FileEntity> getRootUserFilesOrFolders(ProjectEntity project) throws DALException {
         if (project == null) {
             return null;
         }
-        List<FolderEntity> folderEntities = new ArrayList<>();
+        List<FileEntity> fileEntities = new ArrayList<>();
         List<String> systemFolders = Arrays.asList(SYSTEM_FOLDERS);
         try {
             File projectFolder = new File(project.getFolderLocation());
@@ -265,14 +265,39 @@ public class FolderFileServiceManager {
                     if (file.isDirectory() && !systemFolders.contains(file.getName())) {
                         FolderEntity folderEntity = getFolder(file.getAbsolutePath());
                         folderEntity.setFolderType(FolderType.USER);
-                        folderEntities.add(folderEntity);
+                        folderEntity.setProject(project);
+                        fileEntities.add(folderEntity);
+                    } else if (file.isFile()) {
+                        String fileName = file.getName();
+                        if (!(fileName.endsWith(".classpath") ||
+                            fileName.endsWith(".project") ||
+                            fileName.endsWith(".prj") ||
+                            fileName.endsWith(".DS_Store"))) {
+
+                            UserFileEntity fileEntity = new UserFileEntity(file);
+                            fileEntity.setProject(project);
+                            fileEntities.add(fileEntity);
+                        }
                     }
                 }
             }
         } catch (Exception e) {
             throw new DALException(e);
         }
-        return folderEntities;
+        fileEntities.sort(new Comparator<FileEntity>() {
+
+            @Override
+            public int compare(FileEntity fileA, FileEntity fileB) {
+                if (fileA instanceof FolderEntity && fileB instanceof UserFileEntity) { 
+                    return -1;
+                }
+                if (fileB instanceof FolderEntity && fileA instanceof UserFileEntity) { 
+                    return 1;
+                }
+                return fileA.getName().compareToIgnoreCase(fileB.getName());
+            }
+        });
+        return fileEntities;
     }
 
     /**
@@ -310,6 +335,15 @@ public class FolderFileServiceManager {
             return newFolder;
         }
         return null;
+    }
+    
+    public static FolderEntity addNewRootFolder(ProjectEntity project, String name) throws Exception {
+        FolderEntity newFolder = new FolderEntity();
+        newFolder.setName(name);
+        newFolder.setFolderType(FolderType.USER);
+        newFolder.setProject(project);
+        EntityService.getInstance().saveEntity(newFolder);
+        return newFolder;
     }
 
     public static FolderEntity getFolder(String path) throws Exception {

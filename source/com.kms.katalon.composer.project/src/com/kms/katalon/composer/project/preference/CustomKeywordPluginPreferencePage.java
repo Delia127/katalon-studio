@@ -1,14 +1,20 @@
 package com.kms.katalon.composer.project.preference;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -16,22 +22,43 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.project.keyword.ActionProviderFactory;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.keyword.BuiltinKeywords;
+import com.kms.katalon.core.keyword.IActionProvider;
+import com.kms.katalon.core.keyword.IControlSelectionEventHandler;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.custom.keyword.CustomKeywordSettingPage.SettingPageComponent;
 import com.kms.katalon.custom.keyword.KeywordsManifest;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.webui.keyword.Context;
+import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
     private final KeywordsManifest keywordsManifest;
 
+    private static final List<String> acceptedTypes = Arrays.asList(new String[] { "text", "secret", "label", "checkbox", "button" });
+
     private Map<String, Pair<SettingPageComponent, Control>> componentCollection = new HashMap<>();
+
+    private ClassLoader classLoader;
+
+    private IActionProvider actionProvider = ActionProviderFactory.getInstance().getActionProvider();
 
     public CustomKeywordPluginPreferencePage(KeywordsManifest keywordsManifest) {
         this.keywordsManifest = keywordsManifest;
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        try {
+            classLoader = GroovyUtil.getClassLoaderFromParent(projectEntity, BuiltinKeywords.class.getClassLoader());
+        } catch (MalformedURLException | CoreException exception) {
+            LoggerSingleton.logError(exception);
+        }
     }
 
     @Override
@@ -45,7 +72,8 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
             String key = entry.getKey();
             String type = entry.getType();
             String label = entry.getLabel();
-            if (!"text".equals(type) && !"secret".equals(type) && !"label".equals(type) && !"checkbox".equals(type)) {
+
+            if (acceptedTypes.indexOf(type) == -1) {
                 continue;
             }
 
@@ -80,6 +108,7 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                     break;
                 }
                 case "label": {
+                    
                     Label lblComponentLabelEntry = new Label(container, SWT.NONE);
                     lblComponentLabelEntry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
                     lblComponentLabelEntry.setText(label);
@@ -89,8 +118,65 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
             }
         }
 
+        keywordsManifest.getConfiguration()
+                .getSettingPage()
+                .getComponents()
+                .stream()
+                .filter(entry -> entry.getType().equals("button"))
+                .forEach(entry -> {
+                    Button btnOperationExecute = new Button(container, SWT.PUSH);
+                    btnOperationExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
+                    btnOperationExecute.setText(entry.getLabel());
+                    btnOperationExecute.setData(entry.getImplementationClassPath());
+                    reigsterListenerForOperationButton(btnOperationExecute);
+                });
+
         setInput();
+
         return container;
+    }
+
+    private void reigsterListenerForOperationButton(Button btnOperationExecute) {
+        btnOperationExecute.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (classLoader != null) {
+                    String implementationClassPath = (String) btnOperationExecute.getData();
+                    
+                    Context context = new Context();
+                    context.add("selectedControl", btnOperationExecute);
+                    context.add("pluginName", keywordsManifest.getName());
+                    context.add("pluginId", keywordsManifest.getId());
+                    context.add("pluginKeywords", keywordsManifest.getKeywords());
+                    context.add("pluginListeners", keywordsManifest.getListeners());
+                    
+                    try {
+                        Map<String, Object> dataFields = collectDataFieldsWithoutSaving();
+                        Class<?> clazz = classLoader.loadClass(implementationClassPath);
+                        Object pluginRuntimeInstance = clazz.newInstance();
+                        if (pluginRuntimeInstance instanceof IControlSelectionEventHandler) {
+                            IControlSelectionEventHandler pluginButtonSelectionEventHandler = (IControlSelectionEventHandler) pluginRuntimeInstance;
+                            pluginButtonSelectionEventHandler.handle(actionProvider, dataFields, context);
+                        }
+                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
+                        LoggerSingleton.logError(exception);
+                    }
+                }
+            }
+        });
+    }
+
+    protected Map<String, Object> collectDataFieldsWithoutSaving() {
+        Map<String, Object> dataFields = new HashMap<>();
+        for (Entry<String, Pair<SettingPageComponent, Control>> componentEntry : componentCollection.entrySet()) {
+            Control control = componentEntry.getValue().getRight();
+            if(control instanceof Text){
+                dataFields.put(componentEntry.getKey(), ((Text) control).getText());
+            } else if(control instanceof Button) {
+                dataFields.put(componentEntry.getKey(), ((Button) control).getSelection());
+            }
+        }
+        return dataFields;
     }
 
     private BundleSettingStore getSettingStore() {
@@ -126,12 +212,7 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
         }
     }
 
-    @Override
-    public boolean performOk() {
-        if (!isControlCreated()) {
-            return true;
-        }
-
+    private void persistPluginDataFields() {
         BundleSettingStore settingStore = getSettingStore();
         for (Entry<String, Pair<SettingPageComponent, Control>> componentEntry : componentCollection.entrySet()) {
             try {
@@ -148,7 +229,14 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                 LoggerSingleton.logError(e);
             }
         }
+    }
 
+    @Override
+    public boolean performOk() {
+        if (!isControlCreated()) {
+            return true;
+        }
+        persistPluginDataFields();
         return true;
     }
 

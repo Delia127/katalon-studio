@@ -150,6 +150,8 @@ public class MessageConstants extends NLS {
     public static String KATALON_NOT_ACTIVATED;
 
     public static String PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE;
+    
+    public static String PAGE_PREF_AUTO_UPDATE_WEBDRIVERS;
 
     public static String PAGE_PREF_SHOW_HELP_AT_START_UP;
 
@@ -395,8 +397,18 @@ public class MessageConstants extends NLS {
     public static String KStorePluginsDialog_COL_PLUGIN;
 
     public static String KStorePluginsDialog_COL_STATUS;
+    
+    public static String KStorePluginsDialog_COL_LICENSE;
 
     public static String KStorePluginsDialog_DIA_TITLE;
+    
+    public static String KStorePluginsDialog_LICENSE_FREE;
+    
+    public static String KStorePluginsDialog_LICENSE_PAID;
+    
+    public static String KStorePluginsDialog_LICENSE_TRIAL;
+    
+    public static String KStorePluginsDialog_LICENSE_EXPIRED;
 
     public static String KStorePluginsDialog_STATUS_INSTALLED;
 
@@ -409,6 +421,12 @@ public class MessageConstants extends NLS {
     public static String KStorePluginsDialog_COL_VERSION;
 
     public static String KStorePluginsDialog_LBL_UPDATE;
+    
+    public static String KStorePluginsDialog_LNK_REVIEW;
+    
+    public static String KStorePluginsDialog_LNK_PURCHASE;
+    
+    public static String KStorePluginsDialog_LBL_WARNING;
 
     public static String LBL_DISABLE_MOB_BROWSER_PROXY;
 
@@ -431,6 +449,11 @@ public class MessageConstants extends NLS {
     public static String ERR_CONSOLE_MODE;
 
     public static String REQUEST_CODE_PROP_NAME;
+    
+    //PluginPreferencePage
+    public static String PAGE_LBL_PLUGIN_DIRECTORY;
+    
+    public static String PAGE_BTN_BROWSE_FOLDER;
 
     static {
         // initialize resource bundle

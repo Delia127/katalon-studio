@@ -1,12 +1,14 @@
 package com.kms.katalon.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.UserFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 public class UserFileController extends EntityController {
 
@@ -36,5 +38,27 @@ public class UserFileController extends EntityController {
         } catch (DALException e) {
             throw new ControllerException(e);
         }
+    }
+    
+    public UserFileEntity newRootFile(String name, ProjectEntity project) throws ControllerException {
+        try {
+            return getDataProviderSetting().getUserFileDataProvider().newRootFile(name, project);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
+    }
+    
+    public UserFileEntity renameFile(String newName, UserFileEntity userFileEntity) {
+        return getDataProviderSetting().getUserFileDataProvider().renameFile(newName, userFileEntity);
+    }
+    
+    public List<FileEntity> getSiblingFiles(UserFileEntity fileEntity, FolderEntity parentFolder)
+            throws ControllerException {
+        return getChildren(parentFolder).stream().filter(f -> !f.getName().equals(fileEntity.getName()))
+                .collect(Collectors.toList());
+    }
+    
+    public void deleteFile(UserFileEntity userFileEntity) {
+        getDataProviderSetting().getUserFileDataProvider().deleteFile(userFileEntity);
     }
 }

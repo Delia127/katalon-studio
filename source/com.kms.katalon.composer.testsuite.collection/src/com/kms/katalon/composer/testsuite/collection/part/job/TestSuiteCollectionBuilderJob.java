@@ -17,7 +17,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.launcher.IDETestSuiteCollectionLauncher;
 import com.kms.katalon.composer.execution.launcher.SubIDELauncher;
-import com.kms.katalon.composer.execution.util.WebDriverInstallationUtil;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
@@ -120,20 +119,6 @@ public class TestSuiteCollectionBuilderJob extends Job {
     }
 
     private boolean checkInstallWebDriver(TestSuiteRunConfiguration tsRunConfig) {
-        String runConfigId = tsRunConfig.getConfiguration().getRunConfigurationId();
-
-        if (WebUIDriverType.SAFARI_DRIVER.toString().equals(runConfigId)) {
-            final boolean[] result = { true };
-            Display.getDefault().syncExec(new Runnable() {
-
-                @Override
-                public void run() {
-                    result[0] = WebDriverInstallationUtil.installSafariWebDriverAsNeed();
-
-                }
-            });
-            return result[0];
-        }
         return true;
     }
 

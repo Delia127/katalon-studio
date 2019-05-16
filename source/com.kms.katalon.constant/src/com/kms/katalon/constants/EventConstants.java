@@ -66,6 +66,8 @@ public class EventConstants {
 	public static final String EXPLORER_RELOAD_MOBILE_INPUT = "EXPLORER/RELOAD_INPUT";
 
     public static final String EXPLORER_SET_SELECTED_ITEM = "EXPLORER/SET_SELECTED_ITEM";
+    
+    public static final String EXPLORER_ADD_AND_SELECT_ITEM = "EXPLORER/ADD_AND_SELECT_ITEM";
 
     public static final String EXPLORER_SET_SELECTED_ITEMS = "EXPLORER/SET_SELECTED_ITEMS";
 
@@ -196,6 +198,8 @@ public class EventConstants {
     public static final String WEBSERVICE_REQUEST_DRAFT_UPDATED = "WSOBJECT/DRAFT_UPDATED";
 
     public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_SWAGGER = "WSOBJECT/SWAGGER";
+    
+    public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_POSTMAN = "WSOBJECT/POSTMAN";
 
     public static final String IMPORT_WEB_SERVICE_OBJECTS_FROM_WSDL = "WSOBJECT/WSDL";
 

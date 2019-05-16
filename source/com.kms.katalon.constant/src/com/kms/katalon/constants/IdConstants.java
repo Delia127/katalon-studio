@@ -195,6 +195,8 @@ public interface IdConstants {
     public static final String KATALON_CORE_BUNDLE_ID = "com.kms.katalon.core";
 
     public static final String KATALON_WEB_UI_BUNDLE_ID = "com.kms.katalon.core.webui";
+    
+    public static final String KATALON_WEB_UI_EXECUTION_ID = "com.kms.katalon.execution.webui";
 
     public static final String KATALON_MOBILE_BUNDLE_ID = "com.kms.katalon.core.mobile";
 

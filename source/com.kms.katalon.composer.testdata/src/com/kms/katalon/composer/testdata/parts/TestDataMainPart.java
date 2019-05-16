@@ -352,6 +352,9 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (mpart == null || originalDataFile == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.equals(part.getElementId(), mpart.getElementId())) {
             return;

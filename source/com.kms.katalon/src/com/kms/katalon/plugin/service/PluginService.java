@@ -24,7 +24,6 @@ import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
@@ -54,10 +53,6 @@ import com.kms.katalon.tracking.service.Trackings;
 public class PluginService {
 
     private static final String EXCEPTION_UNAUTHORIZED_SINGAL = "Unauthorized";
-    
-    private static final String EXCEPTION_DUPLICATED_BUNDLE_SIGNAL = "A bundle is already installed";
-    
-    private static final String EXCEPTION_ANOTHER_SINGLETON_BUNDLE_SELECTED_SIGNAL = "Another singleton bundle selected";
 
 	private static PluginService instance;
 
@@ -104,7 +99,7 @@ public class PluginService {
                 if (monitor.isCanceled()) {
                     throw new InterruptedException();
                 }
-                String pluginPath = getPluginLocation(plugin);
+                String pluginPath = plugin.getLocation();
                 if (!StringUtils.isBlank(pluginPath)) {
                     platformUninstall(pluginPath);
                 }
@@ -147,13 +142,13 @@ public class PluginService {
                 }
                 
                 String pluginPath = getPluginLocation(plugin);
-                if (!isPluginDownloaded(plugin)) {
+                if (!isLocallyInstalled(plugin)) {
                     File download = downloadAndExtractPlugin(plugin, credentials);
                     if (download != null) {
                         pluginPath = download.getAbsolutePath();
-                        savePluginLocation(plugin, pluginPath);
                     }
                 }
+                plugin.setLocation(pluginPath);
                 
                 LogService.getInstance().logInfo(String.format("Plugin ID: %d. Plugin location: %s.",
                     plugin.getId(), pluginPath));
@@ -296,18 +291,34 @@ public class PluginService {
         PluginInstaller pluginInstaller = context.getService(context.getServiceReference(PluginInstaller.class));
         return pluginInstaller;
     }
-
-    private boolean isPluginDownloaded(KStorePlugin plugin) throws IOException {
-        String pluginLocation = getPluginLocation(plugin);
-        return !StringUtils.isBlank(pluginLocation) && new File(pluginLocation).exists();
+    
+    private boolean isLocallyInstalled(KStorePlugin plugin) {
+        File pluginFile = getPluginFile(plugin);
+        if (pluginFile == null) {
+            return false;
+        }
+        return pluginFile.exists();
     }
 
     private String getPluginLocation(KStorePlugin plugin) throws IOException {
-        return pluginPrefStore.getPluginLocation(plugin);
+        File pluginFile = getPluginFile(plugin);
+        if (pluginFile == null) {
+            return null;
+        }
+        return pluginFile.getAbsolutePath();
     }
-
-    private void savePluginLocation(KStorePlugin plugin, String path) throws IOException {
-        pluginPrefStore.setPluginLocation(plugin, path);
+    
+    private File getPluginFile(KStorePlugin plugin) {
+        File pluginInstallDir = getPluginInstallDir(plugin);
+        if (!pluginInstallDir.exists()) {
+            return null;
+        }
+        
+        File jar = Arrays.stream(pluginInstallDir.listFiles()).filter(file -> {
+            String name = file.getName().toLowerCase();
+            return name.endsWith(".jar") && !name.endsWith("-javadoc.jar") && !name.endsWith("-sources.jar");
+        }).findAny().orElse(null);
+        return jar;
     }
     
     private boolean isCustomKeywordPlugin(KStorePlugin plugin) {

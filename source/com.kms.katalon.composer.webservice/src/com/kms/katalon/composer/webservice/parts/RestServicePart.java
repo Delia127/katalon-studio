@@ -16,7 +16,6 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -57,11 +56,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
-import com.kms.katalon.core.util.BrowserMobProxyManager;
-import com.kms.katalon.core.util.HarFileWriter;
-import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.core.webservice.common.HarConverter;
 import com.kms.katalon.core.webservice.common.HarLogUtil;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
@@ -69,12 +64,9 @@ import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.execution.preferences.SSLPreferences;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
-
-import net.lightbody.bmp.core.har.Har;
 
 public class RestServicePart extends WebServicePart {
 
@@ -200,7 +192,7 @@ public class RestServicePart extends WebServicePart {
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables));
                         String logFolder = Files.createTempDirectory("har").toFile().getAbsolutePath();
                         harFile = HarLogUtil.logHarFile(requestObject, responseObject, logFolder);
-                        
+        
                         if (monitor.isCanceled()) {
                             return;
                         }

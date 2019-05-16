@@ -140,4 +140,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BTN_CHOOSE_A_FILE = ComposerComponentsImplMessageConstants.BTN_CHOOSE_A_FILE;
 
     public static final String DIA_MSG_CREATE_NEW_FILE = ComposerComponentsImplMessageConstants.DIA_MSG_CREATE_NEW_FILE;
+    
+    public static final String DIA_MSG_CREATE_NEW_FOLDER = ComposerComponentsImplMessageConstants.DIA_MSG_CREATE_NEW_FOLDER;
+    
+    public static final String DIA_MSG_RENAME_FILE = ComposerComponentsImplMessageConstants.DIA_MSG_RENAME_FILE;
 }

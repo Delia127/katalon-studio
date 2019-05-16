@@ -139,7 +139,7 @@
 <unit id="org.apache.commons.beanutils" version="1.9.2"/>
 <unit id="org.apache.commons.codec" version="1.7.0"/>
 <unit id="dom4j" version="1.6.1"/>
-<unit id="com.katalon.platform" version="1.0.10"/>
+<unit id="com.katalon.platform" version="1.0.11"/>
 <unit id="org.apache.xmlbeans" version="2.6.0"/>
 <unit id="org.apache.commons.digester" version="1.8.1"/>
 <unit id="org.apache.commons.email" version="1.4.0"/>

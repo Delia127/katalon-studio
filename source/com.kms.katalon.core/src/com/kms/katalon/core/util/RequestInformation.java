@@ -1,7 +1,5 @@
 package com.kms.katalon.core.util;
 
-import java.io.File;
-
 public class RequestInformation {
 
     private String name;

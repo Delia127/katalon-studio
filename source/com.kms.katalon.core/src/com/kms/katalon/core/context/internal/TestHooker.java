@@ -17,10 +17,8 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 
 import com.kms.katalon.core.annotation.AfterTestCase;
-import com.kms.katalon.core.annotation.AfterTestExecution;
 import com.kms.katalon.core.annotation.AfterTestSuite;
 import com.kms.katalon.core.annotation.BeforeTestCase;
-import com.kms.katalon.core.annotation.BeforeTestExecution;
 import com.kms.katalon.core.annotation.BeforeTestSuite;
 import com.kms.katalon.core.constants.CoreMessageConstants;
 import com.kms.katalon.core.logging.ErrorCollector;
@@ -52,8 +50,6 @@ public class TestHooker {
         testContextMethods.put(AfterTestCase.class.getName(), new ArrayList<>());
         testContextMethods.put(BeforeTestSuite.class.getName(), new ArrayList<>());
         testContextMethods.put(AfterTestSuite.class.getName(), new ArrayList<>());
-        testContextMethods.put(BeforeTestExecution.class.getName(), new ArrayList<>());
-        testContextMethods.put(AfterTestExecution.class.getName(), new ArrayList<>());
     }
 
     public void collectContextMethods() {
@@ -114,7 +110,7 @@ public class TestHooker {
             logger.logDebug(MessageFormat.format(CoreMessageConstants.EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED,
                     listenerAnnotationName, methodDisplayName));
         } catch (Throwable e) {
-            logger.logError(ExceptionsUtil.getMessageForThrowable(e));
+            logger.logError(ExceptionsUtil.getMessageForThrowable(e), null, e);
         } finally {
             while (!keywordStack.isEmpty()) {
                 KeywordStackElement keywordStackElement = keywordStack.pop();

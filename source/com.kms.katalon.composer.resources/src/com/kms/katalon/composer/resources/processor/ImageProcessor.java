@@ -250,6 +250,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FOLDER_SOURCE_16);
         ImageManager.registerImage(IImageKeys.CONFIG_16);
         ImageManager.registerImage(IImageKeys.GROOVY_16);
+        ImageManager.registerImage(IImageKeys.JAVA_16);
+        ImageManager.registerImage(IImageKeys.GIT_FILE_16);
     }
 
     private void registerTestCaseStepImages() {

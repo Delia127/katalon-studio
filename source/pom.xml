@@ -102,7 +102,7 @@
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		<platform.version>1.0.10</platform.version>
+		<platform.version>1.0.11</platform.version>
 
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
 		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>
@@ -146,6 +146,13 @@
 	</repositories>
 
 	<build>
+    <extensions>
+        <extension>
+            <groupId>co.leantechniques</groupId>
+            <artifactId>maven-buildtime-extension</artifactId>
+            <version>2.0.3</version>
+        </extension>
+    </extensions>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -168,7 +175,7 @@
 				<artifactId>tycho-compiler-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
-					<maxmem>2048m</maxmem>
+					<maxmem>4096m</maxmem>
 					<excludeResources>
 						<excludeResource>**/*.groovy</excludeResource>
 					</excludeResources>
@@ -252,7 +259,7 @@
 				<configuration>
 					<fork>true</fork>
 					<meminitial>128m</meminitial>
-					<maxmem>1024m</maxmem>
+					<maxmem>4096m</maxmem>
 					<compilerArgs>
 						<arg>-XX:MaxPermSize=128m</arg>
 					</compilerArgs>

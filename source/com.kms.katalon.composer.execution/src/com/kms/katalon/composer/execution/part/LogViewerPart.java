@@ -1041,7 +1041,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
                 lblNumTestcases.getParent().getParent().layout();
                 
-                if (numExecuted == result.getNumPasses()) {
+                if (numExecuted == result.getNumPasses() + result.getNumSkips()) {
                     progressBar.setState(SWT.NORMAL);
                 } else {
                     progressBar.setState(SWT.ERROR);
