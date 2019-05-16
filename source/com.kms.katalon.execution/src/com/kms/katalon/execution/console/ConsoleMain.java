@@ -71,11 +71,9 @@ public class ConsoleMain {
 
     public final static String TESTSUITE_QUERY = "testSuiteQuery";
 
-    public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
+    public static final String KATALON_API_KEY_OPTION = "apiKey";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
-    
-    public static final String KATALON_ANALYTICS_API_KEY_OPTIPON = "kaApiKey";
     
     public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
 
@@ -100,15 +98,14 @@ public class ConsoleMain {
             List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
-           
-          //Analytics
-            if (options.has(KATALON_ANALYTICS_API_KEY_OPTIPON)) {
-            	String apiKeyValue = String.valueOf(options.valueOf(KATALON_ANALYTICS_API_KEY_OPTIPON));
-            	setApiKeyKA(apiKeyValue);
-            }
+
             
-            if (options.has(KATALON_STORE_API_KEY_OPTION)) {
-                String apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
+            if (options.has(KATALON_API_KEY_OPTION)) {
+                String apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
+                //Analytics
+                setApiKeyKA(apiKeyValue);
+                
+                //Store
                 reloadPlugins(apiKeyValue);
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
@@ -141,12 +138,6 @@ public class ConsoleMain {
 //            Trackings.trackOpenApplication(project,
 //                    !ActivationInfoCollector.isActivated(), "console");
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
-            
-            //Analytics
-            if (options.has(KATALON_ANALYTICS_API_KEY_OPTIPON)) {
-            	String apiKeyValue = String.valueOf(options.valueOf(KATALON_ANALYTICS_API_KEY_OPTIPON));
-            	setApiKeyKA(apiKeyValue);
-            }
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,
@@ -160,8 +151,6 @@ public class ConsoleMain {
             waitForExecutionToFinish(options);
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
-            
-            removeApiKeyKA();
             
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             return exitCode;
@@ -190,20 +179,6 @@ public class ConsoleMain {
         }
     }
     
-    private static void removeApiKeyKA() throws Exception {
-        Bundle katalonBundle = Platform.getBundle("com.kms.katalon.integration.analytics");
-        Class<?> setApiKeyKA = katalonBundle
-                .loadClass("com.kms.katalon.integration.analytics.handler.AnalyticsApiKeyHanlder");
-        Object handler = setApiKeyKA.newInstance();
-        Method reloadMethod = Arrays.asList(setApiKeyKA.getMethods()).stream()
-                .filter(method -> method.getName().equals("removeApiKeyAfterDone"))
-                .findAny()
-                .orElse(null);
-        if (reloadMethod != null) {
-            reloadMethod.invoke(handler);
-        }
-    }
-
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> reloadPluginsHandlerClass = katalonBundle

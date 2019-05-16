@@ -297,7 +297,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_CHK_FOR_FAILED_TEST_CASES = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES;
     
-    public static final String DIA_LBL_KSTORE_API_KEY_USAGE = ComposerExecutionMessageConstants.KSTORE_API_KEY_USAGE;
+    public static final String DIA_LBL_API_KEY_USAGE = ComposerExecutionMessageConstants.API_KEY_USAGE;
     
     public static final String DIA_API_KEY = ComposerExecutionMessageConstants.DIA_API_KEY;
     
@@ -325,4 +325,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES = ComposerExecutionMessageConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES;
 
     public static final String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE = ComposerExecutionMessageConstants.DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
+    
+    public static final String REPORT_MSG_MUST_ENTER_API_KEY = ComposerExecutionMessageConstants.REPORT_MSG_MUST_ENTER_API_KEY;
 }

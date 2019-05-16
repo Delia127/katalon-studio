@@ -61,20 +61,6 @@ public class AnalyticsSettingStore extends BundleSettingStore {
 //        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, rawPassword,
 //                encryptionEnabled);
     }
-    
-	public String getApiKey(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-		return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_APIKEY, StringUtils.EMPTY,
-				encryptionEnabled);
-	}
-
-	public void setApiKey(String rawPassword, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-		setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_APIKEY, rawPassword,
-				encryptionEnabled);
-	}
-  
-	public void removeApiKey() throws IOException, GeneralSecurityException {
-		setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_APIKEY, "", true);
-	}
 
     public boolean isEncryptionEnabled() throws IOException {
         return getBoolean(AnalyticsSettingStoreConstants.ANALYTICS_ENCRYPTION_ENABLED, false);

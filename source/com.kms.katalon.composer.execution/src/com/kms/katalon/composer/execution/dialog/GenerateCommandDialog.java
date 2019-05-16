@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -90,6 +91,7 @@ import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -122,10 +124,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Text txtStatusDelay;
     
     private Text txtAPIKey;
-    
-    private Combo cbbProjects;
-
-    private Combo cbbTeams;
 
     private Button btnBrowseTestSuite;
 
@@ -136,8 +134,6 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Button chkRetryFailedTestCase;
     
     private Button chkAPIKey;
-    
-    private Button chkAnlyticsProjectId;
 
     private ProjectEntity project;
 
@@ -167,9 +163,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
     
-    private static final String ARG_APIKEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
-    
-    private static final String ARG_ANALYTICS_PROJECT_ID = OsgiConsoleOptionContributor.ANALYTICS_PROJECT_ID;
+    private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
 
     private Group grpPlatform;
 
@@ -191,23 +185,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private Button btnChangeProfile;
     
-    private Link linkStatusAccessProject;
-    
-    private List<AnalyticsProject> projects = new ArrayList<>();
-
-    private List<AnalyticsTeam> teams = new ArrayList<>();
-    
-    private AnalyticsProject selectProject;
-    
-    private AnalyticsTeam selectTeam;
-    
     private AnalyticsSettingStore analyticsSettingStore;
-    
-    private AnalyticsTokenInfo tokenInfo;
-    
-    private boolean canAccessProject = true;
-    
-    private String serverUrl, email, password; 
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
@@ -431,7 +409,6 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         Label lblSeconds = new Label(grpOptionsContainer, SWT.NONE);
         lblSeconds.setText(StringConstants.DIA_LBL_SECONDS);
-
         
         chkAPIKey = new Button(grpOptionsContainer, SWT.CHECK);
         chkAPIKey.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
@@ -439,50 +416,22 @@ public class GenerateCommandDialog extends AbstractDialog {
         
         txtAPIKey = new Text(grpOptionsContainer, SWT.BORDER);
         GridData gdTxtAPIKey = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 3, 1);
-        gdTxtAPIKey.widthHint = 500;
+        gdTxtAPIKey.widthHint = 600;
         txtAPIKey.setLayoutData(gdTxtAPIKey);
         
         Composite pluginOptionsComposite = new Composite(grpOptionsContainer, SWT.NONE);
         pluginOptionsComposite.setLayout(new GridLayout(2, false));
         pluginOptionsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
         
-        Label lblKStoreApiKeyUsage = new Label(pluginOptionsComposite, SWT.NONE);
-        ControlUtils.setFontStyle(lblKStoreApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
-        lblKStoreApiKeyUsage.setText(StringConstants.DIA_LBL_KSTORE_API_KEY_USAGE);
+        Label lblApiKeyUsage = new Label(pluginOptionsComposite, SWT.NONE);
+        ControlUtils.setFontStyle(lblApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
+        lblApiKeyUsage.setText(StringConstants.DIA_LBL_API_KEY_USAGE);
 
         new HelpComposite(pluginOptionsComposite, DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
-        
-        chkAnlyticsProjectId = new Button(grpOptionsContainer, SWT.CHECK);
-        chkAnlyticsProjectId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        chkAnlyticsProjectId.setText(StringConstants.DIA_ANALYTICS_PROJECT);
-        
-        Composite attachComposite = new Composite(grpOptionsContainer, SWT.NONE);
-        GridLayout glGrpAttach = new GridLayout(4, false);
-        glGrpAttach.marginLeft = 30;
-        attachComposite.setLayout(glGrpAttach);
-        attachComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        
-		Label lblTeam = new Label(attachComposite, SWT.NONE);
-		lblTeam.setText(StringConstants.DIA_TITLE_TEAM);
-
-		cbbTeams = new Combo(attachComposite, SWT.READ_ONLY);
-		cbbTeams.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-
-		Label lblProject = new Label(attachComposite, SWT.NONE);
-		lblProject.setText(StringConstants.DIA_TITLE_PROJECT);
-
-		cbbProjects = new Combo(attachComposite, SWT.READ_ONLY);
-		cbbProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-		
-        linkStatusAccessProject = new Link(attachComposite, SWT.NONE);
-        linkStatusAccessProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
     }
     
     private void changeEnabled() {
     	txtAPIKey.setEnabled(chkAPIKey.getSelection());
-    	
-    	cbbTeams.setEnabled(chkAnlyticsProjectId.getSelection());
-		cbbProjects.setEnabled(chkAnlyticsProjectId.getSelection());
     }
 
     @Override
@@ -700,41 +649,6 @@ public class GenerateCommandDialog extends AbstractDialog {
                 changeEnabled();
             }
         });
-        
-        chkAnlyticsProjectId.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                changeEnabled();
-                getTeamAndProject();
-            }
-        });
-        
-        cbbTeams.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-            	int index = cbbTeams.getSelectionIndex();
-                AnalyticsTeam getSelectTeam = teams.get(index);
-				if (!canAccessProject) {
-					
-					if (getSelectTeam.equals(selectTeam)) {
-						return;
-					} else {
-						teams.remove(selectTeam);
-				    	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-				    	int indexSelectTeam = teams.indexOf(getSelectTeam);
-				    	
-				        cbbTeams.select(indexSelectTeam);
-				        linkStatusAccessProject.setText("");
-				        canAccessProject = true;
-					}
-				}				
-				projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-						getSelectTeam, tokenInfo, new ProgressMonitorDialog(getShell()));
-				
-				setProjectsBasedOnTeam();
-				changeEnabled();
-            }
-        });
     }
 
     private void onRunConfigurationDataChanged() {
@@ -919,6 +833,13 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void generateCommandPressed() {
         try {
+        	if (chkAPIKey.getSelection() && StringUtils.isEmpty(txtAPIKey.getText())) {
+                MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                        ComposerAnalyticsStringConstants.ERROR,
+                        StringConstants.REPORT_MSG_MUST_ENTER_API_KEY);
+                return;
+            }
+        	
             GeneratedCommandDialog generatedCommandDialog = new GeneratedCommandDialog(getShell(), generateCommand());
             generatedCommandDialog.open();
 
@@ -1010,12 +931,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
         
         if (chkAPIKey.getSelection()) {
-        	args.put(ARG_APIKEY, wrapArgumentValue(txtAPIKey.getText()));
-        }
-        
-        if (chkAnlyticsProjectId.getSelection()) {
-        	AnalyticsProject selectProject = cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null;
-        	args.put(ARG_ANALYTICS_PROJECT_ID, wrapArgumentValue(selectProject.getId().toString()));
+        	args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
         }
 
         return args;
@@ -1179,111 +1095,11 @@ public class GenerateCommandDialog extends AbstractDialog {
     	
     	try {
     		boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled() && analyticsSettingStore.isAutoSubmit();
-    		
-    		if (!enableApiKey) {
-    			return;
-    		} 
     		chkAPIKey.setSelection(enableApiKey);
-    		chkAnlyticsProjectId.setSelection(enableApiKey);
-    		
-    		getTeamAndProject();
-            
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    	
-    	return;
-    }
-
-	private void getTeamAndProject() {
-		try {
-			if (analyticsSettingStore == null) {
-				analyticsSettingStore = new AnalyticsSettingStore(
-		                ProjectController.getInstance().getCurrentProject().getFolderLocation());
-			}
-			
-			serverUrl = analyticsSettingStore.getServerEndpoint(true);
-			email = analyticsSettingStore.getEmail(true);
-			password = analyticsSettingStore.getPassword(true);
-						
-			selectProject = analyticsSettingStore.getProject();
-			selectTeam = analyticsSettingStore.getTeam();
-			
-			teams.clear();
-			projects.clear();
-			
-			teams.add(selectTeam);
-			projects.add(selectProject);
-	        
-			cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-			int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-	        cbbTeams.select(indexSelectTeam);
-	        setProjectsBasedOnTeam();
-			
-	        if (chkAnlyticsProjectId.getSelection()) {
-	            tokenInfo = AnalyticsAuthorizationHandler.getToken(
-	                    serverUrl,
-	                    email, 
-	                    password, 
-	                    analyticsSettingStore);
-
-	            teams = AnalyticsAuthorizationHandler.getTeams(serverUrl,
-	                    email, password, tokenInfo,
-	                    new ProgressMonitorDialog(getShell()));
-
-	            if (teams != null && teams.size() > 0) {                	                
-	            	if (!checkUserCanAccessProject()) {
-
-	            		projects.clear();
-	            		canAccessProject = false;
-	            		teams.add(selectTeam);
-	            		projects.add(selectProject);
-	            		linkStatusAccessProject.setText(StringConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
-
-	            	} else {
-	                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-	                            teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
-	                            new ProgressMonitorDialog(getShell()));
-	            	}
-	            	
-	            	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-	            	
-	            	indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-	                cbbTeams.select(indexSelectTeam);
-	                                    
-	                setProjectsBasedOnTeam();
-	            }
-	        }
-		} catch (IOException | GeneralSecurityException e) {
-			e.printStackTrace();
-		}
-		
-	}
-    private boolean checkUserCanAccessProject() throws IOException {
-    	AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
-
-    	if (currentTeam.getId() != null) {
-    		long currentTeamId = currentTeam.getId();
-
-        	for (AnalyticsTeam team : teams) {
-        		long teamId = team.getId();
-        		if (teamId == currentTeamId) {
-        			return true;
-        		}
-        	}
-        	return false;
-    	} 
-    	return true;
-    }
-
-    private void setProjectsBasedOnTeam() {
-        if (projects != null && !projects.isEmpty()) {
-            cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
-        } else {
-        	cbbProjects.clearSelection();
-        	cbbProjects.removeAll();
-        }
     }
     
     private RunConfigurationDescription getStoredConfigurationDescription() {

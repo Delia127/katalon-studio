@@ -79,7 +79,6 @@ public class AnalyticsReportService implements AnalyticsComponent {
     	
     	RunningMode runMode = ApplicationRunningMode.get();
     	if (runMode == RunningMode.CONSOLE) {
-//    		String apiKey = getSettingStore().getApiKey(true);
     		String apiKey = ApiKey.get();
     		if (!apiKey.isEmpty()) {
         		return AnalyticsApiProvider.requestToken(serverUrl, "", apiKey);

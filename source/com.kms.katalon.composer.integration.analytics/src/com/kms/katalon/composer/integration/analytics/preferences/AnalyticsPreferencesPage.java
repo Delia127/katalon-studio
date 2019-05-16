@@ -512,16 +512,16 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 
                 if (teams != null && !teams.isEmpty()) {
 					projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-							teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
-							tokenInfo, new ProgressMonitorDialog(getShell()));
+					        teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
+					        tokenInfo,
+					        new ProgressMonitorDialog(getShell()));
 
-					cbbTeams.setItems(
-							AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-					int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore,
-							teams);
+					cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+					int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
 					cbbTeams.select(indexSelectTeam);
-
+					                    
 					setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+					linkStatusAccessProject.setText("");
                 }
                 changeEnabled();
             }

@@ -116,7 +116,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Label label = new Label(composite, SWT.NONE);
-        label.setText("File location or URL: ");
+        label.setText("File location : ");
 
         Text text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -142,7 +142,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
                 if (ok.isEnabled() == false) {
                     ok.setEnabled(true);
                 }
-
+                    ok.setEnabled(!text.getText().isEmpty());
                 directory = ((Text) e.widget).getText();
             }
         };
@@ -175,5 +175,11 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
 
     public String getPostmanSpecLocation() {
         return directory;
+    }
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        // TODO Auto-generated method stub
+        super.createButtonsForButtonBar(parent);
+        getButton(OK).setEnabled(false);
     }
 }

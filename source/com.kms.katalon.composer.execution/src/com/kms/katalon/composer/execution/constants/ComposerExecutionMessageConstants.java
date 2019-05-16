@@ -322,7 +322,7 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_MSG_CONFIGURATION_IS_REQUIRED;
     
-    public static String KSTORE_API_KEY_USAGE;
+    public static String API_KEY_USAGE;
 
     // MobileDeviceUIProvider
     public static String DIA_MSG_ANDROID_SDK_MISSING;
@@ -352,6 +352,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String AbstractExecutionHandler_HAND_JOB_LAUNCHING_FEATURE_FILE;
     
     public static String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
+    
+    public static String REPORT_MSG_MUST_ENTER_API_KEY;
 
     static {
         // initialize resource bundle
