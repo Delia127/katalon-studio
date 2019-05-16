@@ -42,7 +42,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
         reloadPlugins(false);
     }
 
-    private void reloadPlugins(boolean silenceMode) {
+    public void reloadPlugins(boolean silenceMode) {
         PluginPreferenceStore store = new PluginPreferenceStore();
         List<ResultItem>[] resultHolder = new List[1];
         Job reloadPluginsJob = new Job("Reloading plugins...") {
