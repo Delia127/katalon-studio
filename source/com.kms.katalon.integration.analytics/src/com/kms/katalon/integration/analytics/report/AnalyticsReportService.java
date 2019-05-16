@@ -80,10 +80,10 @@ public class AnalyticsReportService implements AnalyticsComponent {
     	RunningMode runMode = ApplicationRunningMode.get();
     	if (runMode == RunningMode.CONSOLE) {
     		String apiKey = ApiKey.get();
-    		if (!apiKey.isEmpty()) {
+    		if (apiKey != null) {
         		return AnalyticsApiProvider.requestToken(serverUrl, "", apiKey);
         	} else {
-        		LogUtil.printErrorLine("Pleass specify Katalon API Key for execution.");
+        		LogUtil.printErrorLine("Pleass specify Katalon API Key for execution. Read more https://docs.katalon.com/katalon-studio/docs/index.html");
         		return null;
         	}
     	}

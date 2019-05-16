@@ -93,7 +93,7 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
         Label lblRecommend = new Label(recommendComposite, SWT.NONE);
         lblRecommend.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_RECOMMEND);
         
-        new HelpComposite(recommendComposite, "https://#top");
+        new HelpComposite(recommendComposite, "https://analytics.katalon.com"); //TODO Anh Tuan - issue2435
         
         Group grpSelect = new Group(container, SWT.NONE);
         grpSelect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -123,7 +123,7 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
         cbxAutoSubmit = new Button(grpTestResult, SWT.CHECK);
         cbxAutoSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAutoSubmit.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_AUTO_SUBMIT);
-        new HelpComposite(grpTestResult, "https://#top");
+        new HelpComposite(grpTestResult, "https://analytics.katalon.com"); //TODO Anh Tuan - issue2435
 
         Composite attachComposite = new Composite(grpTestResult, SWT.NONE);
         GridLayout glGrpAttach = new GridLayout(1, false);
@@ -266,7 +266,7 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
     
     @Override
     protected Point getInitialSize() {
-//        return getShell().computeSize(450, 370, true);
-        return getShell().computeSize(550, 370, true);
+//        return getShell().computeSize(550, 370, true);
+        return getShell().computeSize(500, 370, true);
     }
 }
