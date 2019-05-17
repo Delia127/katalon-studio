@@ -10,11 +10,11 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
-import com.kms.katalon.composer.integration.analytics.dialog.QuickAnalyticsIntegrationDialog;
+import com.kms.katalon.composer.integration.analytics.dialog.KatalonAnalyticsIntegrationDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 
-public class OpenQuickAnalyticsIntegration {
+public class KatalonAnalyticsIntegrationHandler {
 	@Inject
 	private IEventBroker eventBroker;
 
@@ -35,7 +35,7 @@ public class OpenQuickAnalyticsIntegration {
 
 	@Execute
 	public void execute() {
-		QuickAnalyticsIntegrationDialog quickStartDialog = new QuickAnalyticsIntegrationDialog(Display.getCurrent().getActiveShell());
+		KatalonAnalyticsIntegrationDialog quickStartDialog = new KatalonAnalyticsIntegrationDialog(Display.getCurrent().getActiveShell());
 		quickStartDialog.open();
 	}
 }

@@ -103,7 +103,7 @@ public class ConsoleMain {
             if (options.has(KATALON_API_KEY_OPTION)) {
                 String apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
                 //Analytics
-                setApiKeyKA(apiKeyValue);
+                setApiKey(apiKeyValue);
                 
                 //Store
                 reloadPlugins(apiKeyValue);
@@ -165,12 +165,12 @@ public class ConsoleMain {
         }
     }
     
-    private static void setApiKeyKA(String apiKey) throws Exception {
+    private static void setApiKey(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon.integration.analytics");
-        Class<?> setApiKeyKA = katalonBundle
+        Class<?> analyticsApiKeyHandlerClass = katalonBundle
                 .loadClass("com.kms.katalon.integration.analytics.handler.AnalyticsApiKeyHanlder");
-        Object handler = setApiKeyKA.newInstance();
-        Method reloadMethod = Arrays.asList(setApiKeyKA.getMethods()).stream()
+        Object handler = analyticsApiKeyHandlerClass.newInstance();
+        Method reloadMethod = Arrays.asList(analyticsApiKeyHandlerClass.getMethods()).stream()
                 .filter(method -> method.getName().equals("setApiKeyToProject"))
                 .findAny()
                 .orElse(null);

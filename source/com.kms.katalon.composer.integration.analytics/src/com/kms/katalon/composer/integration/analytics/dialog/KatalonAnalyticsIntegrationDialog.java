@@ -37,7 +37,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
-public class QuickAnalyticsIntegrationDialog extends Dialog{
+public class KatalonAnalyticsIntegrationDialog extends Dialog{
 	public static final int OK_ID = 2;
 	
 	private Composite container;
@@ -64,7 +64,7 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
 	
 	private String email;
 	
-	public QuickAnalyticsIntegrationDialog(Shell parentShell) {
+	public KatalonAnalyticsIntegrationDialog(Shell parentShell) {
 		super(parentShell);
 	}
 	
@@ -266,7 +266,6 @@ public class QuickAnalyticsIntegrationDialog extends Dialog{
     
     @Override
     protected Point getInitialSize() {
-//        return getShell().computeSize(550, 370, true);
-        return getShell().computeSize(500, 370, true);
+        return getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
     }
 }

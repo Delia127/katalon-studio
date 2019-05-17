@@ -45,7 +45,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.integration.analytics.configuration.AnalyticsConfigutionProject;
+import com.kms.katalon.integration.analytics.configuration.AnalyticsSettingProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
@@ -167,13 +167,11 @@ public class OpenProjectHandler {
                                     
                                     AnalyticsTeam teamKA = analyticsSettingStore.getTeam();
                                     AnalyticsProject projectKA = analyticsSettingStore.getProject();
-                                    AnalyticsConfigutionProject analyticsConfigutionProject = new AnalyticsConfigutionProject();
+                                    AnalyticsSettingProject analyticsConfigutionProject = new AnalyticsSettingProject();
                                     
                                     if (teamKA.getId() != null && projectKA.getId() != null) { 
                                     	analyticsConfigutionProject.checkUserAccessProject();
-                                    } else {
-//                                    	analyticsConfigutionProject.setDataStore(); //New project
-                                    }
+                                    } 
                                     
                                  // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, application);

@@ -20,14 +20,14 @@ import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandl
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.util.CryptoUtil;
 
-public class AnalyticsConfigutionProject {
+public class AnalyticsSettingProject {
 	private String email, password;
 	
     private AnalyticsSettingStore analyticsSettingStore;
     
     private String serverUrl = "https://analytics.katalon.com/";
         
-	public AnalyticsConfigutionProject() {
+	public AnalyticsSettingProject() {
 		this.email = "";
 		this.password = "";
 		
