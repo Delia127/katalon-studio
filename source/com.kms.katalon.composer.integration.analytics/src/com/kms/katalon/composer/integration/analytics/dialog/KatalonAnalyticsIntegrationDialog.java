@@ -37,17 +37,18 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
-public class KatalonAnalyticsIntegrationDialog extends Dialog{
-	public static final int OK_ID = 2;
-	
-	private Composite container;
-	
-	private Button btnOk;
-	
-	private Button cbxAutoSubmit;
-	
-	private Button cbxAttachScreenshot;
-	
+public class KatalonAnalyticsIntegrationDialog extends Dialog {
+    
+    public static final int OK_ID = 2;
+
+    private Composite container;
+
+    private Button btnOk;
+
+    private Button cbxAutoSubmit;
+
+    private Button cbxAttachScreenshot;
+
     private Combo cbbProjects;
 
     private Combo cbbTeams;
@@ -55,52 +56,52 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog{
     private List<AnalyticsProject> projects = new ArrayList<>();
 
     private List<AnalyticsTeam> teams = new ArrayList<>();
-    
+
     private AnalyticsSettingStore analyticsSettingStore;
-    
+
     private String password;
-    
-	private String serverUrl;
-	
-	private String email;
-	
-	public KatalonAnalyticsIntegrationDialog(Shell parentShell) {
-		super(parentShell);
-	}
-	
-	@Override
-	protected void configureShell(Shell shell) {
-		super.configureShell(shell);
-		
-		analyticsSettingStore = new AnalyticsSettingStore(
-        		ProjectController.getInstance().getCurrentProject().getFolderLocation());
-		
-		shell.setText(ComposerIntegrationAnalyticsMessageConstants.TITLE_DLG_QUICK_ANALYTICS_INTEGRATION);
-	}
-	
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		container = new Composite(parent, SWT.NONE);
+
+    private String serverUrl;
+
+    private String email;
+
+    public KatalonAnalyticsIntegrationDialog(Shell parentShell) {
+        super(parentShell);
+    }
+
+    @Override
+    protected void configureShell(Shell shell) {
+        super.configureShell(shell);
+
+        analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+
+        shell.setText(ComposerIntegrationAnalyticsMessageConstants.TITLE_DLG_QUICK_ANALYTICS_INTEGRATION);
+    }
+
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout(1, false));
-        
+
         Label lblNote = new Label(container, SWT.NONE);
         lblNote.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_TITLE_ANALYTICS_INTEGRATION);
-        
+
         Composite recommendComposite = new Composite(container, SWT.NONE);
         recommendComposite.setLayout(new GridLayout(2, false));
         recommendComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
-        
+
         Label lblRecommend = new Label(recommendComposite, SWT.NONE);
         lblRecommend.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_RECOMMEND);
-        
-        new HelpComposite(recommendComposite, "https://analytics.katalon.com"); //TODO Anh Tuan - issue2435
-        
+
+        new HelpComposite(recommendComposite, "https://analytics.katalon.com"); // TODO Anh Tuan - issue2435
+
         Group grpSelect = new Group(container, SWT.NONE);
         grpSelect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glGrpSelect = new GridLayout(4, false);
         grpSelect.setLayout(glGrpSelect);
         grpSelect.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SELECT_GROUP);
-        
+
         Label lblTeam = new Label(grpSelect, SWT.NONE);
         lblTeam.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEAM);
 
@@ -112,7 +113,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog{
 
         cbbProjects = new Combo(grpSelect, SWT.READ_ONLY);
         cbbProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        
+
         Group grpTestResult = new Group(container, SWT.NONE);
         grpTestResult.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glGrpTestResult = new GridLayout(2, false);
@@ -123,7 +124,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog{
         cbxAutoSubmit = new Button(grpTestResult, SWT.CHECK);
         cbxAutoSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAutoSubmit.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_AUTO_SUBMIT);
-        new HelpComposite(grpTestResult, "https://analytics.katalon.com"); //TODO Anh Tuan - issue2435
+        new HelpComposite(grpTestResult, "https://analytics.katalon.com"); // TODO Anh Tuan - issue2435
 
         Composite attachComposite = new Composite(grpTestResult, SWT.NONE);
         GridLayout glGrpAttach = new GridLayout(1, false);
@@ -134,109 +135,111 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog{
         cbxAttachScreenshot = new Button(attachComposite, SWT.CHECK);
         cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
-       
+
         Label lblSuggest = new Label(container, SWT.NONE);
         lblSuggest.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_UPLOAD);
-        
+
         Label lblDir = new Label(container, SWT.NONE);
         lblDir.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_TO_CONFIG);
         ControlUtils.setFontStyle(lblDir, SWT.BOLD | SWT.ITALIC, -1);
-        
+
         initialize();
-        
+
         return container;
-	}
-	
-    private void initialize() {
-    	fillData();
-    	updateDataStore();
     }
-    
-	private void fillData() {
-		cbbTeams.setItems();
-		cbbProjects.setItems();
 
-		try {
-			password = analyticsSettingStore.getPassword(true);
-			serverUrl = "https://analytics.katalon.com/";
-			email = analyticsSettingStore.getEmail(true);
+    private void initialize() {
+        fillData();
+        updateDataStore();
+    }
 
-			cbxAutoSubmit.setSelection(true);
-			cbxAttachScreenshot.setSelection(true);
+    private void fillData() {
+        cbbTeams.setItems();
+        cbbProjects.setItems();
 
-			teams.clear();
-			projects.clear();
+        try {
+            password = analyticsSettingStore.getPassword(true);
+            serverUrl = "https://analytics.katalon.com/";
+            email = analyticsSettingStore.getEmail(true);
 
-			AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
-					analyticsSettingStore);
-			if (tokenInfo == null) {
-				return;
-			}
-			teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo,
-					new ProgressMonitorDialog(getShell()));
-			projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-					teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
-					tokenInfo, new ProgressMonitorDialog(getShell()));
+            cbxAutoSubmit.setSelection(true);
+            cbxAttachScreenshot.setSelection(true);
 
-			if (teams != null && teams.size() > 0) {
-				cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+            teams.clear();
+            projects.clear();
 
-				int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-				cbbTeams.select(indexSelectTeam);
+            AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
+                    analyticsSettingStore);
+            if (tokenInfo == null) {
+                return;
+            }
+            teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo,
+                    new ProgressMonitorDialog(getShell()));
+            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                    teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
+                    tokenInfo, new ProgressMonitorDialog(getShell()));
 
-				setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
-			}
-		} catch (IOException | GeneralSecurityException e) {
-			e.printStackTrace();
-		}
-	}
-    
-    private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
-        if (projects != null && !projects.isEmpty()) {
-            cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
-        } else {
-        	cbbProjects.clearSelection();
-        	cbbProjects.removeAll();
+            if (teams != null && teams.size() > 0) {
+                cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+
+                int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                cbbTeams.select(indexSelectTeam);
+
+                setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+            }
+        } catch (IOException | GeneralSecurityException e) {
+            e.printStackTrace();
         }
     }
-	
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		btnOk = createButton(parent, OK_ID, "OK", true);
-		addControlListeners();
-	}
-	
-	private void addControlListeners() {
-		btnOk.addSelectionListener(new SelectionAdapter() {
+
+    private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
+        if (projects != null && !projects.isEmpty()) {
+            cbbProjects.setItems(
+                    AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+        } else {
+            cbbProjects.clearSelection();
+            cbbProjects.removeAll();
+        }
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        btnOk = createButton(parent, OK_ID, "OK", true);
+        addControlListeners();
+    }
+
+    private void addControlListeners() {
+        btnOk.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 updateDataStore();
-            	okPressed();
+                okPressed();
             }
         });
-		
-		cbxAutoSubmit.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
-			}
-		});
-		
-		cbbTeams.addSelectionListener(new SelectionAdapter() {
+
+        cbxAutoSubmit.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
+            }
+        });
+
+        cbbTeams.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 AnalyticsTeam getSelectTeam = teams.get(cbbTeams.getSelectionIndex());
-				
-				AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
-				projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-						getSelectTeam, tokenInfo, new ProgressMonitorDialog(getShell()));
-				
-				setProjectsBasedOnTeam(getSelectTeam, projects);
+
+                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
+                        analyticsSettingStore);
+                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, getSelectTeam,
+                        tokenInfo, new ProgressMonitorDialog(getShell()));
+
+                setProjectsBasedOnTeam(getSelectTeam, projects);
             }
         });
-	}
-	
+    }
+
     private void updateDataStore() {
         try {
             boolean encryptionEnabled = true;
@@ -257,13 +260,13 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog{
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
-        } 
+        }
     }
-	
+
     private boolean isIntegratedSuccessfully() {
         return teams.isEmpty();
     }
-    
+
     @Override
     protected Point getInitialSize() {
         return getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);

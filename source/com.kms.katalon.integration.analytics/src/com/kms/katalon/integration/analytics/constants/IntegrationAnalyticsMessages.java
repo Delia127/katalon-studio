@@ -29,6 +29,8 @@ public class IntegrationAnalyticsMessages extends NLS {
     
     public static String MSG_EXECUTION_URL;
     
+    public static String VIEW_ERROR_MSG_SPECIFY_KATALON_API_KEY;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, IntegrationAnalyticsMessages.class);
