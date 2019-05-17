@@ -87,6 +87,8 @@ KURecorder.addEventHandler('clickAt', 'click', function(event) {
             var clickType = this.rec_getMouseButton(event);            
             if(this.rec_isElementMouseUpEventRecordable(target, clickType)){
                 this.processOnClickTarget(target, clickType, currentURL);
+            } else if(this.shouldBeSetAsQueuedInput(target)) {
+                this.setQueuedInput(target);
             }
             //var arrayTest = this.locatorBuilders.buildAll(event.target);
             preventClickTwice = true;

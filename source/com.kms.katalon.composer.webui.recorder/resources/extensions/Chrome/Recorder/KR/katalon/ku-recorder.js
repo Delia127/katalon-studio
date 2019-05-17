@@ -22,6 +22,7 @@ class KURecorder {
         this.attached = false;
         this.ku_locatorBuilders = new KULocatorBuilders(window);
         this.frameLocation = this.getFrameLocation();
+        this.queuedInput = null;
         browser.runtime.sendMessage({
             frameLocation: this.frameLocation
         }).catch(function (reason) {
@@ -329,6 +330,14 @@ class KURecorder {
         if (!isRecorded) {
             return;
         }
+        
+        // If there exists a queued input then it must have been clicked,
+        // if now it is also being set text then the previous click was just for focus
+        if(this.queuedInput == selectedElement) {
+            // Remove from queue and ignore the click
+            this.queuedInput = null;
+        }
+
         var action = {};
         action["actionName"] = 'inputChange';
         action["actionData"] = selectedElement.value;
@@ -347,6 +356,14 @@ class KURecorder {
         if (!isRecorded) {
             return;
         }
+
+        // If there exists a queued input then it must have been clicked,
+        // if now it is also being set text then the previous click was just for focus
+        if(this.queuedInput == selectedElement) {
+            // Remove from queue and ignore the click
+            this.queuedInput = null;
+        }
+
         var action = {};
         action["actionName"] = 'inputChange';
         if (selectedElement.tagName.toLowerCase() == 'select') {
@@ -416,6 +433,14 @@ class KURecorder {
     }
 
     processOnClickTarget (selectedElement, clickType, currentURL) {
+        // If there exists a queued input then it must have been clicked,
+        // if now another element is clicked, then the previous click
+        // could have triggered this new element to show up (i.e date picker)
+        if(this.queuedInput != null && this.queuedInput != selectedElement) {
+            this.sendClickOnQueuedInput();
+            this.removeQueuedInput();
+        }
+
         var action = {};
         action["actionName"] = 'click';
         action["actionData"] = clickType;
@@ -442,6 +467,7 @@ class KURecorder {
             selectedElement.onfocus = null;
         }
     }    
+
     moveDivAway(e){
         var y = 0;
         var windowHeight = $(window).height();
@@ -449,6 +475,34 @@ class KURecorder {
             y = windowHeight - this.rec_infoDiv.offsetHeight;
         }
         this.rec_infoDiv.style.top = y + 'px';
+    }
+
+    shouldBeSetAsQueuedInput(e) {
+        var elementTypeName = (e.type) ? ( e.type.toLowerCase()) : null;
+        if(KURecorder.INPUT_TYPE_INPUT_EVENT
+            .indexOf(elementTypeName) > 0 && e != this.queuedInput) {
+            return true;
+        }
+        return false;
+    }
+
+    setQueuedInput(e) {
+        this.queuedInput = e;
+    }
+
+    removeQueuedInput() {
+        var tmp = this.queuedInput;
+        this.queuedInput = null;
+        return tmp;
+    }
+
+    sendClickOnQueuedInput() {
+        if(this.queuedInput != null) {
+            var action = {};
+            action["actionName"] = 'click';
+            action["actionData"] = 'left';
+            this.rec_sendData(action, this.queuedInput);
+        }
     }
 }
 
