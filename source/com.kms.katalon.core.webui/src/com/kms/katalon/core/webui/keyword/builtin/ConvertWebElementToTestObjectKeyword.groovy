@@ -40,8 +40,8 @@ import com.kms.katalon.core.testobject.TestObjectBuilder
 import com.kms.katalon.core.testobject.TestObjectProperty
 import com.kms.katalon.core.configuration.RunConfiguration
 
-@Action(value = "webElementToTestObject")
-public class WebElementToTestObjectKeyword extends AbstractKeyword {
+@Action(value = "convertWebElementToTestObject")
+public class ConvertWebElementToTestObjectKeyword extends AbstractKeyword {
 
     @CompileStatic
     @Override
@@ -54,11 +54,11 @@ public class WebElementToTestObjectKeyword extends AbstractKeyword {
     public Object execute(Object ...params) {
         WebElement webElement = (WebElement) params[0]
         FailureHandling flowControl = (FailureHandling)(params.length > 1 && params[1] instanceof FailureHandling ? params[1] : RunConfiguration.getDefaultFailureHandling())
-        return WebElementToTestObject(webElement, flowControl)
+        return convertWebElementToTestObject(webElement, flowControl)
     }
 
     @CompileStatic
-    public Object WebElementToTestObject(WebElement webElement, FailureHandling flowControl) throws StepFailedException {
+    public Object convertWebElementToTestObject(WebElement webElement, FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
             logger.logDebug(StringConstants.KW_LOG_INFO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT);
 

@@ -3831,8 +3831,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static TestObject webElementToTestObject(WebElement webElement, FailureHandling flowControl) throws StepFailedException {
-        return (TestObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "webElementToTestObject", webElement, flowControl)
+    public static TestObject convertWebElementToTestObject(WebElement webElement, FailureHandling flowControl) throws StepFailedException {
+        return (TestObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "convertWebElementToTestObject", webElement, flowControl)
     }
     
     /**
@@ -3848,7 +3848,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static TestObject webElementToTestObject(WebElement webElement) throws StepFailedException {
-        return (TestObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "webElementToTestObject", webElement)
+    public static TestObject convertWebElementToTestObject(WebElement webElement) throws StepFailedException {
+        return (TestObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "convertWebElementToTestObject", webElement)
     }
 }
