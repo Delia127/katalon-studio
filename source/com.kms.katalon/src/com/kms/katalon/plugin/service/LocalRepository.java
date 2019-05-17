@@ -108,7 +108,7 @@ public class LocalRepository {
     
     private List<KStorePlugin> collectDownloads(List<KStorePlugin> plugins) {
         return plugins.stream()
-                .filter(p -> !isLocallyInstalled(p))
+                .filter(p -> !isLocallyInstalled(p) && !p.isExpired())
                 .collect(Collectors.toList());
     }
     
