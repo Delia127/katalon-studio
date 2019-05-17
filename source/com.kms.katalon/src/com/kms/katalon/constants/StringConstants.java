@@ -77,6 +77,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TITLE_QUICK_GUIDE = MessageConstants.DIA_TITLE_QUICK_GUIDE;
 
     // Activation
+    public static final String AGREE_TERM_URL = MessageConstants.AGREE_TERM_URL;
+    
     public static final String FORGOT_PASS_LINK = MessageConstants.FORGOT_PASS_LINK;
 
     public static final String LINK_LABEL_FORGOT_PASS_TEXT = MessageConstants.LINK_LABEL_FORGOT_PASS_TEXT;

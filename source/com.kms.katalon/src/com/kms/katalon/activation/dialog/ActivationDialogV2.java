@@ -54,6 +54,8 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private Link lnkForgotPassword;
 
+    private Link lnkAgreeTerm;
+    
     public ActivationDialogV2(Shell parentShell) {
         super(parentShell, false);
     }
@@ -102,6 +104,13 @@ public class ActivationDialogV2 extends AbstractDialog {
             public void widgetSelected(SelectionEvent e) {
                 setReturnCode(REQUEST_OFFLINE_CODE);
                 close();
+            }
+        });
+        
+        lnkAgreeTerm.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(StringConstants.AGREE_TERM_URL);
             }
         });
 
@@ -197,14 +206,24 @@ public class ActivationDialogV2 extends AbstractDialog {
         glButtonBar.verticalSpacing = 10;
         buttonBar.setLayout(glButtonBar);
         buttonBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
+                     
+        Composite bottomTemp = new Composite(buttonBar, SWT.NONE);
+        bottomTemp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridLayout gdBottomBarTemp = new GridLayout(1, false);
+        gdBottomBarTemp.marginWidth = 10;
+        gdBottomBarTemp.marginHeight = 0;
+        bottomTemp.setLayout(gdBottomBarTemp);
+        
+        lnkAgreeTerm = new Link(bottomTemp, SWT.WRAP);
+        lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);
+        
         Composite bottomBar = new Composite(buttonBar, SWT.NONE);
         bottomBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         GridLayout gdBottomBar = new GridLayout(2, false);
         gdBottomBar.marginWidth = 5;
         gdBottomBar.marginHeight = 0;
         bottomBar.setLayout(gdBottomBar);
-
+        
         Composite bottomLeftComposite = new Composite(bottomBar, SWT.NONE);
         bottomLeftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         bottomLeftComposite.setLayout(new GridLayout(2, false));

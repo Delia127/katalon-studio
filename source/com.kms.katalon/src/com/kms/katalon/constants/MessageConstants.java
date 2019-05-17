@@ -316,6 +316,8 @@ public class MessageConstants extends NLS {
     public static String URL_BUILD_CMD;
 
     // ActivationDialogV2
+    public static String AGREE_TERM_URL;
+    
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
 
     public static String ActivationDialogV2_MSG_ACTIVATING;
@@ -325,6 +327,8 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATION;
 
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
+    
+    public static String ActivationDialogV2_LBL_AGREE_TERM;
 
     // ActivationOfflineDialogV2
     public static String ActivationOfflineDialogV2_LNK_BACK;
