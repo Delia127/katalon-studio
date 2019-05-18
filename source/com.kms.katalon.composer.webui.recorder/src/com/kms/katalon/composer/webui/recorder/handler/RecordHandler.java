@@ -185,7 +185,7 @@ public class RecordHandler {
                         recordedWebPage.getChildren().removeIf(b -> aChildNames.contains(b.getName()));
                         recordedElements.add(a);
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        LoggerSingleton.logError(e);
                     }
                 });
     }
@@ -338,7 +338,7 @@ public class RecordHandler {
             SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
         for (WebPage pageElement : recordedElements) {
             FolderEntity importedFolder = (FolderEntity) folderSelectionResult.getEntitySavedMap().get(pageElement);
-            if(importedFolder != null) {
+            if (importedFolder != null) {
                 pageElement.setFolderAlias(importedFolder);
             }
             for (WebElement childElement : ((WebFrame) pageElement).getChildren()) {
