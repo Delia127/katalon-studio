@@ -1,14 +1,14 @@
-package com.kms.katalon.integration.analytics.util;
+package com.kms.katalon.execution.util;
 
 public class ApiKey {
-    private static String get;
+    private static String key;
     
     //This should be called only once in application startup
     public static void set(String apiKey) {
-    	ApiKey.get = apiKey;
+    	ApiKey.key = apiKey;
     }
     
     public static String get() {
-        return get;
+        return key;
     }
 }

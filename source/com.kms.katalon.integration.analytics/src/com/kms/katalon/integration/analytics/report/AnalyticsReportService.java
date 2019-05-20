@@ -19,6 +19,7 @@ import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.util.ApiKey;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
@@ -28,7 +29,6 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
-import com.kms.katalon.integration.analytics.util.ApiKey;
 import com.kms.katalon.integration.analytics.util.FileUtils;
 import com.kms.katalon.logging.LogUtil;
 

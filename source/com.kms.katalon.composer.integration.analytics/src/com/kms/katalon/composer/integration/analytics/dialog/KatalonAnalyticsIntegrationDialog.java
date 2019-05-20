@@ -30,6 +30,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
@@ -159,7 +160,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
 
         try {
             password = analyticsSettingStore.getPassword(true);
-            serverUrl = "https://analytics.katalon.com/";
+            serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
             email = analyticsSettingStore.getEmail(true);
 
             cbxAutoSubmit.setSelection(true);
@@ -254,17 +255,10 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
             analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());
             analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
             analyticsSettingStore.setAttachLog(encryptionEnabled);
-
-            IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-            eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
-    }
-
-    private boolean isIntegratedSuccessfully() {
-        return teams.isEmpty();
     }
 
     @Override

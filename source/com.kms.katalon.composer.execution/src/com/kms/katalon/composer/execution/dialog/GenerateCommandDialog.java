@@ -1090,16 +1090,15 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
     
     private void getConfigurationAnalytics() {
-    	analyticsSettingStore = new AnalyticsSettingStore(
-                ProjectController.getInstance().getCurrentProject().getFolderLocation());
-    	
-    	try {
-    		boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled() && analyticsSettingStore.isAutoSubmit();
-    		chkAPIKey.setSelection(enableApiKey);
+        analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        try {
+            boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled() && analyticsSettingStore.isAutoSubmit();
+            chkAPIKey.setSelection(enableApiKey);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     private RunConfigurationDescription getStoredConfigurationDescription() {

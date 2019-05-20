@@ -36,13 +36,12 @@ import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptio
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
+import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -102,8 +101,7 @@ public class ConsoleMain {
             
             if (options.has(KATALON_API_KEY_OPTION)) {
                 String apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
-                //Analytics
-                setApiKey(apiKeyValue);
+                ApiKeyHandler.setApiKeyToProject(apiKeyValue);
                 
                 //Store
                 reloadPlugins(apiKeyValue);
@@ -162,20 +160,6 @@ public class ConsoleMain {
             return LauncherResult.RETURN_CODE_ERROR;
         } finally {
             LauncherManager.getInstance().removeAllTerminated();
-        }
-    }
-    
-    private static void setApiKey(String apiKey) throws Exception {
-        Bundle katalonBundle = Platform.getBundle("com.kms.katalon.integration.analytics");
-        Class<?> analyticsApiKeyHandlerClass = katalonBundle
-                .loadClass("com.kms.katalon.integration.analytics.handler.AnalyticsApiKeyHanlder");
-        Object handler = analyticsApiKeyHandlerClass.newInstance();
-        Method reloadMethod = Arrays.asList(analyticsApiKeyHandlerClass.getMethods()).stream()
-                .filter(method -> method.getName().equals("setApiKeyToProject"))
-                .findAny()
-                .orElse(null);
-        if (reloadMethod != null) {
-            reloadMethod.invoke(handler, apiKey);
         }
     }
     
