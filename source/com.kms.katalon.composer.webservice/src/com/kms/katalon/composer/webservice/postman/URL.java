@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class URL {
     private String raw;
-    private Protocol protocol;
+    private String protocol;
     private String[] host;
     private String[] path;
     private List<Variable> variable;
@@ -26,9 +26,9 @@ public class URL {
     public void setRaw(String value) { this.raw = value; }
 
     @JsonProperty("protocol")
-    public Protocol getProtocol() { return protocol; }
+    public String getProtocol() { return protocol; }
     @JsonProperty("protocol")
-    public void setProtocol(Protocol value) { this.protocol = value; }
+    public void setProtocol(String value) { this.protocol = value; }
 
     @JsonProperty("host")
     public String[] getHost() { return host; }

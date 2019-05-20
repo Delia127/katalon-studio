@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.BuildInfo;
@@ -58,6 +59,7 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
@@ -68,6 +70,7 @@ import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FileExcutableUtil;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
+import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.core.webui.util.WebDriverProxyUtil;
 import com.kms.katalon.selenium.driver.CChromeDriver;
@@ -78,7 +81,6 @@ import com.kms.katalon.selenium.driver.CRemoteWebDriver;
 import com.kms.katalon.selenium.driver.CSafariDriver;
 
 import io.appium.java_client.ios.IOSDriver;
-import com.kms.katalon.core.webui.util.OSUtil;
 
 public class DriverFactory {
 
@@ -284,13 +286,14 @@ public class DriverFactory {
         System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
 
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
-        if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
-            WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities,
-                    "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
-        } else {
-            desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        if (ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
+            if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
+                WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, 
+                        "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
+            } else  {
+                desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+            }
         }
-
         return desireCapibilities;
     }
 
@@ -413,7 +416,8 @@ public class DriverFactory {
         }
         DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
                 DesiredCapabilities.edge(), false);
-        desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        //Edge driver doesn't support proxy: https://docs.microsoft.com/en-us/microsoft-edge/webdriver
+        //desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
     }
 

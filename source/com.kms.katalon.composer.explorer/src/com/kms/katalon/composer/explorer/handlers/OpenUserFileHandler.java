@@ -55,7 +55,7 @@ public class OpenUserFileHandler {
     public static IEditorPart openEditor(UserFileEntity object) {
         try {
             IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(object.toFile().getName());
-            if (desc == null) {
+            if (desc == null || desc.getId().equals("org.codehaus.groovy.eclipse.editor.GroovyEditor")) {
                 desc = PlatformUI.getWorkbench().getEditorRegistry().findEditor("org.eclipse.ui.DefaultTextEditor");
             }
             
