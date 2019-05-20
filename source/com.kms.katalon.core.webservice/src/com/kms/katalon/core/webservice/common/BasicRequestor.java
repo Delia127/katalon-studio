@@ -30,7 +30,7 @@ import com.google.api.client.auth.oauth.OAuthRsaSigner;
 import com.google.api.client.auth.oauth.OAuthSigner;
 import com.google.api.client.http.GenericUrl;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.core.model.SSLSettings;
+import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.RequestObject;
@@ -40,7 +40,6 @@ import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.util.BrowserMobProxyManager;
 import com.kms.katalon.core.util.internal.ProxyUtil;
-import com.kms.katalon.core.webservice.constants.PreferenceConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
@@ -63,8 +62,8 @@ public abstract class BasicRequestor implements Requestor {
         return WebServiceSettingStore.create(projectDir).getSSLCertificateOption();
     }
     
-    private SSLSettings getSSLSettings() throws IOException {
-        return WebServiceSettingStore.create(projectDir).getSSLSettings();
+    private SSLClientCertificateSettings getSSLSettings() throws IOException {
+        return WebServiceSettingStore.create(projectDir).getClientCertificateSettings();
     }
 
     protected TrustManager[] getTrustManagers() throws IOException {
@@ -88,7 +87,7 @@ public abstract class BasicRequestor implements Requestor {
     }
     
     protected KeyManager[] getKeyManagers() throws GeneralSecurityException, IOException {
-        SSLSettings sslSettings = getSSLSettings();
+        SSLClientCertificateSettings sslSettings = getSSLSettings();
         String keyStoreFilePath = sslSettings.getKeyStoreFile();
         if (!StringUtils.isBlank(keyStoreFilePath)) {
             File keyStoreFile = new File(keyStoreFilePath);

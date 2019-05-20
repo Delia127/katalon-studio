@@ -1,6 +1,6 @@
 package com.kms.katalon.core.model;
 
-public class SSLSettings {
+public class SSLClientCertificateSettings {
 
     private String keyStoreFile;
     

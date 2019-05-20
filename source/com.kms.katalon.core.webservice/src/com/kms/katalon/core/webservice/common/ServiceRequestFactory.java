@@ -1,7 +1,7 @@
 package com.kms.katalon.core.webservice.common;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.model.SSLSettings;
+import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;

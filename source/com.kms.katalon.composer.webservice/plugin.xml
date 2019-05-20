@@ -21,11 +21,6 @@
            id="com.kms.katalon.composer.webui.setting.testdesign.webservicemethod"
            name="API/Web Service Method">
      </page>
-     <page
-            class="com.kms.katalon.composer.webservice.settings.SSLSettingPage"
-            id="com.kms.katalon.composer.webservice.ssl"
-            name="SSL Settings">
-      </page>
    </extension>
    <extension
          point="com.kms.katalon.composer.execution.tetSuiteExecutionItem">

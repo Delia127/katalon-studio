@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.ssl.KeyMaterial;
 
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.core.model.SSLSettings;
+import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;

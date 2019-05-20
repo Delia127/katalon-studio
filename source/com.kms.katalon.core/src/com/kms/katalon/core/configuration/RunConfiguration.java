@@ -23,7 +23,7 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.model.RunningMode;
-import com.kms.katalon.core.model.SSLSettings;
+import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
@@ -482,13 +482,13 @@ public class RunConfiguration {
         return gson.fromJson((String) generalProperties.get(PROXY_PROPERTY), ProxyInformation.class);
     }
     
-    public static SSLSettings getSSLSettings() {
+    public static SSLClientCertificateSettings getSSLSettings() {
         Map<String, Object> generalProperties = getExecutionGeneralProperties();
         if (!generalProperties.containsKey(SSL_PROPERTY)) {
             return null;
         }
         Gson gson = new Gson();
-        return gson.fromJson((String) generalProperties.get(SSL_PROPERTY), SSLSettings.class);
+        return gson.fromJson((String) generalProperties.get(SSL_PROPERTY), SSLClientCertificateSettings.class);
     }
 
     public static boolean shouldTerminateDriverAfterTestCase() {

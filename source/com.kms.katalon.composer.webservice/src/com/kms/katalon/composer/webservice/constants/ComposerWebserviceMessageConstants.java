@@ -182,10 +182,18 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String DIA_MSG_UNABLE_TO_UPDATE_NETWORK_PAGE;
 
     public static String DIA_GRP_LBL_CERTITICATES;
+    
+    public static String DIA_GRP_LBL_CLIENT_CERTIFICATES;
 
     public static String DIA_LBL_SSL_CERT_NONE_OPT;
 
     public static String DIA_LBL_SSL_CERT_BYPASS_OPT;
+    
+    public static String DIA_LBL_KEYSTORE;
+            
+    public static String DIA_BTN_BROWSE_FILE;
+            
+    public static String DIA_LBL_KEYSTORE_PASSWORD;
 
     public static String PA_LBL_CONSUMER_KEY;
 
