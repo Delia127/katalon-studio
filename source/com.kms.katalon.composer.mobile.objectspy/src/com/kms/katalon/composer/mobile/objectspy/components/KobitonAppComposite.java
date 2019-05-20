@@ -1,6 +1,6 @@
 package com.kms.katalon.composer.mobile.objectspy.components;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -25,20 +25,23 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.mobile.objectspy.constant.ComposerMobileObjectspyMessageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
+import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
 import com.kms.katalon.integration.kobiton.entity.KobitonDevice;
 import com.kms.katalon.integration.kobiton.exceptions.KobitonApiException;
 import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 import com.kms.katalon.integration.kobiton.providers.KobitonApiProvider;
 
-public class KobitonAppComposite extends Composite {
+public class KobitonAppComposite implements MobileAppComposite {
     private Combo cbbKobitonDevices, cbbKobitonApps;
 
     private MobileAppDialog parentDialog;
@@ -52,79 +55,8 @@ public class KobitonAppComposite extends Composite {
     private KobitonDevice selectDevice = null;
 
     private Link linkLabel;
-
-    public KobitonAppComposite(Composite parent, MobileAppDialog parentDialog, int style) {
-        super(parent, style);
-        this.parentDialog = parentDialog;
-        initComposite();
-    }
-
-    public void initComposite() {
-        final GridLayout layout = new GridLayout();
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
-        setLayout(layout);
-        
-        Composite deviceNameCompposite = new Composite(this, SWT.NONE);
-        final GridLayout deviceNameComppositeLayout = new GridLayout(3, false);
-        deviceNameComppositeLayout.marginHeight = 0;
-        deviceNameComppositeLayout.marginWidth = 0;
-        deviceNameCompposite.setLayout(deviceNameComppositeLayout);
-        deviceNameCompposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        Label lblDeviceName = new Label(deviceNameCompposite, SWT.NONE);
-        lblDeviceName.setText(StringConstants.DIA_LBL_DEVICE_NAME);
-
-        cbbKobitonDevices = new Combo(deviceNameCompposite, SWT.READ_ONLY);
-        cbbKobitonDevices.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbbKobitonDevices.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                parentDialog.refreshButtonsState();
-            }
-        });
-
-        btnRefreshKobitonDevice = new Button(deviceNameCompposite, SWT.FLAT);
-        btnRefreshKobitonDevice.setText(StringConstants.REFRESH);
-        btnRefreshKobitonDevice.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                parentDialog.updateDeviceNames();
-            }
-        });
-        
-        
-        linkLabel = new Link(this, SWT.NONE);
-        linkLabel.setText(
-                StringConstants.MSG_NO_DEVICES + " <a href=\"" + StringConstants.NO_DEVICES_TROUBLESHOOTING_GUIDE_LINK
-                        + "\">" + StringConstants.MSG_WRAPPED_NO_DEVICES_TROUBLESHOOTING_GUIDE + "</a>");
-
-        linkLabel.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Program.launch(e.text);
-            }
-        });
-
-        Composite appFileChooserComposite = new Composite(this, SWT.NONE);
-        appFileChooserComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glAppFileChooserComposite = new GridLayout(2, false);
-        glAppFileChooserComposite.marginHeight = 0;
-        glAppFileChooserComposite.marginWidth = 0;
-        appFileChooserComposite.setLayout(glAppFileChooserComposite);
-
-        Label appFileLabel = new Label(appFileChooserComposite, SWT.NONE);
-        appFileLabel.setText(StringConstants.DIA_LBL_APP_FILE);
-
-        cbbKobitonApps = new Combo(appFileChooserComposite, SWT.READ_ONLY);
-        cbbKobitonApps.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbbKobitonApps.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                parentDialog.refreshButtonsState();
-            }
-        });
-    }
+    
+    private Composite composite;
 
     public boolean isAbleToStart() {
         return isNotBlank(cbbKobitonApps.getText()) && cbbKobitonDevices.getSelectionIndex() >= 0;
@@ -172,6 +104,10 @@ public class KobitonAppComposite extends Composite {
             return false;
         }
         return true;
+    }
+
+    private Shell getShell() {
+        return composite.getShell();
     }
 
     public KobitonDevice getSelectedKobitonDevice() {
@@ -236,39 +172,6 @@ public class KobitonAppComposite extends Composite {
         return cbbKobitonApps.getText();
     }
 
-    public void updateKobitonApps() throws InvocationTargetException, InterruptedException {
-        final IRunnableWithProgress runnable = new IRunnableWithProgress() {
-            @Override
-            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                monitor.beginTask(ComposerMobileObjectspyMessageConstants.DIA_JOB_TASK_LOADING_KOBITON_APPS,
-                        IProgressMonitor.UNKNOWN);
-
-                try {
-                    updateKobitonAppList();
-                } catch (URISyntaxException | IOException | KobitonApiException e) {
-                    throw new InvocationTargetException(e);
-                }
-                final List<String> apps = getAllKobitonAppsName();
-
-                checkMonitorCanceled(monitor);
-
-                UISynchronizeService.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (apps.isEmpty()) {
-                            return;
-                        }
-                        cbbKobitonApps.setItems(apps.toArray(new String[] {}));
-                        cbbKobitonApps.select(Math.max(0, apps.indexOf(cbbKobitonApps.getText())));
-                    }
-                });
-
-                monitor.done();
-            }
-        };
-        new ProgressMonitorDialogWithThread(Display.getDefault().getActiveShell()).run(true, true, runnable);
-    }
-
     public void updateKobitonDevices() throws InvocationTargetException, InterruptedException {
         final IRunnableWithProgress runnable = new IRunnableWithProgress() {
             @Override
@@ -306,5 +209,136 @@ public class KobitonAppComposite extends Composite {
         ((GridData) linkLabel.getLayoutData()).exclude = !visible;
         linkLabel.pack();
         linkLabel.getParent().layout(true, true);
+    }
+
+    @Override
+    public Composite createComposite(Composite parent, int type, MobileAppDialog parentDialog) {
+        composite = new Composite(parent, SWT.NONE);
+        final GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        composite.setLayout(layout);
+        
+        Composite deviceNameCompposite = new Composite(composite, SWT.NONE);
+        final GridLayout deviceNameComppositeLayout = new GridLayout(3, false);
+        deviceNameComppositeLayout.marginHeight = 0;
+        deviceNameComppositeLayout.marginWidth = 0;
+        deviceNameCompposite.setLayout(deviceNameComppositeLayout);
+        deviceNameCompposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+        Label lblDeviceName = new Label(deviceNameCompposite, SWT.NONE);
+        lblDeviceName.setText(StringConstants.DIA_LBL_DEVICE_NAME);
+
+        cbbKobitonDevices = new Combo(deviceNameCompposite, SWT.READ_ONLY);
+        cbbKobitonDevices.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        cbbKobitonDevices.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                parentDialog.refreshButtonsState();
+            }
+        });
+
+        btnRefreshKobitonDevice = new Button(deviceNameCompposite, SWT.PUSH);
+        btnRefreshKobitonDevice.setText(StringConstants.REFRESH);
+        btnRefreshKobitonDevice.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                parentDialog.updateDeviceNames();
+            }
+        });
+        
+        
+        linkLabel = new Link(composite, SWT.NONE);
+        linkLabel.setText(
+                StringConstants.MSG_NO_DEVICES + " <a href=\"" + StringConstants.NO_DEVICES_TROUBLESHOOTING_GUIDE_LINK
+                        + "\">" + StringConstants.MSG_WRAPPED_NO_DEVICES_TROUBLESHOOTING_GUIDE + "</a>");
+
+        linkLabel.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
+
+        Composite appFileChooserComposite = new Composite(composite, SWT.NONE);
+        appFileChooserComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridLayout glAppFileChooserComposite = new GridLayout(2, false);
+        glAppFileChooserComposite.marginHeight = 0;
+        glAppFileChooserComposite.marginWidth = 0;
+        appFileChooserComposite.setLayout(glAppFileChooserComposite);
+
+        Label appFileLabel = new Label(appFileChooserComposite, SWT.NONE);
+        appFileLabel.setText(StringConstants.DIA_LBL_APP_FILE);
+
+        cbbKobitonApps = new Combo(appFileChooserComposite, SWT.READ_ONLY);
+        cbbKobitonApps.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        cbbKobitonApps.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                parentDialog.refreshButtonsState();
+            }
+        });
+        return composite;
+    }
+
+    @Override
+    public boolean validateSetting() {
+        return validateKobitonAppSetting();
+    }
+
+    @Override
+    public MobileDriverType getSelectedDriverType() {
+        return MobileInspectorController.getMobileDriverType(selectDevice);
+    }
+
+    @Override
+    public boolean startApp(MobileInspectorController controller, AppiumMonitorDialog progressDialog)
+            throws InvocationTargetException, InterruptedException {
+        return startKobitonApp(controller, progressDialog);
+    }
+
+    @Override
+    public void setInput() throws InvocationTargetException, InterruptedException {
+        loadDevices();
+        final IRunnableWithProgress runnable = new IRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                monitor.beginTask(ComposerMobileObjectspyMessageConstants.DIA_JOB_TASK_LOADING_KOBITON_APPS,
+                        IProgressMonitor.UNKNOWN);
+
+                try {
+                    updateKobitonAppList();
+                } catch (URISyntaxException | IOException | KobitonApiException e) {
+                    throw new InvocationTargetException(e);
+                }
+                final List<String> apps = getAllKobitonAppsName();
+
+                checkMonitorCanceled(monitor);
+
+                UISynchronizeService.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (apps.isEmpty()) {
+                            return;
+                        }
+                        cbbKobitonApps.setItems(apps.toArray(new String[] {}));
+                        cbbKobitonApps.select(Math.max(0, apps.indexOf(cbbKobitonApps.getText())));
+                    }
+                });
+
+                monitor.done();
+            }
+        };
+        new ProgressMonitorDialogWithThread(Display.getDefault().getActiveShell()).run(true, true, runnable);
+    }
+
+    @Override
+    public String getAppFile() {
+        return kobitonApps.get(cbbKobitonApps.getSelectionIndex()).getName();
+    }
+
+    @Override
+    public void loadDevices() throws InvocationTargetException, InterruptedException {
+        updateKobitonDevices();
     }
 }

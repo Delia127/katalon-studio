@@ -52,11 +52,12 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.tracking
 Bundle-ClassPath: .
 Export-Package: com.kms.katalon.composer.mobile.objectspy.components,
+ com.kms.katalon.composer.mobile.objectspy.constant,
  com.kms.katalon.composer.mobile.objectspy.dialog,
  com.kms.katalon.composer.mobile.objectspy.element,
  com.kms.katalon.composer.mobile.objectspy.element.impl,
  com.kms.katalon.composer.mobile.objectspy.element.tree,
- com.kms.katalon.composer.mobile.objectspy.preferences, 
+ com.kms.katalon.composer.mobile.objectspy.preferences,
  com.kms.katalon.composer.mobile.objectspy.util,
  com.kms.katalon.composer.mobile.objectspy.viewer
 Import-Package: com.kms.katalon.composer.handlers,
