@@ -62,6 +62,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
@@ -285,12 +286,13 @@ public class DriverFactory {
         System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
 
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
-        if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
-            WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
-        } else {
-            desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        if (ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
+            if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
+                WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
+            } else  {
+                desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+            }
         }
-        
         return desireCapibilities;
     }
 
