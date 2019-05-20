@@ -406,7 +406,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     public ReportEntity getReportEntity() {
         try {
             if (reportEntity == null) {
-                reportEntity = ReportController.getInstance().getReportEntity(getTestSuite(), getId());
+                reportEntity = ReportController.getInstance().getReportEntity(getTestSuite(), getId(), getRunConfig().getExecutionSessionId());
             }
             return reportEntity;
         } catch (Exception e) {
