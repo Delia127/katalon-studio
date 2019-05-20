@@ -1097,7 +1097,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             chkAPIKey.setSelection(enableApiKey);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LoggerSingleton.logError(e);
         }
     }
     

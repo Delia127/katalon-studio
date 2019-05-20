@@ -368,11 +368,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
                 if (teams != null && teams.size() > 0) {
                     if (!checkUserCanAccessProject()) {
-
                         canAccessProject = false;
-
                         projects.clear();
-
                         teams.add(selectTeamFromConfig);
                         projects.add(selectProjectFromConfig);
                         linkStatusAccessProject.setText(
@@ -387,10 +384,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
                     cbbTeams.setItems(
                             AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-
                     indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
                     cbbTeams.select(indexSelectTeam);
-
                     setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                 }
             }
@@ -404,7 +399,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             if (!StringUtils.isEmpty(preferenceEmail) && !StringUtils.isEmpty(preferencePassword)) {
                 txtEmail.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail)));
                 txtPassword.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword)));
-//                 empty preference store password
+                // empty preference store password
                 preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);
             }
 
@@ -420,7 +415,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     	if (currentTeam.getId() != null) {
     		long currentTeamId = currentTeam.getId();
-
         	for (AnalyticsTeam team : teams) {
         		long teamId = team.getId();
         		if (teamId == currentTeamId) {
@@ -481,7 +475,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
-        } 
+        }
     }
 
     private void addListeners() {
@@ -534,7 +528,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             public void widgetSelected(SelectionEvent e) {
                 AnalyticsTeam selectTeamFromUser = teams.get(cbbTeams.getSelectionIndex());
 				if (!canAccessProject) {
-					
 					if (selectTeamFromUser.equals(selectTeamFromConfig)) {
 						return;
 					} else {
@@ -605,7 +598,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 Program.launch(e.text);
             }
         });
-
     }
 
     private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {

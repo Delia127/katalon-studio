@@ -163,17 +163,17 @@ public class OpenProjectHandler {
                             try {
                                 if (project != null) {
                                     AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
-                                    		ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                                    
+                                            ProjectController.getInstance().getCurrentProject().getFolderLocation());
+
                                     AnalyticsTeam teamKA = analyticsSettingStore.getTeam();
                                     AnalyticsProject projectKA = analyticsSettingStore.getProject();
                                     AnalyticsSettingProject analyticsConfigutionProject = new AnalyticsSettingProject();
-                                    
-                                    if (teamKA.getId() != null && projectKA.getId() != null) { 
-                                    	analyticsConfigutionProject.checkUserAccessProject();
-                                    } 
-                                    
-                                 // Set project name on window title
+
+                                    if (teamKA.getId() != null && projectKA.getId() != null) {
+                                        analyticsConfigutionProject.checkUserAccessProject();
+                                    }
+
+                                    // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, application);
                                     Trackings.trackOpenProject(project);
                                 }
@@ -195,7 +195,6 @@ public class OpenProjectHandler {
                     TimeUnit.SECONDS.sleep(1);
                     eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
                     TimeUnit.SECONDS.sleep(1);
-                    
                     return;
                 } catch (final Exception e) {
                     syncService.syncExec(new Runnable() {
