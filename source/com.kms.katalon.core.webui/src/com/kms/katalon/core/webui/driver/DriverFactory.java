@@ -401,7 +401,8 @@ public class DriverFactory {
         }
         DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
                 DesiredCapabilities.edge(), false);
-        desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        //Edge driver doesn't support proxy: https://docs.microsoft.com/en-us/microsoft-edge/webdriver
+        //desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
     }
 
