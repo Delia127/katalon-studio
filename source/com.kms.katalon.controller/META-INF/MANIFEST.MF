@@ -29,7 +29,6 @@ Require-Bundle: com.kms.katalon.constant,
  org.javalite.common,
  com.kms.katalon.core.webservice,
  com.kms.katalon.logging,
- com.katalon.platform,
- com.kms.katalon.netlightbody
+ com.katalon.platform
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

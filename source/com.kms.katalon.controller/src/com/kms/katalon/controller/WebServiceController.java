@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 
-import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.HttpBodyContent;

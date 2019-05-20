@@ -315,11 +315,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES = ComposerExecutionMessageConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES;
 
     public static final String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE = ComposerExecutionMessageConstants.DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
-
-    // SSL Preference Page
-    public static final String SSLPreferencePage_LBL_KEYSTORE = ComposerExecutionMessageConstants.SSLPreferencePage_LBL_KEYSTORE;
-    
-    public static final String SSLPreferencePage_BTN_BROWSE_FILE = ComposerExecutionMessageConstants.SSLPreferencePage_BTN_BROWSE_FILE;
-    
-    public static final String SSLPreferencePage_LBL_KEYSTORE_PASSWORD = ComposerExecutionMessageConstants.SSLPreferencePage_LBL_KEYSTORE_PASSWORD;
 }

@@ -89,8 +89,6 @@ public class RunConfiguration {
     public static final String EXCUTION_DEFAULT_FAILURE_HANDLING = StringConstants.CONF_PROPERTY_DEFAULT_FAILURE_HANDLING;
 
     public static final String PROXY_PROPERTY = StringConstants.CONF_PROPERTY_PROXY;
-    
-    public static final String SSL_PROPERTY = StringConstants.CONF_PROPERTY_SSL;
 
     public static final String TERMINATE_DRIVER_AFTER_TEST_CASE = "terminateDriverAfterTestCase";
 
@@ -480,15 +478,6 @@ public class RunConfiguration {
         }
         Gson gson = new Gson();
         return gson.fromJson((String) generalProperties.get(PROXY_PROPERTY), ProxyInformation.class);
-    }
-    
-    public static SSLClientCertificateSettings getSSLSettings() {
-        Map<String, Object> generalProperties = getExecutionGeneralProperties();
-        if (!generalProperties.containsKey(SSL_PROPERTY)) {
-            return null;
-        }
-        Gson gson = new Gson();
-        return gson.fromJson((String) generalProperties.get(SSL_PROPERTY), SSLClientCertificateSettings.class);
     }
 
     public static boolean shouldTerminateDriverAfterTestCase() {
