@@ -21,16 +21,49 @@ import com.kms.katalon.util.CryptoUtil;
 public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
+    
+    private static boolean haveNetwork = false;
 
     protected ActivationInfoCollector() {
     }
 
     public static boolean isActivated() {
         String activatedVal = ApplicationInfo.getAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME);
+        String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        
+        boolean isActiveByCode = false;
+        boolean isActiveByAccount = false;
+        
+        if (!StringUtils.isBlank(activationCode)) {
+            isActiveByCode = true;
+        }
+        
+        if (!isActiveByCode) {
+            if (!StringUtils.isBlank(username) && !StringUtils.isBlank(encryptedPassword)) {
+                isActiveByAccount = true;
+            }
+        }
+        
+        if (!isActiveByCode && !isActiveByAccount) {
+            return false;
+        }
+        
         if (activatedVal == null) {
             return false;
         }
         try {
+            if (isActiveByAccount) { //and checknetwork
+                StringBuilder errorMessage = new StringBuilder();
+                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
+                   
+                if (haveNetwork && !result) {
+                    return false;
+                }
+            }
+
             String updatedVersion = ApplicationInfo
                     .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
             if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
@@ -101,12 +134,13 @@ public class ActivationInfoCollector {
         traits.addProperty(UsagePropertyConstant.PROPERTY_USER_KEY, KatalonApplication.USER_KEY);
         return traits;
     }
-
+    
     public static boolean activate(String userName, String pass, StringBuilder errorMessage) {
         boolean activatedResult = false;
         try {
             String userInfo = collectActivationInfo(userName, pass);
             String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
+            haveNetwork = true;
             if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
                 markActivated(userName, pass);
                 activatedResult = true;
