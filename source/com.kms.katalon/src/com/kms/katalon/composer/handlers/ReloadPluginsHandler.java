@@ -24,7 +24,7 @@ import com.kms.katalon.plugin.dialog.KStorePluginsDialog;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
-import com.kms.katalon.plugin.models.ResultItem;
+import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.service.PluginService;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
@@ -44,7 +44,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     public void reloadPlugins(boolean silenceMode) {
         PluginPreferenceStore store = new PluginPreferenceStore();
-        List<ResultItem>[] resultHolder = new List[1];
+        List<ReloadItem>[] resultHolder = new List[1];
         Job reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
@@ -88,7 +88,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     return;
                 }
 
-                List<ResultItem> results = resultHolder[0];
+                List<ReloadItem> results = resultHolder[0];
 
                 if (silenceMode && !checkExpire(results)) {
                     return;
@@ -112,14 +112,14 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
         reloadPluginsJob.schedule();
     }
 
-    private boolean checkExpire(List<ResultItem> reloadItems) {
+    private boolean checkExpire(List<ReloadItem> reloadItems) {
         return reloadItems.stream().filter(i -> {
             KStorePlugin plugin = i.getPlugin();
             return plugin.isExpired() || (plugin.isTrial() && plugin.getRemainingDay() <= 14);
         }).findAny().isPresent();
     }
 
-    private void openResultDialog(List<ResultItem> result) {
+    private void openResultDialog(List<ReloadItem> result) {
         if (result.size() > 0) {
             KStorePluginsDialog dialog = new KStorePluginsDialog(Display.getCurrent().getActiveShell(), result);
             dialog.open();
