@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -211,7 +212,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                 return variableEntity;
             }).collect(Collectors.toList());
         } else {
-            initialVariableMapEntries = new ArrayList<>(variableMaps.getMapEntryExpressions());
+            initialVariableMapEntries = new ArrayList<>(variableMaps != null ? variableMaps.getMapEntryExpressions() : new ArrayList<>());
         }
     }
 
