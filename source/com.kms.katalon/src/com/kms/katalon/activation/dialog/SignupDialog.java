@@ -69,6 +69,8 @@ public class SignupDialog extends AbstractDialog {
     private Link lnkConfigProxy;
     
     private Link lnkOfflineActivation;
+    
+    private Link lnkAgreeTerm;
 
     public SignupDialog(Shell parentShell) {
         super(parentShell, false);
@@ -129,6 +131,13 @@ public class SignupDialog extends AbstractDialog {
             public void widgetSelected(SelectionEvent e) {
                 setReturnCode(REQUEST_OFFLINE_CODE);
                 close();
+            }
+        });
+        
+        lnkAgreeTerm.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(StringConstants.AGREE_TERM_URL);
             }
         });
     }
@@ -204,10 +213,18 @@ public class SignupDialog extends AbstractDialog {
     protected Control createButtonBar(Composite parent) {
         Composite bottomBar = new Composite(parent, SWT.NONE);
         bottomBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        GridLayout gdBottomBar = new GridLayout(2, false);
+        GridLayout gdBottomBar = new GridLayout(1, false);
         gdBottomBar.marginWidth = 0;
         bottomBar.setLayout(gdBottomBar);
 
+        Composite bottomTerm = new Composite(bottomBar, SWT.NONE);
+        bottomTerm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridLayout gdBottomBarTerm = new GridLayout(2, false);
+        bottomTerm.setLayout(gdBottomBarTerm);
+        
+        lnkAgreeTerm = new Link(bottomTerm, SWT.WRAP);
+        lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM_SIGNING_UP);
+        
         Composite bottomLeftComposite = new Composite(bottomBar, SWT.NONE);
         bottomLeftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         bottomLeftComposite.setLayout(new GridLayout(6, false));

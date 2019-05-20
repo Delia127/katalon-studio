@@ -194,7 +194,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         lblProgressMessage = new Label(contentComposite, SWT.NONE);
         lblProgressMessage.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2, 1));
-
+        
         return container;
     }
 
@@ -207,14 +207,14 @@ public class ActivationDialogV2 extends AbstractDialog {
         buttonBar.setLayout(glButtonBar);
         buttonBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
                      
-        Composite bottomTemp = new Composite(buttonBar, SWT.NONE);
-        bottomTemp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        GridLayout gdBottomBarTemp = new GridLayout(1, false);
-        gdBottomBarTemp.marginWidth = 10;
-        gdBottomBarTemp.marginHeight = 0;
-        bottomTemp.setLayout(gdBottomBarTemp);
+        Composite bottomTerm = new Composite(buttonBar, SWT.NONE);
+        bottomTerm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridLayout gdBottomBarTerm = new GridLayout(2, false);
+        gdBottomBarTerm.marginWidth = 10;
+        gdBottomBarTerm.marginHeight = 0;
+        bottomTerm.setLayout(gdBottomBarTerm);
         
-        lnkAgreeTerm = new Link(bottomTemp, SWT.WRAP);
+        lnkAgreeTerm = new Link(bottomTerm, SWT.WRAP);
         lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);
         
         Composite bottomBar = new Composite(buttonBar, SWT.NONE);

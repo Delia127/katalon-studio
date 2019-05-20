@@ -329,7 +329,7 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
     
     public static String ActivationDialogV2_LBL_AGREE_TERM;
-
+   
     // ActivationOfflineDialogV2
     public static String ActivationOfflineDialogV2_LNK_BACK;
 
@@ -363,6 +363,8 @@ public class MessageConstants extends NLS {
     public static String SignupDialog_MSG_SIGNUP_REQUEST_FAILED;
 
     public static String SignupDialog_LNK_OFFLINE_ACTIVATION;
+    
+    public static String ActivationDialogV2_LBL_AGREE_TERM_SIGNING_UP;
 
     // SignupSurveyDialog
     public static String SignupSurveyDialog_DIA_TITLE;
