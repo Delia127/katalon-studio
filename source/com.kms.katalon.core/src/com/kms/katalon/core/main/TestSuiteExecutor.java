@@ -80,6 +80,13 @@ public class TestSuiteExecutor {
 
         eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_SUITE, new Object[] { testSuiteContext });
 
+        /**
+         * TODO
+         * Publish event BEFORE_TEST_DATA_BINDED_INTO_TEST_CASE with testSuiteContext,
+         * testCaseContext and testCaseBindings as arguments
+         * Clients can modify mappings in testCaseBindings given those information
+         */
+        
         accessTestSuiteMainPhase(testCaseBindings);
 
         String status = "COMPLETE";

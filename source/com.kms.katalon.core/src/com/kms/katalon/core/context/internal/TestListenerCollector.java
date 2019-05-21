@@ -28,6 +28,9 @@ public class TestListenerCollector implements ExecutionListenerEventHandler {
         LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.AFTER_TEST_SUITE, AfterTestSuite.class.getName());
         LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.BEFORE_TEST_CASE, BeforeTestCase.class.getName());
         LISTENER_ANNOTATION_NAMES.put(ExecutionListenerEvent.AFTER_TEST_CASE, AfterTestCase.class.getName());
+        /**
+         * TODO: Add BEFORE_TEST_DATA_BIND_INTO_TEST_CASE
+         */
     }
 
     private String sourceFolder;
