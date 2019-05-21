@@ -40,6 +40,7 @@ import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelPr
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
@@ -347,7 +348,8 @@ public class KStorePluginsDialog extends Dialog {
             ReloadItem reloadItem = (ReloadItem) cell.getElement();
             if (reloadItem.getException() != null) {
                 Exception exception = reloadItem.getException();
-                MultiStatusErrorDialog.showErrorDialog(exception, "Failed to reload plugin", exception.getMessage());
+                MultiStatusErrorDialog.showErrorDialog("Failed to reload plugin", exception.getMessage(),
+                        ExceptionsUtil.getStackTraceForThrowable(exception));
             }
         }
 
