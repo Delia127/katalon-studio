@@ -1,5 +1,4 @@
 package com.kms.katalon.composer.integration.analytics.uploadProject;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;

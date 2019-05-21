@@ -553,7 +553,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         } else {
             btnCreate.setEnabled(true);
         }
-	}
+    }
 
     protected boolean isInitialized() {
         return enableAnalyticsIntegration != null;
