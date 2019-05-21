@@ -19,31 +19,32 @@ public class ZipHelper {
             ".git");
 
     public static void Compress(String srcFolder, String destZipFile) throws Exception {
-        ZipOutputStream zip = null;
-        FileOutputStream fileWrite = null;
+        ZipOutputStream zipStream = null;
+        FileOutputStream fileWriteStream = null;
 
-        fileWrite = new FileOutputStream(destZipFile);
-        zip = new ZipOutputStream(fileWrite);
+        fileWriteStream = new FileOutputStream(destZipFile);
+        zipStream = new ZipOutputStream(fileWriteStream);
 
-        addFolderToZip("", srcFolder, zip);
-        zip.flush();
-        zip.close();
+        addFolderToZip("", srcFolder, zipStream);
+        zipStream.flush();
+        zipStream.close();
     }
 
     private static void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
         File folder = new File(srcFile);
-
-        if (folder.isDirectory()) {
-            addFolderToZip(path, srcFile, zip);
-        } else {
-            String extensionFile = FilenameUtils.getExtension(folder.toString());
-            if (!ignoreFileArray.contains(extensionFile)) {
-                byte[] buf = new byte[1024];
-                int len;
-                FileInputStream in = new FileInputStream(srcFile);
-                zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
-                while ((len = in.read(buf)) > 0) {
-                    zip.write(buf, 0, len);
+        if (folder != null) {
+            if (folder.isDirectory()) {
+                addFolderToZip(path, srcFile, zip);
+            } else {
+                String extensionFile = "." + FilenameUtils.getExtension(folder.toString());
+                if (!ignoreFileArray.contains(extensionFile)) {
+                    byte[] buf = new byte[1024];
+                    int len;
+                    FileInputStream inputStream = new FileInputStream(srcFile);
+                    zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
+                    while ((len = inputStream.read(buf)) > 0) {
+                        zip.write(buf, 0, len);
+                    }
                 }
             }
         }
@@ -51,13 +52,14 @@ public class ZipHelper {
 
     private static void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
         File folder = new File(srcFolder);
-
-        for (String fileName : folder.list()) {
-            if (!ignoreFolderArray.contains(fileName)) {
-                if (path.equals("")) {
-                    addFileToZip(folder.getName(), srcFolder + "/" + fileName, zip);
-                } else {
-                    addFileToZip(path + "/" + folder.getName(), srcFolder + "/" + fileName, zip);
+        if (folder != null) {
+            for (String fileName : folder.list()) {
+                if (!ignoreFolderArray.contains(fileName) && !ignoreFileArray.contains(fileName)) {
+                    if (path.equals("")) {
+                        addFileToZip(folder.getName(), srcFolder + "/" + fileName, zip);
+                    } else {
+                        addFileToZip(path + "/" + folder.getName(), srcFolder + "/" + fileName, zip);
+                    }
                 }
             }
         }

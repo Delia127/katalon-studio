@@ -242,7 +242,6 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
             builder.setPath("/team/" + teamId.toString() + "/project/" + projectId.toString() + "/test-projects");
 
             Program.launch(builder.toString());
-            // Desktop.getDesktop().browse(new URL(builder.toString()).toURI());
             zipTeamFile.deleteOnExit();
 
         } catch (Exception exception) {
@@ -259,6 +258,6 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(550, 280);
+        return new Point(550, super.getInitialSize().y);
     }
 }
