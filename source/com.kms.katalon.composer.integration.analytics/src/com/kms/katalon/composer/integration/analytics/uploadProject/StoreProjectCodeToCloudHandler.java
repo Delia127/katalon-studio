@@ -16,33 +16,33 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.constants.EventConstants;
 
 public class StoreProjectCodeToCloudHandler {
-	
-	@Inject
-	IEventBroker eventBroker;
-	
-	@PostConstruct
-	public void registerEventHandler() {
-		eventBroker.subscribe(EventConstants.STORE_PROJECT_CODE_TO_CLOUD, new EventHandler() {
-			
-			@Override
-			public void handleEvent(Event event) {
-				if (!canExecute()) {
-					return;
-				} 
-				execute(Display.getCurrent().getActiveShell());
-			}
-		});
-	}
-	
-	@CanExecute
-	public boolean canExecute() {
-		return true;
-	}
-	
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-		StoreProjectCodeToCloudDialog dialog = new StoreProjectCodeToCloudDialog(parentShell);
-		dialog.open();
-		return;
-	}
+
+    @Inject
+    IEventBroker eventBroker;
+
+    @PostConstruct
+    public void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.STORE_PROJECT_CODE_TO_CLOUD, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
+                if (!canExecute()) {
+                    return;
+                }
+                execute(Display.getCurrent().getActiveShell());
+            }
+        });
+    }
+
+    @CanExecute
+    public boolean canExecute() {
+        return true;
+    }
+
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
+        StoreProjectCodeToCloudDialog dialog = new StoreProjectCodeToCloudDialog(parentShell);
+        dialog.open();
+        return;
+    }
 }

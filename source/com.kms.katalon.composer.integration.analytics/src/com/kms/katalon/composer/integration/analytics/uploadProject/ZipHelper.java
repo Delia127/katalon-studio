@@ -8,13 +8,15 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FilenameUtils;
+
 public class ZipHelper {
 	
-	private static List<String> ignoreFileArray = Arrays.asList(".class", ".log",
-			".ctxt", ".jar", ".war", ".ear", ".zip", ".tar.gz", ".rar");
+	private static final List<String> ignoreFileArray = Arrays.asList(".class", ".log",
+			".ctxt", ".jar", ".war", ".ear", ".zip", ".tar.gz", ".rar", ".project", ".classpath");
 	
-	private static List<String> ignoreFolderArray = Arrays.asList(".classpath", 
-			".project", ".mtj.tmp", "hs_err_pid", "Libs", "bin", ".git");
+	private static final List<String> ignoreFolderArray = Arrays.asList(".mtj.tmp", 
+	        "hs_err_pid", "Libs", "bin", ".git");
 	
 	public static void Compress(String srcFolder, String destZipFile) throws Exception {
 		ZipOutputStream zip = null;
@@ -34,8 +36,9 @@ public class ZipHelper {
 		if (folder.isDirectory()) {
 			addFolderToZip(path, srcFile, zip);
 		} else {
-			String extension = getFileExtension(folder);
-			if (!ignoreFileArray.contains(extension)) {
+//			String extension = getFileExtension(folder);
+		    String extensionFile = FilenameUtils.getExtension(folder.toString());
+			if (!ignoreFileArray.contains(extensionFile)) {
 				byte[] buf = new byte[1024];
 				int len;
 				FileInputStream in = new FileInputStream(srcFile);
@@ -61,25 +64,25 @@ public class ZipHelper {
 		}
 	}
 	
-	private static String getFileExtension(File file) {
-        String extension = "";
- 
-        try {
-            if (file != null && file.exists()) {
-                String name = file.getName();
-                
-                extension = name.substring(name.lastIndexOf("."));
-                if (name.equals("gz")) {
-                	if (extension.equals("tar.gz")) {
-                		extension = ".tar.gz";
-                	}
-                }
-            }
-        } catch (Exception e) {
-            extension = "";
-        }
- 
-        return extension;
- 
-    }
+//	private static String getFileExtension(File file) {
+//        String extension = "";
+// 
+//        try {
+//            if (file != null && file.exists()) {
+//                String name = file.getName();
+//                
+//                extension = name.substring(name.lastIndexOf("."));
+//                if (name.equals("gz")) {
+//                	if (extension.equals("tar.gz")) {
+//                		extension = ".tar.gz";
+//                	}
+//                }
+//            }
+//        } catch (Exception e) {
+//            extension = "";
+//        }
+// 
+//        return extension;
+// 
+//    }
 }

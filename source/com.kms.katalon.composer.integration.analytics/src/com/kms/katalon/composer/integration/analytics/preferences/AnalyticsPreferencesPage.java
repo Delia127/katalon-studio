@@ -534,25 +534,25 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     }
 
-	private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects, String serverUrl,
-			String email, String password) {
-		AnalyticsTeam team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+    private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects, String serverUrl,
+            String email, String password) {
+        AnalyticsTeam team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
 
-		if (projects != null && !projects.isEmpty()) {
-			cbbProjects.setItems(
-					AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
-			cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
-		} else {
-			cbbProjects.setItems(
-					AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
-			cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
-		}
-		String role = team.getRole();
-		if (role.equals("USER")) {
-			btnCreate.setEnabled(false);
-		} else {
-			btnCreate.setEnabled(true);
-		}
+        if (projects != null && !projects.isEmpty()) {
+            cbbProjects.setItems(
+                    AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+        } else {
+            cbbProjects.setItems(
+                    AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+        }
+        String role = team.getRole();
+        if (role.equals("USER")) {
+            btnCreate.setEnabled(false);
+        } else {
+            btnCreate.setEnabled(true);
+        }
 	}
 
     protected boolean isInitialized() {
