@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -49,6 +50,11 @@ import com.kms.katalon.execution.mobile.device.AndroidDeviceInfo;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class MobileLocalAppComposite implements MobileAppComposite {
+
+    private static final int START_WITH_APPLICATION_FILE = 0;
+
+    private static final int START_WITH_APPLICATION_ID = 1;
+
     private String ANDROID_FILTER_NAMES = "Android Application (*.apk)";
 
     private String ANDROID_FILTER_EXTS = "*.apk";
@@ -74,6 +80,18 @@ public class MobileLocalAppComposite implements MobileAppComposite {
     private Composite composite;
 
     private MobileDriverType driverType;
+
+    private Combo cbbStartType;
+
+    private Text txtAppId;
+
+    private Composite appFileChooserComposite;
+
+    private Composite appComposite;
+
+    private Composite appIdComposite;
+
+    private StackLayout slAppComposite;
 
     public MobileLocalAppComposite(MobileDriverType driverType) {
         this.driverType = driverType;
@@ -102,7 +120,18 @@ public class MobileLocalAppComposite implements MobileAppComposite {
     }
 
     public boolean isAbleToStart() {
-        return isNotBlank(getAppFile()) && cbbDevices.getSelectionIndex() >= 0;
+        if (cbbDevices.getSelectionIndex() < 0) {
+            return false;
+        }
+        switch (cbbStartType.getSelectionIndex()) {
+            case START_WITH_APPLICATION_FILE: {
+                return isNotBlank(getAppFile());
+            }
+            case START_WITH_APPLICATION_ID: {
+                return isNotBlank(txtAppId.getText());
+            }
+        }
+        return false;
     }
 
     public void updateLocalDevices() throws InvocationTargetException, InterruptedException {
@@ -186,21 +215,29 @@ public class MobileLocalAppComposite implements MobileAppComposite {
             return false;
         }
 
-        String appFilePath = getAppFile().trim();
+        switch (cbbStartType.getSelectionIndex()) {
+            case START_WITH_APPLICATION_FILE: {
+                String appFilePath = getAppFile().trim();
 
-        if (appFilePath.equals("")) {
-            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_FILE);
-            return false;
-        }
-        File appFile = new File(appFilePath);
+                if (appFilePath.equals("")) {
+                    MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                            StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_FILE);
+                    return false;
+                }
+                File appFile = new File(appFilePath);
 
-        if (!appFile.exists()) {
-            MessageDialog.openWarning(getShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.DIA_ERROR_MSG_APP_FILE_NOT_EXIST);
-            return false;
+                if (!appFile.exists()) {
+                    MessageDialog.openWarning(getShell(), StringConstants.ERROR_TITLE,
+                            StringConstants.DIA_ERROR_MSG_APP_FILE_NOT_EXIST);
+                    return false;
+                }
+                return true;
+            }
+            case START_WITH_APPLICATION_ID: {
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     private Shell getShell() {
@@ -233,6 +270,9 @@ public class MobileLocalAppComposite implements MobileAppComposite {
         // Device Name
         Label lblDeviceName = new Label(deviceNameCompposite, SWT.NONE);
         lblDeviceName.setText(StringConstants.DIA_LBL_DEVICE_NAME);
+        GridData gdDeviceNameLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdDeviceNameLabel.widthHint = 100;
+        lblDeviceName.setLayoutData(gdDeviceNameLabel);
 
         cbbDevices = new Combo(deviceNameCompposite, SWT.READ_ONLY);
         cbbDevices.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -264,7 +304,46 @@ public class MobileLocalAppComposite implements MobileAppComposite {
             }
         });
         linkLabel.setVisible(false);
-        Composite appFileChooserComposite = new Composite(composite, SWT.NONE);
+        
+        Composite startTypeComposite = new Composite(composite, SWT.NONE);
+        GridLayout glStartTypeComposite = new GridLayout(2, false);
+        glStartTypeComposite.marginHeight = 0;
+        glStartTypeComposite.marginWidth = 0;
+        startTypeComposite.setLayout(glStartTypeComposite);
+        Label lblStartType = new Label(startTypeComposite, SWT.NONE);
+        GridData gdStartWithLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdStartWithLabel.widthHint = 100;
+        lblStartType.setLayoutData(gdStartWithLabel);
+        lblStartType.setText("Start with");
+
+        cbbStartType = new Combo(startTypeComposite, SWT.READ_ONLY);
+        cbbStartType.setItems(new String[] { "Application File", "Appication ID"});
+        cbbStartType.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                switch (cbbStartType.getSelectionIndex()) {
+                    case START_WITH_APPLICATION_FILE: {
+                        slAppComposite.topControl = appFileChooserComposite;
+                        appComposite.layout();
+                        parentDialog.refreshButtonsState();
+                        break;
+                    }
+                    case START_WITH_APPLICATION_ID: {
+                        slAppComposite.topControl = appIdComposite;
+                        appComposite.layout();
+                        parentDialog.refreshButtonsState();
+                        break;
+                    }
+                }
+            }
+        });
+        
+        appComposite = new Composite(composite, SWT.NONE);
+        appComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         slAppComposite = new StackLayout();
+        appComposite.setLayout(slAppComposite);
+
+        appFileChooserComposite = new Composite(appComposite, SWT.NONE);
         appFileChooserComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         GridLayout glAppFileChooserComposite = new GridLayout(3, false);
         glAppFileChooserComposite.marginHeight = 0;
@@ -274,8 +353,11 @@ public class MobileLocalAppComposite implements MobileAppComposite {
         // Application File location
         Label appFileLabel = new Label(appFileChooserComposite, SWT.NONE);
         appFileLabel.setText(StringConstants.DIA_LBL_APP_FILE);
+        GridData gdAppFileLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdAppFileLabel.widthHint = 100;
+        appFileLabel.setLayoutData(gdAppFileLabel);
 
-        txtAppFile = new Text(appFileChooserComposite, SWT.READ_ONLY | SWT.BORDER);
+        txtAppFile = new Text(appFileChooserComposite, SWT.BORDER);
         GridData gdText = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdText.widthHint = 100;
         txtAppFile.setLayoutData(gdText);
@@ -290,7 +372,6 @@ public class MobileLocalAppComposite implements MobileAppComposite {
             
             @Override
             public void handleEvent(Event event) {
-                // TODO Auto-generated method stub
                 gdText.widthHint = 100;
             }
         });
@@ -311,6 +392,38 @@ public class MobileLocalAppComposite implements MobileAppComposite {
                 }
                 parentDialog.getPreferencesHelper().setLastAppFile(absolutePath);
                 txtAppFile.setText(absolutePath);
+            }
+        });
+
+        appIdComposite = new Composite(appComposite, SWT.NONE);
+        appIdComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridLayout glAppIdComposite = new GridLayout(2, false);
+        glAppIdComposite.marginHeight = 0;
+        glAppIdComposite.marginWidth = 0;
+        appIdComposite.setLayout(glAppIdComposite);
+
+        Label appIdLabel = new Label(appIdComposite, SWT.NONE);
+        appIdLabel.setText("Application ID");
+        GridData gdAppIdLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdAppIdLabel.widthHint = 100;
+        appIdLabel.setLayoutData(gdAppIdLabel);
+
+        txtAppId = new Text(appIdComposite, SWT.BORDER);
+        GridData gdAppId = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdAppId.widthHint = 100;
+        txtAppId.setLayoutData(gdText);
+        txtAppId.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                parentDialog.refreshButtonsState();
+            }
+        });
+        
+        txtAppId.addListener(SWT.Resize, new Listener() {
+            
+            @Override
+            public void handleEvent(Event event) {
+                gdAppId.widthHint = 100;
             }
         });
 
@@ -339,6 +452,8 @@ public class MobileLocalAppComposite implements MobileAppComposite {
             return false;
         }
         final String appFile = getAppFile();
+        final String appId = txtAppId.getText();
+        final int startType = cbbStartType.getSelectionIndex();
 
         IRunnableWithProgress processToRun = new IRunnableWithProgress() {
             @Override
@@ -348,7 +463,15 @@ public class MobileLocalAppComposite implements MobileAppComposite {
                 progressDlg.runAndWait(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
-                        inspectorController.startMobileApp(selectDeviceInfo, appFile, false);
+                        switch (startType) {
+                            case START_WITH_APPLICATION_FILE: 
+                                inspectorController.startMobileApp(selectDeviceInfo, appFile, false);
+                                break;
+                            case START_WITH_APPLICATION_ID: 
+                                inspectorController.startExistingApp(selectDeviceInfo, appId);
+                                break;
+                        }
+                        
                         return null;
                     }
                 });
@@ -364,9 +487,9 @@ public class MobileLocalAppComposite implements MobileAppComposite {
 
     @Override
     public void setInput() throws InvocationTargetException, InterruptedException {
-//        txtAppFile.setText(parentDialog.getPreferencesHelper().getLastAppFile());
-//        txtAppFile.pack(true);
         updateLocalDevices();
+        cbbStartType.select(0);
+        cbbStartType.notifyListeners(SWT.Selection, new Event());
     }
 
     @Override
@@ -376,9 +499,22 @@ public class MobileLocalAppComposite implements MobileAppComposite {
 
     @Override
     public MobileActionMapping buildStartAppActionMapping() {
-        MobileActionMapping startAppAction = new MobileActionMapping(MobileAction.StartApplication, null);
-        String appValue = getAppFile();
-        startAppAction.getData()[0].setValue(new ConstantExpressionWrapper(appValue));
-        return startAppAction;
+        int startType = cbbStartType.getSelectionIndex();
+
+        switch (startType) {
+            case START_WITH_APPLICATION_FILE: {
+                MobileActionMapping startAppAction = new MobileActionMapping(MobileAction.StartApplication, null);
+                String appValue = getAppFile();
+                startAppAction.getData()[0].setValue(new ConstantExpressionWrapper(appValue));
+                return startAppAction;
+            }
+            case START_WITH_APPLICATION_ID: {
+                MobileActionMapping startAppAction = new MobileActionMapping(MobileAction.StartExistingApplication, null);
+                String appValue = txtAppId.getText();
+                startAppAction.getData()[0].setValue(new ConstantExpressionWrapper(appValue));
+                return startAppAction;
+            }
+        }
+        return null;
     }
 }

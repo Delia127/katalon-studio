@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
@@ -48,6 +49,8 @@ public class AppiumDriverManager {
     private static final KeywordLogger logger = KeywordLogger.getInstance(AppiumDriverManager.class);
 
     public static final String WDA_LOCAL_PORT = "wdaLocalPort";
+    
+    public static final String SYSTEM_PORT = "systemPort";
 
     public static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
 
@@ -391,6 +394,26 @@ public class AppiumDriverManager {
 
     public static void startAppiumServerJS(int timeout) throws AppiumStartException, IOException {
         startAppiumServerJS(timeout, new HashMap<String, String>());
+    }
+    
+    public static int nextFreePort(int from, int to) {
+        int port = ThreadLocalRandom.current().nextInt(from, to);
+        while (true) {
+            if (isLocalPortFree(port)) {
+                return port;
+            } else {
+                port = ThreadLocalRandom.current().nextInt(from, to);
+            }
+        }
+    }
+
+    private static boolean isLocalPortFree(int port) {
+        try {
+            new ServerSocket(port).close();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     public static synchronized int getFreePort() {
