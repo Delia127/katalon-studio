@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
@@ -25,6 +26,8 @@ public interface MobileAppComposite {
     String getAppFile();
 
     String getAppName();
+    
+    MobileActionMapping buildStartAppActionMapping();
 
     boolean isAbleToStart();
 

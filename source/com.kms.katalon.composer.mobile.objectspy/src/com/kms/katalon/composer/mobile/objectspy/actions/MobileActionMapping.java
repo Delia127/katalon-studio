@@ -1,7 +1,7 @@
-package com.kms.katalon.composer.mobile.recorder.actions;
+package com.kms.katalon.composer.mobile.objectspy.actions;
 
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
-import com.kms.katalon.composer.mobile.recorder.utils.MobileActionUtil;
+import com.kms.katalon.composer.mobile.objectspy.util.MobileActionUtil;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.groovy.util.GroovyStringUtil;

@@ -71,6 +71,9 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileAction;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionParamValueType;
 import com.kms.katalon.composer.mobile.objectspy.components.MobileAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
@@ -84,9 +87,6 @@ import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementLabel
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementTreeContentProvider;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
-import com.kms.katalon.composer.mobile.recorder.actions.MobileAction;
-import com.kms.katalon.composer.mobile.recorder.actions.MobileActionMapping;
-import com.kms.katalon.composer.mobile.recorder.actions.MobileActionParamValueType;
 import com.kms.katalon.composer.mobile.recorder.constants.ImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;
@@ -777,7 +777,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             getButton(IDialogConstants.OK_ID).setEnabled(true);
             recordedActions.clear();
             targetElementChanged(null);
-            recordedActions.add(buildStartAppActionMapping());
+            recordedActions.add(mobileComposite.buildStartAppActionMapping());
             actionTableViewer.refresh();
 
             // send event for tracking
@@ -802,13 +802,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } finally {
             inspectorController.setStreamHandler(null);
         }
-    }
-
-    public MobileActionMapping buildStartAppActionMapping() {
-        MobileActionMapping startAppAction = new MobileActionMapping(MobileAction.StartApplication, null);
-        String appValue = mobileComposite.getAppFile();
-        startAppAction.getData()[0].setValue(new ConstantExpressionWrapper(appValue));
-        return startAppAction;
     }
 
     public String getAppName() {

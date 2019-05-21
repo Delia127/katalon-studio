@@ -1,8 +1,8 @@
-package com.kms.katalon.composer.mobile.recorder.actions;
+package com.kms.katalon.composer.mobile.objectspy.actions;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.composer.mobile.recorder.utils.MobileActionUtil;
+import com.kms.katalon.composer.mobile.objectspy.util.MobileActionUtil;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
 

@@ -29,11 +29,14 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileAction;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
 import com.kms.katalon.composer.mobile.objectspy.constant.ComposerMobileObjectspyMessageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
 import com.kms.katalon.integration.kobiton.entity.KobitonDevice;
@@ -340,5 +343,13 @@ public class KobitonAppComposite implements MobileAppComposite {
     @Override
     public void loadDevices() throws InvocationTargetException, InterruptedException {
         updateKobitonDevices();
+    }
+
+    @Override
+    public MobileActionMapping buildStartAppActionMapping() {
+        MobileActionMapping startAppAction = new MobileActionMapping(MobileAction.StartApplication, null);
+        String appValue = kobitonApps.get(cbbKobitonApps.getSelectionIndex()).buildAutomationKey();
+        startAppAction.getData()[0].setValue(new ConstantExpressionWrapper(appValue));
+        return startAppAction;
     }
 }

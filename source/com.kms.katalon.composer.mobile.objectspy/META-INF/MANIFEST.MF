@@ -49,9 +49,12 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  org.apache.commons.lang3,
  org.greenrobot.eventbus,
  com.kms.katalon.application,
- com.kms.katalon.tracking
+ com.kms.katalon.tracking,
+ com.kms.katalon.groovy,
+ com.kms.katalon.custom
 Bundle-ClassPath: .
-Export-Package: com.kms.katalon.composer.mobile.objectspy.components,
+Export-Package: com.kms.katalon.composer.mobile.objectspy.actions,
+ com.kms.katalon.composer.mobile.objectspy.components,
  com.kms.katalon.composer.mobile.objectspy.constant,
  com.kms.katalon.composer.mobile.objectspy.dialog,
  com.kms.katalon.composer.mobile.objectspy.element,
