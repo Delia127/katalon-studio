@@ -80,13 +80,6 @@ public class TestSuiteExecutor {
 
         eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_SUITE, new Object[] { testSuiteContext });
 
-        /**
-         * TODO
-         * Publish event BEFORE_TEST_DATA_BINDED_INTO_TEST_CASE with testSuiteContext,
-         * testCaseContext and testCaseBindings as arguments
-         * Clients can modify mappings in testCaseBindings given those information
-         */
-        
         accessTestSuiteMainPhase(testCaseBindings);
 
         String status = "COMPLETE";
@@ -133,7 +126,9 @@ public class TestSuiteExecutor {
 
         try {
             InternalTestCaseContext testCaseContext = new InternalTestCaseContext(tcBinding.getTestCaseId(), index);
-
+            eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_DATA_BINDED_INTO_TEST_CASE
+                    , new Object[] { testSuiteContext, testCaseContext, tcBinding.getBindedValues() });
+            
             TestCaseExecutor testCaseExecutor = new TestCaseExecutor(tcBinding, scriptEngine, eventManger,
                     testCaseContext);
             testCaseExecutor.setTestSuiteExecutor(this);

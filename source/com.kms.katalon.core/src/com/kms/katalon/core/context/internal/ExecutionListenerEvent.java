@@ -15,5 +15,7 @@ public enum ExecutionListenerEvent {
 
     BEFORE_TEST_EXECUTION,
 
-    AFTER_TEST_EXECUTION
+    AFTER_TEST_EXECUTION,
+    
+    BEFORE_TEST_DATA_BINDED_INTO_TEST_CASE
 }
