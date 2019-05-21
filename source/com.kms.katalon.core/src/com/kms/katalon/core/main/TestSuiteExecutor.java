@@ -126,7 +126,7 @@ public class TestSuiteExecutor {
 
         try {
             InternalTestCaseContext testCaseContext = new InternalTestCaseContext(tcBinding.getTestCaseId(), index);
-            eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_DATA_BINDED_INTO_TEST_CASE
+            eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_DATA_BIND_INTO_TEST_CASE
                     , new Object[] { testSuiteContext, testCaseContext, tcBinding.getBindedValues() });
             
             TestCaseExecutor testCaseExecutor = new TestCaseExecutor(tcBinding, scriptEngine, eventManger,
