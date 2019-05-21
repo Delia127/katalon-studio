@@ -95,6 +95,22 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String MSG_REQUEST_TOKEN_ERROR;
     
+    public static String STORE_CODE_COMPRESSING_PROJECT;
+    
+    public static String STORE_CODE_REQUEST_SERVER;
+    
+    public static String STORE_CODE_GET_TEAM_PROJECT;
+    
+    public static String STORE_CODE_UPLOAD;
+    
+    public static String STORE_CODE_OPEN_BROWSER;
+    
+    public static String STORE_CODE_ERROR_COMPRESS;
+    
+    public static String STORE_CODE_ERROR_NO_FILE_NAME;
+    
+    public static String STORE_CODE_ERROR_NO_NAME;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerIntegrationAnalyticsMessageConstants.class);

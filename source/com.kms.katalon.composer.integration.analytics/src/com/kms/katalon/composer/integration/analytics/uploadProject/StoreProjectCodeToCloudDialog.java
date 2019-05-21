@@ -2,15 +2,20 @@ package com.kms.katalon.composer.integration.analytics.uploadProject;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -32,6 +37,7 @@ import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrat
 import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -200,36 +206,87 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
     @Override
     protected void okPressed() {
         String nameFileZip = txtCodeRepoName.getText();
+
+        if (nameFileZip.isEmpty()) {
+            MultiStatusErrorDialog.showErrorDialog(
+                    ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_ERROR_NO_FILE_NAME,
+                    ComposerAnalyticsStringConstants.ERROR,
+                    ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_ERROR_NO_NAME);
+            return;
+        }
+
         int currentIndexProject = cbbProjects.getSelectionIndex();
         AnalyticsProject sellectProject = projects.get(currentIndexProject);
         currentProject = pController.getCurrentProject();
         String folderCurrentProject = currentProject.getFolderLocation();
 
-        try {
-            String tempDir = ProjectController.getInstance().getTempDir();
-            File zipTeamFile = new File(tempDir, nameFileZip + ".zip");
-            ZipHelper.Compress(folderCurrentProject, zipTeamFile.toString());
-            AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-            AnalyticsUploadInfo uploadInfo = AnalyticsApiProvider.getUploadInfo(serverUrl, token.getAccess_token(),
-                    sellectProject.getId());
-            AnalyticsApiProvider.uploadFile(uploadInfo.getUploadUrl(), zipTeamFile);
-            
-            long timestamp = System.currentTimeMillis();
-            Long teamId = sellectProject.getTeamId();
-            Long projectId = sellectProject.getId();
-            AnalyticsApiProvider.uploadTestProject(serverUrl, projectId, teamId, timestamp, nameFileZip,
-                    zipTeamFile.toString(), zipTeamFile.getName().toString(), uploadInfo.getPath(),
-                    token.getAccess_token());
-
-            URIBuilder builder = new URIBuilder(serverUrl);
-            builder.setScheme("https");
-            builder.setPath("/team/" + teamId.toString() + "/project/" + projectId.toString() + "/test-projects");
-            Program.launch(builder.toString());
-            zipTeamFile.deleteOnExit();
-        } catch (Exception exception) {
-            MultiStatusErrorDialog.showErrorDialog(exception, "Unable to compress project", exception.getMessage());
-        }
+        uploadProject(nameFileZip, sellectProject, folderCurrentProject, new ProgressMonitorDialog(getShell()));
         super.okPressed();
+    }
+
+    private void uploadProject(final String nameFileZip, final AnalyticsProject sellectProject,
+            final String folderCurrentProject, ProgressMonitorDialog monitorDialog) {
+        try {
+            monitorDialog.run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_TITLE_UPLOAD_CODE,
+                                6);
+                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_COMPRESSING_PROJECT);
+
+                        try {
+                            String tempDir = ProjectController.getInstance().getTempDir();
+                            File zipTeamFile = new File(tempDir, nameFileZip + ".zip");
+                            ZipHelper.Compress(folderCurrentProject, zipTeamFile.toString());
+
+                            monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_REQUEST_SERVER);
+                            monitor.worked(2);
+
+                            AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                            AnalyticsUploadInfo uploadInfo = AnalyticsApiProvider.getUploadInfo(serverUrl,
+                                    token.getAccess_token(), sellectProject.getId());
+                            AnalyticsApiProvider.uploadFile(uploadInfo.getUploadUrl(), zipTeamFile);
+
+                            monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_GET_TEAM_PROJECT);
+                            monitor.worked(1);
+
+                            long timestamp = System.currentTimeMillis();
+                            Long teamId = sellectProject.getTeamId();
+                            Long projectId = sellectProject.getId();
+
+                            monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_UPLOAD);
+                            monitor.worked(1);
+                            AnalyticsApiProvider.uploadTestProject(serverUrl, projectId, teamId, timestamp, nameFileZip,
+                                    zipTeamFile.toString(), zipTeamFile.getName().toString(), uploadInfo.getPath(),
+                                    token.getAccess_token());
+
+                            monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_OPEN_BROWSER);
+                            monitor.worked(1);
+
+                            URIBuilder builder = new URIBuilder(serverUrl);
+                            builder.setScheme("https");
+                            builder.setPath("/team/" + teamId.toString() + "/project/" + projectId.toString()
+                                    + "/test-projects");
+                            Program.launch(builder.toString());
+                            zipTeamFile.deleteOnExit();
+                        } catch (Exception exception) {
+                            MultiStatusErrorDialog.showErrorDialog(exception,
+                                    ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_ERROR_COMPRESS,
+                                    exception.getMessage());
+                        }
+                        monitor.worked(1);
+                    } catch (Exception e) {
+                        throw new InvocationTargetException(e);
+                    } finally {
+                        monitor.done();
+                    }
+                }
+            });
+        } catch (InvocationTargetException | InterruptedException exception) {
+            MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
+                    exception.getMessage());
+        }
     }
 
     @Override
