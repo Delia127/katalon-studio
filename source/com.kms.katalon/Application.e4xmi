@@ -210,7 +210,7 @@
         <tags>NoMove</tags>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_-DNO4CSUEeWwuK4yOgypdw" elementId="com.kms.katalon.composer.toolbar.switcher" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.PerspectiveSwitcher"/>
-      <children xsi:type="menu:ToolControl" xmi:id="_Ec3EoI_EEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.forumsearch" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl"/>
+      <children xsi:type="menu:ToolControl" xmi:id="_Ec3EoI_EEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.forumsearch" toBeRendered="false" visible="false" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl"/>
       <children xsi:type="menu:ToolBar" xmi:id="_vDJ6II_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support">
         <tags>NoMove</tags>
         <children xsi:type="menu:HandledToolItem" xmi:id="_qlBqcEVeEem5YYH0D7Rhiw" elementId="com.kms.katalon.handledtoolitem.0" iconURI="platform:/plugin/com.kms.katalon/icons/search_icon_24.png" tooltip="Forum" command="_S1u1gEVcEem5YYH0D7Rhiw"/>
@@ -220,7 +220,7 @@
         <children xsi:type="menu:HandledToolItem" xmi:id="_aJWZ0EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handledtoolitem.1" iconURI="platform:/plugin/com.kms.katalon/icons/tweetaboutus_24.png" tooltip="Tweet about us" command="_QJZX0EVsEem5YYH0D7Rhiw"/>
         <children xsi:type="menu:HandledToolItem" xmi:id="_sK-90EVtEem5YYH0D7Rhiw" elementId="com.kms.katalon.handledtoolitem.feedback" iconURI="platform:/plugin/com.kms.katalon/icons/Feedback_24PX.png" tooltip="Feedback" command="_0jpHUEVsEem5YYH0D7Rhiw"/>
       </children>
-      <children xsi:type="menu:ToolBar" xmi:id="_KDRJMAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin">
+      <children xsi:type="menu:ToolBar" xmi:id="_KDRJMAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin" toBeRendered="false" visible="false">
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_1yN1YAbFEemu-rQeuokE_A" elementId="com.kms.katalon.toolbarseparator.1"/>
         <children xsi:type="menu:HandledToolItem" xmi:id="_27TkYAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin.toolitem" label="Plugin Store" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/katalon_store_32x24.png" tooltip="Plugin Store" command="_5x1PkB7BEemVq49wBuyKyg">
           <tags>FORCE_TEXT</tags>
@@ -235,6 +235,7 @@
           </menu>
         </children>
       </children>
+      <children xsi:type="menu:ToolControl" xmi:id="_p-mLQHbwEemVl_JFsJ2xNQ" elementId="com.kms.katalon.toolcontrol.0" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.PluginStoreToolControl"/>
     </trimBars>
     <trimBars xmi:id="_D8Z7cNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.trimbar.right" side="Right">
       <children xsi:type="menu:ToolControl" xmi:id="_Fy2fsNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">

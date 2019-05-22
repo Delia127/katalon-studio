@@ -1,12 +1,14 @@
 package com.kms.katalon.plugin.models;
 
-public class ResultItem {
+public class ReloadItem {
 
     private KStorePlugin plugin;
     
     private boolean isPluginInstalled;
     
     private boolean isNewVersionAvailable;
+    
+    private Exception exception;
 
     public KStorePlugin getPlugin() {
         return plugin;
@@ -34,5 +36,13 @@ public class ResultItem {
 
     public void setPluginInstalled(boolean isPluginInstalled) {
         this.isPluginInstalled = isPluginInstalled;
+    }
+
+    public Exception getException() {
+        return exception;
+    }
+
+    public void setException(Exception exception) {
+        this.exception = exception;
     }
 }

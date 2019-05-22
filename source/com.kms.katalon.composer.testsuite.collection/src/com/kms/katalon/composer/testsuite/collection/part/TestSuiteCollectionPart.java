@@ -543,15 +543,6 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         ColumnViewerUtil.setTableActivation(tableViewer);
         hookDropTestSuiteEvent();
         hookDragTestSuiteEvent();
-
-        // KAT-3580: hide the "Run With" and "Run Configuration" columns in test
-        // suite collection view
-        // for API projects
-        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        if (project.getType() == ProjectType.WEBSERVICE) {
-            tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(0, 0));
-            tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(0, 0));
-        }
     }
 
     private void hookDragTestSuiteEvent() {
