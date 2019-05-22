@@ -12,10 +12,12 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
+import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.core.har.Har;
 import net.lightbody.bmp.core.har.HarEntry;
 import net.lightbody.bmp.core.har.HarLog;
@@ -77,10 +79,13 @@ public class BrowserMobProxyManager {
     public static final File endHar(RequestInformation requestInformation) {
         try {
             BrowserMobProxy browserMobProxy = browserMobProxyLookup.get();
-            if (browserMobProxy != null) {               
+            if (browserMobProxy != null) {
+                
                 requestInformation.setName(String.valueOf(requestNumber.getAndIncrement()));
                 String threadName = Thread.currentThread().getName();
-                String directoryPath = requestInformation.getReportFolder();
+
+                String directoryPath = RunConfiguration.getReportFolder();
+
                 File directory = new File(directoryPath, "requests" + File.separator + threadName);
                 if (!directory.exists()) {
                     directory.mkdirs();
