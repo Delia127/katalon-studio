@@ -49,7 +49,7 @@ import com.kms.katalon.entity.webservice.TextBodyContent;
 import com.kms.katalon.entity.webservice.UrlEncodedBodyParameter;
 
 public class PostmanParseUtils {
-
+    static int k = 0;
     public static List<WebServiceRequestEntity> parseFromFileLocationToWSTestObject(FolderEntity parentFolder,
             String fileLocationOrUrl) throws JsonParseException, JsonMappingException, IOException, ControllerException {
 
@@ -70,11 +70,12 @@ public class PostmanParseUtils {
                 String rawURL = request.getURL().getRaw();
                 String method = root.getRequest().getMethod();
                 String name = root.getName();
+                String nameVariable = collectNameItem(name, root);
                 String body = StringUtils.defaultString(request.getBody().getRaw());
                 List<VariableEntity> variablesFromURL = collectVariablesFromRawString(rawURL);
                 List<VariableEntity> variablesFromBody = collectVariablesFromRawString(body);
                 HttpHeaderVariable httpHeaderVariable = collectHttpHeaderVariable(request, root);
-                entity.setName(name);
+                entity.setName(nameVariable);
                 entity.setRestRequestMethod(method.toString());
                 entity.setRestUrl(getVariableString(variablesFromURL, rawURL));
                 entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
@@ -112,12 +113,27 @@ public class PostmanParseUtils {
 
                 allVariables.addAll(entityVariables);
             }
+
+        }
+
+        String newname = "";
+        for (int i = 0; i < newWSTestObjects.size() - 1; i++) {
+            for (int j = i + 1; j < newWSTestObjects.size(); j++) {
+                if (newWSTestObjects.get(i).getName().equals(newWSTestObjects.get(j).getName())) {
+
+                    newname = "New Postman Request" + "(" + k + ")";
+                    k++;
+                } else {
+                    newname = newWSTestObjects.get(j).getName();
+                }
+                newWSTestObjects.get(j).setName(newname);
+            }
         }
 
         globalVariableEntites.addAll(toGlobalVariables(allVariables));
         profileEntity.setGlobalVariableEntities(filterDuplicatedGlobalVariables(globalVariableEntites));
         GlobalVariableController.getInstance().updateExecutionProfile(profileEntity);
-        
+
         return newWSTestObjects;
     }
     
@@ -417,16 +433,14 @@ public class PostmanParseUtils {
     }
 
     public static String collectNameItem(String name, Item item) {
-        String katalonVariableName = "";
-        String[] pathAndVariables = name.toString().split("\\/");
-        katalonVariableName += pathAndVariables[0];
-        if (pathAndVariables.length > 1) {
-            for (int i = 1; i < pathAndVariables.length; i++) {
-                katalonVariableName += " or " + pathAndVariables[i];
-            }
+        String newName = "";
+        if (name.contains((":")) || name.contains(("/")) || name.contains(("?")) || name.length() >= 255) {
+            newName = "New Postman Request";
+        } else {
+            newName = name;
         }
-        name = katalonVariableName;
-        return name;
+
+        return newName;
     }
 
     public static List<VariableEntity> collectVariableItem(Request request) {
