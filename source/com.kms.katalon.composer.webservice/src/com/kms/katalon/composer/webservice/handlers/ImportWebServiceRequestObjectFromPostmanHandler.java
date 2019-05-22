@@ -84,7 +84,6 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
             @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-        int k = 0;
         try {
             ITreeEntity parentTreeEntity = objectRepositoryTreeRoot;
 
@@ -96,17 +95,24 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
 
             if (dialog.open() == Dialog.OK) {
                 List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
-
+                int i =0;
                 for (WebServiceRequestEntity entity : requestEntities) {
                     try {
-                        EntityNameController.validateName(entity.toString());
+                        toController.saveNewTestObject(entity);
                     } catch (Exception e) {
-                        entity.setName("New Postman Request" + "(" + k + ")");
-                        k++;
+                        if(i == 0){
+                            entity.setName(EntityNameController.getInstance().getAvailableName("New Postman Request", parentFolderEntity, false));  
+                            i++;
+                        }else{
+                            entity.setName(EntityNameController.getInstance().getAvailableName("New Postman Request" +"("+i+")", parentFolderEntity, false)); 
+                            i++; 
+                        }
+                        toController.saveNewTestObject(entity);
+
                     }
-                    toController.saveNewTestObject(entity);
 
                 }
+                
 
                 trackImportPostman(dialog.getPostmanSpecLocation());
 
