@@ -144,7 +144,20 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             notifyProccess(status, executedEntity, executionResult);
         }
     }
-
+    
+    protected String getExcutionResult() throws Exception{
+        String resultExcution = null;
+        if (getResult().getNumFailures() > 0) {
+            resultExcution = TestStatusValue.FAILED.toString();
+        }
+        else if (getResult().getNumErrors() > 0) {
+            resultExcution = TestStatusValue.ERROR.toString();
+        }
+        else {
+            resultExcution = TestStatusValue.PASSED.toString();
+        }
+        return resultExcution;
+    }
     @Override
     public void stop() {
         setStatus(LauncherStatus.TERMINATED);

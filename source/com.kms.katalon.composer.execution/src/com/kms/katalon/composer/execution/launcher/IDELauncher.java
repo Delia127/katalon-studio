@@ -163,38 +163,33 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         } else {
             resumeExecutionSession(runConfig);
         }
-        if(getExecutedEntity() instanceof TestCaseExecutedEntity ){
+        if (getExecutedEntity() instanceof TestCaseExecutedEntity) {
             try {
-                String resultTestcase = getExcutionResult();
-                Trackings.trackExecuteTestCase(mode.toString(), runConfig.getName(),resultTestcase);
+                String resultTestcase = getExecutionResult();
+                Trackings.trackExecuteTestCase(mode.toString(), runConfig.getName(), resultTestcase);
             } catch (Exception e) {
 
             }
-        }
-        else if(getExecutedEntity() instanceof TestSuiteExecutedEntity){
+        } else if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
             try {
-                String resultTestSuite = getExcutionResult();
-                Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(),resultTestSuite);
-            } catch (Exception e) {
-            }
-    
+                String resultTestSuite = getExecutionResult();
+                Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(), resultTestSuite);
+            } catch (Exception e) {}
+
         }
     }
 
-    protected String getExcutionResult() throws Exception{
-        String resultExcution = null;
+    protected String getExecutionResult() throws Exception {
+        String resultExecution = null;
         if (getResult().getNumFailures() > 0) {
-            resultExcution = TestStatusValue.FAILED.toString();
+            resultExecution = TestStatusValue.FAILED.toString();
+        } else if (getResult().getNumErrors() > 0) {
+            resultExecution = TestStatusValue.ERROR.toString();
+        } else {
+            resultExecution = TestStatusValue.PASSED.toString();
         }
-        else if (getResult().getNumErrors() > 0) {
-            resultExcution = TestStatusValue.ERROR.toString();
-        }
-        else {
-            resultExcution = TestStatusValue.PASSED.toString();
-        }
-        return resultExcution;
+        return resultExecution;
     }
-    
 
     private void resumeExecutionSession(IRunConfiguration runConfig) {
         ExecutionSession executionSession = ExecutionSessionSocketServer.getInstance()
