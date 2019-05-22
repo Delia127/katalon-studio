@@ -77,35 +77,39 @@ public class SoapClient extends BasicRequestor {
         super(projectDir, proxyInformation);
     }
 
-    private void parseWsdl() throws Exception {
-        WSDLFactory factory = WSDLFactory.newInstance();
-        WSDLReader reader = factory.newWSDLReader();
-        reader.setFeature("javax.wsdl.verbose", false);
-        reader.setFeature("javax.wsdl.importDocuments", true);
-
-        
-        boolean isHttps = isHttps(requestObject);
-        if (isHttps) {
-            SSLContext sc = SSLContext.getInstance(SSL);
-            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+    private void parseWsdl() throws WebServiceException {
+        try {
+            WSDLFactory factory = WSDLFactory.newInstance();
+            WSDLReader reader = factory.newWSDLReader();
+            reader.setFeature("javax.wsdl.verbose", false);
+            reader.setFeature("javax.wsdl.importDocuments", true);
+    
+            
+            boolean isHttps = isHttps(requestObject);
+            if (isHttps) {
+                SSLContext sc = SSLContext.getInstance(SSL);
+                sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            }
+    
+            URL oURL = new URL(requestObject.getWsdlAddress());
+            HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
+            if (con instanceof HttpsURLConnection) {
+                ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
+            }
+            con.setRequestMethod(GET);
+            con.setDoOutput(true);
+            
+            setHttpConnectionHeaders(con, requestObject);
+            
+            InputStream is = con.getInputStream();
+            
+            Definition wsdlDefinition = reader.readWSDL(null, new InputSource(is));
+            
+            lookForService(wsdlDefinition);
+        } catch (Exception e) {
+            throw new WebServiceException(e);
         }
-
-        URL oURL = new URL(requestObject.getWsdlAddress());
-        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
-        if (con instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
-        }
-        con.setRequestMethod(GET);
-        con.setDoOutput(true);
-        
-        setHttpConnectionHeaders(con, requestObject);
-        
-        InputStream is = con.getInputStream();
-        
-        Definition wsdlDefinition = reader.readWSDL(null, new InputSource(is));
-        
-        lookForService(wsdlDefinition);
     }
 
     // Look for the Service, but for now just consider the first one
