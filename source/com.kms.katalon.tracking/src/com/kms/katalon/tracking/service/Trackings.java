@@ -109,12 +109,12 @@ public class Trackings {
         trackUserAction("record", "type", type);
     }
 
-    public static void trackExecuteTestCase(String launchMode, String driverType) {
-        trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType);
+    public static void trackExecuteTestCase(String launchMode, String driverType, String result) {
+        trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType,"testcaseResultExecution", result);
     }
 
-    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType) {
-        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType);
+    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType, String result) {
+        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType, "testsuiteResultExecution", result);
     }
 
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType) {

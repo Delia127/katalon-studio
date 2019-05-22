@@ -30,6 +30,8 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
+import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -41,6 +43,7 @@ import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class IDELauncher extends ReportableLauncher implements ILaunchListener, IDEObservableLauncher {
 
@@ -160,7 +163,38 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         } else {
             resumeExecutionSession(runConfig);
         }
+        if(getExecutedEntity() instanceof TestCaseExecutedEntity ){
+            try {
+                String resultTestcase = getExcutionResult();
+                Trackings.trackExecuteTestCase(mode.toString(), runConfig.getName(),resultTestcase);
+            } catch (Exception e) {
+
+            }
+        }
+        else if(getExecutedEntity() instanceof TestSuiteExecutedEntity){
+            try {
+                String resultTestSuite = getExcutionResult();
+                Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(),resultTestSuite);
+            } catch (Exception e) {
+            }
+    
+        }
     }
+
+    protected String getExcutionResult() throws Exception{
+        String resultExcution = null;
+        if (getResult().getNumFailures() > 0) {
+            resultExcution = TestStatusValue.FAILED.toString();
+        }
+        else if (getResult().getNumErrors() > 0) {
+            resultExcution = TestStatusValue.ERROR.toString();
+        }
+        else {
+            resultExcution = TestStatusValue.PASSED.toString();
+        }
+        return resultExcution;
+    }
+    
 
     private void resumeExecutionSession(IRunConfiguration runConfig) {
         ExecutionSession executionSession = ExecutionSessionSocketServer.getInstance()
