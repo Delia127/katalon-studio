@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,7 @@ import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.execution.webservice.TemplateEngine;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
@@ -181,7 +183,7 @@ public class RestServicePart extends WebServicePart {
                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
-
+                        
                         Map<String, Object> evaluatedVariables = evaluateRequestVariables();
                         
                         BrowserMobProxyManager.newHar();

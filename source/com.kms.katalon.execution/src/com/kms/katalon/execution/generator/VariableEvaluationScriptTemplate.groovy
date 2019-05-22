@@ -1,9 +1,12 @@
 package com.kms.katalon.execution.generator
 
+import com.kms.katalon.core.configuration.RunConfiguration
+import com.kms.katalon.core.main.TestCaseMain
 import com.kms.katalon.core.testcase.TestCaseFactory
 import com.kms.katalon.core.testdata.TestDataFactory
 import com.kms.katalon.core.testobject.ObjectRepository
 import com.kms.katalon.entity.variable.VariableEntity
+import com.kms.katalon.execution.configuration.IRunConfiguration
 import com.kms.katalon.groovy.util.GroovyStringUtil
 import groovy.text.GStringTemplateEngine
 import groovy.transform.CompileStatic
@@ -20,6 +23,12 @@ import static ${TestDataFactory.class.getName()}.findTestData
 import static ${ObjectRepository.class.getName()}.findTestObject
 import static ${TestCaseFactory.class.getName()}.findTestCase
 import internal.GlobalVariable as GlobalVariable
+import ${RunConfiguration.class.getName()}
+import ${TestCaseMain.class.getName()}
+
+RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
+
+TestCaseMain.beforeStart()
 
 Map<String, String> evaluatedVariables = [:]
 
@@ -27,32 +36,16 @@ Map<String, String> evaluatedVariables = [:]
 evaluatedVariables.put("<%= entry.key %>", <%= entry.value %>.toString())
 <% } %>
 
-FileOutputStream fos = null
-ObjectOutputStream oos = null
-try {
-   fos = new FileOutputStream(new File("<%= resultFile %>"))
-   oos = new ObjectOutputStream(fos);
-   oos.writeObject(evaluatedVariables)
-} catch (Exception e) {
-   e.printStackTrace()
-} finally {
-   if (fos != null) {
-       fos.close()
-   }
-
-   if (oos != null) {
-       oos.close()
-   }
-}
+return evaluatedVariables
  
 """
    
    @CompileStatic
-   def static generateEvaluationScript(String resultFile, Map<String, String> variables) {
+   def static generateEvaluationScript(Map<String, String> variables, IRunConfiguration config) {
        
        def binding = [
            "rawVariables": variables,
-           "resultFile": GroovyStringUtil.escapeGroovy(resultFile) 
+           "executionConfigFilePath": GroovyStringUtil.escapeGroovy(config.getExecutionSetting().getSettingFilePath())
        ]
        
        def engine = new GStringTemplateEngine()
