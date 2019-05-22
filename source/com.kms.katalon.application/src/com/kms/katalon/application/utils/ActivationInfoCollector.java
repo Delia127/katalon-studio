@@ -21,8 +21,6 @@ import com.kms.katalon.util.CryptoUtil;
 public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
-    
-    private static boolean haveNetwork = false;
 
     protected ActivationInfoCollector() {
     }
@@ -33,20 +31,20 @@ public class ActivationInfoCollector {
         String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
         String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         
-        boolean isActiveByCode = false;
-        boolean isActiveByAccount = false;
+        boolean activatedByCode = false;
+        boolean activatedByAccount = false;
         
         if (!StringUtils.isBlank(activationCode)) {
-            isActiveByCode = true;
+            activatedByCode = true;
         }
         
-        if (!isActiveByCode) {
+        if (!activatedByCode) {
             if (!StringUtils.isBlank(username) && !StringUtils.isBlank(encryptedPassword)) {
-                isActiveByAccount = true;
+                activatedByAccount = true;
             }
         }
         
-        if (!isActiveByCode && !isActiveByAccount) {
+        if (!activatedByCode && !activatedByAccount) {
             return false;
         }
         
@@ -54,12 +52,12 @@ public class ActivationInfoCollector {
             return false;
         }
         try {
-            if (isActiveByAccount) { //and checknetwork
+            if (activatedByAccount) { //and checknetwork
                 StringBuilder errorMessage = new StringBuilder();
                 String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
                 boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
                    
-                if (haveNetwork && !result) {
+                if (!result) {
                     return false;
                 }
             }
@@ -140,7 +138,6 @@ public class ActivationInfoCollector {
         try {
             String userInfo = collectActivationInfo(userName, pass);
             String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
-            haveNetwork = true;
             if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
                 markActivated(userName, pass);
                 activatedResult = true;
