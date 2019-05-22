@@ -38,7 +38,7 @@ public interface IdConstants {
 
     public static final String PERSPECTIVE_SWITCHER_TOOL_CONTROL_ID = "com.kms.katalon.composer.toolbar.switcher";
     
-    public static final String MANAGE_PLUGIN_TOOL_ITEM_ID = "com.kms.katalon.composer.toolbar.plugin.toolitem";
+    public static final String MANAGE_ACCOUNT_TOOL_ITEM_ID = "com.kms.katalon.composer.toolbar.account.toolitem";
 
     // Composer PartStack content
     public static final String COMPOSER_CONTENT_PARTSTACK_ID = "com.kms.katalon.composer.content";
