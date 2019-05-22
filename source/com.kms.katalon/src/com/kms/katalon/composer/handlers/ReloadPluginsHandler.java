@@ -104,11 +104,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             }
         });
 
-        if (silenceMode) {
-            reloadPluginsJob.setUser(false);
-        } else {
-            reloadPluginsJob.setUser(true);
-        }
+        reloadPluginsJob.setUser(true);
         reloadPluginsJob.schedule();
     }
 
