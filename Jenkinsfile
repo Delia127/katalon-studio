@@ -257,7 +257,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
 
                     script {
                         dir("source") {
-                            def command = isRelease ? 'verify' : 'package'
+                            def command = isRelease ? 'verify' : 'verify'
                             // Generate Katalon builds
                             // If branch name contains "release", build production mode for non-qTest package
                             // else build development mode for qTest package
