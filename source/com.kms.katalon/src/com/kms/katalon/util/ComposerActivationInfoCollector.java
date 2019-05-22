@@ -14,7 +14,6 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
-import com.kms.katalon.composer.handlers.LoggedInHandler;
 import com.kms.katalon.composer.intro.QuickStartDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.logging.LogUtil;
@@ -52,7 +51,6 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             showFunctionsIntroductionForTheFirstTime();
         }
         
-//        LoggedInHandler.setUserName();
         return true;
     }
 

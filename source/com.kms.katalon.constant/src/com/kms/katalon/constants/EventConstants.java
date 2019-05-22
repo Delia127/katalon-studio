@@ -19,6 +19,8 @@ public class EventConstants {
     public static final String ACTIVATION_QTEST_INTEGRATION_CHECK_COMPLETED = "ACTIVATION/ACTIVATION_QTEST_INTEGRATION_CHECK_COMPLETED";
 
     public static final String WORKSPACE_DRAFT_PART_CLOSED = "WORKSPACE/DRAFT_PART_CLOSED";
+    
+    public static final String ACTIVATION_SET_USERNAME = "ACTIVATION/SET_USERNAME";
 
     // Project Events
     public static final String PROJECT_ALL = "PROJECT/*";

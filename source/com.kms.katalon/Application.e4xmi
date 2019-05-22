@@ -346,4 +346,5 @@
   <addons xmi:id="_s3AskJDxEea1OZrYaBxRZA" elementId="com.kms.katalon.addon.CustomJFaceDialogMessageImages" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.CustomJFaceDialogMessageImages"/>
   <addons xmi:id="_MsrW0PfuEeagEZnDjERnuw" elementId="com.kms.katalon.addon.defaultwindow" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.ApplicationDefaultSelectedWindowAddon"/>
   <addons xmi:id="_F4kxIDx0Eei_id8nxKK9lw" elementId="com.kms.katalon.addon.contextServiceRegistry" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.ContextServiceRegistryAddon"/>
+  <addons xmi:id="_QNB_gHxzEemiEI4fLe0X_A" elementId="com.kms.katalon.addon.loggedin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.LoggedInHandler"/>
 </application:Application>

@@ -36,7 +36,7 @@ public class ToolbarProcessor {
     
     public static final String KATALON_ACCOUNT_ID = "com.kms.katalon.composer.toolbar.account";
     
-    public static final String KATALON_TOOLITEM_ACCOUNT_ID = "com.kms.katalon.composer.toolbar.account";
+    public static final String KATALON_TOOLITEM_ACCOUNT_ID = "com.kms.katalon.composer.toolbar.account.toolitem";
 
     public static final String KATALON_MENUITEM_ACCOUNT_ID = "com.kms.katalon.composer.toolbar.account.toolitem.menu.username";
     
