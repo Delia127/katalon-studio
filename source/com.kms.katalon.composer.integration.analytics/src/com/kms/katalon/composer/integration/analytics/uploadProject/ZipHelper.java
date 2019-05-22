@@ -10,6 +10,8 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+
 public class ZipHelper {
 
     private static final List<String> ignoreFileArray = Arrays.asList(".class", ".log", ".ctxt", ".jar", ".war", ".ear",
@@ -17,16 +19,16 @@ public class ZipHelper {
 
     private static final List<String> ignoreFolderArray = Arrays.asList(".mtj.tmp", "hs_err_pid", "Libs", "bin", ".git");
 
-    public static void Compress(String srcFolder, String destZipFile) throws Exception {
-        ZipOutputStream zipStream = null;
-        FileOutputStream fileWriteStream = null;
-
-        fileWriteStream = new FileOutputStream(destZipFile);
-        zipStream = new ZipOutputStream(fileWriteStream);
-
-        addFolderToZip("", srcFolder, zipStream);
-        zipStream.flush();
-        zipStream.close();
+    public static void Compress(String srcFolder, String destZipFile) {
+        try {
+            FileOutputStream fileWriteStream = new FileOutputStream(destZipFile);
+            ZipOutputStream zipStream = new ZipOutputStream(fileWriteStream);
+            addFolderToZip("", srcFolder, zipStream);
+            zipStream.flush();
+            zipStream.close();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private static void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
@@ -44,6 +46,7 @@ public class ZipHelper {
                     while ((len = inputStream.read(buf)) > 0) {
                         zip.write(buf, 0, len);
                     }
+                    inputStream.close();
                 }
             }
         }

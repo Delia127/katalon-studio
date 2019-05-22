@@ -14,8 +14,6 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -37,7 +35,6 @@ import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrat
 import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -231,13 +228,12 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
-                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_TITLE_UPLOAD_CODE,
-                                6);
+                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_TITLE_UPLOAD_CODE, 6);
                         monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_COMPRESSING_PROJECT);
-
+                        
+                        String tempDir = ProjectController.getInstance().getTempDir();
+                        File zipTeamFile = new File(tempDir, nameFileZip + ".zip");
                         try {
-                            String tempDir = ProjectController.getInstance().getTempDir();
-                            File zipTeamFile = new File(tempDir, nameFileZip + ".zip");
                             ZipHelper.Compress(folderCurrentProject, zipTeamFile.toString());
 
                             monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_REQUEST_SERVER);
@@ -269,11 +265,12 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                             builder.setPath("/team/" + teamId.toString() + "/project/" + projectId.toString()
                                     + "/test-projects");
                             Program.launch(builder.toString());
-                            zipTeamFile.deleteOnExit();
                         } catch (Exception exception) {
                             MultiStatusErrorDialog.showErrorDialog(exception,
                                     ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_ERROR_COMPRESS,
                                     exception.getMessage());
+                        } finally {
+                            zipTeamFile.deleteOnExit();
                         }
                         monitor.worked(1);
                     } catch (Exception e) {
