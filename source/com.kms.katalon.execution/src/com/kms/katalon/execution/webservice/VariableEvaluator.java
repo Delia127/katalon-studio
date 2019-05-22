@@ -113,7 +113,7 @@ public class VariableEvaluator {
             return evaluationResult;
         });
 
-        evaluatedVariables = future.get(10000, TimeUnit.MILLISECONDS);
+        evaluatedVariables = future.get(60000, TimeUnit.MILLISECONDS);
     }
 
     private File createResultFile() throws IOException {
