@@ -33,6 +33,7 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromPostmanDialog;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.EntityNameController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
@@ -83,6 +84,7 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
             @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
+        int k = 0;
         try {
             ITreeEntity parentTreeEntity = objectRepositoryTreeRoot;
 
@@ -94,8 +96,16 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
 
             if (dialog.open() == Dialog.OK) {
                 List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
+               
                 for (WebServiceRequestEntity entity : requestEntities) {
-                    toController.saveNewTestObject(entity);
+                    try {
+                        EntityNameController.validateName(entity.toString());
+                    } catch (Exception e) {
+                        entity.setName("New Postman Request"+"("+k+")");
+                        k++;
+                      }
+                        toController.saveNewTestObject(entity);
+                    
                 }
 
                 trackImportPostman(dialog.getPostmanSpecLocation());
