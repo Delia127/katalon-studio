@@ -50,7 +50,6 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         if (!isActivated) {
             showFunctionsIntroductionForTheFirstTime();
         }
-        
         return true;
     }
 
