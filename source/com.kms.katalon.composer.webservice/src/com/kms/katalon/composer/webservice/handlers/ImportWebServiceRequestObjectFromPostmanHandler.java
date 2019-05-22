@@ -96,16 +96,16 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
 
             if (dialog.open() == Dialog.OK) {
                 List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
-               
+
                 for (WebServiceRequestEntity entity : requestEntities) {
                     try {
                         EntityNameController.validateName(entity.toString());
                     } catch (Exception e) {
-                        entity.setName("New Postman Request"+"("+k+")");
+                        entity.setName("New Postman Request" + "(" + k + ")");
                         k++;
-                      }
-                        toController.saveNewTestObject(entity);
-                    
+                    }
+                    toController.saveNewTestObject(entity);
+
                 }
 
                 trackImportPostman(dialog.getPostmanSpecLocation());
