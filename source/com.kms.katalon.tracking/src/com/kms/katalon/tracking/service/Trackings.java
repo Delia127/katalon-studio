@@ -117,6 +117,10 @@ public class Trackings {
         trackUserAction("executeTestSuiteResultExecution", "runningMode", "gui", "launchMode", launchMode, "driver", driverType, "testsuiteResultExecution", result);
     }
     
+    public static void trackExecuteTestSuiteInGuiMode( long time) {
+        trackUserAction("timeRunTestsuiteExecution", "runningMode", "gui", "timeRun", time);
+    }
+    
     public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType) {
         trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType);
     }
@@ -129,8 +133,8 @@ public class Trackings {
         trackUserAction("executeTestSuiteCollection", "runningMode", "gui");
     }
     
-    public static void trackExecuteTestSuiteCollectionInGuiMode(String result) {
-        trackUserAction("executeTestSuiteCollectionResultExecution", "runningMode", "gui", "testsuiteCollectionResultExecution", result);
+    public static void trackExecuteTestSuiteCollectionInGuiMode(String result, Long time) {
+        trackUserAction("executeTestSuiteCollectionResultExecution", "runningMode", "gui", "testsuiteCollectionResultExecution", result, "timeRun", time);
     }
 
     public static void trackExecuteTestSuiteCollectionInConsoleMode(boolean isAnonymous) {

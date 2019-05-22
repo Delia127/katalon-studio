@@ -27,6 +27,7 @@ import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.platform.TestSuiteCollectionExecutionEvent;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
 
@@ -124,6 +125,14 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         schedule();
 
         endTime = new Date();
+        String resultTestcase;
+        try {
+            resultTestcase = getExecutionResult();
+            long timeRun = endTime.getSeconds() - startTime.getSeconds();
+            Trackings.trackExecuteTestSuiteCollectionInGuiMode(resultTestcase, timeRun);
+        } catch (Exception e) {
+        }
+        
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_COLLECTION_FINISHED_EVENT);
     }
 
@@ -145,7 +154,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         }
     }
     
-    protected String getExcutionResult() throws Exception{
+    protected String getExecutionResult() throws Exception{
         String resultExcution = null;
         if (getResult().getNumFailures() > 0) {
             resultExcution = TestStatusValue.FAILED.toString();

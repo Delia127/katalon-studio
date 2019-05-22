@@ -55,6 +55,7 @@ import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
     private ReportEntity reportEntity;
@@ -97,6 +98,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             uploadReportToIntegratingProduct(suiteLogRecord);
 
             sendReport(suiteLogRecord);
+            long timeRun = endTime.getSeconds() - startTime.getSeconds();
+            Trackings.trackExecuteTestSuiteInGuiMode(timeRun);
 
         } catch (Exception e) {
             writeError(MessageFormat.format(StringConstants.LAU_RPT_ERROR_TO_GENERATE_REPORT, e.getMessage()));
