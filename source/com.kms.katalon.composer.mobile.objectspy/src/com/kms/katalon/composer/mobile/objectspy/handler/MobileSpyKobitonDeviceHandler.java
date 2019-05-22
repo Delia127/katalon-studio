@@ -2,7 +2,6 @@ package com.kms.katalon.composer.mobile.objectspy.handler;
 
 import javax.inject.Named;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -36,7 +35,6 @@ public class MobileSpyKobitonDeviceHandler {
 
     @CanExecute
     private boolean canExecute() {
-        return ProjectController.getInstance().getCurrentProject() != null
-                && Platform.getOS().equals(Platform.OS_MACOSX);
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 }

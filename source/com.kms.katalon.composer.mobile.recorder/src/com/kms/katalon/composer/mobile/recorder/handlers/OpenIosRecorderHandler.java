@@ -12,6 +12,7 @@ import javax.inject.Named;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -262,7 +263,8 @@ public class OpenIosRecorderHandler {
 
     @CanExecute
     public boolean canExecute() {
-        return ProjectController.getInstance().getCurrentProject() != null;
+        return ProjectController.getInstance().getCurrentProject() != null 
+                && Platform.getOS().equals(Platform.OS_MACOSX);
     }
 
     protected MPart getSelectedPart() {
