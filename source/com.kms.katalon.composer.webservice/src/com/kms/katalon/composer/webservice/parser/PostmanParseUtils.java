@@ -70,8 +70,12 @@ public class PostmanParseUtils {
                 String rawURL = request.getURL().getRaw();
                 String method = root.getRequest().getMethod();
                 String name = root.getName();
-                String body = StringUtils.defaultString(request.getBody().getRaw());
+                String body ="";
                 List<VariableEntity> variablesFromURL = collectVariablesFromRawString(rawURL);
+                
+               
+
+               
                 List<VariableEntity> variablesFromBody = collectVariablesFromRawString(body);
                 HttpHeaderVariable httpHeaderVariable = collectHttpHeaderVariable(request, root);
                 entity.setName(name);
@@ -88,25 +92,29 @@ public class PostmanParseUtils {
                 collectedVariables.addAll(variablesFromBody);
                 List<VariableEntity> entityVariables = filterDuplicatedVariables(collectedVariables);
                 entity.setVariables(entityVariables);
+                if (request.getBody() != null) {
+                    body = StringUtils.defaultString(request.getBody().getRaw());
+                    if (root.getRequest().getBody().getFormdata() != null) {
+                        ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(
+                                root);
+                        entity.setHttpBodyType("form-data");
+                        entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
+                    } else if (root.getRequest().getBody().getUrlencoded() != null) {
+                        ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParameters = collectUrlEncodedBody(
+                                root);
+                        entity.setHttpBodyType("x-www-form-urlencoded");
+                        entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
+                    } else {
+                        String textBody = getVariableString(variablesFromBody, body);
+                        TextBodyContent textBodyContent = new TextBodyContent();
+                        String contentType = getContentType(httpHeaders);
+                        entity.setHttpBodyType("text");
+                        textBodyContent
+                                .setContentType(TextContentType.evaluateContentType(contentType).getContentType());
+                        textBodyContent.setText(textBody);
+                        entity.setHttpBodyContent(JsonUtil.toJson(textBodyContent));
+                    }
 
-                if (root.getRequest().getBody().getFormdata() != null) {
-                    ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(
-                            root);
-                    entity.setHttpBodyType("form-data");
-                    entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
-                } else if (root.getRequest().getBody().getUrlencoded() != null) {
-                    ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParameters = collectUrlEncodedBody(
-                            root);
-                    entity.setHttpBodyType("x-www-form-urlencoded");
-                    entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
-                } else {
-                    String textBody = getVariableString(variablesFromBody, body);
-                    TextBodyContent textBodyContent = new TextBodyContent();
-                    String contentType = getContentType(httpHeaders);
-                    entity.setHttpBodyType("text");
-                    textBodyContent.setContentType(TextContentType.evaluateContentType(contentType).getContentType());
-                    textBodyContent.setText(textBody);
-                    entity.setHttpBodyContent(JsonUtil.toJson(textBodyContent));
                 }
                 newWSTestObjects.add(entity);
 
