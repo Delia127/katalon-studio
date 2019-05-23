@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.handlers;
 
 import java.io.IOException;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;

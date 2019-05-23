@@ -9,6 +9,7 @@ import org.eclipse.swt.program.Program;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.logging.LogUtil;
 
 public class OpenPlanGridExecutionHandler {
     
@@ -29,7 +30,7 @@ public class OpenPlanGridExecutionHandler {
             String url = serverUrl + "/team/" + teamId + "/project/" + projectId + "/grid";
             Program.launch(url);
         } catch (IOException | GeneralSecurityException e) {
-            e.printStackTrace();
+            LogUtil.logError(e);
         }
     }
 }
