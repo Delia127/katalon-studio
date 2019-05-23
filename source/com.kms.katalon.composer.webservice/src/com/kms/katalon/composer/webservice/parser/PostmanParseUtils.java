@@ -130,8 +130,8 @@ public class PostmanParseUtils {
             collectedVariables.addAll(variablesFromBody);
             List<VariableEntity> entityVariables = filterDuplicatedVariables(collectedVariables);
             entity.setVariables(entityVariables);
-
             entity.setParentFolder(parentFolder);
+            allRequests.add(entity);
 
             allVariables.addAll(entityVariables);
         }
