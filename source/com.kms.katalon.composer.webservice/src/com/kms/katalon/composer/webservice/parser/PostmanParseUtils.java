@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -36,7 +35,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
@@ -59,78 +57,15 @@ public class PostmanParseUtils {
         ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
                 false);
         PostmanCollection postman = objectMapper.readValue(new File(fileLocationOrUrl), PostmanCollection.class);
-
-        // List<Item> rootItems = postman.getItem().stream().map(i ->
-        // flatten(i)).flatMap(List::stream).collect(Collectors.toList());
         List<Item> rootItems = postman.getItem();
         ExecutionProfileEntity profileEntity = GlobalVariableController.getInstance().getExecutionProfile("default",
                 ProjectController.getInstance().getCurrentProject());
         List<GlobalVariableEntity> globalVariableEntites = profileEntity.getGlobalVariableEntities();
         List<VariableEntity> allVariables = new ArrayList<>();
-        List<FileEntity> childrenEntities = new ArrayList<FileEntity>();
         for (Item root : rootItems) {
-            if (root.getRequest() == null) {
-                FolderEntity folder = FolderController.getInstance().addNewFolder(folderEntity, root.getName());
-                folder.setChildrenEntities(childrenEntities);
-                pushPostManItemToWSTestObjectSet(root, newWSTestObjects, folder);
-            }
-
-            if (root.getRequest() != null) {
-                WebServiceRequestEntity entity = new WebServiceRequestEntity();
-                Request request = root.getRequest();
-                String rawURL = request.getURL().getRaw();
-                String method = root.getRequest().getMethod();
-                String name = root.getName();
-                String body ="";
-                List<VariableEntity> variablesFromURL = collectVariablesFromRawString(rawURL);
-                
-               
-
-               
-                List<VariableEntity> variablesFromBody = collectVariablesFromRawString(body);
-                HttpHeaderVariable httpHeaderVariable = collectHttpHeaderVariable(request, root);
-                entity.setName(name);
-                entity.setRestRequestMethod(method.toString());
-                entity.setRestUrl(getVariableString(variablesFromURL, rawURL));
-                entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
-                List<WebElementPropertyEntity> httpHeaders = httpHeaderVariable.getHttpHeaders();
-                httpHeaders.addAll(0, getHttpAuthentication(root.getRequest().getAuth()));
-                entity.setHttpHeaderProperties(httpHeaders);
-
-                List<VariableEntity> collectedVariables = new ArrayList<>();
-                collectedVariables.addAll(variablesFromURL);
-                collectedVariables.addAll(httpHeaderVariable.getVariables());
-                collectedVariables.addAll(variablesFromBody);
-                List<VariableEntity> entityVariables = filterDuplicatedVariables(collectedVariables);
-                entity.setVariables(entityVariables);
-                if (request.getBody() != null) {
-                    body = StringUtils.defaultString(request.getBody().getRaw());
-                    if (root.getRequest().getBody().getFormdata() != null) {
-                        ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(
-                                root);
-                        entity.setHttpBodyType("form-data");
-                        entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
-                    } else if (root.getRequest().getBody().getUrlencoded() != null) {
-                        ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParameters = collectUrlEncodedBody(
-                                root);
-                        entity.setHttpBodyType("x-www-form-urlencoded");
-                        entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
-                    } else {
-                        String textBody = getVariableString(variablesFromBody, body);
-                        TextBodyContent textBodyContent = new TextBodyContent();
-                        String contentType = getContentType(httpHeaders);
-                        entity.setHttpBodyType("text");
-                        textBodyContent
-                                .setContentType(TextContentType.evaluateContentType(contentType).getContentType());
-                        textBodyContent.setText(textBody);
-                        entity.setHttpBodyContent(JsonUtil.toJson(textBodyContent));
-                    }
-                }
-                entity.setParentFolder(folderEntity);
-                newWSTestObjects.add(entity);
-
-                allVariables.addAll(entityVariables);
-            }
+            RequestVariable requestVariable = collectRequestVariablesFromItem(folderEntity, root);
+            allVariables.addAll(requestVariable.getVariables());
+            newWSTestObjects.addAll(requestVariable.getRequests());
         }
 
         globalVariableEntites.addAll(toGlobalVariables(allVariables));
@@ -140,6 +75,80 @@ public class PostmanParseUtils {
         return newWSTestObjects;
     }
 
+    
+    public static RequestVariable collectRequestVariablesFromItem(FolderEntity parentFolder, Item root)
+            throws JsonParseException, JsonMappingException, IOException, ControllerException {
+        List<WebServiceRequestEntity> allRequests = new ArrayList<>();
+        List<VariableEntity> allVariables = new ArrayList<>();
+        if (root.getRequest() != null) {
+            WebServiceRequestEntity entity = new WebServiceRequestEntity();
+            Request request = root.getRequest();
+            String rawURL = request.getURL().getRaw();
+            String method = root.getRequest().getMethod();
+            String name = root.getName();
+            List<VariableEntity> variablesFromURL = collectVariablesFromRawString(rawURL);
+            List<VariableEntity> variablesFromBody = new ArrayList<>();
+
+            HttpHeaderVariable httpHeaderVariable = collectHttpHeaderVariable(request, root);
+            entity.setName(name);
+            entity.setRestRequestMethod(method.toString());
+            entity.setRestUrl(getVariableString(variablesFromURL, rawURL));
+            entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
+
+            List<WebElementPropertyEntity> httpHeaders = httpHeaderVariable.getHttpHeaders();
+            httpHeaders.addAll(0, getHttpAuthentication(root.getRequest().getAuth()));
+            entity.setHttpHeaderProperties(httpHeaders);
+
+            if (request.getBody() != null) {
+                String body = StringUtils.defaultString(request.getBody().getRaw());
+                variablesFromBody = collectVariablesFromRawString(body);
+                if (root.getRequest().getBody().getFormdata() != null) {
+                    ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(
+                            root);
+                    entity.setHttpBodyType("form-data");
+                    entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
+                } else if (root.getRequest().getBody().getUrlencoded() != null) {
+                    ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParameters = collectUrlEncodedBody(
+                            root);
+                    entity.setHttpBodyType("x-www-form-urlencoded");
+                    entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
+                } else {
+                    String textBody = getVariableString(variablesFromBody, body);
+                    TextBodyContent textBodyContent = new TextBodyContent();
+                    String contentType = getContentType(httpHeaders);
+                    entity.setHttpBodyType("text");
+                    textBodyContent
+                            .setContentType(TextContentType.evaluateContentType(contentType).getContentType());
+                    textBodyContent.setText(textBody);
+                    entity.setHttpBodyContent(JsonUtil.toJson(textBodyContent));
+                }
+            }
+
+            List<VariableEntity> collectedVariables = new ArrayList<>();
+            collectedVariables.addAll(variablesFromURL);
+            collectedVariables.addAll(httpHeaderVariable.getVariables());
+            collectedVariables.addAll(variablesFromBody);
+            List<VariableEntity> entityVariables = filterDuplicatedVariables(collectedVariables);
+            entity.setVariables(entityVariables);
+
+            entity.setParentFolder(parentFolder);
+
+            allVariables.addAll(entityVariables);
+        }
+       
+        for (Item item : root.getItem()) {
+            FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolder, root.getName());
+            RequestVariable childRequestVariable = collectRequestVariablesFromItem(folder, item);
+            allRequests.addAll(childRequestVariable.getRequests());
+            allVariables.addAll(childRequestVariable.getVariables());
+        }
+        
+        RequestVariable requestVariable = new RequestVariable();
+        requestVariable.setRequests(allRequests);
+        requestVariable.setVariables(allVariables);
+        return requestVariable;
+    }
+    
     public static List<WebElementPropertyEntity> getHttpAuthentication(Auth auth) {
         if (auth == null || StringUtils.isEmpty(auth.getType())) {
             return Collections.emptyList();
@@ -299,128 +308,6 @@ public class PostmanParseUtils {
             variableString = variableString.replace("{{" + variableName + "}}", "${" + variable.getName() + "}");
         }
         return variableString;
-    }
-
-    public static void pushPostManItemToWSTestObjectSet(Item item, List<WebServiceRequestEntity> newWSTestObjects,
-            FolderEntity parentFolder) throws ControllerException {
-        ExecutionProfileEntity profileEntity = GlobalVariableController.getInstance().getExecutionProfile("default",
-                ProjectController.getInstance().getCurrentProject());
-
-        List<VariableEntity> allVariables = new ArrayList<>();
-        List<GlobalVariableEntity> globalVariableEntites = profileEntity.getGlobalVariableEntities();
-        List<FileEntity> childrenEntities = new ArrayList<FileEntity>();
-
-        for (Item childItem : item.getItem()) {
-            
-            if (childItem.getRequest() == null) {
-                WebServiceRequestEntity entity = new WebServiceRequestEntity();
-                FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolder, childItem.getName());
-                folder.setChildrenEntities(childrenEntities);
-                pushPostManItemToWSTestObjectSet(childItem, newWSTestObjects, folder);
-                entity.setParentFolder(folder);
-            }
-        }
-        for (Item childItem : item.getItem()) {
-            if(childItem.getRequest() != null){
-            WebServiceRequestEntity entity = new WebServiceRequestEntity();
-                Request request = childItem.getRequest();
-                String rawURL = request.getURL().getRaw();
-                String method = childItem.getRequest().getMethod();
-                String name = childItem.getName();
-                String body = StringUtils.defaultString(request.getBody().getRaw());
-                List<VariableEntity> variablesFromURL = collectVariablesFromRawString(rawURL);
-                List<VariableEntity> variablesFromBody = collectVariablesFromRawString(body);
-                HttpHeaderVariable httpHeaderVariable = collectHttpHeaderVariable(request, childItem);
-                entity.setName(name);
-                entity.setRestRequestMethod(method.toString());
-                entity.setRestUrl(getVariableString(variablesFromURL, rawURL));
-                entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
-                List<WebElementPropertyEntity> httpHeaders = httpHeaderVariable.getHttpHeaders();
-                httpHeaders.addAll(0, getHttpAuthentication(childItem.getRequest().getAuth()));
-                entity.setHttpHeaderProperties(httpHeaders);
-
-                List<VariableEntity> collectedVariables = new ArrayList<>();
-                collectedVariables.addAll(variablesFromURL);
-                collectedVariables.addAll(httpHeaderVariable.getVariables());
-                collectedVariables.addAll(variablesFromBody);
-                List<VariableEntity> entityVariables = filterDuplicatedVariables(collectedVariables);
-                entity.setVariables(entityVariables);
-
-                if (childItem.getRequest().getBody().getFormdata() != null) {
-                    ParameterizedBodyContent<FormDataBodyParameter> formDataBodyParameters = collectFormDataBody(
-                            childItem);
-                    entity.setHttpBodyType("form-data");
-                    entity.setHttpBodyContent(JsonUtil.toJson(formDataBodyParameters));
-                } else if (childItem.getRequest().getBody().getUrlencoded() != null) {
-                    ParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyParameters = collectUrlEncodedBody(
-                            childItem);
-                    entity.setHttpBodyType("x-www-form-urlencoded");
-                    entity.setHttpBodyContent(JsonUtil.toJson(urlEncodedBodyParameters));
-                } else {
-                    String textBody = getVariableString(variablesFromBody, body);
-                    TextBodyContent textBodyContent = new TextBodyContent();
-                    String contentType = getContentType(httpHeaders);
-                    entity.setHttpBodyType("text");
-                    textBodyContent.setContentType(TextContentType.evaluateContentType(contentType).getContentType());
-                    textBodyContent.setText(textBody);
-                    entity.setHttpBodyContent(JsonUtil.toJson(textBodyContent));
-                   
-                }
-                entity.setParentFolder(parentFolder);
-                allVariables.addAll(entityVariables);
-                newWSTestObjects.add(entity);
-        }
-        }
-        globalVariableEntites.addAll(toGlobalVariables(allVariables));
-        profileEntity.setGlobalVariableEntities(filterDuplicatedGlobalVariables(globalVariableEntites));
-        GlobalVariableController.getInstance().updateExecutionProfile(profileEntity);
-    }
-
-    public static String collectPathItem(String variablePath, Item item) {
-        String katalonVariablePath = "";
-        String[] pathAndVariables = variablePath.toString().split("[\\{||\\}]");
-        katalonVariablePath += pathAndVariables[0];
-        String variables = "";
-
-        if (pathAndVariables.length > 1) {
-            for (int i = 1; i < pathAndVariables.length; i++) {
-                if (!(pathAndVariables[i].equals("")) && !(pathAndVariables[i].contains("/"))) {
-                    katalonVariablePath += "${" + pathAndVariables[i] + "}";
-                } else if (pathAndVariables[i].contains(":")) {
-                    variables = pathAndVariables[i];
-                } else if (!pathAndVariables[i].contains(":") && pathAndVariables[i].contains("/")) {
-                    katalonVariablePath += pathAndVariables[i];
-                }
-            }
-            String[] splitVariables = variables.split("[\\:]");
-            katalonVariablePath += splitVariables[0];
-            if (splitVariables.length > 1) {
-                for (int j = 1; j < splitVariables.length; j++) {
-                    if (splitVariables[j].contains("/")) {
-                        String[] var = splitVariables[j].split("[\\/]");
-                        if (katalonVariablePath.endsWith("/")) {
-                            katalonVariablePath += "${" + var[0] + "}";
-                        } else {
-                            katalonVariablePath += "/" + "${" + var[0] + "}";
-                        }
-                        if (var.length > 1) {
-                            for (int k = 1; k < var.length; k++) {
-                                katalonVariablePath += "/" + var[k];
-                            }
-                        }
-                    } else {
-                        if (katalonVariablePath.endsWith("/")) {
-                            katalonVariablePath += "${" + splitVariables[j] + "}";
-                        } else {
-                            katalonVariablePath += "/" + "${" + splitVariables[j] + "}";
-                        }
-                    }
-                }
-            }
-        }
-        variablePath = katalonVariablePath;
-        return variablePath;
-
     }
 
     public static HttpHeaderVariable collectHttpHeaderVariable(Request request, Item childItem) {
@@ -585,6 +472,28 @@ public class PostmanParseUtils {
 
         public void setVariables(List<VariableEntity> variables) {
             this.variables = variables;
+        }
+    }
+    
+    public static class RequestVariable {
+        private List<WebServiceRequestEntity> requests;
+
+        private List<VariableEntity> variables;
+
+        public List<VariableEntity> getVariables() {
+            return variables;
+        }
+
+        public void setVariables(List<VariableEntity> variables) {
+            this.variables = variables;
+        }
+
+        public List<WebServiceRequestEntity> getRequests() {
+            return requests;
+        }
+
+        public void setRequests(List<WebServiceRequestEntity> requests) {
+            this.requests = requests;
         }
     }
 }
