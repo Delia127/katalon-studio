@@ -80,7 +80,9 @@ import com.kms.katalon.selenium.driver.CInternetExplorerDriver;
 import com.kms.katalon.selenium.driver.CRemoteWebDriver;
 import com.kms.katalon.selenium.driver.CSafariDriver;
 
+import io.appium.java_client.MobileCommand;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.AppiumCommandExecutor;
 
 public class DriverFactory {
 
@@ -317,12 +319,11 @@ public class DriverFactory {
         }
         desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
 
-        HttpCommandExecutor executor = getExecutorForRemoteDriver(remoteWebServerUrl);
-
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
                 remoteWebServerUrl, remoteWebServerType));
         if (!remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
-            return new CRemoteWebDriver(executor, desireCapibilities, getActionDelay());
+            HttpCommandExecutor seleniumExecutor = getSeleniumExecutorForRemoteDriver(remoteWebServerUrl);
+            return new CRemoteWebDriver(seleniumExecutor, desireCapibilities, getActionDelay());
         }
         Object platformName = desireCapibilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
         if (platformName == null || !(platformName instanceof String)) {
@@ -331,17 +332,30 @@ public class DriverFactory {
                             APPIUM_CAPABILITY_PLATFORM_NAME));
         }
         if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
-            return new SwipeableAndroidDriver(executor, WebDriverPropertyUtil
-                    .toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.android(), false));
+            AppiumCommandExecutor appiumExecutor = getAppiumExecutorForRemoteDriver(remoteWebServerUrl);
+            DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
+                    DesiredCapabilities.android(), false);
+            return new SwipeableAndroidDriver(appiumExecutor, desiredCapabilities);
         } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
-            return new IOSDriver(executor, WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
-                    DesiredCapabilities.iphone(), false));
+            AppiumCommandExecutor appiumExecutor = getAppiumExecutorForRemoteDriver(remoteWebServerUrl);
+            DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
+                    DesiredCapabilities.iphone(), false);
+            return new IOSDriver(appiumExecutor, desiredCapabilities);
         }
         throw new StepFailedException(MessageFormat.format(
                 StringConstants.DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER, platformName));
     }
 
-    private static HttpCommandExecutor getExecutorForRemoteDriver(String remoteWebServerUrl)
+    private static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(String remoteWebServerUrl)
+            throws URISyntaxException, IOException, GeneralSecurityException {
+        URL url = new URL(remoteWebServerUrl);
+        ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo));
+        AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, url, clientFactory);
+        return executor;
+    }
+
+    private static HttpCommandExecutor getSeleniumExecutorForRemoteDriver(String remoteWebServerUrl)
             throws URISyntaxException, IOException, GeneralSecurityException {
 
         URL url = new URL(remoteWebServerUrl);
@@ -446,7 +460,7 @@ public class DriverFactory {
         if (firefoxMajorVersion >= USING_MARIONETTEE_VERSION) {
             return CFirefoxDriver47.from(desiredCapabilities, actionDelay);
         }
-        return new CGeckoDriver(desiredCapabilities, actionDelay);
+        return CGeckoDriver.from(desiredCapabilities, actionDelay);
     }
 
     private static WebDriver createHeadlessFirefoxDriver(DesiredCapabilities desiredCapibilities) {
@@ -879,8 +893,8 @@ public class DriverFactory {
                     logger.logInfo("Custom chrome detected at location: " + customeChromeLocationMac.getAbsolutePath());
                     FileExcutableUtil.makeFileExecutable(chromeDriverPath);
                 } catch (IOException e) {
-                    logger.logInfo(
-                            "Cannot make chromedriver file : " + customeChromeLocationMac.getAbsolutePath() + "excutable" );
+                    logger.logInfo("Cannot make chromedriver file : " + customeChromeLocationMac.getAbsolutePath()
+                            + "excutable");
                 }
                 return customeChromeLocationMac.getAbsolutePath();
             }
@@ -895,8 +909,8 @@ public class DriverFactory {
                                 "Custom chrome detected at location: " + customeChromeLocationLinux.getAbsolutePath());
                         FileExcutableUtil.makeFileExecutable(chromeDriverPath);
                     } catch (IOException e) {
-                        logger.logInfo("Cannot make chromedriver file :"
-                                + customeChromeLocationLinux.getAbsolutePath() + " excutable");
+                        logger.logInfo("Cannot make chromedriver file :" + customeChromeLocationLinux.getAbsolutePath()
+                                + " excutable");
                     }
                     return customeChromeLocationLinux.getAbsolutePath();
                 }
@@ -910,8 +924,8 @@ public class DriverFactory {
                                 "Custom chrome detected at location: " + customChromeLocationLinux32.getAbsolutePath());
                         FileExcutableUtil.makeFileExecutable(chromeDriverPath);
                     } catch (IOException e) {
-                        logger.logInfo("Cannot make chromedriver file :"
-                                + customChromeLocationLinux32.getAbsolutePath() + "excutable");
+                        logger.logInfo("Cannot make chromedriver file :" + customChromeLocationLinux32.getAbsolutePath()
+                                + "excutable");
                     }
                     return customChromeLocationLinux32.getAbsolutePath();
                 }
@@ -951,8 +965,8 @@ public class DriverFactory {
                     logger.logInfo("Custom gecko detected at location: " + customeGeckoLocationMac.getAbsolutePath());
                     FileExcutableUtil.makeFileExecutable(geckoDriverPath);
                 } catch (IOException e) {
-                    logger.logInfo(
-                            "Cannot make geckodriver file : " + customeGeckoLocationMac.getAbsolutePath() + " excutable");
+                    logger.logInfo("Cannot make geckodriver file : " + customeGeckoLocationMac.getAbsolutePath()
+                            + " excutable");
                 }
                 return customeGeckoLocationMac.getAbsolutePath();
             }
@@ -967,8 +981,8 @@ public class DriverFactory {
                                 "Custom gecko detected at location: " + customeGeckoLocationLinux.getAbsolutePath());
                         FileExcutableUtil.makeFileExecutable(geckoDriverPath);
                     } catch (IOException e) {
-                        logger.logInfo(
-                                "Cannot make geckodriver file : " + customeGeckoLocationLinux.getAbsolutePath() + " excutable");
+                        logger.logInfo("Cannot make geckodriver file : " + customeGeckoLocationLinux.getAbsolutePath()
+                                + " excutable");
                     }
                     return customeGeckoLocationLinux.getAbsolutePath();
                 }
@@ -982,8 +996,8 @@ public class DriverFactory {
                                 "Custom gecko detected at location: " + customGeckoLocationLinux32.getAbsolutePath());
                         FileExcutableUtil.makeFileExecutable(geckoDriverPath);
                     } catch (IOException e) {
-                        logger.logInfo("Cannot make geckodriver file : "
-                                + customGeckoLocationLinux32.getAbsolutePath() + " excutable");
+                        logger.logInfo("Cannot make geckodriver file : " + customGeckoLocationLinux32.getAbsolutePath()
+                                + " excutable");
                     }
                     return customGeckoLocationLinux32.getAbsolutePath();
 
