@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.handlers;
 
 import java.io.IOException;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -9,6 +10,7 @@ import org.eclipse.swt.program.Program;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.logging.LogUtil;
 
 public class ViewDashboardHandler {
     
@@ -29,7 +31,7 @@ public class ViewDashboardHandler {
             String url = serverUrl + "/team/" + teamId + "/project/" + projectId;
             Program.launch(url);
         } catch (IOException | GeneralSecurityException e) {
-            e.printStackTrace();
+            LogUtil.logError(e);
         }
     }
 }
