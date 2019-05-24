@@ -31,6 +31,7 @@ import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.dialogs.AddOrEditWebServiceMethodDialog;
 import com.kms.katalon.constants.EventConstants;
@@ -81,7 +82,8 @@ public class WebServiceMethodSettingPage extends PreferencePageWithHelp {
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
        
         ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
-        
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
+
         tiAddMethod = new ToolItem(toolBar, SWT.NONE);
         tiAddMethod.setText(StringConstants.ADD);
         tiAddMethod.setImage(ImageConstants.IMG_16_ADD);

@@ -427,6 +427,7 @@ public class TestSuitePartDataBindingView {
         compositeTestDataButton.setLayout(glCompositeTestDataButton);
 
         testDataToolBar = new ToolBar(compositeTestDataButton, SWT.FLAT | SWT.RIGHT);
+        testDataToolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         ToolItem tltmAddTestData = new ToolItem(testDataToolBar, SWT.DROP_DOWN);
         tltmAddTestData.setText(ToolItemConstants.ADD);
         tltmAddTestData.setToolTipText(ToolItemConstants.ADD);

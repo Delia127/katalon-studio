@@ -76,6 +76,7 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.mobile.objectspy.components.KobitonAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.components.LocalAppComposite;
@@ -475,6 +476,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     private void createActionToolbar(Composite parent) {
         ToolBar actionToolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        actionToolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         actionToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         tltmDelete = new ToolItem(actionToolBar, SWT.PUSH);
@@ -1071,6 +1073,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         ToolBar contentToolbar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+        contentToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         contentToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 
         btnCapture = new ToolItem(contentToolbar, SWT.NONE);

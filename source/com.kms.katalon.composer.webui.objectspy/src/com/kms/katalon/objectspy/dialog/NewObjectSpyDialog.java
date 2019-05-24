@@ -46,6 +46,7 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -395,6 +396,7 @@ public class NewObjectSpyDialog extends Dialog
 
     private void addElementTreeToolbar(Composite explorerComposite) {
         mainToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
+        mainToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         mainToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         addPageElementToolItem = new ToolItem(mainToolbar, SWT.NONE);

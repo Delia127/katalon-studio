@@ -133,6 +133,7 @@ public class WebServiceAPIControl extends Composite implements EventHandler {
         }
       
         ToolBar toolbar = new ToolBar(this, SWT.RIGHT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         btnSend = new ToolItem(toolbar, SWT.DROP_DOWN);
         setSendButtonState(false);
         

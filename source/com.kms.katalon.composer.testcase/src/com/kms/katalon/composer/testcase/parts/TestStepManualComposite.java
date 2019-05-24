@@ -65,6 +65,7 @@ import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
 import com.kms.katalon.composer.components.viewer.CustomTreeViewerFocusCellManager;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
@@ -201,7 +202,8 @@ public class TestStepManualComposite {
 		compositeToolbar.setLayoutData(gd_compositeToolbar);
 
 		ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
-
+		toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
+		
 		ToolItem tltmRecord = new ToolItem(toolBar, SWT.NONE);
 		tltmRecord.setText(StringConstants.PA_TOOLBAR_RECORD);
 		tltmRecord.setImage(ImageConstants.IMG_16_RECORD);
@@ -236,6 +238,7 @@ public class TestStepManualComposite {
 			ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
 
 			toolbar = toolBarManager.createControl(compositeTableButtons);
+			toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
 			toolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
 			spacer = new Label(compositeTableButtons, SWT.None);
@@ -243,6 +246,7 @@ public class TestStepManualComposite {
 
 			ToolBarManager toolBarManager2 = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
 			toolbarTwo = toolBarManager2.createControl(compositeTableButtons);
+			toolbarTwo.setForeground(ColorUtil.getToolBarForegroundColor());
 			toolbarTwo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 //			toolbarTwo.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
 			
@@ -271,7 +275,9 @@ public class TestStepManualComposite {
 		} else { // for ClosureDialog
 			ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
 			toolbar = toolBarManager.createControl(parent);
+			toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
 			toolbarTwo = toolBarManager.createControl(parent);
+			toolbarTwo.setForeground(ColorUtil.getToolBarForegroundColor());
 		}
 
 		ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();

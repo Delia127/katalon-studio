@@ -548,6 +548,7 @@ public class ReportPartTestLogView {
 
     private void createTestLogTableToolbar(Composite parent) {
         testLogToolbar = new ToolBar(parent, SWT.NONE);
+        testLogToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         testLogToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         tltmCollapseAllLogs = new ToolItem(testLogToolbar, SWT.NONE);
@@ -731,6 +732,7 @@ public class ReportPartTestLogView {
         compositeTestCaseIntegrationToolbar.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
         testCaseLogIntegrationToolbar = new ToolBar(compositeTestCaseIntegrationToolbar, SWT.FLAT | SWT.VERTICAL);
+        testCaseLogIntegrationToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         compositeTestCaseLogIntegration = new Composite(compositeTestCaseIntegration, SWT.NONE);
         compositeTestCaseLogIntegration.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -750,6 +752,8 @@ public class ReportPartTestLogView {
         createSelectedTestStepImageViewTabItem(selectedTestLogTabFolder);
 
         imageToolbar = new ToolBar(selectedTestLogTabFolder, SWT.NONE);
+        imageToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
+
         tltmFitScreen = new ToolItem(imageToolbar, SWT.CHECK);
         tltmFitScreen.setImage(ImageConstants.IMG_16_FIT_SCREEN);
         tltmFitScreen.setToolTipText("Fit to View");

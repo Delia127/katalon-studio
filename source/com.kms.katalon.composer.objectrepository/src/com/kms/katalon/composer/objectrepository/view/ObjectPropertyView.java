@@ -228,6 +228,7 @@ public class ObjectPropertyView implements EventHandler {
 		compositeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		ToolBar tableToolbar = new ToolBar(compositeTableToolBar, SWT.FLAT | SWT.RIGHT);
+		tableToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
 
 		propertyToolItemAdd = new ToolItem(tableToolbar, SWT.NONE);
 		propertyToolItemAdd.setText(StringConstants.VIEW_LBL_ADD);

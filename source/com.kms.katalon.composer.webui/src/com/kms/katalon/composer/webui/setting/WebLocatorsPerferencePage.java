@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webui.constants.ComposerWebuiMessageConstants;
 import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.composer.webui.constants.StringConstants;
@@ -196,6 +197,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 		compositeAttributeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
 
         ToolBar tb = new ToolBar(compositeAttributeTableToolBar, SWT.FLAT | SWT.RIGHT);
+        tb.setForeground(ColorUtil.getToolBarForegroundColor());
         tiPropertyAdd = new ToolItem(tb, SWT.PUSH);
         tiPropertyAdd.setText(StringConstants.ADD);
         tiPropertyAdd.setImage(ImageConstants.IMG_16_ADD);

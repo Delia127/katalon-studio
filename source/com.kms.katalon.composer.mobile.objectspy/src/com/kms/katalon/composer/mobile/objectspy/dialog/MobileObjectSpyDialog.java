@@ -76,6 +76,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.components.KobitonAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.components.LocalAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.constant.ComposerMobileObjectspyMessageConstants;
@@ -622,6 +623,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     private void addElementTreeToolbar(Composite explorerComposite) {
         ToolBar elementTreeToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
+        elementTreeToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         layoutData.horizontalIndent = 2;
         layoutData.minimumWidth = 180;
@@ -693,6 +695,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         ToolBar contentToolbar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+        contentToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         contentToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 
         btnCapture = new ToolItem(contentToolbar, SWT.NONE);

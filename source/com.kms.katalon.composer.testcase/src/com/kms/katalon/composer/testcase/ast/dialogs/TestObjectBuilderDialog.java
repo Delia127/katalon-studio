@@ -282,6 +282,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         comboComposite.setVisible(haveOtherTypes);
 
         final ToolBar topToolbar = new ToolBar(topComposite, SWT.FLAT | SWT.RIGHT);
+        topToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
+
         topToolbar.setTextDirection(SWT.LEFT_TO_RIGHT);
         topToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
         GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(topToolbar);
@@ -625,6 +627,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         composite.setLayout(new GridLayout(1, false));
 
         ToolBar toolBar = new ToolBar(composite, SWT.FLAT | SWT.RIGHT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         ToolItem tltmAddVariable = new ToolItem(toolBar, SWT.NONE);
         tltmAddVariable.addSelectionListener(new SelectionAdapter() {

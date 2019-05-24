@@ -520,6 +520,7 @@ public class TestSuitePartTestCaseView {
         compositeTableButtons.setLayout(glCompositeTableButtons);
 
         testCaseToolbar = new ToolBar(compositeTableButtons, SWT.FLAT | SWT.RIGHT);
+        testCaseToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         testCaseToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         ToolItem tltmAddTestCases = new ToolItem(testCaseToolbar, SWT.NONE);
@@ -571,6 +572,7 @@ public class TestSuitePartTestCaseView {
         });
 
         ToolBar showHideDetails = new ToolBar(compositeTableButtons, SWT.FLAT | SWT.RIGHT);
+        showHideDetails.setForeground(ColorUtil.getToolBarForegroundColor());
         showHideDetails.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
         tltmShowHideDataBinding = new ToolItem(showHideDetails, SWT.NONE);

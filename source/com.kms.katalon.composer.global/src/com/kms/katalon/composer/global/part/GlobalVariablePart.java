@@ -132,6 +132,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         compositeToolbar.setBackground(ColorUtil.getCompositeBackgroundColor());
 
         ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         tltmAdd = new ToolItem(toolBar, SWT.NONE);
         tltmAdd.setText(StringConstants.PA_BTN_TIP_ADD);

@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -47,6 +48,7 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
     
     private void createToolbar(Composite parent) {
         ToolBar toolbar = new ToolBar(parent, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         toolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         btnAdd = new ToolItem(toolbar, SWT.FLAT);

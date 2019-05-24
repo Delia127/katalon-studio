@@ -50,6 +50,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.preference.ProjectSettingPreference;
+import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -80,11 +81,9 @@ public class WelcomeRightPart extends Composite implements EventHandler {
 
     private static final Color BLUE_COLOR = ColorUtil.getColor("#00A9FF");
 
-    private static final Color TEXT_COLOR = ColorUtil.getColor("#444444");
+    private static final Color TEXT_COLOR = ColorUtil.getTextBlackColor();
     
     private static final Color STEP_DESCRIPTION_COLOR = ColorUtil.getColor("#212121");
-    
-    private static final Color SEPARATOR_COLOR = ColorUtil.getColor("#DCE1E3");
 
     private static final String KEY_ID = "ID";
 
@@ -228,8 +227,8 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         addSpacer(tabComposite);
 
         tabGroup = new Composite(tabComposite, SWT.NONE);
-        tabGroup.setBackground(BACKGROUND_COLOR);
-        tabGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+        //tabGroup.setBackground(BACKGROUND_COLOR);
+        tabGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
         GridLayout glTabGroup = new GridLayout(3, false);
         glTabGroup.marginWidth = 0;
         glTabGroup.marginHeight = 0;
@@ -257,7 +256,9 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         tab.setText(textLabel);
         tab.setBackground(bgInactive);
         tab.setData(KEY_BG_ACTIVE, bgActive);
-        tab.setData(KEY_BG_INACTIVE, bgInactive);
+        if (!ComponentBundleActivator.isDarkTheme(getDisplay())) {
+            tab.setData(KEY_BG_INACTIVE, bgInactive);
+        }
         tab.setCursor(CURSOR_HAND);
         ControlUtils.setFontSize(tab, FONT_SIZE_SMALL);
         return tab;
@@ -304,12 +305,12 @@ public class WelcomeRightPart extends Composite implements EventHandler {
                 .forEach(tabButton -> {
                     tabButton.setEnabled(true);
                     ((CLabel) tabButton).setBackground((Image) tabButton.getData(KEY_BG_INACTIVE));
-                    tabButton.setForeground(TEXT_COLOR);
+                    //tabButton.setForeground(ColorUtil.getTextBlackColor());
                     ((CLabel) tabButton).layout();
                 });
         tab.setEnabled(false);
         tab.setBackground((Image) tab.getData(KEY_BG_ACTIVE));
-        tab.setForeground(ColorUtil.getTextWhiteColor());
+        //tab.setForeground(ColorUtil.getTextWhiteColor());
         stackLayout.topControl = (Composite) tab.getData(KEY_CONTENT);
         tabContentCompositeStack.layout();
         tab.layout();
@@ -377,7 +378,6 @@ public class WelcomeRightPart extends Composite implements EventHandler {
             public void paintControl(PaintEvent e) {
                 GC gc = e.gc;                
                 Point size = testingTypeTabGroup.getSize();
-                gc.setForeground(SEPARATOR_COLOR);
                 gc.setLineWidth(3);
                 gc.drawLine(0, size.y, size.x, size.y);
             }            
@@ -398,6 +398,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         tabButton.setBottomMargin(8);
         tabButton.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
         ControlUtils.setFontSize(tabButton, FONT_SIZE_SMALL);
+        tabButton.setForeground(ColorUtil.getTextColor());
         
         return tabButton;
     }
@@ -440,12 +441,12 @@ public class WelcomeRightPart extends Composite implements EventHandler {
                 GC gc = e.gc;
                 if (tab == selectedTestingTypeTab) {
                     Point size = tab.getSize();
-                    gc.setForeground(BLUE_COLOR);
+                    tab.setForeground(BLUE_COLOR);
                     gc.setLineWidth(3);
                     gc.drawLine(0, size.y, size.x, size.y);
                 } else {
                     Point size = tab.getSize();
-                    gc.setForeground(SEPARATOR_COLOR);
+                    tab.setForeground(ColorUtil.getTextColor());
                     gc.setLineWidth(3);
                     gc.drawLine(0, size.y, size.x, size.y);
                 }
@@ -457,7 +458,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         selectedTestingTypeTab = tab;
         
         for (Control testingTypeTab : testingTypeTabGroup.getChildren()) {
-            testingTypeTab.setForeground(TEXT_COLOR);
+            testingTypeTab.setForeground(ColorUtil.getTextColor());
             ControlUtils.setFontStyle(testingTypeTab, SWT.NORMAL, -1);
             testingTypeTab.redraw();
         }
@@ -804,7 +805,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         c.setLayout(gl);
         c.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        CLabel stepNumber = new CLabel(c, SWT.NONE);
+        Label stepNumber = new Label(c, SWT.NONE);
         stepNumber.setImage(stepNumberImage);
         stepNumber.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true));
 
@@ -814,12 +815,10 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         stepText.setLinkForeground(BLUE_COLOR);
         stepText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
         ControlUtils.setFontStyle(stepText, SWT.NORMAL, 12);
-//        ControlUtils.setFontToBeBold(stepText);
         stepText.addSelectionListener(linkSelectionAdapter);
 
-        CLabel stepDetails = new CLabel(parent, SWT.NONE);
+        Label stepDetails = new Label(parent, SWT.NONE);
         stepDetails.setImage(stepDetailsImage);
-        stepDetails.setLeftMargin(40);
         stepDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     }
 

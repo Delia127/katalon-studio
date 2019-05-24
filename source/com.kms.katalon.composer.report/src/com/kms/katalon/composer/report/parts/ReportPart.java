@@ -624,6 +624,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         ToolBar tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
+        tbShowHideDetails.setForeground(ColorUtil.getToolBarForegroundColor());
 
         createKatalonAnalyticsMenu(tbShowHideDetails);
 

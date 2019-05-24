@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.impl.components.SettingOptionsThread;
 import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.TextContentType;
@@ -36,6 +37,8 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil;
 public class MirrorEditor extends Composite {
 
     private static final String RESOURCES_TEMPLATE_EDITOR = "resources/template/editor";
+    
+    private static final String DARK_THEME_CSS = "darcula";
 
     private Browser browser;
 
@@ -79,6 +82,9 @@ public class MirrorEditor extends Composite {
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
+        
+        boolean isDarkTheme = 
+                ComponentBundleActivator.isDarkTheme(getDisplay());
 
         browser.addProgressListener(new ProgressListener() {
 
@@ -86,7 +92,9 @@ public class MirrorEditor extends Composite {
             public void completed(ProgressEvent event) {
                 documentReady = true;
                 onDocumentReady();
-
+                if (isDarkTheme) {
+                    browser.evaluate(String.format("editor.setOption(\"theme\", \"%s\");", DARK_THEME_CSS));
+                }
                 browser.evaluate("document.addEventListener('contextmenu', function(e) { e.preventDefault();});");
             }
 
@@ -131,8 +139,7 @@ public class MirrorEditor extends Composite {
     	try {
 			return new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    LoggerSingleton.logError(e);
 		}
 		return null;
 	}

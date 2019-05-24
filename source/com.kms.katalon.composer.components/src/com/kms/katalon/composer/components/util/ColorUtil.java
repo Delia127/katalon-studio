@@ -1,10 +1,13 @@
 package com.kms.katalon.composer.components.util;
 
 import org.eclipse.e4.ui.css.swt.helpers.CSSSWTColorHelper;
+import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+
+import com.kms.katalon.composer.components.ComponentBundleActivator;
 
 @SuppressWarnings("restriction")
 public class ColorUtil {
@@ -161,6 +164,10 @@ public class ColorUtil {
         return display.getSystemColor(SWT.COLOR_WHITE);
     }
     
+    public static Color getTextBlackColor() {
+        return display.getSystemColor(SWT.COLOR_BLACK);
+    }
+
     public static Color getTextLinkColor() {
         return display.getSystemColor(SWT.COLOR_LINK_FOREGROUND);
     }
@@ -215,6 +222,22 @@ public class ColorUtil {
     
     public static Color getHintForegroundColor() {
         return getColor("#DC923C");
+    }
+    
+    public static Color getTextColor() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return display.getSystemColor(SWT.COLOR_WHITE);
+        } else {
+            return display.getSystemColor(SWT.COLOR_BLACK);
+        }
+    }
+
+    public static Color getToolBarForegroundColor() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return display.getSystemColor(SWT.COLOR_WHITE);
+        } else {
+            return display.getSystemColor(SWT.COLOR_BLACK);
+        }
     }
 
 }

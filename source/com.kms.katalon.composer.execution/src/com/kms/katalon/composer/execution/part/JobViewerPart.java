@@ -254,6 +254,7 @@ public class JobViewerPart implements EventHandler {
             compositeLauncherToolbar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
             ToolBar toolBar = new ToolBar(compositeLauncherToolbar, SWT.FLAT | SWT.RIGHT);
+            toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
             toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
             ToolItem tltmStop = new ToolItem(toolBar, SWT.NONE);

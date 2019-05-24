@@ -47,6 +47,7 @@ import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTabl
 import com.kms.katalon.composer.components.impl.support.TypeCheckedEditingSupport;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableMaskedOperation;
 import com.kms.katalon.composer.testcase.ast.variable.operations.ClearVariableOperation;
@@ -124,6 +125,7 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
         compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         ToolItem tltmAddVariable = new ToolItem(toolBar, SWT.NONE);
         tltmAddVariable.addSelectionListener(new SelectionAdapter() {

@@ -296,6 +296,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private void createTreeCompositeToolbar(Composite compositeTreeContainer) {
         ToolBar toolBar = new ToolBar(compositeTreeContainer, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         toolBar.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
         ToolItem tltmCollapseAll = new ToolItem(toolBar, SWT.NONE);
@@ -778,6 +779,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private void createTableButtonComposite(Composite container) {
         ToolBar toolBar = new ToolBar(container, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         toolBar.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
         btnShowAllLogs = new ToolItem(toolBar, SWT.CHECK);

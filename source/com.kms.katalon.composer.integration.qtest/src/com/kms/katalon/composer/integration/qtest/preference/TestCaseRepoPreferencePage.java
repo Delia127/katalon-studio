@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRepoDialog;
@@ -78,6 +79,7 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
         compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         ToolBar toolbar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         btnAdd = new ToolItem(toolbar, SWT.NONE);
         btnAdd.setText(StringConstants.ADD);

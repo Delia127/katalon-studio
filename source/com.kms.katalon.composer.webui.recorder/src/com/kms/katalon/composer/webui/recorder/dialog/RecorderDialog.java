@@ -84,6 +84,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -634,6 +635,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void createActionToolbar(Composite parent) {
         ToolBar rightToolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        rightToolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         rightToolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 1, 1));
 
         ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.PUSH);
@@ -746,6 +748,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         compositeToolbars.setLayout(layout);
 
         ToolBar toolbar = new ToolBar(compositeToolbars, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         toolbar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         SelectionListener selectionListener = new SelectionAdapter() {
@@ -814,6 +817,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         };
 
         ToolBar playToolbar = new ToolBar(compositeToolbars, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         GridLayout glPlayToolbar = new GridLayout(1, false);
         glPlayToolbar.marginWidth = 0;
         playToolbar.setLayout(glPlayToolbar);
@@ -1173,6 +1177,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         selectedBrowser = getDefaultBrowser();
         
         toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);

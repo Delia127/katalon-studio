@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.impl.dialogs.AddTestObjectPropertyDialog;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -282,6 +283,7 @@ public class ObjectPropertiesView extends Composite
 		compositeAttributeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
 		
         toolbar = new ToolBar(compositeAttributeToolbar, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
        
         btnAdd = new ToolItem(toolbar, SWT.NONE);
         btnAdd.setText(StringConstants.ADD);

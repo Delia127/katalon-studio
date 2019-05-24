@@ -150,4 +150,12 @@
 		 </activeWhen>
 	  	</handler>
 	</extension>
+ <extension
+       point="org.eclipse.e4.ui.css.swt.theme">
+    <theme
+          basestylesheeturi="css/default.css"
+          id="com.kms.katalon.theme.default"
+          label="Katalon Light Theme">
+    </theme>
+ </extension>
 </plugin>
