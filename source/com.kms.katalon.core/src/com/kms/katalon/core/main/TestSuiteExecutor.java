@@ -43,7 +43,8 @@ public class TestSuiteExecutor {
 
     private final String testSuiteId;
 
-    private final ScriptEngine scriptEngine;
+    private final ScriptEngine scri
+    ptEngine;
 
     private InternalTestSuiteContext testSuiteContext;
 
