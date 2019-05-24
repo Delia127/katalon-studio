@@ -185,7 +185,7 @@ public class TestSuitePartTestCaseView {
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, this);
         Table testCaseTable = testCaseTableViewer.getTable();
         testCaseTable.setHeaderVisible(true);
-        testCaseTable.setLinesVisible(true);
+        testCaseTable.setLinesVisible(ControlUtils.shouldLineVisble(testCaseTable.getDisplay()));
 
         TableViewerColumn tableViewerColumnNotification = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         TableColumn tblclmnNotification = tableViewerColumnNotification.getColumn();

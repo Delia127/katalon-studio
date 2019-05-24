@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityDialog;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
@@ -127,7 +128,7 @@ public class TestDataReferencesDialog extends AbstractDeleteReferredEntityDialog
         testCaseLinkTableViewer = new TableViewer(compositeTestCaseLinkTable, SWT.FULL_SELECTION);
         Table tableTestCaseLink = testCaseLinkTableViewer.getTable();
         tableTestCaseLink.setHeaderVisible(true);
-        tableTestCaseLink.setLinesVisible(true);
+        tableTestCaseLink.setLinesVisible(ControlUtils.shouldLineVisble(tableTestCaseLink.getDisplay()));
 
         TableViewerColumn tableViewerColumnTestCaseOrder = new TableViewerColumn(testCaseLinkTableViewer, SWT.NONE);
         TableColumn tblclmnTestCaseLinkOrder = tableViewerColumnTestCaseOrder.getColumn();

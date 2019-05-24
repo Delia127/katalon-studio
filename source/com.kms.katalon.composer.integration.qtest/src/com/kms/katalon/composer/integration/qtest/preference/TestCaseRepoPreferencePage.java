@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -100,7 +101,7 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
         table = tableViewer.getTable();
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 

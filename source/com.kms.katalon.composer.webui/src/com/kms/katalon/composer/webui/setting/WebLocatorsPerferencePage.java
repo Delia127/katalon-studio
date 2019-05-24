@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webui.constants.ComposerWebuiMessageConstants;
@@ -240,7 +241,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         tvProperty.setContentProvider(ArrayContentProvider.getInstance());
         tProperty = tvProperty.getTable();
         tProperty.setHeaderVisible(true);
-        tProperty.setLinesVisible(true);
+        tProperty.setLinesVisible(ControlUtils.shouldLineVisble(tProperty.getDisplay()));
 
         cvPropertyName = new TableViewerColumn(tvProperty, SWT.LEFT);
         cName = cvPropertyName.getColumn();
@@ -392,7 +393,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         
         tXpath = tvXpath.getTable();
         tXpath.setHeaderVisible(true);
-        tXpath.setLinesVisible(true);
+        tXpath.setLinesVisible(ControlUtils.shouldLineVisble(tXpath.getDisplay()));
         
         cvXpathName = new TableViewerColumn(tvXpath, SWT.LEFT);
         cName = cvXpathName.getColumn();

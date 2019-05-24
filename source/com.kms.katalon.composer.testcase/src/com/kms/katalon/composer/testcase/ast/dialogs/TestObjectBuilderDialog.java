@@ -53,6 +53,7 @@ import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -674,7 +675,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
         Table table = variableTableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         GridData variableTableLayoutData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         variableTableLayoutData.minimumHeight = 100;
         table.setLayoutData(variableTableLayoutData);
@@ -939,7 +940,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         tableViewer = new TableViewer(otherTypesInputTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
 
         ColumnViewerUtil.setTableActivation(tableViewer);

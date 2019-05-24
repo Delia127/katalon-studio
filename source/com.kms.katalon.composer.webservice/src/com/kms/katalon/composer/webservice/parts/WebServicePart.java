@@ -1990,7 +1990,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         Table table = tblNameValue.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 
         // Double click to add new property

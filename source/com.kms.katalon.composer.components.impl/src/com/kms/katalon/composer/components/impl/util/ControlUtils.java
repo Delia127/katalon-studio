@@ -17,12 +17,14 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ScrollBar;
 
+import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.control.CMenu;
 import com.kms.katalon.entity.file.FileEntity;
@@ -243,5 +245,9 @@ public class ControlUtils {
             return name;
         }
         return name + "\t" + hotkey; //$NON-NLS-1$
+    }
+
+    public static boolean shouldLineVisble(Display display) {
+    	return !ComponentBundleActivator.isDarkTheme(display);
     }
 }

@@ -57,6 +57,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
@@ -571,7 +572,7 @@ public class ReportPartTestLogView {
 
         treeViewerTestSteps = new ReportTestStepTreeViewer(compositeTestLogTable, SWT.FULL_SELECTION);
         Tree treeTestCaseLog = treeViewerTestSteps.getTree();
-        treeTestCaseLog.setLinesVisible(true);
+        treeTestCaseLog.setLinesVisible(ControlUtils.shouldLineVisble(treeTestCaseLog.getDisplay()));
         treeTestCaseLog.setHeaderVisible(true);
 
         TreeViewerColumn treeViewerColumnLogItem = new TreeViewerColumn(treeViewerTestSteps, SWT.NONE);

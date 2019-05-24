@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.provider.MapPropertyLabelProvider;
@@ -75,7 +76,7 @@ public class DriverPropertyMapComposite extends Composite {
         tableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
         table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         tableComposite.setLayout(tableColumnLayout);

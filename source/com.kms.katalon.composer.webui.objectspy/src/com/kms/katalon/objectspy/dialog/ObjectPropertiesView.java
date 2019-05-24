@@ -313,7 +313,7 @@ public class ObjectPropertiesView extends Composite
         tvProperty.setContentProvider(ArrayContentProvider.getInstance());
         tProperty = tvProperty.getTable();
         tProperty.setHeaderVisible(true);
-        tProperty.setLinesVisible(true);
+        tProperty.setLinesVisible(ControlUtils.shouldLineVisble(tProperty.getDisplay()));
         tvProperty.setInput(Collections.emptyList());
 
         cvProperty = new TableViewerColumn(tvProperty, SWT.LEFT);
@@ -529,7 +529,7 @@ public class ObjectPropertiesView extends Composite
         tvXpath.setContentProvider(ArrayContentProvider.getInstance());
         tXpath = tvXpath.getTable();
         tXpath.setHeaderVisible(true);
-        tXpath.setLinesVisible(true);
+        tXpath.setLinesVisible(ControlUtils.shouldLineVisble(tXpath.getDisplay()));
         tvXpath.setInput(Collections.emptyList());
 
         

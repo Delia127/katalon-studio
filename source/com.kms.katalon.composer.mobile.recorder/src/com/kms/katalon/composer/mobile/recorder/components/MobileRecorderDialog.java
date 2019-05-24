@@ -392,7 +392,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         actionTableViewer = new TableViewer(actionTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         actionTableViewer.getTable().setHeaderVisible(true);
-        actionTableViewer.getTable().setLinesVisible(true);
+        actionTableViewer.getTable().setLinesVisible(
+        		ControlUtils.shouldLineVisble(actionTableViewer.getTable().getDisplay()));
 
         ColumnViewerToolTipSupport.enableFor(actionTableViewer);
         ColumnViewerUtil.setTableActivation(actionTableViewer);

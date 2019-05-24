@@ -53,6 +53,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.operation.OperationExecutor;
@@ -169,7 +170,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         });
         table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 

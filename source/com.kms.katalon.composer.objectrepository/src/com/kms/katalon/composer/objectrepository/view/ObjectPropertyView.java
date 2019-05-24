@@ -327,7 +327,7 @@ public class ObjectPropertyView implements EventHandler {
 
 		Table table = propertyTableViewer.getTable();
 		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
+		table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
 		gridDataTable.minimumHeight = 150;
 		table.setLayoutData(gridDataTable);
@@ -397,7 +397,7 @@ public class ObjectPropertyView implements EventHandler {
 
 		Table table = xpathTableViewer.getTable();		
 		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
+		table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gridDataTable.minimumHeight = 150;
 		table.setLayoutData(gridDataTable);

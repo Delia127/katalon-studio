@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -127,7 +128,7 @@ public class WebServiceMethodSettingPage extends PreferencePageWithHelp {
         methodTable = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
         Table table = methodTable.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         
         TableViewerColumn tvcMethod = new TableViewerColumn(methodTable, SWT.NONE);
         TableColumn tcMethod = tvcMethod.getColumn();

@@ -31,6 +31,9 @@ public class ComponentBundleActivator extends AbstractUIPlugin {
     public static boolean isDarkTheme(Display display) {
         IThemeEngine engine = ComponentBundleActivator.getThemeEngine(display);
         ITheme activeTheme = engine.getActiveTheme();
+        if (activeTheme == null) {
+        	return false;
+        }
         return activeTheme.getId().contains("dark");
     }
 }

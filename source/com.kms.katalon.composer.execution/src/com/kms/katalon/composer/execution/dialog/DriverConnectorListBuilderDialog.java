@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.collector.DriverConnectorEditorCollector;
@@ -112,7 +113,7 @@ public class DriverConnectorListBuilderDialog extends Dialog {
         tableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         TableColumnLayout tableColumnLayout = new TableColumnLayout();

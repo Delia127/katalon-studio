@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
@@ -79,7 +80,7 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
         
         Table tParams = tvParams.getTable();
         tParams.setHeaderVisible(true);
-        tParams.setLinesVisible(true);
+        tParams.setLinesVisible(ControlUtils.shouldLineVisble(tParams.getDisplay()));
         tParams.addListener(SWT.MouseDoubleClick, new Listener() {
             @Override
             public void handleEvent(Event event) {

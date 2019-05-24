@@ -84,6 +84,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -956,7 +957,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         testCaseTableViewer = new ReportTestCaseTableViewer(compositeTestCaseTableDetails,
                 SWT.FULL_SELECTION | SWT.MULTI);
         Table table = testCaseTableViewer.getTable();
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -1236,7 +1237,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         executionSettingTable = new TableViewer(compositeExecutionSetting, SWT.MULTI | SWT.FULL_SELECTION);
         executionSettingTable.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        executionSettingTable.getTable().setLinesVisible(true);
+        executionSettingTable.getTable().setLinesVisible(
+        		ControlUtils.shouldLineVisble(executionSettingTable.getTable().getDisplay()));
         executionSettingTable.getTable().setHeaderVisible(true);
         executionSettingTable.setContentProvider(new ArrayContentProvider());
 
@@ -1270,7 +1272,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         runDataTable = new TableViewer(compositeRunData, SWT.MULTI | SWT.FULL_SELECTION);
         runDataTable.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        runDataTable.getTable().setLinesVisible(true);
+        runDataTable.getTable().setLinesVisible(ControlUtils.shouldLineVisble(runDataTable.getTable().getDisplay()));
         runDataTable.getTable().setHeaderVisible(true);
         runDataTable.setContentProvider(new ArrayContentProvider());
 

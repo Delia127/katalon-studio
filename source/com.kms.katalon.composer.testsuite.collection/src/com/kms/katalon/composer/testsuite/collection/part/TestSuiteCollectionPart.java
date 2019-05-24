@@ -483,7 +483,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
         tableViewer = new CTableViewer(testSuiteTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Table testSuiteWrapperTable = tableViewer.getTable();
-        testSuiteWrapperTable.setLinesVisible(true);
+        testSuiteWrapperTable.setLinesVisible(ControlUtils.shouldLineVisble(testSuiteWrapperTable.getDisplay()));
         testSuiteWrapperTable.setHeaderVisible(true);
 
         TableViewerColumn tbvcNo = new TableViewerColumn(tableViewer, SWT.NONE);

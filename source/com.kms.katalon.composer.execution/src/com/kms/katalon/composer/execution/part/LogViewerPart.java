@@ -896,7 +896,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         table = tableViewer.getTable();
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 
         TableViewerColumn tbViewerColumnLevel = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnColumnLevel = tbViewerColumnLevel.getColumn();

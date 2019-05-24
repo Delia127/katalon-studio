@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.editors.TypeSelectionDialogCellEditor;
@@ -284,7 +285,7 @@ public class MethodObjectBuilderDialog extends Dialog implements IAstDialogBuild
         tableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
 
         ColumnViewerUtil.setTableActivation(tableViewer);

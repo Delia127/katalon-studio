@@ -57,10 +57,12 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.ComponentBundleActivator;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -348,8 +350,8 @@ public class TestStepManualComposite {
 		treeTable = new CTreeViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 		childTableTree = treeTable.getTree();
 		childTableTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		childTableTree.setLinesVisible(true);
 		childTableTree.setHeaderVisible(true);
+		childTableTree.setLinesVisible(ControlUtils.shouldLineVisble(childTableTree.getDisplay()));
 
 		TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
 		compositeTable.setLayout(treeColumnLayout);

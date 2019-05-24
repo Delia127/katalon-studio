@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.integration.jira.JiraUIComponent;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.composer.integration.jira.constant.StringConstants;
@@ -127,7 +128,7 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
         tableViewer = new TableViewer(issueTableComposite, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 
         TableViewerColumn tableViewerColumnID = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnID = tableViewerColumnID.getColumn();

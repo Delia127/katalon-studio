@@ -46,6 +46,7 @@ import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTableLabelProvider;
 import com.kms.katalon.composer.components.impl.support.TypeCheckedEditingSupport;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -220,7 +221,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
                 new VariableTableDropTarget(this));
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNo = tableViewerColumnNo.getColumn();

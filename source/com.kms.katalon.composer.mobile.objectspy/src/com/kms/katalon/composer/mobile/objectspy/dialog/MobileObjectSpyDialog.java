@@ -232,7 +232,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         Table capturedObjectsTable = capturedObjectsTableViewer.getTable();
         capturedObjectsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
         capturedObjectsTable.setHeaderVisible(true);
-        capturedObjectsTable.setLinesVisible(true);
+        capturedObjectsTable.setLinesVisible(ControlUtils.shouldLineVisble(capturedObjectsTable.getDisplay()));
 
         TableViewerColumn tbvclCapturedObjectsSelection = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
         tblclmnCapturedObjectsSelection = tbvclCapturedObjectsSelection.getColumn();
