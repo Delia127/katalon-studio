@@ -134,13 +134,21 @@ public class PostmanParseUtils {
             allRequests.add(entity);
 
             allVariables.addAll(entityVariables);
-        }
-       
-        for (Item item : root.getItem()) {
-            FolderEntity folder = FolderController.getInstance().addNewFolder(parentFolder, root.getName());
-            RequestVariable childRequestVariable = collectRequestVariablesFromItem(folder, item);
-            allRequests.addAll(childRequestVariable.getRequests());
-            allVariables.addAll(childRequestVariable.getVariables());
+        } else {
+            FolderEntity folder;
+            try {
+                folder = FolderController.getInstance().addNewFolder(parentFolder, root.getName());
+            } catch (Exception e) {
+                String parentFolderName = FolderController.getInstance().getAvailableFolderName(parentFolder,
+                        "New Folder");
+                folder = FolderController.getInstance().addNewFolder(parentFolder, parentFolderName);
+            }
+
+            for (Item item : root.getItem()) {
+                RequestVariable childRequestVariable = collectRequestVariablesFromItem(folder, item);
+                allRequests.addAll(childRequestVariable.getRequests());
+                allVariables.addAll(childRequestVariable.getVariables());
+            }
         }
         
         RequestVariable requestVariable = new RequestVariable();
