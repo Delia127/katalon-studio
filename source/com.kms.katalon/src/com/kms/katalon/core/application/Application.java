@@ -1,17 +1,20 @@
 package com.kms.katalon.core.application;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
-import com.kms.katalon.activation.dialog.LinuxNotSupportedDialog;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
@@ -89,9 +92,37 @@ public class Application implements IApplication {
     }
 
     private void preRunInit() {
+        Location instanceLoc = Platform.getInstanceLocation();
+        if (instanceLoc.getURL() == null) {
+            try {
+                File newLocationFile = getWorkspaceFile();
+                if (!newLocationFile.exists()) {
+                    newLocationFile.mkdirs();
+                }
+                instanceLoc.set(new URL(newLocationFile.toURI().toURL().toString().replaceAll("%20", " ")), false);
+
+                LogUtil.printOutputLine(
+                        "Katalon workspace folder is set to default location: " + newLocationFile.getAbsolutePath());
+            } catch (IllegalStateException | IOException | URISyntaxException ex) {
+                LogUtil.logError(ex);
+                return;
+            }
+        } else {
+            LogUtil.printOutputLine("Katalon workspace folder is set custom to: " + instanceLoc.getURL().toString());
+        }
+
         ApplicationSession.clean();
         MacOSAddon.initMacOSConfig();
         ApplicationInfo.setAppInfoIntoUserHomeDir();
+    }
+
+    private File getWorkspaceFile() throws URISyntaxException {
+        File installLocation = new File(Platform.getInstallLocation().getURL().getPath());
+        String configRelativePath = Platform.OS_MACOSX.equals(Platform.getOS()) ? "../MacOS/config" : "config";
+        if (Platform.inDevelopmentMode()) {
+            configRelativePath += "-dev";
+        }
+        return new File(installLocation.getAbsolutePath(), configRelativePath);
     }
 
     private OptionSet parseOption(final String[] appArgs) {

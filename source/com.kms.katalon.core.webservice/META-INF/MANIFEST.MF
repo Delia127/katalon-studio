@@ -21,7 +21,12 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.httpcomponents.httpclient,
  org.slf4j.api,
  slf4j.api,
- com.kms.katalon.netlightbody
+ com.kms.katalon.netlightbody,
+ ca.juliusdavies.not-yet-commons-ssl,
+ com.kms.katalon.preferences,
+ com.fasterxml.jackson.core.jackson-databind,
+ com.fasterxml.jackson.core.jackson-core,
+ com.fasterxml.jackson.core.jackson-annotations
 Export-Package: com.kms.katalon.core.webservice.common,
  com.kms.katalon.core.webservice.constants,
  com.kms.katalon.core.webservice.contribution,
