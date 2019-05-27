@@ -31,35 +31,24 @@ public class ActivationInfoCollector {
         String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
         String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
         
-        boolean activatedByCode = false;
-        boolean activatedByAccount = false;
-        
         if (!StringUtils.isBlank(activationCode)) {
-            activatedByCode = true;
+            return true;
         }
         
-        if (!activatedByCode) {
-            if (!StringUtils.isBlank(username) && !StringUtils.isBlank(encryptedPassword)) {
-                activatedByAccount = true;
-            }
+        if (!StringUtils.isBlank(username) && !StringUtils.isBlank(encryptedPassword)) {
+            return true;
         }
-        
-        if (!activatedByCode && !activatedByAccount) {
-            return false;
-        }
-        
+              
         if (activatedVal == null) {
             return false;
         }
         try {
-            if (activatedByAccount) { //and checknetwork
-                StringBuilder errorMessage = new StringBuilder();
-                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
-                   
-                if (!result) {
-                    return false;
-                }
+            StringBuilder errorMessage = new StringBuilder();
+            String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+            boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
+               
+            if (!result) {
+                return false;
             }
 
             String updatedVersion = ApplicationInfo
