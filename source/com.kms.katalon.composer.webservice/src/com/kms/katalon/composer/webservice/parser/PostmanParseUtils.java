@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -165,14 +162,16 @@ public class PostmanParseUtils {
     private static void setRequestEntityName(String suggestion, WebServiceRequestEntity entity, List<String> availableNames) {
         int index = 0;
         String entityName = suggestion;
-        for (String name : availableNames) {
-            if (name.equalsIgnoreCase(entityName)) {
-                index++;
-                entityName = suggestion + "_" + index;
-            }
+        while (isNameDuplicated(entityName, availableNames)) {
+            index++;
+            entityName = suggestion + "_" + index;
         }
         entity.setName(entityName);
         availableNames.add(entityName);
+    }
+    
+    private static boolean isNameDuplicated(String name, List<String> availableNames) {
+        return availableNames.stream().anyMatch(n -> n.equalsIgnoreCase(name));
     }
     
     public static List<WebElementPropertyEntity> getHttpAuthentication(Auth auth) {
