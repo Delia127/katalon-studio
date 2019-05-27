@@ -22,34 +22,36 @@ public class LoggedInHandler {
 
     @Inject
     IEventBroker eventBroker;
-    
+
     @Inject
     EModelService modelService;
-    
+
     @Inject
     MApplication application;
-    
+
     @PostConstruct
     public void registerEventHandler() {
         eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, new EventServiceAdapter() {
             @Override
             public void handleEvent(Event event) {
-                MToolBar accountToolBar = (MToolBar) modelService.find(ToolbarProcessor.KATALON_ACCOUNT_ID, application);
-                MHandledToolItem toolItem = (MHandledToolItem) modelService.find(ToolbarProcessor.KATALON_TOOLITEM_ACCOUNT_ID, accountToolBar);
-                MMenu menuItem = toolItem.getMenu();
+                // MToolBar accountToolBar = (MToolBar) modelService.find(ToolbarProcessor.KATALON_ACCOUNT_ID,
+                // application);
+                // MHandledToolItem toolItem = (MHandledToolItem)
+                // modelService.find(ToolbarProcessor.KATALON_TOOLITEM_ACCOUNT_ID, accountToolBar);
+                // MMenu menuItem = toolItem.getMenu();
+                //
+                // MHandledMenuItem handlerMenuItem = (MHandledMenuItem)
+                // modelService.find(ToolbarProcessor.KATALON_MENUITEM_ACCOUNT_ID,
+                // menuItem);
 
-                MHandledMenuItem handlerMenuItem = (MHandledMenuItem) modelService.find(ToolbarProcessor.KATALON_MENUITEM_ACCOUNT_ID,
-                        menuItem);
-                
                 String userName = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                
+
                 if (userName == null || userName.isEmpty()) {
                     userName = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
                 }
-                
-                handlerMenuItem.setLabel("Logged in as " + userName);
+
+                // handlerMenuItem.setLabel("Logged in as " + userName);
             }
         });
     }
 }
-
