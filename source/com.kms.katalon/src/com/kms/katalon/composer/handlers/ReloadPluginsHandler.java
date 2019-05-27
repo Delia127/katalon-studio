@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -71,8 +72,8 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     return Status.CANCEL_STATUS;
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    return new Status(Status.ERROR, "com.kms.katalon", "Error reloading plugins", e);
-                }
+                    return new Status(Status.ERROR, "com.kms.katalon", "Error reloading plugins"
+                            , new Exception(ExceptionUtils.getStackTrace(e)));                }
                 LoggerSingleton.logInfo("Reloaded plugins successfully.");
                 return Status.OK_STATUS;
             }
