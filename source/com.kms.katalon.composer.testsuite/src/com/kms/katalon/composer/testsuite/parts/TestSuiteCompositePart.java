@@ -513,6 +513,9 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (originalTestSuite == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.startsWith(part.getElementId(),
                 EntityPartUtil.getTestSuiteCompositePartId(originalTestSuite.getId()))) {

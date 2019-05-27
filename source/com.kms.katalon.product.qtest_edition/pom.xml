@@ -16,7 +16,7 @@
 		<product.buildDirectory>${project.build.directory}/products</product.buildDirectory>
 		<product.win32OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86</product.win32OutputDirectory>
 		<product.win64OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86_64</product.win64OutputDirectory>
-		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64/${product.name}.app/Contents/Eclipse</product.mac64OutputDirectory>
+		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64/${product.macName}.app/Contents/Eclipse</product.mac64OutputDirectory>
 		<product.linux32OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86</product.linux32OutputDirectory>
 		<product.linux64OutputDirectory>${project.build.directory}/products/${product.id}/linux/gtk/x86_64</product.linux64OutputDirectory>
 
@@ -31,7 +31,8 @@
 		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
 
 		<product.archiveFileName>katalon-studio</product.archiveFileName>
-		<product.name>Katalon Studio</product.name>
+		<product.name>Katalon_Studio</product.name>
+		<product.macName>Katalon Studio</product.macName>
 
 		<product.win32ZipFileSrc>${product.buildDirectory}/${product.id}-win32.win32.x86.zip</product.win32ZipFileSrc>
 		<product.win32ZipFileDest>${product.buildDirectory}/${product.name}_Windows_32.zip</product.win32ZipFileDest>
@@ -82,7 +83,7 @@
 						<product>
 							<id>${product.id}</id>
 							<rootFolders>
-								<macosx>${product.name}.app</macosx>
+								<macosx>${product.macName}.app</macosx>
 							</rootFolders>
 						</product>
 					</products>
@@ -146,7 +147,7 @@
 						<product>
 							<id>${product.id}</id>
 							<rootFolders>
-								<macosx>${product.name}.app</macosx>
+								<macosx>${product.macName}.app</macosx>
 							</rootFolders>
 						</product>
 					</products>
@@ -202,8 +203,8 @@
 								</resource>
 							</resources>
 						</configuration>
-					</execution>					
-					<execution>						
+					</execution>
+					<execution>
 						<id>copy-resources-linux32</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -221,8 +222,8 @@
 							</resources>
 						</configuration>
 					</execution>
-					
-					<execution>						
+
+					<execution>
 						<id>copy-resources-linux64</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -258,7 +259,7 @@
 							</resources>
 						</configuration>
 					</execution>
-		
+
 				</executions>
 			</plugin>
 			<plugin>
@@ -326,4 +327,4 @@
 		</plugins>
 	</build>
 
-</project> 
+</project>

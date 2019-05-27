@@ -293,6 +293,8 @@ public interface IImageKeys {
     public static final String SAVE_ALL_DISABLED_16 = "toolbar/save_all_disabled_16.png"; //$NON-NLS-1$
     
     public static final String PROFILE_16 = "toolbar/profile_16.png";
+    
+    public static final String KATALON_STORE_24 = "toolbar/katalon_store_32x24.png"; //$NON-NLS-1$
     // End Toolbar
 
     // Test Case steps
@@ -433,6 +435,10 @@ public interface IImageKeys {
     public static final String FOLDER_SOURCE_16 = "entity/folder_source_16.png"; //$NON-NLS-1$
     
     public static final String FILTERING_TEST_SUITE_16 = "entity/filtering_test_suite_16.png"; //$NON-NLS-1$
+    
+    public static final String JAVA_16 = "entity/java_16.png"; //$NON-NLS-1$
+    
+    public static final String GIT_FILE_16 = "entity/git_file_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar

@@ -815,6 +815,9 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (checkpoint == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.equals(part.getElementId(), getPart().getElementId())) {
             return;

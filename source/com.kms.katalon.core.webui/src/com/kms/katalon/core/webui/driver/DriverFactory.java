@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,8 +18,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.BuildInfo;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchWindowException;
@@ -29,7 +30,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
-import org.openqa.selenium.firefox.ExtensionConnection;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -38,7 +38,6 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.ie.InternetExplorerOptions;
-import org.openqa.selenium.internal.BuildInfo;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.CommandExecutor;
@@ -49,7 +48,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
-import org.openqa.selenium.remote.internal.ApacheHttpClient;
 import org.openqa.selenium.safari.SafariDriver;
 
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
@@ -60,8 +58,9 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
-import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
+import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
@@ -69,7 +68,9 @@ import com.kms.katalon.core.webui.driver.firefox.CFirefoxDriver47;
 import com.kms.katalon.core.webui.driver.firefox.CGeckoDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
+import com.kms.katalon.core.webui.util.FileExcutableUtil;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
+import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.core.webui.util.WebDriverProxyUtil;
 import com.kms.katalon.selenium.driver.CChromeDriver;
@@ -79,10 +80,12 @@ import com.kms.katalon.selenium.driver.CInternetExplorerDriver;
 import com.kms.katalon.selenium.driver.CRemoteWebDriver;
 import com.kms.katalon.selenium.driver.CSafariDriver;
 
+import io.appium.java_client.MobileCommand;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.AppiumCommandExecutor;
 
 public class DriverFactory {
-    
+
     private static final KeywordLogger logger = KeywordLogger.getInstance(DriverFactory.class);
 
     private static final int USING_MARIONETTEE_VERSION = 47;
@@ -285,12 +288,14 @@ public class DriverFactory {
         System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
 
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
-        if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
-            WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
-        } else {
-            desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        if (ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
+            if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
+                WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, 
+                        "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
+            } else  {
+                desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+            }
         }
-        
         return desireCapibilities;
     }
 
@@ -313,13 +318,12 @@ public class DriverFactory {
             remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
         }
         desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
-        
-        HttpCommandExecutor executor = getExecutorForRemoteDriver(remoteWebServerUrl);
-        
+
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
-                        remoteWebServerUrl, remoteWebServerType));
+                remoteWebServerUrl, remoteWebServerType));
         if (!remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
-            return new CRemoteWebDriver(executor, desireCapibilities, getActionDelay());
+            HttpCommandExecutor seleniumExecutor = getSeleniumExecutorForRemoteDriver(remoteWebServerUrl);
+            return new CRemoteWebDriver(seleniumExecutor, desireCapibilities, getActionDelay());
         }
         Object platformName = desireCapibilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
         if (platformName == null || !(platformName instanceof String)) {
@@ -328,33 +332,60 @@ public class DriverFactory {
                             APPIUM_CAPABILITY_PLATFORM_NAME));
         }
         if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
-            return new SwipeableAndroidDriver(executor, WebDriverPropertyUtil
-                    .toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.android(), false));
+            AppiumCommandExecutor appiumExecutor = getAppiumExecutorForRemoteDriver(remoteWebServerUrl);
+            DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
+                    DesiredCapabilities.android(), false);
+            return new SwipeableAndroidDriver(appiumExecutor, desiredCapabilities);
         } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
-            return new IOSDriver(executor, WebDriverPropertyUtil
-                    .toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.iphone(), false));
+            AppiumCommandExecutor appiumExecutor = getAppiumExecutorForRemoteDriver(remoteWebServerUrl);
+            DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
+                    DesiredCapabilities.iphone(), false);
+            return new IOSDriver(appiumExecutor, desiredCapabilities);
         }
         throw new StepFailedException(MessageFormat.format(
                 StringConstants.DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER, platformName));
     }
-    
-    private static HttpCommandExecutor getExecutorForRemoteDriver(String remoteWebServerUrl) 
+
+    private static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(String remoteWebServerUrl)
             throws URISyntaxException, IOException, GeneralSecurityException {
-        
         URL url = new URL(remoteWebServerUrl);
         ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
-        HttpClientBuilder clientBuilder = HttpClientProxyBuilder.create(proxyInfo).getClientBuilder();
-        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(clientBuilder);
-        HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>() ,
-                url, clientFactory);
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo));
+        AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, url, clientFactory);
         return executor;
     }
-    
-    private static Factory getClientFactoryForRemoteDriverExecutor(HttpClientBuilder clientBuilder) {
+
+    private static HttpCommandExecutor getSeleniumExecutorForRemoteDriver(String remoteWebServerUrl)
+            throws URISyntaxException, IOException, GeneralSecurityException {
+
+        URL url = new URL(remoteWebServerUrl);
+        ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo));
+        HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, clientFactory);
+        return executor;
+    }
+
+    private static Factory getClientFactoryForRemoteDriverExecutor(Proxy proxy) {
         return new Factory() {
+
+            private org.openqa.selenium.remote.internal.OkHttpClient.Factory factory;
+            {
+                factory = new org.openqa.selenium.remote.internal.OkHttpClient.Factory();
+            }
+
             @Override
             public HttpClient createClient(URL url) {
-                return new ApacheHttpClient(clientBuilder.build(), url);
+                return Factory.super.createClient(url);
+            }
+
+            @Override
+            public void cleanupIdleClients() {
+                factory.cleanupIdleClients();
+            }
+
+            @Override
+            public org.openqa.selenium.remote.internal.OkHttpClient.Builder builder() {
+                return factory.builder().proxy(proxy);
             }
         };
     }
@@ -399,7 +430,8 @@ public class DriverFactory {
         }
         DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
                 DesiredCapabilities.edge(), false);
-        desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        //Edge driver doesn't support proxy: https://docs.microsoft.com/en-us/microsoft-edge/webdriver
+        //desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
     }
 
@@ -428,7 +460,7 @@ public class DriverFactory {
         if (firefoxMajorVersion >= USING_MARIONETTEE_VERSION) {
             return CFirefoxDriver47.from(desiredCapabilities, actionDelay);
         }
-        return new CFirefoxDriver(desiredCapabilities, actionDelay);
+        return CGeckoDriver.from(desiredCapabilities, actionDelay);
     }
 
     private static WebDriver createHeadlessFirefoxDriver(DesiredCapabilities desiredCapibilities) {
@@ -481,9 +513,6 @@ public class DriverFactory {
         CommandExecutor commandExecutor = remoteWebDriver.getCommandExecutor();
         if (commandExecutor instanceof HttpCommandExecutor) {
             return ((HttpCommandExecutor) commandExecutor).getAddressOfRemoteServer().toString();
-        }
-        if (commandExecutor instanceof ExtensionConnection) {
-            return ((ExtensionConnection) commandExecutor).getAddressOfRemoteServer().toString();
         }
         return StringUtils.EMPTY;
     }
@@ -541,7 +570,8 @@ public class DriverFactory {
                         webDriver = createNewFirefoxDriver(desiredCapabilities);
                     } else if (options instanceof DesiredCapabilities) {
                         System.setProperty("webdriver.gecko.driver", DriverFactory.getGeckoDriverPath());
-                        webDriver = new CFirefoxDriver(GeckoDriverService.createDefaultService(), (DesiredCapabilities) options);
+                        webDriver = new CFirefoxDriver(GeckoDriverService.createDefaultService(),
+                                (DesiredCapabilities) options);
                     } else {
                         webDriver = new CFirefoxDriver(DesiredCapabilities.firefox(), getActionDelay());
                     }
@@ -636,7 +666,8 @@ public class DriverFactory {
     /**
      * Get the current alert if there is one popped up
      * 
-     * @return the current alert if there is one popped up, or null it there is none
+     * @return the current alert if there is one popped up, or null it there is
+     * none
      * @throws WebDriverException
      */
     public static Alert getAlert() throws WebDriverException {
@@ -700,7 +731,8 @@ public class DriverFactory {
     /**
      * Wait for an alert to pop up for a specific time
      * 
-     * @param timeOut the timeout to wait for the alert (in milliseconds)
+     * @param timeOut
+     * the timeout to wait for the alert (in milliseconds)
      * @return
      */
     public static boolean waitForAlert(int timeOut) {
@@ -791,10 +823,41 @@ public class DriverFactory {
     }
 
     private static String getIEDriverPath() {
+        if (OSUtil.is64Bit()) {
+            File customIELocation = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/iedriver_win64/IEDriverServer.exe");
+            if (customIELocation.exists()) {
+                logger.logInfo("Custom IEDriverServer detected at location: " + customIELocation.getAbsolutePath());
+                return customIELocation.getAbsolutePath();
+            }
+        } else {
+            File customIELocationWin32 = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/iedriver_win32/IEDriverServer.exe");
+            if (customIELocationWin32.exists()) {
+                logger.logInfo(
+                        "Custom IEDriverServer detected at location: " + customIELocationWin32.getAbsolutePath());
+                return customIELocationWin32.getAbsolutePath();
+            }
+        }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, IE_DRIVER_PATH_PROPERTY);
     }
 
     private static String getEdgeDriverPath() {
+        if (OSUtil.is64Bit()) {
+            File customEdgeLocation = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/edgedriver_win64/MicrosoftWebDriver.exe");
+            if (customEdgeLocation.exists()) {
+                logger.logInfo("Custom edgedriver detected at location: " + customEdgeLocation.getAbsolutePath());
+                return customEdgeLocation.getAbsolutePath();
+            }
+        } else {
+            File customEdgeLocationWin32 = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/edgedriver_win32/MicrosoftWebDriver.exe");
+            if (customEdgeLocationWin32.exists()) {
+                logger.logInfo("Custom edgedriver detected at location: " + customEdgeLocationWin32.getAbsolutePath());
+                return customEdgeLocationWin32.getAbsolutePath();
+            }
+        }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EDGE_DRIVER_PATH_PROPERTY);
     }
 
@@ -804,6 +867,70 @@ public class DriverFactory {
      * @return the absolute path of the current ChromeDriver
      */
     public static String getChromeDriverPath() {
+        if (OSUtil.isWindows()) {
+            if (OSUtil.is64Bit()) {
+                File customeChromeLocation = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/chromedriver_win64/chromedriver.exe");
+                if (customeChromeLocation.exists()) {
+                    logger.logInfo("Custom chrome detected at location: " + customeChromeLocation.getAbsolutePath());
+                    return customeChromeLocation.getAbsolutePath();
+                }
+            } else {
+                File customChromeLocationWin32 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/chromedriver_win32/chromedriver.exe");
+                if (customChromeLocationWin32.exists()) {
+                    logger.logInfo(
+                            "Custom chrome detected at location: " + customChromeLocationWin32.getAbsolutePath());
+                    return customChromeLocationWin32.getAbsolutePath();
+                }
+            }
+        } else if (OSUtil.isMac()) {
+            File customeChromeLocationMac = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/chromedriver_mac64/chromedriver");
+            String chromeDriverPath = customeChromeLocationMac.getAbsolutePath();
+            if (customeChromeLocationMac.exists()) {
+                try {
+                    logger.logInfo("Custom chrome detected at location: " + customeChromeLocationMac.getAbsolutePath());
+                    FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+                } catch (IOException e) {
+                    logger.logInfo("Cannot make chromedriver file : " + customeChromeLocationMac.getAbsolutePath()
+                            + "excutable");
+                }
+                return customeChromeLocationMac.getAbsolutePath();
+            }
+        } else {
+            if (OSUtil.is64Bit()) {
+                File customeChromeLocationLinux = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/chromedriver_linux64/chromedriver");
+                String chromeDriverPath = customeChromeLocationLinux.getAbsolutePath();
+                if (customeChromeLocationLinux.exists()) {
+                    try {
+                        logger.logInfo(
+                                "Custom chrome detected at location: " + customeChromeLocationLinux.getAbsolutePath());
+                        FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+                    } catch (IOException e) {
+                        logger.logInfo("Cannot make chromedriver file :" + customeChromeLocationLinux.getAbsolutePath()
+                                + " excutable");
+                    }
+                    return customeChromeLocationLinux.getAbsolutePath();
+                }
+            } else {
+                File customChromeLocationLinux32 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/chromedriver_linux32/chromedriver");
+                String chromeDriverPath = customChromeLocationLinux32.getAbsolutePath();
+                if (customChromeLocationLinux32.exists()) {
+                    try {
+                        logger.logInfo(
+                                "Custom chrome detected at location: " + customChromeLocationLinux32.getAbsolutePath());
+                        FileExcutableUtil.makeFileExecutable(chromeDriverPath);
+                    } catch (IOException e) {
+                        logger.logInfo("Cannot make chromedriver file :" + customChromeLocationLinux32.getAbsolutePath()
+                                + "excutable");
+                    }
+                    return customChromeLocationLinux32.getAbsolutePath();
+                }
+            }
+        }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, CHROME_DRIVER_PATH_PROPERTY);
     }
 
@@ -813,6 +940,70 @@ public class DriverFactory {
      * @return the absolute path of the current GeckoDriver
      */
     public static String getGeckoDriverPath() {
+        if (OSUtil.isWindows()) {
+            if (OSUtil.is64Bit()) {
+                File customeGeckoLocation = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/geckodriver_win64/geckodriver.exe");
+                if (customeGeckoLocation.exists()) {
+                    logger.logInfo("Custom gecko detected at location: " + customeGeckoLocation.getAbsolutePath());
+                    return customeGeckoLocation.getAbsolutePath();
+                }
+            } else {
+                File customChromeLocationWin32 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/geckodriver_win32/geckodriver.exe");
+                if (customChromeLocationWin32.exists()) {
+                    logger.logInfo("Custom gecko detected at location: " + customChromeLocationWin32.getAbsolutePath());
+                    return customChromeLocationWin32.getAbsolutePath();
+                }
+            }
+        } else if (OSUtil.isMac()) {
+            File customeGeckoLocationMac = new File(RunConfiguration.getProjectDir(),
+                    "Include/drivers/geckodriver_mac64/geckodriver");
+            String geckoDriverPath = customeGeckoLocationMac.getAbsolutePath();
+            if (customeGeckoLocationMac.exists()) {
+                try {
+                    logger.logInfo("Custom gecko detected at location: " + customeGeckoLocationMac.getAbsolutePath());
+                    FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                } catch (IOException e) {
+                    logger.logInfo("Cannot make geckodriver file : " + customeGeckoLocationMac.getAbsolutePath()
+                            + " excutable");
+                }
+                return customeGeckoLocationMac.getAbsolutePath();
+            }
+        } else {
+            if (OSUtil.is64Bit()) {
+                File customeGeckoLocationLinux = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/geckodriver_linux64/geckodriver");
+                String geckoDriverPath = customeGeckoLocationLinux.getAbsolutePath();
+                if (customeGeckoLocationLinux.exists()) {
+                    try {
+                        logger.logInfo(
+                                "Custom gecko detected at location: " + customeGeckoLocationLinux.getAbsolutePath());
+                        FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                    } catch (IOException e) {
+                        logger.logInfo("Cannot make geckodriver file : " + customeGeckoLocationLinux.getAbsolutePath()
+                                + " excutable");
+                    }
+                    return customeGeckoLocationLinux.getAbsolutePath();
+                }
+            } else {
+                File customGeckoLocationLinux32 = new File(RunConfiguration.getProjectDir(),
+                        "Include/drivers/geckodriver_linux32/geckodriver");
+                String geckoDriverPath = customGeckoLocationLinux32.getAbsolutePath();
+                if (customGeckoLocationLinux32.exists()) {
+                    try {
+                        logger.logInfo(
+                                "Custom gecko detected at location: " + customGeckoLocationLinux32.getAbsolutePath());
+                        FileExcutableUtil.makeFileExecutable(geckoDriverPath);
+                    } catch (IOException e) {
+                        logger.logInfo("Cannot make geckodriver file : " + customGeckoLocationLinux32.getAbsolutePath()
+                                + " excutable");
+                    }
+                    return customGeckoLocationLinux32.getAbsolutePath();
+
+                }
+            }
+        }
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
                 StringConstants.CONF_PROPERTY_GECKO_DRIVER_PATH);
     }
@@ -859,7 +1050,7 @@ public class DriverFactory {
             }
 
             if (RunConfiguration.getPort() > 0) {
-            	logger.logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
+                logger.logInfo(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_ACTION_DELAY_X, actionDelay));
             }
         }
         return actionDelay;
@@ -906,20 +1097,24 @@ public class DriverFactory {
     }
 
     /**
-     * Get the url of the remove web driver is the current web driver type is remote
+     * Get the url of the remove web driver is the current web driver type is
+     * remote
      * 
-     * @return the url of the remove web driver is the current web driver type is remote, or null if it is not
+     * @return the url of the remove web driver is the current web driver type
+     * is remote, or null if it is not
      */
     public static String getRemoteWebDriverServerUrl() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_URL);
     }
 
     /**
-     * Get the type of the remove web driver is the current web driver type is remote
+     * Get the type of the remove web driver is the current web driver type is
+     * remote
      * <p>
      * Possible values: "Selenium", "Appium"
      * 
-     * @return the type of the remove web driver is the current web driver type is remote, or null if it is not
+     * @return the type of the remove web driver is the current web driver type
+     * is remote, or null if it is not
      */
     public static String getRemoteWebDriverServerType() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_TYPE);

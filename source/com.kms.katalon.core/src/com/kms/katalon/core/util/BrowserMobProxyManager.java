@@ -12,10 +12,12 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
 
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
+import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.core.har.Har;
 import net.lightbody.bmp.core.har.HarEntry;
 import net.lightbody.bmp.core.har.HarLog;
@@ -74,12 +76,23 @@ public class BrowserMobProxyManager {
         }
     }
     
-    public static final void endHar(RequestInformation requestInformation) {
+    public static final File endHar(RequestInformation requestInformation) {
         try {
             BrowserMobProxy browserMobProxy = browserMobProxyLookup.get();
-            if (browserMobProxy != null) {               
+            if (browserMobProxy != null) {
+                
                 requestInformation.setName(String.valueOf(requestNumber.getAndIncrement()));
-                File file = requestInformation.getHarFile();
+                String threadName = Thread.currentThread().getName();
+
+                String directoryPath = RunConfiguration.getReportFolder();
+
+                File directory = new File(directoryPath, "requests" + File.separator + threadName);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+                File file = new File(directory, requestInformation.getName() + ".har");
+                file.createNewFile();
+                
                 String path = file.getAbsolutePath();
                 Map<String, String> attributes = new HashMap<>();
                 String harId = UUID.randomUUID().toString();
@@ -101,10 +114,12 @@ public class BrowserMobProxyManager {
                 originalEntries.addAll(newEntries);                
 //                har.writeTo(file);
                 HarFileWriter.write(har, file);
+                return file;
             }
         } catch (Exception e) {
             logError("Cannot close HAR entry", e);
         }
+        return null;
     }
 
     private static BrowserMobProxy getOrCreateBrowserMobProxy(Proxy systemProxy) {

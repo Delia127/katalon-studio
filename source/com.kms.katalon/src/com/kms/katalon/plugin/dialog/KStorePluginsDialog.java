@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -34,14 +35,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
-import com.kms.katalon.plugin.models.ResultItem;
+import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
@@ -52,8 +55,10 @@ public class KStorePluginsDialog extends Dialog {
     private static final int CLMN_REVIEW_IDX = 3;
     
     private static final int CLMN_PURCHASE_IDX = 4;
+    
+    private static final int CLMN_ERROR_IDX = 5;
 
-    private List<ResultItem> results;
+    private List<ReloadItem> results;
     
     private Label lblWarning;
 
@@ -61,7 +66,7 @@ public class KStorePluginsDialog extends Dialog {
         super(parentShell);
     }
 
-    public KStorePluginsDialog(Shell shell, List<ResultItem> results) {
+    public KStorePluginsDialog(Shell shell, List<ReloadItem> results) {
         this(shell);
         this.results = results;
     }
@@ -104,7 +109,7 @@ public class KStorePluginsDialog extends Dialog {
         tableViewerColumnLicense.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                ResultItem item = (ResultItem) element;
+                ReloadItem item = (ReloadItem) element;
                 KStorePlugin plugin = item.getPlugin();
                 if (plugin.isFree()) {
                     return StringConstants.KStorePluginsDialog_LICENSE_FREE;
@@ -127,7 +132,7 @@ public class KStorePluginsDialog extends Dialog {
             
             @Override
             public Color getForeground(Object element) {
-                ResultItem item = (ResultItem) element;
+                ReloadItem item = (ReloadItem) element;
                 KStorePlugin plugin = item.getPlugin();
                 Color colorWarning = new Color(Display.getCurrent(), 255, 165, 0); //orange
                 if (checkExpire(plugin)) {
@@ -143,7 +148,7 @@ public class KStorePluginsDialog extends Dialog {
         tableViewerColumnVersion.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
-                ResultItem item = (ResultItem) element;
+                ReloadItem item = (ReloadItem) element;
                 return item.getPlugin().getLatestCompatibleVersion().getNumber();
             }
         });
@@ -156,15 +161,20 @@ public class KStorePluginsDialog extends Dialog {
         TableColumn tableColumnPurchase = tableViewerColumnPurchase.getColumn();
         tableViewerColumnPurchase.setLabelProvider(new PurchaseColumnLabelProvider(CLMN_PURCHASE_IDX));
         
+        TableViewerColumn tableViewerColumnError = new TableViewerColumn(pluginTableViewer, SWT.LEFT);
+        TableColumn tableColumnError = tableViewerColumnError.getColumn();
+        tableViewerColumnError.setLabelProvider(new ErrorColumnLabelProvider(CLMN_ERROR_IDX));
+        
         TableColumnLayout tableLayout = new TableColumnLayout();
-        tableLayout.setColumnData(tableColumnPluginName, new ColumnWeightData(40, 40));
+        tableLayout.setColumnData(tableColumnPluginName, new ColumnWeightData(30, 40));
         tableLayout.setColumnData(tableColumnLicense, new ColumnWeightData(20, 10));
         tableLayout.setColumnData(tableColumnVersion, new ColumnWeightData(10, 20));
         tableLayout.setColumnData(tableColumnReview, new ColumnWeightData(15, 30));
         tableLayout.setColumnData(tableColumnPurchase, new ColumnWeightData(15, 30));
+        tableLayout.setColumnData(tableColumnError, new ColumnWeightData(10, 20));
         tableComposite.setLayout(tableLayout);
         
-        pluginTableViewer.setInput(collectInstalledAndExpiredPluginResults(results));
+        pluginTableViewer.setInput(results);
         
         Button btnClose = new Button(body, SWT.NONE);
         btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
@@ -191,12 +201,6 @@ public class KStorePluginsDialog extends Dialog {
          return plugin.isExpired() || (plugin.isTrial() && plugin.getRemainingDay() <= 14);
     }
     
-    private List<ResultItem> collectInstalledAndExpiredPluginResults(List<ResultItem> results) {
-        return results.stream()
-                .filter(result -> result.isPluginInstalled() || result.getPlugin().isExpired())
-                .collect(Collectors.toList());
-    }
-    
     @Override
     protected Control createButtonBar(Composite parent) {
         return parent;
@@ -220,7 +224,7 @@ public class KStorePluginsDialog extends Dialog {
         return true;
     }
     
-    private class PluginNameColumnLabelProvider extends HyperLinkColumnLabelProvider<ResultItem> {
+    private class PluginNameColumnLabelProvider extends HyperLinkColumnLabelProvider<ReloadItem> {
 
         public PluginNameColumnLabelProvider(int columnIndex) {
             super(columnIndex);
@@ -229,7 +233,7 @@ public class KStorePluginsDialog extends Dialog {
         @Override
         protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
             try {
-                ResultItem resultItem = (ResultItem) cell.getElement();
+                ReloadItem resultItem = (ReloadItem) cell.getElement();
                 PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
                 KStoreUsernamePasswordCredentials credentials = pluginPrefStore.getKStoreUsernamePasswordCredentials();
                 
@@ -241,24 +245,24 @@ public class KStorePluginsDialog extends Dialog {
         }
 
         @Override
-        protected Class<ResultItem> getElementType() {
-            return ResultItem.class;
+        protected Class<ReloadItem> getElementType() {
+            return ReloadItem.class;
         }
 
 
         @Override
-        protected Image getImage(ResultItem element) {
+        protected Image getImage(ReloadItem element) {
             return null;
         }
 
 
         @Override
-        protected String getText(ResultItem element) {
+        protected String getText(ReloadItem element) {
             return element.getPlugin().getProduct().getName();
         }
     }
     
-    private class ReviewColumnLabelProvider extends HyperLinkColumnLabelProvider<ResultItem> {
+    private class ReviewColumnLabelProvider extends HyperLinkColumnLabelProvider<ReloadItem> {
 
         public ReviewColumnLabelProvider(int columnIndex) {
             super(columnIndex);
@@ -267,7 +271,7 @@ public class KStorePluginsDialog extends Dialog {
         @Override
         protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
             try {
-                ResultItem resultItem = (ResultItem) cell.getElement();
+                ReloadItem resultItem = (ReloadItem) cell.getElement();
                 PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
                 KStoreUsernamePasswordCredentials credentials = pluginPrefStore.getKStoreUsernamePasswordCredentials();
                 
@@ -279,22 +283,22 @@ public class KStorePluginsDialog extends Dialog {
         }
 
         @Override
-        protected Class<ResultItem> getElementType() {
+        protected Class<ReloadItem> getElementType() {
+            return ReloadItem.class;
+        }
+
+        @Override
+        protected Image getImage(ReloadItem element) {
             return null;
         }
 
         @Override
-        protected Image getImage(ResultItem element) {
-            return null;
-        }
-
-        @Override
-        protected String getText(ResultItem element) {
+        protected String getText(ReloadItem element) {
             return StringConstants.KStorePluginsDialog_LNK_REVIEW;
         }
     }
     
-    private class PurchaseColumnLabelProvider extends HyperLinkColumnLabelProvider<ResultItem> {
+    private class PurchaseColumnLabelProvider extends HyperLinkColumnLabelProvider<ReloadItem> {
 
         public PurchaseColumnLabelProvider(int columnIndex) {
             super(columnIndex);
@@ -303,7 +307,7 @@ public class KStorePluginsDialog extends Dialog {
         @Override
         protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
             try {
-                ResultItem resultItem = (ResultItem) cell.getElement();
+                ReloadItem resultItem = (ReloadItem) cell.getElement();
                 PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
                 KStoreUsernamePasswordCredentials credentials = pluginPrefStore.getKStoreUsernamePasswordCredentials();
                 
@@ -315,22 +319,72 @@ public class KStorePluginsDialog extends Dialog {
         }
 
         @Override
-        protected Class<ResultItem> getElementType() {
+        protected Class<ReloadItem> getElementType() {
+            return ReloadItem.class;
+        }
+
+        @Override
+        protected Image getImage(ReloadItem element) {
             return null;
         }
 
         @Override
-        protected Image getImage(ResultItem element) {
-            return null;
-        }
-
-        @Override
-        protected String getText(ResultItem element) {
+        protected String getText(ReloadItem element) {
             KStorePlugin plugin = element.getPlugin();
             if (plugin.isTrial() || plugin.isExpired()) {
                 return StringConstants.KStorePluginsDialog_LNK_PURCHASE;
             }
             return StringUtils.EMPTY;
+        }
+    }
+    
+    private class ErrorColumnLabelProvider extends HyperLinkColumnLabelProvider<ReloadItem> {
+        public ErrorColumnLabelProvider(int columnIndex) {
+            super(columnIndex);
+        }
+
+        @Override
+        protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
+            ReloadItem reloadItem = (ReloadItem) cell.getElement();
+            if (reloadItem.getException() != null) {
+                Exception exception = reloadItem.getException();
+                MultiStatusErrorDialog.showErrorDialog("Failed to reload plugin", exception.getMessage(),
+                        ExceptionsUtil.getStackTraceForThrowable(exception));
+            }
+        }
+
+        @Override
+        protected Class<ReloadItem> getElementType() {
+            return ReloadItem.class;
+        }
+
+        @Override
+        protected Image getImage(ReloadItem element) {
+            return null;
+        }
+
+        @Override
+        protected String getText(ReloadItem element) {
+            if (element.getException() != null) {
+                return StringConstants.KStorePluginsDialog_LNK_ERROR;
+            }
+            return StringUtils.EMPTY;
+        }
+        
+        @Override
+        public void update(ViewerCell cell) {
+            super.update(cell);
+
+            cell.setStyleRanges(new StyleRange[] { getHyperLinkStyleRange(cell) });
+        }
+        
+        private StyleRange getHyperLinkStyleRange(ViewerCell cell) {
+            StyleRange hyperLinkStyle = new StyleRange();
+            hyperLinkStyle.foreground = cell.getItem().getDisplay().getSystemColor(SWT.COLOR_RED);
+            hyperLinkStyle.underline = true;
+            hyperLinkStyle.start = 0;
+            hyperLinkStyle.length = cell.getText().length();
+            return hyperLinkStyle;
         }
     }
 }

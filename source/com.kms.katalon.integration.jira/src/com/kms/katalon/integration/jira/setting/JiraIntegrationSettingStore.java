@@ -36,7 +36,8 @@ public class JiraIntegrationSettingStore extends BundleSettingStore {
     }
 
     public boolean isIntegrationEnabled() throws IOException {
-        return getBoolean(PREF_INTEGRATION_ENABLED, false);
+        //Disabled since v6.1.5 https://github.com/kms-technology/katalon/issues/2471
+        return false;
     }
 
     public void enableIntegration(boolean enabled) throws IOException {

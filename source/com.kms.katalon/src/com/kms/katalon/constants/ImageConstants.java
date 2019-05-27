@@ -14,6 +14,8 @@ public class ImageConstants {
     public static final Image IMG_USER_GUIDE = ImageManager.getImage(IImageKeys.USER_GUIDE_34);
     
     public static final Image IMG_KATALON_STORE = ImageManager.getImage(IImageKeys.KATALON_STORE_34);
+    
+    public static final Image IMG_KATALON_STORE_24 = ImageManager.getImage(IImageKeys.KATALON_STORE_24);
 
     public static final Image IMG_TUTORIAL = ImageManager.getImage(IImageKeys.TUTORIAL_34);
     

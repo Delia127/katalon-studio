@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.eclipse.core.runtime.Platform;
 import org.xml.sax.InputSource;
 
 import com.google.common.collect.ImmutableList;
@@ -88,6 +89,8 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
         private int minor;
 
         private int micro;
+        
+        private int preview;
 
         private List<SDKArchive> archives;
 
@@ -229,6 +232,9 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
         archPack.major = Integer.valueOf(revElement.elementText("major"));
         archPack.minor = Integer.valueOf(revElement.elementText("minor"));
         archPack.micro = Integer.valueOf(revElement.elementText("micro"));
+        if (revElement.elementText("preview") != null) {
+            archPack.preview = Integer.valueOf(revElement.elementText("preview"));
+        }
 
         List<SDKArchive> archiveLst = new ArrayList<>();
         @SuppressWarnings("unchecked")
@@ -256,7 +262,7 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
     }
 
     private void downloadAndExtract(String fileName, String url, File downloadFolder, File extractedFolder,
-            int startFragement) throws IOException, AndroidSetupException {
+            int startFragment) throws IOException, AndroidSetupException {
         File downloadedFile = new File(downloadFolder, fileName);
         try {
             logAndInvoke(create(
@@ -272,7 +278,7 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
 
             logAndInvoke(create(MessageFormat.format(ExecutionMobileMessageConstants.MSG_SDK_EXTRACTING_X_TO_Y,
                     fileName, extractedFolder.getAbsolutePath()), 0));
-            ZipUtil.extractContent(downloadedFile, extractedFolder, startFragement);
+            ZipUtil.extractContent(downloadedFile, extractedFolder, startFragment);
             logAndInvoke(create(ExecutionMobileMessageConstants.MSG_SDK_EXTRACT_COMPLETED, 10));
         } finally {
             if (downloadedFile.exists()) {
@@ -297,7 +303,7 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
         downloadAndExtract(platformArchive.url, REPO_ROOT_URL + platformArchive.url, downloadFolder, platformToolFolder,
                 ignoredFragement);
 
-        SDKArchivePack buildToolPack = urlHolder.buildToolPacks.get(0);
+        SDKArchivePack buildToolPack = getSuitableBuildToolPack(urlHolder.buildToolPacks);
         SDKArchive buildToolArchive = buildToolPack.getSuitableArchive();
         File buildToolsFolder = sdkLocator.getBuildToolsFolder();
         File buildToolRevFolder = new File(buildToolsFolder, buildToolPack.version());
@@ -307,6 +313,34 @@ public class AndroidSDKDownloadManager implements EventManager<String> {
         downloadAndExtract(buildToolArchive.url, REPO_ROOT_URL + buildToolArchive.url, downloadFolder,
                 buildToolRevFolder, ignoredFragement);
 
+        String sdkToolsUrl = getSdkTooksUrl();
+
+        File toolsFolder = sdkLocator.getToolsFolder();
+        if (!toolsFolder.exists()) {
+            toolsFolder.mkdirs();
+        }
+        downloadAndExtract(sdkToolsUrl, REPO_ROOT_URL + sdkToolsUrl, downloadFolder, sdkLocator.getToolsFolder(), ignoredFragement);
         logAndInvoke(create(ExecutionMobileMessageConstants.MSG_SDK_DOWNLOAD_AND_INSTALL_SDK_COMPELTED, 0));
+    }
+    
+    private SDKArchivePack getSuitableBuildToolPack(List<SDKArchivePack> buildToolPacks) {
+        for (SDKArchivePack archivePack : buildToolPacks) {
+            if (archivePack.preview > 0) {
+                continue;
+            }
+            return archivePack;
+        }
+        return buildToolPacks.get(0);
+    }
+
+    private String getSdkTooksUrl() {
+        switch (Platform.getOS()) {
+            case Platform.OS_WIN32:
+                return "sdk-tools-windows-4333796.zip";
+            case Platform.OS_MACOSX:
+                return "sdk-tools-darwin-4333796.zip";
+            default:
+                return "sdk-tools-linux-4333796.zip";
+        }
     }
 }
