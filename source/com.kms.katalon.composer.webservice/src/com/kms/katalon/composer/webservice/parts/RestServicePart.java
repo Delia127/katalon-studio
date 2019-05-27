@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.webservice.parts;
 
-import java.io.File;
 //import java.awt.Label;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
@@ -8,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,6 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -67,7 +64,6 @@ import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.execution.webservice.TemplateEngine;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
