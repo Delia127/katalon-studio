@@ -75,7 +75,6 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
                 Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(),
                         runConfig.getName(), result, getEndTime().getTime() - getStartTime().getTime());
             } catch (Exception ignored) {
-                System.out.println("ahihi");
             }
         }
     }
