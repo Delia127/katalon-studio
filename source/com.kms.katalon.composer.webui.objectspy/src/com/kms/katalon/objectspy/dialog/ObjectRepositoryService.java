@@ -34,6 +34,11 @@ import com.kms.katalon.objectspy.util.WebElementUtils;
 
 public class ObjectRepositoryService {
 
+    /**
+     * Saved user-defined entity structures chosen by users via dialogResult.
+     * @return SaveActionResult Wrapper of multiple objects necessary for the callers
+     * @throws Exception If adding web elements (conflicted or non-conflicted) throws Exception
+     */
     public SaveActionResult saveObject(SaveToObjectRepositoryDialogResult dialogResult) throws Exception {
         List<Object[]> testObjectIds = new ArrayList<>();
         Set<ITreeEntity> newSelectionOnExplorer = new HashSet<>();
@@ -42,11 +47,16 @@ public class ObjectRepositoryService {
                 continue;
             }
             WebPage page = (WebPage) webPageWrapper.getOriginalWebElement();
+            WebPage clonedWebPage = (WebPage) page.clone();
+            clonedWebPage.getChildren().clear();
+            clonedWebPage.setTag("cloned");
             for (ConflictWebElementWrapper webElementChildWrapper : webPageWrapper.getChildren()) {
                 if (webElementChildWrapper.isConflicted()) {
                     addConflictedWebElement(page, (ConflictWebElementWrapper) webElementChildWrapper, dialogResult, testObjectIds);
                 } else {
-                    newSelectionOnExplorer = addNonConflictedWebElement(page, ((ConflictWebElementWrapper) webElementChildWrapper).getOriginalWebElement(), dialogResult);
+                    WebElement clonedWebElement = webElementChildWrapper.getOriginalWebElement();
+                    clonedWebElement.setParent(clonedWebPage);
+                    newSelectionOnExplorer = addNonConflictedWebElement(clonedWebPage, clonedWebElement, dialogResult);
                 }
             }
         }
@@ -211,7 +221,6 @@ public class ObjectRepositoryService {
                     
                     // Replace old selector method with new one
                     oldWebElementEntity.setSelectorMethod(WebElementSelectorMethod.valueOf(wrapElement.getOriginalWebElement().getSelectorMethod().toString()));
-                    
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 

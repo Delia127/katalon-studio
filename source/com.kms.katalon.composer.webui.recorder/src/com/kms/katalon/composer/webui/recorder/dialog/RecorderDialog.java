@@ -1882,9 +1882,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             WebPage webPage = pageIndex.getOrDefault(folder.getIdForDisplay(), null);
             if (webPage == null) {
                 webPage = new WebPage(folder.getName());
+                webPage.setFolderAlias(folder);
                 pageIndex.put(folder.getIdForDisplay(), webPage);
             }
-
             WebElement we = webElementIndex.getOrDefault(entity.getIdForDisplay(), null);
             if (we == null) {
                 we = WebElementUtils.createWebElementFromTestObject(entity, false, webPage, webElementIndex);
