@@ -164,7 +164,7 @@ public class PostmanParseUtils {
         String entityName = suggestion;
         while (isNameDuplicated(entityName, availableNames)) {
             index++;
-            entityName = suggestion + "_" + index;
+            entityName = suggestion + " (" + index + ")";
         }
         entity.setName(entityName);
         availableNames.add(entityName);
