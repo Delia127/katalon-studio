@@ -1,7 +1,7 @@
 package com.kms.katalon.composer.components.util;
 
 import org.eclipse.e4.ui.css.swt.helpers.CSSSWTColorHelper;
-import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
+import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -11,6 +11,10 @@ import com.kms.katalon.composer.components.ComponentBundleActivator;
 
 @SuppressWarnings("restriction")
 public class ColorUtil {
+
+    private static final String DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME = "#2F2E2F";
+    
+    private static final String DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME_DIALOG = "#505658";
 
     private static final String EVEN_TABLE_ITEM_BACKGROUND_COLOR = "#87cefa";
 
@@ -87,7 +91,19 @@ public class ColorUtil {
     }
 
     public static Color getCompositeBackgroundColor() {
-        return getExtraLightGrayBackgroundColor();
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME);
+        } else {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR);
+        }
+    }
+    
+    public static Color getCompositeBackgroundColorForDialog() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME_DIALOG);
+        } else {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR);
+        }
     }
 
     public static Color getCompositeHeaderBackgroundColor() {
@@ -161,7 +177,11 @@ public class ColorUtil {
     }
 
     public static Color getDefaultTextColor() {
-        return display.getSystemColor(SWT.COLOR_BLACK);
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor("#CCCCCC");
+        } else {
+            return display.getSystemColor(SWT.COLOR_BLACK);
+        }
     }
 
     public static Color getTextWhiteColor() {
@@ -177,11 +197,7 @@ public class ColorUtil {
     }
 
     public static Color getTextErrorColor() {
-        if (ComponentBundleActivator.isDarkTheme(display)) {
-            return getColor("#ff5252");
-        } else {
-            return getColor(ERROR_TEXT_COLOR);
-        }
+        return JFaceColors.getErrorText(display);
     }
 
     public static Color getTextSuccessfulColor() {
@@ -201,7 +217,7 @@ public class ColorUtil {
     }
 
     public static Color getErrorTableItemForegroundColor() {
-        return getColor(ERROR_TEXT_COLOR);
+        return JFaceColors.getErrorText(display);
     }
 
     public static Color getWarningForegroudColor() {

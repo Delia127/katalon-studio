@@ -92,9 +92,11 @@ public class JobViewerPart implements EventHandler {
         updateToolItemStatus();
 
         parentComposite.setLayout(new FillLayout());
-        parentComposite.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
+        //parentComposite.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
 
         scrolledComposite = new ScrolledComposite(parentComposite, SWT.V_SCROLL);
+        scrolledComposite.setBackground(ColorUtil.getCompositeBackgroundColor());
+        scrolledComposite.setBackgroundMode(SWT.INHERIT_FORCE);
 
         scrolledComposite.setExpandVertical(true);
         scrolledComposite.setExpandHorizontal(true);
@@ -102,7 +104,7 @@ public class JobViewerPart implements EventHandler {
         listCompositeLauncher = new Composite(scrolledComposite, SWT.NONE);
         scrolledComposite.setContent(listCompositeLauncher);
 
-        listCompositeLauncher.setBackground(ColorUtil.getWhiteBackgroundColor());
+        //listCompositeLauncher.setBackground(ColorUtil.getWhiteBackgroundColor());
         GridLayout gl_composite_listLauncher = new GridLayout(1, false);
         gl_composite_listLauncher.marginHeight = 0;
         gl_composite_listLauncher.marginWidth = 0;
@@ -144,7 +146,6 @@ public class JobViewerPart implements EventHandler {
     
     private void createLauncherIdComposite(Composite parent, final IDEObservableLauncher launcher) {
         Composite launcherIdComposite = new FocusableComposite(parent, SWT.NONE);
-        launcherIdComposite.setBackground(parent.getBackground());
         launcherIdComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         boolean isDebugMode = launcher.getMode() == LaunchMode.DEBUG;
         GridLayout glLauncherId = new GridLayout(isDebugMode ? 2 : 1, false);
@@ -154,23 +155,22 @@ public class JobViewerPart implements EventHandler {
         if (isDebugMode) {
             Label lblDebugImage = new Label(launcherIdComposite, SWT.NONE);
             lblDebugImage.setImage(ImageConstants.IMG_16_DEBUG);
-            lblDebugImage.setBackground(parent.getBackground());
             lblDebugImage.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         }
         Label lblId = new Label(launcherIdComposite, SWT.WRAP);
         lblId.setText(launcher.getName());
         lblId.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblId.setBackground(parent.getBackground());
         lblId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
     }
 
     private void createJobComposite(Composite composite, final IDEObservableLauncher launcher) throws Exception {
         final Composite compositeLauncher = new FocusableComposite(composite, SWT.BORDER);
-        compositeLauncher.setBackgroundMode(SWT.INHERIT_FORCE);
         compositeLauncher.setData(CONTROL_ID, launcher.getId());
+        compositeLauncher.setBackground(ColorUtil.getCompositeBackgroundColor());
+        compositeLauncher.setBackgroundMode(SWT.INHERIT_FORCE);
 
         compositeLauncher.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        compositeLauncher.setBackground(ColorUtil.getWhiteBackgroundColor());
+        //compositeLauncher.setBackground(ColorUtil.getWhiteBackgroundColor());
         
         GridLayout glCompositeLauncher = new GridLayout(3, false);
         glCompositeLauncher.marginHeight = 0;

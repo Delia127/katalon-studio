@@ -170,6 +170,9 @@ public class NewObjectSpyDialog extends Dialog
         bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         bodyComposite.setLayout(new GridLayout(1, false));
 
+        bodyComposite.setBackground(ColorUtil.getCompositeBackgroundColorForDialog());
+        bodyComposite.setBackgroundMode(SWT.INHERIT_FORCE);
+
         Composite toolbarComposite = new Composite(bodyComposite, SWT.NONE);
         toolbarComposite.setLayout(new GridLayout());
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));

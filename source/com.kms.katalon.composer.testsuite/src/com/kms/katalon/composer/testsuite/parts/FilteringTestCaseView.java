@@ -185,6 +185,7 @@ public class FilteringTestCaseView {
         parent.setLayout(new GridLayout());
         ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
         ToolBar toolbar = toolBarManager.createControl(parent);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         ToolItem tltmAdvancedSearchGuide = new ToolItem(toolbar, SWT.NONE);
         tltmAdvancedSearchGuide.setText("Help");
         tltmAdvancedSearchGuide.setImage(ImageManager.getImage(IImageKeys.HELP_16));

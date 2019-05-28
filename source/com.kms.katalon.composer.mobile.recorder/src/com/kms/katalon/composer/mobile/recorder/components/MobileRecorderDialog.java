@@ -254,6 +254,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     protected Control createDialogContainer(Composite parent) {
         container = new Composite(parent, SWT.NONE);
         container.setLayout(createNoMarginGridLayout());
+        container.setBackground(ColorUtil.getCompositeBackgroundColorForDialog());
+        container.setBackgroundMode(SWT.INHERIT_FORCE);
 
         SashForm sashForm = createMainSashForm(container);
         populateSashForm(sashForm);

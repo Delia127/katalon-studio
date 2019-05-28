@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.BindException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -528,6 +527,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected Control createDialogContainer(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
+        container.setBackground(ColorUtil.getCompositeBackgroundColorForDialog());
+        container.setBackgroundMode(SWT.INHERIT_FORCE);
+
         GridLayout glMain = new GridLayout();
         glMain.marginHeight = 0;
         glMain.marginWidth = 0;
