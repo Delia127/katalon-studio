@@ -223,6 +223,31 @@ public class AnalyticsApiProvider {
         }
     }
     
+    public static void uploadTestProject(String serverUrl, long projectId, long teamId, long timestamp, String name, String folderName,
+            String fileName, String uploadedPath, String token) throws AnalyticsApiExeception {
+
+        try {
+            LogUtil.logInfo("KA: Start uploading test project to KA server: " + serverUrl);
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_UPLOAD_TEST_PROJECT);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("name", name);
+            uriBuilder.setParameter("projectId", String.valueOf(projectId));
+            uriBuilder.setParameter("teamId", String.valueOf(teamId));
+            uriBuilder.setParameter("batch", String.valueOf(timestamp));
+            uriBuilder.setParameter("folderPath", folderName);
+            uriBuilder.setParameter("fileName", fileName);
+            uriBuilder.setParameter("uploadedPath", uploadedPath);
+
+            HttpPost httpPost = new HttpPost(uriBuilder.build());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+
+            executeRequest(httpPost, Object.class);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
     private static String executeRequest(HttpUriRequest httpRequest) throws Exception {
         HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
         HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
@@ -273,5 +298,4 @@ public class AnalyticsApiProvider {
             throw new AnalyticsApiExeception(e);
         }
     }
-
 }

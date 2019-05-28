@@ -5,10 +5,12 @@
     <elements xsi:type="commands:Command" xmi:id="_ReHeI4FhEeax0rcjhkyhJw" elementId="com.kms.katalon.composer.integration.kobiton.execution.command.kobiton" commandName="Kobiton">
       <parameters xmi:id="_lcvRQIPpEeaJTZfureYSqg" elementId="com.kms.katalon.composer.execution.runMode" name="Run Mode"/>
     </elements>
+    <elements xsi:type="commands:Command" xmi:id="_vCrYEG1LEemLsdQmea1a5A" elementId="com.kms.katalon.composer.integration.analytics.command.storeprojectcodetocloud" commandName="Store Project Code to Cloud"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_YJ5ZoIFhEeax0rcjhkyhJw" featurename="handlers" parentElementId="com.kms.katalon.composer.application" positionInList="">
     <elements xsi:type="commands:Handler" xmi:id="_YJ5ZooFhEeax0rcjhkyhJw" elementId="com.kms.katalon.composer.integration.kobiton.execution.handler.kobiton" contributionURI="bundleclass://com.kms.katalon.composer.integration.kobiton/com.kms.katalon.composer.integration.kobiton.execution.handlers.KobitonExecutionHandler" command="_ReHeI4FhEeax0rcjhkyhJw"/>
     <elements xsi:type="commands:Handler" xmi:id="_JRvRUEYNEem9yuiaRu88FQ" elementId="com.kms.katalon.composer.integration.analytics.handler." contributionURI="bundleclass://com.kms.katalon.composer.integration.analytics/com.kms.katalon.composer.integration.analytics.handlers.KatalonAnalytics" command="_-fzYwEYMEem9yuiaRu88FQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_9pPY0G1LEemLsdQmea1a5A" elementId="com.kms.katalon.composer.integration.analytics.handler.uploadProject" contributionURI="bundleclass://com.kms.katalon.composer.integration.analytics/com.kms.katalon.composer.integration.analytics.uploadProject.StoreProjectCodeToCloudHandler" command="_vCrYEG1LEemLsdQmea1a5A"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_COSBcIFiEeax0rcjhkyhJw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="after:com.kms.katalon.composer.mobile.dynamicmenucontribution.ios">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_KSu-EIPpEeaJTZfureYSqg" elementId="com.kms.katalon.composer.integration.kobiton.dynamicmenucontribution.run" label="Run" contributionURI="bundleclass://com.kms.katalon.composer.integration.kobiton/com.kms.katalon.composer.integration.kobiton.menu.KobitonExecutionDynamicContribution"/>
@@ -18,5 +20,10 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Os9j4EYNEem9yuiaRu88FQ" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:1">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_Tad00EYNEem9yuiaRu88FQ" elementId="com.kms.katalon.composer.integration.analytics.handledtoolitem" label="Katalon Analytics" iconURI="platform:/plugin/com.kms.katalon/icons/KA_32x24px.png" tooltip="Katalon Analytics" command="_-fzYwEYMEem9yuiaRu88FQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="__axycG1MEemLsdQmea1a5A" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.execution">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_B_cuoG1NEemLsdQmea1a5A" elementId="com.kms.katalon.composer.integration.analytics.handledtoolitem.uploadProject" label="Store Project Code to Cloud" iconURI="platform:/plugin/com.kms.katalon/icons/upload_16.png" tooltip="Store Project Code to Cloud" command="_vCrYEG1LEemLsdQmea1a5A">
+      <persistedState key="index" value="0"/>
+    </elements>
   </fragments>
 </fragment:ModelFragments>
