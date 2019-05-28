@@ -87,8 +87,6 @@ KURecorder.addEventHandler('clickAt', 'click', function(event) {
             var clickType = this.rec_getMouseButton(event);            
             if(this.rec_isElementMouseUpEventRecordable(target, clickType)){
                 this.processOnClickTarget(target, clickType, currentURL);
-            } else if(this.shouldBeSetAsQueuedInput(target)) {
-                this.setQueuedInput(target);
             }
             //var arrayTest = this.locatorBuilders.buildAll(event.target);
             preventClickTwice = true;
@@ -97,6 +95,19 @@ KURecorder.addEventHandler('clickAt', 'click', function(event) {
     }
 }, true);
 // END
+
+var queuedMouseDown;
+const observerConfig = {
+    childList: true,
+    subtree: true,
+};
+  
+KURecorder.addEventHandler('mouseDown', 'mousedown', function(event) {
+    this.elementBeingObserved = event.target;
+    this.jsonizedClickOnElementBeingObservedOnMouseDown 
+        = this.rec_jsonizeClickTarget(this.elementBeingObserved, 'left');
+    this.mouseDownObserver.observe(this.elementBeingObserved, observerConfig);
+}, true);
 
 
 // © Chen-Chieh Ping, SideeX Team
