@@ -54,6 +54,10 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static boolean checkActivationDialog() {
+        //Please remove before create pull request
+        QuickStartDialog quickStartDialog = new QuickStartDialog(Display.getCurrent().getActiveShell());
+        quickStartDialog.open();
+        
         int result = new ActivationDialogV2(null).open();
         switch (result) {
             case ActivationDialogV2.OK:
@@ -98,29 +102,29 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static void showFunctionsIntroductionForTheFirstTime() {
-        QuickStartDialog dialog = new QuickStartDialog(null);
-
-        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
-        switch (dialog.open()) {
-            case QuickStartDialog.OPEN_PROJECT_ID: {
-                try {
-                    new CommandCaller().call(CommandId.PROJECT_OPEN);
-                } catch (CommandException e) {
-                    LogUtil.logError(e);
-                }
-                break;
-            }
-            case QuickStartDialog.NEW_PROJECT_ID: {
-                try {
-                    new CommandCaller().call(CommandId.PROJECT_ADD);
-                } catch (CommandException e) {
-                    LogUtil.logError(e);
-                }
-                break;
-            }
-            default:
-                break;
-        }
+//        QuickStartDialog dialog = new QuickStartDialog(null);
+//
+//        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
+//        switch (dialog.open()) {
+//            case QuickStartDialog.OPEN_PROJECT_ID: {
+//                try {
+//                    new CommandCaller().call(CommandId.PROJECT_OPEN);
+//                } catch (CommandException e) {
+//                    LogUtil.logError(e);
+//                }
+//                break;
+//            }
+//            case QuickStartDialog.NEW_PROJECT_ID: {
+//                try {
+//                    new CommandCaller().call(CommandId.PROJECT_ADD);
+//                } catch (CommandException e) {
+//                    LogUtil.logError(e);
+//                }
+//                break;
+//            }
+//            default:
+//                break;
+//        }
     }
 
     public static String genRequestActivationInfo() {

@@ -109,6 +109,10 @@ public class ImageConstants {
     public static final Image IMG_INTRO_SCREEN_WELCOME = ImageManager.getImage(IImageKeys.INTRO_SCREEN_WELCOME);
     
     public static final Image IMG_INTRO_SCREEN_WELCOME_SMALL = ImageManager.getImage(IImageKeys.INTRO_SCREEN_WELCOME_SMALL);
+    
+    public static final Image IMG_INTRO_SCREEN_TITLE = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_TITLE);
+    
+    public static final Image IMG_INTRO_SCREEN_WEB_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_WEB_TESTING);
 
     // Activation
     public static final Image KATALON_IMAGE = ImageManager.getImage(IImageKeys.LOGO_16);

@@ -18,6 +18,10 @@ public interface IImageKeys {
     public static final String INTRO_SCREEN_WELCOME = "intro/welcome_screen_BG.png"; //$NON-NLS-1$
 
     public static final String INTRO_SCREEN_WELCOME_SMALL = "intro/welcome_screen_BG_small.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_TITLE = "intro/temp/title.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_WEB_TESTING = "intro/temp/web_testing.png"; //$NON-NLS-1$
     // End Intro
 
     // Welcome
