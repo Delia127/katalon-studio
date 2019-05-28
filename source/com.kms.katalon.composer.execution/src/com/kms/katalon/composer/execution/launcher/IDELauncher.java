@@ -163,17 +163,21 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         } else {
             resumeExecutionSession(runConfig);
         }
+        
+
         if (getExecutedEntity() instanceof TestCaseExecutedEntity) {
             try {
                 String resultTestcase = getExecutionResult();
-                Trackings.trackExecuteTestCase(mode.toString(), runConfig.getName(), resultTestcase);
+                Trackings.trackExecuteTestCase(mode.toString(), runConfig.getName(), resultTestcase,
+                        getEndTime().getTime() - getStartTime().getTime());
             } catch (Exception e) {
-
+                
             }
         } else if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
             try {
                 String resultTestSuite = getExecutionResult();
-                Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(), resultTestSuite);
+                Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(), resultTestSuite,
+                        getEndTime().getTime() - getStartTime().getTime());
             } catch (Exception e) {}
 
         }

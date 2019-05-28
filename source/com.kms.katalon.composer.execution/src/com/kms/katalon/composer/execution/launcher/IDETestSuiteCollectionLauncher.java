@@ -22,6 +22,7 @@ import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher implements IDEObservableLauncher,
         IDEObservableParentLauncher, LauncherListener {
@@ -53,8 +54,29 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
         super.postExecution();
         // update status of "Run" and "Stop" buttons
         getEventBroker().post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
+        try {
+            String executionResult = getExecutionResult();
+            Trackings.trackExecuteTestSuiteCollectionInGuiMode(executionResult,
+                    getEndTime().getTime() - getStartTime().getTime());
+        } catch (Exception ignored) {
+            
+        }
     }
 
+    protected String getExecutionResult() throws Exception{
+        String resultExcution = null;
+        if (getResult().getNumFailures() > 0) {
+            resultExcution = TestStatusValue.FAILED.toString();
+        }
+        else if (getResult().getNumErrors() > 0) {
+            resultExcution = TestStatusValue.ERROR.toString();
+        }
+        else {
+            resultExcution = TestStatusValue.PASSED.toString();
+        }
+        return resultExcution;
+    }
+    
     @Override
     public void setStatus(LauncherStatus status, String message) {
         super.setStatus(status, message);

@@ -85,21 +85,19 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             return;
         }
 
+        this.endTime = new Date();
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
 
         try {
             setStatus(LauncherStatus.PREPARE_REPORT);
-            this.endTime = new Date();
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
 
             uploadReportToIntegratingProduct(suiteLogRecord);
 
             sendReport(suiteLogRecord);
-            long timeRun = endTime.getSeconds() - startTime.getSeconds();
-            Trackings.trackExecuteTestSuiteInGuiMode(timeRun);
 
         } catch (Exception e) {
             writeError(MessageFormat.format(StringConstants.LAU_RPT_ERROR_TO_GENERATE_REPORT, e.getMessage()));
@@ -466,5 +464,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 .withEndTime(endTime != null ? endTime.getTime() : 0L)
                 .build();
         return executionContext;
+    }
+    
+    public Date getStartTime() {
+        return startTime;
+    }
+    
+    public Date getEndTime() {
+        return endTime;
     }
 }

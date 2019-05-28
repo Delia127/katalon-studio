@@ -76,7 +76,7 @@ public class ConsoleExecutor {
         LauncherManager launcherManager = LauncherManager.getInstance();
         launcherManager.addLauncher(launcherOption.getConsoleLauncher(projectEntity, launcherManager));
         
-        trackExecution(launcherOption);
+//        trackExecution(launcherOption);
     }
 
     public ILauncher getUILauncher(ProjectEntity projectEntity, OptionSet optionSet) throws Exception {
@@ -95,20 +95,20 @@ public class ConsoleExecutor {
     }
 
 
-    private void trackExecution(LauncherOptionParser launcherOption) {
-        if (launcherOption instanceof TestSuiteLauncherOptionParser) {
-            String[] browserType = new String[]{ StringUtils.EMPTY };
-            ((TestSuiteLauncherOptionParser) launcherOption).getConsoleOptionList()
-                .stream()
-                .filter(option -> option.getOption().equals(ConsoleMain.BROWSER_TYPE_OPTION))
-                .findFirst()
-                .ifPresent(option -> browserType[0] = (String) option.getValue());
-            
-            Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(), browserType[0]);
-        } else if (launcherOption instanceof TestSuiteCollectionLauncherOptionParser) {
-            Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated());
-        }
-    }
+//    private void trackExecution(LauncherOptionParser launcherOption) {
+//        if (launcherOption instanceof TestSuiteLauncherOptionParser) {
+//            String[] browserType = new String[]{ StringUtils.EMPTY };
+//            ((TestSuiteLauncherOptionParser) launcherOption).getConsoleOptionList()
+//                .stream()
+//                .filter(option -> option.getOption().equals(ConsoleMain.BROWSER_TYPE_OPTION))
+//                .findFirst()
+//                .ifPresent(option -> browserType[0] = (String) option.getValue());
+//            
+//            Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(), browserType[0]);
+//        } else if (launcherOption instanceof TestSuiteCollectionLauncherOptionParser) {
+//            Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated());
+//        }
+//    }
     
     private void setValueForOptionalOptions(List<ConsoleOptionContributor> optionContributors, OptionSet optionSet)
             throws Exception {
