@@ -42,7 +42,7 @@ public class VariableEvaluator {
         URLClassLoader classLoader = GroovyUtil.getProjectClasLoader(project);
         GroovyShell groovyShell = new GroovyShell(classLoader);
         evaluatedVariables = (Map<String, Object>) groovyShell.evaluate(evaluationScript);
-        
+       
         return evaluatedVariables;
     }
     

@@ -30,11 +30,13 @@ RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 
 TestCaseMain.beforeStart()
 
-Map<String, String> evaluatedVariables = [:]
+Map<String, Object> evaluatedVariables = [:]
 
 <% rawVariables.each { entry -> %>
 evaluatedVariables.put("<%= entry.key %>", <%= entry.value %>.toString())
 <% } %>
+
+evaluatedVariables.put('GlobalVariable', internal.GlobalVariable)
 
 return evaluatedVariables
  
