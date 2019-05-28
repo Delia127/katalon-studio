@@ -30,7 +30,6 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
@@ -46,7 +45,7 @@ public class OpenWebServiceRequestObjectHandler {
 
     @Inject
     IEclipseContext context;
-    
+
     @Inject
     EPartService partService;
 
@@ -61,7 +60,7 @@ public class OpenWebServiceRequestObjectHandler {
                 }
             }
         });
-        
+
         eventBroker.subscribe(EventConstants.WORKSPACE_DRAFT_PART_CLOSED, new EventServiceAdapter() {
             @Override
             public void handleEvent(Event event) {
@@ -157,8 +156,9 @@ public class OpenWebServiceRequestObjectHandler {
     }
 
     public void openRequestHistoryObject(RequestHistoryEntity historyRequest) {
-        DraftWebServiceRequestEntity draftWebServiceEntity = JsonUtil
-                .fromJson(JsonUtil.toJson(historyRequest.getRequest()), DraftWebServiceRequestEntity.class);
+        DraftWebServiceRequestEntity draftWebServiceEntity = WebServicePreferenceStore.getGson().fromJson(
+                WebServicePreferenceStore.getGson().toJson(historyRequest.getRequest()),
+                DraftWebServiceRequestEntity.class);
         draftWebServiceEntity.setDraftUid(historyRequest.getUid());
         try {
             MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
@@ -195,14 +195,13 @@ public class OpenWebServiceRequestObjectHandler {
             setSelectedExplorerPart();
         }
     }
-    
+
     private void setSelectedExplorerPart() {
-        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID,
-                application);
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID, application);
         if (stack != null) {
             MPart requestHistoryPart = partService.findPart(IdConstants.COMPOSER_REQUEST_HISTORY_PART_ID);
-            if (requestHistoryPart != null && !stack.getSelectedElement().getElementId()
-                    .equals(requestHistoryPart.getElementId())) {
+            if (requestHistoryPart != null
+                    && !stack.getSelectedElement().getElementId().equals(requestHistoryPart.getElementId())) {
                 stack.setSelectedElement(requestHistoryPart);
             }
         }

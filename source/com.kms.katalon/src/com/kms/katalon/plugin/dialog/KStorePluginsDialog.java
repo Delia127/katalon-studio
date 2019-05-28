@@ -35,11 +35,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
@@ -175,8 +177,16 @@ public class KStorePluginsDialog extends Dialog {
         
         pluginTableViewer.setInput(results);
         
-        Button btnClose = new Button(body, SWT.NONE);
-        btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+        Composite bottomComposite = new Composite(body, SWT.NONE);
+        bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+        bottomComposite.setLayout(new GridLayout(2, false));
+        
+        Label lblUsername = new Label(bottomComposite, SWT.NONE);
+        lblUsername.setText(ApplicationInfo.getAppProperty("email"));
+        lblUsername.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
+        
+        Button btnClose = new Button(bottomComposite, SWT.NONE);
+        btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
         btnClose.setText(IDialogConstants.CLOSE_LABEL);
         btnClose.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -347,7 +357,8 @@ public class KStorePluginsDialog extends Dialog {
             ReloadItem reloadItem = (ReloadItem) cell.getElement();
             if (reloadItem.getException() != null) {
                 Exception exception = reloadItem.getException();
-                MultiStatusErrorDialog.showErrorDialog(exception, "Failed to reload plugin", exception.getMessage());
+                MultiStatusErrorDialog.showErrorDialog("Failed to reload plugin", exception.getMessage(),
+                        ExceptionsUtil.getStackTraceForThrowable(exception));
             }
         }
 

@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -15,12 +12,10 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.service.event.Event;
 
-import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
@@ -31,35 +26,11 @@ import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.service.PluginService;
-import com.kms.katalon.plugin.service.PluginService;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
 public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
-    @Inject
-    private IEventBroker eventBroker;
-
     private static final long DIALOG_CLOSED_DELAY_MILLIS = 500L;
-
-    private PluginPreferenceStore store;
-
-    private Job reloadPluginsJob;
-
-    @PostConstruct
-    public void registerEventListener() {
-        store = new PluginPreferenceStore();
-        // auto reload on startup
-        eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, new EventServiceAdapter() {
-            @Override
-            public void handleEvent(Event event) {
-                if (store.hasReloadedPluginsBefore()) {
-                    reloadPlugins(true);
-                } else {
-                    eventBroker.post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
-                }
-            }
-        });
-    }
 
     @CanExecute
     public boolean canExecute() {
@@ -71,9 +42,10 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
         reloadPlugins(false);
     }
 
-    private void reloadPlugins(boolean silenceMode) {
+    public void reloadPlugins(boolean silenceMode) {
+        PluginPreferenceStore store = new PluginPreferenceStore();
         List<ReloadItem>[] resultHolder = new List[1];
-        reloadPluginsJob = new Job("Reloading plugins...") {
+        Job reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
@@ -109,13 +81,13 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
         reloadPluginsJob.addJobChangeListener(new JobChangeAdapter() {
             @Override
             public void done(IJobChangeEvent event) {
-                eventBroker.post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
 
                 if (!reloadPluginsJob.getResult().isOK()) {
                     LoggerSingleton.logError("Failed to reload plugins.");
                     return;
                 }
-                
+
                 List<ReloadItem> results = resultHolder[0];
 
                 if (silenceMode && !checkExpire(results)) {
@@ -132,21 +104,15 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             }
         });
 
-        if (silenceMode) {
-            reloadPluginsJob.setUser(false);
-        } else {
-            reloadPluginsJob.setUser(true);
-        }
+        reloadPluginsJob.setUser(true);
         reloadPluginsJob.schedule();
     }
-    
+
     private boolean checkExpire(List<ReloadItem> reloadItems) {
-        return reloadItems.stream()
-            .filter(i -> {
-                KStorePlugin plugin = i.getPlugin();
-                return plugin.isExpired() || (plugin.isTrial() && plugin.getRemainingDay() <= 14);
-            }).findAny()
-            .isPresent();
+        return reloadItems.stream().filter(i -> {
+            KStorePlugin plugin = i.getPlugin();
+            return plugin.isExpired() || (plugin.isTrial() && plugin.getRemainingDay() <= 14);
+        }).findAny().isPresent();
     }
 
     private void openResultDialog(List<ReloadItem> result) {

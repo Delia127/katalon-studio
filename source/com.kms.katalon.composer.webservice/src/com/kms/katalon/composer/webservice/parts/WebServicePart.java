@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -864,13 +864,17 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         WebServiceRequestEntity requestEntity = getWSRequestObject();
         List<VariableEntity> variables = requestEntity.getVariables();
-        Map<String, String> variableMap = variables.stream()
-                .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
+        if (!variables.isEmpty()) {
+            Map<String, String> variableMap = variables.stream()
+                    .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
+    
+            VariableEvaluator evaluator = new VariableEvaluator();
+            Map<String, String> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
 
-        VariableEvaluator evaluator = new VariableEvaluator();
-        Map<String, String> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
-
-        return evaluatedVariables;
+            return evaluatedVariables;
+        } else {
+            return new HashMap<>();
+        }
     }
 
     protected abstract void createParamsComposite(Composite parent);

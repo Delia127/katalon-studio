@@ -8,8 +8,6 @@ public class RequestInformation {
     
     private String harId;
     
-    private String reportFolder;
-    
     public String getName() {
 		return name;
 	}
@@ -32,13 +30,5 @@ public class RequestInformation {
     
     public void setTestObjectId(String testObjectId) {
         this.testObjectId = testObjectId;
-    }
-
-    public String getReportFolder() {
-        return reportFolder;
-    }
-
-    public void setReportFolder(String reportFolder) {
-        this.reportFolder = reportFolder;
     }
 }
