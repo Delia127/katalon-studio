@@ -40,7 +40,7 @@ public class ColorUtil {
 
     private static final String ERROR_BACKGROUND_COLOR = "#f8cbcb";
 
-    private static final String ERROR_TEXT_COLOR = "#bd2c00";
+    private static final String ERROR_TEXT_COLOR = "#d50000";
 
     private static final String WARNING_TEXT_COLOR = "#ff8000";
 
@@ -95,7 +95,11 @@ public class ColorUtil {
     }
 
     public static Color getHighlightBackgroundColor() {
-        return display.getSystemColor(SWT.COLOR_YELLOW);
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor("#ef6c00");
+        } else {
+            return getColor("#ffeb3b");
+        }
     }
 
     public static Color getWhiteBackgroundColor() {
@@ -173,7 +177,11 @@ public class ColorUtil {
     }
 
     public static Color getTextErrorColor() {
-        return display.getSystemColor(SWT.COLOR_RED);
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor("#ff5252");
+        } else {
+            return getColor(ERROR_TEXT_COLOR);
+        }
     }
 
     public static Color getTextSuccessfulColor() {

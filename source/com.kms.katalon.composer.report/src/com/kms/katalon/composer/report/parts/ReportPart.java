@@ -28,6 +28,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -57,6 +58,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -83,6 +85,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
@@ -156,7 +159,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
     private ReportTestCaseTableViewer testCaseTableViewer;
 
-    private Text txtTestCaseSearch;
+    private StyledText txtTestCaseSearch;
 
     private CLabel lblTestCaseSearch;
 
@@ -201,6 +204,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private List<TableViewerColumn> testCaseIntergrationColumn;
 
     private TableColumnLayout tclCompositeTestCaseTableDetails;
+
+    private Composite parent;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -283,6 +288,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @PostConstruct
     public void init(Composite parent, ReportEntity report, MPart part) {
         this.report = report;
+        this.parent = parent;
         setTestSuiteLogRecord(LogRecordLookup.getInstance().getTestSuiteLogRecord(report, new NullProgressMonitor()));
         testLogView = new ReportPartTestLogView(this);
         isSearching = false;
@@ -422,6 +428,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         range.underline = true;
         range.data = txtTestSuiteId.getText();
         range.underlineStyle = SWT.UNDERLINE_LINK;
+        range.foreground = JFaceColors.getHyperlinkText(getDisplay());
 
         txtTestSuiteId.setStyleRanges(new StyleRange[] { range });
 
@@ -641,12 +648,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         gl_compositeTableTestCaseSearch.marginHeight = 0;
         compositeTableTestCaseSearch.setLayout(gl_compositeTableTestCaseSearch);
 
-        txtTestCaseSearch = new Text(compositeTableTestCaseSearch, SWT.NONE);
-        txtTestCaseSearch.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
+        txtTestCaseSearch = new StyledText(compositeTableTestCaseSearch, SWT.NONE);
         GridData gd_txtTestCaseSearch = new GridData(GridData.FILL_HORIZONTAL);
         gd_txtTestCaseSearch.grabExcessVerticalSpace = true;
         gd_txtTestCaseSearch.verticalAlignment = SWT.CENTER;
         txtTestCaseSearch.setLayoutData(gd_txtTestCaseSearch);
+        
+        StyledTextMessage styledTextMessage = new StyledTextMessage(txtTestCaseSearch);
+        styledTextMessage.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
 
         Canvas canvasTestCaseSearch = new Canvas(compositeTableTestCaseSearch, SWT.NONE);
         canvasTestCaseSearch.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -655,6 +664,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         lblTestCaseSearch.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
 
         updateStatusSearchLabel();
+    }
+
+    public Display getDisplay() {
+        return parent.getDisplay();
     }
 
     private ScopedPreferenceStore getPreferenceStore() {
@@ -1099,7 +1112,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         setLabelToBeBold(lblTestSuiteId);
         lblTestSuiteId.setBackground(ColorUtil.getWhiteBackgroundColor());
 
-        txtTestSuiteId = new StyledText(compositeSummaryDetails, SWT.NONE);
+        txtTestSuiteId = new StyledText(compositeSummaryDetails, SWT.READ_ONLY);
         txtTestSuiteId.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
         Label lblHostName = new Label(compositeSummaryDetails, SWT.NONE);

@@ -50,13 +50,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ImageUtil;
@@ -93,7 +93,7 @@ public class ReportPartTestLogView {
     private Button btnFilterTestStepInfo, btnFilterTestStepPassed, btnFilterTestStepFailed, btnFilterTestStepError,
             btnFilterTestStepIncomplete, btnFilterTestStepWarning, btnFilterTestStepNotRun;
 
-    private Text txtTestLogSearch;
+    private StyledText txtTestLogSearch;
 
     private CLabel lblTestLogSearch, lblTestLogAdvancedSearch;
 
@@ -515,12 +515,14 @@ public class ReportPartTestLogView {
         glCompositeTestLogSearch.marginHeight = 0;
         compositeTestLogSearch.setLayout(glCompositeTestLogSearch);
 
-        txtTestLogSearch = new Text(compositeTestLogSearch, SWT.NONE);
-        txtTestLogSearch.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
+        txtTestLogSearch = new StyledText(compositeTestLogSearch, SWT.SINGLE);
         GridData gdTxtTestCaseSearch = new GridData(GridData.FILL_HORIZONTAL);
         gdTxtTestCaseSearch.grabExcessVerticalSpace = true;
         gdTxtTestCaseSearch.verticalAlignment = SWT.CENTER;
         txtTestLogSearch.setLayoutData(gdTxtTestCaseSearch);
+
+        StyledTextMessage styledTextMessage = new StyledTextMessage(txtTestLogSearch);
+        styledTextMessage.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
 
         Canvas cvsTestLogSearch = new Canvas(compositeTestLogSearch, SWT.NONE);
         GridLayout glCvsTestLogSearch = new GridLayout(3, false);
@@ -545,6 +547,10 @@ public class ReportPartTestLogView {
         updateStatusSearchLabel();
 
         createTestLogTableToolbar(compositeTestLogFilter);
+    }
+
+    private Display getDisplay() {
+        return parentPart.getDisplay() ;
     }
 
     private void createTestLogTableToolbar(Composite parent) {

@@ -250,4 +250,8 @@ public class ControlUtils {
     public static boolean shouldLineVisble(Display display) {
     	return !ComponentBundleActivator.isDarkTheme(display);
     }
+
+    public static boolean isDarkTheme(Display display) {
+        return ComponentBundleActivator.isDarkTheme(display);
+    }
 }

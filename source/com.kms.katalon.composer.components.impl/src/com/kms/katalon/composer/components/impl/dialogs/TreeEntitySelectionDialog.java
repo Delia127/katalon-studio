@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Cursor;
@@ -27,13 +28,15 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.providers.AbstractEntityViewerFilter;
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 
 public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
-    private Text txtInput;
+    private StyledText txtInput;
 
     private CLabel lblSearch;
 
@@ -68,9 +71,8 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
         grSearchComposite.heightHint = 24;
         searchComposite.setLayoutData(grSearchComposite);
 
-        txtInput = new Text(searchComposite, SWT.NONE);
+        txtInput = new StyledText(searchComposite, SWT.SINGLE);
         txtInput.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        txtInput.setMessage(StringConstants.DIA_SEARCH_TEXT_DEFAULT_VALUE);
         GridData gdTxtInput = new GridData(GridData.FILL_HORIZONTAL);
         gdTxtInput.grabExcessVerticalSpace = true;
         gdTxtInput.verticalAlignment = SWT.CENTER;
@@ -82,6 +84,10 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
                 filterSearchedText();
             }
         });
+
+        StyledTextMessage styledTextMessage = new StyledTextMessage(txtInput);
+        styledTextMessage.setMessage(StringConstants.DIA_SEARCH_TEXT_DEFAULT_VALUE);
+        
         Canvas canvasSearch = new Canvas(searchComposite, SWT.NONE);
         canvasSearch.setLayout(new FillLayout(SWT.HORIZONTAL));
         canvasSearch.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
