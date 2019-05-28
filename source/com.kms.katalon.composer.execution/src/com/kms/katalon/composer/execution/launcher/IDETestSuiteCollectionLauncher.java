@@ -54,16 +54,13 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
         super.postExecution();
         // update status of "Run" and "Stop" buttons
         getEventBroker().post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
-        try {
-            String executionResult = getExecutionResult();
-            Trackings.trackExecuteTestSuiteCollectionInGuiMode(executionResult,
-                    getEndTime().getTime() - getStartTime().getTime());
-        } catch (Exception ignored) {
-            
-        }
+
+        String executionResult = getExecutionResult();
+        Trackings.trackExecuteTestSuiteCollectionInGuiMode(executionResult,
+                getEndTime().getTime() - getStartTime().getTime());
     }
 
-    protected String getExecutionResult() throws Exception{
+    protected String getExecutionResult() {
         String resultExcution = null;
         if (getResult().getNumFailures() > 0) {
             resultExcution = TestStatusValue.FAILED.toString();

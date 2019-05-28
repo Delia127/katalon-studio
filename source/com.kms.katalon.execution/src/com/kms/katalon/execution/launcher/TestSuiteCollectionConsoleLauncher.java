@@ -162,16 +162,13 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
     @Override
     protected void postExecution() {
         super.postExecution();
-        try {
-            String executionResult = getExecutionResult();
-            Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(),
-                    executionResult, getEndTime().getTime() - getStartTime().getTime());
-        } catch (Exception ignored) {
-            
-        }
+        
+        String executionResult = getExecutionResult();
+        Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(),
+                executionResult, getEndTime().getTime() - getStartTime().getTime());
     }
     
-    protected String getExecutionResult() throws Exception{
+    protected String getExecutionResult() {
         String resultExcution = null;
         if (getResult().getNumFailures() > 0) {
             resultExcution = TestStatusValue.FAILED.toString();

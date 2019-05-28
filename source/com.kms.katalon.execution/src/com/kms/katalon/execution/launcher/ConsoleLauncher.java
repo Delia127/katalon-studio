@@ -70,16 +70,13 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
     protected void postExecutionComplete() {
         super.postExecutionComplete();
         if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
-            try {
-                String result = getExecutionResult();
-                Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(),
-                        runConfig.getName(), result, getEndTime().getTime() - getStartTime().getTime());
-            } catch (Exception ignored) {
-            }
+            String result = getExecutionResult();
+            Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(),
+                    runConfig.getName(), result, getEndTime().getTime() - getStartTime().getTime());
         }
     }
     
-    protected String getExecutionResult() throws Exception {
+    protected String getExecutionResult() {
         String resultExecution = null;
         if (getResult().getNumFailures() > 0) {
             resultExecution = TestStatusValue.FAILED.toString();

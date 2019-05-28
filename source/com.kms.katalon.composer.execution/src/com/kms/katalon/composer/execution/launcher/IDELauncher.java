@@ -166,24 +166,17 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         
 
         if (getExecutedEntity() instanceof TestCaseExecutedEntity) {
-            try {
-                String resultTestcase = getExecutionResult();
-                Trackings.trackExecuteTestCase(mode.toString(), runConfig.getName(), resultTestcase,
-                        getEndTime().getTime() - getStartTime().getTime());
-            } catch (Exception e) {
-                
-            }
+            String resultTestcase = getExecutionResult();
+            Trackings.trackExecuteTestCase(mode.toString(), runConfig.getName(), resultTestcase,
+                    getEndTime().getTime() - getStartTime().getTime());
         } else if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
-            try {
-                String resultTestSuite = getExecutionResult();
-                Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(), resultTestSuite,
-                        getEndTime().getTime() - getStartTime().getTime());
-            } catch (Exception e) {}
-
+            String resultTestSuite = getExecutionResult();
+            Trackings.trackExecuteTestSuiteInGuiMode(mode.toString(), runConfig.getName(), resultTestSuite,
+                    getEndTime().getTime() - getStartTime().getTime());
         }
     }
 
-    protected String getExecutionResult() throws Exception {
+    protected String getExecutionResult() {
         String resultExecution = null;
         if (getResult().getNumFailures() > 0) {
             resultExecution = TestStatusValue.FAILED.toString();
