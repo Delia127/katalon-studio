@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.components.impl.dialogs;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -166,7 +167,7 @@ public class MultiStatusErrorDialog extends AbstractDialog {
 
     public static void showErrorDialog(Throwable e, String title, String errorDescription) {
         MultiStatusErrorDialog dialog = new MultiStatusErrorDialog(Display.getCurrent().getActiveShell(), title,
-                errorDescription, e.getMessage());
+                errorDescription, ExceptionUtils.getFullStackTrace(e));
         dialog.open();
     }
 

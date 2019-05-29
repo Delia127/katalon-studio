@@ -15,7 +15,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.execution.setting.ExecutionSettingStore;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
 import com.kms.katalon.execution.util.ExecutionUtil;

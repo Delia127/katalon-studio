@@ -208,6 +208,8 @@ public interface IdConstants {
 
     public static final String KATALON_WEB_UI_RECORDER_BUNDLE_ID = "com.kms.katalon.composer.webui.recorder";
 
+    public static final String KATALON_WEBSERVICE_BUNDLE_ID = "com.kms.katalon.core.webservice";
+    
     public static final String XERCES_BUNDLE_ID = "org.apache.xerces.impl";
 
     public static final String XML_APIS_BUNDLE_ID = "xml-apis";

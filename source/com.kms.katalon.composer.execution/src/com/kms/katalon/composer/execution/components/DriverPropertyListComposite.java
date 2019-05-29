@@ -85,9 +85,13 @@ public class DriverPropertyListComposite extends Composite {
             @SuppressWarnings("unchecked")
             @Override
             protected void setValue(Object element, Object value) {
-                if (value instanceof Integer && tableViewer.getInput() instanceof List) {
+                if (!(value instanceof Integer)) {
+                    return;
+                }
+                int selection = (int) value;
+                if (selection >= 0 && tableViewer.getInput() instanceof List) {
                     DriverPropertyValueType newType = DriverPropertyValueType.valueOf(DriverPropertyValueType
-                            .stringValues()[(Integer) value]);
+                            .stringValues()[selection]);
                     DriverPropertyValueType valueType = DriverPropertyValueType.fromValue(element);
                     if (valueType != newType) {
                         List<Object> inputList = (List<Object>) tableViewer.getInput();

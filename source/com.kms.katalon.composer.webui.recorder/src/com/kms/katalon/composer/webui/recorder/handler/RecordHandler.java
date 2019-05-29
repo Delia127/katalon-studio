@@ -3,6 +3,8 @@ package com.kms.katalon.composer.webui.recorder.handler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -139,6 +141,7 @@ public class RecordHandler {
                 testCaseCompositePart = createNewTestCase();
                 shouldOverride = false;
             }
+            updateRecordedElementsAfterSavingToObjectRepository(recordedElements, folderSelectionResult.getEntitySavedMap());
             doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements,
                     recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
         } catch (Exception e) {
@@ -150,6 +153,41 @@ public class RecordHandler {
                 shell.dispose();
             }
         }
+    }
+
+    /**
+     * Update the structure of recorded elements with the structures decided by user
+     * via entitySavedMap. Cloned WebPages will be created in recordedElements
+     * and references of their children are removed from the original WebPages
+     * @see com.kms.katalon.objectspy.dialog.ObjectRepositoryService#saveObject(SaveToObjectRepositoryDialogResult)
+     * @param recordedElements The list of WebPages and their children of a test case
+     * @param entitySavedMap A map of physical folders indexed by WebPage and WebEntity
+     */
+    private void updateRecordedElementsAfterSavingToObjectRepository(List<WebPage> recordedElements,
+            Map<WebElement, FileEntity> entitySavedMap) {
+
+        List<String> recordedElementNames = recordedElements.stream()
+                .map(b -> b.getName())
+                .collect(Collectors.toList());
+
+        entitySavedMap.entrySet()
+                .stream()
+                .filter(a -> a.getKey() instanceof WebPage && a.getKey().getTag() != null
+                        && a.getKey().getTag().equals("cloned"))
+                .map(a -> (WebPage) a.getKey())
+                .forEach(a -> {
+                    try {
+                        WebPage recordedWebPage = recordedElements.get(recordedElementNames.indexOf(a.getName()));
+                        List<String> aChildNames = a.getChildren()
+                                .stream()
+                                .map(b -> b.getName())
+                                .collect(Collectors.toList());
+                        recordedWebPage.getChildren().removeIf(b -> aChildNames.contains(b.getName()));
+                        recordedElements.add(a);
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                    }
+                });
     }
 
     private Shell getShell(Shell activeShell) {
@@ -300,7 +338,9 @@ public class RecordHandler {
             SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
         for (WebPage pageElement : recordedElements) {
             FolderEntity importedFolder = (FolderEntity) folderSelectionResult.getEntitySavedMap().get(pageElement);
-            pageElement.setFolderAlias(importedFolder);
+            if (importedFolder != null) {
+                pageElement.setFolderAlias(importedFolder);
+            }
             for (WebElement childElement : ((WebFrame) pageElement).getChildren()) {
                 addRecordedElement(childElement, importedFolder, folderSelectionResult);
             }
