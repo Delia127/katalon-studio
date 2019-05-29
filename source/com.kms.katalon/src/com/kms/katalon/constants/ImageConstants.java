@@ -113,6 +113,24 @@ public class ImageConstants {
     public static final Image IMG_INTRO_SCREEN_TITLE = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_TITLE);
     
     public static final Image IMG_INTRO_SCREEN_WEB_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_WEB_TESTING);
+    
+    public static final Image IMG_INTRO_SCREEN_API_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_API_TESTING);
+    
+    public static final Image IMG_INTRO_SCREEN_MOBILE_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_MOBILE_TESTING);
+    
+    public static final Image IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING);
+    
+    public static final Image IMG_INTRO_SCREEN_BDD_TESTING = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_BDD_TESTING);
+    
+    public static final Image IMG_INTRO_SCREEN_CI_INTEGRATION = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_CI_INTEGRATION);
+    
+    public static final Image IMG_INTRO_SCREEN_SDLC_INTEGRATION = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_SDLC_INTEGRATION);
+    
+    public static final Image IMG_INTRO_SCREEN_PLUGIN_STORE = ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_PLUGIN_STORE);
+    
+    public static final Image IMG_INTRO_SCREEN_ADVANCED_REPORT= ImageManager.getImage(IImageKeys.IMG_INTRO_SCREEN_ADVANCED_REPORT);
+    
+
 
     // Activation
     public static final Image KATALON_IMAGE = ImageManager.getImage(IImageKeys.LOGO_16);

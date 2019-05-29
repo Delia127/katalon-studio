@@ -271,7 +271,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(1000, 900);
+        return new Point(1050, 900);
     }
 
     @Override

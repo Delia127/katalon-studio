@@ -54,10 +54,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static boolean checkActivationDialog() {
-        //Please remove before create pull request
-        QuickStartDialog quickStartDialog = new QuickStartDialog(Display.getCurrent().getActiveShell());
-        quickStartDialog.open();
-        
+        //Please remove before create pull request 
         int result = new ActivationDialogV2(null).open();
         switch (result) {
             case ActivationDialogV2.OK:
@@ -102,6 +99,8 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static void showFunctionsIntroductionForTheFirstTime() {
+        QuickStartDialog quickStartDialog = new QuickStartDialog(Display.getCurrent().getActiveShell());
+        quickStartDialog.open();
 //        QuickStartDialog dialog = new QuickStartDialog(null);
 //
 //        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
