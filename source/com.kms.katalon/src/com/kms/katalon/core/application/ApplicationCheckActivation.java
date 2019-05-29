@@ -14,7 +14,7 @@ import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 public class ApplicationCheckActivation {
-
+    
     public static boolean checkActivation(final IEventBroker eventBroker) throws Exception {
         // if (VersionUtil.isInternalBuild()) {
         // return true;

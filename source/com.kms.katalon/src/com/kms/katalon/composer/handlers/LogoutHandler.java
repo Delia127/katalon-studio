@@ -11,7 +11,7 @@ import com.kms.katalon.core.application.ApplicationCheckActivation;
 import com.kms.katalon.logging.LogUtil;
 
 public class LogoutHandler {
-
+        
     @Execute
     public void execute() {
         try {
@@ -21,11 +21,11 @@ public class LogoutHandler {
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, "", true);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, "", true);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, "", true);
-
+            
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE) != null) {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, "", true);
             }
-
+            
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.STORE_TOKEN) != null) {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, "", true);
             }

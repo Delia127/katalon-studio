@@ -32,7 +32,7 @@ import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
 public class PluginStoreToolControl {
-    
+
     @Inject
     IEventBroker eventBroker;
 
@@ -49,10 +49,13 @@ public class PluginStoreToolControl {
                 Menu menu = new Menu(toolbar);
 
                 MenuItem userNameMenuItem = new MenuItem(menu, SWT.PUSH);
+
                 String userName = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+
                 if (userName == null || userName.isEmpty()) {
                     userName = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
                 }
+
                 userNameMenuItem.setText("Logged in as " + userName);
 
                 MenuItem viewDashboardMenuItem = new MenuItem(menu, SWT.PUSH);
@@ -109,6 +112,8 @@ public class PluginStoreToolControl {
                 
                 new MenuItem(menu, SWT.SEPARATOR);
 
+                new MenuItem(menu, SWT.SEPARATOR);
+
                 MenuItem manageApiKeyMenuItem = new MenuItem(menu, SWT.PUSH);
                 manageApiKeyMenuItem.setText("Manage API Keys");
                 manageApiKeyMenuItem.addSelectionListener(new SelectionAdapter() {
@@ -144,9 +149,9 @@ public class PluginStoreToolControl {
                 return menu;
             }
         });
-        
+
         eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, new EventHandler() {
-            
+
             @Override
             public void handleEvent(Event event) {
                 PluginPreferenceStore store = new PluginPreferenceStore();
