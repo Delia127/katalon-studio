@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.intro;
+package com.kms.katalon.composer.KatalonQuickStart;
 
 import java.util.Map;
 
@@ -10,20 +10,20 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.wizard.AbstractWizardPage;
 import com.kms.katalon.constants.ImageConstants;
 
-public class WebTestingWizardPage extends AbstractWizardPage implements WizardPage{
+public class SDLCIntergrationWizardPage extends AbstractWizardPage implements WizardPage{
 
-    public WebTestingWizardPage() {
+    public SDLCIntergrationWizardPage() {
         
     }
     
     @Override
     public String getTitle() {
-        return "Web Testing";
+        return "SDL Integration Testing";
     }
 
     @Override
     public void createStepArea(Composite parent) {
-        Composite imageCompositeImage = new Composite(parent, SWT.NONE);
+        Composite imageCompositeImage = new Composite(parent, SWT.V_SCROLL);
         GridData gridDataImage = new GridData(SWT.RIGHT, SWT.FILL, true, true);    
         Image imageTitleArea = ImageConstants.IMG_INTRO_SCREEN_WEB_TESTING;
         gridDataImage.widthHint = imageTitleArea.getBounds().width;
@@ -54,7 +54,7 @@ public class WebTestingWizardPage extends AbstractWizardPage implements WizardPa
 
     @Override
     public String getStepIndexAsString() {
-        return "1";
+        return "7";
     }
 
     @Override

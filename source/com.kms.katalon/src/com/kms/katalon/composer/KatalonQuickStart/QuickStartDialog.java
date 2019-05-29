@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.intro;
+package com.kms.katalon.composer.KatalonQuickStart;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -245,7 +245,14 @@ public class QuickStartDialog extends SimpleWizardDialog {
     protected Collection<IWizardPage> getWizardPages() {
         return Arrays.asList(new IWizardPage[] {
                 new WebTestingWizardPage(),
-                new WebTestingWizardPage(),
+                new APITestingWizardPage(),
+                new MobileTestingWizardPage(),
+                new DatadrivenTestingWizardPage(),
+                new BDDTestingWizardPage(),
+                new CIIntegrationWizardPage(),
+                new SDLCIntergrationWizardPage(),
+                new PluginStoreWizardPage(),
+                new AdvancedReportWizardPage()
         });
     }
 
@@ -264,7 +271,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(1000, 800);
+        return new Point(1000, 900);
     }
 
     @Override

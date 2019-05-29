@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.intro;
+package com.kms.katalon.composer.KatalonQuickStart;
 
 public interface WizardPage {
     String getStepIndexAsString();

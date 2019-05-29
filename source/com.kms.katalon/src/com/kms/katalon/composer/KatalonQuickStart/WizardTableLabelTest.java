@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.intro;
+package com.kms.katalon.composer.KatalonQuickStart;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
