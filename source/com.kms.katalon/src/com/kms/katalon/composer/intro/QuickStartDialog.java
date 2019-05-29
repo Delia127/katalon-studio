@@ -2,7 +2,6 @@ package com.kms.katalon.composer.intro;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -246,14 +245,14 @@ public class QuickStartDialog extends SimpleWizardDialog {
     protected Collection<IWizardPage> getWizardPages() {
         return Arrays.asList(new IWizardPage[] {
                 new WebTestingWizardPage(),
-//                new WebTestingWizardPage(),
+                new WebTestingWizardPage(),
         });
     }
 
     @Override
     protected void setInput() {
         super.setInput();
-        pageViewerColumn.setLabelProvider(new WizardTableLabelProvider(wizardManager));
+        pageViewerColumn.setLabelProvider(new WizardTableLabelTest(wizardManager));
         tableViewer.setInput(wizardManager.getWizardPages());
     }
 
