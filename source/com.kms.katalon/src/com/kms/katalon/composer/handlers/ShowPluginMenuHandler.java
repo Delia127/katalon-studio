@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.processors.ToolbarProcessor;
 
-public class ShowAccountMenuHandler {
+public class ShowPluginMenuHandler {
 
     @Inject
     private EModelService modelService;

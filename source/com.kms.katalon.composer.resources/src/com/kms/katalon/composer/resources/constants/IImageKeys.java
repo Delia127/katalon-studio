@@ -295,6 +295,8 @@ public interface IImageKeys {
     public static final String PROFILE_16 = "toolbar/profile_16.png";
     
     public static final String KATALON_STORE_24 = "toolbar/katalon_store_32x24.png"; //$NON-NLS-1$
+    
+    public static final String IMG_KATALON_ACCOUNT_24 = "toolbar/account_32x24.png"; //$NON-NLS-1$
     // End Toolbar
 
     // Test Case steps

@@ -6,6 +6,8 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 
 public class ImageConstants {
+    
+    public static final Image IMG_KATALON_ACCOUNT_24 = ImageManager.getImage(IImageKeys.IMG_KATALON_ACCOUNT_24);
 
     public static final Image IMG_BRANDING = ImageManager.getImage(IImageKeys.KATALON_LOGO_202);
 
