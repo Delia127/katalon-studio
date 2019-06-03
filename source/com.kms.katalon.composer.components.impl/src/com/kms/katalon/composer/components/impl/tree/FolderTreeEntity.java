@@ -248,7 +248,7 @@ public class FolderTreeEntity extends AbstractTreeEntity {
             case CHECKPOINT:
                 return ImageConstants.IMG_16_CHECKPOINT;
             default:
-                return null;
+                return ImageConstants.IMG_16_FOLDER;
         }
     }
 

@@ -8,6 +8,7 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.UserFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 public class UserFileController extends EntityController {
 
@@ -34,6 +35,14 @@ public class UserFileController extends EntityController {
     public UserFileEntity newFile(String name, FolderEntity parentFolder) throws ControllerException {
         try {
             return getDataProviderSetting().getUserFileDataProvider().newFile(name, parentFolder);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
+    }
+    
+    public UserFileEntity newRootFile(String name, ProjectEntity project) throws ControllerException {
+        try {
+            return getDataProviderSetting().getUserFileDataProvider().newRootFile(name, project);
         } catch (DALException e) {
             throw new ControllerException(e);
         }

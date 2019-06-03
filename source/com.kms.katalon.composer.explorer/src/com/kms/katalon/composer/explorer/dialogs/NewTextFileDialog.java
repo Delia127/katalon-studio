@@ -2,7 +2,6 @@ package com.kms.katalon.composer.explorer.dialogs;
 
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.SWT;
@@ -20,19 +19,18 @@ import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.EntityNameController;
-import com.kms.katalon.entity.file.FileEntity;
 
 public class NewTextFileDialog extends CustomTitleAreaDialog {
     
-    private List<FileEntity> currentFiles;
+    private List<String> siblingFileNames;
     
     private Text txtName;
 
     private String name;
     
-    public NewTextFileDialog(Shell parentShell, List<FileEntity> currentFiles) {
+    public NewTextFileDialog(Shell parentShell, List<String> siblingFileNames) {
         super(parentShell);
-        this.currentFiles = currentFiles;
+        this.siblingFileNames = siblingFileNames;
     }
 
     @Override
@@ -79,8 +77,8 @@ public class NewTextFileDialog extends CustomTitleAreaDialog {
     }
     
     private boolean isNameDuplicated(String newName) {
-        return currentFiles.stream()
-                .filter(f -> FilenameUtils.getName(f.toFile().getName()).equals(newName))
+        return siblingFileNames.stream()
+                .filter(f -> f.equalsIgnoreCase(newName))
                 .findAny()
                 .isPresent();
     }

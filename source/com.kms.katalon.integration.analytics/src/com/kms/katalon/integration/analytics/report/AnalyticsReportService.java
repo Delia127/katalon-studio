@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.controller.FolderController;
@@ -20,6 +20,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
+import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
@@ -65,6 +66,8 @@ public class AnalyticsReportService implements AnalyticsComponent {
                 throw new AnalyticsApiExeception(e);
             }
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_END);
+        } else {
+            LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_INTEGRATE_WITH_KA);
         }
     }
     
@@ -85,21 +88,28 @@ public class AnalyticsReportService implements AnalyticsComponent {
         long timestamp = System.currentTimeMillis();
         Path reportFolder = Paths.get(FolderController.getInstance().getReportRoot(project).getLocation());
         
+        List<AnalyticsExecution> executions = null;
         for (int i = 0; i < files.size(); i++) {
         	Path filePath = files.get(i);
         	String folderPath = reportFolder.relativize(filePath.getParent()).toString();
         	boolean isEnd = i == (files.size() - 1);
-            
+        	
             LogUtil.printOutputLine("Sending file: " + filePath.toAbsolutePath());
             if (AnalyticsStringConstants.ANALYTICS_STOREAGE.equalsIgnoreCase("s3")) {
                 File file = filePath.toFile();
                 AnalyticsUploadInfo uploadInfo = AnalyticsApiProvider.getUploadInfo(serverUrl, token, projectId);
                 AnalyticsApiProvider.uploadFile(uploadInfo.getUploadUrl(), file);
-                AnalyticsApiProvider.uploadFileInfo(serverUrl,
+                executions = AnalyticsApiProvider.uploadFileInfo(serverUrl,
                         projectId, timestamp, folderPath, file.getName(), uploadInfo.getPath(), isEnd, token);
             } else {
-                AnalyticsApiProvider.sendLog(serverUrl, projectId, timestamp, folderPath, filePath.toFile(), isEnd, token);
+                executions = AnalyticsApiProvider.sendLog(serverUrl, projectId, timestamp, folderPath, filePath.toFile(), isEnd, token);
             }
+        }
+        if (executions != null && !executions.isEmpty()) {
+            executions.stream()
+            .filter(execution -> execution != null)
+            .forEach(execution -> LogUtil.printOutputLine(
+                    MessageFormat.format(IntegrationAnalyticsMessages.MSG_EXECUTION_URL, execution.getWebUrl())));
         }
     }
     

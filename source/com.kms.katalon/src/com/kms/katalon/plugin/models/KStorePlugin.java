@@ -1,5 +1,7 @@
 package com.kms.katalon.plugin.models;
 
+import java.io.File;
+
 public class KStorePlugin {
 
     private long id;
@@ -31,6 +33,8 @@ public class KStorePlugin {
     private String location;
     
     private int remainingDay;
+    
+    private File file;
 
     public long getId() {
         return id;
@@ -150,5 +154,13 @@ public class KStorePlugin {
 
     public void setRemainingDay(int remainingDay) {
         this.remainingDay = remainingDay;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 }

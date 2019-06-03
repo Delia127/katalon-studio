@@ -101,10 +101,6 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                     break;
                 }
                 case "checkbox": {
-                    Label lblComponentLabel = new Label(container, SWT.NONE);
-                    lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-                    lblComponentLabel.setText(label);
-                    
                     Button chckComponentCheckboxEntry = new Button(container, SWT.CHECK);
                     chckComponentCheckboxEntry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
                     chckComponentCheckboxEntry.setText(label);
@@ -112,9 +108,6 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
                     break;
                 }
                 case "label": {
-                    Label lblComponentLabel = new Label(container, SWT.NONE);
-                    lblComponentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-                    lblComponentLabel.setText(label);
                     
                     Label lblComponentLabelEntry = new Label(container, SWT.NONE);
                     lblComponentLabelEntry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));

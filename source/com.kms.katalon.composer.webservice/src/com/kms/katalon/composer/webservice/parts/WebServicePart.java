@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -459,8 +459,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
 
     protected ScriptSnippet verificationScriptImport;
-    
-    protected File harFile;
 
     @Inject
     protected MDirtyable dirtyable;
@@ -483,6 +481,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected TestCaseVariableEditorView variableEditorView;
 
+    protected File harFile;
+    
     public WebServiceRequestEntity getOriginalWsObject() {
         return originalWsObject;
     }
@@ -566,16 +566,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         registerListeners();
         
         cbFollowRedirects.setSelection(originalWsObject.isFollowRedirects());
-        
-        createHarFile();
-    }
-    
-    private void createHarFile() {
-        try {
-            harFile = Files.createTempFile("request-", ".har").toFile();
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
     }
 
     private void insertImportsForVerificationScript() {
@@ -861,17 +851,30 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected abstract void sendRequest(boolean runVerificationScript);
 
+    protected void deleteTempHarFile() {
+        try {
+            if (harFile != null && harFile.exists()) {
+                FileUtils.forceDelete(harFile);
+            }
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
     protected Map<String, String> evaluateRequestVariables() throws Exception {
 
         WebServiceRequestEntity requestEntity = getWSRequestObject();
         List<VariableEntity> variables = requestEntity.getVariables();
-        Map<String, String> variableMap = variables.stream()
-                .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
+        if (!variables.isEmpty()) {
+            Map<String, String> variableMap = variables.stream()
+                    .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
+    
+            VariableEvaluator evaluator = new VariableEvaluator();
+            Map<String, String> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
 
-        VariableEvaluator evaluator = new VariableEvaluator();
-        Map<String, String> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
-
-        return evaluatedVariables;
+            return evaluatedVariables;
+        } else {
+            return new HashMap<>();
+        }
     }
 
     protected abstract void createParamsComposite(Composite parent);
@@ -1780,8 +1783,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     
     private void showHarFile() {
         try {
-            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-            IDE.openEditorOnFileStore(page, EFS.getStore(harFile.toURI()));
+            if (harFile != null && harFile.exists()) {
+                IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                IDE.openEditorOnFileStore(page, EFS.getStore(harFile.toURI()));
+            }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -2352,11 +2357,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 updateVariableManualView();
             }
 
-            if (invalidScheme == true) {
-                MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                        StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
-                return;
-            }
             saveVariables();
             saveVerificationScript();
             saveConfiguration();
@@ -2442,6 +2442,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (mPart == null || originalWsObject == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.equals(part.getElementId(), mPart.getElementId())) {
             return;

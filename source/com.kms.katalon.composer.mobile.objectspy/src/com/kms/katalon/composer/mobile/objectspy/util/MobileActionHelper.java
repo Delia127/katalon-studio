@@ -21,9 +21,15 @@ import com.kms.katalon.core.testobject.TestObject;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.AndroidKeyCode;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.HideKeyboardStrategy;
+import io.appium.java_client.touch.LongPressOptions;
+import io.appium.java_client.touch.TapOptions;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.ElementOption;
+import io.appium.java_client.touch.offset.PointOption;
 
 /**
  * This class duplicated codes from keywords to use for recorder
@@ -65,9 +71,10 @@ public class MobileActionHelper {
                         ta.move(screenSize.width / 2, (int) ((screenSize.height / 2) * 0.5)).perform();
                         ta.release().perform();
                     } else {
-                        TouchAction swipe = new TouchAction(driver).press(screenSize.width / 2, screenSize.height / 2)
-                                .waitAction(Duration.ofMillis(500))
-                                .moveTo(screenSize.width / 2, (int) ((screenSize.height / 2) * 0.5)).release();
+                        TouchAction<?> swipe = new TouchAction<>(driver).press(PointOption.point(screenSize.width / 2, screenSize.height / 2))
+                                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(500)))
+                                .moveTo(PointOption.point(screenSize.width / 2, (int) ((screenSize.height / 2) * 0.5)))
+                                .release();
                         swipe.perform();
                     }
                 } catch (Exception e) {
@@ -88,14 +95,16 @@ public class MobileActionHelper {
                     flowControl, null);
             return;
         }
-        TouchAction tap = new TouchAction(driver).tap(element, 1, 1);
+        TouchAction<?> tap = new TouchAction<>(driver)
+                .tap(TapOptions.tapOptions().withElement(ElementOption.element(element, 1, 1)));
         tap.perform();
     }
 
     public void tapAndHold(TestObject to) throws Exception {
         WebElement element = findElement(to, timeout);
-        TouchAction longPressAction = new TouchAction(driver);
-        longPressAction = longPressAction.longPress(element);
+        TouchAction<?> longPressAction = new TouchAction<>(driver);
+        longPressAction = longPressAction
+                .longPress(LongPressOptions.longPressOptions().withElement(ElementOption.element(element)));
         longPressAction.release().perform();
     }
 
@@ -126,7 +135,7 @@ public class MobileActionHelper {
                 IOSDriver<?> iosDriver = (IOSDriver<?>) driver;
                 iosDriver.hideKeyboard(HideKeyboardStrategy.PRESS_KEY, "Done");
             }
-        } finally { 
+        } finally {
             driver.context(context);
         }
     }
@@ -167,7 +176,7 @@ public class MobileActionHelper {
         try {
             internalSwitchToNativeContext(driver);
             if (driver instanceof AndroidDriver) {
-                ((AndroidDriver<?>) driver).pressKeyCode(AndroidKeyCode.BACK);
+                ((AndroidDriver<?>) driver).pressKey(new KeyEvent(AndroidKey.BACK));
             } else {
                 KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null);
                 return;

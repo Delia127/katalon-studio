@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.webservice.handlers;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -25,11 +26,14 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.view.ImportWebServiceObjectsFromPostmanDialog;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.EntityNameController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
@@ -61,7 +65,7 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
     @PostConstruct
     public void registerEventHandler() {
         eventBroker.subscribe(EventConstants.IMPORT_WEB_SERVICE_OBJECTS_FROM_POSTMAN, new EventHandler() {
-            
+
             @Override
             public void handleEvent(Event event) {
                 if (!canExecute()) {
@@ -71,40 +75,56 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
             }
         });
     }
-    
+
     @CanExecute
     private boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;
     }
-    
+
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,
             @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
         try {
-            ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
-            if (parentTreeEntity == null) {
-                if (objectRepositoryTreeRoot == null) {
-                    return;
-                }
-                parentTreeEntity = objectRepositoryTreeRoot;
-            }
+            ITreeEntity parentTreeEntity = objectRepositoryTreeRoot;
 
             FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
             ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
 
-            ImportWebServiceObjectsFromPostmanDialog dialog = new ImportWebServiceObjectsFromPostmanDialog(parentShell, parentFolderEntity);
-            
+            ImportWebServiceObjectsFromPostmanDialog dialog = new ImportWebServiceObjectsFromPostmanDialog(parentShell,
+                    parentFolderEntity);
+
             if (dialog.open() == Dialog.OK) {
+                List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
+                int i = 0;
+                for (WebServiceRequestEntity entity : requestEntities) {
+                    try {
+                        toController.saveNewTestObject(entity);
+                    } catch (Exception e) {
+                        if (i == 0) {
+                            entity.setName(EntityNameController.getInstance().getAvailableName("New Postman Request",
+                                    parentFolderEntity, false));
+                            i++;
+                        } else {
+                            entity.setName(EntityNameController.getInstance().getAvailableName(
+                                    "New Postman Request" + "(" + i + ")", parentFolderEntity, false));
+                            i++;
+                        }
+                        toController.saveNewTestObject(entity);
+
+                    }
+
+                }
+
+                trackImportPostman(dialog.getPostmanSpecLocation());
+
+                eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                 
-                 List<WebServiceRequestEntity> requestEntities = dialog.getWebServiceRequestEntities();
-                 for(WebServiceRequestEntity entity : requestEntities){
-                    toController.saveNewTestObject(entity);
-                 }
-                 
-                 trackImportPostman(dialog.getPostmanSpecLocation());
-                 
-                 eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-                 eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, parentTreeEntity);
+                List<WebElementTreeEntity> requestTreeEntities = new ArrayList<>();
+                for (WebServiceRequestEntity request: requestEntities) {
+                    requestTreeEntities.add(TreeEntityUtil.getWebElementTreeEntity(request, ProjectController.getInstance().getCurrentProject()));
+                }
+                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEMS,
+                        requestTreeEntities.toArray());
             }
         } catch (FilePathTooLongException e) {
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, e.getMessage());
@@ -114,15 +134,16 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ);
         }
     }
-    
+
     private void trackImportPostman(String postmanSpecLocation) {
-        try{
-             Paths.get(postmanSpecLocation);
+        try {
+            Paths.get(postmanSpecLocation);
             Trackings.trackImportPostman("file");
-        } catch (Throwable e){
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
     }
-    
+
     public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
         if (selectedObjects != null) {
             for (Object entity : selectedObjects) {
@@ -141,13 +162,13 @@ public class ImportWebServiceRequestObjectFromPostmanHandler {
         }
         return null;
     }
-    
+
     @Inject
     @Optional
     private void catchTestDataFolderTreeEntitiesRoot(
             @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
         try {
-            for(Object o : treeEntities) {
+            for (Object o : treeEntities) {
                 Object entityObject = ((ITreeEntity) o).getObject();
                 if (entityObject instanceof FolderEntity) {
                     FolderEntity folder = (FolderEntity) entityObject;

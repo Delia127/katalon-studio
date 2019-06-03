@@ -23,6 +23,10 @@ public class IntegrationAnalyticsMessages extends NLS {
     
     public static String MSG_DLG_PRG_CONNECTING_TO_SERVER;
     
+    public static String MSG_INTEGRATE_WITH_KA;
+    
+    public static String MSG_EXECUTION_URL;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, IntegrationAnalyticsMessages.class);

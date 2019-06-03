@@ -213,6 +213,9 @@ public class TestObjectPart extends CPart implements EventHandler, IComposerPart
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (mPart == null || originalTestObject == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.equals(mPart.getElementId(), part.getElementId())) {
             return;
