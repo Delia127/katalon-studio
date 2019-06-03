@@ -73,22 +73,22 @@ public class AnalyticsReportService implements AnalyticsComponent {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_INTEGRATE_WITH_KA);
         }
     }
-    
+
     private AnalyticsTokenInfo getKAToken() throws IOException, GeneralSecurityException, AnalyticsApiExeception {
-    	String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
-    	
-    	RunningMode runMode = ApplicationRunningMode.get();
-    	if (runMode == RunningMode.CONSOLE) {
-    		String apiKey = ApiKey.get();
-    		if (apiKey != null && !apiKey.isEmpty()) {
-        		return AnalyticsApiProvider.requestToken(serverUrl, "", apiKey);
-        	} else {
-        		LogUtil.printErrorLine(IntegrationAnalyticsMessages.VIEW_ERROR_MSG_SPECIFY_KATALON_API_KEY);
-        		return null;
-        	}
-    	}
-    	
-    	String email = getSettingStore().getEmail(isEncryptionEnabled());
+        String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+
+        RunningMode runMode = ApplicationRunningMode.get();
+        if (runMode == RunningMode.CONSOLE) {
+            String apiKey = ApiKey.get();
+            if (apiKey != null && !apiKey.isEmpty()) {
+                return AnalyticsApiProvider.requestToken(serverUrl, "", apiKey);
+            } else {
+                LogUtil.printErrorLine(IntegrationAnalyticsMessages.VIEW_ERROR_MSG_SPECIFY_KATALON_API_KEY);
+                return null;
+            }
+        }
+
+        String email = getSettingStore().getEmail(isEncryptionEnabled());
         String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
         return AnalyticsApiProvider.requestToken(serverUrl, email, password);
     }

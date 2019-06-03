@@ -40,26 +40,26 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getEmail(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-//        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, StringUtils.EMPTY,
-//                encryptionEnabled);
-    	return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        // return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, StringUtils.EMPTY,
+        // encryptionEnabled);
+        return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
     }
 
     public void setEmail(String email, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-//        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, email, encryptionEnabled);
+        // setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, email, encryptionEnabled);
     }
 
     public String getPassword(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-//        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, StringUtils.EMPTY,
-//                encryptionEnabled);
-    	String passwordDecode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-    	return CryptoUtil.decode(CryptoUtil.getDefault(passwordDecode));
+        // return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, StringUtils.EMPTY,
+        // encryptionEnabled);
+        String passwordDecode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        return CryptoUtil.decode(CryptoUtil.getDefault(passwordDecode));
     }
 
     public void setPassword(String rawPassword, boolean encryptionEnabled)
             throws IOException, GeneralSecurityException {
-//        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, rawPassword,
-//                encryptionEnabled);
+        // setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, rawPassword,
+        // encryptionEnabled);
     }
 
     public boolean isEncryptionEnabled() throws IOException {
