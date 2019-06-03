@@ -190,12 +190,6 @@ public class PluginService {
         }
     }
 
-    private void cleanUpDownloadDir() throws IOException {
-        File downloadDir = getRepoDownloadDir();
-        downloadDir.mkdirs();
-        FileUtils.cleanDirectory(downloadDir);
-    }
-
     private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientExceptionWithInfo {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
