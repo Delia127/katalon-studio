@@ -606,10 +606,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
         } else {
-            cbbProjects.setItems(
-                    AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
-        } else {
         	cbbProjects.clearSelection();
         	cbbProjects.removeAll();
         }
