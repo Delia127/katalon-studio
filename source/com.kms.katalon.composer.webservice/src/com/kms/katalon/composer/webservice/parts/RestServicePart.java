@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.webservice.parts;
 
-import java.io.File;
 //import java.awt.Label;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
@@ -17,7 +16,6 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -181,8 +179,8 @@ public class RestServicePart extends WebServicePart {
                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
-
-                        Map<String, String> evaluatedVariables = evaluateRequestVariables();
+                        
+                        Map<String, Object> evaluatedVariables = evaluateRequestVariables();
                         
                         BrowserMobProxyManager.newHar();
                         

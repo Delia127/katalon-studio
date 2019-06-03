@@ -231,7 +231,7 @@ public class SoapServicePart extends WebServicePart {
 
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
 
-                        Map<String, String> evaluatedVariables = evaluateRequestVariables();
+                        Map<String, Object> evaluatedVariables = evaluateRequestVariables();
 
                         BrowserMobProxyManager.newHar();
                         

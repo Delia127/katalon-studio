@@ -861,7 +861,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             LoggerSingleton.logError(e);
         }
     }
-    protected Map<String, String> evaluateRequestVariables() throws Exception {
+    protected Map<String, Object> evaluateRequestVariables() throws Exception {
 
         WebServiceRequestEntity requestEntity = getWSRequestObject();
         List<VariableEntity> variables = requestEntity.getVariables();
@@ -870,7 +870,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                     .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
     
             VariableEvaluator evaluator = new VariableEvaluator();
-            Map<String, String> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
+            Map<String, Object> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
 
             return evaluatedVariables;
         } else {

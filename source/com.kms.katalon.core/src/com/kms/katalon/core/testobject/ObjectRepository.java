@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrSubstitutor;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -29,6 +28,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.main.ScriptEngine;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
+import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
 
@@ -361,6 +361,15 @@ public class ObjectRepository {
 				}				
 			}
         }
+        
+       
+            
+        try {
+            ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
+            variables.put("GlobalVariable", scriptEngine.runScriptWithoutLogging("internal.GlobalVariable", new Binding()));
+        } catch (ClassNotFoundException | ResourceException | ScriptException | IOException e) {
+        }
+
         
         StrSubstitutor substitutor = new StrSubstitutor(variables);
         if ("SOAP".equals(serviceType)) {
