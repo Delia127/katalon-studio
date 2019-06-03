@@ -9,7 +9,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
-
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
@@ -29,14 +28,14 @@ public class ActivationInfoCollector {
         String activatedVal = ApplicationInfo.getAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME);
         String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
         String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-        String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        // String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+        //
+        // if (!StringUtils.isBlank(activationCode)) {
+        // return false;
+        // }
         
-        if (!StringUtils.isBlank(activationCode)) {
-            return true;
-        }
-        
-        if (!StringUtils.isBlank(username) && !StringUtils.isBlank(encryptedPassword)) {
-            return true;
+        if (StringUtils.isBlank(username) || StringUtils.isBlank(encryptedPassword)) {
+            return false;
         }
               
         if (activatedVal == null) {
@@ -72,7 +71,7 @@ public class ActivationInfoCollector {
             return false;
         }
     }
-
+    
     private static int getHostNameHashValue() throws Exception {
         String hostName = InetAddress.getLocalHost().getHostName();
         String ipAddress = InetAddress.getLocalHost().getHostAddress();
