@@ -47,13 +47,13 @@ public class ReportFileServiceManager {
         folder.mkdirs();
     }
 
-    public static String getReportFolderOfTestSuite(ProjectEntity project, TestSuiteEntity testSuite) throws Exception {
+    public static String getReportFolderOfTestSuite(ProjectEntity project, TestSuiteEntity testSuite, String executionSessionId) throws Exception {
         ITestSuiteDataProvider testSuiteProvider = new FileServiceDataProviderSetting().getTestSuiteDataProvider();
         String testSuiteIdWithoutRoot = testSuiteProvider.getIdForDisplay(testSuite)
                 .substring(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME.length() + 1);
         String reportRootFolderPath = FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation());
 
-        return reportRootFolderPath + File.separator + testSuiteIdWithoutRoot;
+        return reportRootFolderPath + File.separator + executionSessionId + File.separator + testSuiteIdWithoutRoot;
     }
 
     public static void deleteReport(ReportEntity report) throws Exception {

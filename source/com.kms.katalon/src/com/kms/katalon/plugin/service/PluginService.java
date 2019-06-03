@@ -146,7 +146,7 @@ public class PluginService {
                     }
                     reloadItem.markPluginInstalled(true);
                     PluginFactory.getInstance().addPlugin(plugin);
-                } catch (BundleException e) {
+                } catch (Exception e) {
                     LogService.getInstance().logError(e);
                     File pluginRepoDir = PluginSettings.getPluginRepoDir();
                     if (pluginRepoDir.exists()) {

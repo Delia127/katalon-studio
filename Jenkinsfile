@@ -228,19 +228,20 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
 
                     script {
                         dir("source") {
+                            def command = isRelease ? 'verify' : 'verify'
                             // Generate Katalon builds
                             // If branch name contains "release", build production mode for non-qTest package
                             // else build development mode for qTest package
                             if (isQtest) {
                                 echo "Building: qTest Prod"
-                                sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
+                                sh "mvn -pl \\!com.kms.katalon.product clean ${command} -P prod"
                             } else {
                                 echo "Building: Standard Prod"
-                                sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
+                                sh "mvn -pl \\!com.kms.katalon.product.qtest_edition clean ${command} -P prod"
                             }
 
                             // Generate API docs
-                            sh "cd com.kms.katalon.apidocs && mvn clean verify && cp -R 'target/resources/apidocs' ${env.tmpDir}"
+                            sh "cd com.kms.katalon.apidocs && mvn clean ${command} && cp -R 'target/resources/apidocs' ${env.tmpDir}"
                         }
                     }
                 }

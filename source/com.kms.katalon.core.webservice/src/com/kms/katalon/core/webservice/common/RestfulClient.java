@@ -1,21 +1,29 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.ssl.KeyMaterial;
 
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
@@ -55,8 +63,9 @@ public class RestfulClient extends BasicRequestor {
     private ResponseObject sendRequest(RequestObject request) throws Exception {
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
             SSLContext sc = SSLContext.getInstance(SSL);
-            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            sc.init(getKeyManagers(), getTrustManagers(), null);
+            SSLSocketFactory socketFactory = sc.getSocketFactory();
+            HttpsURLConnection.setDefaultSSLSocketFactory(socketFactory);
         }
 
         // If there are some parameters, they should be append after the Service URL
@@ -104,6 +113,7 @@ public class RestfulClient extends BasicRequestor {
                 }
             }
         }
+        
         return responseObject;
     }
     

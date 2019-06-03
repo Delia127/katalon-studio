@@ -29,7 +29,6 @@ import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
-import com.kms.katalon.jasper.pdf.TestSuitePdfGenerator;
 import com.kms.katalon.logging.LogUtil;
 
 import net.lingala.zip4j.core.ZipFile;
@@ -120,12 +119,14 @@ public class MailUtil {
         File attachedFile = null;
         if (conf.isSendAttachmentEnable()) {
             attachment = attach(conf.getAttachmentOptions(), suiteLogRecord);
-            attachedFile = new File(attachment.getURL().toURI());
-            email.attach(
-                    new FileDataSource(attachedFile), 
-                    attachment.getName(),
-                    attachment.getDescription(),
-                    attachment.getDisposition());
+            if (attachment != null) {
+                attachedFile = new File(attachment.getURL().toURI());
+                email.attach(
+                        new FileDataSource(attachedFile), 
+                        attachment.getName(),
+                        attachment.getDescription(),
+                        attachment.getDisposition());
+            }
         }
 
         // Set HTML formatted message
@@ -158,32 +159,33 @@ public class MailUtil {
         tmpReportDir.mkdir();
         for (File f : logFolder.listFiles()) {
             String fileName = f.getName();
-            if (fileName.endsWith(".html") && attachmentOptions.contains(ReportFormatType.HTML)
-                    || fileName.endsWith(".csv") && attachmentOptions.contains(ReportFormatType.CSV)
-                    || (fileName.endsWith(".log") || fileName.endsWith(".meta")
-                            || fileName.endsWith("execution.properties"))
-                            && attachmentOptions.contains(ReportFormatType.LOG)) {
+            if ((fileName.endsWith(".html") && attachmentOptions.contains(ReportFormatType.HTML))
+                    || (fileName.endsWith(".csv") && attachmentOptions.contains(ReportFormatType.CSV))
+                    || (isLogFile(fileName) && attachmentOptions.contains(ReportFormatType.LOG))
+                    || (fileName.endsWith(".pdf") && attachmentOptions.contains(ReportFormatType.PDF))) {
                 FileUtils.copyFileToDirectory(f, tmpReportDir);
             }
         }
-
-        if (attachmentOptions.contains(ReportFormatType.PDF)) {
-            TestSuitePdfGenerator generator = new TestSuitePdfGenerator(suiteLogRecord);
-            generator.exportToPDF(new File(tmpReportDir, logFolder.getName() + ".pdf").getAbsolutePath());
+        if (tmpReportDir.listFiles() != null && tmpReportDir.listFiles().length > 0) {
+            File zipFile = zip(tmpReportDir.getAbsolutePath(), tmpReportDir.getName());
+    
+            if (zipFile.length() > EMAIL_WARNING_SIZE) {
+                LogUtil.printOutputLine(ExecutionMessageConstants.MSG_EMAIL_ATTACHMENT_EXCEEDS_SIZE);
+            }
+            // Create the attachment
+            EmailAttachment attachment = new EmailAttachment();
+            attachment.setName(zipFile.getName());
+            attachment.setURL(zipFile.toURI().toURL());
+            attachment.setDisposition(EmailAttachment.ATTACHMENT);
+    
+            return attachment;
+        } else {
+            return null;
         }
+    }
 
-        File zipFile = zip(tmpReportDir.getAbsolutePath(), tmpReportDir.getName());
-
-        if (zipFile.length() > EMAIL_WARNING_SIZE) {
-            LogUtil.printOutputLine(ExecutionMessageConstants.MSG_EMAIL_ATTACHMENT_EXCEEDS_SIZE);
-        }
-        // Create the attachment
-        EmailAttachment attachment = new EmailAttachment();
-        attachment.setName(zipFile.getName());
-        attachment.setURL(zipFile.toURI().toURL());
-        attachment.setDisposition(EmailAttachment.ATTACHMENT);
-
-        return attachment;
+    private static boolean isLogFile(String fileName) {
+        return fileName.endsWith(".log") || fileName.endsWith(".meta") || fileName.endsWith("execution.properties");
     }
 
     private static File zip(String directory, String zipName) throws Exception {

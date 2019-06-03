@@ -131,8 +131,10 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
             public void widgetSelected(SelectionEvent e) {
                 FileDialog directoryDialog = new FileDialog(getParentShell());
                 String filePath = directoryDialog.open();
-                text.setText(filePath);
-                directory = filePath;
+                if (filePath != null) {
+                    text.setText(filePath);
+                    directory = filePath;
+                }
             }
         });
 
