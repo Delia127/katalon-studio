@@ -207,7 +207,7 @@ public class PluginService {
         } catch (Exception e) {
             if (StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_UNAUTHORIZED_SINGAL)) {
                 throw new ReloadPluginsException(
-                        "Unexpected error occurs during executing reload plugins due to invalid API Key", e);
+                        "Error occurs during executing reload plugins due to invalid API Key", e);
             }
             if (e instanceof KStoreClientExceptionWithInfo) {
                 KStoreClientExceptionWithInfo castedE = (KStoreClientExceptionWithInfo) e;
