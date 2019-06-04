@@ -31,7 +31,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
-public class PluginStoreToolControl {
+public class AccountToolControl {
 
     @Inject
     IEventBroker eventBroker;
@@ -110,8 +110,6 @@ public class PluginStoreToolControl {
                     }
                 });
                 
-                new MenuItem(menu, SWT.SEPARATOR);
-
                 new MenuItem(menu, SWT.SEPARATOR);
 
                 MenuItem manageApiKeyMenuItem = new MenuItem(menu, SWT.PUSH);
