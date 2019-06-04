@@ -29,7 +29,7 @@ public class LogoutHandler {
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.STORE_TOKEN) != null) {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, "", true);
             }
-            if (ApplicationCheckActivation.checkActivation(eventBroker)) {
+            if (ApplicationCheckActivation.checkActivation()) {
                 eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
             }
         } catch (Exception e) {

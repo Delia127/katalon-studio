@@ -202,7 +202,7 @@ public class LifeCycleManager {
 
                     ApplicationCheckActivation.scheduleCollectingStatistics();
 
-                    if (ApplicationCheckActivation.checkActivation(eventBroker)) {
+                    if (ApplicationCheckActivation.checkActivation()) {
                         eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
                     }
 

@@ -7,6 +7,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.tracking.core.TrackingManager;
@@ -15,7 +16,10 @@ import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 public class ApplicationCheckActivation {
     
-    public static boolean checkActivation(final IEventBroker eventBroker) throws Exception {
+    private static IEventBroker eventBroker;
+    
+    public static boolean checkActivation() throws Exception {
+        eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
         // if (VersionUtil.isInternalBuild()) {
         // return true;
         // }
