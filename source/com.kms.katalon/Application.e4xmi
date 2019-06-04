@@ -222,24 +222,6 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_KDRJMAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin" toBeRendered="false" visible="false">
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_1yN1YAbFEemu-rQeuokE_A" elementId="com.kms.katalon.toolbarseparator.1"/>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_27TkYAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.account.toolitem" label="Account" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/account_32x24.png" tooltip="Account">
-          <tags>FORCE_TEXT</tags>
-          <menu xmi:id="_UvQVUAbGEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.account.toolitem.menu">
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_vSdt4HusEemovvmQQcsgiA" elementId="com.kms.katalon.composer.toolbar.account.toolitem.menu.username" label="User Name" tooltip="User name"/>
-            <children xsi:type="menu:MenuSeparator" xmi:id="_3-Lg0HusEemovvmQQcsgiA" elementId="com.kms.katalon.menuseparator.4"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_5a7LoHusEemovvmQQcsgiA" elementId="com.kms.katalon.composer.toolbar.account.menu.viewdashboard" label="View Dashboard" tooltip="View Dashboard"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_Be7eUHutEemovvmQQcsgiA" elementId="com.kms.katalon.composer.toolbar.account.menu.gridexecution" label="Plan Grid Execution" tooltip="Plan Grid Execution"/>
-            <children xsi:type="menu:MenuSeparator" xmi:id="_KblQQHutEemovvmQQcsgiA" elementId="com.kms.katalon.menuseparator.5"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_gsFroAjzEemqvpskrRucLw" elementId="com.kms.katalon.composer.toolbar.account.menu.search" label="Visit Plugin Store" tooltip="" command="_1KbioAj0EemqvpskrRucLw"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_kqH2kAbGEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.account.menu.reload" label="Reload Plugins" iconURI="" tooltip=""/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_EYdBcAj0EemqvpskrRucLw" elementId="com.kms.katalon.composer.toolbar.account.menu.manage" label="Manage Plugins" tooltip=""/>
-            <children xsi:type="menu:MenuSeparator" xmi:id="_S48o8DHREemAoL-JB9vDaQ" elementId="com.kms.katalon.menuseparator.3"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_7_t30CRxEem3k_cDce2KKQ" elementId="com.kms.katalon.composer.toolbar.account.menu.manageclikeys" label="Manage API Keys" tooltip=""/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_YWEOIHutEemovvmQQcsgiA" elementId="com.kms.katalon.composer.toolbar.account.menu.logout" label="Log out" tooltip="Log out"/>
-            <children xsi:type="menu:MenuSeparator" xmi:id="_e_CGMHutEemovvmQQcsgiA" elementId="com.kms.katalon.menuseparator.6"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_TrJh8DHREemAoL-JB9vDaQ" elementId="com.kms.katalon.composer.toolbar.account.menu.help" label="Help"/>
-          </menu>
-        </children>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_p-mLQHbwEemVl_JFsJ2xNQ" elementId="com.kms.katalon.toolcontrol.0" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.PluginStoreToolControl"/>
     </trimBars>
