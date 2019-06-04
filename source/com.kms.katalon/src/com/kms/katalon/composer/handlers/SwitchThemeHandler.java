@@ -37,7 +37,7 @@ public class SwitchThemeHandler {
         changeCucumberEditorColor();
 
         if (MessageDialog.openQuestion(activeShell, StringConstants.INFO,
-                "Katalon Studio requires restart to take fully effect. Do you want to restart now?")) {
+                "Katalon Studio requires restart to take fully effect. Would you like to restart now?")) {
             PlatformUI.getWorkbench().restart(true);
         }
     }

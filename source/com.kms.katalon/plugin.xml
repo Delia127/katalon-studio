@@ -48,6 +48,10 @@
                value="0,290,450,10">
          </property>
          <property
+               name="cssTheme"
+               value="platform:/plugin/com.kms.katalon/css/default.css">
+         </property>
+         <property
                name="applicationCSS"
                value="platform:/plugin/com.kms.katalon/css/default.css">
          </property>
