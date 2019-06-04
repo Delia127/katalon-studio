@@ -17,6 +17,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler;
 import com.kms.katalon.composer.handlers.ManagePluginsHandler;
 import com.kms.katalon.composer.handlers.OpenPluginHelpPageHandler;
