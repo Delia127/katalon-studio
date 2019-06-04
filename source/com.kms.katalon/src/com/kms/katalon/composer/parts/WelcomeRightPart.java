@@ -187,6 +187,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         postConstruct();
         
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
+        eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, this);
     }
 
     public void reloadRecentProjects() {
@@ -280,8 +281,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
     }
 
     private void postConstruct() {
-        int lastSelectedTabId = Math.max(1,
-                PlatformUI.getPreferenceStore().getInt(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB));
+        int lastSelectedTabId = Math.abs(PlatformUI.getPreferenceStore().getInt(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB));
         setActiveTab(lastSelectedTabId);
     }
 
@@ -923,6 +923,9 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         switch (event.getTopic()) {
             case EventConstants.PROJECT_OPENED:
                 setDefaultTestingTypeTabByProjectType();
+                break;
+            case EventConstants.ACTIVATION_CHECKED:
+                postConstruct();
                 break;
             default:
                 break;

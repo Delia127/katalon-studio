@@ -40,6 +40,8 @@ public class DriverPropertyMapComposite extends Composite {
 
     public DriverPropertyMapComposite(Composite parent) {
         super(parent, SWT.NONE);
+        setBackground(ColorUtil.getCompositeBackgroundColorForDialog());
+        setBackgroundMode(SWT.INHERIT_FORCE);
 
         setLayout(new GridLayout(1, false));
         setLayoutData(new GridData(GridData.FILL_BOTH));

@@ -40,6 +40,7 @@ import com.kms.katalon.composer.handlers.SearchHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.composer.initializer.ContentAssistProposalInitializer;
+import com.kms.katalon.composer.initializer.CucumberEditorColorInitializer;
 import com.kms.katalon.composer.initializer.DefaultTextFontInitializer;
 import com.kms.katalon.composer.initializer.DisplayInitializer;
 import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
@@ -131,6 +132,7 @@ public class LifeCycleManager {
         new ProblemViewImageInitializer().setup();
         new DefaultTextFontInitializer().setup();
         new DisplayInitializer().setup();
+        new CucumberEditorColorInitializer().setup();
     }
 
     private void setupPreferences() {

@@ -155,7 +155,7 @@
     <theme
           basestylesheeturi="css/default.css"
           id="com.kms.katalon.theme.default"
-          label="Katalon Light Theme">
+          label="Katalon Default">
     </theme>
  </extension>
 </plugin>

@@ -830,7 +830,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmPlay.addSelectionListener(selectionListener);
         tltmPlay.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_ALL_STEPS);
 
-        setPlayButtonState(false);
+        //setPlayButtonState(false);
     }
 
     private void createRunScripContextMenu() {

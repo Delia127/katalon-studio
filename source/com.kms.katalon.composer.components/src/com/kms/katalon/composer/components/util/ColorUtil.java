@@ -263,5 +263,13 @@ public class ColorUtil {
             return display.getSystemColor(SWT.COLOR_BLACK);
         }
     }
+    
+    public static Color getCucumberCommentColor() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return JFaceColors.getErrorText(display);
+        } else {
+            return display.getSystemColor(SWT.COLOR_DARK_RED);
+        }
+    }
 
 }
