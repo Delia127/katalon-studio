@@ -14,8 +14,8 @@ import com.kms.katalon.logging.LogUtil;
 public class ViewDashboardHandler {
     
     @CanExecute
-    public void canExecute() {
-        return;
+    public boolean canExecute() {
+        return false;
     }
     
     @Execute
