@@ -54,10 +54,10 @@ import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
+import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
-import com.kms.katalon.core.util.BrowserMobProxyManager;
-import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.webservice.common.HarLogUtil;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -182,19 +182,17 @@ public class RestServicePart extends WebServicePart {
                         
                         Map<String, Object> evaluatedVariables = evaluateRequestVariables();
                         
-                        BrowserMobProxyManager.newHar();
-                        
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
                                 projectDir, ProxyPreferences.getProxyInformation(),
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables), false);
                         
                         deleteTempHarFile();
                         
-                        RequestInformation requestInformation = new RequestInformation();
-                        requestInformation.setTestObjectId(requestEntity.getId());
-                        requestInformation.setReportFolder(Files.createTempDirectory("har").toFile().getAbsolutePath());
-                        harFile = BrowserMobProxyManager.endHar(requestInformation);
-                        
+                        RequestObject requestObject = WebServiceController.getRequestObject(requestEntity, projectDir,
+                                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
+                        String logFolder = Files.createTempDirectory("har").toFile().getAbsolutePath();
+                        harFile = HarLogUtil.logHarFile(requestObject, responseObject, logFolder);
+        
                         if (monitor.isCanceled()) {
                             return;
                         }
