@@ -95,9 +95,6 @@ public class WebMobileDriverFactory {
                     capabilities.setCapability(AppiumDriverManager.REAL_DEVICE_LOGGER,
                             RunConfiguration.getDeviceConsoleExecutable());
                     capabilities.setCapability(AppiumDriverManager.WDA_LOCAL_PORT, AppiumDriverManager.getFreePort());
-                    if (AppiumDriverManager.getWebkitDebugPort() > 0) {
-                        capabilities.setCapability("webkitDebugProxyPort", AppiumDriverManager.getWebkitDebugPort());
-                    }
                 }
             } catch (ExecutionException e) {
                 // XCode version not found, ignore this
@@ -132,9 +129,7 @@ public class WebMobileDriverFactory {
      */
     public static AppiumDriver<?> createMobileDriver(WebUIDriverType osType)
             throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {
-        AppiumDriverManager.startAppiumService(osType, getDeviceId());
-        DesiredCapabilities desiredCapabilities = createCapabilities(osType, getDeviceOSVersion());
-        return AppiumDriverManager.createMobileDriver(osType, getDeviceId(), desiredCapabilities);
+        return AppiumDriverManager.createMobileDriver(osType, getDeviceId(), createCapabilities(osType, getDeviceOSVersion()));
     }
 
     /**

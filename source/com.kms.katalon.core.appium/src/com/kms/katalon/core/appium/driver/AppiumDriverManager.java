@@ -433,31 +433,18 @@ public class AppiumDriverManager {
         throw new MobileDriverInitializeException(
                 MessageFormat.format(AppiumStringConstants.CANNOT_CONNECT_TO_APPIUM_AFTER_X, timeOut));
     }
-    
-    public static int getWebkitDebugPort() {
-        int port = localStorageWebProxyPort.get();
-        Process process = localStorageWebProxyProcess.get();
-        if (port > 0 && process != null && process.isAlive()) {
-            return port;
-        }
-        return 0;
-    }
 
     public static AppiumDriver<?> createMobileDriver(DriverType driverType, String deviceId,
             DesiredCapabilities capabilities) throws IOException, InterruptedException, AppiumStartException,
             MobileDriverInitializeException, MalformedURLException {
-        URL appiumServerUrl = new URL(
-                APPIUM_SERVER_URL_PREFIX + localStorageAppiumPort.get() + APPIUM_SERVER_URL_SUFFIX);
-        return createMobileDriver(driverType, capabilities, appiumServerUrl);
-    }
-
-    public static void startAppiumService(DriverType driverType, String deviceId)
-            throws IOException, InterruptedException, AppiumStartException, MobileDriverInitializeException {
         ensureServicesStarted(driverType, deviceId);
         Process appiumService = localStorageAppiumServer.get();
         if (appiumService == null) {
             throw new MobileDriverInitializeException(AppiumStringConstants.APPIUM_NOT_STARTED);
         }
+        URL appiumServerUrl = new URL(
+                APPIUM_SERVER_URL_PREFIX + localStorageAppiumPort.get() + APPIUM_SERVER_URL_SUFFIX);
+        return createMobileDriver(driverType, capabilities, appiumServerUrl);
     }
 
     @SuppressWarnings("rawtypes")
