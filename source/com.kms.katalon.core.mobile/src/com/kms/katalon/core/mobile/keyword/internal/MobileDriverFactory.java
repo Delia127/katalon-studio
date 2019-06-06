@@ -389,6 +389,7 @@ public class MobileDriverFactory {
                     createCapabilities(osType, deviceId, deviceName, platformVersion, appFile, uninstallAfterCloseApp),
                     new URL(remoteWebUrl));
         }
+        AppiumDriverManager.startAppiumService(osType, deviceId);
         return AppiumDriverManager.createMobileDriver(osType, deviceId,
                 createCapabilities(osType, deviceId, deviceName, platformVersion, appFile, uninstallAfterCloseApp));
     }
