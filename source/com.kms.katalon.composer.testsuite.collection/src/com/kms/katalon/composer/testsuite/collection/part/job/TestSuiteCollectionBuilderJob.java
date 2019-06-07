@@ -100,8 +100,6 @@ public class TestSuiteCollectionBuilderJob extends Job {
                     tsLaunchers, testSuiteCollectionEntity.getExecutionMode(), reportCollection);
             launcherManager.addLauncher(launcher);
             
-            trackTestSuiteColletionExecution();
-            
             reportController.updateReportCollection(reportCollection);
             return Status.OK_STATUS;
         } catch (DALException e) {
@@ -112,10 +110,6 @@ public class TestSuiteCollectionBuilderJob extends Job {
 //            UsageInfoCollector
 //                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
         }
-    }
-    
-    private void trackTestSuiteColletionExecution() {
-        Trackings.trackExecuteTestSuiteCollectionInGuiMode();
     }
 
     private boolean checkInstallWebDriver(TestSuiteRunConfiguration tsRunConfig) {

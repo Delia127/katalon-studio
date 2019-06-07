@@ -66,7 +66,7 @@ public class ExecuteTestCaseJob extends Job {
 
             startLauncher();
 
-            Trackings.trackExecuteTestCase(launchMode.toString(), runConfig.getName());
+            //Trackings.trackExecuteTestCase(launchMode.toString(), runConfig.getName());
             
             monitor.worked(1);
 

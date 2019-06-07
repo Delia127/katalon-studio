@@ -3,17 +3,21 @@ package com.kms.katalon.execution.launcher;
 import java.io.IOException;
 import java.util.List;
 
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.core.logging.XmlLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
+import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.process.ConsoleProcess;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.execution.launcher.process.LaunchProcessor;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ConsoleLauncher extends ReportableLauncher implements IConsoleLauncher {
     public ConsoleLauncher(LauncherManager manager, IRunConfiguration runConfig) {
@@ -61,6 +65,29 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
     public String getStatusMessage(int consoleWidth) {
         return getDefaultStatusMessage(consoleWidth);
     }
+    
+    @Override
+    protected void postExecutionComplete() {
+        super.postExecutionComplete();
+        if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
+            String result = getExecutionResult();
+            Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated(),
+                    runConfig.getName(), result, getEndTime().getTime() - getStartTime().getTime());
+        }
+    }
+    
+    protected String getExecutionResult() {
+        String resultExecution = null;
+        if (getResult().getNumFailures() > 0) {
+            resultExecution = TestStatusValue.FAILED.toString();
+        } else if (getResult().getNumErrors() > 0) {
+            resultExecution = TestStatusValue.ERROR.toString();
+        } else {
+            resultExecution = TestStatusValue.PASSED.toString();
+        }
+        return resultExecution;
+    }
+
     
     @Override
     protected void onStartExecution() {

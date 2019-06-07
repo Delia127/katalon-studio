@@ -11,6 +11,12 @@
       <persistedState key="index" value="9"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/mobile_record_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
+      <menu xmi:id="_WgIeEHInEem6_f3XMJ6-2w" elementId="com.kms.katalon.composer.mobile.recorder.menu.0">
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_XRSOMHInEem6_f3XMJ6-2w" elementId="com.kms.katalon.composer.mobile.recorder.directmenuitem.android" label="Android Devices" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/android_16.png" tooltip="Record Android applications" contributionURI="bundleclass://com.kms.katalon.composer.mobile.recorder/com.kms.katalon.composer.mobile.recorder.handlers.OpenAndroidRecorderHandler"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_9oZdkHIoEem6_f3XMJ6-2w" elementId="com.kms.katalon.composer.mobile.recorder.directmenuitem.ios" label="iOS Devices" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/apple_16.png" tooltip="Record iOS applications" contributionURI="bundleclass://com.kms.katalon.composer.mobile.recorder/com.kms.katalon.composer.mobile.recorder.handlers.OpenIosRecorderHandler"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_5NlosHI0Eem6_f3XMJ6-2w" elementId="com.kms.katalon.composer.mobile.recorder.menuseparator.0"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_t_pwoHI0Eem6_f3XMJ6-2w" elementId="com.kms.katalon.composer.mobile.recorder.directmenuitem.kobiton" label="Kobiton Devices" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/kobiton_16.png" tooltip="Record mobile applications on Kobiton cloud devices" contributionURI="bundleclass://com.kms.katalon.composer.mobile.recorder/com.kms.katalon.composer.mobile.recorder.handlers.OpenKobitonRecoderHandler"/>
+      </menu>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6gzv0MxLEeis-d8dVdcONw" featurename="children" parentElementId="com.kms.katalon.menu.record" positionInList="after:com.kms.katalon.composer.webui.recorder.handledmenuitem.recordweb">

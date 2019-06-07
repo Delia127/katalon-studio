@@ -92,12 +92,6 @@ class KURecorder {
         this.rec_createInfoDiv();
         var currentURL = this.window.document.url;
         this.checkForNavigateAction(currentURL);
-        this.elementBeingObservedOnMouseDown = null;
-        this.jsonizedClickOnElementBeingObservedOnMouseDown = null;
-        this.mouseDownObserver = new MutationObserver(mutations => {
-            this.rec_processObject(this.jsonizedClickOnElementBeingObservedOnMouseDown);
-            this.mouseDownObserver.disconnect();
-        });
     }
 
     // This part of code is copyright by Software Freedom Conservancy(SFC)
@@ -442,22 +436,6 @@ class KURecorder {
         var jsonObject = mapDOMForRecord(action, element, window);
         this.rec_processObject(jsonObject);
     }
-
-    rec_jsonizeDataToBeSent(action, element) {
-        if(!element) {
-            return;
-        }
-        var jsonObject = mapDOMForRecord(action, element, window);
-        return jsonObject;
-    }
-
-    rec_jsonizeClickTarget(selectedElement, clickType) {
-        var action = {};
-        action["actionName"] = 'click';
-        action["actionData"] = clickType;
-        return this.rec_jsonizeDataToBeSent(action, selectedElement);
-    }
-
     rec_windowFocus(selectedElement) {
         if (selectedElement.tagName.toLowerCase() == 'select') {
             selectedElement.oldValue = this.rec_getSelectValues(selectedElement);
