@@ -16,6 +16,7 @@ public enum MobileAction implements IMobileAction {
     SwitchToLandscape("switchToLandscape", "Switch the mobile device's orientation to landscape mode"),
     SwitchToPortrait("switchToPortrait", "Switch the mobile device's orientation to portrait mode"),
     StartApplication("startApplication", "Start the application", false),
+    StartExistingApplication("startExistingApplication", "Start an existing application", false),
     CloseApplication("closeApplication", "Close the application", false);
 
     private String description;

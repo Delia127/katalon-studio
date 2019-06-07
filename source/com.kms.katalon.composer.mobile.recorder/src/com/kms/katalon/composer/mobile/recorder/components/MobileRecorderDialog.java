@@ -934,9 +934,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     private void addAdditionalActions() {
-        if (recordedActions.isEmpty() || recordedActions.get(0).getAction() != MobileAction.StartApplication) {
-            recordedActions.add(0, new MobileActionMapping(MobileAction.StartApplication, null));
-        }
         MobileActionMapping lastRecordAction = recordedActions.get(recordedActions.size() - 1);
         if (lastRecordAction.getAction() != MobileAction.CloseApplication) {
             recordedActions.add(new MobileActionMapping(MobileAction.CloseApplication, null));
