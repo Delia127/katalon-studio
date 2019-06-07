@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.actions;
+package com.kms.katalon.composer.mobile.objectspy.actions;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;

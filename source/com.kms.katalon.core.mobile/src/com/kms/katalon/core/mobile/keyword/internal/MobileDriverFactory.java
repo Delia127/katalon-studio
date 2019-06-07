@@ -199,8 +199,6 @@ public class MobileDriverFactory {
             driverPreferences.remove(MobileCapabilityType.BROWSER_NAME);
         }
         if (driverPreferences != null && osType == MobileDriverType.IOS_DRIVER) {
-            capabilities
-                    .merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
             try {
                 if (AppiumDriverManager.getXCodeVersion() >= 8) {
@@ -215,15 +213,16 @@ public class MobileDriverFactory {
             if (deviceId == null) {
                 capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
             }
+            capabilities
+                    .merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
         } else if (driverPreferences != null && osType == MobileDriverType.ANDROID_DRIVER) {
-            capabilities.setCapability("autoGrantPermissions", true);
-            capabilities.merge(
-                    convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
             capabilities.setPlatform(Platform.ANDROID);
-            capabilities.setCapability("autoGrantPermissions", true);
             if (isUsingAndroid7OrBigger()) {
                 capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.UIAUTOMATOR2);
             }
+            capabilities.setCapability("autoGrantPermissions", true);
+            capabilities.merge(
+                    convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
         }
         if (StringUtils.isNotEmpty(platformVersion)) {
             capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, platformVersion);
