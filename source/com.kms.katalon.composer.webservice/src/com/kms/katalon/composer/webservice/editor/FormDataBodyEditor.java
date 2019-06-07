@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.composer.components.impl.editors.SingleFileSelectionDialogCellEditor;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -56,7 +57,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
         tvParams.setContentProvider(ArrayContentProvider.getInstance());
         Table tParams = tvParams.getTable();
         tParams.setHeaderVisible(true);
-        tParams.setLinesVisible(true);
+        tParams.setLinesVisible(ControlUtils.shouldLineVisble(tParams.getDisplay()));
 
         ColumnViewerToolTipSupport.enableFor(tvParams, ToolTip.NO_RECREATE);
 

@@ -38,6 +38,7 @@ import org.openqa.selenium.Keys;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
@@ -121,7 +122,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         treeViewer = new CTreeViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Tree childTableTree = treeViewer.getTree();
         childTableTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        childTableTree.setLinesVisible(true);
+        childTableTree.setLinesVisible(ControlUtils.shouldLineVisble(childTableTree.getDisplay()));
         childTableTree.setHeaderVisible(true);
 
         TreeColumnLayout treeColumnLayout = new TreeColumnLayout();

@@ -9,12 +9,14 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -104,7 +106,7 @@ public class EventLogPart {
             StyleRange range = new StyleRange();
             range.start = text.getText().length();
             range.length = colorString.getString().length();
-            range.foreground = colorString.isError() ? ColorUtil.getTextErrorColor() : ColorUtil.getDefaultTextColor();
+            range.foreground = colorString.isError() ? JFaceColors.getErrorText(text.getDisplay()) : ColorUtil.getTextColor();
 
             text.append(colorString.getString());
             text.setStyleRange(range);

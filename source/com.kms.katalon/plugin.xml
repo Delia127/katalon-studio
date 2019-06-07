@@ -48,6 +48,10 @@
                value="0,290,450,10">
          </property>
          <property
+               name="cssTheme"
+               value="platform:/plugin/com.kms.katalon/css/default.css">
+         </property>
+         <property
                name="applicationCSS"
                value="platform:/plugin/com.kms.katalon/css/default.css">
          </property>
@@ -150,4 +154,12 @@
 		 </activeWhen>
 	  	</handler>
 	</extension>
+ <extension
+       point="org.eclipse.e4.ui.css.swt.theme">
+    <theme
+          basestylesheeturi="css/default.css"
+          id="com.kms.katalon.theme.default"
+          label="Katalon Default">
+    </theme>
+ </extension>
 </plugin>

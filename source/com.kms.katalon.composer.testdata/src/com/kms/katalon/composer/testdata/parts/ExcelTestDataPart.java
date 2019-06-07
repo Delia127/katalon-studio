@@ -278,7 +278,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // tableViewer.getTable().setHeaderVisible(true);
-        tableViewer.getTable().setLinesVisible(true);
+        tableViewer.getTable().setLinesVisible(ControlUtils.shouldLineVisble(tableViewer.getTable().getDisplay()));
 
         TableViewerColumn tbviewerClmnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tbclmnNo = tbviewerClmnNo.getColumn();

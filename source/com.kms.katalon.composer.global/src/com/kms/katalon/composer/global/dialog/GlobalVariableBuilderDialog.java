@@ -103,7 +103,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 
         // Enable editing on Tab move
         TableViewerEditor.create(tableViewer, new ColumnViewerEditorActivationStrategy(tableViewer),

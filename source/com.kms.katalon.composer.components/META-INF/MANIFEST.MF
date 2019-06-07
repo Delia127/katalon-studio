@@ -4,7 +4,8 @@ Bundle-Name: Components
 Bundle-SymbolicName: com.kms.katalon.composer.components;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.composer.components.adapter,
+Export-Package: com.kms.katalon.composer.components,
+ com.kms.katalon.composer.components.adapter,
  com.kms.katalon.composer.components.application,
  com.kms.katalon.composer.components.controls,
  com.kms.katalon.composer.components.dialogs,
@@ -37,7 +38,10 @@ Require-Bundle: org.eclipse.jface,
  com.kms.katalon.tracking,
  com.kms.katalon.composer.util,
  com.kms.katalon.core,
- com.katalon.platform
+ com.katalon.platform,
+ org.eclipse.e4.ui.css.swt.theme,
+ org.eclipse.ui.themes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"
+Bundle-Activator: com.kms.katalon.composer.components.ComponentBundleActivator

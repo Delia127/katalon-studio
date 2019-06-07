@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
@@ -26,11 +27,11 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
@@ -55,7 +56,7 @@ public class KeywordBrowserPart implements EventHandler {
 
     private TreeViewer treeViewer;
 
-    private Text txtSearchInput;
+    private StyledText txtSearchInput;
 
     private KeywordTreeLabelProvider labelProvider;
 
@@ -158,9 +159,11 @@ public class KeywordBrowserPart implements EventHandler {
         grSearchComposite.heightHint = 24;
         searchComposite.setLayoutData(grSearchComposite);
 
-        txtSearchInput = new Text(searchComposite, SWT.NONE);
+        txtSearchInput = new StyledText(searchComposite, SWT.SINGLE);
         txtSearchInput.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        txtSearchInput.setMessage(SEARCH_TEXT_DEFAULT_VALUE);
+
+        StyledTextMessage styledTextMessage = new StyledTextMessage(txtSearchInput);
+        styledTextMessage.setMessage(SEARCH_TEXT_DEFAULT_VALUE);
 
         GridData gdTxtInput = new GridData(GridData.FILL_HORIZONTAL);
         gdTxtInput.grabExcessVerticalSpace = true;

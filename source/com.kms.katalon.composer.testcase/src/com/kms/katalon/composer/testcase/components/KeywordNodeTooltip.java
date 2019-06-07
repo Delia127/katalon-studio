@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 
@@ -113,6 +114,7 @@ public class KeywordNodeTooltip {
         lbl.setLayoutData(gd);
 
         toolBar = new ToolBar(composite, SWT.NONE);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         gd = new GridData();
         gd.horizontalAlignment = SWT.FILL;
         gd.heightHint = TOOLBAR_DEFAULT_HEIGHT;

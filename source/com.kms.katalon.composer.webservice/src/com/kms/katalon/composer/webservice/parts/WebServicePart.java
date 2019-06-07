@@ -882,6 +882,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected ToolBar createAddRemoveToolBar(Composite parent, SelectionListener addSelectionListener,
             SelectionListener removeSelectionListener) {
         ToolBar toolbar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         toolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         ToolItem tiAdd = new ToolItem(toolbar, SWT.RIGHT);
@@ -1989,7 +1990,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         Table table = tblNameValue.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 
         // Double click to add new property

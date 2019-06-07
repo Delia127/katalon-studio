@@ -49,6 +49,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
@@ -89,6 +90,7 @@ public class ExternalLibratiesSettingPage extends PreferencePageWithHelp {
         container.setLayout(new GridLayout(1, false));
 
         ToolBar toolBar = new ToolBar(container, SWT.FLAT | SWT.RIGHT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         tltmAddJars = new ToolItem(toolBar, SWT.NONE);
         tltmAddJars.setText(StringConstants.ADD);

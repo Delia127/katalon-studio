@@ -28,8 +28,8 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_c3zv8MKsEea8__5yGerh4w" elementId="com.kms.katalon.composer.explorer.popupmenu.explore" label="Open containing folder" command="_yoRWIMKtEea8__5yGerh4w"/>
       </menus>
       <toolbar xmi:id="_aZAhMIRYEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.toolbar.0">
-        <children xsi:type="menu:HandledToolItem" xmi:id="_a0KMIIRYEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handledtoolitem.collapseAll" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/collapse_16.png" tooltip="Collapse All" command="_Cl0jYIRZEeW5IumwiTbixg"/>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_T4SpYIRcEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handledtoolitem.linkPart" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/focus_16.png" tooltip="Link with Selected Part" type="Check" command="_bc4cMIRcEeW5IumwiTbixg"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_a0KMIIRYEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handledtoolitem.collapseAll" iconURI="platform:/plugin/org.eclipse.jdt.ui/icons/full/elcl16/collapseall.png" tooltip="Collapse All" command="_Cl0jYIRZEeW5IumwiTbixg"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_T4SpYIRcEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handledtoolitem.linkPart" iconURI="platform:/plugin/org.eclipse.ui.workbench.texteditor/icons/full/elcl16/link_to_editor.png" tooltip="Link with Selected Part" type="Check" command="_bc4cMIRcEeW5IumwiTbixg"/>
       </toolbar>
     </elements>
   </fragments>

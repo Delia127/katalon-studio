@@ -174,7 +174,7 @@ public class DBTestDataPart extends TestDataMainPart {
 
         tableViewer = new TableViewer(compTable, SWT.VIRTUAL | SWT.FULL_SELECTION);
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        tableViewer.getTable().setLinesVisible(true);
+        tableViewer.getTable().setLinesVisible(ControlUtils.shouldLineVisble(tableViewer.getTable().getDisplay()));
 
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tableColumnNo = tableViewerColumnNo.getColumn();
