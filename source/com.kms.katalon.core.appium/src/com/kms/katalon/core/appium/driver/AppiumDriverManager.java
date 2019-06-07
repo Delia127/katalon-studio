@@ -154,7 +154,8 @@ public class AppiumDriverManager {
     private static void startWebProxyServer(String deviceId)
             throws IOException, InterruptedException, IOSWebkitStartException {
         int freePort = getFreePort();
-        String[] webProxyServerCmd = { IOS_WEBKIT_DEBUG_PROXY_EXECUTABLE, C_FLAG, deviceId + ":" + freePort };
+        String[] webProxyServerCmd = { "/bin/sh", "-c",
+                String.format("%s -c %s:%d -d", IOS_WEBKIT_DEBUG_PROXY_EXECUTABLE, deviceId, freePort) };
         ProcessBuilder webProxyServerProcessBuilder = new ProcessBuilder(webProxyServerCmd);
         webProxyServerProcessBuilder
                 .redirectOutput(new File(new File(RunConfiguration.getAppiumLogFilePath()).getParent() + File.separator

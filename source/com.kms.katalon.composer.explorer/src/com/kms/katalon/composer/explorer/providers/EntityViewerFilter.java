@@ -100,7 +100,7 @@ public class EntityViewerFilter extends AbstractEntityViewerFilter {
                     return true;
                 }
 
-                if (entity.getText().toLowerCase().contains(contentString)) {
+                if (entity.getText().toLowerCase().contains(contentString.toLowerCase())) {
                     return true;
                 }
 

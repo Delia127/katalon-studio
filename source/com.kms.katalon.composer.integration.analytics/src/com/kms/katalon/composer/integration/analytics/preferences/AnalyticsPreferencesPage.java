@@ -260,7 +260,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     @Override
     public boolean performOk() {
-    	
+        
         if (!isInitialized()) {
             return true;
         }
@@ -338,19 +338,19 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
             
             selectProjectFromConfig = analyticsSettingStore.getProject();
-    		selectTeamFromConfig = analyticsSettingStore.getTeam();
-    		
-    		teams.clear();
-    		projects.clear();
-    		
-    		teams.add(selectTeamFromConfig);
-    		projects.add(selectProjectFromConfig);
+            selectTeamFromConfig = analyticsSettingStore.getTeam();
             
-    		cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-    		int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+            teams.clear();
+            projects.clear();
+            
+            teams.add(selectTeamFromConfig);
+            projects.add(selectProjectFromConfig);
+            
+            cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+            int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
             cbbTeams.select(indexSelectTeam);
             setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
-    		
+            
             if (enableAnalyticsIntegration.getSelection()) {
                 AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
                         analyticsSettingStore.getServerEndpoint(encryptionEnabled),
@@ -411,19 +411,19 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     private boolean checkUserCanAccessProject() throws IOException {
-    	AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
+        AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
 
-    	if (currentTeam.getId() != null) {
-    		long currentTeamId = currentTeam.getId();
-        	for (AnalyticsTeam team : teams) {
-        		long teamId = team.getId();
-        		if (teamId == currentTeamId) {
-        			return true;
-        		}
-        	}
-        	return false;
-    	} 
-    	return true;
+        if (currentTeam.getId() != null) {
+            long currentTeamId = currentTeam.getId();
+            for (AnalyticsTeam team : teams) {
+                long teamId = team.getId();
+                if (teamId == currentTeamId) {
+                    return true;
+                }
+            }
+            return false;
+        } 
+        return true;
     }
     
     private void maskPasswordField() {
@@ -507,17 +507,17 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(getShell()));
                 
                 if (teams != null && !teams.isEmpty()) {
-					projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-					        teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
-					        tokenInfo,
-					        new ProgressMonitorDialog(getShell()));
+                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                            teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
+                            tokenInfo,
+                            new ProgressMonitorDialog(getShell()));
 
-					cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-					int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-					cbbTeams.select(indexSelectTeam);
-					                    
-					setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
-					linkStatusAccessProject.setText("");
+                    cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                    int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                    cbbTeams.select(indexSelectTeam);
+                                        
+                    setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+                    linkStatusAccessProject.setText("");
                 }
                 changeEnabled();
             }
@@ -527,29 +527,29 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 AnalyticsTeam selectTeamFromUser = teams.get(cbbTeams.getSelectionIndex());
-				if (!canAccessProject) {
-					if (selectTeamFromUser.equals(selectTeamFromConfig)) {
-						return;
-					} else {
-						teams.remove(selectTeamFromConfig);
-				    	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-				    	int indexSelectTeam = teams.indexOf(selectTeamFromUser);
-				    	
-				        cbbTeams.select(indexSelectTeam);
-				        linkStatusAccessProject.setText("");
-				        canAccessProject = true;
-					}
-				}
-				
-				String serverUrl = txtServerUrl.getText();
-				String email = txtEmail.getText();
-				String password = txtPassword.getText();
-				AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
-				projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-						selectTeamFromUser, tokenInfo, new ProgressMonitorDialog(getShell()));
-				
-				setProjectsBasedOnTeam(selectTeamFromUser, projects);
-				changeEnabled();
+                if (!canAccessProject) {
+                    if (selectTeamFromUser.equals(selectTeamFromConfig)) {
+                        return;
+                    } else {
+                        teams.remove(selectTeamFromConfig);
+                        cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                        int indexSelectTeam = teams.indexOf(selectTeamFromUser);
+                        
+                        cbbTeams.select(indexSelectTeam);
+                        linkStatusAccessProject.setText("");
+                        canAccessProject = true;
+                    }
+                }
+                
+                String serverUrl = txtServerUrl.getText();
+                String email = txtEmail.getText();
+                String password = txtPassword.getText();
+                AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
+                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                        selectTeamFromUser, tokenInfo, new ProgressMonitorDialog(getShell()));
+                
+                setProjectsBasedOnTeam(selectTeamFromUser, projects);
+                changeEnabled();
             }
         });
 
@@ -606,8 +606,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
         } else {
-        	cbbProjects.clearSelection();
-        	cbbProjects.removeAll();
+            cbbProjects.clearSelection();
+            cbbProjects.removeAll();
         }
         String role = team.getRole();
         if (role.equals("USER")) {

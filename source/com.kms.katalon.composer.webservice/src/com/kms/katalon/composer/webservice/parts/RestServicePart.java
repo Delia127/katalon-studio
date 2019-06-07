@@ -179,8 +179,8 @@ public class RestServicePart extends WebServicePart {
                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
-
-                        Map<String, String> evaluatedVariables = evaluateRequestVariables();
+                        
+                        Map<String, Object> evaluatedVariables = evaluateRequestVariables();
                         
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
                                 projectDir, ProxyPreferences.getProxyInformation(),
