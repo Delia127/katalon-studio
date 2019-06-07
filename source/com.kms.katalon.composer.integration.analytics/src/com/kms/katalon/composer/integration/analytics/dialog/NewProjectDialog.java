@@ -21,12 +21,12 @@ import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
-import com.kms.katalon.composer.integration.analytics.handlers.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 
 public class NewProjectDialog extends AbstractDialog {
     
@@ -168,6 +168,5 @@ public class NewProjectDialog extends AbstractDialog {
     private boolean isDisposed() {
         Shell shell = getShell();
         return shell == null || shell.isDisposed();
-    }
-    
+    } 
 }

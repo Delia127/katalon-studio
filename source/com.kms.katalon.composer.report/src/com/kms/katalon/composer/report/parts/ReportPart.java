@@ -90,7 +90,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.AuthenticationDialog;
 import com.kms.katalon.composer.integration.analytics.dialog.UploadSelectionDialog;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;

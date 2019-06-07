@@ -36,6 +36,7 @@ import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptio
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
+import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
@@ -69,9 +70,11 @@ public class ConsoleMain {
 
     public final static String TESTSUITE_QUERY = "testSuiteQuery";
 
-    public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
+    public static final String KATALON_API_KEY_OPTION = "apiKey";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
+    
+    public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
 
     private ConsoleMain() {
         // hide constructor
@@ -95,8 +98,12 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
-            if (options.has(KATALON_STORE_API_KEY_OPTION)) {
-                String apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
+            
+            if (options.has(KATALON_API_KEY_OPTION)) {
+                String apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
+                ApiKeyHandler.setApiKeyToProject(apiKeyValue);
+                
+                //Store
                 reloadPlugins(apiKeyValue);
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
@@ -116,7 +123,7 @@ public class ConsoleMain {
                         consoleOptionValueMap);
                 addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
             }
-
+            
             // Set option value to application configuration
             for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
                 String optionName = opt.getOption();
@@ -142,6 +149,7 @@ public class ConsoleMain {
             waitForExecutionToFinish(options);
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
+            
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
@@ -154,7 +162,7 @@ public class ConsoleMain {
             LauncherManager.getInstance().removeAllTerminated();
         }
     }
-
+    
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> reloadPluginsHandlerClass = katalonBundle

@@ -23,9 +23,13 @@ public class IntegrationAnalyticsMessages extends NLS {
     
     public static String MSG_DLG_PRG_CONNECTING_TO_SERVER;
     
+    public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
+
     public static String MSG_INTEGRATE_WITH_KA;
     
     public static String MSG_EXECUTION_URL;
+    
+    public static String VIEW_ERROR_MSG_SPECIFY_KATALON_API_KEY;
     
     static {
         // initialize resource bundle
