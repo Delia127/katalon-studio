@@ -207,4 +207,8 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     private void setPartLabel(String label) {
         mpart.setLabel(label);
     }
+    
+    public MPart getMPart() {
+        return mpart;
+    }
 }

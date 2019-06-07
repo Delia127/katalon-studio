@@ -146,6 +146,24 @@ public class ReportController extends EntityController {
         }
         return lastRunReport;
     }
+    
+    public ReportCollectionEntity getLastRunReportCollectionEntity(TestSuiteCollectionEntity testSuiteCollection) throws Exception {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        ReportCollectionEntity lastRunReport = null;
+        List<ReportCollectionEntity> reports = listReportCollectionEntities(testSuiteCollection, project);
+        if (reports.size() > 0) {
+            lastRunReport = reports.get(0);
+            Date lastRunDate = lastRunReport.getDateCreated();
+            for (ReportCollectionEntity report : reports) {
+                Date reportDate = report.getDateCreated();
+                if (reportDate.after(lastRunDate)) {
+                    lastRunDate = reportDate;
+                    lastRunReport = report;
+                }
+            }
+        }
+        return lastRunReport;
+    }
 
     private Date parseReportDateFromName(String reportName) throws ParseException {
         return dateFormat.parse(reportName);
@@ -192,6 +210,10 @@ public class ReportController extends EntityController {
     public List<ReportEntity> listReportEntities(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
             throws Exception {
         return getDataProviderSetting().getReportDataProvider().listReportEntities(testSuiteEntity, projectEntity);
+    }
+    
+    public List<ReportCollectionEntity> listReportCollectionEntities(TestSuiteCollectionEntity testSuiteCollectionEntity, ProjectEntity projectEntity) throws Exception {
+        return getDataProviderSetting().getReportDataProvider().listReportCollectionEntities(testSuiteCollectionEntity, projectEntity);
     }
 
     public FolderEntity getReportFolder(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity) throws Exception {

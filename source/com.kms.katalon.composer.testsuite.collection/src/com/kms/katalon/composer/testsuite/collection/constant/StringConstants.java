@@ -61,4 +61,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HAND_JOB_DELETING_FOLDER = ComposerTestsuiteCollectionMessageConstants.HAND_JOB_DELETING_FOLDER;
     
+    public static final String ERROR_TITLE = ComposerTestsuiteCollectionMessageConstants.ERROR_TITLE;
+    
+    public static final String HAND_ERROR_MSG_UNABLE_TO_OPEN_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.HAND_ERROR_MSG_UNABLE_TO_OPEN_TEST_SUITE_COLLECTION;
 }

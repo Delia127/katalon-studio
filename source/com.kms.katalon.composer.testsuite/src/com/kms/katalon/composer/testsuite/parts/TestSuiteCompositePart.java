@@ -56,11 +56,13 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
+import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 @SuppressWarnings("restriction")
@@ -85,13 +87,15 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
 
     private static final int COMPOSITE_SIZE = 1;
 
-    private static final int SUB_PARTSTACK_SIZE = 3;
+    private static final int SUB_PARTSTACK_SIZE = 4;
 
     private static final int CHILD_TESTSUITE_MAIN_PART_INDEX = 0;
 
     private static final int CHILD_TESTSUITE_SCRIPT_PART_INDEX = 1;
 
     private static final int CHILD_TESTSUITE_INTEGRATION_PART_INDEX = 2;
+    
+    private static final int CHILD_TESTSUITE_RESULT_PART_INDEX = 3;
 
     public static final String MAIN_TAB_TITLE = StringConstants.PA_TAB_MAIN;
 
@@ -121,6 +125,8 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
     private EPartService partService;
 
     private TestSuiteScriptPart scriptPart;
+    
+    private TestSuiteResultPart resultPart;
 
     public MDirtyable getDirty() {
         return dirty;
@@ -173,6 +179,8 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
                     childTestSuiteIntegrationPart = (TestSuiteIntegrationPart) part;
                 } else if (part instanceof CompatibilityEditor) {
                     scriptPart = new TestSuiteScriptPart(this, (CompatibilityEditor) part);
+                } else {
+                    resultPart = new TestSuiteResultPart(part);
                 }
             }
         }
@@ -205,6 +213,10 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
                 testSuiteIntegrationPart.setText(INTEGRATION_TAB_TITLE);
                 testSuiteIntegrationPart.setImage(ImageConstants.IMG_16_INTEGRATION);
                 testSuiteIntegrationPart.setShowClose(false);
+                
+                CTabItem testSuiteResultPart = tabFolder.getItem(CHILD_TESTSUITE_RESULT_PART_INDEX);
+                testSuiteResultPart.setText(StringConstants.PA_TAB_RESULT);
+                testSuiteResultPart.setShowClose(false);
             }
 
             tabFolder.layout();
@@ -221,6 +233,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
     private void initListeners() {
         eventBroker.subscribe(EventConstants.TEST_SUITE_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
+        eventBroker.subscribe(EventConstants.TEST_SUITE_FINISHED, this);
     }
 
     public MPart getChildMainPart() {
@@ -397,7 +410,6 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
             testSuiteScriptItem.setText(ComposerTestsuiteMessageConstants.PA_TAB_SCRIPT);
             testSuiteScriptItem.setImage(ImageConstants.IMG_16_SCRIPT);
             testSuiteScriptItem.setShowClose(false);
-
             
             this.scriptPart = new TestSuiteScriptPart(this,
                     (CompatibilityEditor) testSuiteScriptPart.getObject());
@@ -446,6 +458,19 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
                 if (elementId.equalsIgnoreCase(compositePart.getElementId())) {
                     TestSuiteEntity testSuite = (TestSuiteEntity) ((Object[]) object)[1];
                     updateTestSuitePart(testSuite);
+                }
+            }
+        } else if (event.getTopic().equals(EventConstants.TEST_SUITE_FINISHED)) {
+            Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+            if (object != null && object instanceof TestSuiteEntity) {
+                TestSuiteEntity eventTestSuite = (TestSuiteEntity) object;
+                if (eventTestSuite.getId().equals(testSuite.getId())) {
+                    try {
+                        ReportEntity report = ReportController.getInstance().getLastRunReportEntity(eventTestSuite);
+                        resultPart.updateReport(report);
+                    } catch (Exception e) {
+                        LoggerSingleton.logError(e);
+                    }
                 }
             }
         }

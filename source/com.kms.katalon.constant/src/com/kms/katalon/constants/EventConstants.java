@@ -169,6 +169,8 @@ public class EventConstants {
     public static final String TEST_SUITE_SAVE = "TESTSUITE/SAVE";
 
     public static final String TEST_SUITE_UPDATED = "TESTSUITE/UPDATED";
+    
+    public static final String TEST_SUITE_FINISHED = "TESTSUITE/FINISHED";
 
     // Add New TestCase Events
     public static final String TEST_SUITE_NEW_FROM_TEST_CASE = "TESTSUITE_TESTCASE/NEW";

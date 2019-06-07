@@ -46,4 +46,6 @@ public interface IReportDataProvider {
             String newName) throws DALException;
 
     void deleteReportCollection(ReportCollectionEntity reportCollection) throws DALException;
+
+    List<ReportCollectionEntity> listReportCollectionEntities(TestSuiteCollectionEntity testSuiteCollection, ProjectEntity project) throws Exception;
 }

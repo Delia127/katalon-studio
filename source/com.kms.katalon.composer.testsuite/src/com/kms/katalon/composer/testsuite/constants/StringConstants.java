@@ -108,6 +108,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TAB_MAIN = ComposerTestsuiteMessageConstants.PA_TAB_MAIN;
 
     public static final String PA_TAB_INTEGRATION = ComposerTestsuiteMessageConstants.PA_TAB_INTEGRATION;
+    
+    public static final String PA_TAB_RESULT = ComposerTestsuiteMessageConstants.PA_TAB_RESULT;
 
     public static final String PA_ERROR_MSG_UNABLE_TO_SAVE_PART = ComposerTestsuiteMessageConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART;
 
