@@ -43,3 +43,5 @@ Bundle-ActivationPolicy: lazy
 Import-Package: org.osgi.service.event,
  org.apache.commons.io,
  org.eclipse.e4.ui.services
+Export-Package: com.kms.katalon.composer.integration.analytics.constants,
+ com.kms.katalon.composer.integration.analytics.dialog
