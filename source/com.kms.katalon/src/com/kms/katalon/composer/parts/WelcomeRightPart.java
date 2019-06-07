@@ -187,7 +187,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
         postConstruct();
         
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
-        eventBroker.subscribe(EventConstants.ACTIVATION_CHECKED, this);
+        eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, this);
     }
 
     public void reloadRecentProjects() {
