@@ -924,7 +924,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
             case EventConstants.PROJECT_OPENED:
                 setDefaultTestingTypeTabByProjectType();
                 break;
-            case EventConstants.ACTIVATION_CHECKED:
+            case EventConstants.WORKSPACE_CREATED:
                 postConstruct();
                 break;
             default:
