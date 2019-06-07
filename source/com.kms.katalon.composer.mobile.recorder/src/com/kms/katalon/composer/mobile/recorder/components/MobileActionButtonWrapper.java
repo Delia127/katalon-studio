@@ -6,7 +6,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.mobile.recorder.actions.MobileAction;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileAction;
 
 public class MobileActionButtonWrapper {
     private Button button;
