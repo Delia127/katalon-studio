@@ -95,13 +95,15 @@ public class ReportFileServiceManager {
         File reportFolder = new File(path);
         File reportCollectionFile = new File(reportFolder,
                 reportFolder.getName() + FileServiceConstant.REPORT_COLLECTION_FILE_EXTENSION);
-        FileEntity entity = EntityService.getInstance().loadEntityFromFile(reportCollectionFile.getAbsolutePath());
-        entity.setParentFolder(FolderFileServiceManager.getFolder(reportCollectionFile.getParent()));
-        entity.setProject(DataProviderState.getInstance().getCurrentProject());
-        entity.setName(FilenameUtils.getBaseName(path));
-
-        if (entity != null && entity instanceof ReportCollectionEntity) {
-            return (ReportCollectionEntity) entity;
+        if (reportCollectionFile.exists()) {
+            FileEntity entity = EntityService.getInstance().loadEntityFromFile(reportCollectionFile.getAbsolutePath());
+            entity.setParentFolder(FolderFileServiceManager.getFolder(reportCollectionFile.getParent()));
+            entity.setProject(DataProviderState.getInstance().getCurrentProject());
+            entity.setName(FilenameUtils.getBaseName(path));
+    
+            if (entity != null && entity instanceof ReportCollectionEntity) {
+                return (ReportCollectionEntity) entity;
+            }
         }
 
         return null;

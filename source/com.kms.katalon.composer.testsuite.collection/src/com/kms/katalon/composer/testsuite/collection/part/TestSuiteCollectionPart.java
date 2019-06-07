@@ -22,6 +22,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.MGenericTile;
+import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -98,6 +100,7 @@ import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEdit
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransfer;
 import com.kms.katalon.composer.testsuite.collection.view.TestSuiteCollectionViewFactory;
+import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -160,6 +163,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     private CMenu menu;
 
     private Callable<Boolean> enableWhenItemSelected;
+    
+    private TestSuiteCollectionCompositePart parentCompositePart;
 
     private Listener layoutExecutionInformationCompositeListener = new Listener() {
 
@@ -179,16 +184,24 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     private Map<String, ExpandableTestSuiteCollectionComposite> viewCompositeMap = new HashMap<>();
 
     @PostConstruct
-    public void initialize(Composite parent, MPart mpart) {
+    public void initialize(Composite parent, TestSuiteCollectionEntity testSuiteCollection, MPart mpart) {
         this.mpart = mpart;
         this.isExecutionInfoCompositeExpanded = true;
         this.parent = parent;
         registerEventListeners();
+        
+//        if (mpart.getParent().getParent() instanceof MGenericTile
+//                && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
+//            MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
+//            if (compositePart.getObject() instanceof TestSuiteCollectionCompositePart) {
+//                parentCompositePart = ((TestSuiteCollectionCompositePart) compositePart.getObject());
+//            }
+//        }
 
         new HelpToolBarForMPart(mpart, DocumentationMessageConstants.TEST_SUITE_COLLECTION);
         createControls();
         registerControlModifyListeners();
-        updateTestSuiteCollections((TestSuiteCollectionEntity) mpart.getObject());
+        updateTestSuiteCollections(testSuiteCollection);
     }
 
     private void registerEventListeners() {
@@ -210,8 +223,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         cloneTestSuite = (TestSuiteCollectionEntity) SerializationUtils.clone(originalTestSuite);
         cloneTestSuite.reuseWrappers(originalTestSuite);
 
-        mpart.setElementId(EntityPartUtil.getTestSuiteCollectionPartId(cloneTestSuite.getId()));
-        mpart.setLabel(cloneTestSuite.getName());
+//        mpart.setElementId(EntityPartUtil.getTestSuiteCollectionPartId(cloneTestSuite.getId()));
+//        mpart.setLabel(cloneTestSuite.getName());
         updateInput();
 
         lastModified = getFileInfo(originalTestSuite).getLastModified();
@@ -224,7 +237,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         updateExecutionInfoInput();
         updateRunColumn();
 
-        mpart.setDirty(false);
+        setDirty(false);
     }
 
     private void updateExecutionInfoInput() {
@@ -619,10 +632,12 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @Override
     public void markDirty() {
         mpart.setDirty(true);
+        parentCompositePart.checkDirty();
     }
 
     public void setDirty(boolean dirty) {
         mpart.setDirty(dirty);
+        parentCompositePart.checkDirty();
     }
 
     @Override
@@ -714,7 +729,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             TestSuiteCollectionController.getInstance().updateTestSuiteCollection(originalTestSuite);
             updateTestSuiteCollections(originalTestSuite);
             refreshTreeEntity();
-            mpart.setDirty(false);
+            setDirty(false);
         } catch (DALException e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION,
                     e.getMessage());

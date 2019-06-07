@@ -82,20 +82,26 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
     
     @Override
     public List<ReportCollectionEntity> listReportCollectionEntities(TestSuiteCollectionEntity testSuiteCollection, ProjectEntity project) throws Exception {
-        String testSuiteCollectionReportFolderPath = ReportFileServiceManager.getReportFolderOfTestSuiteCollection(project, testSuiteCollection);
+        String testSuiteCollectionReportFolderPath = ReportFileServiceManager
+                .getReportFolderOfTestSuiteCollection(project, testSuiteCollection);
         File testSuiteCollectionReportFolder = new File(testSuiteCollectionReportFolderPath);
-        
+
         List<ReportCollectionEntity> reports = new ArrayList<ReportCollectionEntity>();
         if (testSuiteCollectionReportFolder.exists() && testSuiteCollectionReportFolder.isDirectory()) {
             for (File childReportFolder : testSuiteCollectionReportFolder.listFiles()) {
                 if (!childReportFolder.exists() || !childReportFolder.isDirectory()) {
                     continue;
                 }
-                
-                reports.add(ReportFileServiceManager.getReportCollectionEntity(childReportFolder.getAbsolutePath()));
+
+                ReportCollectionEntity reportCollectionEntity = ReportFileServiceManager
+                        .getReportCollectionEntity(childReportFolder.getAbsolutePath());
+                if (reportCollectionEntity != null) {
+                    reports.add(
+                            ReportFileServiceManager.getReportCollectionEntity(childReportFolder.getAbsolutePath()));
+                }
             }
         }
-        
+
         return reports;
     }
 

@@ -21,9 +21,8 @@ public class TestSuiteCollectionResultPart {
     }
     
     public MPart getMPart() {
-        Method getMPartMethod;
         try {
-            getMPartMethod = reportCollectionPart.getClass().getMethod("getMPart");
+            Method getMPartMethod = reportCollectionPart.getClass().getMethod("getMPart");
             return (MPart) getMPartMethod.invoke(reportCollectionPart);
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             LoggerSingleton.logError(e);

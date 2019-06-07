@@ -50,10 +50,20 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
     @Inject
     private MPart mpart;
+    
+    private boolean isInitialized;
+    
+    private Composite mainComposite;
 
     @PostConstruct
-    public void initialize(Composite parent, MPart mpart) {
-        reportCollectionEntity = (ReportCollectionEntity) mpart.getObject();
+    public void initialize(Composite parent, ReportCollectionEntity reportCollectionEntity, MPart mpart) {
+        this.reportCollectionEntity = reportCollectionEntity;
+        this.mainComposite = parent;
+        this.mpart = mpart;
+        
+        if (this.reportCollectionEntity == null) {
+            return;
+        }
 
         new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE_COLLECTION);
         
@@ -65,9 +75,18 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
         eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
         eventBroker.subscribe(EventConstants.REPORT_COLLECTION_RENAMED, this);
+        
+        isInitialized = true;
     }
 
     private void updateInput() {
+        tableViewer.setInput(reportCollectionEntity.getReportItemDescriptions());
+    }
+    
+    public void updateReport(ReportCollectionEntity report) {
+        if (!isInitialized) {
+            initialize(mainComposite, reportCollectionEntity, mpart);
+        }
         tableViewer.setInput(reportCollectionEntity.getReportItemDescriptions());
     }
 
