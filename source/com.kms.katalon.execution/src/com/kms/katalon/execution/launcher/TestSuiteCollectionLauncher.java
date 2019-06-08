@@ -290,4 +290,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     public List<ReportableLauncher> getSubLaunchers() {
         return Collections.unmodifiableList(subLaunchers);
     }
+    
+    public TestSuiteCollectionExecutedEntity getExecutedEntity() {
+        return executedEntity;
+    }
 }

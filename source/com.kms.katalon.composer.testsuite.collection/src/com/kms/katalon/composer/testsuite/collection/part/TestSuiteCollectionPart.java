@@ -190,13 +190,13 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         this.parent = parent;
         registerEventListeners();
         
-//        if (mpart.getParent().getParent() instanceof MGenericTile
-//                && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
-//            MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
-//            if (compositePart.getObject() instanceof TestSuiteCollectionCompositePart) {
-//                parentCompositePart = ((TestSuiteCollectionCompositePart) compositePart.getObject());
-//            }
-//        }
+        if (mpart.getParent().getParent() instanceof MGenericTile
+                && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
+            MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
+            if (compositePart.getObject() instanceof TestSuiteCollectionCompositePart) {
+                parentCompositePart = ((TestSuiteCollectionCompositePart) compositePart.getObject());
+            }
+        }
 
         new HelpToolBarForMPart(mpart, DocumentationMessageConstants.TEST_SUITE_COLLECTION);
         createControls();
@@ -631,13 +631,13 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     @Override
     public void markDirty() {
-        mpart.setDirty(true);
-        parentCompositePart.checkDirty();
+//        mpart.setDirty(true);
+        parentCompositePart.setDirty(true);
     }
 
     public void setDirty(boolean dirty) {
-        mpart.setDirty(dirty);
-        parentCompositePart.checkDirty();
+//        mpart.setDirty(dirty);
+        parentCompositePart.setDirty(dirty);
     }
 
     @Override
@@ -749,7 +749,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     @Override
     public void executeTestRun() {
-        if (mpart.isDirty()) {
+        if (parentCompositePart.isDirty()) {
             MessageDialog.openInformation(null, StringConstants.INFO,
                     ComposerTestsuiteCollectionMessageConstants.INFO_MESSAGE_SAVE_BEFORE_EXECUTE);
             return;

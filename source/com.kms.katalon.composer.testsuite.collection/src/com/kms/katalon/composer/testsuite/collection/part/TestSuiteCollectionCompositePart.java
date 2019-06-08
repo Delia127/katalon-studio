@@ -28,12 +28,15 @@ import org.osgi.service.event.Event;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.part.SavableCompositePart;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 
 public class TestSuiteCollectionCompositePart extends EventServiceAdapter implements IComposerPartEvent, SavableCompositePart {
@@ -101,6 +104,7 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
     private void initListeners() {
         eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
         eventBroker.subscribe(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, this);
+        eventBroker.subscribe(EventConstants.TEST_SUITE_COLLECTION_FINISHED, this);
     }
 
     private void initTabFolder() {
@@ -220,6 +224,20 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
                 }
                 break;
             }
+            case EventConstants.TEST_SUITE_COLLECTION_FINISHED: {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (object != null && object instanceof TestSuiteCollectionEntity) {
+                    TestSuiteCollectionEntity eventTestSuiteCollection = (TestSuiteCollectionEntity) object;
+                    if (eventTestSuiteCollection.getId().equals(testSuiteCollection.getId())) {
+                        try {
+                            ReportCollectionEntity report = ReportController.getInstance().getLastRunReportCollectionEntity(eventTestSuiteCollection);
+                            testSuiteCollectionResultPart.updateReport(report);
+                        } catch (Exception e) {
+                            LoggerSingleton.logError(e);
+                        } 
+                    }
+                }
+            }
         }
 
 
@@ -246,19 +264,5 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
     @Override
     public boolean isDirty() {
         return compositePart.isDirty();
-    }
-    
-    public void checkDirty() {
-        boolean isDirty = false;
-        for (MPart childPart : getChildParts()) {
-            if (childPart.isDirty()) {
-                isDirty = true;
-                break;
-            }
-        }
-        setDirty(isDirty);
-        for (MPart childPart : getChildParts()) {
-            childPart.setDirty(isDirty);
-        }
     }
 }

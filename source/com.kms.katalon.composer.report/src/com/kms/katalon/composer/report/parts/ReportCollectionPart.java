@@ -71,7 +71,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
         updateInput();
 
-        setPartLabel(reportCollectionEntity.getDisplayName());
+//        setPartLabel(reportCollectionEntity.getDisplayName());
 
         eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
         eventBroker.subscribe(EventConstants.REPORT_COLLECTION_RENAMED, this);
@@ -85,9 +85,9 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     
     public void updateReport(ReportCollectionEntity report) {
         if (!isInitialized) {
-            initialize(mainComposite, reportCollectionEntity, mpart);
+            initialize(mainComposite, report, mpart);
         }
-        tableViewer.setInput(reportCollectionEntity.getReportItemDescriptions());
+        tableViewer.setInput(report.getReportItemDescriptions());
     }
 
     private void createControls(Composite parent) {
