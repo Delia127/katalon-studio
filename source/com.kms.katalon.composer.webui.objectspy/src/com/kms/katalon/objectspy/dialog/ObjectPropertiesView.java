@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.impl.dialogs.AddTestObjectPropertyDialog;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -282,6 +283,7 @@ public class ObjectPropertiesView extends Composite
 		compositeAttributeToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
 		
         toolbar = new ToolBar(compositeAttributeToolbar, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
        
         btnAdd = new ToolItem(toolbar, SWT.NONE);
         btnAdd.setText(StringConstants.ADD);
@@ -311,7 +313,7 @@ public class ObjectPropertiesView extends Composite
         tvProperty.setContentProvider(ArrayContentProvider.getInstance());
         tProperty = tvProperty.getTable();
         tProperty.setHeaderVisible(true);
-        tProperty.setLinesVisible(true);
+        tProperty.setLinesVisible(ControlUtils.shouldLineVisble(tProperty.getDisplay()));
         tvProperty.setInput(Collections.emptyList());
 
         cvProperty = new TableViewerColumn(tvProperty, SWT.LEFT);
@@ -527,7 +529,7 @@ public class ObjectPropertiesView extends Composite
         tvXpath.setContentProvider(ArrayContentProvider.getInstance());
         tXpath = tvXpath.getTable();
         tXpath.setHeaderVisible(true);
-        tXpath.setLinesVisible(true);
+        tXpath.setLinesVisible(ControlUtils.shouldLineVisble(tXpath.getDisplay()));
         tvXpath.setInput(Collections.emptyList());
 
         

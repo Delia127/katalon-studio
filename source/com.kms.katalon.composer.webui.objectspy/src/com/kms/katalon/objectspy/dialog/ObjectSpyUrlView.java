@@ -45,6 +45,7 @@ import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.webui.driver.DriverFactory;
@@ -151,6 +152,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
                 getPreferenceStore().getString(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_STARTING_URL));
 
         final ToolBar startBrowserToolbar = new ToolBar(toolbarRightSideComposite, SWT.FLAT | SWT.RIGHT);
+        startBrowserToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         startBrowserToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
         GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).applyTo(startBrowserToolbar);
         startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);

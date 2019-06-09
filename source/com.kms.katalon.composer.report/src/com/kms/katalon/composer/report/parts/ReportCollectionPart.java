@@ -26,6 +26,7 @@ import org.osgi.service.event.Event;
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.report.constants.StringConstants;
@@ -80,7 +81,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
         tableViewer = new CTableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 

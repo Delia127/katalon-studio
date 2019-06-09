@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.google.gson.reflect.TypeToken;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
@@ -49,7 +50,7 @@ public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncoded
         tvParams.setContentProvider(ArrayContentProvider.getInstance());
         Table tParams = tvParams.getTable();
         tParams.setHeaderVisible(true);
-        tParams.setLinesVisible(true);
+        tParams.setLinesVisible(ControlUtils.shouldLineVisble(tParams.getDisplay()));
         
         TableViewerColumn cvName = new TableViewerColumn(tvParams, SWT.LEFT);
         cName = cvName.getColumn();

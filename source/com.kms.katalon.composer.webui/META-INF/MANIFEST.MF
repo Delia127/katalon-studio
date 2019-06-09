@@ -34,7 +34,8 @@ Require-Bundle: org.eclipse.jdt.core,
  org.apache.commons.io,
  com.kms.katalon.composer.testsuite.collection,
  com.kms.katalon.composer.resources,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ com.kms.katalon.composer.components.impl
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.objectspy.constants,
  com.kms.katalon.util.collections,
