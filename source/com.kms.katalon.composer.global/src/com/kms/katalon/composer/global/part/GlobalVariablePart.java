@@ -36,6 +36,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -53,6 +55,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.operation.OperationExecutor;
@@ -121,7 +124,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     private void createComposite(Composite parent) {
         composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(1, false));
-        composite.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
 
         Composite compositeToolbar = new Composite(composite, SWT.NONE);
         compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -131,7 +133,8 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         compositeToolbar.setLayout(gl_compositeToolbar);
         compositeToolbar.setBackground(ColorUtil.getCompositeBackgroundColor());
 
-        ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT);
+        ToolBar toolBar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         tltmAdd = new ToolItem(toolBar, SWT.NONE);
         tltmAdd.setText(StringConstants.PA_BTN_TIP_ADD);
@@ -168,7 +171,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         });
         table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 

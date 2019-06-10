@@ -45,6 +45,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
@@ -73,10 +74,12 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -123,7 +126,7 @@ public class ExplorerPart {
 
     private DragSource dragSource;
 
-    private Text txtInput;
+    private StyledText txtInput;
 
     private CTreeViewer treeViewer;
 
@@ -201,9 +204,8 @@ public class ExplorerPart {
         gdSeperator.heightHint = 22;
         seperator.setLayoutData(gdSeperator);
 
-        txtInput = new Text(searchComposite, SWT.NONE);
+        txtInput = new StyledText(searchComposite, SWT.SINGLE);
         txtInput.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        txtInput.setMessage(SEARCH_TEXT_DEFAULT_VALUE);
         GridData gdTxtInput = new GridData(GridData.FILL_HORIZONTAL);
         gdTxtInput.grabExcessVerticalSpace = true;
         gdTxtInput.verticalAlignment = SWT.CENTER;
@@ -218,6 +220,11 @@ public class ExplorerPart {
             }
         });
 
+        StyledTextMessage styledTextMessage = new StyledTextMessage(txtInput);
+        styledTextMessage.setMessage(SEARCH_TEXT_DEFAULT_VALUE);
+        
+        
+        
         application.getContext().set(ExplorerPart.class.getName(), this);
 
         createExplorerTreeViewer();
@@ -267,6 +274,10 @@ public class ExplorerPart {
         activateHandler();
 
         // loadSavedState(part);
+    }
+    
+    private Display getDisplay() {
+        return parent.getDisplay();
     }
 
     private void createExplorerTreeViewerIfDisposed() {

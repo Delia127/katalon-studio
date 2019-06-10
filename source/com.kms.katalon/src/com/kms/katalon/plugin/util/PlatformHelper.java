@@ -14,27 +14,17 @@ public class PlatformHelper {
     public static Bundle installPlugin(KStorePlugin plugin) throws BundleException {
         BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
         String bundlePath = plugin.getFile().toURI().toString();
-        Bundle existingBundle = bundleContext.getBundle(bundlePath);
-        if (existingBundle == null) {
-            PluginInstaller pluginInstaller = getPluginInstaller();
-            Bundle bundle = pluginInstaller.installPlugin(bundleContext, bundlePath);
-            return bundle;
-        } else {
-            return existingBundle;
-        }
+        PluginInstaller pluginInstaller = getPluginInstaller();
+        Bundle bundle = pluginInstaller.installPlugin(bundleContext, bundlePath);
+        return bundle;       
     }
     
     public static Bundle uninstallPlugin(KStorePlugin plugin) throws BundleException {
         BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
         String bundlePath = plugin.getFile().toURI().toString();
-        Bundle existingBundle = bundleContext.getBundle(bundlePath);
-        if (existingBundle != null) {
-            PluginInstaller pluginInstaller = getPluginInstaller();
-            Bundle bundle = pluginInstaller.uninstallPlugin(bundleContext, bundlePath);
-            return bundle;
-        } else {
-            return existingBundle;
-        }
+        PluginInstaller pluginInstaller = getPluginInstaller();
+        Bundle bundle = pluginInstaller.uninstallPlugin(bundleContext, bundlePath);
+        return bundle;
     }
     
     private static PluginInstaller getPluginInstaller() {

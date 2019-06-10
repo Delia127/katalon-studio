@@ -205,7 +205,7 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
         tableViewer = new TableViewer(compTable, SWT.FULL_SELECTION | SWT.HIDE_SELECTION | SWT.SINGLE);
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         final Table table = tableViewer.getTable();
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tableColumnNo = tableViewerColumnNo.getColumn();

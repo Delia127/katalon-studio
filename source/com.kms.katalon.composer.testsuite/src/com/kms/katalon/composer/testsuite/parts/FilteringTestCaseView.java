@@ -43,6 +43,7 @@ import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.extension.DynamicQueryingTestSuiteDescription;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
@@ -143,7 +144,7 @@ public class FilteringTestCaseView {
         testCaseTableViewer = new CTableViewer(cpsTestCasePreview, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Table testCaseTable = testCaseTableViewer.getTable();
         testCaseTable.setHeaderVisible(true);
-        testCaseTable.setLinesVisible(true);
+        testCaseTable.setLinesVisible(ControlUtils.shouldLineVisble(testCaseTable.getDisplay()));
 
         TableViewerColumn tableViewerColumnOrder = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         TableColumn tblclmnOrder = tableViewerColumnOrder.getColumn();
@@ -184,6 +185,7 @@ public class FilteringTestCaseView {
         parent.setLayout(new GridLayout());
         ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
         ToolBar toolbar = toolBarManager.createControl(parent);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         ToolItem tltmAdvancedSearchGuide = new ToolItem(toolbar, SWT.NONE);
         tltmAdvancedSearchGuide.setText("Help");
         tltmAdvancedSearchGuide.setImage(ImageManager.getImage(IImageKeys.HELP_16));

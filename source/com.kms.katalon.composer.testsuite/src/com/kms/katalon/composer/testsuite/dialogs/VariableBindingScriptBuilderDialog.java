@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.dialogs.provider.ScriptVariableTypeEditingSupport;
@@ -70,7 +71,7 @@ public class VariableBindingScriptBuilderDialog extends AbstractDialog {
 
         tableViewer = new CTableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
 
         TableColumn tblclmnName = createColumn(StringConstants.NAME, 

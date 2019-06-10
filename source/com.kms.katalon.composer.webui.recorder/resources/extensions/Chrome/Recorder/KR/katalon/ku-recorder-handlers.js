@@ -96,19 +96,6 @@ KURecorder.addEventHandler('clickAt', 'click', function(event) {
 }, true);
 // END
 
-var queuedMouseDown;
-const observerConfig = {
-    childList: true,
-    subtree: true,
-};
-  
-KURecorder.addEventHandler('mouseDown', 'mousedown', function(event) {
-    this.elementBeingObserved = event.target;
-    this.jsonizedClickOnElementBeingObservedOnMouseDown 
-        = this.rec_jsonizeClickTarget(this.elementBeingObserved, 'left');
-    this.mouseDownObserver.observe(this.elementBeingObserved, observerConfig);
-}, true);
-
 
 // © Chen-Chieh Ping, SideeX Team
 KURecorder.addEventHandler('doubleClickAt', 'dblclick', function (event) {

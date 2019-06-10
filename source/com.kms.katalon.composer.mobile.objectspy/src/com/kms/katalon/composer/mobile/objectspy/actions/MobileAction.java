@@ -1,8 +1,8 @@
-package com.kms.katalon.composer.mobile.recorder.actions;
+package com.kms.katalon.composer.mobile.objectspy.actions;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.composer.mobile.recorder.utils.MobileActionUtil;
+import com.kms.katalon.composer.mobile.objectspy.util.MobileActionUtil;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
 
@@ -16,6 +16,7 @@ public enum MobileAction implements IMobileAction {
     SwitchToLandscape("switchToLandscape", "Switch the mobile device's orientation to landscape mode"),
     SwitchToPortrait("switchToPortrait", "Switch the mobile device's orientation to portrait mode"),
     StartApplication("startApplication", "Start the application", false),
+    StartExistingApplication("startExistingApplication", "Start an existing application", false),
     CloseApplication("closeApplication", "Close the application", false);
 
     private String description;

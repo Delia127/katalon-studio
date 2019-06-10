@@ -1,12 +1,12 @@
-package com.kms.katalon.composer.mobile.recorder.utils;
+package com.kms.katalon.composer.mobile.objectspy.util;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kms.katalon.composer.mobile.recorder.actions.IMobileAction;
-import com.kms.katalon.composer.mobile.recorder.actions.MobileActionMapping;
-import com.kms.katalon.composer.mobile.recorder.actions.MobileActionParam;
-import com.kms.katalon.composer.mobile.recorder.actions.MobileActionParamValueType;
+import com.kms.katalon.composer.mobile.objectspy.actions.IMobileAction;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionParam;
+import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionParamValueType;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;

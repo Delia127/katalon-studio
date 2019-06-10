@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
@@ -138,7 +139,7 @@ public class InternalTestDataPart extends TestDataMainPart {
         tableViewer = new CTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
         table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 
         createColumnViewer(StringConstants.PA_COL_NO, SWT.CENTER, false, DF_UNREMOVEVABLE_COLUMN_WIDTH,
                 new InternalDataAddColumnLabelProvider(), null);

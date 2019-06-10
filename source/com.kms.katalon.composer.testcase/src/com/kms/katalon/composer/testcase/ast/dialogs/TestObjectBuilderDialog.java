@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,7 @@ import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -210,7 +212,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                 return variableEntity;
             }).collect(Collectors.toList());
         } else {
-            initialVariableMapEntries = new ArrayList<>(variableMaps.getMapEntryExpressions());
+            initialVariableMapEntries = new ArrayList<>(variableMaps != null ? variableMaps.getMapEntryExpressions() : new ArrayList<>());
         }
     }
 
@@ -282,6 +284,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         comboComposite.setVisible(haveOtherTypes);
 
         final ToolBar topToolbar = new ToolBar(topComposite, SWT.FLAT | SWT.RIGHT);
+        topToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
+
         topToolbar.setTextDirection(SWT.LEFT_TO_RIGHT);
         topToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
         GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(topToolbar);
@@ -625,6 +629,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         composite.setLayout(new GridLayout(1, false));
 
         ToolBar toolBar = new ToolBar(composite, SWT.FLAT | SWT.RIGHT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         ToolItem tltmAddVariable = new ToolItem(toolBar, SWT.NONE);
         tltmAddVariable.addSelectionListener(new SelectionAdapter() {
@@ -671,7 +676,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
         Table table = variableTableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         GridData variableTableLayoutData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         variableTableLayoutData.minimumHeight = 100;
         table.setLayoutData(variableTableLayoutData);
@@ -936,7 +941,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         tableViewer = new TableViewer(otherTypesInputTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
 
         ColumnViewerUtil.setTableActivation(tableViewer);

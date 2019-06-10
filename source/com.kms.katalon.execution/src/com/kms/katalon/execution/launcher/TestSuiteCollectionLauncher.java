@@ -27,6 +27,7 @@ import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.platform.TestSuiteCollectionExecutionEvent;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
 
@@ -124,6 +125,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         schedule();
 
         endTime = new Date();
+        
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_COLLECTION_FINISHED_EVENT);
     }
 
@@ -144,7 +146,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             notifyProccess(status, executedEntity, executionResult);
         }
     }
-
+    
     @Override
     public void stop() {
         setStatus(LauncherStatus.TERMINATED);
@@ -291,7 +293,16 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         return Collections.unmodifiableList(subLaunchers);
     }
     
+
     public TestSuiteCollectionExecutedEntity getExecutedEntity() {
         return executedEntity;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+    
+    public Date getEndTime() {
+        return endTime;
     }
 }

@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.entity.file.FileEntity;
@@ -94,7 +95,7 @@ public abstract class AbstractDeleteReferredEntityDialog extends AbstractDialog 
         Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 
         TableViewerColumn tbvclmOrder = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnOrder = tbvclmOrder.getColumn();

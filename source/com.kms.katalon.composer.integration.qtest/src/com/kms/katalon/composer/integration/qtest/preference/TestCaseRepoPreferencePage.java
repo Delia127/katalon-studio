@@ -36,7 +36,9 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestCaseRepoDialog;
@@ -78,6 +80,7 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
         compositeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         ToolBar toolbar = new ToolBar(compositeToolbar, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         btnAdd = new ToolItem(toolbar, SWT.NONE);
         btnAdd.setText(StringConstants.ADD);
@@ -98,7 +101,7 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
         table = tableViewer.getTable();
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
