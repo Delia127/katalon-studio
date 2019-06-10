@@ -43,7 +43,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
 
     public QuickStartDialog(Shell parentShell) {
         super(parentShell);
-        lastTreeWidth = 220;
+        lastTreeWidth = 240;
     }
 
     @Override
@@ -108,7 +108,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         pageViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-        pageViewerColumn.getColumn().setWidth(200);
+        pageViewerColumn.getColumn().setWidth(220);
 
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
@@ -249,7 +249,6 @@ public class QuickStartDialog extends SimpleWizardDialog {
                 new MobileTestingWizardPage(),
                 new DatadrivenTestingWizardPage(),
                 new BDDTestingWizardPage(),
-                new CIIntegrationWizardPage(),
                 new SDLCIntergrationWizardPage(),
                 new PluginStoreWizardPage(),
                 new AdvancedReportWizardPage()
@@ -271,7 +270,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(1050, 900);
+        return new Point(1050, 800);
     }
 
     @Override
@@ -282,5 +281,18 @@ public class QuickStartDialog extends SimpleWizardDialog {
     @Override
     protected void finishPressed() {
         super.okPressed();
+    }
+
+
+    @Override
+    public String getStepIndexAsString() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isChild() {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

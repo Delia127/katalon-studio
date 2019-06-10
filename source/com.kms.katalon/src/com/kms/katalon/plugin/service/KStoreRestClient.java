@@ -80,6 +80,34 @@ public class KStoreRestClient {
         return plugins.get();
     }
     
+    public List<KStorePlugin> getRecommendPlugins() throws KStoreClientException {
+        AtomicReference<List<KStorePlugin>> plugins = new AtomicReference<>();
+        try {
+            executeGetRequest(getKSRecommendPlugins(), credentials, response -> {
+                try {
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null) {
+                        String responseContent = EntityUtils.toString(response.getEntity());
+                        LogService.getInstance().logInfo("Recommend plugins responses: " + responseContent);
+
+                        LogService.getInstance().logInfo("Plugin info URL: " + getKSRecommendPlugins());
+                        plugins.set(parsePluginListJson(responseContent));
+                    }
+                else {
+                    throw new KStoreClientException("Failed to get latest plugin. No content returned from server.");
+                }
+                } catch (Exception e) {
+                    propagateIfInstanceOf(e, KStoreClientException.class);
+                    throw new KStoreClientException("Unexpected error occurs during executing get latest plugins", e);
+                }
+            });
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during executing get latest plugins", e);
+        }
+        return plugins.get();
+        
+    }
     private List<KStorePlugin> parsePluginListJson(String json) 
             throws ParseException {
         Gson gson = new GsonBuilder()
@@ -309,6 +337,10 @@ public class KStoreRestClient {
     
     private String getPluginsAPIUrl(String appVersion) {
         return getKatalonStoreAPIUrl() + "/products/ks?appVersion=" + appVersion;
+    }
+    
+    private String getKSRecommendPlugins() {
+        return getKatalonStoreAPIUrl() + "/products/ks/recommended";
     }
     
     private String getPluginDownloadAPIUrl(long pluginId, String pluginVersion) {

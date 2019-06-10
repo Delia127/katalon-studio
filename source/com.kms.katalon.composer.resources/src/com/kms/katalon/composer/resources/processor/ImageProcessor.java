@@ -433,6 +433,11 @@ public class ImageProcessor {
         
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_TITLE);
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_WEB_TESTING);
+        ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_API_TESTING);
+        ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_MOBILE_TESTING);
+        ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING);
+        ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_BDD_TESTING);
+        ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_SDLC_INTEGRATION);
         
     }
 }

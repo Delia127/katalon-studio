@@ -19,25 +19,23 @@ public interface IImageKeys {
 
     public static final String INTRO_SCREEN_WELCOME_SMALL = "intro/welcome_screen_BG_small.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_TITLE = "intro/temp/title.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_TITLE = "temp/title.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_WEB_TESTING = "intro/temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_WEB_TESTING = "temp/WebTesting.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_API_TESTING = "intro/temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_API_TESTING = "temp/APITesting.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_MOBILE_TESTING = "intro/temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_MOBILE_TESTING = "temp/MobileTesting.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING = "intro/temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING = "temp/Data-drivenTesting.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_BDD_TESTING = "intro/temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_BDD_TESTING = "temp/BDDTesting.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_CI_INTEGRATION = "intro/temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_SDLC_INTEGRATION = "temp/CIIntegration.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_SDLC_INTEGRATION = "intro/temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_PLUGIN_STORE = "temp/web_testing.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_PLUGIN_STORE = "intro/temp/web_testing.png"; //$NON-NLS-1$
-    
-    public static final String IMG_INTRO_SCREEN_ADVANCED_REPORT = "intro/temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_ADVANCED_REPORT = "temp/web_testing.png"; //$NON-NLS-1$
     
     
     // End Intro
