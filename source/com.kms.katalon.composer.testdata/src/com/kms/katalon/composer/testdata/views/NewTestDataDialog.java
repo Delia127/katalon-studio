@@ -35,7 +35,7 @@ public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
         super(parentShell, parentFolder, suggestedName);
         setDialogTitle(StringConstants.VIEW_TITLE_TEST_DATA);
         setDialogMsg(StringConstants.VIEW_MSG_CREATE_NEW_TEST_DATA);
-        shouldReadAsString = true;
+        shouldReadAsString = false;
     }
 
     @Override
