@@ -299,7 +299,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         createControls(parent);
         registerControlModifyListeners();
         updateInput();
-        setPartLabel(report.getDisplayName());
+//        setPartLabel(report.getDisplayName());
         isInitialized = true;
     }
 

@@ -2,6 +2,7 @@ package com.kms.katalon.dal.fileservice.dataprovider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -9,9 +10,11 @@ import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.dal.IReportDataProvider;
+import com.kms.katalon.dal.ITestSuiteDataProvider;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
+import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.ReportFileServiceManager;
 import com.kms.katalon.entity.file.FileEntity;
@@ -36,17 +39,17 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
     }
 
     @Override
-    public String getLogDirectory(TestSuiteEntity testSuite) throws Exception {
+    public String getLogDirectory(TestSuiteEntity testSuite, String executionSessionId) throws Exception {
         File testSuiteLogDir = new File(
-                ReportFileServiceManager.getReportFolderOfTestSuite(testSuite.getProject(), testSuite));
+                ReportFileServiceManager.getReportFolderOfTestSuite(testSuite.getProject(), testSuite, executionSessionId));
         ReportFileServiceManager.ensureFolderExist(testSuiteLogDir);
         return testSuiteLogDir.getAbsolutePath();
     }
 
     @Override
-    public ReportEntity getReportEntity(ProjectEntity project, TestSuiteEntity testSuite, String reportName)
+    public ReportEntity getReportEntity(ProjectEntity project, TestSuiteEntity testSuite, String reportName, String executionSessionId)
             throws Exception {
-        String testSuiteReportFolderPath = ReportFileServiceManager.getReportFolderOfTestSuite(project, testSuite);
+        String testSuiteReportFolderPath = ReportFileServiceManager.getReportFolderOfTestSuite(project, testSuite, executionSessionId);
         FolderEntity parentFolder = FolderFileServiceManager.getFolder(testSuiteReportFolderPath);
         ReportEntity report = ReportFileServiceManager
                 .getReportEntity(testSuiteReportFolderPath + File.separator + reportName);
@@ -63,45 +66,57 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
 
     @Override
     public List<ReportEntity> listReportEntities(TestSuiteEntity testSuite, ProjectEntity project) throws Exception {
-        String testSuiteReportFolderPath = ReportFileServiceManager.getReportFolderOfTestSuite(project, testSuite);
-        File testSuiteReportFolder = new File(testSuiteReportFolderPath);
-
         List<ReportEntity> lstReport = new ArrayList<ReportEntity>();
-        if (testSuiteReportFolder.exists() && testSuiteReportFolder.isDirectory()) {
-            for (File childReportFolder : testSuiteReportFolder.listFiles()) {
-                if (!childReportFolder.exists() || !childReportFolder.isDirectory()) {
-                    continue;
+        String reportRootFolderPath = FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation());
+        File reportRootFolder = new File(reportRootFolderPath);
+        for (File reportFolderByExecutionId : reportRootFolder.listFiles()) {
+            if (reportFolderByExecutionId.isDirectory()) {
+                String testSuiteReportFolderPath = reportFolderByExecutionId.getAbsolutePath() + File.separator
+                        + testSuite.getIdForDisplay()
+                                .substring(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME.length() + 1)
+                                .replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
+                File testSuiteReportFolder = new File(testSuiteReportFolderPath);
+                if (testSuiteReportFolder.exists() && testSuiteReportFolder.isDirectory()) {
+                    for (File reportFolder : testSuiteReportFolder.listFiles()) {
+                        if (reportFolder.isDirectory()) {
+                            ReportEntity report = ReportFileServiceManager
+                                    .getReportEntity(reportFolder.getAbsolutePath());
+                            if (report != null) {
+                                lstReport.add(report);
+                            }
+                        }
+                    }
                 }
-
-                lstReport.add(ReportFileServiceManager.getReportEntity(childReportFolder.getAbsolutePath()));
             }
         }
-
         return lstReport;
     }
     
     @Override
     public List<ReportCollectionEntity> listReportCollectionEntities(TestSuiteCollectionEntity testSuiteCollection, ProjectEntity project) throws Exception {
-        String testSuiteCollectionReportFolderPath = ReportFileServiceManager
-                .getReportFolderOfTestSuiteCollection(project, testSuiteCollection);
-        File testSuiteCollectionReportFolder = new File(testSuiteCollectionReportFolderPath);
-
         List<ReportCollectionEntity> reports = new ArrayList<ReportCollectionEntity>();
-        if (testSuiteCollectionReportFolder.exists() && testSuiteCollectionReportFolder.isDirectory()) {
-            for (File childReportFolder : testSuiteCollectionReportFolder.listFiles()) {
-                if (!childReportFolder.exists() || !childReportFolder.isDirectory()) {
-                    continue;
-                }
-
-                ReportCollectionEntity reportCollectionEntity = ReportFileServiceManager
-                        .getReportCollectionEntity(childReportFolder.getAbsolutePath());
-                if (reportCollectionEntity != null) {
-                    reports.add(
-                            ReportFileServiceManager.getReportCollectionEntity(childReportFolder.getAbsolutePath()));
+        String reportRootFolderPath = FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation());
+        File reportRootFolder = new File(reportRootFolderPath);
+        for (File reportFolderByExecutionId : reportRootFolder.listFiles()) {
+            if (reportFolderByExecutionId.isDirectory()) {
+                String testSuiteCollectionReportFolderPath = reportFolderByExecutionId.getAbsolutePath() + File.separator
+                        + testSuiteCollection.getIdForDisplay()
+                                .substring(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME.length() + 1)
+                                .replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
+                File testSuiteReportFolder = new File(testSuiteCollectionReportFolderPath);
+                if (testSuiteReportFolder.exists() && testSuiteReportFolder.isDirectory()) {
+                    for (File reportFolder : testSuiteReportFolder.listFiles()) {
+                        if (reportFolder.isDirectory()) {
+                            ReportCollectionEntity report = ReportFileServiceManager
+                                    .getReportCollectionEntity(reportFolder.getAbsolutePath());
+                            if (report != null) {
+                                reports.add(report);
+                            }
+                        }
+                    }
                 }
             }
         }
-
         return reports;
     }
 
@@ -127,30 +142,36 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
     }
 
     @Override
-    public FolderEntity getReportFolder(TestSuiteEntity testSuite, ProjectEntity project) throws Exception {
+    public FolderEntity getReportFolder(TestSuiteEntity testSuite, ProjectEntity project, String executionSessionId) throws Exception {
         return FolderFileServiceManager
-                .getFolder(ReportFileServiceManager.getReportFolderOfTestSuite(project, testSuite));
+                .getFolder(ReportFileServiceManager.getReportFolderOfTestSuite(project, testSuite, executionSessionId));
     }
 
-    private String getReportCollectionEntityLocation(ProjectEntity project, TestSuiteCollectionEntity entity)
+    private String getReportCollectionEntityLocation(ProjectEntity project, TestSuiteCollectionEntity entity, String executionSessionId)
             throws DALException {
         try {
-            return project.getFolderLocation() + File.separator
-                    + entity.getIdForDisplay()
-                            .replaceFirst(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME,
-                                    FileServiceConstant.REPORT_ROOT_FOLDER_NAME)
-                            .replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
+//            return project.getFolderLocation() + File.separator
+//                    + entity.getIdForDisplay()
+//                            .replaceFirst(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME,
+//                                    FileServiceConstant.REPORT_ROOT_FOLDER_NAME)
+//                            .replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
+            
+            String testSuiteCollectionIdWithoutRoot = entity.getIdForDisplay()
+                    .substring(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME.length() + 1);
+            String reportRootFolderPath = FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation());
+
+            return reportRootFolderPath + File.separator + executionSessionId + File.separator + testSuiteCollectionIdWithoutRoot;
         } catch (Exception e) {
             throw new DALException(e);
         }
     }
 
     @Override
-    public ReportCollectionEntity newReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity tsEntity,
-            String newName) throws DALException {
+    public ReportCollectionEntity newReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity tsEntity, 
+            String executionSessionId, String newName) throws DALException {
         try {
 
-            File folder = new File(getReportCollectionEntityLocation(project, tsEntity), newName);
+            File folder = new File(getReportCollectionEntityLocation(project, tsEntity, executionSessionId), newName);
 
             if (!folder.exists()) {
                 folder.mkdirs();
@@ -171,10 +192,10 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
 
     @Override
     public ReportCollectionEntity getReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity entity,
-            String reportName) throws DALException {
+            String executionSessionId, String reportName) throws DALException {
         try {
             FolderEntity parentFolder = FolderFileServiceManager
-                    .getFolder(getReportCollectionEntityLocation(project, entity) + File.separator + reportName);
+                    .getFolder(getReportCollectionEntityLocation(project, entity, executionSessionId) + File.separator + reportName);
 
             return getReportCollectionEntity(
                     parentFolder.getId() + File.separator + reportName + ReportCollectionEntity.FILE_EXTENSION);
