@@ -64,4 +64,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ERROR_TITLE = ComposerTestsuiteCollectionMessageConstants.ERROR_TITLE;
     
     public static final String HAND_ERROR_MSG_UNABLE_TO_OPEN_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.HAND_ERROR_MSG_UNABLE_TO_OPEN_TEST_SUITE_COLLECTION;
+
+    public static final String PA_TAB_MAIN = ComposerTestsuiteCollectionMessageConstants.PA_TAB_MAIN;
+    
+    public static final String PA_TAB_RESULT = ComposerTestsuiteCollectionMessageConstants.PA_TAB_RESULT;
 }

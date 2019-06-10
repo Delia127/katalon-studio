@@ -216,6 +216,7 @@ public class TestSuiteCompositePart implements EventHandler, ParentTestSuiteComp
                 
                 CTabItem testSuiteResultPart = tabFolder.getItem(CHILD_TESTSUITE_RESULT_PART_INDEX);
                 testSuiteResultPart.setText(StringConstants.PA_TAB_RESULT);
+                testSuiteResultPart.setImage(ImageConstants.IMG_16_REPORT);
                 testSuiteResultPart.setShowClose(false);
             }
 

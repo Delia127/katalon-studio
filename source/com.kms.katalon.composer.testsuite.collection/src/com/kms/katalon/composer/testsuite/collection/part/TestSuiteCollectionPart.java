@@ -864,37 +864,37 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
-        if (mpart == null || originalTestSuite == null) {
-            return;
-        }
-        MPart part = EventUtil.getPart(event);
-        if (part == null || !StringUtils.equals(part.getElementId(), mpart.getElementId())) {
-            return;
-        }
-        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalTestSuite);
+//        if (mpart == null || originalTestSuite == null) {
+//            return;
+//        }
+//        MPart part = EventUtil.getPart(event);
+//        if (part == null || !StringUtils.equals(part.getElementId(), mpart.getElementId())) {
+//            return;
+//        }
+//        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalTestSuite);
     }
 
     @Override
     @Inject
     @Optional
     public void onChangeEntityProperties(@UIEventTopic(EventConstants.PROPERTIES_ENTITY_UPDATED) Event event) {
-        Object eventData = EventUtil.getData(event);
-        if (!(eventData instanceof TestSuiteCollectionEntity)) {
-            return;
-        }
-
-        TestSuiteCollectionEntity updatedEntity = (TestSuiteCollectionEntity) eventData;
-        if (!StringUtils.equals(updatedEntity.getIdForDisplay(), getEntityId())) {
-            return;
-        }
-        originalTestSuite.setTag(updatedEntity.getTag());
-        originalTestSuite.setDescription(updatedEntity.getDescription());
+//        Object eventData = EventUtil.getData(event);
+//        if (!(eventData instanceof TestSuiteCollectionEntity)) {
+//            return;
+//        }
+//
+//        TestSuiteCollectionEntity updatedEntity = (TestSuiteCollectionEntity) eventData;
+//        if (!StringUtils.equals(updatedEntity.getIdForDisplay(), getEntityId())) {
+//            return;
+//        }
+//        originalTestSuite.setTag(updatedEntity.getTag());
+//        originalTestSuite.setDescription(updatedEntity.getDescription());
     }
 
     @Override
     @PreDestroy
     public void onClose() {
-        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+//        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
     }
 
     public MPart getMPart() {

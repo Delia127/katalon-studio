@@ -31,15 +31,16 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.part.SavableCompositePart;
-import com.kms.katalon.composer.testsuite.constants.ImageConstants;
-import com.kms.katalon.composer.testsuite.constants.StringConstants;
+import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
+import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 
-public class TestSuiteCollectionCompositePart extends EventServiceAdapter implements IComposerPartEvent, SavableCompositePart {
+public class TestSuiteCollectionCompositePart extends EventServiceAdapter
+        implements IComposerPartEvent, SavableCompositePart {
 
     private static final int COMPOSITE_SIZE = 1;
 
@@ -54,7 +55,7 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
 
     @Inject
     private IEventBroker eventBroker;
-    
+
     @Inject
     private EPartService partService;
 
@@ -123,6 +124,7 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
 
                 CTabItem resultPart = tabFolder.getItem(CHILD_RESULT_PART_INDEX);
                 resultPart.setText(StringConstants.PA_TAB_RESULT);
+                resultPart.setImage(ImageConstants.IMG_16_REPORT);
                 resultPart.setShowClose(false);
             }
 
@@ -151,7 +153,8 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
             return;
         }
         MPart part = EventUtil.getPart(event);
-        if (part == null || !StringUtils.startsWith(part.getElementId(), EntityPartUtil.getTestSuiteCompositePartId(testSuiteCollection.getId()))) {
+        if (part == null || !StringUtils.startsWith(part.getElementId(),
+                EntityPartUtil.getTestSuiteCollectionPartId(testSuiteCollection.getId()))) {
             return;
         }
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, testSuiteCollection);
@@ -165,7 +168,7 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
         if (!(eventData instanceof TestSuiteCollectionEntity)) {
             return;
         }
-        
+
         TestSuiteCollectionEntity updatedEntity = (TestSuiteCollectionEntity) eventData;
         if (!StringUtils.equals(updatedEntity.getIdForDisplay(), getEntityId())) {
             return;
@@ -183,18 +186,7 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
                     return;
                 }
                 if (ObjectUtils.equals(testSuiteCollection.getIdForDisplay(), objects[1])) {
-                    String newCompositePartId = EntityPartUtil.getTestSuiteCollectionPartId(testSuiteCollection.getId());
-                    if (!newCompositePartId.equals(compositePart.getElementId())) {
-                        compositePart.setElementId(newCompositePartId);
-                        compositePart.setLabel(testSuiteCollection.getName());
-                        MPartStack partStack = (MPartStack) compositePart.getChildren().get(0);
-                        partStack.setElementId(
-                                newCompositePartId + IdConstants.TEST_SUITE_COLLECTION_SUB_PART_STACK_ID_SUFFIX);
-                        testSuiteCollectionMainPart.getMPart()
-                                .setElementId(newCompositePartId + IdConstants.TEST_SUITE_COLLECTION_MAIN_PART_ID_SUFFIX);
-                        testSuiteCollectionResultPart.getMPart()
-                                .setElementId(newCompositePartId + IdConstants.TEST_SUITE_COLLECTION_RESULT_PART_ID_SUFFIX);
-                    }
+                    updatePartIds(testSuiteCollection);
                 }
                 break;
             }
@@ -209,18 +201,7 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
                     return;
                 }
                 if (testSuiteCollection.equals(objects[1])) {
-                    String newCompositePartId = EntityPartUtil.getTestSuiteCollectionPartId(testSuiteCollection.getId());
-                    if (!newCompositePartId.equals(compositePart.getElementId())) {
-                        compositePart.setElementId(newCompositePartId);
-                        compositePart.setLabel(testSuiteCollection.getName());
-                        MPartStack partStack = (MPartStack) compositePart.getChildren().get(0);
-                        partStack.setElementId(
-                                newCompositePartId + IdConstants.TEST_SUITE_COLLECTION_SUB_PART_STACK_ID_SUFFIX);
-                        testSuiteCollectionMainPart.getMPart()
-                                .setElementId(newCompositePartId + IdConstants.TEST_SUITE_COLLECTION_MAIN_PART_ID_SUFFIX);
-                        testSuiteCollectionResultPart.getMPart()
-                                .setElementId(newCompositePartId + IdConstants.TEST_SUITE_COLLECTION_RESULT_PART_ID_SUFFIX);
-                    }
+                    updatePartIds(testSuiteCollection);
                 }
                 break;
             }
@@ -228,19 +209,39 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object instanceof TestSuiteCollectionEntity) {
                     TestSuiteCollectionEntity eventTestSuiteCollection = (TestSuiteCollectionEntity) object;
-                    if (eventTestSuiteCollection.getId().equals(testSuiteCollection.getId())) {
-                        try {
-                            ReportCollectionEntity report = ReportController.getInstance().getLastRunReportCollectionEntity(eventTestSuiteCollection);
-                            testSuiteCollectionResultPart.updateReport(report);
-                        } catch (Exception e) {
-                            LoggerSingleton.logError(e);
-                        } 
-                    }
+                    handleTestSuiteCollectionExecutionFinished(eventTestSuiteCollection);
                 }
+                break;
             }
         }
 
-
+    }
+    
+    private void updatePartIds(TestSuiteCollectionEntity updatedEntity) {
+        String newCompositePartId = EntityPartUtil.getTestSuiteCollectionPartId(testSuiteCollection.getId());
+        if (!newCompositePartId.equals(compositePart.getElementId())) {
+            compositePart.setElementId(newCompositePartId);
+            compositePart.setLabel(testSuiteCollection.getName());
+            MPartStack partStack = (MPartStack) compositePart.getChildren().get(0);
+            partStack.setElementId(
+                    newCompositePartId + IdConstants.TEST_SUITE_COLLECTION_SUB_PART_STACK_ID_SUFFIX);
+            testSuiteCollectionMainPart.getMPart()
+                    .setElementId(newCompositePartId + IdConstants.TEST_SUITE_COLLECTION_MAIN_PART_ID_SUFFIX);
+            testSuiteCollectionResultPart.getMPart()
+                    .setElementId(newCompositePartId + IdConstants.TEST_SUITE_COLLECTION_RESULT_PART_ID_SUFFIX);
+        }
+    }
+    
+    private void handleTestSuiteCollectionExecutionFinished(TestSuiteCollectionEntity executedTestSuiteCollection) {
+        if (executedTestSuiteCollection.getId().equals(testSuiteCollection.getId())) {
+            try {
+                ReportCollectionEntity report = ReportController.getInstance()
+                        .getLastRunReportCollectionEntity(executedTestSuiteCollection);
+                testSuiteCollectionResultPart.updateReport(report);
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
     }
 
     @Override
@@ -253,7 +254,7 @@ public class TestSuiteCollectionCompositePart extends EventServiceAdapter implem
 
     @Override
     public void save() throws Exception {
-        testSuiteCollectionMainPart.save();        
+        testSuiteCollectionMainPart.save();
     }
 
     @Override

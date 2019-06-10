@@ -164,7 +164,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
-        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+//        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
     }
 
     @Override
