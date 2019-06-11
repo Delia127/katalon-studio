@@ -69,7 +69,7 @@ public class ActivationInfoCollector {
             return false;
         }
     }
-    
+
     private static int getHostNameHashValue() throws Exception {
         String hostName = InetAddress.getLocalHost().getHostName();
         String ipAddress = InetAddress.getLocalHost().getHostAddress();
@@ -118,7 +118,7 @@ public class ActivationInfoCollector {
         traits.addProperty(UsagePropertyConstant.PROPERTY_USER_KEY, KatalonApplication.USER_KEY);
         return traits;
     }
-    
+
     public static boolean activate(String userName, String pass, StringBuilder errorMessage) {
         boolean activatedResult = false;
         try {
