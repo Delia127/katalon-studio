@@ -41,11 +41,11 @@ public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
     @Override
     protected Control createEntityCustomControl(Composite parent, int column, int span) {
         createDataSourceTypeControl(parent, column);
-        createReadAsIsOption(parent);
+        createReadAsStringOption(parent);
         return super.createEntityCustomControl(parent, column, span);
     }
     
-    private Control createReadAsIsOption(Composite parent) {
+    private Control createReadAsStringOption(Composite parent) {
         Label labelDataSourceType = new Label(parent, SWT.NONE);
         labelDataSourceType.setText(StringConstants.VIEW_LBL_READ_AS_STRING);
         Button checkBox = new Button(parent, SWT.CHECK);
