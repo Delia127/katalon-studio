@@ -34,18 +34,25 @@ public class ActivationInfoCollector {
             return false;
         }
         try {
+            StringBuilder errorMessage = new StringBuilder();
             if (StringUtils.isBlank(activationCode)) {
-                StringBuilder errorMessage = new StringBuilder();
                 if (StringUtils.isBlank(username) || StringUtils.isBlank(encryptedPassword)) {
                     return false;
                 }
                 
                 String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
                 boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
-                 
                 if (!result) {
                     return false;
                 }           
+            } else {
+                if (!StringUtils.isBlank(username) && !StringUtils.isBlank(encryptedPassword)) {
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
+                    if (!result) {
+                        return false;
+                    }
+                }
             }
 
             String updatedVersion = ApplicationInfo
