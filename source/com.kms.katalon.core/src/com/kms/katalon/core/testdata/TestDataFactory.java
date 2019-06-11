@@ -159,9 +159,11 @@ public class TestDataFactory {
                     break;
                 default:
                     testData = null;
-            }
+            }            
             getPropertiesForTestData(testData, testDataElement);
-            return testData;
+            if (testData != null) {
+                return testData;
+            }
         }
         throw new IllegalArgumentException(MessageFormat.format(StringConstants.XML_LOG_ERROR_TEST_DATA_X_NOT_EXISTS,
                 testDataId));
