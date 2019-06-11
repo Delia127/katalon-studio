@@ -163,7 +163,7 @@ public class JiraReportTestLogView extends TestCaseLogDetailsIntegrationView imp
         tableViewer = new TableViewer(issueTableComposite, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
 
         TableViewerColumn tableViewerColumnID = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnID = tableViewerColumnID.getColumn();

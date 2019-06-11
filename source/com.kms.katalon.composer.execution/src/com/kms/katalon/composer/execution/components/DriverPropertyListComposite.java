@@ -24,6 +24,8 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.provider.ListPropertyLabelProvider;
 import com.kms.katalon.core.setting.DriverPropertyValueType;
@@ -55,6 +57,7 @@ public class DriverPropertyListComposite extends Composite {
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         tltmAddProperty = new ToolItem(toolBar, SWT.NONE);
         tltmAddProperty.setText(StringConstants.SETT_TOOLITEM_ADD);
@@ -74,7 +77,7 @@ public class DriverPropertyListComposite extends Composite {
         tableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
         table = tableViewer.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         
         TableColumnLayout tableColumnLayout = new TableColumnLayout();

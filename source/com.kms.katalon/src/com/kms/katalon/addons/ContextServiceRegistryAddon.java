@@ -9,8 +9,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import com.kms.katalon.composer.handlers.ActiveEventLogPartHandler;
 import com.kms.katalon.composer.handlers.CheckForUpdateOnStartupHandler;
 import com.kms.katalon.composer.handlers.ProjectToolbarHandler;
-import com.kms.katalon.composer.handlers.ShowInAppSurveyDialogHandler;
-import com.kms.katalon.composer.handlers.ShowUserFeedbackDialogHandler;
 
 
 public class ContextServiceRegistryAddon {

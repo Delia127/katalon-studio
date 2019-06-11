@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.actions;
+package com.kms.katalon.composer.mobile.objectspy.actions;
 
 public interface IMobileAction {
     public String getName();

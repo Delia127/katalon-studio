@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.util.ColorUtil;
 
 public class DropdownGroup {
 
@@ -46,6 +47,7 @@ public class DropdownGroup {
 
     public ToolItem addItem(String label, Image image, SelectionListener selectionListener) {
         ToolBar toolbar = new ToolBar(composite, SWT.FLAT | SWT.VERTICAL | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         GridData ldToolbar = new GridData(SWT.FILL, SWT.TOP, true, false);
         ldToolbar.horizontalIndent = 15;
         toolbar.setLayoutData(ldToolbar);
