@@ -17,6 +17,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -206,6 +207,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         linkStatusAccessProject = new Link(grpSelect, SWT.NONE);
         linkStatusAccessProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
         
+        Display display = Display.getCurrent();
+        Color textColor = display.getSystemColor(SWT.COLOR_RED);
+        linkStatusAccessProject.setForeground(textColor);
     }
 
     private void createTestResultGroup() {
