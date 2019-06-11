@@ -28,26 +28,24 @@ public class ActivationInfoCollector {
         String activatedVal = ApplicationInfo.getAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME);
         String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
         String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-        // String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
-        //
-        // if (!StringUtils.isBlank(activationCode)) {
-        // return false;
-        // }
-        
-        if (StringUtils.isBlank(username) || StringUtils.isBlank(encryptedPassword)) {
-            return false;
-        }
-              
+        String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+   
         if (activatedVal == null) {
             return false;
         }
         try {
-            StringBuilder errorMessage = new StringBuilder();
-            String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-            boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
-               
-            if (!result) {
-                return false;
+            if (StringUtils.isBlank(activationCode)) {
+                StringBuilder errorMessage = new StringBuilder();
+                if (StringUtils.isBlank(username) || StringUtils.isBlank(encryptedPassword)) {
+                    return false;
+                }
+                
+                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
+                 
+                if (!result) {
+                    return false;
+                }           
             }
 
             String updatedVersion = ApplicationInfo
