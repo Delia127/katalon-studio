@@ -15,7 +15,7 @@ public class ViewDashboardHandler {
     
     @CanExecute
     public boolean canExecute() {
-        return false;
+        return true;
     }
     
     @Execute

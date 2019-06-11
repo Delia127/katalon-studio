@@ -31,7 +31,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
-public class AccountToolControl {
+public class PluginStoreToolControl {
 
     @Inject
     IEventBroker eventBroker;

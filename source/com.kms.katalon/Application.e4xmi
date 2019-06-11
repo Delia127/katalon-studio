@@ -223,7 +223,7 @@
       <children xsi:type="menu:ToolBar" xmi:id="_KDRJMAbFEemu-rQeuokE_A" elementId="com.kms.katalon.composer.toolbar.plugin" toBeRendered="false" visible="false">
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_1yN1YAbFEemu-rQeuokE_A" elementId="com.kms.katalon.toolbarseparator.1"/>
       </children>
-      <children xsi:type="menu:ToolControl" xmi:id="_p-mLQHbwEemVl_JFsJ2xNQ" elementId="com.kms.katalon.toolcontrol.account" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.AccountToolControl"/>
+      <children xsi:type="menu:ToolControl" xmi:id="_p-mLQHbwEemVl_JFsJ2xNQ" elementId="com.kms.katalon.toolcontrol.account" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.PluginStoreToolControl"/>
     </trimBars>
     <trimBars xmi:id="_D8Z7cNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.trimbar.right" side="Right">
       <children xsi:type="menu:ToolControl" xmi:id="_Fy2fsNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
