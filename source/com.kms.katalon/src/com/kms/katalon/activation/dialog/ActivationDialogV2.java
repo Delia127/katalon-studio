@@ -194,7 +194,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         lblProgressMessage = new Label(contentComposite, SWT.NONE);
         lblProgressMessage.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2, 1));
-        
+
         return container;
     }
 
@@ -223,7 +223,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         gdBottomBar.marginWidth = 5;
         gdBottomBar.marginHeight = 0;
         bottomBar.setLayout(gdBottomBar);
-        
+
         Composite bottomLeftComposite = new Composite(bottomBar, SWT.NONE);
         bottomLeftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         bottomLeftComposite.setLayout(new GridLayout(2, false));
