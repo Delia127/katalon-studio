@@ -49,7 +49,8 @@ public class TestCaseBindingStringBuilder {
     }
 
     private String getDeclarationWithTestCaseName() {
-        return new StringBuilder("new TestCaseBinding('").append(getTestCaseBindingName())
+        return new StringBuilder("new TestCaseBinding('")
+                .append(getTestCaseBindingName())
                 .append("', '")
                 .append(testCaseExecutedEntity.getSourceId())
                 .append("', ")
@@ -63,7 +64,8 @@ public class TestCaseBindingStringBuilder {
 
         StringBuilder testCaseBindingString = new StringBuilder(getDeclarationWithTestCaseName()).append(" [ ");
         for (Entry<String, String> variableEntry : variableBinding.entrySet()) {
-            testCaseBindingString.append(variableEntry.getKey())
+            testCaseBindingString
+                    .append(variableEntry.getKey())
                     .append(" : ")
                     .append(variableEntry.getValue())
                     .append(" , ");
@@ -185,7 +187,8 @@ public class TestCaseBindingStringBuilder {
     }
 
     private String getErrorSyntaxMessageWithReason(String variableName, String variableValue, String reason) {
-        return new StringBuilder("Wrong syntax at [Test case ID: ").append(testCaseExecutedEntity.getSourceId())
+        return new StringBuilder("Wrong syntax at [Test case ID: ")
+                .append(testCaseExecutedEntity.getSourceId())
                 .append(", Variable name: ")
                 .append(variableName)
                 .append(", Variable value: ")
@@ -226,17 +229,16 @@ public class TestCaseBindingStringBuilder {
                 throw new SyntaxErrorException(getErrorSyntaxMessageWithReason(variableName, variableLink.getValue(),
                         "Test data value cannot be empty."));
             }
-            TestDataExecutedEntity testDataExecutedEntity = testCaseExecutedEntity
-                    .getTestDataExecuted(variableLink.getTestDataLinkId());
+            TestDataExecutedEntity testDataExecutedEntity = 
+                    testCaseExecutedEntity.getTestDataExecuted(variableLink.getTestDataLinkId());
             TestData testData = testDataMap.get(testDataExecutedEntity.getTestDataId());
             int rowIndex = getRowIndex(testDataExecutedEntity);
-            
-            Object value =  TestDataCellDecorator.decorate(testData,
+
+            Object value = TestDataCellDecorator.decorate(testData,
                     testData.getObjectValue(getColumnIndex(testData), rowIndex));
             // Ensure backward compatibility for old test data in general
             String readAsString = testData.getProperty("readAsString");
-            if (readAsString == null || (Boolean.valueOf(readAsString).booleanValue())
-                    || value instanceof String) {
+            if (readAsString == null || (Boolean.valueOf(readAsString).booleanValue()) || value instanceof String) {
                 return GroovyStringUtil.toGroovyStringFormat(value.toString());
             }
             return String.valueOf(value);

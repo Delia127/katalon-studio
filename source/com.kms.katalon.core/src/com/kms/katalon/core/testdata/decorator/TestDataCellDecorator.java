@@ -146,17 +146,15 @@ public class TestDataCellDecorator {
     }
 
     /**
-     * Decorate a cell in test data. For Test Data of type Excel, cells are decorated
-     * as object types determined by POI library if and only if test data has property "readAsIs" equals true.
-     * Otherwise cells are decorated as string
+     * Decorate a cell/cell value in test data.
      * 
      * @param testData A {@link TestData}
-     * @param cell An {@link Object} represents either a cell value or a cell (for Excel) to be decorated
+     * @param input An {@link Object} represents either a cell value or a cell to be decorated
      * @return A decorated {@link Object}
      */
-    public static Object decorate(TestData testData, Object cell) {
+    public static Object decorate(TestData testData, Object input) {
 
-        if (cell == null || testData == null) {
+        if (input == null || testData == null) {
             return null;
         }
 
@@ -174,15 +172,15 @@ public class TestDataCellDecorator {
                     // Ensure backward compatibility for old Excel test data
                     String readAsString = testData.getProperty("readAsString");
                     if (readAsString == null || (Boolean.valueOf(readAsString).booleanValue())) {
-                        return decorateExcelCellAsString(workbook, (Cell) cell);
+                        return decorateExcelCellAsString(workbook, (Cell) input);
                     }
-                    rawValue = decorateExcelCellAsIs(workbook, (Cell) cell);
+                    rawValue = decorateExcelCellAsIs(workbook, (Cell) input);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             default:
-                rawValue = cell;
+                rawValue = input;
         }
         return rawValue;
     }
