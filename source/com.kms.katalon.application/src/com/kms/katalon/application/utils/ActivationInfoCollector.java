@@ -59,7 +59,7 @@ public class ActivationInfoCollector {
 
         StringBuilder errorMessage = new StringBuilder();
         try {
-            if (StringUtils.isBlank(username) || StringUtils.isBlank(encryptedPassword)) {
+            if (StringUtils.isBlank(username)) {
                 return false;
             }
 
