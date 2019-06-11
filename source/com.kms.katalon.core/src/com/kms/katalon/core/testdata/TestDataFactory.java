@@ -159,9 +159,9 @@ public class TestDataFactory {
                     break;
                 default:
                     testData = null;
-            }            
-            getPropertiesForTestData(testData, testDataElement);
+            }
             if (testData != null) {
+                getPropertiesForTestData(testData, testDataElement);
                 return testData;
             }
         }
