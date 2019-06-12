@@ -12,12 +12,12 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.wizard.AbstractWizardPage;
 import com.kms.katalon.constants.ImageConstants;
 
-public class SDLCIntergrationWizardPage extends AbstractWizardPage implements WizardPage{
+public class SDLCIntergrationWizardPage extends AbstractWizardPage implements WizardPage {
 
     public SDLCIntergrationWizardPage() {
-        
+
     }
-    
+
     @Override
     public String getTitle() {
         return "SDLC/CI Integration Testing";
@@ -25,7 +25,7 @@ public class SDLCIntergrationWizardPage extends AbstractWizardPage implements Wi
 
     @Override
     public void createStepArea(Composite parent) {
-        Composite imageCompositeImage = new Composite(parent,SWT.FILL);
+        Composite imageCompositeImage = new Composite(parent, SWT.FILL);
         GridData gridDataImage = new GridData(SWT.RIGHT, SWT.FILL, true, true);
         Image imageTitleArea = ImageConstants.IMG_INTRO_SCREEN_SDLC_INTEGRATION;
         gridDataImage.widthHint = imageTitleArea.getBounds().width;
@@ -33,22 +33,22 @@ public class SDLCIntergrationWizardPage extends AbstractWizardPage implements Wi
         imageCompositeImage.setLayoutData(gridDataImage);
         imageCompositeImage.setBackgroundImage(imageTitleArea);
     }
-    
+
     @Override
     public void setInput(Map<String, Object> sharedData) {
 
     }
-    
+
     @Override
     public void registerControlModifyListeners() {
 
     }
-    
+
     @Override
     public boolean canFlipToNextPage() {
         return true;
     }
-    
+
     @Override
     public boolean autoFlip() {
         return false;
@@ -63,7 +63,7 @@ public class SDLCIntergrationWizardPage extends AbstractWizardPage implements Wi
     public boolean isChild() {
         return false;
     }
-    
+
     @Override
     public boolean canFinish() {
         return true;

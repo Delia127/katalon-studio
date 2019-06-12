@@ -12,12 +12,12 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.wizard.AbstractWizardPage;
 import com.kms.katalon.constants.ImageConstants;
 
-public class PluginStoreWizardPage extends AbstractWizardPage implements WizardPage{
+public class PluginStoreWizardPage extends AbstractWizardPage implements WizardPage {
 
     public PluginStoreWizardPage() {
-        
+
     }
-    
+
     @Override
     public String getTitle() {
         return "Plugin Store";
@@ -25,7 +25,7 @@ public class PluginStoreWizardPage extends AbstractWizardPage implements WizardP
 
     @Override
     public void createStepArea(Composite parent) {
-        Composite imageCompositeImage = new Composite(parent,SWT.FILL);
+        Composite imageCompositeImage = new Composite(parent, SWT.FILL);
         GridData gridDataImage = new GridData(SWT.RIGHT, SWT.FILL, true, true);
         Image imageTitleArea = ImageConstants.IMG_INTRO_SCREEN_WEB_TESTING;
         gridDataImage.widthHint = imageTitleArea.getBounds().width;
@@ -33,22 +33,22 @@ public class PluginStoreWizardPage extends AbstractWizardPage implements WizardP
         imageCompositeImage.setLayoutData(gridDataImage);
         imageCompositeImage.setBackgroundImage(imageTitleArea);
     }
-    
+
     @Override
     public void setInput(Map<String, Object> sharedData) {
 
     }
-    
+
     @Override
     public void registerControlModifyListeners() {
 
     }
-    
+
     @Override
     public boolean canFlipToNextPage() {
         return true;
     }
-    
+
     @Override
     public boolean autoFlip() {
         return false;
@@ -63,7 +63,7 @@ public class PluginStoreWizardPage extends AbstractWizardPage implements WizardP
     public boolean isChild() {
         return false;
     }
-    
+
     @Override
     public boolean canFinish() {
         return true;

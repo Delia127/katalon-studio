@@ -9,6 +9,7 @@ import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,12 +22,15 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.program.Program;
+import org.seleniumhq.jetty9.util.log.Log;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.katalon.plugin.jira.composer.constant.StringConstants;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -205,7 +209,6 @@ public class KStoreRestClient {
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode == HttpStatus.SC_OK) {
                     product = true;
-                    
                 } else {
                     throw new KStoreClientException(String.format("Invalid Request. Status Code: %d. Message: %s",
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));

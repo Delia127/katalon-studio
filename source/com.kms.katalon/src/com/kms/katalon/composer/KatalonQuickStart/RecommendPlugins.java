@@ -15,9 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.imp.wizard.WizardRecommend;
 
-
 public class RecommendPlugins extends WizardRecommend {
-
 
     public RecommendPlugins(Shell parentShell) {
         super(parentShell);
@@ -37,8 +35,8 @@ public class RecommendPlugins extends WizardRecommend {
         applyDialogFont(composite);
         Label lb = new Label(composite, SWT.NONE);
         lb.setText("\n\t\t\tMost recommended plugins\n");
-        org.eclipse.swt.graphics.Font defaultFont = new org.eclipse.swt.graphics.Font(null, "Aria",10,SWT.BOLD);
-        lb.setFont(defaultFont);  
+        org.eclipse.swt.graphics.Font defaultFont = new org.eclipse.swt.graphics.Font(null, "Aria", 10, SWT.BOLD);
+        lb.setFont(defaultFont);
         // initialize the dialog units
         initializeDialogUnits(composite);
         // create the dialog area and button bar
@@ -55,7 +53,7 @@ public class RecommendPlugins extends WizardRecommend {
         glDialogComposite.marginWidth = 20;
         glDialogComposite.verticalSpacing = 20;
         glDialogComposite.horizontalSpacing = 20;
-        
+
         createStepArea(dialogComposite);
         createWizardArea(dialogComposite);
 
@@ -66,11 +64,10 @@ public class RecommendPlugins extends WizardRecommend {
     protected void setShellStyle(int arg) {
         super.setShellStyle(arg | SWT.RESIZE);
     }
-    
+
     @Override
     protected Collection<IWizardPage> getWizardPages() {
-        return Arrays.asList(new IWizardPage[] {
-        });
+        return Arrays.asList(new IWizardPage[] {});
     }
 
     @Override
@@ -85,13 +82,11 @@ public class RecommendPlugins extends WizardRecommend {
 
     @Override
     public String getStepIndexAsString() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public boolean isChild() {
-        // TODO Auto-generated method stub
         return false;
     }
 

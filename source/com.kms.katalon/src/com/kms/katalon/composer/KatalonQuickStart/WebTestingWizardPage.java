@@ -26,35 +26,35 @@ public class WebTestingWizardPage extends AbstractWizardPage implements WizardPa
     @Override
     public void createStepArea(Composite parent) {
 
-        /*ScrolledComposite c1 = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL | SWT.CENTER);
-        c1.setExpandHorizontal(true);
-        c1.setExpandVertical(true);
-        
+        /*
+         * ScrolledComposite c1 = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL | SWT.CENTER);
+         * c1.setExpandHorizontal(true);
+         * c1.setExpandVertical(true);
+         * Composite leftComposite = new Composite(c1, SWT.NONE);
+         * c1.setContent(leftComposite);
+         * GridLayout glLeft = new GridLayout(1, false);
+         * glLeft.marginWidth = 0;
+         * glLeft.marginHeight = 0;
+         * glLeft.marginLeft = 0;
+         * glLeft.horizontalSpacing = 0;
+         * glLeft.verticalSpacing = 0;
+         * Image imageTitleArea = ImageConstants.IMG_INTRO_SCREEN_WEB_TESTING;
+         * c1.setMinSize(1000, 1000);
+         * leftComposite.setLayout(glLeft);
+         * leftComposite.setBackgroundImage(imageTitleArea);
+         * ;
+         * GridData gdLeft = new GridData(SWT.FILL, SWT.FILL, true, true);
+         * c1.setLayoutData(gdLeft);
+         * c1.setVisible(true);
+         */
 
-        Composite leftComposite = new Composite(c1, SWT.NONE);
-        c1.setContent(leftComposite);
-        GridLayout glLeft = new GridLayout(1, false);
-        glLeft.marginWidth = 0;
-        glLeft.marginHeight = 0;
-        glLeft.marginLeft = 0;
-        glLeft.horizontalSpacing = 0;
-        glLeft.verticalSpacing = 0;
+        Composite imageCompositeImage = new Composite(parent, SWT.FILL);
+        GridData gridDataImage = new GridData(SWT.RIGHT, SWT.FILL, true, true);
         Image imageTitleArea = ImageConstants.IMG_INTRO_SCREEN_WEB_TESTING;
-        c1.setMinSize(1000, 1000);
-        leftComposite.setLayout(glLeft);
-        leftComposite.setBackgroundImage(imageTitleArea);
-        ;
-        GridData gdLeft = new GridData(SWT.FILL, SWT.FILL, true, true);
-        c1.setLayoutData(gdLeft);
-        c1.setVisible(true);*/
-       
-         Composite imageCompositeImage = new Composite(parent,SWT.FILL);
-         GridData gridDataImage = new GridData(SWT.RIGHT, SWT.FILL, true, true);
-         Image imageTitleArea = ImageConstants.IMG_INTRO_SCREEN_WEB_TESTING;
-         gridDataImage.widthHint = imageTitleArea.getBounds().width;
-         gridDataImage.heightHint = imageTitleArea.getBounds().height;
-         imageCompositeImage.setLayoutData(gridDataImage);
-         imageCompositeImage.setBackgroundImage(imageTitleArea);
+        gridDataImage.widthHint = imageTitleArea.getBounds().width;
+        gridDataImage.heightHint = imageTitleArea.getBounds().height;
+        imageCompositeImage.setLayoutData(gridDataImage);
+        imageCompositeImage.setBackgroundImage(imageTitleArea);
 
     }
 

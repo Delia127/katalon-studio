@@ -55,7 +55,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
         gridData.heightHint = imageTitle.getBounds().height;
         imageComposite.setLayoutData(gridData);
         imageComposite.setBackgroundImage(imageTitle);
-        
+
         // create the top level composite for the dialog
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -82,7 +82,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
         glDialogComposite.marginWidth = 0;
         glDialogComposite.verticalSpacing = 0;
         glDialogComposite.horizontalSpacing = 0;
-        
+
         Composite stepTreeComposite = createStepTableComposite(dialogComposite);
 
         layoutTreeAreaControl(stepTreeComposite);
@@ -240,19 +240,12 @@ public class QuickStartDialog extends SimpleWizardDialog {
         });
 
     }
-    
+
     @Override
     protected Collection<IWizardPage> getWizardPages() {
-        return Arrays.asList(new IWizardPage[] {
-                new WebTestingWizardPage(),
-                new APITestingWizardPage(),
-                new MobileTestingWizardPage(),
-                new DatadrivenTestingWizardPage(),
-                new BDDTestingWizardPage(),
-                new SDLCIntergrationWizardPage(),
-                new PluginStoreWizardPage(),
-                new AdvancedReportWizardPage()
-        });
+        return Arrays.asList(new IWizardPage[] { new WebTestingWizardPage(), new APITestingWizardPage(),
+                new MobileTestingWizardPage(), new DatadrivenTestingWizardPage(), new BDDTestingWizardPage(),
+                new SDLCIntergrationWizardPage(), new PluginStoreWizardPage(), new AdvancedReportWizardPage() });
     }
 
     @Override
@@ -270,7 +263,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(1050, 800);
+        return new Point(1070, 800);
     }
 
     @Override
@@ -283,16 +276,13 @@ public class QuickStartDialog extends SimpleWizardDialog {
         super.okPressed();
     }
 
-
     @Override
     public String getStepIndexAsString() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public boolean isChild() {
-        // TODO Auto-generated method stub
         return false;
     }
 }

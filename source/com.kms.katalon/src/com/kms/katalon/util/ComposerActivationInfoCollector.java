@@ -103,7 +103,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         QuickStartDialog quickStartDialog = new QuickStartDialog(Display.getCurrent().getActiveShell());
         RecommendPlugins recommendPlugins = new RecommendPlugins(Display.getCurrent().getActiveShell());
         quickStartDialog.open();
-        if(quickStartDialog.close()){
+        if (quickStartDialog.close()) {
             recommendPlugins.open();
         }
 //        QuickStartDialog dialog = new QuickStartDialog(null);
