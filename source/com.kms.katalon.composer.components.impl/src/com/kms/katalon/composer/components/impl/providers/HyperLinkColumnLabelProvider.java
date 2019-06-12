@@ -43,7 +43,7 @@ public abstract class HyperLinkColumnLabelProvider<T> extends MouseCursorColumnL
 
     private StyleRange getHyperLinkStyleRange(ViewerCell cell) {
         StyleRange hyperLinkStyle = new StyleRange();
-        hyperLinkStyle.foreground = cell.getItem().getDisplay().getSystemColor(SWT.COLOR_BLUE);
+        hyperLinkStyle.foreground = cell.getItem().getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW);
         hyperLinkStyle.underline = true;
         hyperLinkStyle.start = 0;
         hyperLinkStyle.length = cell.getText().length();
