@@ -1,5 +1,7 @@
 package com.kms.katalon.tracking.service;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
@@ -342,6 +344,11 @@ public class Trackings {
         apiKey = StringUtils.isNotBlank(apiKey) ? apiKey : StringUtils.EMPTY;
         trackUserAction("downloadPlugin", "apiKey", apiKey, "pluginId", pluginId, "pluginName", pluginName,
                     "pluginVersion", pluginVersion, "runningMode", runningMode.toString());
+    }
+    
+    public static void trackInstallPlugins(List<Long> installedPluginIds, String apiKey, RunningMode runningMode) {
+        trackUserAction("installPlugins", "pluginIdList", JsonUtil.toJson(installedPluginIds), "apiKey",
+                StringUtils.isNotBlank(apiKey) ? apiKey : StringUtils.EMPTY, "runningMode", runningMode.toString());
     }
     
     private static void trackUserAction(String actionName, Object... properties) {
