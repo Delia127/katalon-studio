@@ -450,6 +450,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         toolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         selectionListener = new ToolbarItemListener(this);
@@ -482,7 +483,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
         tableViewer = new CTableViewer(testSuiteTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Table testSuiteWrapperTable = tableViewer.getTable();
-        testSuiteWrapperTable.setLinesVisible(true);
+        testSuiteWrapperTable.setLinesVisible(ControlUtils.shouldLineVisble(testSuiteWrapperTable.getDisplay()));
         testSuiteWrapperTable.setHeaderVisible(true);
 
         TableViewerColumn tbvcNo = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -543,15 +544,6 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         ColumnViewerUtil.setTableActivation(tableViewer);
         hookDropTestSuiteEvent();
         hookDragTestSuiteEvent();
-
-        // KAT-3580: hide the "Run With" and "Run Configuration" columns in test
-        // suite collection view
-        // for API projects
-        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
-        if (project.getType() == ProjectType.WEBSERVICE) {
-            tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(0, 0));
-            tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(0, 0));
-        }
     }
 
     private void hookDragTestSuiteEvent() {
@@ -858,6 +850,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (mpart == null || originalTestSuite == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.equals(part.getElementId(), mpart.getElementId())) {
             return;

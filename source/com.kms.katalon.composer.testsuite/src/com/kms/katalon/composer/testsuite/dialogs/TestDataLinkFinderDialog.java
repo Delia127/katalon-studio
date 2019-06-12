@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
@@ -27,13 +28,14 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.filters.TestDataTreeViewerFilter;
 import com.kms.katalon.composer.testsuite.providers.TestDataIDColumnLabelProvider;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 
 public class TestDataLinkFinderDialog extends Dialog {
-    private Text textSearch;
+    private StyledText textSearch;
     private List<TestCaseTestDataLink> testDataLinks;
     private TableViewer treeViewer;
 
@@ -101,11 +103,13 @@ public class TestDataLinkFinderDialog extends Dialog {
         compositeSearch.setLayout(gl_compositeSearch);
         compositeSearch.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-        textSearch = new Text(compositeSearch, SWT.BORDER);
+        textSearch = new StyledText(compositeSearch, SWT.SINGLE);
         GridData gd_textSearch = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gd_textSearch.heightHint = 18;
         textSearch.setLayoutData(gd_textSearch);
-        textSearch.setMessage(StringConstants.DIA_TXT_ENTER_TEXT_TO_SEARCH);
+        
+        StyledTextMessage styledTextMessage = new StyledTextMessage(textSearch);
+        styledTextMessage.setMessage(StringConstants.DIA_TXT_ENTER_TEXT_TO_SEARCH);
 
         Composite compositeTree = new Composite(container, SWT.NONE);
         compositeTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));

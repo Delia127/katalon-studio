@@ -55,7 +55,7 @@ public class CCTabRendering extends CTabRendering {
         if (maxRect.width == 0 || maxRect.height == 0) {
             return;
         }
-        gc.setBackground(ColorUtil.getToolBarBackgroundColor());
+        gc.setForeground(ColorUtil.getToolBarForegroundColor());
         gc.fillRectangle(maxRect.x, maxRect.y, maxRect.width, maxRect.height);
         if (!parent.getMaximized()) {
             gc.drawImage(ImageConstants.IMG_MAXIMIZE, maxRect.x, maxRect.y);

@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -860,17 +860,21 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
             LoggerSingleton.logError(e);
         }
     }
-    protected Map<String, String> evaluateRequestVariables() throws Exception {
+    protected Map<String, Object> evaluateRequestVariables() throws Exception {
 
         WebServiceRequestEntity requestEntity = getWSRequestObject();
         List<VariableEntity> variables = requestEntity.getVariables();
-        Map<String, String> variableMap = variables.stream()
-                .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
+        if (!variables.isEmpty()) {
+            Map<String, String> variableMap = variables.stream()
+                    .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
+    
+            VariableEvaluator evaluator = new VariableEvaluator();
+            Map<String, Object> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
 
-        VariableEvaluator evaluator = new VariableEvaluator();
-        Map<String, String> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
-
-        return evaluatedVariables;
+            return evaluatedVariables;
+        } else {
+            return new HashMap<>();
+        }
     }
 
     protected abstract void createParamsComposite(Composite parent);
@@ -878,6 +882,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected ToolBar createAddRemoveToolBar(Composite parent, SelectionListener addSelectionListener,
             SelectionListener removeSelectionListener) {
         ToolBar toolbar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         toolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         ToolItem tiAdd = new ToolItem(toolbar, SWT.RIGHT);
@@ -1985,7 +1990,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         Table table = tblNameValue.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 
         // Double click to add new property
@@ -2353,11 +2358,6 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
                 updateVariableManualView();
             }
 
-            if (invalidScheme == true) {
-                MessageDialog.openError(null, StringConstants.ERROR_TITLE,
-                        StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
-                return;
-            }
             saveVariables();
             saveVerificationScript();
             saveConfiguration();
@@ -2443,6 +2443,9 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        if (mPart == null || originalWsObject == null) {
+            return;
+        }
         MPart part = EventUtil.getPart(event);
         if (part == null || !StringUtils.equals(part.getElementId(), mPart.getElementId())) {
             return;

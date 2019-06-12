@@ -12,12 +12,12 @@ public class WebPage extends WebFrame {
 
     @Override
     public String getTag() {
-        return null;
+        return super.getTag();
     }
 
     @Override
     public void setTag(String tag) {
-        // Do nothing
+        super.setTag(tag);
     }
 
     @Override

@@ -251,6 +251,11 @@ public class StringConstants {
 
     public static final String COMM_LOG_INFO_CHECKING_NUM_PARAMS = CoreMessageConstants.COMM_LOG_INFO_CHECKING_NUM_PARAMS;
 
+    public static final String KW_LOG_INFO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT = CoreMessageConstants.KW_LOG_INFO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT;
+    
+    public static final String KW_LOG_INFO_FAIL_TO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT = CoreMessageConstants.KW_LOG_INFO_FAIL_TO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT;
+    
+    
     // XML LOG
     public static final String XML_LOG_DESCRIPTION_PROPERTY = "description";
     
@@ -399,6 +404,8 @@ public class StringConstants {
     public static final String CONF_PROPERTY_DEFAULT_FAILURE_HANDLING = "defaultFailureHandling";
         
     public static final String CONF_PROPERTY_PROXY = "proxy";
+    
+    public static final String CONF_PROPERTY_SSL = "ssl";
 
     public static final String CONF_PROPERTY_TEST_DATA_INFO = "testDataInfo";
 

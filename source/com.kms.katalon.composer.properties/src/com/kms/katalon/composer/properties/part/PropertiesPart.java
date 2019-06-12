@@ -40,6 +40,7 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.CssUtil;
 import com.kms.katalon.composer.properties.constants.ImageConstants;
 import com.kms.katalon.composer.properties.constants.PropertiesIdConstants;
@@ -117,6 +118,7 @@ public class PropertiesPart {
     private void createToolBar(MPart part) {
         CTabFolder ctabfolder = (CTabFolder) part.getParent().getWidget();
         ToolBar toolbar = new ToolBar(ctabfolder, SWT.FLAT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         MToolBar mToolbar = MMenuFactory.INSTANCE.createToolBar();
         mToolbar.setElementId(PropertiesIdConstants.PROPERTIES_TOOLBAR_ID);
         mToolbar.setWidget(toolbar);

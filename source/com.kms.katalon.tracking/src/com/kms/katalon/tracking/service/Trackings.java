@@ -109,24 +109,24 @@ public class Trackings {
         trackUserAction("record", "type", type);
     }
 
-    public static void trackExecuteTestCase(String launchMode, String driverType) {
-        trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType);
+    public static void trackExecuteTestCase(String launchMode, String driverType, String result, long duration) {
+        trackUserAction("executeTestCase", "launchMode", launchMode, "driver", driverType,"executionResult", result, "duration", duration);
     }
 
-    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType) {
-        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType);
+    public static void trackExecuteTestSuiteInGuiMode(String launchMode, String driverType, String result, long duration) {
+        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode, "driver", driverType, "executionResult", result, "duration", duration);
     }
 
-    public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType) {
-        trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType);
+    public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous, String driverType, String result, long duration) {
+        trackAction("executeTestSuite", isAnonymous, "runningMode", "console", "driver", driverType, "executionResult", result, "duration", duration);
+    }
+    
+    public static void trackExecuteTestSuiteCollectionInGuiMode(String result, long duration) {
+        trackUserAction("executeTestSuiteCollection", "runningMode", "gui", "executionResult", result, "duration", duration);
     }
 
-    public static void trackExecuteTestSuiteCollectionInGuiMode() {
-        trackUserAction("executeTestSuiteCollection", "runningMode", "gui");
-    }
-
-    public static void trackExecuteTestSuiteCollectionInConsoleMode(boolean isAnonymous) {
-        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console");
+    public static void trackExecuteTestSuiteCollectionInConsoleMode(boolean isAnonymous, String result, long duration) {
+        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console", "executionResult", result, "duration", duration);
     }
 
     public static void trackGenerateCmd() {

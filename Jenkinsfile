@@ -56,7 +56,7 @@ pipeline {
                     isQtest = branch.contains('qtest')
                     println("Is qTest ${isQtest}.")
 
-                    isRelease = branch.startsWith('release-')
+                    isRelease = branch.startsWith('release-') || branch.contains('-release-')
                     println("Is release ${isRelease}.")
 
                     isBeta = isRelease && branch.contains('.rc')
@@ -109,61 +109,32 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
-        // stage('Generate lastest_release.json') {
-//             steps {
-//                 script {
-//                         def latestRelease =
-// """[
-//     {
-//         "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_32-${version}.zip",
-//         "file": "win_32"
-//     },
-//     {
-//         "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_64-${version}.zip",
-//         "file": "win_64"
-//     },
-//     {
-//         "location": "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
-//         "file": "mac_64"
-//     },
-//     {
-//         "location": "https://download.katalon.com/${version}/Katalon_Studio_Linux_64-${version}.tar.gz",
-//         "file": "linux_64"
-//     }
-// ]"""
-//                         writeFile(file: "${env.tmpDir}/lastest_release.json", text: latestRelease)
-//                         def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_release.json")
-//                         println(latest_release_from_file)
-
-//                 }
-//             }
-//         }
-
         stage('Generate lastest_release.json') {
             steps {
                 script {
                         def latestRelease =
 """[
     {
-        "location": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_32-${version}.zip",
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_32-${version}.zip",
         "file": "win_32"
     },
     {
-        "location": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Windows_64-${version}.zip",
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_64-${version}.zip",
         "file": "win_64"
     },
     {
-        "location": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.dmg",
+        "location": "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
         "file": "mac_64"
     },
     {
-        "location": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon_Studio_Linux_64-${version}.tar.gz",
+        "location": "https://download.katalon.com/${version}/Katalon_Studio_Linux_64-${version}.tar.gz",
         "file": "linux_64"
     }
 ]"""
                         writeFile(file: "${env.tmpDir}/lastest_release.json", text: latestRelease)
                         def latest_release_from_file = readFile(file: "${env.tmpDir}/lastest_release.json")
                         println(latest_release_from_file)
+
                 }
             }
         }
@@ -212,7 +183,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
-        stage('Generate latest_release.json') {
+        stage('Generate latest_version.json') {
             steps {
                 script {
                     def latest_release = """
@@ -224,8 +195,8 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
     "quickRelease": true
 }
                     """
-                        writeFile(file: "${env.tmpDir}/latest_release.json", text: latest_release)
-                        def latest_releases_from_file = readFile(file: "${env.tmpDir}/latest_release.json")
+                        writeFile(file: "${env.tmpDir}/latest_version.json", text: latest_release)
+                        def latest_releases_from_file = readFile(file: "${env.tmpDir}/latest_version.json")
                         println(latest_releases_from_file)
                 }
             }
@@ -257,19 +228,20 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
 
                     script {
                         dir("source") {
+                            def command = isRelease ? 'verify' : 'verify'
                             // Generate Katalon builds
                             // If branch name contains "release", build production mode for non-qTest package
                             // else build development mode for qTest package
                             if (isQtest) {
                                 echo "Building: qTest Prod"
-                                sh 'mvn -pl \\!com.kms.katalon.product clean verify -P prod'
+                                sh "mvn -pl \\!com.kms.katalon.product clean ${command} -P prod"
                             } else {
                                 echo "Building: Standard Prod"
-                                sh 'mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod'
+                                sh "mvn -pl \\!com.kms.katalon.product.qtest_edition clean ${command} -P prod"
                             }
 
                             // Generate API docs
-                            sh "cd com.kms.katalon.apidocs && mvn clean verify && cp -R 'target/resources/apidocs' ${env.tmpDir}"
+                            sh "cd com.kms.katalon.apidocs && mvn clean ${command} && cp -R 'target/resources/apidocs' ${env.tmpDir}"
                         }
                     }
                 }
@@ -429,14 +401,14 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         stage('Create Github release') {
             steps {
                 script {
-                    if (isRelease) {
+                    if (isRelease && !isQtest) {
                         dir("tools/release") {
                             nodejs(nodeJSInstallationName: 'nodejs') {
                                 sh 'npm prune && npm install'
                                 withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-                                    sh """node app.js ${env.GITHUB_TOKEN} ${tag} \
+                                    sh """node app.js ${env.GITHUB_TOKEN} v${tag} \
                                         '${env.tmpDir}/lastest_release.json' \
-                                        '${env.tmpDir}/latest_release.json' \
+                                        '${env.tmpDir}/latest_version.json' \
                                         '${env.tmpDir}/releases.json' \
                                         '${env.tmpDir}/apidocs.zip' \
                                         '${env.tmpDir}/commit.txt' \

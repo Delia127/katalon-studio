@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.webservice.parts;
 
-import java.io.File;
 //import java.awt.Label;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
@@ -17,7 +16,6 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -56,10 +54,10 @@ import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
+import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
-import com.kms.katalon.core.util.BrowserMobProxyManager;
-import com.kms.katalon.core.util.RequestInformation;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.webservice.common.HarLogUtil;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -181,10 +179,8 @@ public class RestServicePart extends WebServicePart {
                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
-
-                        Map<String, String> evaluatedVariables = evaluateRequestVariables();
                         
-                        BrowserMobProxyManager.newHar();
+                        Map<String, Object> evaluatedVariables = evaluateRequestVariables();
                         
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
                                 projectDir, ProxyPreferences.getProxyInformation(),
@@ -192,11 +188,11 @@ public class RestServicePart extends WebServicePart {
                         
                         deleteTempHarFile();
                         
-                        RequestInformation requestInformation = new RequestInformation();
-                        requestInformation.setTestObjectId(requestEntity.getId());
-                        requestInformation.setReportFolder(Files.createTempDirectory("har").toFile().getAbsolutePath());
-                        harFile = BrowserMobProxyManager.endHar(requestInformation);
-                        
+                        RequestObject requestObject = WebServiceController.getRequestObject(requestEntity, projectDir,
+                                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
+                        String logFolder = Files.createTempDirectory("har").toFile().getAbsolutePath();
+                        harFile = HarLogUtil.logHarFile(requestObject, responseObject, logFolder);
+        
                         if (monitor.isCanceled()) {
                             return;
                         }

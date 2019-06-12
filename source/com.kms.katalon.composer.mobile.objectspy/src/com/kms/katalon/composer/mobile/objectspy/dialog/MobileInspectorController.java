@@ -44,6 +44,7 @@ import com.kms.katalon.core.appium.exception.IOSWebkitStartException;
 import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
 import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
@@ -85,6 +86,60 @@ public class MobileInspectorController {
 
     public MobileInspectorController() {
     }
+    
+    public void startExistingApp(MobileDeviceInfo mobileDeviceInfo, String appId)
+            throws ExecutionException, InterruptedException, IOException, AppiumStartException,
+            MobileDriverInitializeException, IOSWebkitStartException {
+        if (mobileDeviceInfo == null) {
+            return;
+        }
+        if (driver != null) {
+            closeApp();
+            Thread.sleep(2000);
+        }
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+
+        MobileDriverType mobileDriverType = getMobileDriverType(mobileDeviceInfo);
+        if (mobileDriverType == null) {
+            throw new ExecutionException(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);
+        }
+
+        MobileDriverConnector mobileDriverConnector = getMobileDriverConnector(mobileDriverType, projectDir);
+
+        if (mobileDriverConnector == null) {
+            throw new ExecutionException(StringConstants.DIA_ERROR_MSG_OS_NOT_SUPPORT);
+        }
+
+        mobileDriverConnector = (MobileDriverConnector) mobileDriverConnector.clone();
+        mobileDriverConnector.setDevice(mobileDeviceInfo);
+        Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(2);
+        driverConnectors.put(MobileDriverFactory.MOBILE_DRIVER_PROPERTY, mobileDriverConnector);
+
+        String logFilePath = projectDir + File.separator + "appium.log";
+        RunConfiguration.setAppiumLogFilePath(logFilePath);
+
+        DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
+        generalExecutionSetting.setTimeout(60);
+
+        RunConfiguration.setExecutionSetting(
+                ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
+
+        if (!AppiumDriverManager.isAppiumServerStarted(1)) {
+            createAppiumLogTailer(logFilePath);
+        }
+
+        mobileDeviceInfo.updateRuntimeEnvironmentVariables();
+
+        AppiumDriverManager.startAppiumServerJS(SERVER_START_TIMEOUT,
+                getAdditionalEnvironmentVariables(mobileDriverType));
+        driver = MobileDriverFactory.startMobileDriver(appId);
+        driver.activateApp(appId);
+
+        appiumServerProcess = AppiumDriverManager.getAppiumSeverProcess();
+
+        iosWebKitProcess = AppiumDriverManager.getIosWebKitProcess();
+    }
+
 
     public void startMobileApp(MobileDeviceInfo mobileDeviceInfo, String appFile, boolean uninstallAfterCloseApp)
             throws ExecutionException, InterruptedException, IOException, AppiumStartException,
@@ -132,7 +187,8 @@ public class MobileInspectorController {
         AppiumDriverManager.startAppiumServerJS(SERVER_START_TIMEOUT,
                 getAdditionalEnvironmentVariables(mobileDriverType));
         driver = MobileDriverFactory.startMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(),
-                mobileDeviceInfo.getDeviceName(), appFile, uninstallAfterCloseApp);
+                mobileDeviceInfo.getDeviceName(), mobileDeviceInfo.getDeviceOSVersion(), appFile,
+                uninstallAfterCloseApp);
 
         appiumServerProcess = AppiumDriverManager.getAppiumSeverProcess();
 
@@ -182,7 +238,9 @@ public class MobileInspectorController {
         RunConfiguration.setExecutionSetting(
                 ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
         driver = MobileDriverFactory.startMobileDriver(getMobileDriverType(kobitonDevice), null,
-                kobitonDevice.getCapabilities().getDeviceName(), kobitonApplication.buildAutomationKey(), false);
+                kobitonDevice.getCapabilities().getDeviceName(),
+                kobitonDevice.getCapabilities().getPlatformVersion(), 
+                kobitonApplication.buildAutomationKey(), false);
     }
 
     public static MobileDriverType getMobileDriverType(KobitonDevice kobitonDevice) {

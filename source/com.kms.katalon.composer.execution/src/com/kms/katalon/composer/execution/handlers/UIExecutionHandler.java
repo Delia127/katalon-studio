@@ -140,9 +140,6 @@ public class UIExecutionHandler {
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
 
-                        trackTestSuiteExecution(launchMode, runConfig, testSuiteExecutedEntity.getEmailSettings()
-                                .getEmailConfig()
-                                .isSendEmailTestFailedOnly());
                         // trackEmailAfterExecution(testSuiteExecutedEntity.getEmailSettings().getEmailConfig().isSendEmailTestFailedOnly());
 
                         monitor.worked(1);
@@ -204,10 +201,6 @@ public class UIExecutionHandler {
                 job.removeJobChangeListener(this);
             }
         });
-    }
-
-    private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig, boolean testFailedOnly) {
-        Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString(), runConfig.getName());
     }
 
     /**

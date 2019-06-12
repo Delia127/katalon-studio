@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CustomTitleAreaDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.parser.PostmanParseUtils;
@@ -69,6 +70,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
                         monitor.beginTask("Importing Web Service Requests from Postman...", SubMonitor.UNKNOWN);
                         createWebServiceRequestEntities();
                     } catch (Exception e) {
+                        LoggerSingleton.logError(e);
                         throw new InvocationTargetException(e);
                     } finally {
                         monitor.done();
@@ -77,7 +79,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
             });
         } catch (Exception e) {
             closeTheDialog = false;
-            setMessage(StringConstants.EXC_INVALID_POSTMAN_FILE, IMessageProvider.ERROR);
+            setMessage(e.getMessage(), IMessageProvider.ERROR);
             ok.setEnabled(false);
         } finally {
             if (closeTheDialog == true) {
@@ -114,7 +116,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Label label = new Label(composite, SWT.NONE);
-        label.setText("File location or URL: ");
+        label.setText("File location : ");
 
         Text text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -129,8 +131,10 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
             public void widgetSelected(SelectionEvent e) {
                 FileDialog directoryDialog = new FileDialog(getParentShell());
                 String filePath = directoryDialog.open();
-                text.setText(filePath);
-                directory = filePath;
+                if (filePath != null) {
+                    text.setText(filePath);
+                    directory = filePath;
+                }
             }
         });
 
@@ -140,7 +144,7 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
                 if (ok.isEnabled() == false) {
                     ok.setEnabled(true);
                 }
-
+                    ok.setEnabled(!text.getText().isEmpty());
                 directory = ((Text) e.widget).getText();
             }
         };
@@ -173,5 +177,11 @@ public class ImportWebServiceObjectsFromPostmanDialog extends CustomTitleAreaDia
 
     public String getPostmanSpecLocation() {
         return directory;
+    }
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        // TODO Auto-generated method stub
+        super.createButtonsForButtonBar(parent);
+        getButton(OK).setEnabled(false);
     }
 }

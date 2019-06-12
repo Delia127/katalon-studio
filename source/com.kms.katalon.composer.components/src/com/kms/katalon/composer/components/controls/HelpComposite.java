@@ -7,6 +7,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 
+import com.kms.katalon.composer.components.util.ColorUtil;
+
 public class HelpComposite extends Composite {
 
     public HelpComposite(Composite parent, String documentationUrl) {
@@ -22,6 +24,7 @@ public class HelpComposite extends Composite {
         setLayout(createLayout());
         setLayoutData(createGridData());
         ToolBar toolBar = new ToolBar(this, SWT.FLAT);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         Cursor cursor = new Cursor(parent.getDisplay(), SWT.CURSOR_HAND);
         toolBar.setCursor(cursor);
         toolBar.addDisposeListener(e -> cursor.dispose());

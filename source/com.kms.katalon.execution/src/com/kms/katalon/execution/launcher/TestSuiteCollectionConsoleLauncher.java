@@ -7,9 +7,11 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
@@ -29,6 +31,7 @@ import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLauncher implements IConsoleLauncher {
 
@@ -154,5 +157,28 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
                 .append(GlobalStringConstants.CR_EOL)
                 .append(subLauncherManager.getChildrenLauncherStatus(consoleWidth))
                 .toString();
+    }
+    
+    @Override
+    protected void postExecution() {
+        super.postExecution();
+        
+        String executionResult = getExecutionResult();
+        Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated(),
+                executionResult, getEndTime().getTime() - getStartTime().getTime());
+    }
+    
+    protected String getExecutionResult() {
+        String resultExcution = null;
+        if (getResult().getNumFailures() > 0) {
+            resultExcution = TestStatusValue.FAILED.toString();
+        }
+        else if (getResult().getNumErrors() > 0) {
+            resultExcution = TestStatusValue.ERROR.toString();
+        }
+        else {
+            resultExcution = TestStatusValue.PASSED.toString();
+        }
+        return resultExcution;
     }
 }

@@ -30,7 +30,9 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.dialogs.AddOrEditWebServiceMethodDialog;
 import com.kms.katalon.constants.EventConstants;
@@ -81,7 +83,8 @@ public class WebServiceMethodSettingPage extends PreferencePageWithHelp {
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
        
         ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
-        
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
+
         tiAddMethod = new ToolItem(toolBar, SWT.NONE);
         tiAddMethod.setText(StringConstants.ADD);
         tiAddMethod.setImage(ImageConstants.IMG_16_ADD);
@@ -125,7 +128,7 @@ public class WebServiceMethodSettingPage extends PreferencePageWithHelp {
         methodTable = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
         Table table = methodTable.getTable();
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         
         TableViewerColumn tvcMethod = new TableViewerColumn(methodTable, SWT.NONE);
         TableColumn tcMethod = tvcMethod.getColumn();

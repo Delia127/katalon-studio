@@ -1,20 +1,17 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.wsdl.Definition;
-import javax.wsdl.WSDLException;
 import javax.wsdl.extensions.http.HTTPOperation;
 import javax.wsdl.extensions.soap.SOAPOperation;
 import javax.wsdl.extensions.soap12.SOAP12Operation;
@@ -23,6 +20,7 @@ import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.StringUtils;
+import org.xml.sax.InputSource;
 
 import com.ibm.wsdl.BindingOperationImpl;
 import com.ibm.wsdl.PortImpl;
@@ -42,6 +40,8 @@ import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 
 public class SoapClient extends BasicRequestor {
+    
+    private static final String GET = RequestHeaderConstants.GET;
 
     private static final String POST = RequestHeaderConstants.POST;
 
@@ -77,13 +77,39 @@ public class SoapClient extends BasicRequestor {
         super(projectDir, proxyInformation);
     }
 
-    private void parseWsdl() throws WSDLException, WebServiceException {
-        WSDLFactory factory = WSDLFactory.newInstance();
-        WSDLReader reader = factory.newWSDLReader();
-        reader.setFeature("javax.wsdl.verbose", false);
-        reader.setFeature("javax.wsdl.importDocuments", true);
-        Definition wsdlDefinition = reader.readWSDL(null, requestObject.getWsdlAddress());
-        lookForService(wsdlDefinition);
+    private void parseWsdl() throws WebServiceException {
+        try {
+            WSDLFactory factory = WSDLFactory.newInstance();
+            WSDLReader reader = factory.newWSDLReader();
+            reader.setFeature("javax.wsdl.verbose", false);
+            reader.setFeature("javax.wsdl.importDocuments", true);
+    
+            
+            boolean isHttps = isHttps(requestObject);
+            if (isHttps) {
+                SSLContext sc = SSLContext.getInstance(SSL);
+                sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            }
+    
+            URL oURL = new URL(requestObject.getWsdlAddress());
+            HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
+            if (con instanceof HttpsURLConnection) {
+                ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
+            }
+            con.setRequestMethod(GET);
+            con.setDoOutput(true);
+            
+            setHttpConnectionHeaders(con, requestObject);
+            
+            InputStream is = con.getInputStream();
+            
+            Definition wsdlDefinition = reader.readWSDL(null, new InputSource(is));
+            
+            lookForService(wsdlDefinition);
+        } catch (Exception e) {
+            throw new WebServiceException(e);
+        }
     }
 
     // Look for the Service, but for now just consider the first one
@@ -156,7 +182,6 @@ public class SoapClient extends BasicRequestor {
         }
         con.setRequestMethod(POST);
         con.setDoOutput(true);
-
         con.setRequestProperty(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
         con.setRequestProperty(SOAP_ACTION, actionUri);
         

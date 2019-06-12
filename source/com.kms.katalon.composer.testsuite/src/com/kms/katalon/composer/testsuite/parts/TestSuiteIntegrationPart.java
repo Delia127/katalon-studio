@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testsuite.integration.TestSuiteIntegrationFactory;
 import com.kms.katalon.composer.testsuite.parts.integration.AbstractTestSuiteIntegrationView;
 import com.kms.katalon.composer.testsuite.parts.integration.TestSuiteIntegrationViewBuilder;
@@ -67,6 +68,7 @@ public class TestSuiteIntegrationPart {
 
         toolBar = new ToolBar(toolBarComposite, SWT.FLAT | SWT.RIGHT);
         toolBar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         container = new Composite(mainComposite, SWT.NONE);
         container.setLayout(new FillLayout(SWT.HORIZONTAL));

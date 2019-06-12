@@ -120,7 +120,9 @@ public class SearchDropDownBox extends Composite {
 			// draw black rectangle around table
 			Rectangle listRect = table.getBounds();
 			Color black = ColorUtil.getCompositeBackgroundColor();
-			event.gc.setForeground(black);
+			if (black != null) {
+			    event.gc.setForeground(black);
+			}
 			event.gc.drawRectangle(0, 0, listRect.width + 1, listRect.height + 1);
 			break;
 		case SWT.Close:
