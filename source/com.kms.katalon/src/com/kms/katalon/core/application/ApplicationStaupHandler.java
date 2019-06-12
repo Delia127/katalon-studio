@@ -14,7 +14,7 @@ import com.kms.katalon.tracking.core.TrackingManager;
 import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
-public class ApplicationCheckActivation {
+public class ApplicationStaupHandler {
     
     private static IEventBroker eventBroker;
     

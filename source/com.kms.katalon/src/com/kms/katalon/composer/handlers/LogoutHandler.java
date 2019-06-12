@@ -7,7 +7,7 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.core.application.ApplicationCheckActivation;
+import com.kms.katalon.core.application.ApplicationStaupHandler;
 import com.kms.katalon.logging.LogUtil;
 
 public class LogoutHandler {
@@ -16,7 +16,6 @@ public class LogoutHandler {
     public void execute() {
         try {
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-            eventBroker.send(EventConstants.PROJECT_CLOSE, null);
 
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, "", true);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, "", true);
@@ -29,7 +28,10 @@ public class LogoutHandler {
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.STORE_TOKEN) != null) {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, "", true);
             }
-            if (ApplicationCheckActivation.checkActivation()) {
+            
+            eventBroker.send(EventConstants.PROJECT_CLOSE, null);
+            
+            if (ApplicationStaupHandler.checkActivation()) {
                 eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
             }
         } catch (Exception e) {
