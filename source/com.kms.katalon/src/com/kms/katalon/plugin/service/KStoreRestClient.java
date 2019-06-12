@@ -32,6 +32,7 @@ import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.plugin.models.KStoreClientException;
+import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreProduct;
@@ -53,7 +54,7 @@ public class KStoreRestClient {
         this.credentials = credentials;
     }
     
-    public List<KStorePlugin> getLatestPlugins(String appVersion) throws KStoreClientException {
+    public List<KStorePlugin> getLatestPlugins(String appVersion) throws KStoreClientExceptionWithInfo {
         AtomicReference<List<KStorePlugin>> plugins = new AtomicReference<>();
         try {
             executeGetRequest(getPluginsAPIUrl(appVersion), credentials, response -> {
@@ -67,7 +68,8 @@ public class KStoreRestClient {
                         LogService.getInstance().logInfo("Plugin info URL: " + getPluginsAPIUrl(appVersion));
                         plugins.set(parsePluginListJson(responseContent));
                     } else {
-                        throw new KStoreClientException("Failed to get latest plugin. No content returned from server.");
+                        throw new KStoreClientException(
+                                "Failed to get latest plugin. No content returned from server.");
                     }
                 } catch (Exception e) {
                     propagateIfInstanceOf(e, KStoreClientException.class);
@@ -75,8 +77,9 @@ public class KStoreRestClient {
                 }
             });
         } catch (Exception e) {
-            propagateIfInstanceOf(e, KStoreClientException.class);
-            throw new KStoreClientException("Unexpected error occurs during executing get latest plugins", e);
+            propagateIfInstanceOf(e, KStoreClientExceptionWithInfo.class);
+            throw new KStoreClientExceptionWithInfo("Unexpected error occurs during executing get latest plugins",
+                    credentials, getPluginsAPIUrl(appVersion));
         }
         return plugins.get();
     }

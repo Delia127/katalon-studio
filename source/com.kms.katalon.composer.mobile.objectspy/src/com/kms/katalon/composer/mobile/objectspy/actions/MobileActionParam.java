@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.recorder.actions;
+package com.kms.katalon.composer.mobile.objectspy.actions;
 
 public class MobileActionParam {
     private String name;

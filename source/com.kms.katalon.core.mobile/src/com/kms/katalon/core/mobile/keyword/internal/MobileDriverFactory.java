@@ -190,6 +190,56 @@ public class MobileDriverFactory {
         return desireCapabilities;
     }
 
+    private static DesiredCapabilities createCapabilities(MobileDeviceInfo mobileDeviceInfo, String appId) {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
+        // Running app so no browser name
+        if (driverPreferences.containsKey(MobileCapabilityType.BROWSER_NAME)) {
+            driverPreferences.remove(MobileCapabilityType.BROWSER_NAME);
+        }
+        if (driverPreferences != null && mobileDeviceInfo.getDriverType() == MobileDriverType.IOS_DRIVER) {
+            capabilities.setCapability("bundleId", appId);
+            capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
+            try {
+                if (AppiumDriverManager.getXCodeVersion() >= 8) {
+                    capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.XCUI_TEST);
+                    capabilities.setCapability(AppiumDriverManager.REAL_DEVICE_LOGGER,
+                            RunConfiguration.getDeviceConsoleExecutable());
+                    capabilities.setCapability(AppiumDriverManager.WDA_LOCAL_PORT, AppiumDriverManager.getFreePort());
+                }
+            } catch (ExecutionException e) {
+                // XCode version not found, ignore this
+            }
+            if (mobileDeviceInfo.getDeviceId() == null) {
+                capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
+            }
+            capabilities
+                    .merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
+        } else if (driverPreferences != null && mobileDeviceInfo.getDriverType() == MobileDriverType.ANDROID_DRIVER) {
+            //Launch Android Settings app at default
+            capabilities.setCapability("appPackage", "com.android.settings");
+            capabilities.setCapability("appActivity", ".Settings");
+            capabilities.setPlatform(Platform.ANDROID);
+            if (isUsingAndroid7OrBigger()) {
+                capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.UIAUTOMATOR2);
+            }
+            capabilities.setCapability("autoGrantPermissions", true);
+            capabilities.setCapability(AppiumDriverManager.SYSTEM_PORT, 
+                    AppiumDriverManager.nextFreePort(8200, 8299));
+            capabilities.merge(
+                    convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
+        }
+        if (StringUtils.isNotEmpty(mobileDeviceInfo.getDeviceOS())) {
+            capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, mobileDeviceInfo.getDeviceOS());
+        }
+        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, mobileDeviceInfo.getDeviceName());
+        if (mobileDeviceInfo.getDeviceId() != null) {
+            capabilities.setCapability(MobileCapabilityType.UDID, mobileDeviceInfo.getDeviceId());
+        }
+        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
+        return capabilities;
+    }
+
     private static DesiredCapabilities createCapabilities(MobileDriverType osType, String deviceId, String deviceName,
             String platformVersion, String appFile, boolean uninstallAfterCloseApp) {
         DesiredCapabilities capabilities = new DesiredCapabilities();
@@ -199,8 +249,6 @@ public class MobileDriverFactory {
             driverPreferences.remove(MobileCapabilityType.BROWSER_NAME);
         }
         if (driverPreferences != null && osType == MobileDriverType.IOS_DRIVER) {
-            capabilities
-                    .merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
             try {
                 if (AppiumDriverManager.getXCodeVersion() >= 8) {
@@ -215,15 +263,17 @@ public class MobileDriverFactory {
             if (deviceId == null) {
                 capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
             }
+            capabilities
+                    .merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
         } else if (driverPreferences != null && osType == MobileDriverType.ANDROID_DRIVER) {
-            capabilities.setCapability("autoGrantPermissions", true);
-            capabilities.merge(
-                    convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
             capabilities.setPlatform(Platform.ANDROID);
-            capabilities.setCapability("autoGrantPermissions", true);
             if (isUsingAndroid7OrBigger()) {
                 capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.UIAUTOMATOR2);
             }
+            capabilities.setCapability("autoGrantPermissions", true);
+            capabilities.setCapability(AppiumDriverManager.SYSTEM_PORT, AppiumDriverManager.getFreePort());
+            capabilities.merge(
+                    convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
         }
         if (StringUtils.isNotEmpty(platformVersion)) {
             capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, platformVersion);
@@ -260,6 +310,28 @@ public class MobileDriverFactory {
 
     private static boolean isUsingExistingDriver() {
         return getExistingDriver() != null;
+    }
+
+    public static AppiumDriver<?> startMobileDriver(String appId) throws AppiumStartException, IOException,
+            InterruptedException, MobileDriverInitializeException, IOSWebkitStartException {
+        if (isUsingExistingDriver()) {
+            return startExistingBrowser();
+        }
+        MobileDeviceInfo mobileDeviceInfo = MobileDeviceInfo.create(getMobileDriverType(), getDeviceId(),
+                getDeviceName(), getDeviceOS(), getDeviceOSVersion());
+        AppiumDriver<?> driver;
+        String remoteWebUrl = getRemoteWebDriverServerUrl();
+        if (StringUtils.isNotEmpty(remoteWebUrl)) {
+            driver = AppiumDriverManager.createMobileDriver(mobileDeviceInfo.getDriverType(),
+                    createCapabilities(mobileDeviceInfo, appId), new URL(remoteWebUrl));
+        } else {
+            driver = AppiumDriverManager.createMobileDriver(mobileDeviceInfo.getDriverType(),
+                    mobileDeviceInfo.getDeviceId(), createCapabilities(mobileDeviceInfo, appId));
+        }
+        if (driver != null) {
+            saveWebDriverSessionData(driver);
+        }
+        return driver;
     }
 
     /**

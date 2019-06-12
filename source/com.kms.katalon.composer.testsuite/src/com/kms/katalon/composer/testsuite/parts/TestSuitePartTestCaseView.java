@@ -24,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DropTarget;
@@ -54,6 +55,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.impl.util.MenuUtils;
@@ -120,7 +122,7 @@ public class TestSuitePartTestCaseView {
 
     private CLabel lblSearch;
 
-    private Text txtSearch;
+    private StyledText txtSearch;
 
     private boolean isSearching;
 
@@ -185,7 +187,7 @@ public class TestSuitePartTestCaseView {
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, this);
         Table testCaseTable = testCaseTableViewer.getTable();
         testCaseTable.setHeaderVisible(true);
-        testCaseTable.setLinesVisible(true);
+        testCaseTable.setLinesVisible(ControlUtils.shouldLineVisble(testCaseTable.getDisplay()));
 
         TableViewerColumn tableViewerColumnNotification = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         TableColumn tblclmnNotification = tableViewerColumnNotification.getColumn();
@@ -437,12 +439,14 @@ public class TestSuitePartTestCaseView {
         glCompositeTableSearch.marginHeight = 0;
         compositeTableSearch.setLayout(glCompositeTableSearch);
 
-        txtSearch = new Text(compositeTableSearch, SWT.NONE);
-        txtSearch.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
+        txtSearch = new StyledText(compositeTableSearch, SWT.SINGLE);
         GridData gdTxtInput = new GridData(GridData.FILL_HORIZONTAL);
         gdTxtInput.grabExcessVerticalSpace = true;
         gdTxtInput.verticalAlignment = SWT.CENTER;
         txtSearch.setLayoutData(gdTxtInput);
+        
+        StyledTextMessage styledTextMessage = new StyledTextMessage(txtSearch);
+        styledTextMessage.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
 
         Canvas canvasSearch = new Canvas(compositeTableSearch, SWT.NONE);
         canvasSearch.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -520,6 +524,7 @@ public class TestSuitePartTestCaseView {
         compositeTableButtons.setLayout(glCompositeTableButtons);
 
         testCaseToolbar = new ToolBar(compositeTableButtons, SWT.FLAT | SWT.RIGHT);
+        testCaseToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         testCaseToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         ToolItem tltmAddTestCases = new ToolItem(testCaseToolbar, SWT.NONE);
@@ -571,6 +576,7 @@ public class TestSuitePartTestCaseView {
         });
 
         ToolBar showHideDetails = new ToolBar(compositeTableButtons, SWT.FLAT | SWT.RIGHT);
+        showHideDetails.setForeground(ColorUtil.getToolBarForegroundColor());
         showHideDetails.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
         tltmShowHideDataBinding = new ToolItem(showHideDetails, SWT.NONE);

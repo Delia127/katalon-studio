@@ -39,6 +39,7 @@ import org.w3c.dom.Element;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
@@ -120,7 +121,7 @@ public class CapturedHTMLElementsComposite extends Composite {
         final Table table = attributesTableViewer.getTable();
 
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         attributesTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         attributesTableViewer.setInput(Collections.emptyList());
 

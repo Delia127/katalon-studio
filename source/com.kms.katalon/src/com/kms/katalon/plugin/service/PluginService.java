@@ -26,6 +26,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreClientException;
+import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.ReloadItem;
@@ -173,8 +174,16 @@ public class PluginService {
         } catch (InterruptedException e) {
             throw e;
         } catch (Exception e) {
-            if(StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_UNAUTHORIZED_SINGAL)){
-                throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins due to invalid API Key", e);
+            if (StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_UNAUTHORIZED_SINGAL)) {
+                throw new ReloadPluginsException(
+                        "Error occurs during executing reload plugins due to invalid API Key", e);
+            }
+            if (e instanceof KStoreClientExceptionWithInfo) {
+                KStoreClientExceptionWithInfo castedE = (KStoreClientExceptionWithInfo) e;
+                throw new ReloadPluginsException(
+                        "Unexpected error occurs during executing reload plugins under account: "
+                                + castedE.getInfoMessage(),
+                        e);
             }
             throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins", e);
         }
@@ -182,7 +191,12 @@ public class PluginService {
     private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientException {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
-        List<KStorePlugin> latestPlugins = restClient.getLatestPlugins(appVersion);
+        List<KStorePlugin> latestPlugins = null;
+        try {
+            latestPlugins = restClient.getLatestPlugins(appVersion);
+        } catch (KStoreClientExceptionWithInfo e) {
+            e.printStackTrace();
+        }
         latestPlugins.stream().forEach(p -> logPluginInfo(p));
         return latestPlugins;
     }

@@ -187,7 +187,7 @@ public class TestSuitePartDataBindingView {
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Table testCaseVariableTable = testCaseVariableTableViewer.getTable();
         testCaseVariableTable.setHeaderVisible(true);
-        testCaseVariableTable.setLinesVisible(true);
+        testCaseVariableTable.setLinesVisible(ControlUtils.shouldLineVisble(testCaseVariableTable.getDisplay()));
         ColumnViewerUtil.setTableActivation(testCaseVariableTableViewer);
 
         TableViewerColumn variableNotificationColumnViewer = new TableViewerColumn(testCaseVariableTableViewer,
@@ -427,6 +427,7 @@ public class TestSuitePartDataBindingView {
         compositeTestDataButton.setLayout(glCompositeTestDataButton);
 
         testDataToolBar = new ToolBar(compositeTestDataButton, SWT.FLAT | SWT.RIGHT);
+        testDataToolBar.setForeground(ColorUtil.getToolBarForegroundColor());
         ToolItem tltmAddTestData = new ToolItem(testDataToolBar, SWT.DROP_DOWN);
         tltmAddTestData.setText(ToolItemConstants.ADD);
         tltmAddTestData.setToolTipText(ToolItemConstants.ADD);
@@ -459,7 +460,7 @@ public class TestSuitePartDataBindingView {
 
         testDataTableViewer = new TableViewer(compositeTestDataTreeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         Table testDataTable = testDataTableViewer.getTable();
-        testDataTable.setLinesVisible(true);
+        testDataTable.setLinesVisible(ControlUtils.shouldLineVisble(testDataTable.getDisplay()));
         testDataTable.setHeaderVisible(true);
         ColumnViewerUtil.setTableActivation(testDataTableViewer);
 

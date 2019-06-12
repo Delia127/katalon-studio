@@ -449,7 +449,9 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         Text txtField = new Text(parent, SWT.SINGLE | SWT.BORDER);
         GridData gridData = new GridData(GridData.FILL, GridData.CENTER, true, false, hspan, 1);
         txtField.setLayoutData(gridData);
-        txtField.setMessage(hintText);
+        if (!ControlUtils.isDarkTheme(txtField.getDisplay())) {
+            txtField.setMessage(hintText);
+        }
         return txtField;
     }
 

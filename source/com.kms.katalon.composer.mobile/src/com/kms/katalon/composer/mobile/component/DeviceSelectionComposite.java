@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
@@ -34,6 +35,9 @@ public class DeviceSelectionComposite extends Composite {
 
     public DeviceSelectionComposite(Composite parent, int style, MobileDriverType platform) {
         super(parent, style);
+        setBackground(ColorUtil.getCompositeBackgroundColorForDialog());
+        setBackgroundMode(SWT.INHERIT_FORCE);
+
         setLayoutData(new GridData(GridData.FILL_BOTH));
         GridLayout glContainer = new GridLayout(2, false);
         glContainer.verticalSpacing = 10;

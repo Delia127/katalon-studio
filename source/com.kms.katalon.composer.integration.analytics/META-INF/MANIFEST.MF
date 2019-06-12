@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.execution.webui,
  com.kms.katalon.composer.mobile,
  com.kms.katalon.composer.webui,
- com.kms.katalon.controller;bundle-version="1.0.0",
+ com.kms.katalon.controller,
  com.kms.katalon.integration.analytics,
  org.eclipse.jface,
  com.kms.katalon.preferences,
@@ -36,11 +36,12 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.services,
  com.kms.katalon,
  com.kms.katalon.application,
- org.apache.commons.io,
- org.eclipse.e4.ui.services
+ org.eclipse.e4.ui.services,
+ org.eclipse.e4.core.di.annotations
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
+Import-Package: org.osgi.service.event,
+ org.apache.commons.io,
+ org.eclipse.e4.ui.services
 Export-Package: com.kms.katalon.composer.integration.analytics.constants,
  com.kms.katalon.composer.integration.analytics.dialog
-Import-Package: org.eclipse.e4.core.di.annotations,
- org.osgi.service.event

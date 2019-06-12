@@ -1,13 +1,20 @@
 package com.kms.katalon.composer.components.util;
 
 import org.eclipse.e4.ui.css.swt.helpers.CSSSWTColorHelper;
+import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.ComponentBundleActivator;
+
 @SuppressWarnings("restriction")
 public class ColorUtil {
+
+    private static final String DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME = "#2F2E2F";
+    
+    private static final String DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME_DIALOG = "#505658";
 
     private static final String EVEN_TABLE_ITEM_BACKGROUND_COLOR = "#87cefa";
 
@@ -37,7 +44,7 @@ public class ColorUtil {
 
     private static final String ERROR_BACKGROUND_COLOR = "#f8cbcb";
 
-    private static final String ERROR_TEXT_COLOR = "#bd2c00";
+    private static final String ERROR_TEXT_COLOR = "#d50000";
 
     private static final String WARNING_TEXT_COLOR = "#ff8000";
 
@@ -84,7 +91,19 @@ public class ColorUtil {
     }
 
     public static Color getCompositeBackgroundColor() {
-        return getExtraLightGrayBackgroundColor();
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME);
+        } else {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR);
+        }
+    }
+    
+    public static Color getCompositeBackgroundColorForDialog() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME_DIALOG);
+        } else {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR);
+        }
     }
 
     public static Color getCompositeHeaderBackgroundColor() {
@@ -92,7 +111,11 @@ public class ColorUtil {
     }
 
     public static Color getHighlightBackgroundColor() {
-        return display.getSystemColor(SWT.COLOR_YELLOW);
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor("#ef6c00");
+        } else {
+            return getColor("#ffeb3b");
+        }
     }
 
     public static Color getWhiteBackgroundColor() {
@@ -154,19 +177,27 @@ public class ColorUtil {
     }
 
     public static Color getDefaultTextColor() {
-        return display.getSystemColor(SWT.COLOR_BLACK);
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor("#CCCCCC");
+        } else {
+            return display.getSystemColor(SWT.COLOR_BLACK);
+        }
     }
 
     public static Color getTextWhiteColor() {
         return display.getSystemColor(SWT.COLOR_WHITE);
     }
     
+    public static Color getTextBlackColor() {
+        return display.getSystemColor(SWT.COLOR_BLACK);
+    }
+
     public static Color getTextLinkColor() {
         return display.getSystemColor(SWT.COLOR_LINK_FOREGROUND);
     }
 
     public static Color getTextErrorColor() {
-        return display.getSystemColor(SWT.COLOR_RED);
+        return JFaceColors.getErrorText(display);
     }
 
     public static Color getTextSuccessfulColor() {
@@ -186,7 +217,7 @@ public class ColorUtil {
     }
 
     public static Color getErrorTableItemForegroundColor() {
-        return getColor(ERROR_TEXT_COLOR);
+        return JFaceColors.getErrorText(display);
     }
 
     public static Color getWarningForegroudColor() {
@@ -215,6 +246,30 @@ public class ColorUtil {
     
     public static Color getHintForegroundColor() {
         return getColor("#DC923C");
+    }
+    
+    public static Color getTextColor() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return display.getSystemColor(SWT.COLOR_WHITE);
+        } else {
+            return display.getSystemColor(SWT.COLOR_BLACK);
+        }
+    }
+
+    public static Color getToolBarForegroundColor() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return display.getSystemColor(SWT.COLOR_WHITE);
+        } else {
+            return display.getSystemColor(SWT.COLOR_BLACK);
+        }
+    }
+    
+    public static Color getCucumberCommentColor() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return JFaceColors.getErrorText(display);
+        } else {
+            return display.getSystemColor(SWT.COLOR_DARK_RED);
+        }
     }
 
 }

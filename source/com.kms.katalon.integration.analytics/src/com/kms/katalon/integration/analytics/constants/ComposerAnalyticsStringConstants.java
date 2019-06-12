@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.analytics.constants;
+package com.kms.katalon.integration.analytics.constants;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 

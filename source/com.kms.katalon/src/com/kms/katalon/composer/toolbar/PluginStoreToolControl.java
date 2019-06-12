@@ -17,6 +17,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler;
 import com.kms.katalon.composer.handlers.ManagePluginsHandler;
 import com.kms.katalon.composer.handlers.OpenPluginHelpPageHandler;
@@ -34,6 +35,7 @@ public class PluginStoreToolControl {
     @PostConstruct
     void createWidget(Composite parent, MToolControl toolControl) {
         ToolBar toolbar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         ToolItem pluginStoreToolItem = new ToolItem(toolbar, SWT.DROP_DOWN);
         pluginStoreToolItem.setText("Plugin Store");
         pluginStoreToolItem.setImage(ImageConstants.IMG_KATALON_STORE_24);

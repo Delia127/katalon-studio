@@ -15,8 +15,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.RunningMode;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.util.ApiKey;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
@@ -70,13 +73,24 @@ public class AnalyticsReportService implements AnalyticsComponent {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_INTEGRATE_WITH_KA);
         }
     }
-    
+
     private AnalyticsTokenInfo getKAToken() throws IOException, GeneralSecurityException, AnalyticsApiExeception {
-    	String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+        String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+
+        RunningMode runMode = ApplicationRunningMode.get();
+        if (runMode == RunningMode.CONSOLE) {
+            String apiKey = ApiKey.get();
+            if (apiKey != null && !apiKey.isEmpty()) {
+                return AnalyticsApiProvider.requestToken(serverUrl, "", apiKey);
+            } else {
+                LogUtil.printErrorLine(IntegrationAnalyticsMessages.VIEW_ERROR_MSG_SPECIFY_KATALON_API_KEY);
+                return null;
+            }
+        }
+
         String email = getSettingStore().getEmail(isEncryptionEnabled());
         String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
-        AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-        return token;
+        return AnalyticsApiProvider.requestToken(serverUrl, email, password);
     }
 
     private void perform(String token, String path) throws Exception {

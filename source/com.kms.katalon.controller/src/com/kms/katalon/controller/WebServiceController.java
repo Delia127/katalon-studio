@@ -1,14 +1,17 @@
 package com.kms.katalon.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrSubstitutor;
 
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
@@ -18,10 +21,15 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
+import com.kms.katalon.core.util.BrowserMobProxyManager;
+import com.kms.katalon.core.util.RequestInformation;
+import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.core.webservice.common.ServiceRequestFactory;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.webservice.RequestHistoryEntity;
+
+import groovy.text.GStringTemplateEngine;
 
 public class WebServiceController extends EntityController {
 
