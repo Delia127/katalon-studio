@@ -293,6 +293,10 @@ public class CoreMessageConstants extends NLS {
 
     public static String EXEC_MSG_INVOKE_LISTENER_METHOD_FAILED; 
     
+    public static String KW_LOG_INFO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT;
+    
+    public static String KW_LOG_INFO_FAIL_TO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT;
+    
     //VideoRecorderService
     public static String EXEC_LOG_START_RECORDING_VIDEO;
 

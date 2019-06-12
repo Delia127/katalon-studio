@@ -20,6 +20,7 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.handlers.LogoutHandler;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler;
 import com.kms.katalon.composer.handlers.ManagePluginsHandler;
 import com.kms.katalon.composer.handlers.OpenPlanGridExecutionHandler;
@@ -39,6 +40,7 @@ public class PluginStoreToolControl {
     @PostConstruct
     void createWidget(Composite parent, MToolControl toolControl) {
         ToolBar toolbar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         ToolItem accountToolItem = new ToolItem(toolbar, SWT.DROP_DOWN);
         accountToolItem.setText("Account");
         accountToolItem.setImage(ImageConstants.IMG_KATALON_ACCOUNT_24);

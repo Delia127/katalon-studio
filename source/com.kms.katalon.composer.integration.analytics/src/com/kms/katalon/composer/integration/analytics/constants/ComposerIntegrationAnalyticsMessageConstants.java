@@ -50,6 +50,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String MSG_INFO_DLG_AUTHENTICATE_ENTER_EMAIL_PASSWORD;
 
     public static String TITLE_DLG_AUTHENTICATE;
+    
+    public static String TITLE_DLG_QUICK_ANALYTICS_INTEGRATION;
 
     public static String LBL_NEW_PROJECT;
 
@@ -72,6 +74,16 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String LBL_TEST_RESULT_ATTACH_LOG;
 
     public static String LBL_TEST_RESULT_ATTACH_CAPTURED_VIDEO;
+    
+    public static String LBL_QUICK_TITLE_ANALYTICS_INTEGRATION;
+    
+    public static String LBL_QUICK_ANALYTICS_INTEGRATION_RECOMMEND;
+    
+    public static String LBL_QUICK_ANALYTICS_INTEGRATION_UPLOAD;
+    
+    public static String LBL_QUICK_ANALYTICS_INTEGRATION_TO_CONFIG;
+    
+    public static String LBL_QUICK_ANALYTICS_INTEGRATION_AUTO_SUBMIT;
 
     public static String DIA_TITLE_CREATE_NEW_PROJECT;
 
@@ -95,6 +107,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String MSG_REQUEST_TOKEN_ERROR;
     
+    public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
+  
     public static String STORE_CODE_COMPRESSING_PROJECT;
     
     public static String STORE_CODE_REQUEST_SERVER;

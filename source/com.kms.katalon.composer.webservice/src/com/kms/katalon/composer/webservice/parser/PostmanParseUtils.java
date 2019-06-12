@@ -62,8 +62,9 @@ public class PostmanParseUtils {
                 ProjectController.getInstance().getCurrentProject());
         List<GlobalVariableEntity> globalVariableEntites = profileEntity.getGlobalVariableEntities();
         List<VariableEntity> allVariables = new ArrayList<>();
+        List<String> requestItemNames = new ArrayList<>();
         for (Item root : rootItems) {
-            RequestVariable requestVariable = collectRequestVariablesFromItem(folderEntity, root);
+            RequestVariable requestVariable = collectRequestVariablesFromItem(folderEntity, root, requestItemNames);
             allVariables.addAll(requestVariable.getVariables());
             newWSTestObjects.addAll(requestVariable.getRequests());
         }
@@ -76,7 +77,7 @@ public class PostmanParseUtils {
     }
 
     
-    public static RequestVariable collectRequestVariablesFromItem(FolderEntity parentFolder, Item root)
+    public static RequestVariable collectRequestVariablesFromItem(FolderEntity parentFolder, Item root, List<String> siblingNames)
             throws JsonParseException, JsonMappingException, IOException, ControllerException {
         List<WebServiceRequestEntity> allRequests = new ArrayList<>();
         List<VariableEntity> allVariables = new ArrayList<>();
@@ -90,7 +91,7 @@ public class PostmanParseUtils {
             List<VariableEntity> variablesFromBody = new ArrayList<>();
 
             HttpHeaderVariable httpHeaderVariable = collectHttpHeaderVariable(request, root);
-            entity.setName(name);
+            setRequestEntityName(name, entity, siblingNames);
             entity.setRestRequestMethod(method.toString());
             entity.setRestUrl(getVariableString(variablesFromURL, rawURL));
             entity.setServiceType(WebServiceRequestEntity.SERVICE_TYPES[1]);
@@ -143,9 +144,10 @@ public class PostmanParseUtils {
                         "New Folder");
                 folder = FolderController.getInstance().addNewFolder(parentFolder, parentFolderName);
             }
-
+ 
+            List<String> requestItemNames = new ArrayList<>();
             for (Item item : root.getItem()) {
-                RequestVariable childRequestVariable = collectRequestVariablesFromItem(folder, item);
+                RequestVariable childRequestVariable = collectRequestVariablesFromItem(folder, item, requestItemNames);
                 allRequests.addAll(childRequestVariable.getRequests());
                 allVariables.addAll(childRequestVariable.getVariables());
             }
@@ -155,6 +157,21 @@ public class PostmanParseUtils {
         requestVariable.setRequests(allRequests);
         requestVariable.setVariables(allVariables);
         return requestVariable;
+    }
+    
+    private static void setRequestEntityName(String suggestion, WebServiceRequestEntity entity, List<String> availableNames) {
+        int index = 0;
+        String entityName = suggestion;
+        while (isNameDuplicated(entityName, availableNames)) {
+            index++;
+            entityName = suggestion + " (" + index + ")";
+        }
+        entity.setName(entityName);
+        availableNames.add(entityName);
+    }
+    
+    private static boolean isNameDuplicated(String name, List<String> availableNames) {
+        return availableNames.stream().anyMatch(n -> n.equalsIgnoreCase(name));
     }
     
     public static List<WebElementPropertyEntity> getHttpAuthentication(Auth auth) {

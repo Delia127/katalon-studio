@@ -85,7 +85,7 @@ public class MobileReadonlyElementPropertiesComposite {
         Table attributesTable = attributesTableViewer.getTable();
 
         attributesTable.setHeaderVisible(true);
-        attributesTable.setLinesVisible(true);
+        attributesTable.setLinesVisible(ControlUtils.shouldLineVisble(attributesTable.getDisplay()));
         attributesTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         attributesTableViewer.setInput(Collections.emptyList());

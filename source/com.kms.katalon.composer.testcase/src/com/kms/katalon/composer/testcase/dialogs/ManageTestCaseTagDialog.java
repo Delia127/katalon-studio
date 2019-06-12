@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
@@ -123,7 +124,7 @@ public class ManageTestCaseTagDialog extends Dialog {
         
         Table tagTable = tagTableViewer.getTable();
         tagTable.setHeaderVisible(true);
-        tagTable.setLinesVisible(true);
+        tagTable.setLinesVisible(ControlUtils.shouldLineVisble(tagTable.getDisplay()));
         ColumnViewerUtil.setTableActivation(tagTableViewer);
 
         TableViewerColumn tableViewerColumnTagName = new TableViewerColumn(tagTableViewer, SWT.LEFT);

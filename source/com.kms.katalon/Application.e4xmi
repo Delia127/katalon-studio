@@ -127,6 +127,10 @@
       <children xsi:type="menu:Menu" xmi:id="_IjUoUNnnEeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window" label="Window">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_xoCTINn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window.resetPerspective" label="Reset Perspective..." tooltip="" command="_oilxkNn4EeWQyuuwTERZYg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="__AZwYO9jEeaEL7_gfQD4GQ" elementId="com.kms.katalon.handledmenuitem.commandpalette" label="Command Palette..." mnemonics="" command="_nGeSINxwEeaEL7_gfQD4GQ"/>
+        <children xsi:type="menu:Menu" xmi:id="_FS-uYIXXEemk7_pQJ7Uj1g" elementId="com.kms.katalon.menu.themes" label="Themes">
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_HMnJgIXXEemk7_pQJ7Uj1g" elementId="com.kms.katalon.directmenuitem.themes.light" label="Light" tooltip="Katalon Default Theme" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SwitchThemeHandler"/>
+          <children xsi:type="menu:DirectMenuItem" xmi:id="_qBe2oIXXEemk7_pQJ7Uj1g" elementId="com.kms.katalon.directmenuitem.themes.dark" label="Dark" tooltip="Dark Theme" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SwitchThemeHandler"/>
+        </children>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" tooltip="" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>

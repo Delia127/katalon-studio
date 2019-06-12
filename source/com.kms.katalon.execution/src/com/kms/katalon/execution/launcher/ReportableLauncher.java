@@ -55,6 +55,7 @@ import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
     private ReportEntity reportEntity;
@@ -84,13 +85,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             return;
         }
 
+        this.endTime = new Date();
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
 
         try {
             setStatus(LauncherStatus.PREPARE_REPORT);
-            this.endTime = new Date();
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
 
@@ -463,5 +464,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 .withEndTime(endTime != null ? endTime.getTime() : 0L)
                 .build();
         return executionContext;
+    }
+    
+    public Date getStartTime() {
+        return startTime;
+    }
+    
+    public Date getEndTime() {
+        return endTime;
     }
 }

@@ -16,6 +16,8 @@ import java.util.Stack;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.groovy.ast.MethodNode;
 
+import com.beust.jcommander.internal.Maps;
+import com.google.common.base.Optional;
 import com.kms.katalon.core.annotation.SetUp;
 import com.kms.katalon.core.annotation.SetupTestCase;
 import com.kms.katalon.core.annotation.TearDown;
@@ -125,8 +127,15 @@ public class TestSuiteExecutor {
         errorCollector.clearErrors();
 
         try {
+            Map<String, Object> bindedValues = new HashMap<>(
+                    Optional.fromNullable(tcBinding.getBindedValues()).or(new HashMap<String, Object>()));
+            
             InternalTestCaseContext testCaseContext = new InternalTestCaseContext(tcBinding.getTestCaseId(), index);
-
+            eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_DATA_BIND_INTO_TEST_CASE
+                    , new Object[] { testSuiteContext, testCaseContext
+                            , bindedValues });
+            tcBinding.setBindedValues(bindedValues);
+            
             TestCaseExecutor testCaseExecutor = new TestCaseExecutor(tcBinding, scriptEngine, eventManger,
                     testCaseContext);
             testCaseExecutor.setTestSuiteExecutor(this);
