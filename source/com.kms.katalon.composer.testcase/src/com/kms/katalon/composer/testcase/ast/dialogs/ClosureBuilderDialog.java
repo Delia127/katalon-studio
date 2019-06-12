@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -136,7 +137,7 @@ public class ClosureBuilderDialog extends Dialog implements IAstDialogBuilder, I
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gridData.heightHint = 50;
         table.setLayoutData(gridData);
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
 
         ColumnViewerUtil.setTableActivation(paramTableViewer);

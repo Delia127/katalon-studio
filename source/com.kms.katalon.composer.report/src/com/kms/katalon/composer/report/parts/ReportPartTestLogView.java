@@ -50,13 +50,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
@@ -92,7 +93,7 @@ public class ReportPartTestLogView {
     private Button btnFilterTestStepInfo, btnFilterTestStepPassed, btnFilterTestStepFailed, btnFilterTestStepError,
             btnFilterTestStepIncomplete, btnFilterTestStepWarning, btnFilterTestStepNotRun;
 
-    private Text txtTestLogSearch;
+    private StyledText txtTestLogSearch;
 
     private CLabel lblTestLogSearch, lblTestLogAdvancedSearch;
 
@@ -514,12 +515,14 @@ public class ReportPartTestLogView {
         glCompositeTestLogSearch.marginHeight = 0;
         compositeTestLogSearch.setLayout(glCompositeTestLogSearch);
 
-        txtTestLogSearch = new Text(compositeTestLogSearch, SWT.NONE);
-        txtTestLogSearch.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
+        txtTestLogSearch = new StyledText(compositeTestLogSearch, SWT.SINGLE);
         GridData gdTxtTestCaseSearch = new GridData(GridData.FILL_HORIZONTAL);
         gdTxtTestCaseSearch.grabExcessVerticalSpace = true;
         gdTxtTestCaseSearch.verticalAlignment = SWT.CENTER;
         txtTestLogSearch.setLayoutData(gdTxtTestCaseSearch);
+
+        StyledTextMessage styledTextMessage = new StyledTextMessage(txtTestLogSearch);
+        styledTextMessage.setMessage(StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE);
 
         Canvas cvsTestLogSearch = new Canvas(compositeTestLogSearch, SWT.NONE);
         GridLayout glCvsTestLogSearch = new GridLayout(3, false);
@@ -546,8 +549,13 @@ public class ReportPartTestLogView {
         createTestLogTableToolbar(compositeTestLogFilter);
     }
 
+    private Display getDisplay() {
+        return parentPart.getDisplay() ;
+    }
+
     private void createTestLogTableToolbar(Composite parent) {
         testLogToolbar = new ToolBar(parent, SWT.NONE);
+        testLogToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         testLogToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         tltmCollapseAllLogs = new ToolItem(testLogToolbar, SWT.NONE);
@@ -570,7 +578,7 @@ public class ReportPartTestLogView {
 
         treeViewerTestSteps = new ReportTestStepTreeViewer(compositeTestLogTable, SWT.FULL_SELECTION);
         Tree treeTestCaseLog = treeViewerTestSteps.getTree();
-        treeTestCaseLog.setLinesVisible(true);
+        treeTestCaseLog.setLinesVisible(ControlUtils.shouldLineVisble(treeTestCaseLog.getDisplay()));
         treeTestCaseLog.setHeaderVisible(true);
 
         TreeViewerColumn treeViewerColumnLogItem = new TreeViewerColumn(treeViewerTestSteps, SWT.NONE);
@@ -731,6 +739,7 @@ public class ReportPartTestLogView {
         compositeTestCaseIntegrationToolbar.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
         testCaseLogIntegrationToolbar = new ToolBar(compositeTestCaseIntegrationToolbar, SWT.FLAT | SWT.VERTICAL);
+        testCaseLogIntegrationToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         compositeTestCaseLogIntegration = new Composite(compositeTestCaseIntegration, SWT.NONE);
         compositeTestCaseLogIntegration.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -750,6 +759,8 @@ public class ReportPartTestLogView {
         createSelectedTestStepImageViewTabItem(selectedTestLogTabFolder);
 
         imageToolbar = new ToolBar(selectedTestLogTabFolder, SWT.NONE);
+        imageToolbar.setForeground(ColorUtil.getToolBarForegroundColor());
+
         tltmFitScreen = new ToolItem(imageToolbar, SWT.CHECK);
         tltmFitScreen.setImage(ImageConstants.IMG_16_FIT_SCREEN);
         tltmFitScreen.setToolTipText("Fit to View");

@@ -238,7 +238,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
         tableViewer = new TableViewer(compositeTable, SWT.VIRTUAL | SWT.FULL_SELECTION);
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        tableViewer.getTable().setLinesVisible(true);
+        tableViewer.getTable().setLinesVisible(ControlUtils.shouldLineVisble(tableViewer.getTable().getDisplay()));
 
         TableViewerColumn tbvclmnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tbclmnNo = tbvclmnNo.getColumn();

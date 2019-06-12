@@ -11,22 +11,22 @@ public class RequestInformation {
     private String reportFolder;
     
     public String getName() {
-		return name;
-	}
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getHarId() {
-		return harId;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public String getHarId() {
+        return harId;
+    }
 
-	public void setHarId(String harId) {
-		this.harId = harId;
-	}
+    public void setHarId(String harId) {
+        this.harId = harId;
+    }
 
-	public String getTestObjectId() {
+    public String getTestObjectId() {
         return testObjectId;
     }
     

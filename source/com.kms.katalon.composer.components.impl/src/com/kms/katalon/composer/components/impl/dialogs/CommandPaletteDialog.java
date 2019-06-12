@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -47,6 +48,7 @@ import com.kms.katalon.composer.components.impl.command.KCommand;
 import com.kms.katalon.composer.components.impl.command.KatalonCommands;
 import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.util.EntityIndexingUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -76,7 +78,7 @@ public class CommandPaletteDialog extends Dialog {
 
     private ListViewer listCommand;
 
-    private Text txtCommand;
+    private StyledText txtCommand;
 
     private IEventBroker eventBroker;
 
@@ -117,10 +119,12 @@ public class CommandPaletteDialog extends Dialog {
         mainContainer.setLayout(new GridLayout());
         mainContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        txtCommand = new Text(mainContainer, SWT.BORDER);
+        txtCommand = new StyledText(mainContainer, SWT.BORDER | SWT.SINGLE);
         txtCommand.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
-        txtCommand.setMessage(ComposerComponentsImplMessageConstants.DIA_TXT_MSG_COMMAND_PALETTE);
         txtCommand.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        StyledTextMessage styledTextMessage = new StyledTextMessage(txtCommand);
+        styledTextMessage.setMessage(ComposerComponentsImplMessageConstants.DIA_TXT_MSG_COMMAND_PALETTE);
 
         listCommand = new ListViewer(mainContainer, SWT.BORDER | SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
         org.eclipse.swt.widgets.List list = listCommand.getList();

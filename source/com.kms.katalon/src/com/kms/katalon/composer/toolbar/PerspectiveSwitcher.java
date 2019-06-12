@@ -33,6 +33,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.PartServiceSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -186,6 +187,7 @@ public class PerspectiveSwitcher {
         gdLabel.heightHint = 24;
         label.setLayoutData(gdLabel);
         toolbar = new ToolBar(container, SWT.FLAT | SWT.RIGHT);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         MPerspectiveStack perspectiveStack = find(IdConstants.MAIN_PERSPECTIVE_STACK_ID, window);
         if (perspectiveStack == null) {

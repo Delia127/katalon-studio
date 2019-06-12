@@ -108,6 +108,7 @@ public class RequestHistoryPart implements IRequestHistoryListener {
         ControlUtils.setFontToBeBold(lblRequestHistoryTitle);
 
         ToolBar buttonsComposite = new ToolBar(headerComposite, SWT.FLAT | SWT.WRAP);
+        buttonsComposite.setForeground(ColorUtil.getToolBarForegroundColor());
         buttonsComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
         buttonsComposite.setLayout(new GridLayout(2, false));
 

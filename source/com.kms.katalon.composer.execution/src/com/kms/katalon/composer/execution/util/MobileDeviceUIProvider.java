@@ -23,6 +23,44 @@ import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 public class MobileDeviceUIProvider {
     private MobileDeviceUIProvider() {
     }
+    
+    public static List<MobileDeviceInfo> getAndroidDevices() {
+        List<MobileDeviceInfo> mobileDeviceInfos = new ArrayList<MobileDeviceInfo>();
+        Shell activeShell = null;
+        try {
+            boolean sdkExists = CallabelUISynchronize.newInstance()
+                    .syncCallabelExec(() -> checkAndroidSDKExist(activeShell));
+
+            if (sdkExists) {
+                mobileDeviceInfos.addAll(MobileDeviceProvider.getAndroidDevices());
+            }
+        } catch (Exception e) {
+            UISynchronizeService.syncExec(() -> {
+                MessageDialog.openInformation(activeShell, "Error", e.getClass().getName() + ": " + e.getMessage());
+            });
+        }
+        return mobileDeviceInfos;
+    }
+    
+    public static List<MobileDeviceInfo> getIOSDevices() {
+        List<MobileDeviceInfo> mobileDeviceInfos = new ArrayList<MobileDeviceInfo>();
+        Shell activeShell = null;
+        try {
+            mobileDeviceInfos.addAll(MobileDeviceProvider.getIosDevices());
+        } catch (InterruptedException | IOException e) {
+            UISynchronizeService.syncExec(() -> {
+                MessageDialog.openInformation(activeShell, "Error", e.getClass().getName() + ": " + e.getMessage());
+            });
+        }
+        try {
+            mobileDeviceInfos.addAll(MobileDeviceProvider.getIosSimulators());
+        } catch (InterruptedException | IOException e) {
+            UISynchronizeService.syncExec(() -> {
+                MessageDialog.openInformation(activeShell, "Error", e.getClass().getName() + ": " + e.getMessage());
+            });
+        }
+        return mobileDeviceInfos;
+    }
 
     public static List<MobileDeviceInfo> getAllDevices() {
         List<MobileDeviceInfo> mobileDeviceInfos = new ArrayList<MobileDeviceInfo>();

@@ -47,6 +47,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.OpenAndLinkWithEditorHelper;
 import org.eclipse.ui.model.IWorkbenchAdapter3;
 
+import com.kms.katalon.composer.components.util.ColorUtil;
+
 /**
  * Table displaying push operation results.
  */
@@ -258,6 +260,7 @@ public class CustomPushResultTable {
 
     private void addToolbar(Composite parent) {
         ToolBar toolbar = new ToolBar(parent, SWT.VERTICAL);
+        toolbar.setForeground(ColorUtil.getToolBarForegroundColor());
         GridDataFactory.fillDefaults().grab(false, true).applyTo(toolbar);
         UIUtils.addExpansionItems(toolbar, treeViewer);
     }

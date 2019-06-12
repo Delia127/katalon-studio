@@ -25,7 +25,7 @@ public class EntityNameController extends EntityController implements Serializab
         return getDataProviderSetting().getEntityNameProvider().getAvailableName(name, parentFolder, isFolder);
     }
 
-    public void validateName(String name) throws Exception {
+    public static void validateName(String name) throws Exception {
         getDataProviderSetting().getEntityNameProvider().validateName(name);
     }
 

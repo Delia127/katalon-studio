@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseResultPreviewUploadedLableProvider;
 import com.kms.katalon.composer.integration.qtest.dialog.support.TestCaseResultAttachmentEditingSupport;
@@ -46,7 +47,7 @@ public class ListReportUploadingPreviewDialog extends Dialog {
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
-        table.setLinesVisible(true);
+        table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
         table.setHeaderVisible(true);
 
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);

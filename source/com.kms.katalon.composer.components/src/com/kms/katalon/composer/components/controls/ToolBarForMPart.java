@@ -7,6 +7,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.ToolBar;
 
+import com.kms.katalon.composer.components.util.ColorUtil;
+
 public class ToolBarForMPart extends ToolBar {
     private static final String ELEMENT_ID_SUFFIX = "_toolbar";
 
@@ -15,6 +17,7 @@ public class ToolBarForMPart extends ToolBar {
         MToolBar mToolbar = MMenuFactory.INSTANCE.createToolBar();
         mToolbar.setElementId(part.getElementId() + ELEMENT_ID_SUFFIX);
         mToolbar.setWidget(this);
+        setForeground(ColorUtil.getToolBarForegroundColor());
         part.setToolbar(mToolbar);
     }
 

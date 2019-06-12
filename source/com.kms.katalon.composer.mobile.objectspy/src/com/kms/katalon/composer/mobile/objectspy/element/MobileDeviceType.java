@@ -1,7 +1,10 @@
 package com.kms.katalon.composer.mobile.objectspy.element;
 
 public enum MobileDeviceType {
-    Local("Local devices"), Kobiton("Kobiton devices");
+    Local("Local devices"), 
+    Android("Android devices"),
+    iOS("iOS devices"),
+    Kobiton("Kobiton devices");
 
     private String displayName;
 
