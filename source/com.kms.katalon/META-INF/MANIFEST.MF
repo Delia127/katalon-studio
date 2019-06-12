@@ -82,10 +82,10 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.groovy,
  com.kms.katalon.custom,
  org.eclipse.ui.workbench,
- com.kms.katalon.integration.analytics
- org.eclipse.e4.ui.css.swt.theme,
  org.codehaus.groovy.eclipse.ui,
- cucumber.eclipse.editor
+ cucumber.eclipse.editor,
+ com.kms.katalon.integration.analytics,
+ org.eclipse.e4.ui.css.swt.theme
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: 

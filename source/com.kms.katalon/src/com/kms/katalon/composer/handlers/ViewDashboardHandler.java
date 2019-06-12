@@ -33,7 +33,7 @@ public class ViewDashboardHandler {
             String url = serverUrl + "/team/" + teamId + "/project/" + projectId;
             Program.launch(url);
         } catch (IOException | GeneralSecurityException e) {
-            MessageDialog.openError(null, GlobalStringConstants.ERROR, "Can not open Dashboard");
+            MessageDialog.openError(null, GlobalStringConstants.ERROR, "Cannot open Dashboard");
             LoggerSingleton.logError(e);
         }
     }

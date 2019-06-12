@@ -33,7 +33,7 @@ public class OpenPlanGridExecutionHandler {
             String url = serverUrl + "/team/" + teamId + "/project/" + projectId + "/grid";
             Program.launch(url);
         } catch (IOException | GeneralSecurityException e) {
-            MessageDialog.openError(null, GlobalStringConstants.ERROR, "Can not open PLan Grid Execution");
+            MessageDialog.openError(null, GlobalStringConstants.ERROR, "Cannot open Plan Grid Execution");
             LoggerSingleton.logError(e);
         }
     }
