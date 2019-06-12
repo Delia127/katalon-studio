@@ -33,6 +33,7 @@ import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWith
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.NewProjectDialog;
 import com.kms.katalon.constants.ActivationPreferenceConstants;
@@ -206,10 +207,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         
         linkStatusAccessProject = new Link(grpSelect, SWT.NONE);
         linkStatusAccessProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-        
-        Display display = Display.getCurrent();
-        Color textColor = display.getSystemColor(SWT.COLOR_RED);
-        linkStatusAccessProject.setForeground(textColor);
+
+        linkStatusAccessProject.setForeground(ColorUtil.getTextErrorColor());
     }
 
     private void createTestResultGroup() {
