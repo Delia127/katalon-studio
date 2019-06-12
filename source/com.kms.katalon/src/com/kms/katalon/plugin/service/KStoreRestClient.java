@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
@@ -196,8 +197,6 @@ public class KStoreRestClient {
             HttpPost post = new HttpPost(postAPIProduct());
             addAuthenticationHeaders(credentials, post);
             KStoreProductID ks = new KStoreProductID(productsID);
-
-            Boolean product = false;
             String content = JsonUtil.toJson(ks);
             StringEntity requestEntity = new StringEntity(content);
             post.setEntity(requestEntity);
@@ -207,7 +206,7 @@ public class KStoreRestClient {
             try (CloseableHttpClient client = getHttpClient(); CloseableHttpResponse response = client.execute(post);) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode == HttpStatus.SC_OK) {
-                    product = true;
+                    LoggerSingleton.logInfo("Successful");
                 } else {
                     throw new KStoreClientException(String.format("Invalid Request. Status Code: %d. Message: %s",
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));

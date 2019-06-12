@@ -195,7 +195,7 @@ public class PluginService {
         try {
             latestPlugins = restClient.getLatestPlugins(appVersion);
         } catch (KStoreClientExceptionWithInfo e) {
-            e.printStackTrace();
+            LoggerSingleton.logError(e);
         }
         latestPlugins.stream().forEach(p -> logPluginInfo(p));
         return latestPlugins;

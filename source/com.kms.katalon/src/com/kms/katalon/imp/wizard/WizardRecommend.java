@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -29,6 +30,7 @@ import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPageChangedListerner;
 import com.kms.katalon.composer.components.impl.wizard.WizardManager;
 import com.kms.katalon.composer.components.impl.wizard.WizardPageChangedEvent;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.handlers.RequireAuthorizationHandler;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStoreClientException;
@@ -215,16 +217,14 @@ public abstract class WizardRecommend extends Dialog implements IWizardPageChang
         try {
             credentials = RequireAuthorizationHandler.getUsernamePasswordCredentials();
             KStoreRestClient res = new KStoreRestClient(credentials);
-            try {
                 res.postRecommended(idProduct);
-            } catch (KStoreClientException e) {
-                e.printStackTrace();
-            }
             PluginService.getInstance().reloadPlugins(credentials, new NullProgressMonitor());
         } catch (ReloadPluginsException | InterruptedException e) {
-            e.printStackTrace();
+            LoggerSingleton.logError(e);
         } catch (KStoreClientAuthException e) {
-            e.printStackTrace();
+            LoggerSingleton.logError(e);
+        } catch (KStoreClientException e) {
+            LoggerSingleton.logError(e);
         }
     }
 
