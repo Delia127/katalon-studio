@@ -336,10 +336,6 @@ public class Trackings {
     public static void trackClickWalkthroughIgnoreButton(String dialogId){
     	trackUserAction("clickWalkthroughIgnoreButton", "dialogId", dialogId);
     }
-    
-    public static void trackUserProfile(String userRole, String usage) {
-        trackUserAction("userProfile", "role", userRole, "usage", usage);
-    }
 
     public static void trackDownloadPlugin(String apiKey, long pluginId, String pluginName, String pluginVersion,
             RunningMode runningMode) {
