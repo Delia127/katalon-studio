@@ -35,7 +35,7 @@ public interface IRunConfiguration {
     
     public String getExecutionSessionId();
 
-	public void setExecutionSessionId(String executionSessionId);
+    public void setExecutionSessionId(String executionSessionId);
 
     boolean allowsRecording();
     
