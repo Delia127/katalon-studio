@@ -6,10 +6,14 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -35,7 +39,7 @@ public class SignupSurveyDialog extends AbstractDialog {
     
     private static final String HUBSPOT_STAGING_API_KEY = "852e9ada-878f-4b06-8026-de8b1879ec27";
     
-    private static final String HUBSPOT_PRODUCTION_API_KEY = "852e9ada-878f-4b06-8026-de8b1879ec27";
+    private static final String HUBSPOT_PRODUCTION_API_KEY = "1e2da5ad-ed21-43c4-86d8-ccda6ee6f7a6";
 
     private static final String[] USER_ROLE_OPTIONS = new String[] { 
             "Manual tester",
@@ -149,13 +153,24 @@ public class SignupSurveyDialog extends AbstractDialog {
             String content = getHubspotUpdateAccountContent(title, downloadPurpose);
             
             String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-            HttpPost post = new HttpPost(getHubspotAccountUpdateUrl(email));
+            String url = getHubspotAccountUpdateUrl(email);
+            HttpPost post = new HttpPost(url);
             StringEntity requestEntity = new StringEntity(content);
             post.setEntity(requestEntity);
             post.setHeader("Content-type", "application/json");
             
             CloseableHttpClient client = getHttpClient();
-            client.execute(post);
+            CloseableHttpResponse response = client.execute(post);
+            LoggerSingleton.logInfo("Signup Survey Response Status Code: " + response.getStatusLine().getStatusCode());
+            LoggerSingleton.logInfo("Signup Survey Response Reason: " + response.getStatusLine().getReasonPhrase());
+            HttpEntity responseEntity = response.getEntity();
+            if (responseEntity != null) {
+                String responseContent = EntityUtils.toString(responseEntity);
+                LoggerSingleton.logInfo("Singup Survey Response Content: " + responseContent);
+            }
+            
+            IOUtils.closeQuietly(client);
+            IOUtils.closeQuietly(response);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
