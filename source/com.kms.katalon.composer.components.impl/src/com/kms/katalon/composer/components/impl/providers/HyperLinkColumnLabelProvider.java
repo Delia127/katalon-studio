@@ -1,11 +1,12 @@
 package com.kms.katalon.composer.components.impl.providers;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 
 public abstract class HyperLinkColumnLabelProvider<T> extends MouseCursorColumnLabelProvider<T> {
@@ -43,7 +44,7 @@ public abstract class HyperLinkColumnLabelProvider<T> extends MouseCursorColumnL
 
     private StyleRange getHyperLinkStyleRange(ViewerCell cell) {
         StyleRange hyperLinkStyle = new StyleRange();
-        hyperLinkStyle.foreground = cell.getItem().getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW);
+        hyperLinkStyle.foreground = JFaceColors.getHyperlinkText(Display.getDefault());
         hyperLinkStyle.underline = true;
         hyperLinkStyle.start = 0;
         hyperLinkStyle.length = cell.getText().length();
