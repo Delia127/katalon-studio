@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.osgi.framework.BundleException;
 
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -180,133 +179,6 @@ public class PluginService {
             throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins", e);
         }
     }
-    
-    public List<ReloadItem> reloadRecommendPlugins(KStoreCredentials credentials, IProgressMonitor monitor)
-            throws ReloadPluginsException, InterruptedException {
-        CustomKeywordPluginFactory.getInstance().clearPluginInStore();
-        try {
-            List<ReloadItem> results = new ArrayList<>();
-
-            SubMonitor subMonitor = SubMonitor.convert(monitor);
-            subMonitor.beginTask("", 100);
-    
-            SubMonitor fetchDataMonitor = subMonitor.split(20, SubMonitor.SUPPRESS_NONE);
-            fetchDataMonitor.beginTask("Fetching latest plugin info from Katalon Store...", 100);
-    
-            List<KStorePlugin> recommendPlugins = fetchRecommendPlugins(credentials);
-    
-            fetchDataMonitor.done();
-    
-            SubMonitor uninstallMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
-            uninstallMonitor.beginTask("Uninstalling plugins...", 100);
-    
-            List<KStorePlugin> localPlugins = PluginFactory.getInstance().getPlugins();
-    
-            int totalUninstallWork = localPlugins.size();
-            int uninstallWork = 0;
-            for (KStorePlugin plugin : localPlugins) {
-                if (monitor.isCanceled()) {
-                    throw new InterruptedException();
-                }
-                PlatformHelper.uninstallPlugin(plugin);
-                uninstallWork++;
-                markWork(uninstallWork, totalUninstallWork, uninstallMonitor);
-            }
-    
-            uninstallMonitor.done();
-            
-            SubMonitor resolveMonitor = subMonitor.split(40, SubMonitor.SUPPRESS_NONE);
-            resolveMonitor.beginTask("Resolving plugins...", 100);
-            
-            List<ResolutionItem> resolutionItems = LocalRepository.getInstance().resolvePlugins(recommendPlugins,
-                    credentials, resolveMonitor);
-            
-            resolveMonitor.done();
-    
-            SubMonitor installPluginMonitor = subMonitor.split(20, SubMonitor.SUPPRESS_NONE);
-            installPluginMonitor.beginTask("Installing plugins...", 100);
-    
-            int totalInstallWork = recommendPlugins.size();
-            int installWork = 0;
-
-            CustomKeywordPluginFactory.getInstance().clearPluginInStore();
-            PluginFactory.getInstance().clear();
-            for (ResolutionItem resolutionItem : resolutionItems) {
-                if (monitor.isCanceled()) {
-                    throw new InterruptedException();
-                }
-                
-                KStorePlugin plugin = resolutionItem.getPlugin();
-                ReloadItem reloadItem = new ReloadItem();
-                reloadItem.setPlugin(plugin);
-                results.add(reloadItem);
-                
-                if (resolutionItem.getException() != null) {
-                    reloadItem.setException(resolutionItem.getException());
-                    continue;
-                }
-                
-                if (plugin.isExpired()) {
-                    LogService.getInstance().logInfo(String.format("Expired plugin: %d.", plugin.getId()));
-                    continue;
-                }
-                
-                if (plugin.getLatestCompatibleVersion() == null) {
-                    LogService.getInstance().logInfo(String.format("Plugin with latest compatible version: %d.", plugin.getId()));
-                    continue;
-                }
-                
-                
-                LogService.getInstance().logInfo(String.format("Plugin ID: %d. Plugin location: %s.",
-                    plugin.getId(), plugin.getFile().getAbsolutePath()));
-                
-                try {
-                    if (PluginHelper.isCustomKeywordPlugin(plugin)) {
-                        CustomKeywordPlugin customKeywordPlugin = new CustomKeywordPlugin();
-                        customKeywordPlugin.setId(Long.toString(plugin.getId()));
-                        File pluginFile = plugin.getFile();
-                        customKeywordPlugin.setPluginFile(pluginFile);
-                        CustomKeywordPluginFactory.getInstance().addPluginFile(pluginFile, customKeywordPlugin);
-                    } else {
-                        PlatformHelper.installPlugin(plugin);
-                    }
-                    reloadItem.markPluginInstalled(true);
-                    PluginFactory.getInstance().addPlugin(plugin);
-                } catch (Exception e) {
-                    LogService.getInstance().logError(e);
-                    File pluginRepoDir = PluginSettings.getPluginRepoDir();
-                    if (pluginRepoDir.exists()) {
-                        pluginRepoDir.delete();
-                    }
-                    reloadItem.setException(e);
-                }
-
-                installWork++;
-                markWork(installWork, totalInstallWork, installPluginMonitor);
-            }
-    
-            installPluginMonitor.done();
-            
-            SubMonitor refreshClasspathMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
-            refreshClasspathMonitor.beginTask("Refreshing classpath...", 100);
-            
-            refreshProjectClasspath(refreshClasspathMonitor);
-            
-            refreshClasspathMonitor.done();
-
-            monitor.done();
-    
-            return results;
-        } catch (InterruptedException e) {
-            throw e;
-        } catch (Exception e) {
-            if(StringUtils.containsIgnoreCase(e.getMessage(), EXCEPTION_UNAUTHORIZED_SINGAL)){
-                throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins due to invalid API Key", e);
-            }
-            throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins", e);
-        }
-    }
-
     private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientException {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
@@ -315,16 +187,7 @@ public class PluginService {
         return latestPlugins;
     }
     
-    private List<KStorePlugin> fetchRecommendPlugins(KStoreCredentials credentials) throws KStoreClientException {
-        KStoreRestClient restClient = new KStoreRestClient(credentials); 
-        String appVersion = VersionUtil.getCurrentVersion().getVersion();
-        List<KStorePlugin> recommendPlugins = restClient.getRecommendPlugins(appVersion);
-        recommendPlugins.stream().forEach(p -> logPluginInfo(p));
-        return null;
-        
-    }
-    
-    private void logPluginInfo(KStorePlugin plugin) {
+    public void logPluginInfo(KStorePlugin plugin) {
         try {
             Map<String, Object> infoMap = new HashMap<>(); 
             infoMap.put("id", plugin.getId());

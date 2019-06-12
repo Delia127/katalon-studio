@@ -40,8 +40,6 @@ public class EventConstants {
     public static final String PROJECT_SAVE_SESSION = "PROJECT/SAVE_SESSION";
 
     public static final String PROJECT_OPEN_LATEST = "PROJECT/OPEN_LATEST";
-    
-    public static final String PROJECT_RECOMMEND_PLUGINS = "PROJECT/RECOMMENDPLUGINS";
 
     public static final String PROJECT_RESTORE_SESSION = "PROJECT/RESTORE_SESSION";
 

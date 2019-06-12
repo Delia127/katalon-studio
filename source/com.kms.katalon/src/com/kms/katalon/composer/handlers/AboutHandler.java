@@ -6,7 +6,6 @@ import com.kms.katalon.about.dialog.KatalonAboutDialog;
 import com.kms.katalon.activation.ActivationService;
 import com.kms.katalon.activation.ActivationServiceConsumer;
 import com.kms.katalon.composer.KatalonQuickStart.QuickStartDialog;
-import com.kms.katalon.composer.KatalonQuickStart.RecommendPlugins;
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 
 public class AboutHandler extends AbstractHandler {
@@ -18,14 +17,12 @@ public class AboutHandler extends AbstractHandler {
 
     @Override
     public void execute() {
-       // ActivationService activationService = ActivationServiceConsumer.getServiceInstance();
+        ActivationService activationService = ActivationServiceConsumer.getServiceInstance();
         Shell activeShell = getActiveWorkbenchWindow().getShell();
-        //if (activationService != null) {
-        //    activationService.openAboutDialog(activeShell);
-        //} else {
-        //    new KatalonAboutDialog(activeShell).open();
-       // }
-        RecommendPlugins q = new RecommendPlugins(activeShell);
-        q.open();
+        if (activationService != null) {
+            activationService.openAboutDialog(activeShell);
+        } else {
+            new KatalonAboutDialog(activeShell).open();
+        }
     }
 }

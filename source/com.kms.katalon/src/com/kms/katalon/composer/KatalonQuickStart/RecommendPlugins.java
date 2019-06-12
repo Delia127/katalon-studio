@@ -13,7 +13,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
-import com.kms.katalon.composer.components.impl.wizard.WizardRecommend;
+import com.kms.katalon.imp.wizard.WizardRecommend;
+
 
 public class RecommendPlugins extends WizardRecommend {
 
@@ -35,7 +36,7 @@ public class RecommendPlugins extends WizardRecommend {
         composite.setLayoutData(gridData);
         applyDialogFont(composite);
         Label lb = new Label(composite, SWT.NONE);
-        lb.setText("\n\t\tMost recommended plugins\n");
+        lb.setText("\n\t\t\tMost recommended plugins\n");
         org.eclipse.swt.graphics.Font defaultFont = new org.eclipse.swt.graphics.Font(null, "Aria",10,SWT.BOLD);
         lb.setFont(defaultFont);  
         // initialize the dialog units
@@ -74,7 +75,7 @@ public class RecommendPlugins extends WizardRecommend {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(600, 600);
+        return new Point(770, 500);
     }
 
     @Override
