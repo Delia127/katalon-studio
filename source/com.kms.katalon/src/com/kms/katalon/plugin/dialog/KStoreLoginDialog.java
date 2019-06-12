@@ -236,6 +236,7 @@ public class KStoreLoginDialog extends Dialog {
 
     private void showError(String errorMsg) {
         lblError.setText(errorMsg);
+        lblError.setForeground(new org.eclipse.swt.graphics.Color(Display.getDefault(), 255,0,0));
         setErrorMessageVisible(true);
     }
 
