@@ -5,7 +5,6 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.about.dialog.KatalonAboutDialog;
 import com.kms.katalon.activation.ActivationService;
 import com.kms.katalon.activation.ActivationServiceConsumer;
-import com.kms.katalon.composer.KatalonQuickStart.QuickStartDialog;
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 
 public class AboutHandler extends AbstractHandler {
