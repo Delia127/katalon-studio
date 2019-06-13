@@ -17,7 +17,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -377,7 +376,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         projects.add(selectProjectFromConfig);
                         linkStatusAccessProject.setText(String.format(
                                 ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT,
-                                serverUrl));
+                                serverUrl + "/user/teams"));
 
                     } else {
                         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email,

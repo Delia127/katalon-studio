@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
 
@@ -107,7 +108,7 @@ public class AnalyticsSettingProject {
                 }
             }
             PermissionAccessAnalyticsDialog.showErrorDialog(GlobalStringConstants.WARN,
-                    IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
+                    String.format(IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT, server + "/user/teams"));
         } catch (IOException | GeneralSecurityException error) {
             LogUtil.logError(error);
         }
