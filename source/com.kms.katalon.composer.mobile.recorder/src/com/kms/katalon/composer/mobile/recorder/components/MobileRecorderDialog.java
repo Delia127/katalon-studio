@@ -333,7 +333,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         sashForm.setSashWidth(3);
         sashForm.setLayout(new FillLayout());
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        sashForm.setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
         return sashForm;
     }
 
@@ -354,7 +353,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         SashForm hSashForm = new SashForm(middlePane, SWT.VERTICAL);
         hSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        hSashForm.setBackground(hSashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
         createActionListComposite(hSashForm);
 
