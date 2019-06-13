@@ -252,7 +252,11 @@ public class ObjectRepository {
                 selectorEntry.forEach(entry -> {
                     Element selectorMethodElement = ((Element) entry);
                     SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
-                    String entryValue = strSubtitutor.replace(selectorMethodElement.elementText(PROPERTY_VALUE));
+                    String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+                    if (entryValue == null) {
+                        return;
+                    }
+                    entryValue = strSubtitutor.replace(entryValue);
                     testObject.setSelectorValue(entryKey, entryValue);
                 });
             }

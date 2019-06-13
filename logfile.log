@@ -1,0 +1,1281 @@
+commit d66c69a89d99bfbebdb5170eb323c596a88c599e
+Author: Huy Nguyen <huynguyen@SGH034RY6T.kms.com.vn>
+Date:   Tue Apr 16 11:57:49 2019 +0700
+
+    issue2323: Fix Katalon cannot detect object using variable in xpath
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -220,105 +220,107 @@
+     private static TestObject findWebUIObject(String testObjectId, Element element, Map<String, Object> variables) {
+         TestObject testObject = new TestObject(testObjectId);
+ 
+         // For image
+         Element imagePathElement = element.element("imagePath");
+         if (imagePathElement != null) {
+             String imagePath = imagePathElement.getText();
+             testObject.setImagePath(imagePath);
+         }
+ 
+         Element relativeImagePathElement = element.element("useRalativeImagePath");
+         if (relativeImagePathElement != null) {
+             String useRelavitePathString = relativeImagePathElement.getText();
+             testObject.setUseRelativeImagePath(Boolean.parseBoolean(useRelavitePathString));
+         }
+ 
+         Element dfSelectorMethodElement = element.element(PROPERTY_SELECTOR_METHOD);
+         if (dfSelectorMethodElement != null) {
+             testObject.setSelectorMethod(SelectorMethod.valueOf(dfSelectorMethodElement.getText()));
+         }
+ 
++        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
++        for (Entry<String, Object> entry : variables.entrySet()) {
++            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
++        }
++
++        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
++        
+         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
+         if (propertySelectorCollection != null) {
+             List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
+             if (selectorEntry != null) {
+                 selectorEntry.forEach(entry -> {
+                     Element selectorMethodElement = ((Element) entry);
+                     SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
+-                    String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
++                    String entryValue = strSubtitutor.replace(selectorMethodElement.elementText(PROPERTY_VALUE));
+                     testObject.setSelectorValue(entryKey, entryValue);
+                 });
+             }
+         }
+ 
+         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+             TestObjectProperty objectProperty = new TestObjectProperty();
+             Element propertyElement = (Element) propertyElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+             ConditionType propertyCondition = ConditionType
+                     .fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+             boolean isPropertySelected = Boolean
+                     .valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectProperty.setName(propertyName);
+             objectProperty.setCondition(propertyCondition);
+             objectProperty.setValue(propertyValue);
+             objectProperty.setActive(isPropertySelected);
+ 
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
+             } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                 testObject.setParentObjectShadowRoot(true);
+             } else {
+                 testObject.addProperty(objectProperty);
+             }
+         }
+         
+         for (Object xpathElementObject : element.elements(WEB_ELEMENT_XPATH_NODE_NAME)) {
+             TestObjectXpath objectXpath = new TestObjectXpath();
+             Element xpathElement = (Element) xpathElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_NAME));
+             ConditionType propertyCondition = ConditionType
+                     .fromValue(StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_VALUE));
+             boolean isPropertySelected = Boolean
+                     .valueOf(StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectXpath.setName(propertyName);
+             objectXpath.setCondition(propertyCondition);
+             objectXpath.setValue(propertyValue);
+             objectXpath.setActive(isPropertySelected);
+ 
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
+             } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                 testObject.setParentObjectShadowRoot(true);
+             } else {
+                 testObject.addXpath(objectXpath);
+             }
+         }
+ 
+         if (testObject == null || variables == null || variables.isEmpty()) {
+             return testObject;
+         }
+-        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+-        for (Entry<String, Object> entry : variables.entrySet()) {
+-            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
+-        }
+-
+-        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
++        
+         for (TestObjectProperty objectProperty : testObject.getProperties()) {
+             objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue()));
+         }
+ 
+         return testObject;
+     }
+ 
+     @SuppressWarnings("unchecked")
+
+commit fcaaacf00431f70ff2e0cc65ad6557eb1627ee4e
+Author: Thanh To <thanhto@kms.com.vn>
+Date:   Wed Jul 25 15:00:30 2018 +0700
+
+     Implemented trial and error strategy when user-chosen locators failed
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -213,78 +215,105 @@
+     private static TestObject findWebUIObject(String testObjectId, Element element, Map<String, Object> variables) {
+         TestObject testObject = new TestObject(testObjectId);
+ 
+         // For image
+         Element imagePathElement = element.element("imagePath");
+         if (imagePathElement != null) {
+             String imagePath = imagePathElement.getText();
+             testObject.setImagePath(imagePath);
+         }
+ 
+         Element relativeImagePathElement = element.element("useRalativeImagePath");
+         if (relativeImagePathElement != null) {
+             String useRelavitePathString = relativeImagePathElement.getText();
+             testObject.setUseRelativeImagePath(Boolean.parseBoolean(useRelavitePathString));
+         }
+ 
+         Element dfSelectorMethodElement = element.element(PROPERTY_SELECTOR_METHOD);
+         if (dfSelectorMethodElement != null) {
+             testObject.setSelectorMethod(SelectorMethod.valueOf(dfSelectorMethodElement.getText()));
+         }
+ 
+         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
+         if (propertySelectorCollection != null) {
+             List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
+             if (selectorEntry != null) {
+                 selectorEntry.forEach(entry -> {
+                     Element selectorMethodElement = ((Element) entry);
+                     SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
+                     String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+                     testObject.setSelectorValue(entryKey, entryValue);
+                 });
+             }
+         }
+ 
+         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+             TestObjectProperty objectProperty = new TestObjectProperty();
+             Element propertyElement = (Element) propertyElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+             ConditionType propertyCondition = ConditionType
+                     .fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+             boolean isPropertySelected = Boolean
+                     .valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectProperty.setName(propertyName);
+             objectProperty.setCondition(propertyCondition);
+             objectProperty.setValue(propertyValue);
+             objectProperty.setActive(isPropertySelected);
+ 
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
+             } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                 testObject.setParentObjectShadowRoot(true);
+             } else {
+                 testObject.addProperty(objectProperty);
+             }
+         }
++        
++        for (Object xpathElementObject : element.elements(WEB_ELEMENT_XPATH_NODE_NAME)) {
++            TestObjectXpath objectXpath = new TestObjectXpath();
++            Element xpathElement = (Element) xpathElementObject;
++
++            String propertyName = StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_NAME));
++            ConditionType propertyCondition = ConditionType
++                    .fromValue(StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_CONDITION)));
++            String propertyValue = StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_VALUE));
++            boolean isPropertySelected = Boolean
++                    .valueOf(StringEscapeUtils.unescapeXml(xpathElement.elementText(PROPERTY_IS_SELECTED)));
++
++            objectXpath.setName(propertyName);
++            objectXpath.setCondition(propertyCondition);
++            objectXpath.setValue(propertyValue);
++            objectXpath.setActive(isPropertySelected);
++
++            // Check if this element is inside a frame
++            if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
++                TestObject parentObject = findTestObject(propertyValue);
++                testObject.setParentObject(parentObject);
++            } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
++                testObject.setParentObjectShadowRoot(true);
++            } else {
++                testObject.addXpath(objectXpath);
++            }
++        }
+ 
+         if (testObject == null || variables == null || variables.isEmpty()) {
+             return testObject;
+         }
+         Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+         for (Entry<String, Object> entry : variables.entrySet()) {
+             variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
+         }
+ 
+         StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
+         for (TestObjectProperty objectProperty : testObject.getProperties()) {
+             objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue()));
+         }
+ 
+         return testObject;
+     }
+ 
+     @SuppressWarnings("unchecked")
+
+commit 1f6026f38a2e8172032d3534a3ac5629ba342abb
+Author: Duy Luong <duyluong@kms-technology.com>
+Date:   Thu Mar 29 15:47:15 2018 +0700
+
+    KAT-3084 [KS-API] Ability to parameterize Request Body
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -184,65 +177,78 @@
+-    private static TestObject findWebUIObject(String testObjectId, Element element) {
++    private static TestObject findWebUIObject(String testObjectId, Element element, Map<String, Object> variables) {
+         TestObject testObject = new TestObject(testObjectId);
+ 
+         // For image
+         Element imagePathElement = element.element("imagePath");
+         if (imagePathElement != null) {
+             String imagePath = imagePathElement.getText();
+             testObject.setImagePath(imagePath);
+         }
+ 
+         Element relativeImagePathElement = element.element("useRalativeImagePath");
+         if (relativeImagePathElement != null) {
+             String useRelavitePathString = relativeImagePathElement.getText();
+             testObject.setUseRelativeImagePath(Boolean.parseBoolean(useRelavitePathString));
+         }
+ 
+         Element dfSelectorMethodElement = element.element(PROPERTY_SELECTOR_METHOD);
+         if (dfSelectorMethodElement != null) {
+             testObject.setSelectorMethod(SelectorMethod.valueOf(dfSelectorMethodElement.getText()));
+         }
+ 
+         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
+         if (propertySelectorCollection != null) {
+             List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
+             if (selectorEntry != null) {
+                 selectorEntry.forEach(entry -> {
+                     Element selectorMethodElement = ((Element) entry);
+                     SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
+                     String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+                     testObject.setSelectorValue(entryKey, entryValue);
+                 });
+             }
+         }
+ 
+         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+             TestObjectProperty objectProperty = new TestObjectProperty();
+             Element propertyElement = (Element) propertyElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+             ConditionType propertyCondition = ConditionType
+                     .fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+             boolean isPropertySelected = Boolean
+                     .valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectProperty.setName(propertyName);
+             objectProperty.setCondition(propertyCondition);
+             objectProperty.setValue(propertyValue);
+             objectProperty.setActive(isPropertySelected);
+ 
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
+             } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                 testObject.setParentObjectShadowRoot(true);
+             } else {
+                 testObject.addProperty(objectProperty);
+             }
+         }
+ 
++        if (testObject == null || variables == null || variables.isEmpty()) {
++            return testObject;
++        }
++        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
++        for (Entry<String, Object> entry : variables.entrySet()) {
++            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
++        }
++
++        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
++        for (TestObjectProperty objectProperty : testObject.getProperties()) {
++            objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue()));
++        }
++
+         return testObject;
+     }
+ 
+     @SuppressWarnings("unchecked")
+
+commit 1a106345aa36bd07c3b22f777276e7cdd897653d
+Author: Duy Luong <duyluong@kms-technology.com>
+Date:   Wed Mar 28 11:41:25 2018 +0700
+
+    KAT-3026 [KS - API] Implement function for HTTP Body File type
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -185,65 +184,65 @@
+     private static TestObject findWebUIObject(String testObjectId, Element element) {
+         TestObject testObject = new TestObject(testObjectId);
+ 
+         // For image
+         Element imagePathElement = element.element("imagePath");
+         if (imagePathElement != null) {
+             String imagePath = imagePathElement.getText();
+             testObject.setImagePath(imagePath);
+         }
+-        
++
+         Element relativeImagePathElement = element.element("useRalativeImagePath");
+         if (relativeImagePathElement != null) {
+             String useRelavitePathString = relativeImagePathElement.getText();
+             testObject.setUseRelativeImagePath(Boolean.parseBoolean(useRelavitePathString));
+         }
+ 
+         Element dfSelectorMethodElement = element.element(PROPERTY_SELECTOR_METHOD);
+         if (dfSelectorMethodElement != null) {
+             testObject.setSelectorMethod(SelectorMethod.valueOf(dfSelectorMethodElement.getText()));
+         }
+ 
+         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
+         if (propertySelectorCollection != null) {
+             List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
+-            if (selectorEntry != null) {selectorEntry.forEach(entry -> {
++            if (selectorEntry != null) {
++                selectorEntry.forEach(entry -> {
+                     Element selectorMethodElement = ((Element) entry);
+                     SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
+                     String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+                     testObject.setSelectorValue(entryKey, entryValue);
+                 });
+             }
+         }
+ 
+         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+             TestObjectProperty objectProperty = new TestObjectProperty();
+             Element propertyElement = (Element) propertyElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+             ConditionType propertyCondition = ConditionType
+                     .fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+             boolean isPropertySelected = Boolean
+                     .valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectProperty.setName(propertyName);
+             objectProperty.setCondition(propertyCondition);
+             objectProperty.setValue(propertyValue);
+             objectProperty.setActive(isPropertySelected);
+ 
+-
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
+             } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                 testObject.setParentObjectShadowRoot(true);
+             } else {
+                 testObject.addProperty(objectProperty);
+             }
+         }
+ 
+         return testObject;
+     }
+ 
+     @SuppressWarnings("unchecked")
+
+commit 19df8f4fdd64ede03c0601c4973ca97f5442b6cf
+Author: Duy Luong <duyluong@kms-technology.com>
+Date:   Mon Nov 27 16:36:59 2017 +0700
+
+    KAT-2725 [Implementation] Remove current 'android_sdk' folder and only download it when users start mobile testing
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -184,54 +183,65 @@
+     private static TestObject findWebUIObject(String testObjectId, Element element) {
+         TestObject testObject = new TestObject(testObjectId);
++
+         // For image
+-        String imagePath = element.elementText("imagePath");
+-        boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
+-        testObject.setImagePath(imagePath);
+-        testObject.setUseRelativeImagePath(useRalativeImagePath);
+-
+-        String selectorMethod = element.elementText(PROPERTY_SELECTOR_METHOD);
+-        if (selectorMethod != null) {
+-            testObject.setSelectorMethod(SelectorMethod.valueOf(selectorMethod));
++        Element imagePathElement = element.element("imagePath");
++        if (imagePathElement != null) {
++            String imagePath = imagePathElement.getText();
++            testObject.setImagePath(imagePath);
++        }
++        
++        Element relativeImagePathElement = element.element("useRalativeImagePath");
++        if (relativeImagePathElement != null) {
++            String useRelavitePathString = relativeImagePathElement.getText();
++            testObject.setUseRelativeImagePath(Boolean.parseBoolean(useRelavitePathString));
++        }
++
++        Element dfSelectorMethodElement = element.element(PROPERTY_SELECTOR_METHOD);
++        if (dfSelectorMethodElement != null) {
++            testObject.setSelectorMethod(SelectorMethod.valueOf(dfSelectorMethodElement.getText()));
+         }
+ 
+         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
+         if (propertySelectorCollection != null) {
+-            propertySelectorCollection.elements(PROPERTY_ENTRY).forEach(entry -> {
+-                Element selectorMethodElement = ((Element) entry);
+-                SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
+-                String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+-                testObject.setSelectorValue(entryKey, entryValue);
+-            });
++            List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
++            if (selectorEntry != null) {selectorEntry.forEach(entry -> {
++                    Element selectorMethodElement = ((Element) entry);
++                    SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
++                    String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
++                    testObject.setSelectorValue(entryKey, entryValue);
++                });
++            }
+         }
+ 
+         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+             TestObjectProperty objectProperty = new TestObjectProperty();
+             Element propertyElement = (Element) propertyElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+             ConditionType propertyCondition = ConditionType
+                     .fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+             boolean isPropertySelected = Boolean
+                     .valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectProperty.setName(propertyName);
+             objectProperty.setCondition(propertyCondition);
+             objectProperty.setValue(propertyValue);
+             objectProperty.setActive(isPropertySelected);
+ 
++
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
+             } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                 testObject.setParentObjectShadowRoot(true);
+             } else {
+                 testObject.addProperty(objectProperty);
+             }
+         }
+ 
+         return testObject;
+     }
+ 
+     @SuppressWarnings("unchecked")
+
+commit 8d12005b26febbdfe35afd9810213c7773eecb9f
+Author: Duy Luong <duyluong@kms-technology.com>
+Date:   Tue Sep 19 19:01:40 2017 +0700
+
+    KAT-2522 [Object Spy] Adjust Object Spy (initial commit)
+    
+    KAT-2522 Adjust layout
+    
+    KAT-2543: Object Spy Settings
+    
+    KAT-2545 Object's Properties
+    
+    KAT-2545 Object's Properties
+    
+    KAT-2544: Manage Captured Object
+    
+    KAT-2545 Object's Properties
+    
+    KAT-2584 Implement features for Object's Properties and Captured Objects
+    
+    KAT-2546 Selector Editor
+    
+    KAT-2546 Fix KAT-2602, KAT-2603
+    
+    KAT-2588: Remember last used object spy dialog size and position
+    
+    KAT-2611 fix
+    
+    KAT-2584 Fix KAT-2596, KAT-2597, KAT-2607
+    
+    KAT-2584 Fix KAT-2591, KAT-2593
+    
+    KAT-2609 fix
+    
+    KAT-2584 Fix KAT-2610
+    
+    KAT-2547 Verify and Highlight
+    
+    KAT-2547 Fix KAT-2615, KAT-2619
+    
+    KAT-2624 fix
+    
+    KAT-2613 fix
+    
+    KAT-2547 Verify and Highlight
+    
+    KAT-2608 Replace current Web Object Spy with the new one
+    
+    KAT-2608 Fix selection of selector method when adding a test object to spy web
+    
+    KAT-2547 Verify and Highlight
+    
+    KAT-2608 Replace current Web Object Spy with the new one
+    
+    KAT-2608 Fix selection of selector method when adding a test object to spy web
+    
+    KAT-2598 Adjust test execution to use generated selector
+    
+    KAT-2584 Fix KAT-2610
+    
+    KAT-2598 Add support for TestObject in ScriptView
+    
+    KAT-2625: Align Verify And Highligh Button and Quick Guide icon in Object Spy
+    
+    KAT-2643 fix
+    
+    KAT-2635 fix
+    
+    KAT-2638 fix
+    
+    KAT-2639 fix
+    
+    KAT-2591 fix
+    
+    KAT-2553 [View Test Object] Adjust view test objects UI
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -175,39 +184,54 @@
+     private static TestObject findWebUIObject(String testObjectId, Element element) {
+         TestObject testObject = new TestObject(testObjectId);
+         // For image
+         String imagePath = element.elementText("imagePath");
+         boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
+         testObject.setImagePath(imagePath);
+         testObject.setUseRelativeImagePath(useRalativeImagePath);
+ 
++        String selectorMethod = element.elementText(PROPERTY_SELECTOR_METHOD);
++        if (selectorMethod != null) {
++            testObject.setSelectorMethod(SelectorMethod.valueOf(selectorMethod));
++        }
++
++        Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
++        if (propertySelectorCollection != null) {
++            propertySelectorCollection.elements(PROPERTY_ENTRY).forEach(entry -> {
++                Element selectorMethodElement = ((Element) entry);
++                SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
++                String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
++                testObject.setSelectorValue(entryKey, entryValue);
++            });
++        }
++
+         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+             TestObjectProperty objectProperty = new TestObjectProperty();
+             Element propertyElement = (Element) propertyElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+             ConditionType propertyCondition = ConditionType
+                     .fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+             boolean isPropertySelected = Boolean
+                     .valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectProperty.setName(propertyName);
+             objectProperty.setCondition(propertyCondition);
+             objectProperty.setValue(propertyValue);
+             objectProperty.setActive(isPropertySelected);
+-            
++
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
+             } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                 testObject.setParentObjectShadowRoot(true);
+             } else {
+                 testObject.addProperty(objectProperty);
+             }
+         }
+ 
+         return testObject;
+     }
+ 
+     @SuppressWarnings("unchecked")
+
+commit e750d13eaad815b645efac954adf54ca3dd09199
+Author: Hieu Mai <hieumai@kms-technology.com>
+Date:   Wed Jul 19 14:44:27 2017 +0700
+
+    KAT-2237: Implement a solution for finding element within shadow DOM
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -173,37 +175,39 @@
+     private static TestObject findWebUIObject(String testObjectId, Element element) {
+         TestObject testObject = new TestObject(testObjectId);
+         // For image
+         String imagePath = element.elementText("imagePath");
+         boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
+         testObject.setImagePath(imagePath);
+         testObject.setUseRelativeImagePath(useRalativeImagePath);
+ 
+         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+             TestObjectProperty objectProperty = new TestObjectProperty();
+             Element propertyElement = (Element) propertyElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+             ConditionType propertyCondition = ConditionType
+                     .fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+             boolean isPropertySelected = Boolean
+                     .valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectProperty.setName(propertyName);
+             objectProperty.setCondition(propertyCondition);
+             objectProperty.setValue(propertyValue);
+             objectProperty.setActive(isPropertySelected);
+-
++            
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
++            } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
++                testObject.setParentObjectShadowRoot(true);
+             } else {
+                 testObject.addProperty(objectProperty);
+             }
+         }
+ 
+         return testObject;
+     }
+ 
+     @SuppressWarnings("unchecked")
+
+commit 6705323def7203db7db429329d4a07bf3a73a549
+Author: Hieu Mai <hieumai@kms-technology.com>
+Date:   Tue Apr 25 17:41:28 2017 +0700
+
+    KAT-1358: [Test Object] Ability to parameterize attributes of objects
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -128,35 +165,37 @@
+     private static TestObject findWebUIObject(String testObjectId, Element element) {
+         TestObject testObject = new TestObject(testObjectId);
+         // For image
+         String imagePath = element.elementText("imagePath");
+         boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
+         testObject.setImagePath(imagePath);
+         testObject.setUseRelativeImagePath(useRalativeImagePath);
+ 
+         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+             TestObjectProperty objectProperty = new TestObjectProperty();
+             Element propertyElement = (Element) propertyElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+-            ConditionType propertyCondition = ConditionType.fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
++            ConditionType propertyCondition = ConditionType
++                    .fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+-            boolean isPropertySelected = Boolean.valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
++            boolean isPropertySelected = Boolean
++                    .valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectProperty.setName(propertyName);
+             objectProperty.setCondition(propertyCondition);
+             objectProperty.setValue(propertyValue);
+             objectProperty.setActive(isPropertySelected);
+ 
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
+             } else {
+                 testObject.addProperty(objectProperty);
+             }
+         }
+ 
+         return testObject;
+     }
+ 
+     @SuppressWarnings("unchecked")
+
+commit 3d847afabe376d48dc53c8cadd695978b318a27d
+Author: Duy Luong <duyluong@kms-technology.com>
+Date:   Mon Jul 11 15:51:38 2016 +0700
+
+    KAT-479 Reduce code complexity in scripting mode
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -71,37 +128,35 @@
+     private static TestObject findWebUIObject(String testObjectId, Element element) {
+         TestObject testObject = new TestObject(testObjectId);
+         // For image
+         String imagePath = element.elementText("imagePath");
+         boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
+         testObject.setImagePath(imagePath);
+         testObject.setUseRelativeImagePath(useRalativeImagePath);
+ 
+         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+             TestObjectProperty objectProperty = new TestObjectProperty();
+             Element propertyElement = (Element) propertyElementObject;
+ 
+             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+-            ConditionType propertyCondition = ConditionType.fromValue(StringEscapeUtils.unescapeXml(propertyElement
+-                    .elementText(PROPERTY_CONDITION)));
++            ConditionType propertyCondition = ConditionType.fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+-            boolean isPropertySelected = Boolean.valueOf(StringEscapeUtils.unescapeXml(propertyElement
+-                    .elementText(PROPERTY_IS_SELECTED)));
++            boolean isPropertySelected = Boolean.valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+ 
+             objectProperty.setName(propertyName);
+             objectProperty.setCondition(propertyCondition);
+             objectProperty.setValue(propertyValue);
+             objectProperty.setActive(isPropertySelected);
+ 
+             // Check if this element is inside a frame
+             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+                 TestObject parentObject = findTestObject(propertyValue);
+                 testObject.setParentObject(parentObject);
+             } else {
+                 testObject.addProperty(objectProperty);
+             }
+         }
+ 
+         return testObject;
+     }
+ 
+     @SuppressWarnings("unchecked")
+
+commit f2bb61dcf300acce029296b938fd543aa19cb223
+Merge: 89d13bb90 d3aae1b34
+Author: An Truong Nguyen <antruongnguyen@kms-technology.com>
+Date:   Tue Jan 12 16:28:56 2016 +0700
+
+    Merge branch 'master' of https://github.com/kms-technology/katalon
+    
+    Conflicts:
+            source/com.kms.katalon.composer.report/src/com/kms/katalon/composer/report/provider/ReportPartTestCaseLabelProvider.java
+            source/com.kms.katalon.composer.report/src/com/kms/katalon/composer/report/provider/ReportPartTestStepLabelProvider.java
+            source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+
+
+commit d3aae1b3475d481fd560e9983ca448c4ec758d85
+Author: hieumai <hieumai@kms-technology.com>
+Date:   Tue Jan 12 15:04:41 2016 +0700
+
+    KAT-499: [IFrame] - Althought uncheck 'Use below object as parent iframe of this object' in the Test object editor but it is not working (https://incubation.kms-technology.com/browse/KAT-499)
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -20,137 +20,137 @@
+ 	private static final String WEB_SERVICES_TYPE_NAME = "WebServiceRequestEntity";
+ 	private static final String WEB_ELEMENT_TYPE_NAME = "WebElementEntity";
+ 	private static final String WEBELEMENT_FILE_EXTENSION = ".rs";
+ 	private static final String WEB_ELEMENT_PROPERTY_NODE_NAME = "webElementProperties";
+ 	private static final String PROPERTY_NAME = "name";
+ 	private static final String PROPERTY_CONDITION = "matchCondition";
+ 	private static final String PROPERTY_VALUE = "value";
+ 	private static final String PROPERTY_IS_SELECTED = "isSelected";
+ 	private static final String[] PARENT_FRAME_ATTRS = new String[] { "ref_element", "parent_frame" };
+ 
+ 	public static TestObject findTestObject(String testObjectId) {
+ 		try {
+ 			if (testObjectId == null) {
+ 				KeywordLogger.getInstance().logWarning(StringConstants.TO_LOG_WARNING_TEST_OBJ_NULL);
+ 				return null;
+ 			}
+ 			KeywordLogger.getInstance().logInfo(
+ 					MessageFormat.format(StringConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID, testObjectId));
+ 			String currentDirFilePath = new File(RunConfiguration.getProjectDir()).getAbsolutePath();
+ 			File objectFile = new File(currentDirFilePath + File.separator + testObjectId
+ 					+ WEBELEMENT_FILE_EXTENSION);
+ 			if (objectFile.exists()) {
+ 				SAXReader reader = new SAXReader();
+ 				Document document = reader.read(objectFile);
+ 				Element element = document.getRootElement();
+ 				if (element.getName().equals(WEB_ELEMENT_TYPE_NAME)) {
+ 					return findWebUIObject(testObjectId, element);
+ 				} else if (element.getName().equals(WEB_SERVICES_TYPE_NAME)) {
+ 					return findRequestObject(testObjectId);
+ 				}
+ 			} else {
+ 				KeywordLogger.getInstance().logWarning(
+ 						MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
+ 				return null;
+ 			}
+ 		} catch (Exception e) {
+ 			KeywordLogger.getInstance().logWarning(
+ 					MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
+ 							testObjectId, ExceptionsUtil.getMessageForThrowable(e)));
+ 		}
+ 		return null;
+ 
+ 	}
+ 
+ 	private static TestObject findWebUIObject(String testObjectId, Element element) {
+ 		TestObject testObject = new TestObject(testObjectId);
+ 		// For image
+ 		String imagePath = element.elementText("imagePath");
+ 		boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
+ 		testObject.setImagePath(imagePath);
+ 		testObject.setUseRelativeImagePath(useRalativeImagePath);
+ 
+ 		for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+ 			TestObjectProperty objectProperty = new TestObjectProperty();
+ 			Element propertyElement = (Element) propertyElementObject;
+ 
+ 			String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+ 			ConditionType propertyCondition = ConditionType.fromValue(StringEscapeUtils.unescapeXml(propertyElement
+ 					.elementText(PROPERTY_CONDITION)));
+ 			String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+ 			boolean isPropertySelected = Boolean.valueOf(StringEscapeUtils.unescapeXml(propertyElement
+ 					.elementText(PROPERTY_IS_SELECTED)));
+ 
+ 			objectProperty.setName(propertyName);
+ 			objectProperty.setCondition(propertyCondition);
+ 			objectProperty.setValue(propertyValue);
+ 			objectProperty.setActive(isPropertySelected);
+ 
+ 			// Check if this element is inside a frame
+-			if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName)) {
++			if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
+ 				TestObject parentObject = findTestObject(propertyValue);
+ 				testObject.setParentObject(parentObject);
+ 			} else {
+ 				testObject.addProperty(objectProperty);
+ 			}
+ 		}
+ 
+ 		return testObject;
+ 	}
+ 
+ 	@SuppressWarnings("unchecked")
+ 	private static RequestObject findRequestObject(String requestObjectId) throws Exception {
+ 		String currentDirFilePath = new File(RunConfiguration.getProjectDir()).getAbsolutePath();
+ 		File objectFile = new File(currentDirFilePath + File.separator + requestObjectId
+ 				+ WEBELEMENT_FILE_EXTENSION);
+ 		if (objectFile.exists()) {
+ 			SAXReader reader = new SAXReader();
+ 			Document document = reader.read(objectFile);
+ 			Element reqElement = document.getRootElement();
+ 
+ 			RequestObject requestObject = new RequestObject(requestObjectId);
+ 			requestObject.setName(reqElement.elementText("name"));
+ 
+ 			String serviceType = reqElement.elementText("serviceType");
+ 			requestObject.setServiceType(serviceType);
+ 
+ 			requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties")));
+ 			requestObject.setHttpBody(reqElement.elementText("httpBody"));
+ 
+ 			if ("SOAP".equals(serviceType)) {
+ 				requestObject.setWsdlAddress(reqElement.elementText("wsdlAddress"));
+ 				requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
+ 				requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
+ 				requestObject.setSoapParameters(parseProperties(reqElement.elements("soapParameters")));
+ 				requestObject.setSoapHeader(reqElement.elementText("soapHeader"));
+ 				requestObject.setSoapBody(reqElement.elementText("soapBody"));
+ 			} else if ("RESTful".equals(serviceType)) {
+ 				requestObject.setRestUrl(reqElement.elementText("restUrl"));
+ 				requestObject.setRestRequestMethod(reqElement.elementText("restRequestMethod"));
+ 				requestObject.setRestParameters(parseProperties(reqElement.elements("restParameters")));
+ 			}
+ 
+ 			return requestObject;
+ 		}
+ 		return null;
+ 	}
+ 
+ 	private static List<TestObjectProperty> parseProperties(List<Object> objects) {
+ 		List<TestObjectProperty> props = new ArrayList<>();
+ 		for (Object propertyElementObject : objects) {
+ 			TestObjectProperty objectProperty = new TestObjectProperty();
+ 			Element propertyElement = (Element) propertyElementObject;
+ 
+ 			String propertyName = propertyElement.elementText(PROPERTY_NAME);
+ 			ConditionType propertyCondition = ConditionType.fromValue(propertyElement.elementText(PROPERTY_CONDITION));
+ 			String propertyValue = propertyElement.elementText(PROPERTY_VALUE);
+ 			boolean isPropertySelected = Boolean.valueOf(propertyElement.elementText(PROPERTY_IS_SELECTED));
+ 
+ 			objectProperty.setName(propertyName);
+ 			objectProperty.setCondition(propertyCondition);
+ 			objectProperty.setValue(propertyValue);
+ 			objectProperty.setActive(isPropertySelected);
+ 
+ 			props.add(objectProperty);
+ 		}
+ 		return props;
+ 	}
+
+commit 89d13bb90a6b2fa7c0d8bb61c2809969c4de895a
+Author: An Truong Nguyen <antruongnguyen@kms-technology.com>
+Date:   Tue Jan 12 16:22:07 2016 +0700
+
+    Fixed KAT-327 Provide API page for the APIs of Katalon Studio
+
+diff --git a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- a/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
++++ b/source/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -20,137 +71,37 @@
+-	private static final String WEB_SERVICES_TYPE_NAME = "WebServiceRequestEntity";
+-	private static final String WEB_ELEMENT_TYPE_NAME = "WebElementEntity";
+-	private static final String WEBELEMENT_FILE_EXTENSION = ".rs";
+-	private static final String WEB_ELEMENT_PROPERTY_NODE_NAME = "webElementProperties";
+-	private static final String PROPERTY_NAME = "name";
+-	private static final String PROPERTY_CONDITION = "matchCondition";
+-	private static final String PROPERTY_VALUE = "value";
+-	private static final String PROPERTY_IS_SELECTED = "isSelected";
+-	private static final String[] PARENT_FRAME_ATTRS = new String[] { "ref_element", "parent_frame" };
+-
+-	public static TestObject findTestObject(String testObjectId) {
+-		try {
+-			if (testObjectId == null) {
+-				KeywordLogger.getInstance().logWarning(StringConstants.TO_LOG_WARNING_TEST_OBJ_NULL);
+-				return null;
+-			}
+-			KeywordLogger.getInstance().logInfo(
+-					MessageFormat.format(StringConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID, testObjectId));
+-			String currentDirFilePath = new File(RunConfiguration.getProjectDir()).getAbsolutePath();
+-			File objectFile = new File(currentDirFilePath + File.separator + testObjectId
+-					+ WEBELEMENT_FILE_EXTENSION);
+-			if (objectFile.exists()) {
+-				SAXReader reader = new SAXReader();
+-				Document document = reader.read(objectFile);
+-				Element element = document.getRootElement();
+-				if (element.getName().equals(WEB_ELEMENT_TYPE_NAME)) {
+-					return findWebUIObject(testObjectId, element);
+-				} else if (element.getName().equals(WEB_SERVICES_TYPE_NAME)) {
+-					return findRequestObject(testObjectId);
+-				}
+-			} else {
+-				KeywordLogger.getInstance().logWarning(
+-						MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
+-				return null;
+-			}
+-		} catch (Exception e) {
+-			KeywordLogger.getInstance().logWarning(
+-					MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
+-							testObjectId, ExceptionsUtil.getMessageForThrowable(e)));
+-		}
+-		return null;
+-
+-	}
+-
+-	private static TestObject findWebUIObject(String testObjectId, Element element) {
+-		TestObject testObject = new TestObject(testObjectId);
+-		// For image
+-		String imagePath = element.elementText("imagePath");
+-		boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
+-		testObject.setImagePath(imagePath);
+-		testObject.setUseRelativeImagePath(useRalativeImagePath);
+-
+-		for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
+-			TestObjectProperty objectProperty = new TestObjectProperty();
+-			Element propertyElement = (Element) propertyElementObject;
+-
+-			String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
+-			ConditionType propertyCondition = ConditionType.fromValue(StringEscapeUtils.unescapeXml(propertyElement
+-					.elementText(PROPERTY_CONDITION)));
+-			String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
+-			boolean isPropertySelected = Boolean.valueOf(StringEscapeUtils.unescapeXml(propertyElement
+-					.elementText(PROPERTY_IS_SELECTED)));
+-
+-			objectProperty.setName(propertyName);
+-			objectProperty.setCondition(propertyCondition);
+-			objectProperty.setValue(propertyValue);
+-			objectProperty.setActive(isPropertySelected);
+-
+-			// Check if this element is inside a frame
+-			if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName)) {
+-				TestObject parentObject = findTestObject(propertyValue);
+-				testObject.setParentObject(parentObject);
+-			} else {
+-				testObject.addProperty(objectProperty);
+-			}
+-		}
+-
+-		return testObject;
+-	}
+-
+-	@SuppressWarnings("unchecked")
+-	private static RequestObject findRequestObject(String requestObjectId) throws Exception {
+-		String currentDirFilePath = new File(RunConfiguration.getProjectDir()).getAbsolutePath();
+-		File objectFile = new File(currentDirFilePath + File.separator + requestObjectId
+-				+ WEBELEMENT_FILE_EXTENSION);
+-		if (objectFile.exists()) {
+-			SAXReader reader = new SAXReader();
+-			Document document = reader.read(objectFile);
+-			Element reqElement = document.getRootElement();
+-
+-			RequestObject requestObject = new RequestObject(requestObjectId);
+-			requestObject.setName(reqElement.elementText("name"));
+-
+-			String serviceType = reqElement.elementText("serviceType");
+-			requestObject.setServiceType(serviceType);
+-
+-			requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties")));
+-			requestObject.setHttpBody(reqElement.elementText("httpBody"));
+-
+-			if ("SOAP".equals(serviceType)) {
+-				requestObject.setWsdlAddress(reqElement.elementText("wsdlAddress"));
+-				requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
+-				requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
+-				requestObject.setSoapParameters(parseProperties(reqElement.elements("soapParameters")));
+-				requestObject.setSoapHeader(reqElement.elementText("soapHeader"));
+-				requestObject.setSoapBody(reqElement.elementText("soapBody"));
+-			} else if ("RESTful".equals(serviceType)) {
+-				requestObject.setRestUrl(reqElement.elementText("restUrl"));
+-				requestObject.setRestRequestMethod(reqElement.elementText("restRequestMethod"));
+-				requestObject.setRestParameters(parseProperties(reqElement.elements("restParameters")));
+-			}
+-
+-			return requestObject;
+-		}
+-		return null;
+-	}
+-
+-	private static List<TestObjectProperty> parseProperties(List<Object> objects) {
+-		List<TestObjectProperty> props = new ArrayList<>();
+-		for (Object propertyElementObject : objects) {
+-			TestObjectProperty objectProperty = new TestObjectProperty();
+-			Element propertyElement = (Element) propertyElementObject;
+-
+-			String propertyName = propertyElement.elementText(PROPERTY_NAME);
+-			ConditionType propertyCondition = ConditionType.fromValue(propertyElement.elementText(PROPERTY_CONDITION));
+-			String propertyValue = propertyElement.elementText(PROPERTY_VALUE);
+-			boolean isPropertySelected = Boolean.valueOf(propertyElement.elementText(PROPERTY_IS_SELECTED));
+-
+-			objectProperty.setName(propertyName);
+-			objectProperty.setCondition(propertyCondition);
+-			objectProperty.setValue(propertyValue);
+-			objectProperty.setActive(isPropertySelected);
+-
+-			props.add(objectProperty);
+-		}
+-		return props;
+-	}
++    private static TestObject findWebUIObject(String testObjectId, Element element) {
++        TestObject testObject = new TestObject(testObjectId);
++        // For image
++        String imagePath = element.elementText("imagePath");
++        boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
++        testObject.setImagePath(imagePath);
++        testObject.setUseRelativeImagePath(useRalativeImagePath);
++
++        for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
++            TestObjectProperty objectProperty = new TestObjectProperty();
++            Element propertyElement = (Element) propertyElementObject;
++
++            String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
++            ConditionType propertyCondition = ConditionType.fromValue(StringEscapeUtils.unescapeXml(propertyElement
++                    .elementText(PROPERTY_CONDITION)));
++            String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
++            boolean isPropertySelected = Boolean.valueOf(StringEscapeUtils.unescapeXml(propertyElement
++                    .elementText(PROPERTY_IS_SELECTED)));
++
++            objectProperty.setName(propertyName);
++            objectProperty.setCondition(propertyCondition);
++            objectProperty.setValue(propertyValue);
++            objectProperty.setActive(isPropertySelected);
++
++            // Check if this element is inside a frame
++            if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName)) {
++                TestObject parentObject = findTestObject(propertyValue);
++                testObject.setParentObject(parentObject);
++            } else {
++                testObject.addProperty(objectProperty);
++            }
++        }
++
++        return testObject;
++    }
++
++    @SuppressWarnings("unchecked")
+
+commit f6fb4f8b4454dd246a1de08c06a8a9c35e0bfaa9
+Author: An Truong Nguyen <antruongnguyen@kms-technology.com>
+Date:   Mon Sep 7 11:46:07 2015 +0700
+
+    Initial Katalon project
+
+diff --git a/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java b/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+--- /dev/null
++++ b/com.kms.katalon.core/src/com/kms/katalon/core/testobject/ObjectRepository.java
+@@ -0,0 +20,137 @@
++	private static final String WEB_SERVICES_TYPE_NAME = "WebServiceRequestEntity";
++	private static final String WEB_ELEMENT_TYPE_NAME = "WebElementEntity";
++	private static final String WEBELEMENT_FILE_EXTENSION = ".rs";
++	private static final String WEB_ELEMENT_PROPERTY_NODE_NAME = "webElementProperties";
++	private static final String PROPERTY_NAME = "name";
++	private static final String PROPERTY_CONDITION = "matchCondition";
++	private static final String PROPERTY_VALUE = "value";
++	private static final String PROPERTY_IS_SELECTED = "isSelected";
++	private static final String[] PARENT_FRAME_ATTRS = new String[] { "ref_element", "parent_frame" };
++
++	public static TestObject findTestObject(String testObjectId) {
++		try {
++			if (testObjectId == null) {
++				KeywordLogger.getInstance().logWarning(StringConstants.TO_LOG_WARNING_TEST_OBJ_NULL);
++				return null;
++			}
++			KeywordLogger.getInstance().logInfo(
++					MessageFormat.format(StringConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID, testObjectId));
++			String currentDirFilePath = new File(RunConfiguration.getProjectDir()).getAbsolutePath();
++			File objectFile = new File(currentDirFilePath + File.separator + testObjectId
++					+ WEBELEMENT_FILE_EXTENSION);
++			if (objectFile.exists()) {
++				SAXReader reader = new SAXReader();
++				Document document = reader.read(objectFile);
++				Element element = document.getRootElement();
++				if (element.getName().equals(WEB_ELEMENT_TYPE_NAME)) {
++					return findWebUIObject(testObjectId, element);
++				} else if (element.getName().equals(WEB_SERVICES_TYPE_NAME)) {
++					return findRequestObject(testObjectId);
++				}
++			} else {
++				KeywordLogger.getInstance().logWarning(
++						MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
++				return null;
++			}
++		} catch (Exception e) {
++			KeywordLogger.getInstance().logWarning(
++					MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
++							testObjectId, ExceptionsUtil.getMessageForThrowable(e)));
++		}
++		return null;
++
++	}
++
++	private static TestObject findWebUIObject(String testObjectId, Element element) {
++		TestObject testObject = new TestObject(testObjectId);
++		// For image
++		String imagePath = element.elementText("imagePath");
++		boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
++		testObject.setImagePath(imagePath);
++		testObject.setUseRelativeImagePath(useRalativeImagePath);
++
++		for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
++			TestObjectProperty objectProperty = new TestObjectProperty();
++			Element propertyElement = (Element) propertyElementObject;
++
++			String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
++			ConditionType propertyCondition = ConditionType.fromValue(StringEscapeUtils.unescapeXml(propertyElement
++					.elementText(PROPERTY_CONDITION)));
++			String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
++			boolean isPropertySelected = Boolean.valueOf(StringEscapeUtils.unescapeXml(propertyElement
++					.elementText(PROPERTY_IS_SELECTED)));
++
++			objectProperty.setName(propertyName);
++			objectProperty.setCondition(propertyCondition);
++			objectProperty.setValue(propertyValue);
++			objectProperty.setActive(isPropertySelected);
++
++			// Check if this element is inside a frame
++			if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName)) {
++				TestObject parentObject = findTestObject(propertyValue);
++				testObject.setParentObject(parentObject);
++			} else {
++				testObject.addProperty(objectProperty);
++			}
++		}
++
++		return testObject;
++	}
++
++	@SuppressWarnings("unchecked")
++	private static RequestObject findRequestObject(String requestObjectId) throws Exception {
++		String currentDirFilePath = new File(RunConfiguration.getProjectDir()).getAbsolutePath();
++		File objectFile = new File(currentDirFilePath + File.separator + requestObjectId
++				+ WEBELEMENT_FILE_EXTENSION);
++		if (objectFile.exists()) {
++			SAXReader reader = new SAXReader();
++			Document document = reader.read(objectFile);
++			Element reqElement = document.getRootElement();
++
++			RequestObject requestObject = new RequestObject(requestObjectId);
++			requestObject.setName(reqElement.elementText("name"));
++
++			String serviceType = reqElement.elementText("serviceType");
++			requestObject.setServiceType(serviceType);
++
++			requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties")));
++			requestObject.setHttpBody(reqElement.elementText("httpBody"));
++
++			if ("SOAP".equals(serviceType)) {
++				requestObject.setWsdlAddress(reqElement.elementText("wsdlAddress"));
++				requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
++				requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
++				requestObject.setSoapParameters(parseProperties(reqElement.elements("soapParameters")));
++				requestObject.setSoapHeader(reqElement.elementText("soapHeader"));
++				requestObject.setSoapBody(reqElement.elementText("soapBody"));
++			} else if ("RESTful".equals(serviceType)) {
++				requestObject.setRestUrl(reqElement.elementText("restUrl"));
++				requestObject.setRestRequestMethod(reqElement.elementText("restRequestMethod"));
++				requestObject.setRestParameters(parseProperties(reqElement.elements("restParameters")));
++			}
++
++			return requestObject;
++		}
++		return null;
++	}
++
++	private static List<TestObjectProperty> parseProperties(List<Object> objects) {
++		List<TestObjectProperty> props = new ArrayList<>();
++		for (Object propertyElementObject : objects) {
++			TestObjectProperty objectProperty = new TestObjectProperty();
++			Element propertyElement = (Element) propertyElementObject;
++
++			String propertyName = propertyElement.elementText(PROPERTY_NAME);
++			ConditionType propertyCondition = ConditionType.fromValue(propertyElement.elementText(PROPERTY_CONDITION));
++			String propertyValue = propertyElement.elementText(PROPERTY_VALUE);
++			boolean isPropertySelected = Boolean.valueOf(propertyElement.elementText(PROPERTY_IS_SELECTED));
++
++			objectProperty.setName(propertyName);
++			objectProperty.setCondition(propertyCondition);
++			objectProperty.setValue(propertyValue);
++			objectProperty.setActive(isPropertySelected);
++
++			props.add(objectProperty);
++		}
++		return props;
++	}
