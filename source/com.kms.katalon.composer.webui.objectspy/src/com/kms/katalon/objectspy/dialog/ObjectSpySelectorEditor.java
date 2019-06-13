@@ -89,7 +89,6 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         if (editable) {
             txtSelector.forceFocus();
             txtSelector.selectAll();
-            txtSelector.setBackground(ColorUtil.getBlackBackgroundColor());
             return;
         }
         txtSelector.setBackground(ColorUtil.getDisabledItemBackgroundColor());
