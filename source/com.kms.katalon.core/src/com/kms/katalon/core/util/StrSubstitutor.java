@@ -29,7 +29,7 @@ public class StrSubstitutor {
      * @return A string with variable values if the template string is not null. Otherwise return an empty string
      */
     public String replace(String str) {
-        if (str == null) {
+        if (str == null || str.equals(StringUtils.EMPTY)) {
             return StringUtils.EMPTY;
         }
         try {
