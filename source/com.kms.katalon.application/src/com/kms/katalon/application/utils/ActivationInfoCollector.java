@@ -65,16 +65,17 @@ public class ActivationInfoCollector {
 
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
             boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
-            if (!result) {
+            if (result) {
+                return true;
+            }
+            if (StringUtils.isBlank(activationCode)) {
                 return false;
             }
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }
-        if (StringUtils.isBlank(activationCode)) {
-            return false;
-        }
-        return true;
+        
+        return false;
     }
 
     private static int getHostNameHashValue() throws Exception {
