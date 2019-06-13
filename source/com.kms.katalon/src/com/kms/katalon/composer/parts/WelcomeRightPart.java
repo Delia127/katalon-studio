@@ -281,7 +281,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
     }
 
     private void postConstruct() {
-        int lastSelectedTabId = Math.abs(PlatformUI.getPreferenceStore().getInt(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB));
+        int lastSelectedTabId = 1;
         setActiveTab(lastSelectedTabId);
     }
 
@@ -328,7 +328,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
 
     public void setActiveTab(int tabId) {
         Optional<Control> targetTab = Arrays.stream(tabGroup.getChildren())
-                .filter(tab -> tab.getData(KEY_ID) != null || tab.getData(KEY_ID).equals(tabId))
+                .filter(tab -> tab.getData(KEY_ID) != null && tab.getData(KEY_ID).equals(tabId))
                 .findFirst();
         if (targetTab.isPresent()) {
             selectTab((CLabel) targetTab.get());
