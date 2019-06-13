@@ -68,8 +68,8 @@ public class ActivationInfoCollector {
             if (result) {
                 return true;
             }
-            if (StringUtils.isBlank(activationCode)) {
-                return false;
+            if (!StringUtils.isBlank(activationCode)) {
+                return true;
             }
         } catch (Exception ex) {
             LogUtil.logError(ex);
