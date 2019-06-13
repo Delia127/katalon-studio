@@ -22,7 +22,7 @@ public class StrSubstitutor {
     }
 
     /**
-     * Use {@link GStringTemplateEngine} to replace place-holders in
+     * Use {@link GStringTemplateEngine} to convert a template string into
      * a string with variable values.
      * 
      * @param str A template string
