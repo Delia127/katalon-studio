@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.service.KStoreRestClient;
@@ -236,6 +237,7 @@ public class KStoreLoginDialog extends Dialog {
 
     private void showError(String errorMsg) {
         lblError.setText(errorMsg);
+        lblError.setForeground(ColorUtil.getTextErrorColor());
         setErrorMessageVisible(true);
     }
 
