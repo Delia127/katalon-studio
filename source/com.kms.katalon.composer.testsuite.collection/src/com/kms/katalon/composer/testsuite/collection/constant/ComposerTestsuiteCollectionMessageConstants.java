@@ -76,6 +76,14 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     
     // TestSuiteCollectionPart
     public static String PA_TABLE_COLUMN_PROFILE;
+    
+    public static String ERROR_TITLE;
+    
+    public static String HAND_ERROR_MSG_UNABLE_TO_OPEN_TEST_SUITE_COLLECTION;
+    
+    public static String PA_TAB_MAIN;
+    
+    public static String PA_TAB_RESULT;
 
     static {
         // initialize resource bundle

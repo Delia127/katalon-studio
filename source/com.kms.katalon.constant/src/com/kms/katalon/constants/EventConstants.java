@@ -156,6 +156,7 @@ public class EventConstants {
 
     public static final String TEST_SUITE_COLLECTION_UPDATED = "TEST_SUITE_COLLECTION/UPDATED";
 
+    public static final String TEST_SUITE_COLLECTION_FINISHED = "TEST_SUITE_COLLECTION/FINISHED";
     // Test Listener Events
     public static final String TEST_LISTENER_NEW = "TEST_LISTENER/NEW";
 
@@ -169,6 +170,8 @@ public class EventConstants {
     public static final String TEST_SUITE_SAVE = "TESTSUITE/SAVE";
 
     public static final String TEST_SUITE_UPDATED = "TESTSUITE/UPDATED";
+    
+    public static final String TEST_SUITE_FINISHED = "TESTSUITE/FINISHED";
 
     // Add New TestCase Events
     public static final String TEST_SUITE_NEW_FROM_TEST_CASE = "TESTSUITE_TESTCASE/NEW";

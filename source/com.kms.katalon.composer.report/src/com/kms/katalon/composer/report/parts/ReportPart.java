@@ -204,6 +204,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private List<TableViewerColumn> testCaseIntergrationColumn;
 
     private TableColumnLayout tclCompositeTestCaseTableDetails;
+    
+    private boolean isInitialized = false;
+    
+    private Composite mainComposite;
 
     private Composite parent;
 
@@ -288,16 +292,21 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @PostConstruct
     public void init(Composite parent, ReportEntity report, MPart part) {
         this.report = report;
-        this.parent = parent;
+        this.mpart = part;
+        mainComposite = parent;
+        if (report == null) {
+            return;
+        }
         setTestSuiteLogRecord(LogRecordLookup.getInstance().getTestSuiteLogRecord(report, new NullProgressMonitor()));
         testLogView = new ReportPartTestLogView(this);
         isSearching = false;
         registerListeners();
-        new HelpToolBarForMPart(part, DocumentationMessageConstants.REPORT_TEST_SUITE);
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE);
         createControls(parent);
         registerControlModifyListeners();
         updateInput();
-        setPartLabel(report.getDisplayName());
+//        setPartLabel(report.getDisplayName());
+        isInitialized = true;
     }
 
     private void registerControlModifyListeners() {
@@ -457,6 +466,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     }
 
     public void updateReportAndInput(ReportEntity report) {
+        if (!isInitialized) {
+            init(mainComposite, report, getMPart());
+            return;
+        }
 
         this.report = report;
 
@@ -1347,7 +1360,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     }
 
     public MPart getMPart() {
-        return null;
+        return mpart;
     }
 
     public ReportEntity getReport() {
@@ -1429,6 +1442,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) org.osgi.service.event.Event event) {
+        if (getReport() == null) {
+            return;
+        }
         MPart selectedPart = EventUtil.getPart(event);
         if (selectedPart == null) {
             return;
