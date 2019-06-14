@@ -13,8 +13,9 @@ import com.kms.katalon.activation.dialog.SignupDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.KatalonQuickStart.QuickStartDialog;
+import com.kms.katalon.composer.KatalonQuickStart.RecommendPlugins;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
-import com.kms.katalon.composer.intro.QuickStartDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
@@ -54,6 +55,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static boolean checkActivationDialog() {
+        //Please remove before create pull request 
         int result = new ActivationDialogV2(null).open();
         switch (result) {
             case ActivationDialogV2.OK:
@@ -98,29 +100,35 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     private static void showFunctionsIntroductionForTheFirstTime() {
-        QuickStartDialog dialog = new QuickStartDialog(null);
-
-        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
-        switch (dialog.open()) {
-            case QuickStartDialog.OPEN_PROJECT_ID: {
-                try {
-                    new CommandCaller().call(CommandId.PROJECT_OPEN);
-                } catch (CommandException e) {
-                    LogUtil.logError(e);
-                }
-                break;
-            }
-            case QuickStartDialog.NEW_PROJECT_ID: {
-                try {
-                    new CommandCaller().call(CommandId.PROJECT_ADD);
-                } catch (CommandException e) {
-                    LogUtil.logError(e);
-                }
-                break;
-            }
-            default:
-                break;
+        QuickStartDialog quickStartDialog = new QuickStartDialog(Display.getCurrent().getActiveShell());
+        quickStartDialog.open();
+        if (quickStartDialog.close()) {
+            RecommendPlugins recommendPlugins = new RecommendPlugins(Display.getCurrent().getActiveShell());
+            recommendPlugins.open();
         }
+//        QuickStartDialog dialog = new QuickStartDialog(null);
+//
+//        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
+//        switch (dialog.open()) {
+//            case QuickStartDialog.OPEN_PROJECT_ID: {
+//                try {
+//                    new CommandCaller().call(CommandId.PROJECT_OPEN);
+//                } catch (CommandException e) {
+//                    LogUtil.logError(e);
+//                }
+//                break;
+//            }
+//            case QuickStartDialog.NEW_PROJECT_ID: {
+//                try {
+//                    new CommandCaller().call(CommandId.PROJECT_ADD);
+//                } catch (CommandException e) {
+//                    LogUtil.logError(e);
+//                }
+//                break;
+//            }
+//            default:
+//                break;
+//        }
     }
 
     public static String genRequestActivationInfo() {

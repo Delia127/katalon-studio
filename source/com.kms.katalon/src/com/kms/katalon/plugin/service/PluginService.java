@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.osgi.framework.BundleException;
 
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -189,16 +188,20 @@ public class PluginService {
             throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins", e);
         }
     }
-
-    private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientExceptionWithInfo {
+    private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientException {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
-        List<KStorePlugin> latestPlugins = restClient.getLatestPlugins(appVersion);
+        List<KStorePlugin> latestPlugins = null;
+        try {
+            latestPlugins = restClient.getLatestPlugins(appVersion);
+        } catch (KStoreClientExceptionWithInfo e) {
+            LoggerSingleton.logError(e);
+        }
         latestPlugins.stream().forEach(p -> logPluginInfo(p));
         return latestPlugins;
     }
     
-    private void logPluginInfo(KStorePlugin plugin) {
+    public void logPluginInfo(KStorePlugin plugin) {
         try {
             Map<String, Object> infoMap = new HashMap<>(); 
             infoMap.put("id", plugin.getId());

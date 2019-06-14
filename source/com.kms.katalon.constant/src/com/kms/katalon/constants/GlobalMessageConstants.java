@@ -212,6 +212,8 @@ public class GlobalMessageConstants extends NLS {
     public static String ROOT_FOLDER_NAME_DRIVERS;
 
     public static String WZ_SETUP_BTN_BACK;
+    
+    public static String WZ_SETUP_BTN_INSTALL;
 
     public static String WZ_SETUP_BTN_NEXT;
 
@@ -219,7 +221,7 @@ public class GlobalMessageConstants extends NLS {
     
     public static String DIA_OK;
 
-    public static String DIA_CANCEL;
+    public static String DIA_SKIP;
 
     public static String DIA_CLOSE;
 

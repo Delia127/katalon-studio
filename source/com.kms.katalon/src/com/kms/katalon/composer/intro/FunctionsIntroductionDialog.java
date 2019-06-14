@@ -100,4 +100,14 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
     protected Point getInitialSize() {
         return computeSizeHelper.getBestSize();
     }
+
+    @Override
+    public String getStepIndexAsString() {
+        return null;
+    }
+
+    @Override
+    public boolean isChild() {
+        return false;
+    }
 }
