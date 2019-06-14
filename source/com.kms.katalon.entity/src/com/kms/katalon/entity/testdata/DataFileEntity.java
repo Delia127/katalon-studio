@@ -2,6 +2,10 @@ package com.kms.katalon.entity.testdata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -9,6 +13,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.util.Util;
 
+@XmlRootElement
 public class DataFileEntity extends FileEntity {
 
     private static final long serialVersionUID = 1L;
@@ -36,6 +41,8 @@ public class DataFileEntity extends FileEntity {
     private boolean containsHeaders;
 
     private String csvSeperator;
+    
+    private Map<String, String> properties;
 
     // Database properties
     /**
@@ -267,6 +274,15 @@ public class DataFileEntity extends FileEntity {
     public void setQuery(String query) {
         this.query = query;
     }
+    
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    @XmlElementWrapper(name="properties")
+    private Map<String, String> getProperties() {
+        return properties;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -292,7 +308,8 @@ public class DataFileEntity extends FileEntity {
                 .append(this.isSecureUserAccount(), that.isSecureUserAccount())
                 .append(this.getUser(), that.getUser())
                 .append(this.getPassword(), that.getPassword())
-                .append(this.getQuery(), that.getQuery());
+                .append(this.getQuery(), that.getQuery())
+                .append(this.getProperties(), that.getProperties());
         return isEquals && equalsBuilder.isEquals();
     }
 }
