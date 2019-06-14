@@ -52,7 +52,7 @@ public class SignupSurveyDialog extends AbstractDialog {
     private static final String[] DOWNLOAD_PURPOSE_OPTIONS = new String[] {
             "Learn automation testing",
             "Use as a required automation tool",
-            "Checkout and evaluate the tool"
+            "Check out and evaluate the tool"
         };
 
     private List<String> signupAnwsers = new ArrayList<>(2);
@@ -80,10 +80,10 @@ public class SignupSurveyDialog extends AbstractDialog {
 
         Label lblQuestionMsg = new Label(container, SWT.WRAP);
         lblQuestionMsg.setText(MessageConstants.SignupSurveyDialog_LBL_SURVEY_HEADLINE);
-        lblQuestionMsg.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+        lblQuestionMsg.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         Composite questionComposite = new Composite(container, SWT.NONE);
-        questionComposite.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
+        questionComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         questionComposite.setLayout(new GridLayout(2, false));
 
         Label lblFirstQuestion = new Label(questionComposite, SWT.NONE);
@@ -132,7 +132,7 @@ public class SignupSurveyDialog extends AbstractDialog {
     @Override
     protected Point getInitialSize() {
         Point initialSize = super.getInitialSize();
-        return new Point(Math.max(500, initialSize.x), initialSize.y);
+        return new Point(Math.max(400, initialSize.x), initialSize.y);
     }
 
     public List<String> getSignupAnwser() {
