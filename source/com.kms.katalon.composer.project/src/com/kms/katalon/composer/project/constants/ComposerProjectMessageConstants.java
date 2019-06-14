@@ -113,6 +113,8 @@ public class ComposerProjectMessageConstants extends NLS {
     
     public static String CB_GENERATE_GITIGNORE_FILE;
     
+    public static String CB_GENERATE_GRADLE_FILE;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerProjectMessageConstants.class);
