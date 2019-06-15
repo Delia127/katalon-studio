@@ -45,6 +45,8 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
     
     public static final Image IMG_16_SCRIPT = ImageManager.getImage(IImageKeys.TAB_SCRIPT_16);
     
+    public static final Image IMG_16_REPORT = ImageManager.getImage(IImageKeys.REPORT_16);
+    
     public static final String URL_IMG_16_SCRIPT = ImageManager.getImageURLString(IImageKeys.TAB_SCRIPT_16);
 
 }

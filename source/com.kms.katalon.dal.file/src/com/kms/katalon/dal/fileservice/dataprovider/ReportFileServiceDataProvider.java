@@ -2,6 +2,7 @@ package com.kms.katalon.dal.fileservice.dataprovider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -65,21 +66,71 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
 
     @Override
     public List<ReportEntity> listReportEntities(TestSuiteEntity testSuite, ProjectEntity project) throws Exception {
-        String testSuiteReportFolderPath = ReportFileServiceManager.getReportFolderOfTestSuite(project, testSuite, "");
-        File testSuiteReportFolder = new File(testSuiteReportFolderPath);
-
         List<ReportEntity> lstReport = new ArrayList<ReportEntity>();
-        if (testSuiteReportFolder.exists() && testSuiteReportFolder.isDirectory()) {
-            for (File childReportFolder : testSuiteReportFolder.listFiles()) {
-                if (!childReportFolder.exists() || !childReportFolder.isDirectory()) {
-                    continue;
+        String reportRootFolderPath = FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation());
+        File reportRootFolder = new File(reportRootFolderPath);
+        File[] reportFoldersByExecutionIds = reportRootFolder.listFiles();
+        if (reportFoldersByExecutionIds != null) {
+            for (File reportFolderByExecutionId : reportFoldersByExecutionIds) {
+                if (reportFolderByExecutionId.isDirectory()) {
+                    String testSuiteReportFolderPath = reportFolderByExecutionId.getAbsolutePath() + File.separator
+                            + testSuite.getIdForDisplay()
+                                    .substring(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME.length() + 1)
+                                    .replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
+                    File testSuiteReportFolder = new File(testSuiteReportFolderPath);
+                    if (testSuiteReportFolder.exists() && testSuiteReportFolder.isDirectory()) {
+                        File[] reportFolders = testSuiteReportFolder.listFiles();
+                        if (reportFolders != null) {
+                            for (File reportFolder : reportFolders) {
+                                if (reportFolder.isDirectory()) {
+                                    ReportEntity report = ReportFileServiceManager
+                                            .getReportEntity(reportFolder.getAbsolutePath());
+                                    if (report != null) {
+                                        lstReport.add(report);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-
-                lstReport.add(ReportFileServiceManager.getReportEntity(childReportFolder.getAbsolutePath()));
             }
         }
-
         return lstReport;
+    }
+    
+    @Override
+    public List<ReportCollectionEntity> listReportCollectionEntities(TestSuiteCollectionEntity testSuiteCollection, ProjectEntity project) throws Exception {
+        List<ReportCollectionEntity> reports = new ArrayList<ReportCollectionEntity>();
+        String reportRootFolderPath = FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation());
+        File reportRootFolder = new File(reportRootFolderPath);
+        File[] reportFoldersByExecutionIds = reportRootFolder.listFiles();
+        if (reportFoldersByExecutionIds != null) {
+            for (File reportFolderByExecutionId : reportFoldersByExecutionIds) {
+                if (reportFolderByExecutionId.isDirectory()) {
+                    String testSuiteCollectionReportFolderPath = reportFolderByExecutionId.getAbsolutePath()
+                            + File.separator
+                            + testSuiteCollection.getIdForDisplay()
+                                    .substring(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME.length() + 1)
+                                    .replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator);
+                    File testSuiteReportFolder = new File(testSuiteCollectionReportFolderPath);
+                    if (testSuiteReportFolder.exists() && testSuiteReportFolder.isDirectory()) {
+                        File[] reportFolders = testSuiteReportFolder.listFiles();
+                        if (reportFolders != null) {
+                            for (File reportFolder : reportFolders) {
+                                if (reportFolder.isDirectory()) {
+                                    ReportCollectionEntity report = ReportFileServiceManager
+                                            .getReportCollectionEntity(reportFolder.getAbsolutePath());
+                                    if (report != null) {
+                                        reports.add(report);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return reports;
     }
 
     @Override

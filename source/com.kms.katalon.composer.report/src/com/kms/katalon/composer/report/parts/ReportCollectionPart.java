@@ -51,10 +51,20 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
     @Inject
     private MPart mpart;
+    
+    private boolean isInitialized;
+    
+    private Composite mainComposite;
 
     @PostConstruct
-    public void initialize(Composite parent, MPart mpart) {
-        reportCollectionEntity = (ReportCollectionEntity) mpart.getObject();
+    public void initialize(Composite parent, ReportCollectionEntity reportCollectionEntity, MPart mpart) {
+        this.reportCollectionEntity = reportCollectionEntity;
+        this.mainComposite = parent;
+        this.mpart = mpart;
+        
+        if (this.reportCollectionEntity == null) {
+            return;
+        }
 
         new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE_COLLECTION);
         
@@ -62,14 +72,23 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
         updateInput();
 
-        setPartLabel(reportCollectionEntity.getDisplayName());
+//        setPartLabel(reportCollectionEntity.getDisplayName());
 
         eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
         eventBroker.subscribe(EventConstants.REPORT_COLLECTION_RENAMED, this);
+        
+        isInitialized = true;
     }
 
     private void updateInput() {
         tableViewer.setInput(reportCollectionEntity.getReportItemDescriptions());
+    }
+    
+    public void updateReport(ReportCollectionEntity report) {
+        if (!isInitialized) {
+            initialize(mainComposite, report, mpart);
+        }
+        tableViewer.setInput(report.getReportItemDescriptions());
     }
 
     private void createControls(Composite parent) {
@@ -146,7 +165,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
-        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+//        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
     }
 
     @Override
@@ -207,5 +226,9 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
     private void setPartLabel(String label) {
         mpart.setLabel(label);
+    }
+    
+    public MPart getMPart() {
+        return mpart;
     }
 }

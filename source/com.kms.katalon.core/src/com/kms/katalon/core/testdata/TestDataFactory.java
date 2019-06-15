@@ -8,7 +8,11 @@ import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -65,6 +69,8 @@ public class TestDataFactory {
     private static final String NODE_PASSWORD = "password";
 
     private static final String NODE_SQL_QUERY = "query";
+    
+    private static final String PROPERTIES = "properties";
 
     /**
      * Returns test data id of a its relative id.
@@ -132,27 +138,48 @@ public class TestDataFactory {
             SAXReader reader = new SAXReader();
             Document document = reader.read(dataFile);
             Element testDataElement = document.getRootElement();
-
+            TestData testData;
             String driverName = testDataElement.elementText(DRIVER_NODE);
             switch (TestDataType.fromValue(driverName)) {
                 case EXCEL_FILE:
                     logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA);
-                    return readExcelData(testDataElement, projectDir);
+                    testData = readExcelData(testDataElement, projectDir);
+                    break;
                 case INTERNAL_DATA:
                     logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_INTERNAL_DATA);
-                    return readInternalData(testDataElement, projectDir, dataFile);
+                    testData = readInternalData(testDataElement, projectDir, dataFile);
+                    break;
                 case CSV_FILE:
                     logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_CSV_DATA);
-                    return readCSVData(testDataElement, projectDir);
+                    testData = readCSVData(testDataElement, projectDir);
+                    break;
                 case DB_DATA:
                     logger.logDebug(StringConstants.XML_LOG_TEST_DATA_READING_DB_DATA);
-                    return readDBData(testDataElement, projectDir);
+                    testData = readDBData(testDataElement, projectDir);
+                    break;
                 default:
-                    return null;
+                    testData = null;
+            }
+            if (testData != null) {
+                getPropertiesForTestData(testData, testDataElement);
+                return testData;
             }
         }
         throw new IllegalArgumentException(MessageFormat.format(StringConstants.XML_LOG_ERROR_TEST_DATA_X_NOT_EXISTS,
                 testDataId));
+    }
+
+    private static void getPropertiesForTestData(TestData testData, Element testDataElement) {
+        List<?> propertiesElement = testDataElement.elements(PROPERTIES);
+        if (propertiesElement == null || propertiesElement.size() == 0) {
+            return;
+        }
+        Iterator<?> it = propertiesElement.iterator();
+        while(it.hasNext()) {
+            Element entry = (Element) it.next();
+            Element keyValuePair = entry.element("entry");
+            testData.setProperty(keyValuePair.elementText("key"), keyValuePair.elementText("value"));
+        }
     }
 
     private static String getProjectDir() {

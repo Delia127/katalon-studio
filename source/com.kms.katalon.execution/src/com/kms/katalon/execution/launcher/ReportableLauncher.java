@@ -20,6 +20,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestCaseExecutionContext;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -107,6 +108,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         waitForLoggingFinished();
 
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_FINISHED_EVENT);
+        
+        if (getExecutedEntity() instanceof TestSuiteExecutedEntity) {
+            TestSuiteExecutedEntity executedEntity = (TestSuiteExecutedEntity) getExecutedEntity();
+            TestSuiteEntity testSuite = (TestSuiteEntity) executedEntity.getEntity();
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.TEST_SUITE_FINISHED, testSuite);
+        }
 
         if (needToRerun()) {
             Rerunable rerun = (Rerunable) getExecutedEntity();

@@ -8,9 +8,11 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testdata.TestData;
+import com.kms.katalon.core.testdata.decorator.TestDataCellDecorator;
 import com.kms.katalon.entity.link.TestDataCombinationType;
 import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.variable.VariableEntity;
@@ -48,8 +50,10 @@ public class TestCaseBindingStringBuilder {
 
     private String getDeclarationWithTestCaseName() {
         return new StringBuilder("new TestCaseBinding('")
-                .append(getTestCaseBindingName()).append("', '")
-                .append(testCaseExecutedEntity.getSourceId()).append("', ")
+                .append(getTestCaseBindingName())
+                .append("', '")
+                .append(testCaseExecutedEntity.getSourceId())
+                .append("', ")
                 .toString();
     }
 
@@ -60,7 +64,10 @@ public class TestCaseBindingStringBuilder {
 
         StringBuilder testCaseBindingString = new StringBuilder(getDeclarationWithTestCaseName()).append(" [ ");
         for (Entry<String, String> variableEntry : variableBinding.entrySet()) {
-            testCaseBindingString.append(variableEntry.getKey()).append(" : ").append(variableEntry.getValue())
+            testCaseBindingString
+                    .append(variableEntry.getKey())
+                    .append(" : ")
+                    .append(variableEntry.getValue())
                     .append(" , ");
         }
         testCaseBindingString.append(" ])");
@@ -222,11 +229,19 @@ public class TestCaseBindingStringBuilder {
                 throw new SyntaxErrorException(getErrorSyntaxMessageWithReason(variableName, variableLink.getValue(),
                         "Test data value cannot be empty."));
             }
-            TestDataExecutedEntity testDataExecutedEntity = testCaseExecutedEntity.getTestDataExecuted(variableLink
-                    .getTestDataLinkId());
+            TestDataExecutedEntity testDataExecutedEntity = 
+                    testCaseExecutedEntity.getTestDataExecuted(variableLink.getTestDataLinkId());
             TestData testData = testDataMap.get(testDataExecutedEntity.getTestDataId());
             int rowIndex = getRowIndex(testDataExecutedEntity);
-            return GroovyStringUtil.toGroovyStringFormat(testData.getValue(getColumnIndex(testData), rowIndex));
+
+            Object value = TestDataCellDecorator.decorate(testData,
+                    testData.getObjectValue(getColumnIndex(testData), rowIndex));
+            // Ensure backward compatibility for old test data in general
+            String readAsString = testData.getProperty("readAsString");
+            if (readAsString == null || (Boolean.valueOf(readAsString).booleanValue()) || value instanceof String) {
+                return GroovyStringUtil.toGroovyStringFormat(value.toString());
+            }
+            return String.valueOf(value);
         }
     }
 }

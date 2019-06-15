@@ -64,7 +64,7 @@ public class ConvertWebElementToTestObjectKeyword extends AbstractKeyword {
             logger.logDebug(StringConstants.KW_LOG_INFO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT);
 
             String outerHtmlContent = webElement.getAttribute("outerHTML");
-            String regex = "([a-z]+-?[a-z]+_?)='?\"?([a-z]+-?[a-z]+_?)'?\"";
+            String regex = "(\\S+)=[\"']?((?:.(?![\"']?\\s+(?:\\S+)=|[>\"']))+.)[\"']?";
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(outerHtmlContent);
             List<TestObjectProperty> properties = new ArrayList<>();
