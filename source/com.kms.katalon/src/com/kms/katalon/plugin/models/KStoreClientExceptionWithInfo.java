@@ -16,7 +16,7 @@ public class KStoreClientExceptionWithInfo extends Exception {
 
     private String getUsername() {
         if (credential == null) {
-            return "No username in this Exception";
+            return "Invalid API key";
         }
         if (credential instanceof KStoreUsernamePasswordCredentials) {
             return ((KStoreUsernamePasswordCredentials) credential).getUsername();
