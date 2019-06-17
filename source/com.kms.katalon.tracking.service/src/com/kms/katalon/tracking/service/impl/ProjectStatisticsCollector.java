@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.application.utils.FileUtil;
-import com.kms.katalon.composer.integration.slack.util.SlackUtil;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
@@ -94,8 +93,6 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
         statistics.setKobitonIntegrated(isKobitonIntegrated());
         
         statistics.setqTestIntegrated(isqTestIntegrated());
-        
-        statistics.setSlackIntegrated(isSlackIntegrated());
         
         statistics.setKatalonAnalyticsIntegrated(isKatalonAnalyticsIntegrated());
         
@@ -341,10 +338,6 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
             LogUtil.logError(e);
             return false;
         }
-    }
-    
-    private boolean isSlackIntegrated() {
-        return SlackUtil.getInstance().isSlackEnabled();
     }
     
     private String getWebLocatorConfig() throws IOException {
