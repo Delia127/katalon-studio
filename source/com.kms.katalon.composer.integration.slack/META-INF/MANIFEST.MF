@@ -30,7 +30,6 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.apache.httpcomponents.httpcore
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.google.gson.stream,
- com.kms.katalon.composer.integration.jira.constant,
  com.kms.katalon.tracking.service,
  org.apache.commons.lang
 Export-Package: com.kms.katalon.composer.integration.slack.util

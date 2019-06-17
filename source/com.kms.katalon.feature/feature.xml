@@ -2058,20 +2058,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.kms.katalon.composer.integration.jira"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.integration.jira"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.kms.katalon.support.testing.katserver"
          download-size="0"
          install-size="0"
