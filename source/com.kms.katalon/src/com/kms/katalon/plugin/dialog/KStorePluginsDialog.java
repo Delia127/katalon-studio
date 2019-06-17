@@ -89,8 +89,7 @@ public class KStorePluginsDialog extends Dialog {
         boolean visible = shouldShowExpiryWarningMessage();
         gdWarning.exclude = !visible;
         lblWarning.setVisible(visible);
-        Color colorWarning = ColorUtil.getColor("#ff9933");
-        lblWarning.setForeground(colorWarning);
+        lblWarning.setForeground(ColorUtil.getWarningForegroudColor());
         
         Composite tableComposite = new Composite(body, SWT.NONE);
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
