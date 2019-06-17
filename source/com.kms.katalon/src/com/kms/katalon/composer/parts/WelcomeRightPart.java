@@ -281,7 +281,11 @@ public class WelcomeRightPart extends Composite implements EventHandler {
     }
 
     private void postConstruct() {
-        int lastSelectedTabId = Math.abs(PlatformUI.getPreferenceStore().getInt(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB));
+        int lastSelectedTabId = Math
+                .abs(PlatformUI.getPreferenceStore().getInt(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB));
+        if (lastSelectedTabId < 1) {
+            lastSelectedTabId = 1;
+        }
         setActiveTab(lastSelectedTabId);
     }
 
