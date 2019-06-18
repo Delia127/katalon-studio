@@ -2,8 +2,6 @@
 
 bin
 
-Drivers/*.jar
-
 Reports
 
 Libs
@@ -11,7 +9,7 @@ Libs
 output
 
 !output/.gitkeep
-/build
+build
 
 .classpath
 
