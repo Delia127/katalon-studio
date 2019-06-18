@@ -19,16 +19,23 @@ import net.lightbody.bmp.core.har.Har;
 import net.lightbody.bmp.core.har.HarEntry;
 import net.lightbody.bmp.core.har.HarLog;
 
-public class HarLogUtil {
+public class HarLogger {
     
-    private static final KeywordLogger logger = KeywordLogger.getInstance(HarLogUtil.class);
+    private static final KeywordLogger logger = KeywordLogger.getInstance(HarLogger.class);
 
     private static final AtomicLong requestNumber = new AtomicLong(0);
     
-    public static File logHarFile(RequestObject request, ResponseObject response, String logFolder) {
+    private HarConverter harConverter;
+    
+    public void initHarFile() {
+        harConverter = new HarConverter();
+        harConverter.initHarFile();
+    }
+    
+    public File logHarFile(RequestObject request, ResponseObject response, String logFolder) {
+        
         try {
-            HarConverter harConverter = new HarConverter();
-            Har har = harConverter.convertToHarFormat(request, response);
+            Har har = harConverter.endHar(request, response);
     
             RequestInformation requestInformation = new RequestInformation();
             requestInformation.setName(String.valueOf(requestNumber.getAndIncrement()));

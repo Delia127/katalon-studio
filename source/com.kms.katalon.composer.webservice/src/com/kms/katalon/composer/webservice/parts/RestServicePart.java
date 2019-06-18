@@ -57,7 +57,7 @@ import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.core.webservice.common.HarLogUtil;
+import com.kms.katalon.core.webservice.common.HarLogger;
 import com.kms.katalon.core.webservice.helper.RestRequestMethodHelper;
 import com.kms.katalon.entity.repository.DraftWebServiceRequestEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -182,16 +182,17 @@ public class RestServicePart extends WebServicePart {
 
                         Map<String, String> evaluatedVariables = evaluateRequestVariables();
                         
+                        HarLogger harLogger = new HarLogger();
+                        harLogger.initHarFile();
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
                                 projectDir, ProxyPreferences.getProxyInformation(),
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables), false);
-                        
                         deleteTempHarFile();
                         
                         RequestObject requestObject = WebServiceController.getRequestObject(requestEntity, projectDir,
                                 Collections.<String, Object>unmodifiableMap(evaluatedVariables));
                         String logFolder = Files.createTempDirectory("har").toFile().getAbsolutePath();
-                        harFile = HarLogUtil.logHarFile(requestObject, responseObject, logFolder);
+                        harFile = harLogger.logHarFile(requestObject, responseObject, logFolder);
         
                         if (monitor.isCanceled()) {
                             return;
