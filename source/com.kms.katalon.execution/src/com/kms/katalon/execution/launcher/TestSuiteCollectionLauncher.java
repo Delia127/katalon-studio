@@ -293,6 +293,11 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         return Collections.unmodifiableList(subLaunchers);
     }
     
+
+    public TestSuiteCollectionExecutedEntity getExecutedEntity() {
+        return executedEntity;
+    }
+
     public Date getStartTime() {
         return startTime;
     }

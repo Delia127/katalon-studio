@@ -32,6 +32,7 @@ import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWith
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.NewProjectDialog;
 import com.kms.katalon.constants.ActivationPreferenceConstants;
@@ -205,7 +206,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         
         linkStatusAccessProject = new Link(grpSelect, SWT.NONE);
         linkStatusAccessProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-        
+
+        linkStatusAccessProject.setForeground(ColorUtil.getTextErrorColor());
     }
 
     private void createTestResultGroup() {
@@ -372,8 +374,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         projects.clear();
                         teams.add(selectTeamFromConfig);
                         projects.add(selectProjectFromConfig);
-                        linkStatusAccessProject.setText(
-                                ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
+                        linkStatusAccessProject.setText(String.format(
+                                ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT,
+                                serverUrl + "/user/teams"));
 
                     } else {
                         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email,

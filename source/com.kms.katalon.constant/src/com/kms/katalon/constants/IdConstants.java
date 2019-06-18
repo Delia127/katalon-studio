@@ -38,7 +38,7 @@ public interface IdConstants {
 
     public static final String PERSPECTIVE_SWITCHER_TOOL_CONTROL_ID = "com.kms.katalon.composer.toolbar.switcher";
     
-    public static final String MANAGE_PLUGIN_TOOL_ITEM_ID = "com.kms.katalon.composer.toolbar.plugin.toolitem";
+    public static final String MANAGE_ACCOUNT_TOOL_ITEM_ID = "com.kms.katalon.composer.toolbar.account.toolitem";
 
     // Composer PartStack content
     public static final String COMPOSER_CONTENT_PARTSTACK_ID = "com.kms.katalon.composer.content";
@@ -116,6 +116,9 @@ public interface IdConstants {
 
     public static final String TEST_SUITE_INTEGRATION_PART_ID_SUFFIX = TEST_SUITE_SUB_PART_STACK_ID_SUFFIX
             + ".integration";
+    
+    public static final String TEST_SUITE_RESULT_PART_ID_SUFFIX = TEST_SUITE_SUB_PART_STACK_ID_SUFFIX
+            + ".result";
 
     public static final String TEST_SUITE_MAIN_PART_ID_SUFFIX = TEST_SUITE_SUB_PART_STACK_ID_SUFFIX + ".testSuitePart";
     
@@ -127,7 +130,15 @@ public interface IdConstants {
     // Test Data Part content
     public static final String TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
             + ".testSuiteCollection";
-
+    
+    public static final String TEST_SUITE_COLLECTION_SUB_PART_STACK_ID_SUFFIX = ".partStack";
+    
+    public static final String TEST_SUITE_COLLECTION_MAIN_PART_ID_SUFFIX = TEST_SUITE_COLLECTION_SUB_PART_STACK_ID_SUFFIX 
+            + ".testSuiteCollectionPart";
+    
+    public static final String TEST_SUITE_COLLECTION_RESULT_PART_ID_SUFFIX = TEST_SUITE_COLLECTION_SUB_PART_STACK_ID_SUFFIX
+            + ".result";
+    
     public static final String FEATURE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
             + ".feature";
 

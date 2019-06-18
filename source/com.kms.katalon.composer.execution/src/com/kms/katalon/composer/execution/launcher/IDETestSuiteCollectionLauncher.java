@@ -12,6 +12,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
@@ -54,6 +55,8 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
         super.postExecution();
         // update status of "Run" and "Stop" buttons
         getEventBroker().post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
+        TestSuiteCollectionEntity testSuiteCollectionEntity = getExecutedEntity().getEntity();
+        getEventBroker().post(EventConstants.TEST_SUITE_COLLECTION_FINISHED, testSuiteCollectionEntity);
 
         String executionResult = getExecutionResult();
         Trackings.trackExecuteTestSuiteCollectionInGuiMode(executionResult,

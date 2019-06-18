@@ -38,6 +38,8 @@ public class FileServiceConstant {
     public static final String EXTERNAL_SETTING_DIR = SETTING_DIR + File.separator + "external";
 
     public static final String INTERNAL_SETTING_DIR = SETTING_DIR + File.separator + "internal";
+    
+    public static final String REPORT_COLLECTION_FILE_EXTENSION = ".rp";
 
     public static final int MAX_FILE_PATH_LENGTH = 255;
 

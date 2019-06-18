@@ -44,7 +44,7 @@ public interface IImageKeys {
     public static final String FAQ_34 = "welcome/faqs_34.png"; //$NON-NLS-1$
 
     public static final String USER_GUIDE_34 = "welcome/user_guide_34.png"; //$NON-NLS-1$
-    
+        
     public static final String KATALON_STORE_34 = "welcome/katalon_store_34.png"; //$NON-NLS-1$
 
     public static final String TUTORIAL_34 = "welcome/tutorial_34.png"; //$NON-NLS-1$
@@ -315,6 +315,8 @@ public interface IImageKeys {
     public static final String PROFILE_16 = "toolbar/profile_16.png";
     
     public static final String KATALON_STORE_24 = "toolbar/katalon_store_32x24.png"; //$NON-NLS-1$
+    
+    public static final String KATALON_ACCOUNT_24 = "toolbar/account_32x24.png"; //$NON-NLS-1$
     // End Toolbar
 
     // Test Case steps

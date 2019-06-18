@@ -7,6 +7,7 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.manager.TestSuiteFileServiceManager;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuiteFileServiceDataProvider implements ITestSuiteDataProvider {
@@ -48,6 +49,11 @@ public class TestSuiteFileServiceDataProvider implements ITestSuiteDataProvider 
 
     @Override
     public String getIdForDisplay(TestSuiteEntity entity) throws Exception {
+        return entity.getRelativePathForUI();
+    }
+    
+    @Override
+    public String getTestSuiteCollectionIdForDisplay(TestSuiteCollectionEntity entity) throws Exception {
         return entity.getRelativePathForUI();
     }
 

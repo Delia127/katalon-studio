@@ -4,15 +4,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.poi.ss.format.CellDateFormatter;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -20,6 +13,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.testdata.ExcelData;
+import com.kms.katalon.core.testdata.decorator.TestDataCellDecorator;
 
 public class SheetPOI extends ExcelData {
     private static final int COLUMN_HEADER_ROW_NUMBER = 0;
@@ -67,7 +61,7 @@ public class SheetPOI extends ExcelData {
     }
 
     @Override
-    protected String internallyGetValue(int col, int row) throws IOException {
+    protected Object internallyGetValue(int col, int row) throws IOException {
         int maxRow = getRowNumbers();
         if (row > maxRow) {
             throw new IllegalArgumentException(
@@ -77,13 +71,13 @@ public class SheetPOI extends ExcelData {
         int maxColumnAtRow = getMaxColumn(row + getHeaderRowIdx());
 
         if (maxColumnAtRow < 0) {
-            return "";
+            return null;
         }
 
         if (col > maxColumnAtRow) {
             // throw new IllegalArgumentException(MessageFormat.format(StringConstants.EXCEL_INVALID_COL_NUMBER, col,
             // maxColumnAtRow));
-            return "";
+            return null;
         }
 
         // check if cell index is in a merged region
@@ -91,83 +85,26 @@ public class SheetPOI extends ExcelData {
             // If the region does contain the cell index
             if (mergedRegion.isInRange(row, col)) {
                 // Now, you need to get the cell from the top left hand corner of this
-                return internallyGetCellText(mergedRegion.getFirstColumn(), mergedRegion.getFirstRow());
+                return getCellAt(mergedRegion.getFirstColumn(), mergedRegion.getFirstRow());
             }
         }
 
-        return internallyGetCellText(col, row + getHeaderRowIdx());
+        return getCellAt(col, row + getHeaderRowIdx());
     }
-
-    private String internallyGetCellText(int col, int row) {
+    
+    private Cell getCellAt(int col, int row) {
         Row curRow = sheet.getRow(row);
 
         if (curRow == null) {
-            return "";
+            return null;
         }
 
         Cell curCell = curRow.getCell(col);
 
         if (curCell == null) {
-            return "";
+            return null;
         }
-
-        switch (curCell.getCellType()) {
-            case Cell.CELL_TYPE_STRING: {
-                return curCell.getRichStringCellValue().getString();
-            }
-            case Cell.CELL_TYPE_NUMERIC: {
-                DataFormatter formatter = new DataFormatter(Locale.getDefault());
-
-                return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
-                        getFormatString(curCell.getCellStyle().getDataFormatString()));
-            }
-            case Cell.CELL_TYPE_BOOLEAN: {
-                return Boolean.toString(curCell.getBooleanCellValue());
-            }
-            case Cell.CELL_TYPE_FORMULA: {
-                // try with String
-                FormulaEvaluator formulaEval = null;
-                try {
-                    formulaEval = workbook.getCreationHelper().createFormulaEvaluator();
-                    CellValue cellVal = formulaEval.evaluate(curCell);
-
-                    switch (cellVal.getCellType()) {
-                        case Cell.CELL_TYPE_BLANK:
-                            return "";
-                        case Cell.CELL_TYPE_STRING:
-                            return cellVal.getStringValue();
-                        case Cell.CELL_TYPE_NUMERIC:
-                            DataFormatter formatter = new DataFormatter(Locale.getDefault());
-
-                            return formatter.formatRawCellContents(cellVal.getNumberValue(), -1,
-                                    getFormatString(curCell.getCellStyle().getDataFormatString()));
-                        default:
-                            return cellVal.formatAsString();
-                    }
-                } catch (Exception ex) {
-                    // Try another way
-                }
-
-                // Try with number
-                try {
-                    if (DateUtil.isCellDateFormatted(curCell)) {
-                        String cellFormatString = curCell.getCellStyle().getDataFormatString();
-                        return new CellDateFormatter(cellFormatString).simpleFormat(curCell.getDateCellValue());
-                    } else {
-                        DataFormatter formatter = new DataFormatter(Locale.getDefault());
-
-                        return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
-                                getFormatString(curCell.getCellStyle().getDataFormatString()));
-                    }
-                } catch (Exception ex) {
-                    // Try another way
-                }
-
-                return curCell.getStringCellValue();
-            }
-            default:
-                return curCell.getStringCellValue();
-        }
+        return curCell;
     }
 
     protected int getColumnIndex(String colName) throws IOException {
@@ -185,15 +122,15 @@ public class SheetPOI extends ExcelData {
     }
 
     @Override
-    protected String internallyGetValue(String colName, int row) throws IOException {
+    protected Object internallyGetValue(String colName, int row) throws IOException {
         int col = getColumnIndex(colName);
 
         if (col < 0) {
             throw new IllegalArgumentException("Column not found");
         }
 
-        String text = internallyGetValue(col, row);
-        return text;
+        Object value = internallyGetValue(col, row);
+        return value;
     }
 
     /**
@@ -230,7 +167,7 @@ public class SheetPOI extends ExcelData {
             columnNames = new String[maxColumnCounts];
             if (hasHeaders) {
                 for (int i = 0; i < maxColumnCounts; i++) {
-                    columnNames[i] = internallyGetCellText(i, COLUMN_HEADER_ROW_NUMBER);
+                    columnNames[i] = TestDataCellDecorator.decorateExcelCellAsString(workbook, getCellAt(i, COLUMN_HEADER_ROW_NUMBER));
                 }
             }
         }
@@ -247,14 +184,6 @@ public class SheetPOI extends ExcelData {
             }
         }
         return Math.max(0, columnCount);
-    }
-
-    protected String getFormatString(String rawFormatString) {
-        if (rawFormatString == null || rawFormatString.isEmpty()) {
-            return rawFormatString;
-        }
-
-        return rawFormatString.replace("_(*", "_(\"\"*");
     }
 
     /**
