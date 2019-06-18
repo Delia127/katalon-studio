@@ -27,7 +27,6 @@
 		<module>com.kms.katalon.composer.integration.analytics</module>
 		<module>com.kms.katalon.composer.integration.qtest</module>
 		<module>com.kms.katalon.composer.integration.qtest.activation</module>
-		<module>com.kms.katalon.composer.integration.slack</module>
 		<module>com.kms.katalon.composer.integration.git</module>
 		<module>com.kms.katalon.composer.integration.kobiton</module>
 		<module>com.kms.katalon.composer.integration.cucumber</module>

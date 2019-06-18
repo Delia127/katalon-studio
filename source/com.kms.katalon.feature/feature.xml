@@ -324,7 +324,6 @@
       <import plugin="com.google.guava" version="23.0.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.lang3" version="3.1.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.logging" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.composer.integration.slack"/>
    </requires>
 
    <plugin
@@ -1574,13 +1573,6 @@
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.composer.integration.slack"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.qualifier"
          unpack="false"/>
 
    <plugin
