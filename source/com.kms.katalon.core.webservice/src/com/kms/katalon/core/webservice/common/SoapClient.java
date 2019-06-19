@@ -252,6 +252,8 @@ public class SoapClient extends BasicRequestor {
         this.serviceName = serviceName;
     }
     
+    // Refer to
+    // https://github.com/SmartBear/soapui/blob/fe41852da853365c8be1ab331f713462695fd519/soapui/src/main/java/com/eviware/soapui/impl/wsdl/support/wsdl/AbstractWsdlDefinitionLoader.java
     private class CustomWSDLLocator implements WSDLLocator {
 
         private RequestObject request;
