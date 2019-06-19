@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -64,6 +65,13 @@ public class SettingHandler {
 
     @Inject
     private IEclipseContext eclipseContext;
+
+    private static SettingHandler instance;
+    
+    @PostConstruct
+    public void onPostConstruct() {
+        instance = this;
+    }
 
     @CanExecute
     public boolean canExecute() {
@@ -305,6 +313,10 @@ public class SettingHandler {
             // In case of someone changes the page ID in e4xmi, this will get DEV attention
             LoggerSingleton.logError(e);
         }
+    }
+
+    public static SettingHandler getInstance() {
+        return instance;
     }
 
     private final class PreferenceLabelProvider extends TypeCheckedStyleCellLabelProvider<PreferenceNode> {

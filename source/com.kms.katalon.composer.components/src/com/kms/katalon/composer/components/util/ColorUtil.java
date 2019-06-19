@@ -102,7 +102,7 @@ public class ColorUtil {
         if (ComponentBundleActivator.isDarkTheme(display)) {
             return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME_DIALOG);
         } else {
-            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR);
+            return ColorUtil.getWhiteBackgroundColor();
         }
     }
 

@@ -66,6 +66,8 @@ public class RunConfiguration {
     public static final String EXECUTION_PREFS_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_PREFS_PROPERTY;
 
     public static final String EXECUTION_TEST_DATA_INFO_PROPERTY = StringConstants.CONF_PROPERTY_TEST_DATA_INFO;
+    
+    public static final String REMOTE_DRIVER_PROPERTY = "Remote";
 
     public static final String EXECUTION_PROPERTY = StringConstants.CONF_PROPERTY_EXEC;
 
@@ -371,17 +373,17 @@ public class RunConfiguration {
         return getStringProperty(SESSION_SERVER_HOST);
     }
 
-    public static String getExisingSessionSessionId() {
+    public static String getExistingSessionSessionId() {
         return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
                 StringConstants.CONF_PROPERTY_EXISTING_SESSION_SESSION_ID);
     }
 
-    public static String getExisingSessionServerUrl() {
+    public static String getExistingSessionServerUrl() {
         return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
                 StringConstants.CONF_PROPERTY_EXISTING_SESSION_SERVER_URL);
     }
 
-    public static String getExisingSessionDriverType() {
+    public static String getExistingSessionDriverType() {
         return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
                 StringConstants.CONF_PROPERTY_EXISTING_SESSION_DRIVER_TYPE);
     }

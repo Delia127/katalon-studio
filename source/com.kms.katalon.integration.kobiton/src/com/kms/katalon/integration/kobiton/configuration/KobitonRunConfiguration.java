@@ -18,7 +18,7 @@ public class KobitonRunConfiguration extends RemoteWebRunConfiguration {
 
     public KobitonRunConfiguration(String projectDir) throws IOException {
         super(projectDir, new KobitonDriverConnector(projectDir));
-        kobitonDriverConnetor = (KobitonDriverConnector) webUiDriverConnector;
+        kobitonDriverConnetor = (KobitonDriverConnector) remoteDriverConnector;
     }
 
     public KobitonDevice getKobitonDevice() {
