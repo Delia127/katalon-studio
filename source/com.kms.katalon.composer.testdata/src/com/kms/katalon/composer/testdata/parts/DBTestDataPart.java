@@ -94,6 +94,8 @@ public class DBTestDataPart extends TestDataMainPart {
 
     private Button btnEdit;
 
+    private Button ckcbReadAsString;
+    
     @Override
     protected EPartService getPartService() {
         return partService;
@@ -141,6 +143,9 @@ public class DBTestDataPart extends TestDataMainPart {
         glCompositeFileInfoDetails.marginHeight = 0;
         compFileInfoDetails.setLayout(glCompositeFileInfoDetails);
         compFileInfoDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        
+        ckcbReadAsString = new Button(compFileInfoDetails, SWT.CHECK);
+        ckcbReadAsString.setText(StringConstants.VIEW_LBL_READ_AS_STRING);
 
         Label lblQuery = new Label(compFileInfoDetails, SWT.BOLD);
         lblQuery.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 2, 1));
@@ -244,6 +249,16 @@ public class DBTestDataPart extends TestDataMainPart {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 executeOperation(new ChangeQueryOperation());
+            }
+        });
+        
+        ckcbReadAsString.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                getDataFile().setProperty("readAsString"
+                        , String.valueOf(ckcbReadAsString.getSelection()));
+                dirtyable.setDirty(true);
             }
         });
     }
