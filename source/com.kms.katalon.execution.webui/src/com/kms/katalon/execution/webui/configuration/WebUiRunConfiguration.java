@@ -29,6 +29,7 @@ public abstract class WebUiRunConfiguration extends AbstractRunConfiguration {
     
     @Override
     protected void initExecutionSetting() {
+        super.initExecutionSetting();
         executionSetting = new WebUIExecutionSetting();
     }
 }

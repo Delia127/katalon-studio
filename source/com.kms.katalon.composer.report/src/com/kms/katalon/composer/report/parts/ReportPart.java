@@ -293,6 +293,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     public void init(Composite parent, ReportEntity report, MPart part) {
         this.report = report;
         this.mpart = part;
+        this.parent = parent;
         mainComposite = parent;
         if (report == null) {
             return;
