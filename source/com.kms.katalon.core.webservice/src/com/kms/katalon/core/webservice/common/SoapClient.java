@@ -1,12 +1,15 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -16,6 +19,7 @@ import javax.wsdl.extensions.http.HTTPOperation;
 import javax.wsdl.extensions.soap.SOAPOperation;
 import javax.wsdl.extensions.soap12.SOAP12Operation;
 import javax.wsdl.factory.WSDLFactory;
+import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
@@ -83,28 +87,8 @@ public class SoapClient extends BasicRequestor {
             WSDLReader reader = factory.newWSDLReader();
             reader.setFeature("javax.wsdl.verbose", false);
             reader.setFeature("javax.wsdl.importDocuments", true);
-    
             
-            boolean isHttps = isHttps(requestObject);
-            if (isHttps) {
-                SSLContext sc = SSLContext.getInstance(SSL);
-                sc.init(null, getTrustManagers(), new java.security.SecureRandom());
-                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            }
-    
-            URL oURL = new URL(requestObject.getWsdlAddress());
-            HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
-            if (con instanceof HttpsURLConnection) {
-                ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
-            }
-            con.setRequestMethod(GET);
-            con.setDoOutput(true);
-            
-            setHttpConnectionHeaders(con, requestObject);
-            
-            InputStream is = con.getInputStream();
-            
-            Definition wsdlDefinition = reader.readWSDL(null, new InputSource(is));
+            Definition wsdlDefinition = reader.readWSDL(new CustomWSDLLocator(requestObject));
             
             lookForService(wsdlDefinition);
         } catch (Exception e) {
@@ -266,5 +250,89 @@ public class SoapClient extends BasicRequestor {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+    
+    private class CustomWSDLLocator implements WSDLLocator {
+
+        private RequestObject request;
+
+        private String last;
+
+        public CustomWSDLLocator(RequestObject request) {
+            this.request = request;
+        }
+
+        @Override
+        public InputSource getBaseInputSource() {
+            try {
+                InputStream is = load(requestObject.getWsdlAddress());
+                return new InputSource(is);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public String getBaseURI() {
+            return requestObject.getWsdlAddress();
+        }
+
+        @Override
+        public InputSource getImportInputSource(String parent, String imp) {
+            if (isAbsoluteUrl(imp)) {
+                last = imp;
+            } else {
+                last = parent + "/" + imp;
+            }
+            try {
+                InputStream input = load(last);
+                return input == null ? null : new InputSource(input);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private boolean isAbsoluteUrl(String url) {
+            url = url.toLowerCase();
+            return url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:");
+        }
+
+        private InputStream load(String url) throws GeneralSecurityException, IOException, WebServiceException {
+            boolean isHttps = isHttps(url);
+            if (isHttps) {
+                SSLContext sc = SSLContext.getInstance(SSL);
+                sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            }
+
+            URL oURL = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
+            if (con instanceof HttpsURLConnection) {
+                ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
+            }
+            con.setRequestMethod(GET);
+            con.setDoOutput(true);
+
+            setHttpConnectionHeaders(con, requestObject);
+
+            InputStream is = con.getInputStream();
+            return is;
+        }
+
+        private boolean isHttps(String url) {
+            url = url.toLowerCase();
+            return url.startsWith("https");
+        }
+
+        @Override
+        public String getLatestImportURI() {
+            String result = last == null ? request.getWsdlAddress() : last;
+            return result;
+        }
+
+        @Override
+        public void close() {
+            // TODO Auto-generated method stub
+        }
     }
 }
