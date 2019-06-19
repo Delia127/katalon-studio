@@ -332,7 +332,6 @@ public class SoapClient extends BasicRequestor {
 
         @Override
         public void close() {
-            // TODO Auto-generated method stub
         }
     }
 }
