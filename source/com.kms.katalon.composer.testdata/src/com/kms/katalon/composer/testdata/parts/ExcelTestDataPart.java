@@ -237,7 +237,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         Composite compositeCheckBoxes = new Composite(compositeFileInfoDetails, SWT.NONE);
         compositeCheckBoxes.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        GridLayout glCompositeCheckBoxes = new GridLayout(2, false);
+        GridLayout glCompositeCheckBoxes = new GridLayout(3, false);
         glCompositeCheckBoxes.horizontalSpacing = 15;
         glCompositeCheckBoxes.marginWidth = 0;
         compositeCheckBoxes.setLayout(glCompositeCheckBoxes);
