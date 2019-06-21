@@ -46,6 +46,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         } else {
             if (!isActivated) {
                 if (checkActivationDialog()) {
+                    showFunctionsIntroductionForTheFirstTime();
                     openSignupSurveyDialog(Display.getCurrent().getActiveShell());
                     return true;
                 } else {
@@ -54,9 +55,6 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             }
         }
 
-        if (!isActivated) {
-            showFunctionsIntroductionForTheFirstTime();
-        }
         return true;
     }
     
