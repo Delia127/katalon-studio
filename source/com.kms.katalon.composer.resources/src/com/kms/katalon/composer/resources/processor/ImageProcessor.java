@@ -439,6 +439,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING);
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_BDD_TESTING);
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_SDLC_INTEGRATION);
+        ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_ADVANCED_REPORT);
+        ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_PLUGIN_STORE);
         
     }
 }

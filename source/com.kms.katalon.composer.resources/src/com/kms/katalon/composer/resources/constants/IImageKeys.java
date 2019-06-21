@@ -33,9 +33,9 @@ public interface IImageKeys {
     
     public static final String IMG_INTRO_SCREEN_SDLC_INTEGRATION = "temp/CIIntegration.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_PLUGIN_STORE = "temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_PLUGIN_STORE = "temp/plugin.png"; //$NON-NLS-1$
     
-    public static final String IMG_INTRO_SCREEN_ADVANCED_REPORT = "temp/web_testing.png"; //$NON-NLS-1$
+    public static final String IMG_INTRO_SCREEN_ADVANCED_REPORT = "temp/report.png"; //$NON-NLS-1$
     
     
     // End Intro

@@ -34,6 +34,7 @@ public class WizardTableLabelTest extends TypeCheckedStyleCellLabelProvider<IWiz
         return (getStepNumber(wizardPage) == getCurrentStepNumber()) ? ColorUtil.getSelectedTableItemBackgroundColor()
                 : ColorUtil.getWhiteBackgroundColor();
     }
+    
 
     private int getCurrentStepNumber() {
         return fWizardManager.getWizardPages().indexOf(fWizardManager.getCurrentPage()) + 1;
@@ -59,16 +60,6 @@ public class WizardTableLabelTest extends TypeCheckedStyleCellLabelProvider<IWiz
         return wizardPage.getTitle();
     }
 
-    @Override
-    protected Image getImage(IWizardPage wizardPage) {
-        int stepNumber = getStepNumber(wizardPage);
-        int currentStepNumber = getCurrentStepNumber();
-
-        if (wizardPage instanceof AbstractWizardPage) {
-            return (stepNumber < currentStepNumber) ? ImageConstants.IMG_16_CHECKED : ImageConstants.IMG_16_UNCHECKED;
-        }
-        return null;
-    }
     
     @Override
     public CellLayoutInfo getCellLayoutInfo() {
@@ -95,5 +86,11 @@ public class WizardTableLabelTest extends TypeCheckedStyleCellLabelProvider<IWiz
                 return layoutInfo.getLeftMargin() + extendedSpace;
             }
         };
+    }
+
+    @Override
+    protected Image getImage(IWizardPage element) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

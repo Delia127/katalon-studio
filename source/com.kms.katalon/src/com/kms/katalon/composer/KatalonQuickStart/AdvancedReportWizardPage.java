@@ -20,14 +20,14 @@ public class AdvancedReportWizardPage extends AbstractWizardPage implements Wiza
 
     @Override
     public String getTitle() {
-        return "Avanced Report";
+        return "Advanced Report";
     }
 
     @Override
     public void createStepArea(Composite parent) {
         Composite imageCompositeImage = new Composite(parent, SWT.FILL);
         GridData gridDataImage = new GridData(SWT.RIGHT, SWT.FILL, true, true);
-        Image imageTitleArea = ImageConstants.IMG_INTRO_SCREEN_WEB_TESTING;
+        Image imageTitleArea = ImageConstants.IMG_INTRO_SCREEN_ADVANCED_REPORT;
         gridDataImage.widthHint = imageTitleArea.getBounds().width;
         gridDataImage.heightHint = imageTitleArea.getBounds().height;
         imageCompositeImage.setLayoutData(gridDataImage);
