@@ -637,7 +637,7 @@ public class WelcomeRightPart extends Composite implements EventHandler {
                 samplesContent.setRedraw(true);
             });
 
-            sampleProjects.parallelStream().forEach(sample -> {
+            sampleProjects.stream().forEach(sample -> {
                 Map<Integer, File> imageFiles = sampleRemoteProjectProvider.getThumbnailFiles(sample);
 
                 int index = sampleProjects.indexOf(sample);
