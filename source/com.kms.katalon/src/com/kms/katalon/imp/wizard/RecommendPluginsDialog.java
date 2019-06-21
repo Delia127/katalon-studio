@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -17,6 +18,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
@@ -31,6 +33,7 @@ import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 import com.kms.katalon.plugin.service.PluginService;
+import com.sun.jna.platform.unix.X11.Display;
 
 public class RecommendPluginsDialog extends AbstractDialog {
     List<Long> idProduct = new ArrayList<>();
@@ -87,9 +90,9 @@ public class RecommendPluginsDialog extends AbstractDialog {
         Composite compositeBody = new Composite(composite, SWT.BORDER);
         GridData gridDataBD = new GridData(SWT.NONE);
         GridLayout layoutBD = new GridLayout();
-        layout.marginHeight = 10;
-        layout.marginWidth = 10;
-        layout.verticalSpacing = 10;
+        layoutBD.marginHeight = 10;
+        layoutBD.marginWidth = 10;
+        layoutBD.verticalSpacing = 10;
         compositeBody.setLayout(layoutBD);
         compositeBody.setLayoutData(gridDataBD);
         gridDataBD.widthHint = 640;
@@ -112,6 +115,7 @@ public class RecommendPluginsDialog extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 installPressed();
+                MessageDialog.openInformation(parent.getShell(), "Install Recommend Plugins", "Install Recommend Plugins Successful");
             }
 
             @Override
@@ -119,6 +123,7 @@ public class RecommendPluginsDialog extends AbstractDialog {
 
             }
         });
+
         return buttonBarComposite;
     }
 
@@ -170,10 +175,10 @@ public class RecommendPluginsDialog extends AbstractDialog {
 
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        for (int i = 0; i < buttons.size(); i++) {
+                        for (int i = 0; i < idProduct.size(); i++) {
                         if (buttons.get(i).getSelection() != true) {
                                 idProduct.remove(idProduct.get(i));
-                        } else {
+                        } else if(buttons.get(i).getSelection() == true && !idProduct.contains(recommendList.get(i).getId())) {
                                 idProduct.add(idProduct.get(i));
                             }
                         }
@@ -198,7 +203,7 @@ public class RecommendPluginsDialog extends AbstractDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(680, 600);
+        return new Point(680, 620);
     }
 
 
