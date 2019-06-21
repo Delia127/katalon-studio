@@ -242,8 +242,7 @@ public class ReportController extends EntityController {
             tempfolder = tempfolder.getParentFolder();
         }
         String testSuiteDisplayId = TEST_SUITES_FOLDER + strBuilder.toString();
-        return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteDisplayId,
-                tempfolder.getProject());
+        return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteDisplayId, tempfolder.getProject());
     }
     
     public ReportEntity reloadReport(ReportEntity report, Entity entity) throws Exception {
