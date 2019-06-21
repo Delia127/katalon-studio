@@ -449,7 +449,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         range.underline = true;
         range.data = txtTestSuiteId.getText();
         range.underlineStyle = SWT.UNDERLINE_LINK;
-        range.foreground = JFaceColors.getHyperlinkText(getDisplay());
+        range.foreground = ColorUtil.getHyperlinkTextColor();
 
         txtTestSuiteId.setStyleRanges(new StyleRange[] { range });
 

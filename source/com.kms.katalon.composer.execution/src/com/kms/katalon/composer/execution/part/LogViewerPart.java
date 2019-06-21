@@ -601,6 +601,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                             range.length = exceptionLogString.length();
                             range.underline = true;
                             range.data = exceptionLogEntry;
+                            range.foreground = ColorUtil.getHyperlinkTextColor();
                             range.underlineStyle = SWT.UNDERLINE_LINK;
 
                             styleRanges.add(range);

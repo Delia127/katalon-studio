@@ -272,4 +272,7 @@ public class ColorUtil {
         }
     }
 
+    public static Color getHyperlinkTextColor() {
+        return JFaceColors.getHyperlinkText(display);
+    }
 }
