@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.testdata.views;
 
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -117,7 +116,7 @@ public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
     
     protected void handleShowReadAsStringOption(String text) {
         DataFileDriverType type = DataFileDriverType.fromValue(text);
-        if(type.equals(DataFileDriverType.CSV) || type.equals(DataFileDriverType.InternalData)) {
+        if (type.equals(DataFileDriverType.CSV) || type.equals(DataFileDriverType.InternalData)) {
             readAsStringOptionComposite.setVisible(false);
         } else {
             readAsStringOptionComposite.setVisible(true);

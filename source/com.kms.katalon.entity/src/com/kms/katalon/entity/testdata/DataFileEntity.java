@@ -285,14 +285,14 @@ public class DataFileEntity extends FileEntity {
     }
     
     public String getProperty(String key) {
-        if(properties == null || key == null || key.equals(StringUtils.EMPTY)) {
+        if (properties == null || key == null || key.equals(StringUtils.EMPTY)) {
             return StringUtils.EMPTY;
         }
         return properties.get(key);
     }
-    
+
     public void setProperty(String key, String value) {
-        if(properties == null) {
+        if (properties == null) {
             return;
         }
         properties.put(key, value);

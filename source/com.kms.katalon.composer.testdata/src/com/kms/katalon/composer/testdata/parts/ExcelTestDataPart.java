@@ -403,8 +403,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         ckcbReadAsString.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                getDataFile().setProperty("readAsString"
-                        , String.valueOf(ckcbReadAsString.getSelection()));
+                getDataFile().setProperty("readAsString", String.valueOf(ckcbReadAsString.getSelection()));
                 dirtyable.setDirty(true);
             }
         });
