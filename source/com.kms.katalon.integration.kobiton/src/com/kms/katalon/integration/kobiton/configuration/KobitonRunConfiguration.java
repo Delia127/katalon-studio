@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
@@ -54,8 +55,7 @@ public class KobitonRunConfiguration extends RemoteWebRunConfiguration {
     @Override
     public Map<String, IDriverConnector> getDriverConnectors() {
         Map<String, IDriverConnector> driverCollector = new LinkedHashMap<String, IDriverConnector>();
-        driverCollector.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, kobitonDriverConnetor);
-        driverCollector.put(DriverFactory.MOBILE_DRIVER_PROPERTY, kobitonDriverConnetor);
+        driverCollector.put(RunConfiguration.REMOTE_DRIVER_PROPERTY, kobitonDriverConnetor);
         return driverCollector;
     }
 }
