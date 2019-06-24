@@ -74,7 +74,6 @@
 		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
 		<module>com.kms.katalon.integration.kobiton</module>
-		<module>com.kms.katalon.jasper</module>
 		<module>com.kms.katalon.logging</module>
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.util</module>

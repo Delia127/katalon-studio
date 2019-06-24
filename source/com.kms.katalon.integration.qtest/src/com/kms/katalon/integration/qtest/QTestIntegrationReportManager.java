@@ -61,8 +61,6 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.util.DateUtil;
 import com.kms.katalon.integration.qtest.util.ZipUtil;
-import com.kms.katalon.jasper.pdf.TestCasePdfGenerator;
-import com.kms.katalon.jasper.pdf.exception.JasperReportException;
 import com.kms.katalon.logging.LogUtil;
 
 /**
@@ -154,12 +152,11 @@ public class QTestIntegrationReportManager {
      * @return
      * @throws QTestException
      * @throws IOException
-     * @throws JasperReportException
      * @throws URISyntaxException
      */
     public static QTestLog uploadTestLog(String projectDir, QTestLogUploadedPreview preparedTestCaseResult,
             String tempDir, TestSuiteLogRecord testSuiteLogRecord)
-            throws QTestException, IOException, JasperReportException, URISyntaxException {
+            throws QTestException, IOException, URISyntaxException {
 
         QTestProject qTestProject = preparedTestCaseResult.getQTestProject();
         QTestTestCase qTestCase = preparedTestCaseResult.getQTestCase();
@@ -281,7 +278,7 @@ public class QTestIntegrationReportManager {
 
     private static void generateReportFile(ReportFormatType format, File destReportFile,
             TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR)
-            throws IOException, JasperReportException, URISyntaxException {
+            throws IOException, URISyntaxException {
         switch (format) {
             case CSV:
                 ReportUtil.writeLogRecordToCSVFile(testSuiteLR, destReportFile,
@@ -290,11 +287,6 @@ public class QTestIntegrationReportManager {
             case HTML:
                 ReportUtil.writeLogRecordToHTMLFile(testSuiteLR, destReportFile,
                         Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
-                break;
-            case PDF:
-                TestCasePdfGenerator generator = new TestCasePdfGenerator(testCaseLogRecord,
-                        testSuiteLR.getLogFolder());
-                generator.exportToPDF(destReportFile.getAbsolutePath());
                 break;
             default:
                 break;
