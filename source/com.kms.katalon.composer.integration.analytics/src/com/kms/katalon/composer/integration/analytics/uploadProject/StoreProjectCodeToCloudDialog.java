@@ -125,6 +125,8 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         txtCodeRepoName = new Text(grpUploadProject, SWT.BORDER);
         GridData txtCodeRepoNameGridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtCodeRepoName.setLayoutData(txtCodeRepoNameGridData);
+        String nameSuggest = currentProject.getName();
+        txtCodeRepoName.setText(nameSuggest);
 
         addListener();
         fillData();
@@ -133,9 +135,6 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
     private void fillData() {
         try {
-            String nameSuggest = currentProject.getName();
-            txtCodeRepoName.setText(nameSuggest);
-        	
             cbbTeams.setItems();
             cbbProjects.setItems();
             analyticsSettingStore = new AnalyticsSettingStore(
