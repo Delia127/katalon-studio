@@ -64,6 +64,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
     public StoreProjectCodeToCloudDialog(Shell parentShell) {
         super(parentShell);
+        currentProject = pController.getCurrentProject();
     }
 
     @Override
@@ -124,6 +125,8 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         txtCodeRepoName = new Text(grpUploadProject, SWT.BORDER);
         GridData txtCodeRepoNameGridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtCodeRepoName.setLayoutData(txtCodeRepoNameGridData);
+        String nameSuggest = currentProject.getName();
+        txtCodeRepoName.setText(nameSuggest);
 
         addListener();
         fillData();
@@ -214,7 +217,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
         int currentIndexProject = cbbProjects.getSelectionIndex();
         AnalyticsProject sellectProject = projects.get(currentIndexProject);
-        currentProject = pController.getCurrentProject();
+        
         String folderCurrentProject = currentProject.getFolderLocation();
 
         uploadProject(nameFileZip, sellectProject, folderCurrentProject, new ProgressMonitorDialog(getShell()));
@@ -263,7 +266,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                             URIBuilder builder = new URIBuilder(serverUrl);
                             builder.setScheme("https");
                             builder.setPath("/team/" + teamId.toString() + "/project/" + projectId.toString()
-                                    + "/test-projects");
+                                    + "/test-project");
                             Program.launch(builder.toString());
                         } catch (Exception exception) {
                             MultiStatusErrorDialog.showErrorDialog(exception,
