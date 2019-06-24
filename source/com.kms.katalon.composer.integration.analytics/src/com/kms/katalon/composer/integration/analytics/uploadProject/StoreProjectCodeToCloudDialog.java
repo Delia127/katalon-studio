@@ -133,8 +133,9 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
     private void fillData() {
         try {
-        	String nameSuggest = currentProject.getName();
-        	txtCodeRepoName.setText(nameSuggest);
+            String nameSuggest = currentProject.getName();
+            txtCodeRepoName.setText(nameSuggest);
+        	
             cbbTeams.setItems();
             cbbProjects.setItems();
             analyticsSettingStore = new AnalyticsSettingStore(
