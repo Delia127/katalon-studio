@@ -188,9 +188,16 @@ public class DriverFactory {
             if (isUsingExistingDriver()) {
                 webDriver = startExistingBrowser();
             } else {
-                webDriver = startNewBrowser(getExecutedBrowser());
+                String remoteWebDriverUrl = getRemoteWebDriverServerUrl();
+                if (StringUtils.isNotEmpty(remoteWebDriverUrl)) {
+                    webDriver = startRemoteBrowser();
+                } else {
+                    webDriver = startNewBrowser(getExecutedBrowser());
+                }
             }
-            changeWebDriver(webDriver);
+            if (webDriver != null) {
+                changeWebDriver(webDriver);
+            }
             return webDriver;
         } catch (Error e) {
             logger.logMessage(LogLevel.WARNING, e.getMessage(), e);
@@ -207,6 +214,34 @@ public class DriverFactory {
 
     private static boolean isUsingExistingDriver() {
         return RunConfiguration.getDriverSystemProperties(EXISTING_DRIVER_PROPERTY) != null;
+    }
+    
+    private static WebDriver startRemoteBrowser() throws MalformedURLException, MobileDriverInitializeException,
+            IOException, InterruptedException, AppiumStartException, Exception {
+
+        if (null != localWebServerStorage.get()
+                && null != ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
+            logger.logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
+            closeWebDriver();
+        }
+
+        WebUIDriverType driver = WebUIDriverType.REMOTE_WEB_DRIVER;
+        String remoteServerUrl = getRemoteWebDriverServerUrl();
+        if (StringUtils.isEmpty(remoteServerUrl)) {
+            return null;
+        }
+
+        Map<String, Object> driverPreferenceProps = RunConfiguration
+                .getDriverPreferencesProperties(RunConfiguration.REMOTE_DRIVER_PROPERTY);
+        DesiredCapabilities desireCapibilities = null;
+        if (driverPreferenceProps != null) {
+            desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, driver);
+        }
+
+        WebDriver webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities);
+        saveWebDriverSessionData(webDriver);
+
+        return webDriver;
     }
 
     private static WebDriver startNewBrowser(DriverType executedBrowser) throws MalformedURLException,
@@ -519,9 +554,9 @@ public class DriverFactory {
 
     protected static WebDriver startExistingBrowser()
             throws MalformedURLException, MobileDriverInitializeException, ConnectException {
-        String remoteDriverType = RunConfiguration.getExisingSessionDriverType();
-        String sessionId = RunConfiguration.getExisingSessionSessionId();
-        String remoteServerUrl = RunConfiguration.getExisingSessionServerUrl();
+        String remoteDriverType = RunConfiguration.getExistingSessionDriverType();
+        String sessionId = RunConfiguration.getExistingSessionSessionId();
+        String remoteServerUrl = RunConfiguration.getExistingSessionServerUrl();
         if (WebUIDriverType.ANDROID_DRIVER.toString().equals(remoteDriverType)
                 || WebUIDriverType.IOS_DRIVER.toString().equals(remoteDriverType)) {
             return WebMobileDriverFactory.startExisitingMobileDriver(WebUIDriverType.fromStringValue(remoteDriverType),
@@ -1075,7 +1110,7 @@ public class DriverFactory {
     public static DriverType getExecutedBrowser() {
         DriverType webDriverType = null;
         if (isUsingExistingDriver()) {
-            webDriverType = WebUIDriverType.fromStringValue(RunConfiguration.getExisingSessionDriverType());
+            webDriverType = WebUIDriverType.fromStringValue(RunConfiguration.getExistingSessionDriverType());
         }
 
         if (webDriverType != null) {
@@ -1104,7 +1139,7 @@ public class DriverFactory {
      * is remote, or null if it is not
      */
     public static String getRemoteWebDriverServerUrl() {
-        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_URL);
+        return RunConfiguration.getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_URL);
     }
 
     /**
@@ -1117,7 +1152,7 @@ public class DriverFactory {
      * is remote, or null if it is not
      */
     public static String getRemoteWebDriverServerType() {
-        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_TYPE);
+        return RunConfiguration.getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_TYPE);
     }
 
     /**

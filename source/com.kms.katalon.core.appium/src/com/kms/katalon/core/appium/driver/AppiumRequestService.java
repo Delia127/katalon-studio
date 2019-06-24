@@ -36,8 +36,9 @@ public class AppiumRequestService {
     }
 
     public void logAppiumInfo() {
+        String appiumJsonResponseStatus = "";
         try {
-            String appiumJsonResponseStatus = sendGetRequest(appiumServerUrl + APPIUM_URL_STATUS_PATH);
+            appiumJsonResponseStatus = sendGetRequest(appiumServerUrl + APPIUM_URL_STATUS_PATH);
 
             JsonObject parser = new JsonParser().parse(appiumJsonResponseStatus).getAsJsonObject();
             String appiumVersion = parser.getAsJsonObject("value")
@@ -49,6 +50,8 @@ public class AppiumRequestService {
         } catch (UnsupportedOperationException | IOException e) {
             logger.logWarning(MessageFormat.format(AppiumStringConstants.MSG_UNABLE_TO_GET_APPIUM_STATUS,
                     e.getMessage()), null, e);
+        } catch (IllegalStateException e) {
+            logger.logRunData("appiumStatus", appiumJsonResponseStatus);
         }
     }
 }
