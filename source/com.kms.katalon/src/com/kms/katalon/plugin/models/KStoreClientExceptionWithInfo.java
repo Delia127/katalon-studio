@@ -1,5 +1,7 @@
 package com.kms.katalon.plugin.models;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class KStoreClientExceptionWithInfo extends Exception {
 
     private static final long serialVersionUID = -154534255301013098L;
@@ -14,14 +16,14 @@ public class KStoreClientExceptionWithInfo extends Exception {
         this.endpoint = endpoint;
     }
 
-    private String getUsername() {
+    private String getCredential() {
         if (credential == null) {
-            return "No username in this Exception";
+            return StringUtils.EMPTY;
         }
         if (credential instanceof KStoreUsernamePasswordCredentials) {
             return ((KStoreUsernamePasswordCredentials) credential).getUsername();
         }
-        return "No username in this Exception";
+        return StringUtils.EMPTY;
     }
 
     private String getEndpoint() {
@@ -36,7 +38,14 @@ public class KStoreClientExceptionWithInfo extends Exception {
      * @return String
      */
     public String getInfoMessage() {
-        return "username: " + getUsername() + ", endpoint: " + getEndpoint();
+        String credential = getCredential();
+        String endpoint = getEndpoint();
+        
+        if(credential.equals(StringUtils.EMPTY)) {
+            return "Invalid API key, please re-check your credential";
+        }
+        
+        return "credential: " + credential + ", endpoint: " + endpoint;
     }
 
 }
