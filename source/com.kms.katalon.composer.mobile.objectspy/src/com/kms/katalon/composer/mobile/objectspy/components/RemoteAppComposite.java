@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -31,6 +32,7 @@ import com.kms.katalon.composer.project.handlers.SettingHandler;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
 
 public class RemoteAppComposite implements MobileAppComposite {
@@ -89,7 +91,12 @@ public class RemoteAppComposite implements MobileAppComposite {
 
     @Override
     public MobileDriverType getSelectedDriverType() {
-        return MobileDriverType.ANDROID_DRIVER;
+        if (runConfiguration == null || runConfiguration.getRemoteDriverConnector() == null) {
+            return MobileDriverType.ANDROID_DRIVER;
+        }
+        DesiredCapabilities desiredCapabilities = new DesiredCapabilities(
+                runConfiguration.getRemoteDriverConnector().getUserConfigProperties());
+        return MobileDriverFactory.getMobileDriverTypeFromDesiredCapabilities(desiredCapabilities);
     }
 
     @Override
