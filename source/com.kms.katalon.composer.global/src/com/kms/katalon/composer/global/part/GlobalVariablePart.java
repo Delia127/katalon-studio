@@ -666,7 +666,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             for (Object selectedItem : selection.toArray()) {
                 if (!(selectedItem instanceof GlobalVariableEntity)) {
                     continue;
-                }
+                }		
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
                 int indexMove = globalVariables.indexOf(selectedVariable) + 1;
                 if (indexMove < globalVariables.size()) {
@@ -676,15 +676,26 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 		continue;
                 	}
                 	
-                	Collections.swap(globalVariables, indexMove, indexMove - 1);
+//                	Collections.swap(globalVariables, indexMove, indexMove - 1);
                 	moveDownVirables.add(indexMove);
                 }
             }
+            toDo();
+            
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
         }
 
+        private void toDo() {
+        	if (moveDownVirables.size() > 0) {
+        		Collections.sort(moveDownVirables, Collections.reverseOrder());
+            	for (int indexMove : moveDownVirables) {
+            		Collections.swap(globalVariables, indexMove - 1, indexMove);
+            	}
+            }
+        }
+        
         @Override
         public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
             refresh();
@@ -694,12 +705,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-        	if (moveDownVirables.size() > 0) {
-        		Collections.sort(moveDownVirables, Collections.reverseOrder());
-            	for (int indexMove : moveDownVirables) {
-            		Collections.swap(globalVariables, indexMove - 1, indexMove);
-            	}
-            }
+        	toDo();
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
