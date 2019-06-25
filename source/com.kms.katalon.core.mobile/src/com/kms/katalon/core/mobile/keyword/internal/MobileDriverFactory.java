@@ -460,7 +460,7 @@ public class MobileDriverFactory {
         return AppiumDriverManager.createMobileDriver(driverType, desiredCapabilities, new URL(remoteWebUrl));
     }
 
-    private static MobileDriverType getMobileDriverTypeFromDesiredCapabilities(
+    public static MobileDriverType getMobileDriverTypeFromDesiredCapabilities(
             DesiredCapabilities desiredCapabilities) {
         MobileDriverType driverType = MobileDriverType.ANDROID_DRIVER;
         if (desiredCapabilities != null) {
