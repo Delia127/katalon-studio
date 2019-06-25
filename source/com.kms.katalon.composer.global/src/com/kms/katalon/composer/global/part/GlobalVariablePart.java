@@ -684,9 +684,9 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         private void doChange(boolean isUndo) {
             if (moveDownVirables.size() > 0) {
             	if (isUndo) {
-            		Collections.sort(moveDownVirables);
+                    Collections.sort(moveDownVirables);
             	} else {
-            		Collections.sort(moveDownVirables, Collections.reverseOrder());
+                    Collections.sort(moveDownVirables, Collections.reverseOrder());
             	}
             	for (int indexMove : moveDownVirables) {
                     Collections.swap(globalVariables, indexMove - 1, indexMove);
