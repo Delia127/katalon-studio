@@ -675,15 +675,19 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                     moveDownVirables.add(indexMove);
                 }
             }
-            doChange();
+            doChange(false);
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
         }
 
-        private void doChange() {
+        private void doChange(boolean isUndo) {
             if (moveDownVirables.size() > 0) {
-            	Collections.sort(moveDownVirables, Collections.reverseOrder());
+            	if (isUndo) {
+            		Collections.sort(moveDownVirables);
+            	} else {
+            		Collections.sort(moveDownVirables, Collections.reverseOrder());
+            	}
             	for (int indexMove : moveDownVirables) {
                     Collections.swap(globalVariables, indexMove - 1, indexMove);
             	}
@@ -699,7 +703,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            doChange();
+            doChange(true);
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
