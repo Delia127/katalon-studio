@@ -2,7 +2,6 @@ package com.kms.katalon.composer.global.part;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -38,8 +37,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -675,19 +672,16 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 	if (variableBefore == selectedVariable) {
                 		continue;
                 	}
-                	
-//                	Collections.swap(globalVariables, indexMove, indexMove - 1);
                 	moveDownVirables.add(indexMove);
                 }
             }
-            toDo();
-            
+            doChange();
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
         }
 
-        private void toDo() {
+        private void doChange() {
         	if (moveDownVirables.size() > 0) {
         		Collections.sort(moveDownVirables, Collections.reverseOrder());
             	for (int indexMove : moveDownVirables) {
@@ -705,7 +699,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-        	toDo();
+        	doChange();
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
