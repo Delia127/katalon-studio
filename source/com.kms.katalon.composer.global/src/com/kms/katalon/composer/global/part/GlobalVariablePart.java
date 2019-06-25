@@ -595,10 +595,8 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     }
     
     private class MoveUpVariablesOperation extends AbstractOperation {
-        private Map<GlobalVariableEntity, Integer> moveUpvirables = new LinkedHashMap<>();
+        private List<Integer> moveUpVirables = new ArrayList<Integer>();
         
-        private Integer indexMove;
-
         public MoveUpVariablesOperation() {
             super(MoveUpVariablesOperation.class.getName());
         }
@@ -614,7 +612,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                     continue;
                 }
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
-                indexMove = globalVariables.indexOf(selectedVariable) - 1;
+                int indexMove = globalVariables.indexOf(selectedVariable) - 1;
                 if (indexMove >= 0) {
                 	GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
                 	
@@ -623,6 +621,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 	}
 
                 	Collections.swap(globalVariables, indexMove, indexMove + 1);
+                	moveUpVirables.add(indexMove);
                 }
             }
             refresh();
@@ -639,8 +638,11 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            if (indexMove != null) {
-            	Collections.swap(globalVariables, indexMove + 1, indexMove);
+            if (moveUpVirables.size() > 0) {
+            	Collections.sort(moveUpVirables, Collections.reverseOrder());
+            	for (int indexMove : moveUpVirables) {
+            		Collections.swap(globalVariables, indexMove + 1, indexMove);
+            	}
             }
             refresh();
             setDirty(true);
@@ -649,7 +651,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     }
     
     private class MoveDownVariablesOperation extends AbstractOperation {
-    	private Integer indexMove;
+    	private List<Integer> moveDownVirables = new ArrayList<Integer>();
     	
         public MoveDownVariablesOperation() {
             super(MoveDownVariablesOperation.class.getName());
@@ -666,7 +668,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                     continue;
                 }
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
-                indexMove = globalVariables.indexOf(selectedVariable) + 1;
+                int indexMove = globalVariables.indexOf(selectedVariable) + 1;
                 if (indexMove < globalVariables.size()) {
                 	GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
                 	
@@ -675,6 +677,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 	}
                 	
                 	Collections.swap(globalVariables, indexMove, indexMove - 1);
+                	moveDownVirables.add(indexMove);
                 }
             }
             refresh();
@@ -691,8 +694,11 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            if (indexMove != null) {
-            	Collections.swap(globalVariables, indexMove - 1, indexMove);
+        	if (moveDownVirables.size() > 0) {
+        		Collections.sort(moveDownVirables, Collections.reverseOrder());
+            	for (int indexMove : moveDownVirables) {
+            		Collections.swap(globalVariables, indexMove - 1, indexMove);
+            	}
             }
             refresh();
             setDirty(true);
