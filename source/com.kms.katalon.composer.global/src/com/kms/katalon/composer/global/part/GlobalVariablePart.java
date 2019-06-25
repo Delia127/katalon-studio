@@ -89,7 +89,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
     private TableViewer tableViewer;
 
-    private ToolItem tltmAdd, tltmRemove, tltmClear, tltmEdit;
+    private ToolItem tltmAdd, tltmRemove, tltmClear, tltmEdit, tltmMoveUp, tltmMoveDown;
 
     private MPart mpart;
 
@@ -153,6 +153,14 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         tltmClear = new ToolItem(toolBar, SWT.NONE);
         tltmClear.setText(StringConstants.PA_BTN_TIP_CLEAR);
         tltmClear.setImage(ImageConstants.IMG_16_CLEAR);
+        
+        tltmMoveUp = new ToolItem(toolBar, SWT.NONE);
+        tltmMoveUp.setText(StringConstants.PA_BTN_TIP_UP);
+        tltmMoveUp.setImage(ImageConstants.IMG_16_MOVE_UP);
+        
+        tltmMoveDown = new ToolItem(toolBar, SWT.NONE);
+        tltmMoveDown.setText(StringConstants.PA_BTN_TIP_DOWN);
+        tltmMoveDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
 
         Composite compositeTable = new Composite(composite, SWT.NONE);
         GridLayout gl_compositeTable = new GridLayout(1, false);
@@ -257,6 +265,14 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     private void editVariable() {
         executeOperation(new EditVariableOperation());
     }
+    
+    private void moveUpVariable() {
+        executeOperation(new MoveUpVariablesOperation());
+    }
+    
+    private void moveDownVariable() {
+        executeOperation(new EditVariableOperation());
+    }
 
     private void registerControlModifyListeners() {
         tltmAdd.addSelectionListener(new SelectionAdapter() {
@@ -288,6 +304,20 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             @Override
             public void widgetSelected(SelectionEvent e) {
                 clearVariables();
+            }
+        });
+        
+        tltmMoveUp.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                moveUpVariable();
+            }
+        });
+        
+        tltmMoveDown.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                moveDownVariable();
             }
         });
     }
@@ -557,6 +587,61 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             }
             refresh();
             tableViewer.setSelection(new StructuredSelection(deletedVariables.keySet().toArray()));
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+    
+    private class MoveUpVariablesOperation extends AbstractOperation {
+        private Map<GlobalVariableEntity, Integer> moveUpvirables = new LinkedHashMap<>();
+
+        public MoveUpVariablesOperation() {
+            super(MoveUpVariablesOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
+            if (selection.size() <= 0) {
+                return Status.CANCEL_STATUS;
+            }
+            for (Object selectedItem : selection.toArray()) {
+                if (!(selectedItem instanceof GlobalVariableEntity)) {
+                    continue;
+                }
+                GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
+                int index = globalVariables.indexOf(selectedVariable) - 1;
+                if (index >= 0) {
+                	GlobalVariableEntity variableBefore = globalVariables.get(index);
+                	
+                	if (variableBefore == selectedVariable) {
+                		continue;
+                	}
+                	
+                	globalVariables.remove(index + 1);
+                	globalVariables.add(index, selectedVariable);
+                }
+            }
+            refresh();
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            globalVariables.removeAll(moveUpvirables.keySet());
+            refresh();
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            for (Entry<GlobalVariableEntity, Integer> deletedVariable : moveUpvirables.entrySet()) {
+                globalVariables.add(deletedVariable.getValue(), deletedVariable.getKey());
+            }
+            refresh();
+            tableViewer.setSelection(new StructuredSelection(moveUpvirables.keySet().toArray()));
             setDirty(true);
             return Status.OK_STATUS;
         }
