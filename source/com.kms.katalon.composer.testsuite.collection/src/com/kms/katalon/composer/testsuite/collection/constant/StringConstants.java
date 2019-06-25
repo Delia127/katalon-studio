@@ -4,12 +4,14 @@ import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
     // Test Suite Collection Part
+	public static final String PA_ACTION_CREATE_TEST_PLAN = ComposerTestsuiteCollectionMessageConstants.PA_ACTION_CREATE_TEST_PLAN;
+	
     public static final String PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION;
 
     public static final String PA_TABLE_COLUMN_RUN_WITH = ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_RUN_WITH;
 
-    public static final String PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION;
-
+    public static final String PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION;    
+    
     // TestSuiteSelectionCellEditor
     public static final String DIA_TITLE_TEST_SUITE_BROWSER = ComposerTestsuiteCollectionMessageConstants.DIA_TITLE_TEST_SUITE_BROWSER;
 

@@ -73,7 +73,12 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
                 executeTestRun();
                 return;
             }
+            case CREATE_TEST_PLAN: {
+            	showCreateTestPlanDialog();
+            	return;
+            }
         }
+        
     }
 
     private TableViewer getTableViewer() {
@@ -82,6 +87,11 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
 
     private List<TestSuiteRunConfiguration> getTableItems() {
         return provider.getTableItems();
+    }
+    
+    private void showCreateTestPlanDialog(){
+    	
+    	return;
     }
 
     private void executeTestRun() {
@@ -280,8 +290,9 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
         REMOVE(StringConstants.REMOVE),
         UP(StringConstants.UP),
         DOWN(StringConstants.DOWN),
+        CREATE_TEST_PLAN(StringConstants.PA_ACTION_CREATE_TEST_PLAN),
         EXECUTE(StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION);
-
+    	
         private final String id;
 
         private ActionId(final String id) {

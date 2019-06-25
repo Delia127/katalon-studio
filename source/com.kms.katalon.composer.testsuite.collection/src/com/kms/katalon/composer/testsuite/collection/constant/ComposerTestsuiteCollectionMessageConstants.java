@@ -84,6 +84,8 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     public static String PA_TAB_MAIN;
     
     public static String PA_TAB_RESULT;
+    
+    public static String PA_ACTION_CREATE_TEST_PLAN;
 
     static {
         // initialize resource bundle
