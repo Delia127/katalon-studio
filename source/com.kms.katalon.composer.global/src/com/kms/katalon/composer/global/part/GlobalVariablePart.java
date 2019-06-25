@@ -271,7 +271,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     }
     
     private void moveDownVariable() {
-        executeOperation(new EditVariableOperation());
+        executeOperation(new MoveDownVariablesOperation());
     }
 
     private void registerControlModifyListeners() {
@@ -629,7 +629,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            globalVariables.removeAll(moveUpvirables.keySet());
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
@@ -642,6 +641,60 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             }
             refresh();
             tableViewer.setSelection(new StructuredSelection(moveUpvirables.keySet().toArray()));
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+    
+    private class MoveDownVariablesOperation extends AbstractOperation {
+        private Map<GlobalVariableEntity, Integer> moveDownVirables = new LinkedHashMap<>();
+
+        public MoveDownVariablesOperation() {
+            super(MoveDownVariablesOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
+            if (selection.size() <= 0) {
+                return Status.CANCEL_STATUS;
+            }
+            for (Object selectedItem : selection.toArray()) {
+                if (!(selectedItem instanceof GlobalVariableEntity)) {
+                    continue;
+                }
+                GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
+                int index = globalVariables.indexOf(selectedVariable) + 1;
+                if (index < globalVariables.size()) {
+                	GlobalVariableEntity variableBefore = globalVariables.get(index);
+                	
+                	if (variableBefore == selectedVariable) {
+                		continue;
+                	}
+                	
+                	globalVariables.remove(index - 1);
+                	globalVariables.add(index, selectedVariable);
+                }
+            }
+            refresh();
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            refresh();
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            for (Entry<GlobalVariableEntity, Integer> deletedVariable : moveDownVirables.entrySet()) {
+                globalVariables.add(deletedVariable.getValue(), deletedVariable.getKey());
+            }
+            refresh();
+            tableViewer.setSelection(new StructuredSelection(moveDownVirables.keySet().toArray()));
             setDirty(true);
             return Status.OK_STATUS;
         }
