@@ -612,13 +612,13 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
                 int indexMove = globalVariables.indexOf(selectedVariable) - 1;
                 if (indexMove >= 0) {
-                	GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
-                	
-                	if (variableBefore == selectedVariable) {
-                		continue;
-                	}
-                	Collections.swap(globalVariables, indexMove, indexMove + 1);
-                	moveUpVirables.add(indexMove);
+                    GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
+
+                    if (variableBefore == selectedVariable) {
+                    	continue;
+                    }
+                    Collections.swap(globalVariables, indexMove, indexMove + 1);
+                    moveUpVirables.add(indexMove);
                 }
             }
             refresh();
@@ -638,7 +638,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             if (moveUpVirables.size() > 0) {
             	Collections.sort(moveUpVirables, Collections.reverseOrder());
             	for (int indexMove : moveUpVirables) {
-            		Collections.swap(globalVariables, indexMove + 1, indexMove);
+                    Collections.swap(globalVariables, indexMove + 1, indexMove);
             	}
             }
             refresh();
@@ -668,11 +668,11 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
                 int indexMove = globalVariables.indexOf(selectedVariable) + 1;
                 if (indexMove < globalVariables.size()) {
-                	GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
-                	if (variableBefore == selectedVariable) {
-                		continue;
-                	}
-                	moveDownVirables.add(indexMove);
+                    GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
+                    if (variableBefore == selectedVariable) {
+                    	continue;
+                    }
+                    moveDownVirables.add(indexMove);
                 }
             }
             doChange();
@@ -685,7 +685,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             if (moveDownVirables.size() > 0) {
             	Collections.sort(moveDownVirables, Collections.reverseOrder());
             	for (int indexMove : moveDownVirables) {
-                	Collections.swap(globalVariables, indexMove - 1, indexMove);
+                    Collections.swap(globalVariables, indexMove - 1, indexMove);
             	}
             }
         }
