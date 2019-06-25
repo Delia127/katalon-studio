@@ -2,6 +2,8 @@ package com.kms.katalon.composer.global.part;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -594,6 +596,8 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     
     private class MoveUpVariablesOperation extends AbstractOperation {
         private Map<GlobalVariableEntity, Integer> moveUpvirables = new LinkedHashMap<>();
+        
+        private Integer indexMove;
 
         public MoveUpVariablesOperation() {
             super(MoveUpVariablesOperation.class.getName());
@@ -610,16 +614,15 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                     continue;
                 }
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
-                int index = globalVariables.indexOf(selectedVariable) - 1;
-                if (index >= 0) {
-                	GlobalVariableEntity variableBefore = globalVariables.get(index);
+                indexMove = globalVariables.indexOf(selectedVariable) - 1;
+                if (indexMove >= 0) {
+                	GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
                 	
                 	if (variableBefore == selectedVariable) {
                 		continue;
                 	}
-                	
-                	globalVariables.remove(index + 1);
-                	globalVariables.add(index, selectedVariable);
+
+                	Collections.swap(globalVariables, indexMove, indexMove + 1);
                 }
             }
             refresh();
@@ -636,19 +639,18 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            for (Entry<GlobalVariableEntity, Integer> deletedVariable : moveUpvirables.entrySet()) {
-                globalVariables.add(deletedVariable.getValue(), deletedVariable.getKey());
+            if (indexMove != null) {
+            	Collections.swap(globalVariables, indexMove + 1, indexMove);
             }
             refresh();
-            tableViewer.setSelection(new StructuredSelection(moveUpvirables.keySet().toArray()));
             setDirty(true);
             return Status.OK_STATUS;
         }
     }
     
     private class MoveDownVariablesOperation extends AbstractOperation {
-        private Map<GlobalVariableEntity, Integer> moveDownVirables = new LinkedHashMap<>();
-
+    	private Integer indexMove;
+    	
         public MoveDownVariablesOperation() {
             super(MoveDownVariablesOperation.class.getName());
         }
@@ -664,16 +666,15 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                     continue;
                 }
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
-                int index = globalVariables.indexOf(selectedVariable) + 1;
-                if (index < globalVariables.size()) {
-                	GlobalVariableEntity variableBefore = globalVariables.get(index);
+                indexMove = globalVariables.indexOf(selectedVariable) + 1;
+                if (indexMove < globalVariables.size()) {
+                	GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
                 	
                 	if (variableBefore == selectedVariable) {
                 		continue;
                 	}
                 	
-                	globalVariables.remove(index - 1);
-                	globalVariables.add(index, selectedVariable);
+                	Collections.swap(globalVariables, indexMove, indexMove - 1);
                 }
             }
             refresh();
@@ -690,11 +691,10 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            for (Entry<GlobalVariableEntity, Integer> deletedVariable : moveDownVirables.entrySet()) {
-                globalVariables.add(deletedVariable.getValue(), deletedVariable.getKey());
+            if (indexMove != null) {
+            	Collections.swap(globalVariables, indexMove - 1, indexMove);
             }
             refresh();
-            tableViewer.setSelection(new StructuredSelection(moveDownVirables.keySet().toArray()));
             setDirty(true);
             return Status.OK_STATUS;
         }
