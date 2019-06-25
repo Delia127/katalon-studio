@@ -592,6 +592,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     }
     
     private class MoveUpVariablesOperation extends AbstractOperation {
+    	
         private List<Integer> moveUpVirables = new ArrayList<Integer>();
         
         public MoveUpVariablesOperation() {
@@ -616,7 +617,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 	if (variableBefore == selectedVariable) {
                 		continue;
                 	}
-
                 	Collections.swap(globalVariables, indexMove, indexMove + 1);
                 	moveUpVirables.add(indexMove);
                 }
@@ -648,6 +648,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     }
     
     private class MoveDownVariablesOperation extends AbstractOperation {
+    	
     	private List<Integer> moveDownVirables = new ArrayList<Integer>();
     	
         public MoveDownVariablesOperation() {
@@ -668,7 +669,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 int indexMove = globalVariables.indexOf(selectedVariable) + 1;
                 if (indexMove < globalVariables.size()) {
                 	GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
-                	
                 	if (variableBefore == selectedVariable) {
                 		continue;
                 	}
@@ -682,8 +682,8 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         }
 
         private void doChange() {
-        	if (moveDownVirables.size() > 0) {
-        		Collections.sort(moveDownVirables, Collections.reverseOrder());
+            if (moveDownVirables.size() > 0) {
+            	Collections.sort(moveDownVirables, Collections.reverseOrder());
             	for (int indexMove : moveDownVirables) {
             		Collections.swap(globalVariables, indexMove - 1, indexMove);
             	}
@@ -699,7 +699,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-        	doChange();
+            doChange();
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
@@ -834,7 +834,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         return newVariableEntityWrapper;
     }
 
-
     public ExecutionProfileEntity getExecutionProfileEntity() {
         updateProfilEntityWithCurrentVariables();
         return executionProfileEntity;
@@ -844,5 +843,4 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     public boolean isDirty() {
         return mpart.isDirty();
     }
-
 }
