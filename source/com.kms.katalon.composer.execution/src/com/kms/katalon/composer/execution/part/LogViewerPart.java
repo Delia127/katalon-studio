@@ -82,6 +82,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
@@ -636,7 +637,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             try {
                 showTreeLogProperties();
             } catch (Exception e) {
-                e.printStackTrace();
+               LoggerSingleton.logError(e);
             }
         }
     };
