@@ -288,10 +288,13 @@ public class QTestIntegrationReportManager {
                 ReportUtil.writeLogRecordToHTMLFile(testSuiteLR, destReportFile,
                         Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
                 break;
+            case PDF:
+                if (!destReportFile.exists()) {
+                    break;
+                }
             default:
                 break;
         }
-
     }
 
     private static boolean isValidFileToAttach(File file, String projectDir) {
