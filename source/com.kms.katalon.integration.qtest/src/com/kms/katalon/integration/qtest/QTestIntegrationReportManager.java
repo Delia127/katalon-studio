@@ -233,7 +233,7 @@ public class QTestIntegrationReportManager {
                 } else {
                     File newReportFile = new File(logTempFolder, FilenameUtils.getBaseName(logFolder.getAbsolutePath())
                             + "." + formatType.getFileExtension());
-                    generateReportFile(formatType, newReportFile, testCaseLogRecord, testSuiteLogRecord);
+                    generateReportFile(formatType, newReportFile, testCaseLogRecord, testSuiteLogRecord, logFolder);
                 }
             }
 
@@ -277,7 +277,7 @@ public class QTestIntegrationReportManager {
     }
 
     private static void generateReportFile(ReportFormatType format, File destReportFile,
-            TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR)
+            TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR, File logFolder)
             throws IOException, URISyntaxException {
         switch (format) {
             case CSV:
@@ -289,11 +289,21 @@ public class QTestIntegrationReportManager {
                         Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
                 break;
             case PDF:
-                if (!destReportFile.exists()) {
-                    break;
-                }
+                checkPDFReportInProject(format, logFolder, destReportFile);
             default:
                 break;
+        }
+    }
+    
+    private static void checkPDFReportInProject(ReportFormatType formatType, File logFolder, File destReportFile) {
+        try {
+            File newReportFile = new File(logFolder,
+                    FilenameUtils.getBaseName(logFolder.getAbsolutePath()) + "." + formatType.getFileExtension());
+            if (newReportFile.exists()) {
+                FileUtils.copyFile(newReportFile, destReportFile);
+            }
+        } catch (IOException e) {
+            LogUtil.logError(e);
         }
     }
 
