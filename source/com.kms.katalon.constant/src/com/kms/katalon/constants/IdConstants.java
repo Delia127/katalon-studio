@@ -106,6 +106,8 @@ public interface IdConstants {
 
     // Test Object Part content
     public static final String TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testobject";
+
+    public static final String WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".windowstestobject";
     
     public static final String DRAFT_REQUEST_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".draftRequest";
 
@@ -327,4 +329,9 @@ public interface IdConstants {
     
     // Jira Plugin
     public static final String JIRA_PLUGIN_ID = "com.katalon.katalon-studio-jira-plugin";
+    
+    // Project Settings ID
+    public static final String SETTING_CAPABILITIES_WINDOWS = "com.kms.katalon.composer.execution.settings.default.5";
+    
+    public static final String SETTING_CAPABILITIES_REMOTE = "com.kms.katalon.composer.execution.settings.default.4";
 }

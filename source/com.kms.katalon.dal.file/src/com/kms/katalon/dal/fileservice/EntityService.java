@@ -33,7 +33,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
-import org.xml.sax.InputSource;
 
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.exception.InvalidNameException;
@@ -115,6 +114,7 @@ public final class EntityService {
                 com.kms.katalon.entity.repository.WebElementEntity.class,
                 com.kms.katalon.entity.repository.WebElementPropertyEntity.class,
                 com.kms.katalon.entity.repository.WebElementSelectorMethod.class,
+                com.kms.katalon.entity.repository.WindowsElementEntity.class,
                 com.kms.katalon.entity.testcase.TestCaseEntity.class,
                 com.kms.katalon.entity.testdata.DataFileEntity.class,
                 com.kms.katalon.entity.testdata.InternalDataColumnEntity.class,
@@ -140,7 +140,8 @@ public final class EntityService {
                 com.kms.katalon.dal.fileservice.adapter.CheckpointDataXmlAdapter.class,
                 com.kms.katalon.entity.project.SourceContent.class,
                 com.kms.katalon.entity.variable.VariableEntityWrapper.class,
-                com.kms.katalon.entity.project.SourceFolderConfiguration.class};
+                com.kms.katalon.entity.project.SourceFolderConfiguration.class
+                };
     }
 
     public Marshaller getMarshaller() {

@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core Windows
+Bundle-SymbolicName: com.kms.katalon.core.windows;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Katalon LLC
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.kms.katalon.core,
+ com.kms.katalon.core.appium,
+ com.kms.katalon.selenium-standalone,
+ org.codehaus.groovy,
+ com.kms.katalon.custom,
+ org.eclipse.core.runtime,
+ org.apache.commons.io,
+ org.apache.commons.lang3
+Export-Package: com.kms.katalon.core.windows,
+ com.kms.katalon.core.windows.constants,
+ com.kms.katalon.core.windows.driver,
+ com.kms.katalon.core.windows.keyword,
+ com.kms.katalon.core.windows.keyword.builtin,
+ com.kms.katalon.core.windows.keyword.contribution,
+ com.kms.katalon.core.windows.keyword.exception,
+ com.kms.katalon.core.windows.keyword.helper

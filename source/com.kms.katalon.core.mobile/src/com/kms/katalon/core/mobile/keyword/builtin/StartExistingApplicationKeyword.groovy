@@ -34,6 +34,7 @@ public class StartExistingApplicationKeyword extends MobileAbstractKeyword {
         startApplication(appId, flowControl)
     }
 
+    @CompileStatic
     public void startApplication(String appId, FailureHandling flowControl) throws StepFailedException {
         MobileKeywordMain.runKeyword({
             logger.logDebug(MessageFormat.format(CoreMobileMessageConstants.KW_LOG_INFO_STARTING_APP_WITH_ID, appId))

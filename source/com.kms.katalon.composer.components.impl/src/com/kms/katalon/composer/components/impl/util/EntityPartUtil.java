@@ -49,6 +49,10 @@ public class EntityPartUtil {
     public static String getTestObjectPartId(String testObjectPk) {
         return IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX + "(" + testObjectPk + ")";
     }
+    
+    public static String getWindowsTestObjectPartId(String windowsTestObjectId) {
+        return IdConstants.WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX + "(" + windowsTestObjectId + ")";
+    }
 
     public static String getDraftRequestPartId(String testObjectPk) {
         return IdConstants.DRAFT_REQUEST_CONTENT_PART_ID_PREFIX + "(" + testObjectPk + ")";

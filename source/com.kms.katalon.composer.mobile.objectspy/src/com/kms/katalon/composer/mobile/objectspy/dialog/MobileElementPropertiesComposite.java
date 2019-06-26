@@ -42,9 +42,9 @@ public class MobileElementPropertiesComposite {
 
     private TableViewer attributesTableViewer;
 
-    private MobileObjectSpyDialog dialog;
+    private MobileElementDialog dialog;
 
-    public MobileElementPropertiesComposite(MobileObjectSpyDialog dialog) {
+    public MobileElementPropertiesComposite(MobileElementDialog dialog) {
         this.dialog = dialog;
     }
 
@@ -253,7 +253,7 @@ public class MobileElementPropertiesComposite {
         attributesTableViewer.refresh();
     }
 
-    /* package */void focusAndEditCapturedElementName() {
+    public void focusAndEditCapturedElementName() {
         txtObjectName.setFocus();
         txtObjectName.selectAll();
     }

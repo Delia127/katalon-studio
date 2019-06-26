@@ -27,6 +27,7 @@ import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEnti
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.UserFileTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.CheckpointController;
@@ -53,6 +54,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
@@ -87,6 +89,9 @@ public class TreeEntityUtil {
                             folderTreeEntity));
                 } else if (childrenEntities[i] instanceof WebElementEntity) {
                     treeEntities.add(new WebElementTreeEntity((WebElementEntity) childrenEntities[i],
+                            folderTreeEntity));
+                } else if (childrenEntities[i] instanceof WindowsElementEntity) {
+                    treeEntities.add(new WindowsElementTreeEntity((WindowsElementEntity) childrenEntities[i],
                             folderTreeEntity));
                 } else if (childrenEntities[i] instanceof ReportEntity) {
                     treeEntities.add(new ReportTreeEntity((ReportEntity) childrenEntities[i], folderTreeEntity));
@@ -137,6 +142,13 @@ public class TreeEntityUtil {
     }
     
     public static FolderTreeEntity getWebElementFolderTreeEntity(FolderEntity folderEntity, ProjectEntity projectEntity)
+            throws Exception {
+        FolderEntity webElementRoot = FolderController.getInstance().getObjectRepositoryRoot(projectEntity);
+        return new FolderTreeEntity(folderEntity,
+                createSelectedTreeEntityHierachy(folderEntity.getParentFolder(), webElementRoot));
+    }
+
+    public static FolderTreeEntity getWindowsElementFolderTreeEntity(FolderEntity folderEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity webElementRoot = FolderController.getInstance().getObjectRepositoryRoot(projectEntity);
         return new FolderTreeEntity(folderEntity,
@@ -237,6 +249,11 @@ public class TreeEntityUtil {
     public static SystemFileTreeEntity getSystemFileTreeEntity(SystemFileEntity systemFile,
             FolderEntity parent) {
         return new SystemFileTreeEntity(systemFile, new FolderTreeEntity(parent, null));
+    }
+    
+    public static WindowsElementTreeEntity getWindowsElementTreeEntity(WindowsElementEntity windowsElement,
+            FolderEntity parent) {
+        return new WindowsElementTreeEntity(windowsElement, new FolderTreeEntity(parent, null));
     }
 
     /**

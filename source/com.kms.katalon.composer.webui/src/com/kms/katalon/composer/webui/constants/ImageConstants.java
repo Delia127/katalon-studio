@@ -23,7 +23,7 @@ public class ImageConstants {
 
     public static final String IMG_URL_16_FIREFOX_HEADLESS = ImageManager.getImageURLString(IImageKeys.FIREFOX_HEADLESS_16);
 
-    public static final String IMG_URL_16_WEB_DESKTOP = ImageManager.getImageURLString(IImageKeys.DESKTOP_16);
+    public static final String IMG_URL_16_WEB_DESKTOP = ImageManager.getImageURLString(IImageKeys.WEB_16);
 
     public static final Image IMG_16_ADD = ImageManager.getImage(IImageKeys.ADD_16);
 

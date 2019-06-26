@@ -71,6 +71,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.CUSTOM_EXECUTION_16);
         ImageManager.registerImage(IImageKeys.DEBUG_PERSPECTIVE_16);
         ImageManager.registerImage(IImageKeys.DESKTOP_16);
+        ImageManager.registerImage(IImageKeys.WEB_16);
         ImageManager.registerImage(IImageKeys.OK_16);
         ImageManager.registerImage(IImageKeys.DONE_16);
         ImageManager.registerImage(IImageKeys.GLOBAL_VARIABLE_16);
@@ -252,6 +253,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.GROOVY_16);
         ImageManager.registerImage(IImageKeys.JAVA_16);
         ImageManager.registerImage(IImageKeys.GIT_FILE_16);
+        ImageManager.registerImage(IImageKeys.WINDOWS_ENTITY_16);
     }
 
     private void registerTestCaseStepImages() {

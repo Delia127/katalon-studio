@@ -179,4 +179,7 @@ public class ImageConstants {
     
     // CDropdownBox
     public static final Image IMG_16_CHECK = ImageManager.getImage(IImageKeys.CHECK_16);
+    
+    // WindowsElementTreeEntity
+    public static final Image IMG_16_WINDOWS_ENTITY = ImageManager.getImage(IImageKeys.WINDOWS_ENTITY_16);
 }
