@@ -3,6 +3,7 @@ package com.kms.katalon.composer.integration.analytics.uploadProject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +40,10 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
+import com.kms.katalon.integration.analytics.handler.AnalyticsUploadProjectHandler;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.integration.analytics.util.ZipHelper;
 
 public class StoreProjectCodeToCloudDialog extends Dialog {
 
@@ -220,7 +223,10 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         
         String folderCurrentProject = currentProject.getFolderLocation();
 
-        uploadProject(nameFileZip, sellectProject, folderCurrentProject, new ProgressMonitorDialog(getShell()));
+//        uploadProject(nameFileZip, sellectProject, folderCurrentProject, new ProgressMonitorDialog(getShell()));
+        AnalyticsUploadProjectHandler.uploadProject(serverUrl, email, password, nameFileZip, 
+        		sellectProject, folderCurrentProject, new ProgressMonitorDialog(getShell()));
+        
         super.okPressed();
     }
 

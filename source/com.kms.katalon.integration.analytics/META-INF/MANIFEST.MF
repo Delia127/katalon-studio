@@ -36,7 +36,8 @@ Require-Bundle: com.kms.katalon.core,
  org.eclipse.e4.core.di,
  org.eclipse.e4.core.services,
  org.eclipse.e4.ui.di,
- org.eclipse.e4.ui.services
+ org.eclipse.e4.ui.services,
+ org.apache.commons.io
 Export-Package: com.kms.katalon.integration.analytics,
  com.kms.katalon.integration.analytics.configuration,
  com.kms.katalon.integration.analytics.constants,
