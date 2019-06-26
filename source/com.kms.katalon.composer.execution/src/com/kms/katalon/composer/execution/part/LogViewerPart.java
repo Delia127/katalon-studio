@@ -631,7 +631,6 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private Listener focusOutListener = new Listener() {
-
         @Override
         public void handleEvent(org.eclipse.swt.widgets.Event event) {
             try {
@@ -639,9 +638,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
-
     };
     // Handle mouse down event on txtMessage
     private Listener mouseDownListener = new Listener() {
