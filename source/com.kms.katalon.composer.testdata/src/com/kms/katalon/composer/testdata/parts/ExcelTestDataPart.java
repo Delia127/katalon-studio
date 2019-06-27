@@ -87,6 +87,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private Button ckcbEnableHeader;
 
     private Button ckcbUseRelativePath;
+    
+    private Button ckcbReadAsString;
 
     private Button btnBrowse;
 
@@ -235,7 +237,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         Composite compositeCheckBoxes = new Composite(compositeFileInfoDetails, SWT.NONE);
         compositeCheckBoxes.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        GridLayout glCompositeCheckBoxes = new GridLayout(2, false);
+        GridLayout glCompositeCheckBoxes = new GridLayout(3, false);
         glCompositeCheckBoxes.horizontalSpacing = 15;
         glCompositeCheckBoxes.marginWidth = 0;
         compositeCheckBoxes.setLayout(glCompositeCheckBoxes);
@@ -245,6 +247,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         ckcbUseRelativePath = new Button(compositeCheckBoxes, SWT.CHECK);
         ckcbUseRelativePath.setText(StringConstants.PA_CHKBOX_USE_RELATIVE_PATH);
+        
+        ckcbReadAsString = new Button(compositeCheckBoxes, SWT.CHECK);
+        ckcbReadAsString.setText(StringConstants.VIEW_LBL_READ_AS_STRING);
         new Label(compositeCheckBoxes, SWT.NONE);
 
         isFileInfoExpanded = true;
@@ -306,6 +311,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
         ckcbEnableHeader.setSelection(dataFile.isContainsHeaders());
 
         ckcbUseRelativePath.setSelection(dataFile.getIsInternalPath());
+        
+        ckcbReadAsString.setSelection(Boolean.valueOf(dataFile.getProperty("readAsString")).booleanValue());
 
         fCurrentSheetName = dataFile.getSheetName();
 
@@ -390,6 +397,14 @@ public class ExcelTestDataPart extends TestDataMainPart {
             public void widgetSelected(SelectionEvent e) {
                 executeOperation(new ChangeUseRelativePathOperation(ckcbUseRelativePath.getSelection()));
                 
+            }
+        });
+        
+        ckcbReadAsString.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                getDataFile().setProperty("readAsString", String.valueOf(ckcbReadAsString.getSelection()));
+                dirtyable.setDirty(true);
             }
         });
 
