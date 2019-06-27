@@ -641,6 +641,18 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             }
         }
     };
+    private Listener resizeListener = new Listener() {
+
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            try {
+                showTreeLogProperties();
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        
+    };
     // Handle mouse down event on txtMessage
     private Listener mouseDownListener = new Listener() {
         @Override
@@ -716,6 +728,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         txtMessage.setEditable(false);
         txtMessage.addListener(SWT.MouseDown, mouseDownListener);
         txtMessage.addListener(SWT.FocusOut, focusOutListener);
+        txtMessage.addListener(SWT.Resize, resizeListener);
         txtMessage.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
         setWrapTxtMessage();
     }
