@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.global.part;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.codehaus.groovy.runtime.ArrayUtil;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.runtime.CoreException;
@@ -605,6 +607,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             if (selection.size() <= 0) {
                 return Status.CANCEL_STATUS;
             }
+            GlobalVariableEntity lastSelected = new GlobalVariableEntity();
             for (Object selectedItem : selection.toArray()) {
                 if (!(selectedItem instanceof GlobalVariableEntity)) {
                     continue;
@@ -613,13 +616,18 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 int indexMove = globalVariables.indexOf(selectedVariable) - 1;
                 if (indexMove >= 0) {
                     GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
-
-                    if (variableBefore == selectedVariable) {
+                       
+                    if (variableBefore.equals(selectedVariable) || variableBefore.equals(lastSelected)) {
+                        lastSelected = selectedVariable;
                     	continue;
                     }
                     Collections.swap(globalVariables, indexMove, indexMove + 1);
                     moveUpVirables.add(indexMove);
                 }
+                lastSelected = selectedVariable;
+            }
+            if (moveUpVirables.size() == 0) {
+                return Status.CANCEL_STATUS;
             }
             refresh();
             setDirty(true);
@@ -661,36 +669,38 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             if (selection.size() <= 0) {
                 return Status.CANCEL_STATUS;
             }
-            for (Object selectedItem : selection.toArray()) {
+            GlobalVariableEntity lastSelected = new GlobalVariableEntity();
+            List<GlobalVariableEntity> selections = selection.toList();
+            Collections.reverse(selections);
+            for (Object selectedItem : selections) {
                 if (!(selectedItem instanceof GlobalVariableEntity)) {
                     continue;
                 }		
                 GlobalVariableEntity selectedVariable = (GlobalVariableEntity) selectedItem;
                 int indexMove = globalVariables.indexOf(selectedVariable) + 1;
                 if (indexMove < globalVariables.size()) {
-                    GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
-                    if (variableBefore == selectedVariable) {
+                    GlobalVariableEntity variableAfter = globalVariables.get(indexMove);
+                    if (variableAfter.equals(selectedVariable) || variableAfter.equals(lastSelected)) {
+                        lastSelected = selectedVariable;
                     	continue;
                     }
+                    Collections.swap(globalVariables, indexMove - 1, indexMove);
                     moveDownVirables.add(indexMove);
                 }
+                lastSelected = selectedVariable;
             }
-            doChange(false);
+            if (moveDownVirables.size() == 0) {
+                return Status.CANCEL_STATUS;
+            }
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
         }
 
-        private void doChange(boolean isUndo) {
-            if (moveDownVirables.size() > 0) {
-            	if (isUndo) {
-                    Collections.sort(moveDownVirables);
-            	} else {
-                    Collections.sort(moveDownVirables, Collections.reverseOrder());
-            	}
-            	for (int indexMove : moveDownVirables) {
-                    Collections.swap(globalVariables, indexMove - 1, indexMove);
-            	}
+        private void doChange() {
+            Collections.sort(moveDownVirables);
+            for (int indexMove : moveDownVirables) {
+                Collections.swap(globalVariables, indexMove - 1, indexMove);
             }
         }
         
@@ -703,7 +713,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            doChange(true);
+            doChange();
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
