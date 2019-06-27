@@ -297,10 +297,11 @@ public class QTestIntegrationReportManager {
     
     private static void checkPDFReportInProject(ReportFormatType formatType, File logFolder, File destReportFile) {
         try {
-            File newReportFile = new File(logFolder,
+            //If there if PDF file in logFoder, then copy the content to the dest file.
+            File pdfReportFile = new File(logFolder, 
                     FilenameUtils.getBaseName(logFolder.getAbsolutePath()) + "." + formatType.getFileExtension());
-            if (newReportFile.exists()) {
-                FileUtils.copyFile(newReportFile, destReportFile);
+            if(logFolder.getAbsoluteFile().exists()) {
+                FileUtils.copyFile(pdfReportFile, destReportFile);
             }
         } catch (IOException e) {
             LogUtil.logError(e);
