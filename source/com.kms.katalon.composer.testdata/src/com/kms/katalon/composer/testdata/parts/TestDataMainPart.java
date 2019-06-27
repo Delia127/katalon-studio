@@ -84,17 +84,18 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
     protected ModifyListener modifyListener;
 
     /**
-     * Create controls of Test Data. In addition to override this method to 
+     * Create controls of Test Data. In addition to override this method to
      * create custom controls, extending classes should implement
-     * {@link #initValues()} to initialize any values that are dependent on the 
+     * {@link #initValues()} to initialize any values that are dependent on the
      * underlying physical data file
+     * 
      * @param parent
-     * @param mpart 
+     * @param mpart
      */
     public void createControls(Composite parent, MPart mpart) {
         this.mpart = mpart;
         initialize(mpart, partService);
-        
+
         currentThreads = new HashSet<Thread>();
 
         isConfirmDialogShowed = false;
@@ -106,14 +107,14 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
         registerEventHandlers();
 
         updateDataFile((DataFileEntity) mpart.getObject());
-        
+
         initValues();
 
         dirtyable.setDirty(false);
     }
 
     /**
-     * Concrete classes must initialize values that are dependent on the 
+     * Concrete classes must initialize values that are dependent on the
      * underlying physical data file here. This method is called only
      * after the physical data file is initialized.
      */

@@ -269,8 +269,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
     @Override
     protected void initValues() {
         String strReadAsString = getDataFile().getProperty("readAsString");
-        ckcbReadAsString.setSelection((strReadAsString == null
-                || strReadAsString.isEmpty()) ? true : Boolean.valueOf(strReadAsString).booleanValue());
+        ckcbReadAsString.setSelection((strReadAsString == null || strReadAsString.isEmpty()) ? true
+                : Boolean.valueOf(strReadAsString).booleanValue());
     }
 
     @Override
