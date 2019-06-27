@@ -167,6 +167,13 @@ public class DBTestDataPart extends TestDataMainPart {
         btnFetchData.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
         return parent;
     }
+    
+    @Override
+    protected void initValues() {
+        String strReadAsString = getDataFile().getProperty("readAsString");
+        ckcbReadAsString.setSelection((strReadAsString == null
+                || strReadAsString.isEmpty()) ? true : Boolean.valueOf(strReadAsString).booleanValue());
+    }
 
     @Override
     protected Composite createDataTablePart(Composite parent) {

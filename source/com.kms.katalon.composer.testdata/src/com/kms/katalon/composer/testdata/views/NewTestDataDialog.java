@@ -54,7 +54,7 @@ public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
         glReadAsStringOption.marginHeight = 0;
         glReadAsStringOption.marginWidth = 0;
         readAsStringOptionComposite.setLayout(glReadAsStringOption);
-        readAsStringOptionComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true, 2, 1));
+        readAsStringOptionComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2, 1));
         
         Label labelDataSourceType = new Label(readAsStringOptionComposite, SWT.NONE);
         labelDataSourceType.setText(StringConstants.VIEW_LBL_READ_AS_STRING);
@@ -71,7 +71,9 @@ public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
     }
 
     private Control createDataSourceTypeControl(Composite parent, int column) {
-        parent.setLayoutData(new GridData(GridData.FILL_BOTH));
+        GridData gdParent = new GridData(SWT.FILL, SWT.FILL, true, true, column, 1);
+        gdParent.heightHint = 250;
+        parent.setLayoutData(gdParent);
         parent.setLayout(new GridLayout(column, false));
         Label labelDataSourceType = new Label(parent, SWT.NONE);
         labelDataSourceType.setText(StringConstants.VIEW_LBL_DATA_TYPE);
