@@ -318,8 +318,6 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         ckcbUseRelativePath.setSelection(dataFile.getIsInternalPath());
         
-        ckcbReadAsString.setSelection(Boolean.valueOf(dataFile.getProperty("readAsString")).booleanValue());
-
         fCurrentSheetName = dataFile.getSheetName();
 
         readExcelFile();
