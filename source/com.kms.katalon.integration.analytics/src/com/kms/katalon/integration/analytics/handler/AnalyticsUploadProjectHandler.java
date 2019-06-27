@@ -2,6 +2,8 @@ package com.kms.katalon.integration.analytics.handler;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -10,15 +12,19 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.program.Program;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.util.ZipHelper;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsRunConfiguration;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestSuiteCollection;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
+import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 
 public class AnalyticsUploadProjectHandler {
@@ -32,7 +38,7 @@ public class AnalyticsUploadProjectHandler {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
-                        monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_TITLE_UPLOAD_CODE, 6);
+                        monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_TITLE_UPLOAD_CODE, 5);
                         monitor.subTask(IntegrationAnalyticsMessages.STORE_CODE_COMPRESSING_PROJECT);
 
                         String tempDir = ProjectController.getInstance().getTempDir();
@@ -61,22 +67,11 @@ public class AnalyticsUploadProjectHandler {
                                     projectId, teamId, timestamp, nameFileZip, zipTeamFile.toString(),
                                     zipTeamFile.getName().toString(), uploadInfo.getPath(), token.getAccess_token());
 
-                            //here
-                            AnalyticsTestSuiteCollection tsc = newTestProject.getTestSuiteCollections().get(0);
-                            AnalyticsApiProvider.createTestPlan(serverUrl, projectId, teamId, 
-                                    tsc.getName(), 
-                                    newTestProject.getId(), "CIRCLE_CI", "TSC", tsc.getId(), token.getAccess_token());
-                            
                             testProject.setId(newTestProject.getId());
+                            testProject.setName(newTestProject.getName());
+                            testProject.setDescription(newTestProject.getDescription());
+                            testProject.setTestSuiteCollections(newTestProject.getTestSuiteCollections());
 
-                            monitor.subTask(IntegrationAnalyticsMessages.STORE_CODE_OPEN_BROWSER);
-                            monitor.worked(1);
-
-                            URIBuilder builder = new URIBuilder(serverUrl);
-                            builder.setScheme("https");
-                            builder.setPath("/team/" + teamId.toString() + "/project/" + projectId.toString()
-                                    + "/test-project");
-                            Program.launch(builder.toString());
                         } catch (Exception exception) {
                             MultiStatusErrorDialog.showErrorDialog(exception,
                                     IntegrationAnalyticsMessages.STORE_CODE_ERROR_COMPRESS, exception.getMessage());
@@ -96,5 +91,47 @@ public class AnalyticsUploadProjectHandler {
                     exception.getMessage());
         }
         return testProject;
+    }
+
+    public static void createTestPlan(final String serverUrl, final String email, final String password,
+            final String testPlanName, final AnalyticsProject project, final AnalyticsTestProject testProject,
+            final AnalyticsTestSuiteCollection tsc, ProgressMonitorDialog monitorDialog) {
+        try {
+            monitorDialog.run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+
+                    try {
+                        monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_CREATE_TEST_PLAN, 2);
+
+                        AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+
+                        Long teamId = project.getTeamId();
+                        Long projectId = project.getId();
+                        AnalyticsRunConfiguration analyticsRunConfiguration = AnalyticsApiProvider.createTestPlan(
+                                serverUrl, projectId, teamId, testPlanName, testProject.getId(),
+                                AnalyticsStringConstants.ANALYTICS_CLOUD_TYPE_CIRCLE_CI,
+                                AnalyticsStringConstants.ANALYTICS_CONFIG_TYPE_TEST_SUITE_COLLECTION, tsc.getId(),
+                                token.getAccess_token());
+                        monitor.worked(1);
+                        monitor.setTaskName("");
+                        URIBuilder builder = new URIBuilder(serverUrl);
+                        builder.setScheme(AnalyticsStringConstants.ANALYTICS_SCHEME_HTTPS);
+                        builder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_URL_TEST_PLAN, teamId,
+                                projectId, analyticsRunConfiguration.getId()));
+                        Program.launch(builder.toString());
+                        
+                    } catch (Exception e) {
+                        throw new InvocationTargetException(e);
+                    } finally {
+                        monitor.done();
+                    }
+                }
+            });
+        } catch (InvocationTargetException | InterruptedException exception) {
+            MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
+                    exception.getMessage());
+        }
+
     }
 }

@@ -40,6 +40,7 @@ import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsRunConfiguration;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeamPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestProject;
@@ -249,7 +250,7 @@ public class AnalyticsApiProvider {
         }
     }
 
-    public static void createTestPlan(String serverUrl, long projectId, long teamId, String name, long testProjectId,
+    public static AnalyticsRunConfiguration createTestPlan(String serverUrl, long projectId, long teamId, String name, long testProjectId,
             String cloudType, String configType, long testSuiteCollectionId, String token)
             throws AnalyticsApiExeception {
         try {
@@ -275,7 +276,7 @@ public class AnalyticsApiProvider {
             StringEntity entity = new StringEntity(gson.toJson(map));
             httpPost.setEntity(entity);
 
-            executeRequest(httpPost, Object.class);
+            return executeRequest(httpPost, AnalyticsRunConfiguration.class);
         } catch (Exception e) {
             LogUtil.logError(e);
             throw new AnalyticsApiExeception(e);

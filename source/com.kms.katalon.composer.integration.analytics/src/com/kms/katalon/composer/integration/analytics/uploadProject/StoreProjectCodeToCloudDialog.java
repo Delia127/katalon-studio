@@ -34,6 +34,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
@@ -220,13 +221,24 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
         int currentIndexProject = cbbProjects.getSelectionIndex();
         AnalyticsProject sellectProject = projects.get(currentIndexProject);
-        
+
         String folderCurrentProject = currentProject.getFolderLocation();
 
-//        uploadProject(nameFileZip, sellectProject, folderCurrentProject, new ProgressMonitorDialog(getShell()));
-        AnalyticsUploadProjectHandler.uploadProject(serverUrl, email, password, nameFileZip, 
-        		sellectProject, folderCurrentProject, new ProgressMonitorDialog(getShell()));
-        
+        // uploadProject(nameFileZip, sellectProject, folderCurrentProject, new ProgressMonitorDialog(getShell()));
+        AnalyticsUploadProjectHandler.uploadProject(serverUrl, email, password, nameFileZip, sellectProject,
+                folderCurrentProject, new ProgressMonitorDialog(getShell()));
+
+        Long teamId = sellectProject.getTeamId();
+        Long projectId = sellectProject.getId();
+        try {
+            URIBuilder builder = new URIBuilder(serverUrl);
+            builder.setScheme(AnalyticsStringConstants.ANALYTICS_SCHEME_HTTPS);
+            builder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_URL_TEST_PROJECT, teamId, projectId));
+            Program.launch(builder.toString());
+        } catch (URISyntaxException e) {
+            MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
+        }
+
         super.okPressed();
     }
 
@@ -237,9 +249,10 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
-                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_TITLE_UPLOAD_CODE, 6);
+                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_TITLE_UPLOAD_CODE,
+                                6);
                         monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_COMPRESSING_PROJECT);
-                        
+
                         String tempDir = ProjectController.getInstance().getTempDir();
                         File zipTeamFile = new File(tempDir, nameFileZip + ".zip");
                         try {
