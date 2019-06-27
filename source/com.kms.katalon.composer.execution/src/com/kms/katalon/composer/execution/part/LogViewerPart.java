@@ -82,6 +82,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
@@ -631,11 +632,22 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         txtMessage.setText(message);
     }
 
+    private Listener focusOutListener = new Listener() {
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            try {
+                showTreeLogProperties();
+            } catch (Exception e) {
+               LoggerSingleton.logError(e);
+            }
+        }
+    };
     // Handle mouse down event on txtMessage
     private Listener mouseDownListener = new Listener() {
         @Override
         public void handleEvent(org.eclipse.swt.widgets.Event event) {
             try {
+                showTreeLogProperties();
                 int offset = txtMessage.getOffsetAtLocation(new Point(event.x, event.y));
                 StyleRange style = null;
                 for (StyleRange range : txtMessage.getStyleRanges()) {
@@ -657,7 +669,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     ArtifactStyleRangeMatcher matcher = (ArtifactStyleRangeMatcher) styleData;
                     matcher.onClick(txtMessage.getText(), style);
                 }
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 // no character under event.x, event.y
             }
         }
@@ -704,6 +716,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
         txtMessage.addListener(SWT.MouseDown, mouseDownListener);
+        txtMessage.addListener(SWT.FocusOut, focusOutListener);
         txtMessage.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
         setWrapTxtMessage();
     }
