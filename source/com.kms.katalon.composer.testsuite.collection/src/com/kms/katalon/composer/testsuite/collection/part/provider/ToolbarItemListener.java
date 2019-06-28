@@ -38,7 +38,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestSuiteCollection;
-import com.kms.katalon.integration.analytics.handler.AnalyticsUploadProjectHandler;
+import com.kms.katalon.integration.analytics.handler.AnalyticsGridHandler;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiveListener {
@@ -109,7 +109,7 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
             AnalyticsProject analyticsProject = analyticsSettingStore.getProject();
 
             String nameFileZip = currentProject.getName();
-            AnalyticsTestProject analyticsTestProject = AnalyticsUploadProjectHandler.uploadProject(serverUrl, email,
+            AnalyticsTestProject analyticsTestProject = AnalyticsGridHandler.uploadProject(serverUrl, email,
                     password, nameFileZip, analyticsProject, currentProject.getFolderLocation(),
                     new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
 
@@ -121,7 +121,7 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
                     .findFirst()
                     .orElse(null);
 
-            AnalyticsUploadProjectHandler.createTestPlan(serverUrl, email, password, name, analyticsProject,
+            AnalyticsGridHandler.createTestPlan(serverUrl, email, password, name, analyticsProject,
                     analyticsTestProject, analyticsTestSuiteCollection,
                     new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
 

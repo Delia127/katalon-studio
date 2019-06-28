@@ -27,7 +27,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 
-public class AnalyticsUploadProjectHandler {
+public class AnalyticsGridHandler {
 
     public static AnalyticsTestProject uploadProject(final String serverUrl, final String email, final String password,
             final String nameFileZip, final AnalyticsProject sellectProject, final String folderCurrentProject,
