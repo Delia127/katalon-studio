@@ -15,6 +15,12 @@ public class KStoreClientExceptionWithInfo extends Exception {
         this.credential = credential;
         this.endpoint = endpoint;
     }
+    
+    public KStoreClientExceptionWithInfo(String message, KStoreCredentials credential, String endpoint, Throwable cause) {
+        super(message, cause);
+        this.credential = credential;
+        this.endpoint = endpoint;
+    }
 
     private String getCredential() {
         if (credential == null) {
