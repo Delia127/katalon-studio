@@ -459,7 +459,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void updateDataStore() {
         try {
-            boolean encryptionEnabled = enableAnalyticsIntegration.getSelection();
+            boolean encryptionEnabled = chckEncrypt.getSelection();
             analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
             analyticsSettingStore.setServerEndPoint(txtServerUrl.getText(), encryptionEnabled);
             analyticsSettingStore.enableEncryption(encryptionEnabled);
