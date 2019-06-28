@@ -109,8 +109,8 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
             AnalyticsProject analyticsProject = analyticsSettingStore.getProject();
 
             String nameFileZip = currentProject.getName();
-            AnalyticsTestProject analyticsTestProject = AnalyticsGridHandler.uploadProject(serverUrl, email,
-                    password, nameFileZip, analyticsProject, currentProject.getFolderLocation(),
+            AnalyticsTestProject analyticsTestProject = AnalyticsGridHandler.uploadProject(serverUrl, email, password,
+                    nameFileZip, analyticsProject, currentProject.getFolderLocation(),
                     new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
 
             TestSuiteCollectionEntity testSuiteCollection = provider.getTestSuiteCollection();
@@ -125,9 +125,10 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
                     analyticsTestProject, analyticsTestSuiteCollection,
                     new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
 
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.LS_MSG_UNABLE_TO_ADD_TEST_SUITE, e.getMessage());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN,
+                    e.getMessage());
         }
 
         return;
@@ -150,9 +151,9 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
                     continue;
                 }
 
-                TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration.newInstance(
-                        selectedTestSuite, TestExecutionGroupCollector.getInstance().getDefaultConfiguration(
-                                ProjectController.getInstance().getCurrentProject()));
+                TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration
+                        .newInstance(selectedTestSuite, TestExecutionGroupCollector.getInstance()
+                                .getDefaultConfiguration(ProjectController.getInstance().getCurrentProject()));
                 getTableItems().add(newTestSuiteRunConfig);
                 newItems.add(newTestSuiteRunConfig);
             }
@@ -175,8 +176,8 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
         TestSuiteSelectionDialog dialog = new TestSuiteSelectionDialog(Display.getCurrent().getActiveShell(),
                 new EntityLabelProvider(), new EntityProvider(), new TestSuiteViewerFilter(entityProvider));
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        dialog.setInput(TreeEntityUtil.getChildren(null, FolderController.getInstance()
-                .getTestSuiteRoot(currentProject)));
+        dialog.setInput(
+                TreeEntityUtil.getChildren(null, FolderController.getInstance().getTestSuiteRoot(currentProject)));
         if (dialog.open() != Dialog.OK) {
             return Collections.emptyList();
         }
@@ -329,7 +330,7 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
         REMOVE(StringConstants.REMOVE),
         UP(StringConstants.UP),
         DOWN(StringConstants.DOWN),
-        CREATE_TEST_PLAN(StringConstants.PA_ACTION_CREATE_TEST_PLAN),
+        CREATE_TEST_PLAN(StringConstants.PA_ACTION_ANALYTICS_CREATE_TEST_PLAN),
         EXECUTE(StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION);
 
         private final String id;

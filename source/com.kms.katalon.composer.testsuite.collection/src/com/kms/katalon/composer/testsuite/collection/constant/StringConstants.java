@@ -4,14 +4,14 @@ import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
     // Test Suite Collection Part
-	public static final String PA_ACTION_CREATE_TEST_PLAN = ComposerTestsuiteCollectionMessageConstants.PA_ACTION_CREATE_TEST_PLAN;
-	
+    public static final String PA_ACTION_ANALYTICS_CREATE_TEST_PLAN = ComposerTestsuiteCollectionMessageConstants.PA_ACTION_ANALYTICS_CREATE_TEST_PLAN;
+
     public static final String PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION;
 
     public static final String PA_TABLE_COLUMN_RUN_WITH = ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_RUN_WITH;
 
-    public static final String PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION;    
-    
+    public static final String PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION;
+
     // TestSuiteSelectionCellEditor
     public static final String DIA_TITLE_TEST_SUITE_BROWSER = ComposerTestsuiteCollectionMessageConstants.DIA_TITLE_TEST_SUITE_BROWSER;
 
@@ -19,6 +19,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // ToolbarItemListener
     public static final String LS_MSG_UNABLE_TO_ADD_TEST_SUITE = ComposerTestsuiteCollectionMessageConstants.LS_MSG_UNABLE_TO_ADD_TEST_SUITE;
+
+    public static final String LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN = ComposerTestsuiteCollectionMessageConstants.LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN;
 
     // RennameTestSuiteCollectionHandler
     public static final String HDL_MSG_UNABLE_TO_RENAME_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.HDL_MSG_UNABLE_TO_RENAME_TEST_SUITE_COLLECTION;
@@ -62,12 +64,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String HAND_JOB_DELETING_ENTITY = ComposerTestsuiteCollectionMessageConstants.HAND_JOB_DELETING_ENTITY;
 
     public static final String HAND_JOB_DELETING_FOLDER = ComposerTestsuiteCollectionMessageConstants.HAND_JOB_DELETING_FOLDER;
-    
+
     public static final String ERROR_TITLE = ComposerTestsuiteCollectionMessageConstants.ERROR_TITLE;
-    
+
     public static final String HAND_ERROR_MSG_UNABLE_TO_OPEN_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.HAND_ERROR_MSG_UNABLE_TO_OPEN_TEST_SUITE_COLLECTION;
 
     public static final String PA_TAB_MAIN = ComposerTestsuiteCollectionMessageConstants.PA_TAB_MAIN;
-    
+
     public static final String PA_TAB_RESULT = ComposerTestsuiteCollectionMessageConstants.PA_TAB_RESULT;
 }

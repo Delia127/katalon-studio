@@ -102,7 +102,7 @@ public class AnalyticsGridHandler {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 
                     try {
-                        monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_CREATE_TEST_PLAN, 2);
+                        monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_CREATE_TEST_PLAN, 1);
 
                         AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
 
@@ -120,7 +120,7 @@ public class AnalyticsGridHandler {
                         builder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_URL_TEST_PLAN, teamId,
                                 projectId, analyticsRunConfiguration.getId()));
                         Program.launch(builder.toString());
-                        
+
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
                     } finally {

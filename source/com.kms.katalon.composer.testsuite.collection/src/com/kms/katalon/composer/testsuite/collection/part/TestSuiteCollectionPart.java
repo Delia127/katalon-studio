@@ -476,7 +476,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         toolItemExecute = createToolItemWithSelectionListener(toolBar,
                 StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION, ImageConstants.IMG_16_EXECUTE,
                 selectionListener);
-        createToolItemWithSelectionListener(toolBar, StringConstants.PA_ACTION_CREATE_TEST_PLAN,
+        createToolItemWithSelectionListener(toolBar, StringConstants.PA_ACTION_ANALYTICS_CREATE_TEST_PLAN,
                 ImageConstants.IMG_16_ADD, selectionListener);
     }
 
