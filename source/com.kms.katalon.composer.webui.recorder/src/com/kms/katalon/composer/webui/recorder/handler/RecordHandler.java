@@ -45,7 +45,6 @@ import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
-import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
 import com.kms.katalon.constants.EventConstants;
@@ -134,7 +133,6 @@ public class RecordHandler {
                 return;
             }
             final SaveToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
-            final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
             final List<WebPage> recordedElements = recordDialog.getElements();
             boolean shouldOverride = true;
             if (testCaseCompositePart == null || testCaseCompositePart.isDisposed()) {
@@ -142,7 +140,7 @@ public class RecordHandler {
                 shouldOverride = false;
             }
             updateRecordedElementsAfterSavingToObjectRepository(recordedElements, folderSelectionResult.getEntitySavedMap());
-            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements,
+            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedElements,
                     recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
         } catch (Exception e) {
             MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
@@ -215,8 +213,7 @@ public class RecordHandler {
     }
 
     private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
-            final SaveToObjectRepositoryDialogResult folderSelectionResult,
-            final List<HTMLActionMapping> recordedActions, final List<WebPage> recordedElements,
+            final SaveToObjectRepositoryDialogResult folderSelectionResult, final List<WebPage> recordedElements,
             final ScriptNodeWrapper wrapper, final VariableEntity[] variables, final boolean shouldOverride) {
         if (testCaseCompositePart == null) {
             return;
@@ -230,7 +227,7 @@ public class RecordHandler {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE,
-                            recordedActions.size() + recordedElements.size());
+                            recordedElements.size());
 
                     addRecordedElements(recordedElements, folderSelectionResult, monitor);
                     sync.syncExec(new Runnable() {

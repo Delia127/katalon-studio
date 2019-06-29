@@ -102,51 +102,7 @@ public class HTMLActionUtil {
         return new ExpressionStatementWrapper(methodCallExpressionWrapper, null);
     }
 
-    public static boolean verifyActionMapping(HTMLActionMapping actionMapping,
-            List<HTMLActionMapping> existingActionMappings) {
-        if (actionMapping == null || actionMapping.getAction() == null) {
-            return false;
-        }
-        if (actionMapping.getAction() == HTMLAction.Navigate
-                && (existingActionMappings.size() > 0 || (actionMapping.getData().length == 0
-                        || String.valueOf(actionMapping.getData()[0].getValue()).equals(ABOUT_BLANK)))) {
-            return false;
-        }
-        if (actionMapping.getAction() == HTMLAction.DoubleClick && existingActionMappings.size() >= 2) {
-            checkAndUpdateDoubleClick(actionMapping, existingActionMappings);
-        }
-        if (actionMapping.getAction() == HTMLAction.SetText) {
-            return checkAndUpdateSetText(actionMapping, existingActionMappings);
-        }
-        return true;
-    }
-
-    private static void checkAndUpdateDoubleClick(HTMLActionMapping actionMapping,
-            List<HTMLActionMapping> existingActionMappings) {
-        HTMLActionMapping actionOffset_1 = existingActionMappings.get(existingActionMappings.size() - 1);
-        HTMLActionMapping actionOffset_2 = existingActionMappings.get(existingActionMappings.size() - 2);
-        if (actionOffset_1.getAction() == HTMLAction.LeftClick && actionOffset_2.getAction() == HTMLAction.LeftClick
-                && areElementsEqual(actionOffset_1.getTargetElement(), actionMapping.getTargetElement())
-                && areElementsEqual(actionOffset_2.getTargetElement(), actionMapping.getTargetElement())) {
-            existingActionMappings.remove(actionOffset_1);
-            existingActionMappings.remove(actionOffset_2);
-        }
-    }
-
-    private static boolean checkAndUpdateSetText(HTMLActionMapping actionMapping,
-            List<HTMLActionMapping> existingActionMappings) {
-        if (existingActionMappings.isEmpty()) {
-            return true;
-        }
-        HTMLActionMapping lastAction = existingActionMappings.get(existingActionMappings.size() - 1);
-        if (lastAction.getAction() != HTMLAction.SetText
-                || !areElementsEqual(lastAction.getTargetElement(), actionMapping.getTargetElement())) {
-            return true;
-        }
-        existingActionMappings.remove(lastAction);
-        return true;
-    }
-
+    @SuppressWarnings("unused")
     private static boolean areElementsEqual(WebElement elm1, WebElement elm2) {
         return new EqualsBuilder().append(elm1.getType(), elm2.getType())
                 .append(elm1.getTag(), elm2.getTag())
