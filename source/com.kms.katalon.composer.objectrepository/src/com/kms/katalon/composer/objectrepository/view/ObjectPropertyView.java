@@ -522,7 +522,7 @@ public class ObjectPropertyView implements EventHandler {
 		return compositeObjectDetails;
 	}
 
-	private void createObjectPropertiesComposite(Composite parent) {
+    private void createObjectPropertiesComposite(Composite parent) {
         ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         scrolledComposite.setExpandHorizontal(true);
