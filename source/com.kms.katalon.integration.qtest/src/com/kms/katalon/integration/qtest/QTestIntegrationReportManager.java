@@ -1,6 +1,7 @@
 package com.kms.katalon.integration.qtest;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -297,15 +298,22 @@ public class QTestIntegrationReportManager {
     
     private static void checkPDFReportInProject(ReportFormatType formatType, File logFolder, File destReportFile) {
         try {
-            //If there if PDF file in logFoder, then copy the content to the dest file.
-            File pdfReportFile = new File(logFolder, 
-                    FilenameUtils.getBaseName(logFolder.getAbsolutePath()) + "." + formatType.getFileExtension());
-            if(logFolder.getAbsoluteFile().exists()) {
-                FileUtils.copyFile(pdfReportFile, destReportFile);
+            if(logFolder.exists()) {
+                File[] pdfReportFiles = checkPDFFileExistFolder(logFolder);
+                if (pdfReportFiles.length > 0) {
+                    FileUtils.copyFile(pdfReportFiles[0], destReportFile);
+                }
             }
         } catch (IOException e) {
             LogUtil.logError(e);
         }
+    }
+    
+    private static File[] checkPDFFileExistFolder(File folder) {
+        return folder.listFiles(new FilenameFilter() { 
+            public boolean accept(File dir, String filename)
+                 { return filename.endsWith(".pdf"); }
+        } );
     }
 
     private static boolean isValidFileToAttach(File file, String projectDir) {
