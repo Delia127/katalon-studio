@@ -614,7 +614,7 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                     GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
                     if (!variableBefore.equals(selectedVariable)) {
                         Collections.swap(globalVariables, indexMove, indexMove + 1);
-                    }                    
+                    }
                     moveUpVariable = indexMove;
                     tableViewer.setSelection(new StructuredSelection(globalVariables.get(indexMove)));
                     break;
@@ -670,10 +670,9 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 int indexMove = globalVariables.indexOf(selectedVariable) + 1;
                 if (indexMove < globalVariables.size()) {
                     GlobalVariableEntity variableAfter = globalVariables.get(indexMove);
-                    if (variableAfter.equals(selectedVariable)) {
-                    	continue;
+                    if (!variableAfter.equals(selectedVariable)) {
+                        Collections.swap(globalVariables, indexMove - 1, indexMove);
                     }
-                    Collections.swap(globalVariables, indexMove - 1, indexMove);
                     moveDownVariable = indexMove;
                     tableViewer.setSelection(new StructuredSelection(globalVariables.get(indexMove)));
                     break;
