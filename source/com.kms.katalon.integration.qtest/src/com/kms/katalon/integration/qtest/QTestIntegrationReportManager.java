@@ -300,7 +300,7 @@ public class QTestIntegrationReportManager {
         try {
             if(logFolder.exists()) {
                 File[] pdfReportFiles = getPDFReport(logFolder);
-                if (pdfReportFiles.length > 0) {
+                if (pdfReportFiles != null && pdfReportFiles.length > 0) {
                     FileUtils.copyFile(pdfReportFiles[0], destReportFile);
                 }
             }
