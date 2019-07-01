@@ -249,8 +249,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
         ckcbUseRelativePath.setText(StringConstants.PA_CHKBOX_USE_RELATIVE_PATH);
         
         ckcbReadAsString = new Button(compositeCheckBoxes, SWT.CHECK);
-        ckcbReadAsString.setText(StringConstants.VIEW_LBL_READ_AS_STRING);
-        new Label(compositeCheckBoxes, SWT.NONE);
+        ckcbReadAsString.setText(StringConstants.VIEW_LBL_READ_AS_STRING);        
 
         isFileInfoExpanded = true;
         redrawBtnExpandFileInfo();
@@ -265,6 +264,13 @@ public class ExcelTestDataPart extends TestDataMainPart {
             sourceUrl = PathUtil.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation());
         }
         return sourceUrl;
+    }
+    
+    @Override
+    protected void initValues() {
+        String strReadAsString = getDataFile().getProperty("readAsString");
+        ckcbReadAsString.setSelection((strReadAsString == null || strReadAsString.isEmpty()) ? true
+                : Boolean.valueOf(strReadAsString).booleanValue());
     }
 
     @Override
@@ -312,8 +318,6 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         ckcbUseRelativePath.setSelection(dataFile.getIsInternalPath());
         
-        ckcbReadAsString.setSelection(Boolean.valueOf(dataFile.getProperty("readAsString")).booleanValue());
-
         fCurrentSheetName = dataFile.getSheetName();
 
         readExcelFile();
