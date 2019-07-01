@@ -259,13 +259,12 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     }
     
     /**
-     * Determine if the new action should be added. If so return the
-     * value to be added to the Abstract Syntax Tree,
-     * otherwise returns null
+     * Determine if the new action should be added (see {@link RecordedStepsView#preventDuplicatedActions})
+     * Returns the value to be added to the AST, otherwise returns null
      * 
      * @param newAction The new action
      * @return An {@link ExpressionStatementWrapper}
-     * @throws ClassNotFoundException
+     * @throws ClassNotFoundException If the method in the new action does not belong to built-in or custom keywords
      */
     private ExpressionStatementWrapper shouldAddNewNode(HTMLActionMapping newAction) throws ClassNotFoundException {
         WebElement targetElement = newAction.getTargetElement();
@@ -320,6 +319,19 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     	}       
     }
 
+    /**
+     * Prevent:
+     * <ul>
+     * <li>Multiple SetText on the same object</li>
+     * <li>Multiple Click on the same object</li>
+     * </ul>
+     * 
+     * @param newAction
+     * @param latestNode
+     * @param targetElement
+     * @param wrapper
+     * @return
+     */
     private boolean preventDuplicatedActions(HTMLActionMapping newAction, AstBuiltInKeywordTreeTableNode latestNode,
             WebElement targetElement, ExpressionStatementWrapper wrapper) {
         String objectId = latestNode.getTestObjectText();
