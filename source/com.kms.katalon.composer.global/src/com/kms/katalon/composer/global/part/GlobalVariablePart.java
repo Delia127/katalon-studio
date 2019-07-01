@@ -266,11 +266,11 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
     }
     
     private void moveUpVariable() {
-        executeOperation(new MoveUpVariablesOperation());
+        executeOperation(new MoveUpVariableOperation());
     }
     
     private void moveDownVariable() {
-        executeOperation(new MoveDownVariablesOperation());
+        executeOperation(new MoveDownVariableOperation());
     }
 
     private void registerControlModifyListeners() {
@@ -591,12 +591,11 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         }
     }
     
-    private class MoveUpVariablesOperation extends AbstractOperation {
-    	
-        private List<Integer> moveUpVirables = new ArrayList<Integer>();
-        
-        public MoveUpVariablesOperation() {
-            super(MoveUpVariablesOperation.class.getName());
+    private class MoveUpVariableOperation extends AbstractOperation {
+        private Integer moveUpVariable;
+
+        public MoveUpVariableOperation() {
+            super(MoveUpVariableOperation.class.getName());
         }
 
         @Override
@@ -605,7 +604,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             if (selection.size() <= 0) {
                 return Status.CANCEL_STATUS;
             }
-            GlobalVariableEntity lastSelected = new GlobalVariableEntity();
             for (Object selectedItem : selection.toArray()) {
                 if (!(selectedItem instanceof GlobalVariableEntity)) {
                     continue;
@@ -614,17 +612,15 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 int indexMove = globalVariables.indexOf(selectedVariable) - 1;
                 if (indexMove >= 0) {
                     GlobalVariableEntity variableBefore = globalVariables.get(indexMove);
-                       
-                    if (variableBefore.equals(selectedVariable) || variableBefore.equals(lastSelected)) {
-                        lastSelected = selectedVariable;
-                    	continue;
-                    }
-                    Collections.swap(globalVariables, indexMove, indexMove + 1);
-                    moveUpVirables.add(indexMove);
+                    if (!variableBefore.equals(selectedVariable)) {
+                        Collections.swap(globalVariables, indexMove, indexMove + 1);
+                    }                    
+                    moveUpVariable = indexMove;
+                    tableViewer.setSelection(new StructuredSelection(globalVariables.get(indexMove)));
+                    break;
                 }
-                lastSelected = selectedVariable;
             }
-            if (moveUpVirables.size() == 0) {
+            if (moveUpVariable == null) {
                 return Status.CANCEL_STATUS;
             }
             refresh();
@@ -641,11 +637,9 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            if (moveUpVirables.size() > 0) {
-            	Collections.sort(moveUpVirables, Collections.reverseOrder());
-            	for (int indexMove : moveUpVirables) {
-                    Collections.swap(globalVariables, indexMove + 1, indexMove);
-            	}
+            if (moveUpVariable != null) {
+                Collections.swap(globalVariables, moveUpVariable + 1, moveUpVariable);
+                tableViewer.setSelection(new StructuredSelection(globalVariables.get(moveUpVariable + 1)));
             }
             refresh();
             setDirty(true);
@@ -653,12 +647,11 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
         }
     }
     
-    private class MoveDownVariablesOperation extends AbstractOperation {
-    	
-    	private List<Integer> moveDownVirables = new ArrayList<Integer>();
-    	
-        public MoveDownVariablesOperation() {
-            super(MoveDownVariablesOperation.class.getName());
+    private class MoveDownVariableOperation extends AbstractOperation {
+    	private Integer moveDownVariable;
+
+        public MoveDownVariableOperation() {
+            super(MoveDownVariableOperation.class.getName());
         }
 
         @Override
@@ -667,7 +660,6 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
             if (selection.size() <= 0) {
                 return Status.CANCEL_STATUS;
             }
-            GlobalVariableEntity lastSelected = new GlobalVariableEntity();
             List<GlobalVariableEntity> selections = selection.toList();
             Collections.reverse(selections);
             for (Object selectedItem : selections) {
@@ -678,28 +670,21 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
                 int indexMove = globalVariables.indexOf(selectedVariable) + 1;
                 if (indexMove < globalVariables.size()) {
                     GlobalVariableEntity variableAfter = globalVariables.get(indexMove);
-                    if (variableAfter.equals(selectedVariable) || variableAfter.equals(lastSelected)) {
-                        lastSelected = selectedVariable;
+                    if (variableAfter.equals(selectedVariable)) {
                     	continue;
                     }
                     Collections.swap(globalVariables, indexMove - 1, indexMove);
-                    moveDownVirables.add(indexMove);
+                    moveDownVariable = indexMove;
+                    tableViewer.setSelection(new StructuredSelection(globalVariables.get(indexMove)));
+                    break;
                 }
-                lastSelected = selectedVariable;
             }
-            if (moveDownVirables.size() == 0) {
+            if (moveDownVariable == null) {
                 return Status.CANCEL_STATUS;
             }
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
-        }
-
-        private void doChange() {
-            Collections.sort(moveDownVirables);
-            for (int indexMove : moveDownVirables) {
-                Collections.swap(globalVariables, indexMove - 1, indexMove);
-            }
         }
         
         @Override
@@ -711,7 +696,10 @@ public class GlobalVariablePart extends CPart implements TableViewerProvider, Ev
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            doChange();
+            if (moveDownVariable != null) {
+                Collections.swap(globalVariables, moveDownVariable - 1, moveDownVariable);
+                tableViewer.setSelection(new StructuredSelection(globalVariables.get(moveDownVariable - 1)));
+            }
             refresh();
             setDirty(true);
             return Status.OK_STATUS;
