@@ -299,7 +299,7 @@ public class QTestIntegrationReportManager {
     private static void checkPDFReportInProject(ReportFormatType formatType, File logFolder, File destReportFile) {
         try {
             if(logFolder.exists()) {
-                File[] pdfReportFiles = checkPDFFileExistFolder(logFolder);
+                File[] pdfReportFiles = getPDFReport(logFolder);
                 if (pdfReportFiles.length > 0) {
                     FileUtils.copyFile(pdfReportFiles[0], destReportFile);
                 }
@@ -309,7 +309,7 @@ public class QTestIntegrationReportManager {
         }
     }
     
-    private static File[] checkPDFFileExistFolder(File folder) {
+    private static File[] getPDFReport(File folder) {
         return folder.listFiles(new FilenameFilter() { 
             public boolean accept(File dir, String filename)
                  { return filename.endsWith(".pdf"); }
