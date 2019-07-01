@@ -18,6 +18,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TrayDialog;
+import org.eclipse.jface.internal.text.revisions.Colors;
 import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.ToolTip;
@@ -27,6 +28,8 @@ import org.eclipse.swt.accessibility.AccessibleAttributeAdapter;
 import org.eclipse.swt.accessibility.AccessibleAttributeEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -35,6 +38,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -238,9 +242,9 @@ public class TitleAreaDialog extends TrayDialog {
         // Dialog image @ right
         titleImageLabel = new Label(parent, SWT.CENTER);
         titleImageLabel.setBackground(background);
-        if (titleAreaImage == null)
-            titleImageLabel.setImage(JFaceResources
-                    .getImage(null));
+        if (titleAreaImage == null) {           titleImageLabel.setImage(JFaceResources
+                .getImage(null));
+        }
         else
             titleImageLabel.setImage(titleAreaImage);
 
