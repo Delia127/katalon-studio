@@ -242,8 +242,16 @@ public class TitleAreaDialog extends TrayDialog {
         // Dialog image @ right
         titleImageLabel = new Label(parent, SWT.CENTER);
         titleImageLabel.setBackground(background);
-        if (titleAreaImage == null) {           titleImageLabel.setImage(JFaceResources
-                .getImage(null));
+        if (titleAreaImage == null) {
+            Color white = display.getSystemColor(SWT.COLOR_WHITE);
+            Color black = display.getSystemColor(SWT.COLOR_BLACK);
+            PaletteData palette = new PaletteData(new RGB[] { white.getRGB(), black.getRGB() });
+            Rectangle sampleRectangle = JFaceResources
+                    .getImage(DLG_IMG_TITLE_BANNER).getBounds();
+            ImageData sourceData = new ImageData(sampleRectangle.width, sampleRectangle.height, 1, palette);
+            sourceData.transparentPixel = 0;
+            Image image = new Image(Display.getCurrent(), sourceData);
+            titleImageLabel.setImage(image);
         }
         else
             titleImageLabel.setImage(titleAreaImage);
