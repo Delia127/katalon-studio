@@ -22,6 +22,10 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN = ComposerTestsuiteCollectionMessageConstants.LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN;
 
+    public static final String LS_MSG_ANALYTICS_TSC_NOT_FOUND = ComposerTestsuiteCollectionMessageConstants.LS_MSG_ANALYTICS_TSC_NOT_FOUND;
+
+    public static final String LS_MSG_ANALYTICS_TEST_PROJECT_HAVE_NO_TSC = ComposerTestsuiteCollectionMessageConstants.LS_MSG_ANALYTICS_TEST_PROJECT_HAVE_NO_TSC;
+
     // RennameTestSuiteCollectionHandler
     public static final String HDL_MSG_UNABLE_TO_RENAME_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.HDL_MSG_UNABLE_TO_RENAME_TEST_SUITE_COLLECTION;
 

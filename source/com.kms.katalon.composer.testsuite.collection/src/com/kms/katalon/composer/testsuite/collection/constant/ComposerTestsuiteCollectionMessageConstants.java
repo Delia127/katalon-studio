@@ -89,6 +89,10 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
 
     public static String LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN;
 
+    public static String LS_MSG_ANALYTICS_TSC_NOT_FOUND;
+    
+    public static String LS_MSG_ANALYTICS_TEST_PROJECT_HAVE_NO_TSC;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestsuiteCollectionMessageConstants.class);

@@ -73,8 +73,7 @@ public class AnalyticsGridHandler {
                             testProject.setTestSuiteCollections(newTestProject.getTestSuiteCollections());
 
                         } catch (Exception exception) {
-                            MultiStatusErrorDialog.showErrorDialog(exception,
-                                    IntegrationAnalyticsMessages.STORE_CODE_ERROR_COMPRESS, exception.getMessage());
+                            throw new InvocationTargetException(exception);
                         } finally {
                             zipTeamFile.deleteOnExit();
                         }

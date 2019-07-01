@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
@@ -115,11 +116,23 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
 
             TestSuiteCollectionEntity testSuiteCollection = provider.getTestSuiteCollection();
             String name = testSuiteCollection.getName();
-            AnalyticsTestSuiteCollection analyticsTestSuiteCollection = analyticsTestProject.getTestSuiteCollections()
-                    .stream()
+            List<AnalyticsTestSuiteCollection> listAnalyticsTestSuiteCollection = analyticsTestProject
+                    .getTestSuiteCollections();
+            if (listAnalyticsTestSuiteCollection == null) {
+                MultiStatusErrorDialog.showErrorDialog(StringConstants.LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN,
+                        StringConstants.LS_MSG_ANALYTICS_TEST_PROJECT_HAVE_NO_TSC, "");
+                return;
+            }
+
+            AnalyticsTestSuiteCollection analyticsTestSuiteCollection = listAnalyticsTestSuiteCollection.stream()
                     .filter(tsc -> tsc.getName().equals(testSuiteCollection.getIdForDisplay()))
                     .findFirst()
                     .orElse(null);
+            if (analyticsTestSuiteCollection == null) {
+                MultiStatusErrorDialog.showErrorDialog(StringConstants.LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN,
+                        StringConstants.LS_MSG_ANALYTICS_TSC_NOT_FOUND, "");
+                return;
+            }
 
             AnalyticsGridHandler.createTestPlan(serverUrl, email, password, name, analyticsProject,
                     analyticsTestProject, analyticsTestSuiteCollection,
