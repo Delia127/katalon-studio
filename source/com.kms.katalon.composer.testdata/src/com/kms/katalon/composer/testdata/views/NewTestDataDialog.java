@@ -29,6 +29,8 @@ public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
 
     private Combo cbDataSourceType;
     
+    private Composite readAsStringOptionComposite;
+    
     private boolean shouldReadAsString;
 
     public NewTestDataDialog(Shell parentShell, FolderEntity parentFolder, String suggestedName) {
@@ -41,27 +43,37 @@ public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
     @Override
     protected Control createEntityCustomControl(Composite parent, int column, int span) {
         createDataSourceTypeControl(parent, column);
-        createReadAsStringOption(parent);
+        createReadAsStringOption(parent, column);
         return super.createEntityCustomControl(parent, column, span);
     }
     
-    private Control createReadAsStringOption(Composite parent) {
-        Label labelDataSourceType = new Label(parent, SWT.NONE);
+    private Control createReadAsStringOption(Composite parent, int column) {
+        
+        readAsStringOptionComposite = new Composite(parent, SWT.NONE);
+        GridLayout glReadAsStringOption = new GridLayout(column, false);
+        glReadAsStringOption.marginHeight = 0;
+        glReadAsStringOption.marginWidth = 0;
+        readAsStringOptionComposite.setLayout(glReadAsStringOption);
+        readAsStringOptionComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2, 1));
+        
+        Label labelDataSourceType = new Label(readAsStringOptionComposite, SWT.NONE);
         labelDataSourceType.setText(StringConstants.VIEW_LBL_READ_AS_STRING);
-        Button checkBox = new Button(parent, SWT.CHECK);
-        checkBox.setSelection(shouldReadAsString);
-        checkBox.addSelectionListener(new SelectionAdapter() {
+        Button ckcbReadAsString = new Button(readAsStringOptionComposite, SWT.CHECK);
+        ckcbReadAsString.setSelection(shouldReadAsString);
+        ckcbReadAsString.addSelectionListener(new SelectionAdapter() {
             @Override
-            public void widgetSelected(SelectionEvent event) {                
-               shouldReadAsString = !shouldReadAsString;                
+            public void widgetSelected(SelectionEvent event) {
+                shouldReadAsString = !shouldReadAsString;
             }
         });
 
-        return parent;
+        return readAsStringOptionComposite;
     }
 
     private Control createDataSourceTypeControl(Composite parent, int column) {
-        parent.setLayoutData(new GridData(GridData.FILL_BOTH));
+        GridData gdParent = new GridData(SWT.FILL, SWT.FILL, true, true, column, 1);
+        gdParent.heightHint = 250;
+        parent.setLayoutData(gdParent);
         parent.setLayout(new GridLayout(column, false));
         Label labelDataSourceType = new Label(parent, SWT.NONE);
         labelDataSourceType.setText(StringConstants.VIEW_LBL_DATA_TYPE);
@@ -72,7 +84,9 @@ public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
         cbDataSourceType.select(0);
         cbDataSourceType.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                setDataSource(((Combo) e.getSource()).getText());
+                String txtSelectedDataSource = ((Combo) e.getSource()).getText();
+                setDataSource(txtSelectedDataSource);
+                handleShowReadAsStringOption(txtSelectedDataSource);                
             }
         });
 
@@ -100,5 +114,14 @@ public class NewTestDataDialog extends CommonNewEntityDialog<DataFileEntity> {
         Map<String, String> map = new HashMap<String, String>();
         map.put("readAsString", String.valueOf(shouldReadAsString));
         entity.setProperties(map);
+    }
+    
+    protected void handleShowReadAsStringOption(String text) {
+        DataFileDriverType type = DataFileDriverType.fromValue(text);
+        if (type.equals(DataFileDriverType.CSV) || type.equals(DataFileDriverType.InternalData)) {
+            readAsStringOptionComposite.setVisible(false);
+        } else {
+            readAsStringOptionComposite.setVisible(true);
+        }
     }
 }
