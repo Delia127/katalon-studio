@@ -522,32 +522,31 @@ public class ObjectPropertyView implements EventHandler {
 		return compositeObjectDetails;
 	}
 
-    private void createObjectPropertiesComposite(Composite parent) {
+	private void createObjectPropertiesComposite(Composite parent) {
         ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
-        propertyTableComposite = new Composite(scrolledComposite, SWT.NONE);
-        propertyTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        GridLayout glCompositeTable = new GridLayout();
-        glCompositeTable.marginWidth = 0;
-        glCompositeTable.marginHeight = 0;
-        propertyTableComposite.setLayout(glCompositeTable);
+		propertyTableComposite = new Composite(scrolledComposite, SWT.NONE);
+		propertyTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		GridLayout glCompositeTable = new GridLayout();
+		glCompositeTable.marginWidth = 0;
+		glCompositeTable.marginHeight = 0;
+		propertyTableComposite.setLayout(glCompositeTable);
+		
+		Label lblObjectProperties = new Label(propertyTableComposite, SWT.NONE);
+		lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
+		ControlUtils.setFontToBeBold(lblObjectProperties);	
+		
+		createPropertyTableToolbar(propertyTableComposite);
 
-        Label lblObjectProperties = new Label(propertyTableComposite, SWT.NONE);
-        lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
-        ControlUtils.setFontToBeBold(lblObjectProperties);
+		createPropertyTableDetails(propertyTableComposite);
 
-        createPropertyTableToolbar(propertyTableComposite);
-
-        createPropertyTableDetails(propertyTableComposite);
-
-        createPropertyTableMenu();
-
+		createPropertyTableMenu();
         scrolledComposite.setMinSize(propertyTableComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
         scrolledComposite.setContent(propertyTableComposite);
 
-    }
+	}
 
 	private void createObjectXpathsComposite(Composite parent) {
 		
