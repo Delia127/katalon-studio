@@ -523,8 +523,11 @@ public class ObjectPropertyView implements EventHandler {
 	}
 
 	private void createObjectPropertiesComposite(Composite parent) {
-
-		propertyTableComposite = new Composite(parent, SWT.NONE);
+        ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+		propertyTableComposite = new Composite(scrolledComposite, SWT.NONE);
 		propertyTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		GridLayout glCompositeTable = new GridLayout();
 		glCompositeTable.marginWidth = 0;
@@ -540,7 +543,8 @@ public class ObjectPropertyView implements EventHandler {
 		createPropertyTableDetails(propertyTableComposite);
 
 		createPropertyTableMenu();
-		
+        scrolledComposite.setMinSize(propertyTableComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        scrolledComposite.setContent(propertyTableComposite);
 
 	}
 
