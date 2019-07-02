@@ -40,7 +40,7 @@ public abstract class CommonNewEntityDialog<T extends FileEntity> extends Abstra
 
         Text txtDescription = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.WRAP | SWT.BORDER);
         GridData descLayoutData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        descLayoutData.heightHint = 100;
+        descLayoutData.heightHint = 80;
         txtDescription.setLayoutData(descLayoutData);
         txtDescription.addModifyListener(new ModifyListener() {
 
