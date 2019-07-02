@@ -104,6 +104,7 @@ import com.kms.katalon.composer.testcase.preferences.StoredKeyword;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
+import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrapper;
 import com.kms.katalon.composer.webui.recorder.constants.ComposerWebuiRecorderMessageConstants;
@@ -1638,7 +1639,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     public void addNewActionMapping(final HTMLActionMapping newAction) {
-        if (isPauseRecording) {
+        if (isPauseRecording || (newAction.getAction().equals(HTMLAction.Navigate)
+                && (recordStepsView.getNodes().size() > 0 || (newAction.getData().length == 0
+                        || String.valueOf(newAction.getData()[0].getValue()).equals("\"about:blank\""))))) {
             return;
         }
         WebElement targetElement = newAction.getTargetElement();
