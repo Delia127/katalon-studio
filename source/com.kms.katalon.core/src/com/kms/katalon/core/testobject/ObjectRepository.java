@@ -243,6 +243,12 @@ public class ObjectRepository {
             variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
         }
 
+        try {
+            ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
+            variablesStringMap.put("GlobalVariable", scriptEngine.runScriptWithoutLogging("internal.GlobalVariable", new Binding()));
+        } catch (ClassNotFoundException | ResourceException | ScriptException | IOException e) {
+        }
+        
         StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
         
         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
