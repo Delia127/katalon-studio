@@ -3,6 +3,7 @@ package com.kms.katalon.composer.integration.analytics.uploadProject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +34,17 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
+import com.kms.katalon.integration.analytics.handler.AnalyticsGridHandler;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.integration.analytics.util.ZipHelper;
 
 public class StoreProjectCodeToCloudDialog extends Dialog {
 
@@ -217,76 +221,23 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
         int currentIndexProject = cbbProjects.getSelectionIndex();
         AnalyticsProject sellectProject = projects.get(currentIndexProject);
-        
+
         String folderCurrentProject = currentProject.getFolderLocation();
 
-        uploadProject(nameFileZip, sellectProject, folderCurrentProject, new ProgressMonitorDialog(getShell()));
-        super.okPressed();
-    }
+        AnalyticsGridHandler.uploadProject(serverUrl, email, password, nameFileZip, sellectProject,
+                folderCurrentProject, new ProgressMonitorDialog(getShell()));
 
-    private void uploadProject(final String nameFileZip, final AnalyticsProject sellectProject,
-            final String folderCurrentProject, ProgressMonitorDialog monitorDialog) {
         try {
-            monitorDialog.run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_TITLE_UPLOAD_CODE, 6);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_COMPRESSING_PROJECT);
-                        
-                        String tempDir = ProjectController.getInstance().getTempDir();
-                        File zipTeamFile = new File(tempDir, nameFileZip + ".zip");
-                        try {
-                            ZipHelper.Compress(folderCurrentProject, zipTeamFile.toString());
-
-                            monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_REQUEST_SERVER);
-                            monitor.worked(2);
-
-                            AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                            AnalyticsUploadInfo uploadInfo = AnalyticsApiProvider.getUploadInfo(serverUrl,
-                                    token.getAccess_token(), sellectProject.getId());
-                            AnalyticsApiProvider.uploadFile(uploadInfo.getUploadUrl(), zipTeamFile);
-
-                            monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_GET_TEAM_PROJECT);
-                            monitor.worked(1);
-
-                            long timestamp = System.currentTimeMillis();
-                            Long teamId = sellectProject.getTeamId();
-                            Long projectId = sellectProject.getId();
-
-                            monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_UPLOAD);
-                            monitor.worked(1);
-                            AnalyticsApiProvider.uploadTestProject(serverUrl, projectId, teamId, timestamp, nameFileZip,
-                                    zipTeamFile.toString(), zipTeamFile.getName().toString(), uploadInfo.getPath(),
-                                    token.getAccess_token());
-
-                            monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_OPEN_BROWSER);
-                            monitor.worked(1);
-
-                            URIBuilder builder = new URIBuilder(serverUrl);
-                            builder.setScheme("https");
-                            builder.setPath("/team/" + teamId.toString() + "/project/" + projectId.toString()
-                                    + "/test-project");
-                            Program.launch(builder.toString());
-                        } catch (Exception exception) {
-                            MultiStatusErrorDialog.showErrorDialog(exception,
-                                    ComposerIntegrationAnalyticsMessageConstants.STORE_CODE_ERROR_COMPRESS,
-                                    exception.getMessage());
-                        } finally {
-                            zipTeamFile.deleteOnExit();
-                        }
-                        monitor.worked(1);
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    } finally {
-                        monitor.done();
-                    }
-                }
-            });
-        } catch (InvocationTargetException | InterruptedException exception) {
-            MultiStatusErrorDialog.showErrorDialog(exception, ComposerAnalyticsStringConstants.ERROR,
-                    exception.getMessage());
+            Long teamId = sellectProject.getTeamId();
+            Long projectId = sellectProject.getId();
+            URIBuilder builder = new URIBuilder(serverUrl);
+            builder.setScheme(AnalyticsStringConstants.ANALYTICS_SCHEME_HTTPS);
+            builder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_URL_TEST_PROJECT, teamId, projectId));
+            Program.launch(builder.toString());
+        } catch (URISyntaxException e) {
+            MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
+        super.okPressed();
     }
 
     @Override

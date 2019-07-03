@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.analytics.uploadProject;
+package com.kms.katalon.integration.analytics.util;
 
 import java.io.File;
 import java.io.FileInputStream;

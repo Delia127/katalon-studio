@@ -36,6 +36,8 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_API_UPLOAD_TEST_PROJECT = "/api/v1/test-projects/upload";
     
+    public static final String ANALYTICS_API_CREATE_TEST_PLAN = "/api/v1/run-configurations";
+    
     public static final String ANALYTICS_STOREAGE = "s3";
     
     public static final String ANALYTICS_REPORT_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(log))$)";
@@ -49,4 +51,12 @@ public class AnalyticsStringConstants {
     public static final String ANALYTICS_HAR_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(har))$)";
     
     public static final String ANALYTICS_UUID_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(uuid))$)";
+    
+    public static final String ANALYTICS_URL_TEST_PLAN = "/team/%d/project/%d/grid/plan/%d/job";
+    
+    public static final String ANALYTICS_URL_TEST_PROJECT = "/team/%d/project/%d/test-project";
+    
+    public static final String ANALYTICS_CLOUD_TYPE_CIRCLE_CI = "CIRCLE_CI";
+    
+    public static final String ANALYTICS_CONFIG_TYPE_TEST_SUITE_COLLECTION = "TSC";
 }
