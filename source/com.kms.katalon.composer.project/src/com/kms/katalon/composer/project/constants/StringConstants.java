@@ -94,8 +94,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String KATALON_ANALYTICS_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.analytics.page";
 
-    public static final String JIRA_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.jira.page";
-
     public static final String QTEST_SETTING_PAGE_ID = "com.kms.katalon.composer.intergration.qtest.setting";
 
     public static final String TEST_CASE_REPOSITORIES_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.qtest.testCaseRepoMapping";
