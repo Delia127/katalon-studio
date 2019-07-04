@@ -199,11 +199,6 @@ public class QuickStartDialog extends SimpleWizardDialog {
     }
 
     @Override
-    protected void setShellStyle(int arg) {
-        super.setShellStyle(arg | SWT.RESIZE);
-    }
-
-    @Override
     protected void registerControlModifyListeners() {
         super.registerControlModifyListeners();
         // Disable user click on step table
