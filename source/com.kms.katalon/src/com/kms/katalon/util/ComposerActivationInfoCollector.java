@@ -2,13 +2,7 @@ package com.kms.katalon.util;
 
 import java.util.Random;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -22,10 +16,10 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.KatalonQuickStart.QuickStartDialog;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.composer.components.impl.handler.CommandCaller;
+import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.imp.wizard.RecommendPluginsDialog;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
@@ -119,31 +113,34 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         QuickStartDialog quickStartDialog = new QuickStartDialog(Display.getCurrent().getActiveShell());
         quickStartDialog.open();
         RecommendPluginsDialog recommendPlugins = new RecommendPluginsDialog(Display.getCurrent().getActiveShell());
-        recommendPlugins.open();
         
 //        QuickStartDialog dialog = new QuickStartDialog(null);
-//
-//        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
-//        switch (dialog.open()) {
-//            case QuickStartDialog.OPEN_PROJECT_ID: {
-//                try {
-//                    new CommandCaller().call(CommandId.PROJECT_OPEN);
-//                } catch (CommandException e) {
-//                    LogUtil.logError(e);
-//                }
-//                break;
-//            }
-//            case QuickStartDialog.NEW_PROJECT_ID: {
-//                try {
-//                    new CommandCaller().call(CommandId.PROJECT_ADD);
-//                } catch (CommandException e) {
-//                    LogUtil.logError(e);
-//                }
-//                break;
-//            }
-//            default:
-//                break;
-//        }
+
+      // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
+        switch (recommendPlugins.open()) {
+            
+            case RecommendPluginsDialog.OPEN_PROJECT_ID: {
+                recommendPlugins.installPressed();
+                try {
+                    new CommandCaller().call(CommandId.PROJECT_OPEN);
+                } catch (CommandException e) {
+                  LogUtil.logError(e);
+               }
+                break;
+          }
+            case RecommendPluginsDialog.NEW_PROJECT_ID: {
+                recommendPlugins.installPressed();
+                try {
+                    new CommandCaller().call(CommandId.PROJECT_ADD);
+                } catch (CommandException e) {
+                    LogUtil.logError(e);
+                }
+               break;
+           }
+           default:
+               recommendPlugins.installPressed();
+                break;
+        }
     }
 
     public static String genRequestActivationInfo() {

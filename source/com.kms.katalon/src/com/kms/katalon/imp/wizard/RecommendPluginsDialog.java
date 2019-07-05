@@ -3,9 +3,16 @@ package com.kms.katalon.imp.wizard;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -18,25 +25,31 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.handlers.ReloadPluginsHandler;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.handlers.RequireAuthorizationHandler;
-import com.kms.katalon.constants.GlobalMessageConstants;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStoreClientException;
+import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
+import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreProduct;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
-import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.service.KStoreRestClient;
-import com.kms.katalon.plugin.service.PluginService;
-import com.sun.jna.platform.unix.X11.Display;
 
-public class RecommendPluginsDialog extends AbstractDialog {
+public class RecommendPluginsDialog extends Dialog {
     List<Long> idProduct = new ArrayList<>();
+
+    public static final int NEW_PROJECT_ID = 1025;
+    
+    private static final long DIALOG_CLOSED_DELAY_MILLIS = 500L;
+
+    public static final int OPEN_PROJECT_ID = 1026;
     protected Button newButton;
     // Controls
     protected Composite stepDetailsComposite;
@@ -47,16 +60,13 @@ public class RecommendPluginsDialog extends AbstractDialog {
 
     public RecommendPluginsDialog(Shell parentShell) {
         super(parentShell);
-    }
-
-    @Override
-    protected void registerControlModifyListeners() {
+        
 
     }
-
     @Override
-    protected void setInput() {
-
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        newShell.setText("Most recommended plugins");
     }
 
     @Override
@@ -69,19 +79,20 @@ public class RecommendPluginsDialog extends AbstractDialog {
         layout.verticalSpacing = 10;
         composite.setLayout(layout);
         composite.setLayoutData(gridData);
-        composite.setSize(parent.computeSize(680, 600));
         Composite compositeHeader = new Composite(composite, SWT.NONE);
-        GridData gridDataHeader = new GridData(SWT.CENTER);
+        GridData gridDataHeader = new GridData(SWT.NONE);
         GridLayout layoutHeader = new GridLayout();
         layout.marginHeight = 10;
-        layout.marginWidth = 20;
-        layout.verticalSpacing = 20;
+        layout.marginWidth = 10;
+        layout.verticalSpacing = 10;
         compositeHeader.setLayout(layoutHeader);
         compositeHeader.setLayoutData(gridDataHeader);
-        compositeHeader.setSize(700, 100);
+        gridDataHeader.heightHint = 40;
+        gridDataHeader.widthHint = 585;
         applyDialogFont(compositeHeader);
-        Label lb = new Label(compositeHeader, SWT.NONE);
-        lb.setText("\n\t\t Most recommended plugins\n");
+        Label lb = new Label(compositeHeader, SWT.CENTER);
+        layoutHeader.marginLeft = 170;
+        lb.setText("Most recommended plugins\n");
         org.eclipse.swt.graphics.Font defaultFont = new org.eclipse.swt.graphics.Font(null, "Aria", 10, SWT.BOLD);
         lb.setFont(defaultFont);
         // initialize the dialog units
@@ -95,8 +106,8 @@ public class RecommendPluginsDialog extends AbstractDialog {
         layoutBD.verticalSpacing = 10;
         compositeBody.setLayout(layoutBD);
         compositeBody.setLayoutData(gridDataBD);
-        gridDataBD.widthHint = 640;
-        gridDataBD.heightHint = 400;
+        gridDataBD.widthHint = 585;
+        gridDataBD.heightHint = 420;
         createDialogContainer(compositeBody);
        // scrolledComposite.setMinHeight(800);
 
@@ -104,48 +115,68 @@ public class RecommendPluginsDialog extends AbstractDialog {
     }
     @Override
     protected Control createButtonBar(Composite parent) {
-        Composite buttonBarComposite = new Composite(parent, SWT.NONE);
+        Composite buttonBarComposite = new Composite(parent, SWT.RIGHT | SWT.BOTTOM);
         GridLayout layout = new GridLayout();
-        layout.marginLeft = 585;
+        layout.marginLeft = 275;
+        layout.marginRight= 0;
         buttonBarComposite.setLayout(layout);
-        Button btnInstall = new Button(buttonBarComposite, SWT.NONE);
-        btnInstall.setText(GlobalMessageConstants.WZ_SETUP_BTN_INSTALL);
-        btnInstall.addSelectionListener(new SelectionListener() {
-
+        createButton(buttonBarComposite, OPEN_PROJECT_ID, StringConstants.DIA_OPEN_PROJECT, false);
+        createButton(buttonBarComposite, NEW_PROJECT_ID, StringConstants.DIA_NEW_PROJECT, true);
+        return buttonBarComposite;
+    }
+    public final void installPressed() {
+        
+        Job reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
-            public void widgetSelected(SelectionEvent e) {
-                installPressed();
-                MessageDialog.openInformation(parent.getShell(), "Install Recommend Plugins", "Install Recommend Plugins Successful");
+            protected IStatus run(IProgressMonitor monitor) {
+                    KStoreUsernamePasswordCredentials[] credentials = new KStoreUsernamePasswordCredentials[1];
+                    UISynchronizeService.syncExec(() -> {
+                        try {
+                            credentials[0] = RequireAuthorizationHandler.getUsernamePasswordCredentials();
+                            KStoreRestClient res = new KStoreRestClient(credentials[0]);
+                            res.postRecommended(idProduct);
+                        } catch (KStoreClientAuthException e) {
+                            LoggerSingleton.logError(e);
+                        } catch (KStoreClientException e) {
+                            LoggerSingleton.logError(e);
+                        }
+                    });
+                LoggerSingleton.logInfo("Reloaded plugins successfully.");
+                return Status.OK_STATUS;
             }
-
+        };
+        reloadPluginsJob.addJobChangeListener(new JobChangeAdapter() {
             @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
+            public void done(IJobChangeEvent event) {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
 
+                if (!reloadPluginsJob.getResult().isOK()) {
+                    LoggerSingleton.logError("Failed to reload plugins.");
+                    return;
+                }
+
+                Executors.newSingleThreadExecutor().submit(() -> {
+                    try {
+                        // wait for Reloading Plugins dialog to close
+                        TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
+                    } catch (InterruptedException ignored) {}
+                });
             }
         });
 
-        return buttonBarComposite;
+        reloadPluginsJob.setUser(true);
+        reloadPluginsJob.schedule();
     }
-
-    protected final void installPressed() {
-        KStoreUsernamePasswordCredentials credentials = new KStoreUsernamePasswordCredentials();
-
-        try {
-            credentials = RequireAuthorizationHandler.getUsernamePasswordCredentials();
-            KStoreRestClient res = new KStoreRestClient(credentials);
-            res.postRecommended(idProduct);
-            PluginService.getInstance().reloadPlugins(credentials, new NullProgressMonitor());
-            ReloadPluginsHandler r = new ReloadPluginsHandler();
-            r.reloadPlugins(false);
-        } catch (KStoreClientAuthException e) {
-            LoggerSingleton.logError(e);
-        } catch (KStoreClientException e) {
-            LoggerSingleton.logError(e);
-        } catch (ReloadPluginsException | InterruptedException e) {
-            LoggerSingleton.logError(e);
-        }
+    
+    @Override
+    protected void buttonPressed(int buttonId) {
+        setReturnCode(buttonId);
+        close();
     }
-
+    @Override
+    public void create() {
+        super.create();
+    }
     protected void createSeparator(Composite parent) {
         Label label = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
         label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -157,6 +188,8 @@ public class RecommendPluginsDialog extends AbstractDialog {
             credentials = RequireAuthorizationHandler.getUsernamePasswordCredentials();
             KStoreRestClient res = new KStoreRestClient(credentials);
             List<KStoreProduct> recommendList = res.getRecommendPlugins();
+            String appVersion = VersionUtil.getCurrentVersion().getVersion();
+            List<KStorePlugin> plugin = res.getLatestPlugins(appVersion);
             List<Button> buttons = new ArrayList<Button>();
             for (int i = 0; i < recommendList.size(); i++) {
                 newButton = new Button(parent, SWT.CHECK | SWT.WRAP);
@@ -164,7 +197,7 @@ public class RecommendPluginsDialog extends AbstractDialog {
                 newButton.setSelection(true);
                 Label lb = new Label(parent, SWT.WRAP);
                 GridData gdLb = new GridData(SWT.FILL, SWT.TOP, false, false);
-                gdLb.widthHint = 580;
+                gdLb.widthHint = 560;
                 lb.setLayoutData(gdLb);
                 lb.setText("    " + recommendList.get(i).getDescription());
                 lb.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
@@ -182,19 +215,21 @@ public class RecommendPluginsDialog extends AbstractDialog {
                                 idProduct.add(idProduct.get(i));
                             }
                         }
-
                     }
-
                     @Override
                     public void widgetDefaultSelected(SelectionEvent e) {
 
                     }
                 });
+                if(plugin.contains(idProduct.get(i))){
+                    idProduct.remove(idProduct.get(i));
+                }
             }
         } catch (KStoreClientException e1) {
             e1.printStackTrace();
         } catch (KStoreClientAuthException e1) {
             e1.printStackTrace();
+        } catch (KStoreClientExceptionWithInfo e1) {
         }
 
         return stepDetailsComposite;
@@ -203,7 +238,7 @@ public class RecommendPluginsDialog extends AbstractDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(680, 620);
+        return new Point(620, 600);
     }
 
 

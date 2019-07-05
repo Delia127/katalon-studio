@@ -348,7 +348,7 @@ public class SetupWizardDialog extends SimpleWizardDialog {
     }
 
     @Override
-    protected void finishPressed() {
+    public void finishPressed() {
         updateQTestSetting();
         updateProject();
         super.okPressed();

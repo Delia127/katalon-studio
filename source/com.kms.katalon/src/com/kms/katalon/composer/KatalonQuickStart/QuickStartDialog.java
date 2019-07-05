@@ -206,6 +206,9 @@ public class QuickStartDialog extends SimpleWizardDialog {
             @Override
             public void selectionChanged(final SelectionChangedEvent event) {
                 if (!event.getSelection().isEmpty()) {
+                    int index = tableViewer.getTable().getSelectionIndex();
+                    showPage(wizardManager.choosenPage(index));
+                }else{
                     tableViewer.setSelection(StructuredSelection.EMPTY);
                 }
             }
@@ -215,10 +218,12 @@ public class QuickStartDialog extends SimpleWizardDialog {
         tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
             public void handleEvent(Event event) {
                 // Selection:
-                event.detail &= ~SWT.SELECTED;
+                if((event.detail & SWT.SELECTED) != 0){
+                    //event.detail &= ~SWT.SELECTED;
+                    event.gc.setBackground( event.display.getSystemColor( SWT.COLOR_BLUE ) );
+                }
                 // Expect: selection now has no visual effect.
                 // Actual: selection remains but changes from light blue to white.
-
                 // MouseOver:
                 event.detail &= ~SWT.HOT;
                 // Expect: mouse over now has no visual effect.
@@ -240,7 +245,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
     protected Collection<IWizardPage> getWizardPages() {
         return Arrays.asList(new IWizardPage[] { new WebTestingWizardPage(), new APITestingWizardPage(),
                 new MobileTestingWizardPage(), new DatadrivenTestingWizardPage(), new BDDTestingWizardPage(),
-                new SDLCIntergrationWizardPage(), new PluginStoreWizardPage(), new AdvancedReportWizardPage() });
+                new SDLCIntergrationWizardPage(), new PluginStoreWizardPage(), new AdvancedReportWizardPage(), new NullDialog() });
     }
 
     @Override
@@ -258,17 +263,12 @@ public class QuickStartDialog extends SimpleWizardDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(1070, 800);
+        return new Point(1050, 770);
     }
 
     @Override
     protected String getDialogTitle() {
         return "Katalon Studio Quick Start";
-    }
-
-    @Override
-    protected void finishPressed() {
-        super.okPressed();
     }
 
     @Override
@@ -279,5 +279,10 @@ public class QuickStartDialog extends SimpleWizardDialog {
     @Override
     public boolean isChild() {
         return false;
+    }
+
+    @Override
+    public void finishPressed() {
+        super.okPressed();
     }
 }
