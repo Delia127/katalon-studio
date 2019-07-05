@@ -180,4 +180,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BLANK_PROJECT = ComposerProjectMessageConstants.BLANK_PROJECT;
 
 	public static final String CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER = ComposerProjectMessageConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER;
+	
+	public static final String CB_GENERATE_GITIGNORE_FILE = ComposerProjectMessageConstants.CB_GENERATE_GITIGNORE_FILE;
+	
+	public static final String CB_GENERATE_GRADLE_FILE = ComposerProjectMessageConstants.CB_GENERATE_GRADLE_FILE;
 }
