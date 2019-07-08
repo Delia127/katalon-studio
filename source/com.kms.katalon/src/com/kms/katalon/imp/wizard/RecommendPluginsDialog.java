@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -36,8 +35,6 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStoreClientException;
-import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
-import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreProduct;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.service.KStoreRestClient;
@@ -80,7 +77,7 @@ public class RecommendPluginsDialog extends Dialog {
         composite.setLayout(layout);
         composite.setLayoutData(gridData);
         Composite compositeHeader = new Composite(composite, SWT.NONE);
-        GridData gridDataHeader = new GridData(SWT.NONE);
+        GridData gridDataHeader = new GridData(SWT.CENTER, SWT.TOP, true, false);
         GridLayout layoutHeader = new GridLayout();
         layout.marginHeight = 10;
         layout.marginWidth = 10;
@@ -88,12 +85,13 @@ public class RecommendPluginsDialog extends Dialog {
         compositeHeader.setLayout(layoutHeader);
         compositeHeader.setLayoutData(gridDataHeader);
         gridDataHeader.heightHint = 40;
-        gridDataHeader.widthHint = 585;
+        gridDataHeader.widthHint = 540;
         applyDialogFont(compositeHeader);
         Label lb = new Label(compositeHeader, SWT.CENTER);
-        layoutHeader.marginLeft = 170;
+        lb.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
         lb.setText("Most recommended plugins\n");
-        org.eclipse.swt.graphics.Font defaultFont = new org.eclipse.swt.graphics.Font(null, "Aria", 10, SWT.BOLD);
+        //layoutHeader.marginLeft = (gridDataHeader.widthHint - lb.getText().length() *16);
+        org.eclipse.swt.graphics.Font defaultFont = new org.eclipse.swt.graphics.Font(null, "Aria", 12, SWT.BOLD);
         lb.setFont(defaultFont);
         // initialize the dialog units
         initializeDialogUnits(compositeHeader);
@@ -106,8 +104,8 @@ public class RecommendPluginsDialog extends Dialog {
         layoutBD.verticalSpacing = 10;
         compositeBody.setLayout(layoutBD);
         compositeBody.setLayoutData(gridDataBD);
-        gridDataBD.widthHint = 585;
-        gridDataBD.heightHint = 420;
+        gridDataBD.widthHint = 540;
+        gridDataBD.heightHint = 380;
         createDialogContainer(compositeBody);
        // scrolledComposite.setMinHeight(800);
 
@@ -115,11 +113,14 @@ public class RecommendPluginsDialog extends Dialog {
     }
     @Override
     protected Control createButtonBar(Composite parent) {
-        Composite buttonBarComposite = new Composite(parent, SWT.RIGHT | SWT.BOTTOM);
+        Composite buttonBarComposite = new Composite(parent, SWT.RIGHT);
         GridLayout layout = new GridLayout();
-        layout.marginLeft = 275;
-        layout.marginRight= 0;
+        GridData gridDataBD = new GridData(SWT.RIGHT , SWT.BOTTOM, true, false);
+        gridDataBD.widthHint = 540;
+        gridDataBD.heightHint = 40;
+        layout.marginRight = 10;
         buttonBarComposite.setLayout(layout);
+        buttonBarComposite.setLayoutData(new GridData(SWT.RIGHT , SWT.BOTTOM, true, false));
         createButton(buttonBarComposite, OPEN_PROJECT_ID, StringConstants.DIA_OPEN_PROJECT, false);
         createButton(buttonBarComposite, NEW_PROJECT_ID, StringConstants.DIA_NEW_PROJECT, true);
         return buttonBarComposite;
@@ -188,8 +189,6 @@ public class RecommendPluginsDialog extends Dialog {
             credentials = RequireAuthorizationHandler.getUsernamePasswordCredentials();
             KStoreRestClient res = new KStoreRestClient(credentials);
             List<KStoreProduct> recommendList = res.getRecommendPlugins();
-            String appVersion = VersionUtil.getCurrentVersion().getVersion();
-            List<KStorePlugin> plugin = res.getLatestPlugins(appVersion);
             List<Button> buttons = new ArrayList<Button>();
             for (int i = 0; i < recommendList.size(); i++) {
                 newButton = new Button(parent, SWT.CHECK | SWT.WRAP);
@@ -197,7 +196,7 @@ public class RecommendPluginsDialog extends Dialog {
                 newButton.setSelection(true);
                 Label lb = new Label(parent, SWT.WRAP);
                 GridData gdLb = new GridData(SWT.FILL, SWT.TOP, false, false);
-                gdLb.widthHint = 560;
+                gdLb.widthHint = 530;
                 lb.setLayoutData(gdLb);
                 lb.setText("    " + recommendList.get(i).getDescription());
                 lb.setFont(JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT));
@@ -221,16 +220,12 @@ public class RecommendPluginsDialog extends Dialog {
 
                     }
                 });
-                if(plugin.contains(idProduct.get(i))){
-                    idProduct.remove(idProduct.get(i));
-                }
             }
-        } catch (KStoreClientException e1) {
-            e1.printStackTrace();
-        } catch (KStoreClientAuthException e1) {
-            e1.printStackTrace();
-        } catch (KStoreClientExceptionWithInfo e1) {
-        }
+        } catch (KStoreClientException e) {
+            LoggerSingleton.logError(e);
+        } catch (KStoreClientAuthException e) {
+            LoggerSingleton.logError(e);
+        } 
 
         return stepDetailsComposite;
 
@@ -238,7 +233,7 @@ public class RecommendPluginsDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(620, 600);
+        return new Point(580, 550);
     }
 
 

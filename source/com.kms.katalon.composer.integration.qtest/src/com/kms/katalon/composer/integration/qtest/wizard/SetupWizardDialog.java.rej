@@ -1,0 +1,10 @@
+diff a/source/com.kms.katalon.composer.integration.qtest/src/com/kms/katalon/composer/integration/qtest/wizard/SetupWizardDialog.java b/source/com.kms.katalon.composer.integration.qtest/src/com/kms/katalon/composer/integration/qtest/wizard/SetupWizardDialog.java	(rejected hunks)
+@@ -348,7 +348,7 @@
+     }
+ 
+     @Override
+-    protected void finishPressed() {
++    public void finishPressed() {
+         updateQTestSetting();
+         updateProject();
+         super.okPressed();

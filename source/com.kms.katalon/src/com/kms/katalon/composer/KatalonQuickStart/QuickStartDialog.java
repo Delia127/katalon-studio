@@ -26,11 +26,11 @@ import org.eclipse.swt.widgets.Table;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
-import com.kms.katalon.composer.components.impl.wizard.SimpleWizardDialog;
+import com.kms.katalon.composer.components.impl.wizard.WizardDialog;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.ImageConstants;
 
-public class QuickStartDialog extends SimpleWizardDialog {
+public class QuickStartDialog extends WizardDialog {
 
     private int lastTreeWidth;
 
@@ -245,7 +245,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
     protected Collection<IWizardPage> getWizardPages() {
         return Arrays.asList(new IWizardPage[] { new WebTestingWizardPage(), new APITestingWizardPage(),
                 new MobileTestingWizardPage(), new DatadrivenTestingWizardPage(), new BDDTestingWizardPage(),
-                new SDLCIntergrationWizardPage(), new PluginStoreWizardPage(), new AdvancedReportWizardPage(), new NullDialog() });
+                new SDLCIntergrationWizardPage(), new PluginStoreWizardPage(), new AdvancedReportWizardPage() });
     }
 
     @Override
@@ -263,7 +263,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(1050, 770);
+        return new Point(1050, 750);
     }
 
     @Override
@@ -282,7 +282,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
     }
 
     @Override
-    public void finishPressed() {
+    protected void finishPressed() {
         super.okPressed();
     }
 }

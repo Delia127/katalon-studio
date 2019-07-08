@@ -315,6 +315,8 @@ public class GlobalStringConstants {
     public static final String WZ_SETUP_BTN_NEXT = GlobalMessageConstants.WZ_SETUP_BTN_NEXT;
 
     public static final String DIA_FINISH = GlobalMessageConstants.DIA_FINISH;
+    
+    public static final String DIA_CANCEL = GlobalMessageConstants.DIA_CANCEL;
 
     public static final String DIA_OK = GlobalMessageConstants.DIA_OK;
     

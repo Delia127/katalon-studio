@@ -219,6 +219,8 @@ public class GlobalMessageConstants extends NLS {
 
     public static String DIA_FINISH;
     
+    public static String DIA_CANCEL;
+    
     public static String DIA_OK;
 
     public static String DIA_SKIP;
