@@ -117,6 +117,7 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
         layout.numColumns = buttonMap.size();
         return buttonBarComposite;
     }
+
     protected final Button createButton(Composite buttonBarComposite, int id, String text) {
         Button button = new Button(buttonBarComposite, SWT.FLAT);
         button.setLayoutData(getButtonGridData());
@@ -194,9 +195,10 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
         if (pageSharedData != null) {
             sharedData.putAll(pageSharedData);
         }
-        if(wizardManager.getWizardPages().indexOf(wizardManager.getCurrentPage())< wizardManager.getWizardPages().size()-1){
+        if (wizardManager.getWizardPages()
+                .indexOf(wizardManager.getCurrentPage()) < wizardManager.getWizardPages().size() - 1) {
             showPage(wizardManager.nextPage());
-        }else{
+        } else {
             super.close();
         }
 
@@ -235,9 +237,9 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
         }
     }
 
-    protected void finishPressed() {   
+    protected void finishPressed() {
         super.okPressed();
-        
+
     }
 
 }

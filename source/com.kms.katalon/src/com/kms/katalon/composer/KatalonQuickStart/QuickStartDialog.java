@@ -208,7 +208,7 @@ public class QuickStartDialog extends WizardDialog {
                 if (!event.getSelection().isEmpty()) {
                     int index = tableViewer.getTable().getSelectionIndex();
                     showPage(wizardManager.choosenPage(index));
-                }else{
+                } else {
                     tableViewer.setSelection(StructuredSelection.EMPTY);
                 }
             }
@@ -218,9 +218,9 @@ public class QuickStartDialog extends WizardDialog {
         tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
             public void handleEvent(Event event) {
                 // Selection:
-                if((event.detail & SWT.SELECTED) != 0){
-                    //event.detail &= ~SWT.SELECTED;
-                    event.gc.setBackground( event.display.getSystemColor( SWT.COLOR_BLUE ) );
+                if ((event.detail & SWT.SELECTED) != 0) {
+                    // event.detail &= ~SWT.SELECTED;
+                    event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
                 }
                 // Expect: selection now has no visual effect.
                 // Actual: selection remains but changes from light blue to white.
