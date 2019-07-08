@@ -994,7 +994,10 @@ public class ObjectPropertyView implements EventHandler {
 		Composite testObjectDetailsComposite = createTestObjectDetailsComposite(mainComposite);
 
 		mainComposite.setContent(testObjectDetailsComposite);
-		mainComposite.setMinSize(new Point(900, 750));
+        int height = propertyTableComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y
+                + testObjectDetailsComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y
+                + mainComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+		mainComposite.setMinSize(new Point(900, height));
 		mainComposite.setExpandVertical(true);
 		mainComposite.setExpandHorizontal(true);
 
