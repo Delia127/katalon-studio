@@ -40,8 +40,10 @@ import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsRunConfiguration;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeamPage;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTestProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
@@ -223,7 +225,7 @@ public class AnalyticsApiProvider {
         }
     }
     
-    public static void uploadTestProject(String serverUrl, long projectId, long teamId, long timestamp, String name, String folderName,
+    public static AnalyticsTestProject uploadTestProject(String serverUrl, long projectId, long teamId, long timestamp, String name, String folderName,
             String fileName, String uploadedPath, String token) throws AnalyticsApiExeception {
 
         try {
@@ -241,7 +243,40 @@ public class AnalyticsApiProvider {
             HttpPost httpPost = new HttpPost(uriBuilder.build());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
 
-            executeRequest(httpPost, Object.class);
+            return executeRequest(httpPost, AnalyticsTestProject.class);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
+    public static AnalyticsRunConfiguration createTestPlan(String serverUrl, long projectId, long teamId, String name, long testProjectId,
+            String cloudType, String configType, long testSuiteCollectionId, String token)
+            throws AnalyticsApiExeception {
+        try {
+            LogUtil.logInfo("KA: Create test plan in KA server: " + serverUrl);
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_CREATE_TEST_PLAN);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+
+            Map<String, String> map = new HashMap<>();
+            map.put("name", name);
+            map.put("projectId", String.valueOf(projectId));
+            map.put("teamId", String.valueOf(teamId));
+            map.put("testProjectId", String.valueOf(testProjectId));
+            map.put("cloudType", cloudType);
+            map.put("configType", configType);
+            map.put("testSuiteCollectionId", String.valueOf(testSuiteCollectionId));
+
+            HttpPost httpPost = new HttpPost(uriBuilder.build());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+
+            Gson gson = new Gson();
+            StringEntity entity = new StringEntity(gson.toJson(map));
+            httpPost.setEntity(entity);
+
+            return executeRequest(httpPost, AnalyticsRunConfiguration.class);
         } catch (Exception e) {
             LogUtil.logError(e);
             throw new AnalyticsApiExeception(e);
