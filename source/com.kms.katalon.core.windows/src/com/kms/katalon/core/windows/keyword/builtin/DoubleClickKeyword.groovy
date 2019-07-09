@@ -11,12 +11,10 @@ import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.keyword.internal.SupportLevel;
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling;
-import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.windows.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsElementHelper
 
-import groovy.transform.CompileStatic;
 import io.appium.java_client.windows.WindowsDriver
 
 @Action(value = "doubleClick")
@@ -24,7 +22,6 @@ public class DoubleClickKeyword extends AbstractKeyword {
 
     private KeywordLogger logger = KeywordLogger.getInstance(DoubleClickKeyword.class)
 
-    @CompileStatic
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
         return SupportLevel.NOT_SUPPORT

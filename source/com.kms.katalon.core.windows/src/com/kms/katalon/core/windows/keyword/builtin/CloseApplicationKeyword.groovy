@@ -10,7 +10,6 @@ import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.windows.WindowsDriverFactory
 
-import groovy.transform.CompileStatic;
 import io.appium.java_client.windows.WindowsDriver
 
 @Action(value = "closeApplication")
@@ -18,7 +17,6 @@ public class CloseApplicationKeyword extends AbstractKeyword {
 
     private KeywordLogger logger = KeywordLogger.getInstance(CloseApplicationKeyword.class)
 
-    @CompileStatic
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
         return SupportLevel.NOT_SUPPORT

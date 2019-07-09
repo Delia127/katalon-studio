@@ -14,7 +14,6 @@ import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.windows.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsElementHelper
 
-import groovy.transform.CompileStatic
 import io.appium.java_client.windows.WindowsDriver
 
 @Action(value = "getText")
@@ -26,7 +25,6 @@ public class GetTextKeyword extends AbstractKeyword {
         return SupportLevel.NOT_SUPPORT;
     }
 
-    @CompileStatic
     @Override
     public Object execute(Object ...params) {
         WindowsTestObject testObject = (WindowsTestObject) params[0]
@@ -34,7 +32,6 @@ public class GetTextKeyword extends AbstractKeyword {
         getText(testObject, flowControl)
     }
 
-    @CompileStatic
     public String getText(WindowsTestObject testObject, FailureHandling flowControl) throws StepFailedException {
         return (String) KeywordMain.runKeyword({
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()

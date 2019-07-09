@@ -14,7 +14,6 @@ import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.windows.WindowsDriverFactory
 
-import groovy.transform.CompileStatic
 import io.appium.java_client.windows.WindowsDriver
 
 @Action(value = "takeScreenshot")
@@ -27,7 +26,6 @@ public class TakeScreenshotKeyword extends AbstractKeyword {
         return SupportLevel.NOT_SUPPORT;
     }
 
-    @CompileStatic
     @Override
     public Object execute(Object ...params) {
         String screenshotLocation = (String) params[0]
@@ -35,7 +33,6 @@ public class TakeScreenshotKeyword extends AbstractKeyword {
         takeScreenshot(screenshotLocation, flowControl)
     }
 
-    @CompileStatic
     public File takeScreenshot(String screenshotLocation, FailureHandling flowControl) throws StepFailedException {
         return (File) KeywordMain.runKeyword({
             WindowsDriver<WebElement> windowsDriver = WindowsDriverFactory.getWindowsDriver()

@@ -14,7 +14,6 @@ import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.windows.WindowsDriverFactory
 import com.kms.katalon.core.windows.keyword.helper.WindowsElementHelper
 
-import groovy.transform.CompileStatic;
 import io.appium.java_client.windows.WindowsDriver
 
 @Action(value = "click")
@@ -22,7 +21,6 @@ public class ClickKeyword extends AbstractKeyword {
 
     private KeywordLogger logger = KeywordLogger.getInstance(ClickKeyword.class)
 
-    @CompileStatic
     @Override
     public SupportLevel getSupportLevel(Object ...params) {
         return SupportLevel.NOT_SUPPORT
