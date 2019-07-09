@@ -223,7 +223,7 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
         updateButtonBar(event.getWizardPage());
     }
 
-    protected Button getButton(int id) {
+    public Button getButton(int id) {
         return buttonMap.get(id);
     }
 

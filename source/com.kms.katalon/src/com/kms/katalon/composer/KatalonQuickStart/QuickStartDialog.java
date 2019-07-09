@@ -149,7 +149,7 @@ public class QuickStartDialog extends WizardDialog {
     protected Sash createSash(final Composite composite, final Control rightControl) {
         final Sash sash = new Sash(composite, SWT.VERTICAL);
         sash.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-        sash.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        //sash.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
         sash.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -218,14 +218,12 @@ public class QuickStartDialog extends WizardDialog {
         tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
             public void handleEvent(Event event) {
                 // Selection:
-                if ((event.detail & SWT.SELECTED) != 0) {
-                    // event.detail &= ~SWT.SELECTED;
+                if ((event.detail & SWT.SELECTED) == 0) {
                     event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
                 }
-                // Expect: selection now has no visual effect.
-                // Actual: selection remains but changes from light blue to white.
-                // MouseOver:
-                event.detail &= ~SWT.HOT;
+                event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
+                //event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
+                event.detail &=~SWT.HOT;
                 // Expect: mouse over now has no visual effect.
                 // Actual: behavior remains unchanged.
             }

@@ -8,11 +8,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -33,12 +35,15 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.handlers.RequireAuthorizationHandler;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreProduct;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
+import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.service.KStoreRestClient;
+import com.kms.katalon.plugin.service.PluginService;
 
 public class RecommendPluginsDialog extends Dialog {
     List<Long> idProduct = new ArrayList<>();
@@ -71,63 +76,18 @@ public class RecommendPluginsDialog extends Dialog {
     }
 
     @Override
-    protected Control createDialogArea(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
-        GridData gridData = new GridData(SWT.NONE);
-        GridLayout layout = new GridLayout();
-        layout.marginHeight = 10;
-        layout.marginWidth = 10;
-        layout.verticalSpacing = 10;
-        composite.setLayout(layout);
-        composite.setLayoutData(gridData);
-        Composite compositeHeader = new Composite(composite, SWT.NONE);
-        GridData gridDataHeader = new GridData(SWT.CENTER, SWT.TOP, true, false);
-        GridLayout layoutHeader = new GridLayout();
-        layout.marginHeight = 10;
-        layout.marginWidth = 10;
-        layout.verticalSpacing = 10;
-        compositeHeader.setLayout(layoutHeader);
-        compositeHeader.setLayoutData(gridDataHeader);
-        gridDataHeader.heightHint = 40;
-        gridDataHeader.widthHint = 540;
-        applyDialogFont(compositeHeader);
-        Label lb = new Label(compositeHeader, SWT.CENTER);
-        lb.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
-        lb.setText("Most recommended plugins\n");
-        ControlUtils.setFontToBeBold(lb);
-        ControlUtils.setFontSize(lb, 12);
-        // initialize the dialog units
-        initializeDialogUnits(compositeHeader);
-        // create the dialog area and button bar
-        Composite compositeBody = new Composite(composite, SWT.BORDER);
-        GridData gridDataBD = new GridData(SWT.NONE);
-        GridLayout layoutBD = new GridLayout();
-        layoutBD.marginHeight = 10;
-        layoutBD.marginWidth = 10;
-        layoutBD.verticalSpacing = 10;
-        compositeBody.setLayout(layoutBD);
-        compositeBody.setLayoutData(gridDataBD);
-        gridDataBD.widthHint = 540;
-        gridDataBD.heightHint = 380;
-        createDialogContainer(compositeBody);
-        // scrolledComposite.setMinHeight(800);
-
-        return composite;
-    }
-
-    @Override
     protected Control createButtonBar(Composite parent) {
-        Composite buttonBarComposite = new Composite(parent, SWT.RIGHT);
-        GridLayout layout = new GridLayout();
-        GridData gridDataBD = new GridData(SWT.RIGHT, SWT.BOTTOM, true, false);
-        gridDataBD.widthHint = 540;
-        gridDataBD.heightHint = 40;
-        layout.marginRight = 10;
-        buttonBarComposite.setLayout(layout);
+        Composite buttonBarComposite = new Composite(parent, SWT.NONE);
         buttonBarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false));
-        createButton(buttonBarComposite, OPEN_PROJECT_ID, StringConstants.DIA_OPEN_PROJECT, false);
-        createButton(buttonBarComposite, NEW_PROJECT_ID, StringConstants.DIA_NEW_PROJECT, true);
+        buttonBarComposite.setLayout(new GridLayout());
+
+        createButtonsForButtonBar(buttonBarComposite);
         return buttonBarComposite;
+    }
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, OPEN_PROJECT_ID, StringConstants.DIA_OPEN_PROJECT, false);
+        createButton(parent, NEW_PROJECT_ID, StringConstants.DIA_NEW_PROJECT, true);
     }
 
     public final void installPressed() {
@@ -141,6 +101,11 @@ public class RecommendPluginsDialog extends Dialog {
                         credentials[0] = RequireAuthorizationHandler.getUsernamePasswordCredentials();
                         KStoreRestClient res = new KStoreRestClient(credentials[0]);
                         res.postRecommended(idProduct);
+                        try {
+                            PluginService.getInstance().reloadPlugins(credentials[0], new NullProgressMonitor());
+                        } catch (ReloadPluginsException | InterruptedException e) {
+                            LoggerSingleton.logError(e);
+                        }
                     } catch (KStoreClientAuthException e) {
                         LoggerSingleton.logError(e);
                     } catch (KStoreClientException e) {
@@ -242,15 +207,20 @@ public class RecommendPluginsDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(580, 550);
+        Point initialSize = super.getInitialSize();
+        return new Point(Math.max(580, initialSize.x), initialSize.y);
     }
-
-    protected Control createDialogContainer(Composite parent) {
+    @Override
+    protected boolean isResizable() {
+        return true;
+    }
+    @Override
+    protected Control createDialogArea(Composite parent) {
         scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
-        Composite composite = new Composite(scrolledComposite, SWT.NONE);
+        Composite composite = new Composite(scrolledComposite, SWT.BORDER);
         composite.setLayout(new GridLayout());
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         createStepArea(composite);
