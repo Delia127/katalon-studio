@@ -46,6 +46,8 @@ import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity.LocatorStrategy;
 
 public class WindowsElementPropertiesComposite {
+    private static final int DF_LABEL_WIDTH_HINT = 120;
+
     private Text txtObjectName;
 
     private CapturedWindowsElement editingElement;
@@ -83,7 +85,7 @@ public class WindowsElementPropertiesComposite {
         // Object Name
         Label objectNameLabel = new Label(objectPropertiesComposite, SWT.NONE);
         GridData gdObjectNameLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdObjectNameLabel.widthHint = 100;
+        gdObjectNameLabel.widthHint = DF_LABEL_WIDTH_HINT;
         objectNameLabel.setLayoutData(gdObjectNameLabel);
         objectNameLabel.setText(StringConstants.DIA_LBL_OBJECT_NAME);
 
@@ -100,13 +102,17 @@ public class WindowsElementPropertiesComposite {
 
         Label lblLocatorStrategy = new Label(locatorComposite, SWT.NONE);
         lblLocatorStrategy.setText("Locator Strategy");
-        lblLocatorStrategy.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        GridData gdLocatorStrategy = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdLocatorStrategy.widthHint = DF_LABEL_WIDTH_HINT;
+        lblLocatorStrategy.setLayoutData(gdLocatorStrategy);
 
         cbbLocatorStrategy = new Combo(locatorComposite, SWT.READ_ONLY);
         cbbLocatorStrategy.setItems(strategies);
 
         Label lblLocator = new Label(locatorComposite, SWT.NONE);
-        lblLocator.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+        GridData gdLocator = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdLocator.widthHint = DF_LABEL_WIDTH_HINT;
+        lblLocator.setLayoutData(gdLocator);
         lblLocator.setText("Locator");
 
         txtLocator = new StyledText(locatorComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
