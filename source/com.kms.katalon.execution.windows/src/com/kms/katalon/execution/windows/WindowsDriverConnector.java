@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
-import com.kms.katalon.core.windows.WindowsDriverFactory;
+import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.core.windows.constants.StringConstants;
 import com.kms.katalon.core.windows.driver.WindowsDriverType;
 import com.kms.katalon.execution.configuration.AbstractDriverConnector;

@@ -33,7 +33,7 @@ import com.kms.katalon.composer.mobile.objectspy.util.Util;
 import com.kms.katalon.composer.windows.element.SnapshotWindowsElement;
 import com.kms.katalon.composer.windows.element.TreeWindowsElement;
 import com.kms.katalon.core.util.internal.ProxyUtil;
-import com.kms.katalon.core.windows.WindowsDriverFactory;
+import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.execution.windows.WindowsDriverConnector;
 import com.thoughtworks.selenium.SeleniumException;

@@ -53,6 +53,7 @@
 		<module>com.kms.katalon.composer.webui.objectspy</module>
 		<module>com.kms.katalon.composer.webui.recorder</module>
 		<module>com.kms.katalon.composer.webui</module>
+		<module>com.kms.katalon.composer.windows</module>
 		<module>com.kms.katalon.console</module>
 		<module>com.kms.katalon.constant</module>
 		<module>com.kms.katalon.controller</module>
@@ -61,6 +62,7 @@
 		<module>com.kms.katalon.core.webservice</module>
 		<module>com.kms.katalon.core.webui</module>
 		<module>com.kms.katalon.core.cucumber</module>
+		<module>com.kms.katalon.core.windows</module>
 		<module>com.kms.katalon.core</module>
 		<module>com.kms.katalon.custom</module>
 		<module>com.kms.katalon.dal.file</module>
@@ -69,6 +71,7 @@
 		<module>com.kms.katalon.execution.mobile</module>
 		<module>com.kms.katalon.execution.webui</module>
 		<module>com.kms.katalon.execution.webservice</module>
+		<module>com.kms.katalon.execution.windows</module>
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
 		<module>com.kms.katalon.feature.qtest_edition</module>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.kms</groupId>
+		<artifactId>com.kms.parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>com.kms.katalon.core.windows</artifactId>
+	<packaging>eclipse-plugin</packaging>
+
+	<properties>
+		<groovydocOutputDirectory>${mainBuildDirectory}/${apidocDirectory}/${project.artifactId}</groovydocOutputDirectory>
+	</properties>
+
+	<build>
+		<plugins>
+			<!-- Generates groovy doc and copy output to parent's resources directory -->
+			<!-- AntRun cannot read project.parent, so must workaround like this (http://stackoverflow.com/questions/4040778/parent-properties-inside-maven-antrun-plugin) -->
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>set-custom-property</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<providerSelection>2.0</providerSelection>
+							<source>
+								project.properties.setProperty('mainBuildDirectory', project.parent.build.directory.toString())
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>groovydoc</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<taskdef name="groovydoc" classname="org.codehaus.groovy.ant.Groovydoc"
+									classpathref="maven.compile.classpath" />
+								<groovydoc destdir="${groovydocOutputDirectory}"
+									sourcepath="${project.basedir}/src" use="true" windowtitle="${project.name}"
+									doctitle="${project.name}"
+									packagenames="com.kms.katalon.core.windows.driver,com.kms.katalon.core.windows.keyword">
+									<link packages="java.,org.xml.,javax.,org.xml."
+										href="http://download.oracle.com/javase/8/docs/api" />
+									<link packages="org.apache.tools.ant." href="http://evgeny-goldin.org/javadoc/ant/api" />
+									<link packages="org.junit.,junit.framework."
+										href="http://kentbeck.github.com/junit/javadoc/latest" />
+									<link packages="groovy.,org.codehaus.groovy." href="http://groovy.codehaus.org/api/" />
+									<link packages="org.codehaus.gmaven." href="http://evgeny-goldin.org/javadoc/gmaven" />
+								</groovydoc>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project> 

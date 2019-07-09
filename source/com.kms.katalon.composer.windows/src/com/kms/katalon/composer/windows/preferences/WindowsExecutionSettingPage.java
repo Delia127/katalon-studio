@@ -21,7 +21,7 @@ import com.kms.katalon.composer.execution.components.DriverPropertyMapComposite;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
-import com.kms.katalon.core.windows.WindowsDriverFactory;
+import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.execution.windows.WindowsDriverConnector;
 
 public class WindowsExecutionSettingPage extends PreferencePage {

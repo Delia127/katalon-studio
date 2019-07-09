@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebElement;
 
 import com.kms.katalon.core.testobject.WindowsTestObject;
-import com.kms.katalon.core.windows.WindowsDriverFactory;
+import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
 import com.kms.katalon.core.windows.keyword.exception.DriverNotStartedException;
 
 import io.appium.java_client.windows.WindowsDriver;

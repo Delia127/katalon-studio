@@ -12,7 +12,7 @@ import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.keyword.internal.SupportLevel;
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
-import com.kms.katalon.core.windows.WindowsDriverFactory
+import com.kms.katalon.core.windows.driver.WindowsDriverFactory
 
 import io.appium.java_client.windows.WindowsDriver
 

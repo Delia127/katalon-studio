@@ -1,4 +1,4 @@
-package com.kms.katalon.core.windows;
+package com.kms.katalon.core.windows.driver;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -16,7 +16,6 @@ import org.openqa.selenium.remote.http.HttpClient.Factory;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.thoughtworks.selenium.SeleniumException;
