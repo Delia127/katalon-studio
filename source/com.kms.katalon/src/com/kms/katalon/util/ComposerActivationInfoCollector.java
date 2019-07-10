@@ -113,21 +113,21 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         QuickStartDialog quickStartDialog = new QuickStartDialog(Display.getCurrent().getActiveShell());
         quickStartDialog.open();
         RecommendPluginsDialog recommendPlugins = new RecommendPluginsDialog(Display.getCurrent().getActiveShell());
-        
-//        QuickStartDialog dialog = new QuickStartDialog(null);
 
-      // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
+        // QuickStartDialog dialog = new QuickStartDialog(null);
+
+        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
         switch (recommendPlugins.open()) {
-            
+
             case RecommendPluginsDialog.OPEN_PROJECT_ID: {
                 recommendPlugins.installPressed();
                 try {
                     new CommandCaller().call(CommandId.PROJECT_OPEN);
                 } catch (CommandException e) {
-                  LogUtil.logError(e);
-               }
+                    LogUtil.logError(e);
+                }
                 break;
-          }
+            }
             case RecommendPluginsDialog.NEW_PROJECT_ID: {
                 recommendPlugins.installPressed();
                 try {
@@ -135,10 +135,10 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                 } catch (CommandException e) {
                     LogUtil.logError(e);
                 }
-               break;
-           }
-           default:
-               recommendPlugins.installPressed();
+                break;
+            }
+            default:
+                recommendPlugins.installPressed();
                 break;
         }
     }
