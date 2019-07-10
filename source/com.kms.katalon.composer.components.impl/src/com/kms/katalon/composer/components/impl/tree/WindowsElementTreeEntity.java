@@ -91,4 +91,8 @@ public class WindowsElementTreeEntity extends AbstractTreeEntity {
         
     }
 
+    @Override
+    public WindowsElementEntity getObject() throws Exception {
+        return (WindowsElementEntity) super.getObject();
+    }
 }

@@ -41,6 +41,7 @@ import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
@@ -49,7 +50,7 @@ import com.kms.katalon.composer.windows.dialog.NewWindowsElementPropertyDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.WindowsElementController;
-import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 
@@ -96,10 +97,17 @@ public class WindowsObjectPart {
             if (objects == null || objects.length != 2) {
                 return;
             }
-            String newsWindowsObjectId = (String) objects[1];
-            if (entity.getIdForDisplay().equals(newsWindowsObjectId)) {
-                editingEntity.setName(entity.getName());
-                mpart.setLabel(editingEntity.getName());
+            try {
+                String oldWindowsObjectId = (String) objects[0];
+                String newWindowsObjectId = (String) objects[1];
+                if (editingEntity.getIdForDisplay().equals(oldWindowsObjectId)) {
+                    entity = WindowsElementController.getInstance().getWindowsElementByDisplayId(newWindowsObjectId);
+                    editingEntity = (WindowsElementEntity) entity.clone();
+                    editingEntity.setName(entity.getName());
+                    mpart.setLabel(editingEntity.getName());
+                }
+            } catch (ControllerException e) {
+                LoggerSingleton.logError(e);
             }
         }
     };
@@ -111,6 +119,8 @@ public class WindowsObjectPart {
 
     private void addListeners() {
         eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, eventHandler);
+
+        eventBroker.subscribe(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, eventHandler);
 
         txtLocator.addModifyListener(new ModifyListener() {
 
@@ -151,30 +161,48 @@ public class WindowsObjectPart {
         mainComposite.setLayout(new GridLayout(1, false));
 
         Composite locatorComposite = new Composite(mainComposite, SWT.NONE);
-        locatorComposite.setLayout(new GridLayout(2, false));
+        locatorComposite.setLayout(new GridLayout(1, false));
         locatorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-        Label lblLocatorStrategy = new Label(locatorComposite, SWT.NONE);
+        Label lblLocatorTitle = new Label(locatorComposite, SWT.NONE);
+        lblLocatorTitle.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        lblLocatorTitle.setText("Locator");
+        ControlUtils.setFontToBeBold(lblLocatorTitle);
+
+        Composite locatorDetailsComposite = new Composite(locatorComposite, SWT.NONE);
+        locatorDetailsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        GridLayout glLocatorDetails = new GridLayout(2, false);
+        glLocatorDetails.marginWidth = 0;
+        glLocatorDetails.marginHeight = 0;
+        locatorDetailsComposite.setLayout(glLocatorDetails);
+
+        Label lblLocatorStrategy = new Label(locatorDetailsComposite, SWT.NONE);
         lblLocatorStrategy.setText("Locator Strategy");
         lblLocatorStrategy.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 
-        cbbLocatorStrategy = new Combo(locatorComposite, SWT.READ_ONLY);
+        cbbLocatorStrategy = new Combo(locatorDetailsComposite, SWT.READ_ONLY);
         cbbLocatorStrategy.setItems(strategies);
 
-        Label lblLocator = new Label(locatorComposite, SWT.NONE);
+        Label lblLocator = new Label(locatorDetailsComposite, SWT.NONE);
         lblLocator.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
         lblLocator.setText("Locator");
 
-        txtLocator = new StyledText(locatorComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+        txtLocator = new StyledText(locatorDetailsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
         GridData gdTxtEditor = new GridData(SWT.FILL, SWT.FILL, true, false);
         gdTxtEditor.heightHint = 100;
         txtLocator.setLayoutData(gdTxtEditor);
 
-        Composite compositeTable = new Composite(mainComposite, SWT.NONE);
-        compositeTable.setLayoutData(new GridData(GridData.FILL_BOTH));
-        compositeTable.setLayout(new GridLayout());
+        Composite tableComposite = new Composite(mainComposite, SWT.NONE);
+        tableComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+        GridLayout glTableComposite = new GridLayout();
+        glTableComposite.marginTop = 15;
+        tableComposite.setLayout(glTableComposite);
 
-        ToolBar tbProperties = new ToolBar(compositeTable, SWT.FLAT | SWT.RIGHT);
+        Label lblObjectPropertiesTitle = new Label(tableComposite, SWT.NONE);
+        lblObjectPropertiesTitle.setText("Object Properties");
+        ControlUtils.setFontToBeBold(lblObjectPropertiesTitle);
+
+        ToolBar tbProperties = new ToolBar(tableComposite, SWT.FLAT | SWT.RIGHT);
         tbProperties.setForeground(ColorUtil.getToolBarForegroundColor());
         tbProperties.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
@@ -237,7 +265,7 @@ public class WindowsObjectPart {
             }
         });
 
-        tableViewerObjectProperties = new CTableViewer(compositeTable, SWT.BORDER);
+        tableViewerObjectProperties = new CTableViewer(tableComposite, SWT.BORDER);
         Table table = tableViewerObjectProperties.getTable();
         table.setLayoutData(new GridData(GridData.FILL_BOTH));
         table.setHeaderVisible(true);
@@ -290,7 +318,7 @@ public class WindowsObjectPart {
                     entity.getParentFolder());
             ExplorerPart.getInstance().refreshTreeEntity(treeEntity);
             mpart.setDirty(false);
-        } catch (DALException e) {
+        } catch (ControllerException e) {
             MultiStatusErrorDialog.showErrorDialog(e, "Error", "Unable to save Windows Object");
         }
     }

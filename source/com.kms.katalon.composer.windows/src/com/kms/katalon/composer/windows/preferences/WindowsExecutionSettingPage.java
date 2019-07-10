@@ -79,6 +79,9 @@ public class WindowsExecutionSettingPage extends PreferencePage {
 
     @Override
     public boolean performOk() {
+        if (!isControlCreated()) {
+            return true;
+        }
         Map<String, Object> properties = new HashMap<>();
         properties.put(WindowsDriverFactory.WIN_APP_DRIVER_PROPERTY, txtUrl.getText());
         properties.put(WindowsDriverFactory.DESIRED_CAPABILITIES_PROPERTY,

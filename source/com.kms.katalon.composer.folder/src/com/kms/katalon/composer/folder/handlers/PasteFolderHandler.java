@@ -26,6 +26,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.utils.EntityTrackingHelper;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -37,6 +38,7 @@ import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityProcessingUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
@@ -52,6 +54,8 @@ import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.controller.WindowsElementController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
@@ -59,6 +63,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
@@ -155,6 +160,9 @@ public class PasteFolderHandler {
                 } else if (treeEntity instanceof WebElementTreeEntity
                         && targetFolder.getFolderType() == FolderType.WEBELEMENT) {
                     copyTestObject((WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof WindowsElementTreeEntity
+                        && targetFolder.getFolderType() == FolderType.WEBELEMENT) {
+                    copyWindowsObject(((WindowsElementTreeEntity) treeEntity).getObject(), targetFolder);
                 } else if (treeEntity instanceof PackageTreeEntity
                         && targetFolder.getFolderType() == FolderType.KEYWORD) {
                     copyKeywordPackage((IPackageFragment) ((PackageTreeEntity) treeEntity).getObject(), targetFolder,
@@ -207,6 +215,8 @@ public class PasteFolderHandler {
                     moveCheckpoint(((CheckpointTreeEntity) treeEntity).getObject(), targetFolder);
                 } else if (treeEntity instanceof SystemFileTreeEntity) {
                     moveSystemFile(((SystemFileTreeEntity) treeEntity).getObject(), targetFolder);
+                } else if (treeEntity instanceof WindowsElementTreeEntity) {
+                    moveWindowsObject(((WindowsElementTreeEntity) treeEntity).getObject(), targetFolder);
                 }
             }
             GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
@@ -350,7 +360,7 @@ public class PasteFolderHandler {
         ExecutionProfileEntity coppiedProfile = GlobalVariableController.getInstance().copyProfile(sourceProfile);
 
         eventBroker.post(EventConstants.EXECUTION_PROFILE_CREATED, coppiedProfile.getName());
-        
+
         lastPastedTreeEntity = new ProfileTreeEntity(coppiedProfile, profileTree.getParent());
     }
 
@@ -418,11 +428,31 @@ public class PasteFolderHandler {
     }
 
     private void moveSystemFile(SystemFileEntity systemFile, FolderEntity targetFolder) throws DALException {
-        SystemFileEntity newSystemFile = 
-                 SystemFileController.getInstance().moveSystemFile(systemFile, targetFolder);
+        SystemFileEntity newSystemFile = SystemFileController.getInstance().moveSystemFile(systemFile, targetFolder);
         if (newSystemFile != null) {
             lastPastedTreeEntity = new SystemFileTreeEntity(newSystemFile, (FolderTreeEntity) parentPastedTreeEntity);
         }
+    }
+
+    private void moveWindowsObject(WindowsElementEntity windowsElement, FolderEntity targetFolder) throws ControllerException {
+        String oldId = windowsElement.getIdForDisplay();
+        WindowsElementEntity newsWindowsElement = WindowsElementController.getInstance()
+                .moveWindowsElementEntity(windowsElement, targetFolder);
+        if (newsWindowsElement != null) {
+            lastPastedTreeEntity = new WindowsElementTreeEntity(newsWindowsElement,
+                    (FolderTreeEntity) parentPastedTreeEntity);
+
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM,
+                    new Object[] { oldId, newsWindowsElement.getIdForDisplay() });
+        }
+    }
+
+    private void copyWindowsObject(WindowsElementEntity object, FolderEntity targetFolder) throws ControllerException {
+        WindowsElementEntity coppiedSystemFile = WindowsElementController.getInstance().copyWindowsElementEntity(object,
+                targetFolder);
+
+        lastPastedTreeEntity = new WindowsElementTreeEntity(coppiedSystemFile,
+                (FolderTreeEntity) parentPastedTreeEntity);
     }
 
 }

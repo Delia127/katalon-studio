@@ -3,6 +3,7 @@ package com.kms.katalon.controller;
 import java.io.File;
 
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.IWindowsElementDataProvider;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -32,7 +33,8 @@ public class WindowsElementController extends EntityController {
         return getDataProviderSetting().getWindowsElementDataProvider();
     }
 
-    public WindowsElementEntity getWindowsElementByDisplayId(String windowsElementEntityDisplayId) throws DALException {
+    public WindowsElementEntity getWindowsElementByDisplayId(String windowsElementEntityDisplayId)
+            throws ControllerException {
         if (windowsElementEntityDisplayId == null) {
             return null;
         }
@@ -44,33 +46,62 @@ public class WindowsElementController extends EntityController {
         String id = projectDir + File.separator
                 + windowsElementEntityDisplayId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator)
                 + WindowsElementEntity.FILE_EXTENSION;
-        return getWindowsElementDataProvider().get(id);
+        try {
+            return getWindowsElementDataProvider().get(id);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
-    public WindowsElementEntity newWindowsElementEntity(FolderEntity parentFolder, String newName) throws DALException {
-        return getWindowsElementDataProvider().add(parentFolder, newName);
+    public WindowsElementEntity newWindowsElementEntity(FolderEntity parentFolder, String newName)
+            throws ControllerException {
+        try {
+            return getWindowsElementDataProvider().add(parentFolder, newName);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
-    public void updateWindowsElementEntity(WindowsElementEntity windowsElementEntity) throws DALException {
-        getWindowsElementDataProvider().update(windowsElementEntity);
+    public void updateWindowsElementEntity(WindowsElementEntity windowsElementEntity) throws ControllerException {
+        try {
+            getWindowsElementDataProvider().update(windowsElementEntity);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
     public void renameWindowsElementEntity(String newName, WindowsElementEntity windowsElementEntity)
-            throws DALException {
-        getWindowsElementDataProvider().rename(windowsElementEntity.getId(), newName);
+            throws ControllerException {
+        try {
+            getWindowsElementDataProvider().rename(windowsElementEntity.getId(), newName);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
-    public void deleteWindowsElementEntity(WindowsElementEntity windowsElementEntity) throws DALException {
-        getWindowsElementDataProvider().delete(windowsElementEntity.getId());
+    public void deleteWindowsElementEntity(WindowsElementEntity windowsElementEntity) throws ControllerException {
+        try {
+            getWindowsElementDataProvider().delete(windowsElementEntity.getId());
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
     public WindowsElementEntity moveWindowsElementEntity(WindowsElementEntity windowsElementEntity,
-            FolderEntity newLocation) throws DALException {
-        return getWindowsElementDataProvider().move(windowsElementEntity.getId(), newLocation);
+            FolderEntity newLocation) throws ControllerException {
+        try {
+            return getWindowsElementDataProvider().move(windowsElementEntity.getId(), newLocation);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 
     public WindowsElementEntity copyWindowsElementEntity(WindowsElementEntity windowsElementEntity,
-            FolderEntity newLocation) throws DALException {
-        return getWindowsElementDataProvider().copy(windowsElementEntity.getId(), newLocation);
+            FolderEntity newLocation) throws ControllerException {
+        try {
+            return getWindowsElementDataProvider().copy(windowsElementEntity.getId(), newLocation);
+        } catch (DALException e) {
+            throw new ControllerException(e);
+        }
     }
 }

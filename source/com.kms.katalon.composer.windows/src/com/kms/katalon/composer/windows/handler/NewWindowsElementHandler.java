@@ -42,13 +42,14 @@ public class NewWindowsElementHandler {
             WindowsElementEntity newWindowsElementEntity = WindowsElementController.getInstance()
                     .newWindowsElementEntity(folder, testRunEntity.getName());
 
-            Trackings.trackCreatingObject("windowsElementObject");
+            Trackings.trackCreatingObject("windowsObject");
 
             ExplorerPart.getInstance().refreshTreeEntity(folderTreeEntity);
             ExplorerPart.getInstance().setSelectedItems(
                     new Object[] { TreeEntityUtil.getWindowsElementTreeEntity(newWindowsElementEntity, folder) });
-            
-            
+
+            OpenWindowsElementHandler.getInstance().openWindowsElement(newWindowsElementEntity);
+
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, "Unable to create Windows object", e.getMessage());
         }
