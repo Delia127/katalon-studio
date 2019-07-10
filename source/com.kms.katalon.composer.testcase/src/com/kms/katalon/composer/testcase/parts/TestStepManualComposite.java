@@ -188,9 +188,7 @@ public class TestStepManualComposite {
 		compositeDetails.setLayout(new FormLayout());
 
 		createTestCaseManualTableControls(compositeDetails);
-
-		treeTableInput = new TestCaseTreeTableInput(new ScriptNodeWrapper(), treeTable, parentPart);
-
+		
 		registerEventBrokerListeners();
 	}
 
