@@ -31,6 +31,7 @@ import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
+import com.kms.katalon.plugin.models.KStoreProduct;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResolutionItem;
@@ -221,6 +222,20 @@ public class PluginService {
         } catch (Exception ignored) {}
     }
     
+    public void logPluginProductInfo(KStoreProduct plugin) {
+        try {
+            Map<String, Object> infoMap = new HashMap<>();
+            infoMap.put("id", plugin.getId());
+            infoMap.put("productId", plugin.getId());
+            infoMap.put("name", plugin.getName());
+            if (ApplicationRunningMode.get() == RunningMode.GUI) {
+                LoggerSingleton.logInfo("Plugin info: " + JsonUtil.toJson(infoMap));
+            } else {
+                LogUtil.printOutputLine("Plugin info: " + JsonUtil.toJson(infoMap));
+            }
+        } catch (Exception ignored) {}
+    }
+
     private void refreshProjectClasspath(SubMonitor monitor) throws Exception {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();

@@ -8,13 +8,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -30,20 +28,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.handlers.RequireAuthorizationHandler;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreProduct;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
-import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.service.KStoreRestClient;
-import com.kms.katalon.plugin.service.LogService;
 import com.kms.katalon.plugin.service.PluginService;
 
 public class RecommendPluginsDialog extends Dialog {
@@ -89,6 +83,7 @@ public class RecommendPluginsDialog extends Dialog {
         createButtonsForButtonBar(buttonBarComposite);
         return buttonBarComposite;
     }
+
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, OPEN_PROJECT_ID, StringConstants.DIA_OPEN_PROJECT, false);
@@ -106,12 +101,16 @@ public class RecommendPluginsDialog extends Dialog {
                         credentials[0] = RequireAuthorizationHandler.getUsernamePasswordCredentials();
                         KStoreRestClient res = new KStoreRestClient(credentials[0]);
                         res.postRecommended(idProduct);
-                        
-                        try {
-                            PluginService.getInstance().reloadPlugins(credentials[0], new NullProgressMonitor());
-                        } catch (ReloadPluginsException | InterruptedException e) {
-                            LoggerSingleton.logError(e);
-                        }
+                        res.getRecommendPlugins()
+                                .stream()
+                                .forEach(p -> PluginService.getInstance().logPluginProductInfo(p));
+                        /*
+                         * try {
+                         * PluginService.getInstance().reloadPlugins(credentials[0], new NullProgressMonitor());
+                         * } catch (ReloadPluginsException | InterruptedException e) {
+                         * LoggerSingleton.logError(e);
+                         * }
+                         */
                     } catch (KStoreClientAuthException e) {
                         LoggerSingleton.logError(e);
                     } catch (KStoreClientException e) {
@@ -216,10 +215,12 @@ public class RecommendPluginsDialog extends Dialog {
         Point initialSize = super.getInitialSize();
         return new Point(Math.max(580, initialSize.x), initialSize.y);
     }
+
     @Override
     protected boolean isResizable() {
         return true;
     }
+
     @Override
     protected Control createDialogArea(Composite parent) {
         scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
@@ -227,7 +228,9 @@ public class RecommendPluginsDialog extends Dialog {
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
         Composite composite = new Composite(scrolledComposite, SWT.BORDER);
-        composite.setLayout(new GridLayout());
+        GridLayout girdLayout = new GridLayout();
+        girdLayout.marginLeft = 5;
+        composite.setLayout(girdLayout);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         createStepArea(composite);
         scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
