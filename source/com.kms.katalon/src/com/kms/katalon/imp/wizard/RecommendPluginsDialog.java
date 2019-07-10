@@ -43,6 +43,7 @@ import com.kms.katalon.plugin.models.KStoreProduct;
 import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.service.KStoreRestClient;
+import com.kms.katalon.plugin.service.LogService;
 import com.kms.katalon.plugin.service.PluginService;
 
 public class RecommendPluginsDialog extends Dialog {
@@ -77,10 +78,14 @@ public class RecommendPluginsDialog extends Dialog {
 
     @Override
     protected Control createButtonBar(Composite parent) {
+        Composite labelComposite = new Composite(parent, SWT.NONE);
+        labelComposite.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, true, false));
+        labelComposite.setLayout(new GridLayout());
         Composite buttonBarComposite = new Composite(parent, SWT.NONE);
         buttonBarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false));
         buttonBarComposite.setLayout(new GridLayout());
-
+        Label lb = new Label(labelComposite, SWT.NONE);
+        lb.setText(StringConstants.DIA_INTRO_PROJECT);
         createButtonsForButtonBar(buttonBarComposite);
         return buttonBarComposite;
     }
@@ -101,6 +106,7 @@ public class RecommendPluginsDialog extends Dialog {
                         credentials[0] = RequireAuthorizationHandler.getUsernamePasswordCredentials();
                         KStoreRestClient res = new KStoreRestClient(credentials[0]);
                         res.postRecommended(idProduct);
+                        
                         try {
                             PluginService.getInstance().reloadPlugins(credentials[0], new NullProgressMonitor());
                         } catch (ReloadPluginsException | InterruptedException e) {
