@@ -40,6 +40,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.plugin.models.KStoreClientException;
@@ -88,6 +89,7 @@ public class KStorePluginsDialog extends Dialog {
         boolean visible = shouldShowExpiryWarningMessage();
         gdWarning.exclude = !visible;
         lblWarning.setVisible(visible);
+        lblWarning.setForeground(ColorUtil.getWarningForegroudColor());
         
         Composite tableComposite = new Composite(body, SWT.NONE);
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

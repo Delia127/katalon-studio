@@ -49,23 +49,24 @@
             name="Edge">
       </page>
        <page
-            category="com.kms.katalon.composer.execution.settings.default.1"
-            class="com.kms.katalon.composer.webui.setting.RemoteWebPreferencePage"
-            id="com.kms.katalon.composer.execution.settings.default.1.6"
-            name="Remote">
-      </page>
-       <page
              category="com.kms.katalon.composer.execution.settings.default.1"
              class="com.kms.katalon.composer.webui.setting.HeadlessPreferencePage"
-             id="com.kms.katalon.composer.execution.settings.default.1.7"
+             id="com.kms.katalon.composer.execution.settings.default.1.6"
              name="Chrome (headless)">
        </page>
        <page
              category="com.kms.katalon.composer.execution.settings.default.1"
              class="com.kms.katalon.composer.webui.setting.FirefoxHeadlessPreferencePage"
-             id="com.kms.katalon.composer.execution.settings.default.1.8"
+             id="com.kms.katalon.composer.execution.settings.default.1.7"
              name="Firefox (headless)">
        </page>
+       
+       <page
+            category="com.kms.katalon.composer.execution.desiredcapabilities"
+            class="com.kms.katalon.composer.webui.setting.RemoteWebPreferencePage"
+            id="com.kms.katalon.composer.execution.settings.default.4"
+            name="Remote">
+      </page>
    </extension>
 	<extension
 	       point="com.kms.katalon.composer.execution.driverConnectorEditor">

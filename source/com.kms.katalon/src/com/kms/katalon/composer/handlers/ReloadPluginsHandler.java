@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -13,14 +12,13 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.plugin.dialog.KStorePluginsDialog;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStorePlugin;
@@ -118,12 +116,7 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
     }
 
     private void openResultDialog(List<ReloadItem> result) {
-        if (result.size() > 0) {
-            KStorePluginsDialog dialog = new KStorePluginsDialog(Display.getCurrent().getActiveShell(), result);
-            dialog.open();
-        } else {
-            MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
-                    StringConstants.HAND_INFO_NO_PLUGINS_FOUND);
-        }
+        KStorePluginsDialog dialog = new KStorePluginsDialog(Display.getCurrent().getActiveShell(), result);
+        dialog.open();
     }
 }

@@ -17,6 +17,8 @@ import org.apache.http.util.EntityUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -52,7 +54,7 @@ public class SignupSurveyDialog extends AbstractDialog {
     private static final String[] DOWNLOAD_PURPOSE_OPTIONS = new String[] {
             "Learn automation testing",
             "Use as a required automation tool",
-            "Checkout and evaluate the tool"
+            "Check out and evaluate the tool"
         };
 
     private List<String> signupAnwsers = new ArrayList<>(2);
@@ -80,10 +82,10 @@ public class SignupSurveyDialog extends AbstractDialog {
 
         Label lblQuestionMsg = new Label(container, SWT.WRAP);
         lblQuestionMsg.setText(MessageConstants.SignupSurveyDialog_LBL_SURVEY_HEADLINE);
-        lblQuestionMsg.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+        lblQuestionMsg.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         Composite questionComposite = new Composite(container, SWT.NONE);
-        questionComposite.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
+        questionComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         questionComposite.setLayout(new GridLayout(2, false));
 
         Label lblFirstQuestion = new Label(questionComposite, SWT.NONE);
@@ -96,6 +98,12 @@ public class SignupSurveyDialog extends AbstractDialog {
         cbxFirstQuestion.setLayoutData(gdCombo);
         cbxFirstQuestion.setItems(USER_ROLE_OPTIONS);
         cbxFirstQuestion.setText(MessageConstants.SignupSurveyDialog_CBX_DEFAULT_OPTION);
+        cbxFirstQuestion.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                validateInput();
+            }
+        });
 
         Label lblSecondQuestion = new Label(questionComposite, SWT.NONE);
         lblSecondQuestion.setText(MessageConstants.SignupSurveyDialog_LBL_QUESTION_FOR_DOWNLOAD_PURPOSE);
@@ -105,6 +113,12 @@ public class SignupSurveyDialog extends AbstractDialog {
         cbxSecondQuestion.setLayoutData(gdCombo);
         cbxSecondQuestion.setItems(DOWNLOAD_PURPOSE_OPTIONS);
         cbxSecondQuestion.setText(MessageConstants.SignupSurveyDialog_CBX_DEFAULT_OPTION);
+        cbxSecondQuestion.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                validateInput();
+            }
+        });
 
         return container;
     }
@@ -122,6 +136,7 @@ public class SignupSurveyDialog extends AbstractDialog {
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, IDialogConstants.OK_ID, MessageConstants.SignupSurveyDialog_BTN_EXPLORE_KATALON, true);
+        getButton(IDialogConstants.OK_ID).setEnabled(false);
     }
 
     @Override
@@ -132,7 +147,7 @@ public class SignupSurveyDialog extends AbstractDialog {
     @Override
     protected Point getInitialSize() {
         Point initialSize = super.getInitialSize();
-        return new Point(Math.max(500, initialSize.x), initialSize.y);
+        return new Point(Math.max(400, initialSize.x), initialSize.y);
     }
 
     public List<String> getSignupAnwser() {
@@ -144,6 +159,15 @@ public class SignupSurveyDialog extends AbstractDialog {
         sendSignupAnswers();
 
         super.okPressed();
+    }
+    
+    private void validateInput() {
+        boolean isValid =  cbxFirstQuestion.getSelectionIndex() >= 0 && cbxSecondQuestion.getSelectionIndex() >= 0;
+        if (isValid) {
+            getButton(IDialogConstants.OK_ID).setEnabled(true);
+        } else {
+            getButton(IDialogConstants.OK_ID).setEnabled(false);
+        }
     }
     
     private void sendSignupAnswers() {

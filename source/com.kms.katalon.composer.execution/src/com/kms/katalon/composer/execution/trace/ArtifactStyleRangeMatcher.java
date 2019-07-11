@@ -10,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 
+import com.kms.katalon.composer.components.util.ColorUtil;
+
 public abstract class ArtifactStyleRangeMatcher implements StyleRangeMatcher {
 
     public abstract String getPattern();
@@ -26,6 +28,7 @@ public abstract class ArtifactStyleRangeMatcher implements StyleRangeMatcher {
             range.start = matcher.start() + 1;
             range.length = matcher.end() - matcher.start() - 2;
             range.underline = true;
+            range.foreground = ColorUtil.getHyperlinkTextColor();
             range.underlineStyle = SWT.UNDERLINE_LINK;
             range.data = this;
             styleRanges.add(range);

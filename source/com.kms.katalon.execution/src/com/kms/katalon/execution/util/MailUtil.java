@@ -101,6 +101,7 @@ public class MailUtil {
                 break;
             case TLS:
                 email.setStartTLSEnabled(true);
+                email.setSmtpPort(Integer.parseInt(conf.getPort()));
                 break;
             default:
                 break;

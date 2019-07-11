@@ -33,5 +33,9 @@ public class ImageConstants {
     
     // TestSuiteRunConfigLabelProvider
     public static final Image IMG_16_PROFILE = ImageManager.getImage(IImageKeys.PROFILE_ENTITY_16);
+    
+    public static final Image IMG_16_MAIN = ImageManager.getImage(IImageKeys.TAB_MAIN_16);
+    
+    public static final Image IMG_16_REPORT = ImageManager.getImage(IImageKeys.REPORT_16);
 
 }

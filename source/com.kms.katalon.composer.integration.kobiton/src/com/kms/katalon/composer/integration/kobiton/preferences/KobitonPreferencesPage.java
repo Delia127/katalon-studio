@@ -253,9 +253,13 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
         boolean isKobitonIntegrated = enableKobitonIntegration.getBooleanValue();
         connectButton.setEnabled(isKobitonIntegrated);
         passwordFieldEditor.setEnabled(isKobitonIntegrated, authenticateGroup);
+        passwordFieldEditor.getLabelControl(authenticateGroup).setEnabled(true);
         userNameEditor.setEnabled(isKobitonIntegrated, authenticateGroup);
+        userNameEditor.getLabelControl(authenticateGroup).setEnabled(true);
         serverEditor.setEnabled(isKobitonIntegrated, serverAndApiKeyComposite);
+        serverEditor.getLabelControl(serverAndApiKeyComposite).setEnabled(true);
         apiKeyComboEditor.setEnabled(isKobitonIntegrated, serverAndApiKeyComposite);
+        apiKeyComboEditor.getLabelControl(serverAndApiKeyComposite).setEnabled(true);
     }
 
     @Override

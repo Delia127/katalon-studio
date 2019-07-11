@@ -75,14 +75,21 @@ public class MobileDriverFactory {
      * @return the remote web driver url if running Mobile keyword on cloud services
      */
     public static String getRemoteWebDriverServerUrl() {
-        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, "remoteWebDriverUrl");
+        return RunConfiguration.getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, "remoteWebDriverUrl");
     }
 
     /**
      * @return the remote web driver type if running Mobile keyword on cloud services
      */
     public static String getRemoteWebDriverType() {
-        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, "browserType");
+        return RunConfiguration.getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, "browserType");
+    }
+
+    /**
+     * @return the remote web driver url if running Mobile keyword on cloud services
+     */
+    public static Map<String, Object> getRemoteWebDriverPreferences() {
+        return RunConfiguration.getDriverPreferencesProperties(RunConfiguration.REMOTE_DRIVER_PROPERTY);
     }
 
     /**
@@ -216,7 +223,7 @@ public class MobileDriverFactory {
             capabilities
                     .merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
         } else if (driverPreferences != null && mobileDeviceInfo.getDriverType() == MobileDriverType.ANDROID_DRIVER) {
-            //Launch Android Settings app at default
+            // Launch Android Settings app at default
             capabilities.setCapability("appPackage", "com.android.settings");
             capabilities.setCapability("appActivity", ".Settings");
             capabilities.setPlatform(Platform.ANDROID);
@@ -224,8 +231,7 @@ public class MobileDriverFactory {
                 capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.UIAUTOMATOR2);
             }
             capabilities.setCapability("autoGrantPermissions", true);
-            capabilities.setCapability(AppiumDriverManager.SYSTEM_PORT, 
-                    AppiumDriverManager.nextFreePort(8200, 8299));
+            capabilities.setCapability(AppiumDriverManager.SYSTEM_PORT, AppiumDriverManager.nextFreePort(8200, 8299));
             capabilities.merge(
                     convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
         }
@@ -352,9 +358,17 @@ public class MobileDriverFactory {
         if (isUsingExistingDriver()) {
             return startExistingBrowser();
         }
-        AppiumDriver<?> driver = startMobileDriver(getMobileDriverType(), getDeviceId(), getDeviceName(),
-                getDeviceOSVersion(), appFile, uninstallAfterCloseApp);
-        saveWebDriverSessionData(driver);
+        AppiumDriver<?> driver;
+        String remoteWebUrl = getRemoteWebDriverServerUrl();
+        if (StringUtils.isNotEmpty(remoteWebUrl)) {
+            driver = startRemoteMobileDriver(remoteWebUrl, new DesiredCapabilities(getRemoteWebDriverPreferences()), appFile);
+        } else {
+            driver = startLocalMobileDriver(getMobileDriverType(), getDeviceId(), getDeviceName(), getDeviceOSVersion(),
+                appFile, uninstallAfterCloseApp);
+        }
+        if (driver != null) {
+            saveWebDriverSessionData(driver);
+        }
         return driver;
     }
 
@@ -409,28 +423,8 @@ public class MobileDriverFactory {
     protected static AppiumDriver<?> startExistingBrowser()
             throws MalformedURLException, MobileDriverInitializeException {
         return AppiumDriverManager.startExisitingMobileDriver(
-                MobileDriverType.fromStringValue(RunConfiguration.getExisingSessionDriverType()),
-                RunConfiguration.getExisingSessionSessionId(), RunConfiguration.getExisingSessionServerUrl());
-    }
-
-    /**
-     * Start a new native app mobile driver
-     * 
-     * @param osType the os type for the new mobile driver with type {@link MobileDriverType}
-     * @param deviceId id of the device
-     * @param deviceName name of the device
-     * @param appFile absolute path of the application file
-     * @param uninstallAfterCloseApp true to un-install the app after execution
-     * @return the newly created driver with type {@link AppiumDriver}
-     * @throws MobileDriverInitializeException
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws AppiumStartException
-     */
-    public static AppiumDriver<?> startMobileDriver(MobileDriverType osType, String deviceId, String deviceName,
-            String appFile, boolean uninstallAfterCloseApp)
-            throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {
-        return startMobileDriver(osType, deviceId, deviceName, "", appFile, uninstallAfterCloseApp);
+                MobileDriverType.fromStringValue(RunConfiguration.getExistingSessionDriverType()),
+                RunConfiguration.getExistingSessionSessionId(), RunConfiguration.getExistingSessionServerUrl());
     }
 
     /**
@@ -448,20 +442,32 @@ public class MobileDriverFactory {
      * @throws InterruptedException
      * @throws AppiumStartException
      */
-    public static AppiumDriver<?> startMobileDriver(MobileDriverType osType, String deviceId, String deviceName,
+    public static AppiumDriver<?> startLocalMobileDriver(MobileDriverType osType, String deviceId, String deviceName,
             String platformVersion, String appFile, boolean uninstallAfterCloseApp)
             throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {
         Preconditions.checkArgument(osType != null && StringUtils.isNotEmpty(deviceName),
                 CoreMobileMessageConstants.KW_MSG_DEVICE_MISSING);
         Preconditions.checkArgument(StringUtils.isNotEmpty(appFile),
                 CoreMobileMessageConstants.KW_MSG_APP_FILE_MISSING);
-        String remoteWebUrl = getRemoteWebDriverServerUrl();
-        if (StringUtils.isNotEmpty(remoteWebUrl)) {
-            return AppiumDriverManager.createMobileDriver(osType,
-                    createCapabilities(osType, deviceId, deviceName, platformVersion, appFile, uninstallAfterCloseApp),
-                    new URL(remoteWebUrl));
-        }
         return AppiumDriverManager.createMobileDriver(osType, deviceId,
                 createCapabilities(osType, deviceId, deviceName, platformVersion, appFile, uninstallAfterCloseApp));
+    }
+
+    public static AppiumDriver<?> startRemoteMobileDriver(String remoteWebUrl, DesiredCapabilities desiredCapabilities, String appFile)
+            throws MalformedURLException, MobileDriverInitializeException {
+        MobileDriverType driverType = getMobileDriverTypeFromDesiredCapabilities(desiredCapabilities);
+        desiredCapabilities.setCapability("app", appFile);
+        return AppiumDriverManager.createMobileDriver(driverType, desiredCapabilities, new URL(remoteWebUrl));
+    }
+
+    public static MobileDriverType getMobileDriverTypeFromDesiredCapabilities(
+            DesiredCapabilities desiredCapabilities) {
+        MobileDriverType driverType = MobileDriverType.ANDROID_DRIVER;
+        if (desiredCapabilities != null) {
+            String platformName = (String) desiredCapabilities.getCapability("platformName");
+            driverType = StringUtils.containsIgnoreCase(platformName, "android") ? MobileDriverType.ANDROID_DRIVER
+                    : MobileDriverType.IOS_DRIVER;
+        }
+        return driverType;
     }
 }

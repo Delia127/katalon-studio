@@ -864,17 +864,14 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
         WebServiceRequestEntity requestEntity = getWSRequestObject();
         List<VariableEntity> variables = requestEntity.getVariables();
-        if (!variables.isEmpty()) {
-            Map<String, String> variableMap = variables.stream()
-                    .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
-    
-            VariableEvaluator evaluator = new VariableEvaluator();
-            Map<String, Object> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
+        
+        Map<String, String> variableMap = variables.stream()
+                .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
 
-            return evaluatedVariables;
-        } else {
-            return new HashMap<>();
-        }
+        VariableEvaluator evaluator = new VariableEvaluator();
+        Map<String, Object> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
+
+        return evaluatedVariables;
     }
 
     protected abstract void createParamsComposite(Composite parent);

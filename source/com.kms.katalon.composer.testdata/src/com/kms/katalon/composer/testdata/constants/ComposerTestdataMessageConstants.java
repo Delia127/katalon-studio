@@ -135,6 +135,8 @@ public class ComposerTestdataMessageConstants extends NLS {
 
     public static String DIA_DB_SETTING_COMMENT;
 
+    public static String VIEW_LBL_READ_AS_STRING;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestdataMessageConstants.class);

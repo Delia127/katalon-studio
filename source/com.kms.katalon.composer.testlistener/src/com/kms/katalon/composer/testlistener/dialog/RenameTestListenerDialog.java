@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.internal.corext.util.JavaConventionsUtil;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -19,6 +18,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.composer.components.impl.dialogs.TitleAreaDialog;
 import com.kms.katalon.composer.testlistener.constant.ComposerTestListenerMessageConstants;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.entity.file.TestListenerEntity;
