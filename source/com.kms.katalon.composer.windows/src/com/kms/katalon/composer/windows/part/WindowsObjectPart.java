@@ -42,6 +42,7 @@ import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
@@ -54,7 +55,7 @@ import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 
-public class WindowsObjectPart {
+public class WindowsObjectPart implements IComposerPart {
 
     private WindowsElementEntity entity;
 
@@ -321,5 +322,10 @@ public class WindowsObjectPart {
         } catch (ControllerException e) {
             MultiStatusErrorDialog.showErrorDialog(e, "Error", "Unable to save Windows Object");
         }
+    }
+
+    @Override
+    public String getEntityId() {
+        return entity.getIdForDisplay();
     }
 }

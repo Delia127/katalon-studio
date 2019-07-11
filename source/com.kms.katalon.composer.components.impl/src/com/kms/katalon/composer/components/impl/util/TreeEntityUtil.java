@@ -42,6 +42,7 @@ import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestListenerController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.controller.WindowsElementController;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
@@ -415,6 +416,12 @@ public class TreeEntityUtil {
                 WebElementEntity to = ObjectRepositoryController.getInstance().getWebElementByDisplayPk(id);
                 if (to != null) {
                     treeEntities.add(TreeEntityUtil.getWebElementTreeEntity(to, project));
+                }
+
+                // Test Object
+                WindowsElementEntity windowsElement = WindowsElementController.getInstance().getWindowsElementByDisplayId(id);
+                if (windowsElement != null) {
+                    treeEntities.add(TreeEntityUtil.getWindowsElementTreeEntity(windowsElement, windowsElement.getParentFolder()));
                 }
                 continue;
             }

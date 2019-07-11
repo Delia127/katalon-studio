@@ -160,9 +160,6 @@ public class PasteFolderHandler {
                 } else if (treeEntity instanceof WebElementTreeEntity
                         && targetFolder.getFolderType() == FolderType.WEBELEMENT) {
                     copyTestObject((WebElementEntity) ((WebElementTreeEntity) treeEntity).getObject(), targetFolder);
-                } else if (treeEntity instanceof WindowsElementTreeEntity
-                        && targetFolder.getFolderType() == FolderType.WEBELEMENT) {
-                    copyWindowsObject(((WindowsElementTreeEntity) treeEntity).getObject(), targetFolder);
                 } else if (treeEntity instanceof PackageTreeEntity
                         && targetFolder.getFolderType() == FolderType.KEYWORD) {
                     copyKeywordPackage((IPackageFragment) ((PackageTreeEntity) treeEntity).getObject(), targetFolder,
@@ -181,7 +178,10 @@ public class PasteFolderHandler {
                 } else if (treeEntity instanceof SystemFileTreeEntity
                         && targetFolder.getFolderType() == FolderType.INCLUDE) {
                     copySystemFileEntity((SystemFileTreeEntity) treeEntity, targetFolder);
-                }
+                } else if (treeEntity instanceof WindowsElementTreeEntity
+                        && targetFolder.getFolderType() == FolderType.WEBELEMENT) {
+                    copyWindowsObject(((WindowsElementTreeEntity) treeEntity).getObject(), targetFolder);
+                } 
                 GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
             }
         } catch (OperationCanceledException operationCanceledException) {

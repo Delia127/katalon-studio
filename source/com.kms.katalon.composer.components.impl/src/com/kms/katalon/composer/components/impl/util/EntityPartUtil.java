@@ -28,6 +28,7 @@ import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.controller.WindowsElementController;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
@@ -180,6 +181,11 @@ public class EntityPartUtil {
             String checkpointId = getEntityIdFromPartId(partElementId, IdConstants.CHECKPOINT_CONTENT_PART_ID_PREFIX);
             if (checkpointId != null) {
                 return CheckpointController.getInstance().getById(checkpointId);
+            }
+            
+            String windowsEntityId = getEntityIdFromPartId(partElementId, IdConstants.WINDOWS_TESTOBJECT_CONTENT_PART_ID_PREFIX);
+            if (windowsEntityId != null) {
+                return WindowsElementController.getInstance().getWindowsElementEntity(windowsEntityId);
             }
 
             return null;
