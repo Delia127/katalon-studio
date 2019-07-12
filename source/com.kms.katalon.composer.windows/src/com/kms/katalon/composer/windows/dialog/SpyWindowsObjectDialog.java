@@ -139,19 +139,11 @@ public class SpyWindowsObjectDialog extends Dialog {
 
     public SpyWindowsObjectDialog(Shell parentShell, WindowsAppComposite mobileComposite) {
         super(parentShell);
-        setShellStyle(getInitShellStyle());
+        setShellStyle(SWT.SHELL_TRIM | SWT.CENTER);
         this.disposed = false;
         this.inspectorController = new WindowsInspectorController();
         this.mobileComposite = mobileComposite;
         instance = this;
-    }
-
-    private int getInitShellStyle() {
-        if (!Platform.OS_LINUX.equals(Platform.getOS())) {
-            return SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER;
-        } else {
-            return SWT.SHELL_TRIM | SWT.CENTER;
-        }
     }
 
     @Override
