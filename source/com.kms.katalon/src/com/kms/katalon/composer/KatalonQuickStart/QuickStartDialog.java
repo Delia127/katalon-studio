@@ -207,25 +207,11 @@ public class QuickStartDialog extends WizardDialog {
             public void selectionChanged(final SelectionChangedEvent event) {
                 if (!event.getSelection().isEmpty()) {
                     int index = tableViewer.getTable().getSelectionIndex();
-                    showPage(wizardManager.choosenPage(index));
+                    doShowPage(wizardManager.choosenPage(index));
+                    tableViewer.refresh();
                 } else {
                     tableViewer.setSelection(StructuredSelection.EMPTY);
                 }
-            }
-        });
-
-        // Disable color change when selected item changed
-        tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
-            public void handleEvent(Event event) {
-                // Selection:
-                if ((event.detail & SWT.SELECTED) == 0) {
-                    event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
-                }
-                event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
-                // event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
-                event.detail &= ~SWT.HOT;
-                // Expect: mouse over now has no visual effect.
-                // Actual: behavior remains unchanged.
             }
         });
 
@@ -255,8 +241,13 @@ public class QuickStartDialog extends WizardDialog {
 
     @Override
     protected void showPage(IWizardPage page) {
-        super.showPage(page);
+        doShowPage(page);
         tableViewer.refresh(true);
+        tableViewer.setSelection(new StructuredSelection(page));
+    }
+    
+    private void doShowPage(IWizardPage page) {
+        super.showPage(page);
     }
 
     @Override
