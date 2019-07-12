@@ -106,6 +106,22 @@ public class EmailSettingStore extends BundleSettingStore {
         setStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL, protocol, encryptionEnabled);
     }
 
+    public boolean useUsernameAsSender() throws IOException {
+        return getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_USE_USERNAME_AS_SENDER, true);
+    }
+    
+    public void setUseUsernameAsSender(boolean useUsernameAsSender) throws IOException {
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_USE_USERNAME_AS_SENDER, useUsernameAsSender);
+    }
+    
+    public String getSender() throws IOException {
+        return getString(ExecutionPreferenceConstants.MAIL_CONFIG_SENDER, StringUtils.EMPTY);
+    }
+    
+    public void setSender(String sender) throws IOException {
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SENDER, sender);
+    }
+    
     public String getRecipients(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
         return getStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS, StringUtils.EMPTY,
                 encryptionEnabled);

@@ -16,6 +16,10 @@ public interface ExecutionPreferenceConstants {
     public static final String MAIL_CONFIG_PASSWORD = "mailConfig.password";
 
     public static final String MAIL_CONFIG_ENABLE_ENCRYPTION = "mailConfig.encryptionEnabled";
+    
+    public static final String MAIL_CONFIG_USE_USERNAME_AS_SENDER = "mailConfig.useUsernameAsSender";
+    
+    public static final String MAIL_CONFIG_SENDER = "mailConfig.sender";
 
     public static final String MAIL_CONFIG_REPORT_RECIPIENTS = "mailConfig.reportRecipients";
 
