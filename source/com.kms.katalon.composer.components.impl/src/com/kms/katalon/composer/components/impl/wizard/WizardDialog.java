@@ -26,7 +26,8 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
     public static final int NEXT_BUTTON_ID = 2;
 
     private static final int BUTTON_WIDTH = 80;
-
+    
+    public static final int SKIP_BUTTON_ID = 1;
     // Controls
     protected Composite stepDetailsComposite;
 
@@ -80,7 +81,7 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
         glMainArea.marginHeight = 0;
         glMainArea.marginWidth = 0;
         mainArea.setLayout(glMainArea);
-
+        glMainArea.numColumns =2;
         Composite stepAreaComposite = createStepAreaComposite(mainArea);
         stepAreaComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
@@ -91,7 +92,6 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
         glSeparatorAndButtonComposite.marginRight = 20;
         separatorAndButtonComposite.setLayout(glSeparatorAndButtonComposite);
         separatorAndButtonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 1, 1));
-        createSeparator(separatorAndButtonComposite);
 
         Composite buttonBarComposite = createButtonBarComposite(separatorAndButtonComposite);
         buttonBarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 1, 1));
@@ -112,12 +112,12 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
         Composite buttonBarComposite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
         buttonBarComposite.setLayout(layout);
+        createButton(buttonBarComposite, SKIP_BUTTON_ID, StringConstants.DIA_SKIP);
         createButton(buttonBarComposite, NEXT_BUTTON_ID, StringConstants.WZ_SETUP_BTN_NEXT);
 
         layout.numColumns = buttonMap.size();
         return buttonBarComposite;
     }
-
     protected final Button createButton(Composite buttonBarComposite, int id, String text) {
         Button button = new Button(buttonBarComposite, SWT.FLAT);
         button.setLayoutData(getButtonGridData());
@@ -142,8 +142,17 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
         }
     }
 
-    protected void wizardButtonPress() {
-        nextPressed();
+    protected void wizardButtonPress(int id) {
+        switch (id) {
+            case NEXT_BUTTON_ID: {
+                nextPressed();
+                break;
+            }
+            case SKIP_BUTTON_ID: {
+                cancelPressed();
+                break;
+            }
+        }
     }
 
     protected void setInput() {
@@ -205,14 +214,9 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
     }
 
     private GridData getButtonGridData() {
-        GridData buttonGridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        GridData buttonGridData = new GridData(SWT.NONE, SWT.CENTER, false, false, 1, 1);
         buttonGridData.widthHint = BUTTON_WIDTH;
         return buttonGridData;
-    }
-
-    protected void createSeparator(Composite parent) {
-        Label label = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
-        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
     }
 
     @Override
@@ -233,8 +237,11 @@ public abstract class WizardDialog extends Dialog implements IWizardPageChangedL
             if (e.widget.isDisposed()) {
                 return;
             }
-            wizardButtonPress();
+            wizardButtonPress((int) e.widget.getData(StringConstants.ID));
         }
+    }
+    protected void cancelPressed() {
+        super.cancelPressed();
     }
 
     protected void finishPressed() {
