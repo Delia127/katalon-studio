@@ -21,17 +21,11 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 
-public abstract class SimpleWizardDialog extends Dialog implements IWizardPageChangedListerner {
+public abstract class WizardDialog extends Dialog implements IWizardPageChangedListerner {
+
+    public static final int NEXT_BUTTON_ID = 2;
 
     private static final int BUTTON_WIDTH = 80;
-
-    public static final int BACK_BUTTON_ID = 0;
-
-    public static final int NEXT_BUTTON_ID = 1;
-
-    public static final int FINISH_BUTTON_ID = 2;
-
-    public static final int CANCEL_BUTTON_ID = 3;
 
     // Controls
     protected Composite stepDetailsComposite;
@@ -43,7 +37,7 @@ public abstract class SimpleWizardDialog extends Dialog implements IWizardPageCh
 
     protected HashMap<String, Object> sharedData;
 
-    public SimpleWizardDialog(Shell parentShell) {
+    public WizardDialog(Shell parentShell) {
         super(parentShell);
     }
 
@@ -88,18 +82,20 @@ public abstract class SimpleWizardDialog extends Dialog implements IWizardPageCh
         mainArea.setLayout(glMainArea);
 
         Composite stepAreaComposite = createStepAreaComposite(mainArea);
-        stepAreaComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        stepAreaComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
         Composite separatorAndButtonComposite = new Composite(mainArea, SWT.NONE);
         GridLayout glSeparatorAndButtonComposite = new GridLayout();
         glSeparatorAndButtonComposite.marginWidth = 0;
         glSeparatorAndButtonComposite.marginHeight = 0;
+        glSeparatorAndButtonComposite.marginRight = 20;
         separatorAndButtonComposite.setLayout(glSeparatorAndButtonComposite);
-        separatorAndButtonComposite.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
+        separatorAndButtonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 1, 1));
         createSeparator(separatorAndButtonComposite);
 
         Composite buttonBarComposite = createButtonBarComposite(separatorAndButtonComposite);
         buttonBarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 1, 1));
+
         return mainArea;
     }
 
@@ -116,11 +112,8 @@ public abstract class SimpleWizardDialog extends Dialog implements IWizardPageCh
         Composite buttonBarComposite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
         buttonBarComposite.setLayout(layout);
-
-        createButton(buttonBarComposite, BACK_BUTTON_ID, StringConstants.WZ_SETUP_BTN_BACK);
         createButton(buttonBarComposite, NEXT_BUTTON_ID, StringConstants.WZ_SETUP_BTN_NEXT);
-        createButton(buttonBarComposite, FINISH_BUTTON_ID, StringConstants.DIA_FINISH);
-        createButton(buttonBarComposite, CANCEL_BUTTON_ID, StringConstants.DIA_CANCEL);
+
         layout.numColumns = buttonMap.size();
         return buttonBarComposite;
     }
@@ -149,25 +142,8 @@ public abstract class SimpleWizardDialog extends Dialog implements IWizardPageCh
         }
     }
 
-    protected void wizardButtonPress(int id) {
-        switch (id) {
-            case BACK_BUTTON_ID: {
-                backPressed();
-                break;
-            }
-            case NEXT_BUTTON_ID: {
-                nextPressed();
-                break;
-            }
-            case FINISH_BUTTON_ID: {
-                finishPressed();
-                break;
-            }
-            case CANCEL_BUTTON_ID: {
-                cancelPressed();
-                break;
-            }
-        }
+    protected void wizardButtonPress() {
+        nextPressed();
     }
 
     protected void setInput() {
@@ -209,22 +185,9 @@ public abstract class SimpleWizardDialog extends Dialog implements IWizardPageCh
     }
 
     private void updateButtonBar(IWizardPage page) {
-        getButton(FINISH_BUTTON_ID).setEnabled(page.canFinish() && page.canFlipToNextPage());
+        getButton(NEXT_BUTTON_ID).setEnabled(page.canFlipToNextPage()
+                && wizardManager.getWizardPages().indexOf(page) < wizardManager.getWizardPages().size());
 
-        getButton(BACK_BUTTON_ID).setEnabled(wizardManager.getWizardPages().indexOf(page) > 0);
-
-        getButton(NEXT_BUTTON_ID).setEnabled(
-                page.canFlipToNextPage()
-                        && wizardManager.getWizardPages().indexOf(page) < wizardManager.getWizardPages().size() - 1);
-    }
-
-    protected final void backPressed() {
-        Map<String, Object> pageSharedData = wizardManager.getCurrentPage().storeControlStates();
-        if (pageSharedData != null) {
-            sharedData.putAll(pageSharedData);
-        }
-
-        showPage(wizardManager.backPage());
     }
 
     protected final void nextPressed() {
@@ -232,16 +195,13 @@ public abstract class SimpleWizardDialog extends Dialog implements IWizardPageCh
         if (pageSharedData != null) {
             sharedData.putAll(pageSharedData);
         }
+        if (wizardManager.getWizardPages()
+                .indexOf(wizardManager.getCurrentPage()) < wizardManager.getWizardPages().size() - 1) {
+            showPage(wizardManager.nextPage());
+        } else {
+            super.close();
+        }
 
-        showPage(wizardManager.nextPage());
-    }
-
-    protected void finishPressed() {
-        super.okPressed();
-    }
-
-    protected void cancelPressed() {
-        super.cancelPressed();
     }
 
     private GridData getButtonGridData() {
@@ -263,7 +223,7 @@ public abstract class SimpleWizardDialog extends Dialog implements IWizardPageCh
         updateButtonBar(event.getWizardPage());
     }
 
-    protected Button getButton(int id) {
+    public Button getButton(int id) {
         return buttonMap.get(id);
     }
 
@@ -273,7 +233,13 @@ public abstract class SimpleWizardDialog extends Dialog implements IWizardPageCh
             if (e.widget.isDisposed()) {
                 return;
             }
-            wizardButtonPress((int) e.widget.getData(StringConstants.ID));
+            wizardButtonPress();
         }
     }
+
+    protected void finishPressed() {
+        super.okPressed();
+
+    }
+
 }

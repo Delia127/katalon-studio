@@ -56,9 +56,7 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
         GridLayout layout = new GridLayout();
         buttonBarComposite.setLayout(layout);
 
-        btnBack = createButton(buttonBarComposite, BACK_BUTTON_ID, StringConstants.WZ_SETUP_BTN_BACK);
         btnNext = createButton(buttonBarComposite, NEXT_BUTTON_ID, StringConstants.WZ_SETUP_BTN_NEXT);
-        createButton(buttonBarComposite, FINISH_BUTTON_ID, StringConstants.DIA_CLOSE);
         layout.numColumns = buttonMap.size();
         registerEventListeners();
         return buttonBarComposite;
@@ -109,5 +107,11 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
     @Override
     public boolean isChild() {
         return false;
+    }
+
+    @Override
+    public void finishPressed() {
+        super.okPressed();
+        
     }
 }

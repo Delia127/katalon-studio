@@ -6,6 +6,8 @@ public class GlobalMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.constants.globalMessages";
 
 	public static String DIA_OPEN_PROJECT;
+	
+	public static String DIA_INTRO_PROJECT;
 
     public static String APP_NAME;
 
@@ -218,6 +220,8 @@ public class GlobalMessageConstants extends NLS {
     public static String WZ_SETUP_BTN_NEXT;
 
     public static String DIA_FINISH;
+    
+    public static String DIA_CANCEL;
     
     public static String DIA_OK;
 

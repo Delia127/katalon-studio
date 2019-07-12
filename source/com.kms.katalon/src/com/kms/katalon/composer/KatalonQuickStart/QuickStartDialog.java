@@ -26,11 +26,11 @@ import org.eclipse.swt.widgets.Table;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
-import com.kms.katalon.composer.components.impl.wizard.SimpleWizardDialog;
+import com.kms.katalon.composer.components.impl.wizard.WizardDialog;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.ImageConstants;
 
-public class QuickStartDialog extends SimpleWizardDialog {
+public class QuickStartDialog extends WizardDialog {
 
     private int lastTreeWidth;
 
@@ -149,7 +149,7 @@ public class QuickStartDialog extends SimpleWizardDialog {
     protected Sash createSash(final Composite composite, final Control rightControl) {
         final Sash sash = new Sash(composite, SWT.VERTICAL);
         sash.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-        sash.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        // sash.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
         sash.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -206,6 +206,9 @@ public class QuickStartDialog extends SimpleWizardDialog {
             @Override
             public void selectionChanged(final SelectionChangedEvent event) {
                 if (!event.getSelection().isEmpty()) {
+                    int index = tableViewer.getTable().getSelectionIndex();
+                    showPage(wizardManager.choosenPage(index));
+                } else {
                     tableViewer.setSelection(StructuredSelection.EMPTY);
                 }
             }
@@ -215,11 +218,11 @@ public class QuickStartDialog extends SimpleWizardDialog {
         tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
             public void handleEvent(Event event) {
                 // Selection:
-                event.detail &= ~SWT.SELECTED;
-                // Expect: selection now has no visual effect.
-                // Actual: selection remains but changes from light blue to white.
-
-                // MouseOver:
+                if ((event.detail & SWT.SELECTED) == 0) {
+                    event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
+                }
+                event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
+                // event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
                 event.detail &= ~SWT.HOT;
                 // Expect: mouse over now has no visual effect.
                 // Actual: behavior remains unchanged.
@@ -258,17 +261,13 @@ public class QuickStartDialog extends SimpleWizardDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(1070, 850);
+        return new Point(1050, 750);
+
     }
 
     @Override
     protected String getDialogTitle() {
         return "Katalon Studio Quick Start";
-    }
-
-    @Override
-    protected void finishPressed() {
-        super.okPressed();
     }
 
     @Override
@@ -279,5 +278,10 @@ public class QuickStartDialog extends SimpleWizardDialog {
     @Override
     public boolean isChild() {
         return false;
+    }
+
+    @Override
+    protected void finishPressed() {
+        super.okPressed();
     }
 }

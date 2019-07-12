@@ -23,6 +23,14 @@ public class WizardManager {
 
         return getCurrentPage();
     }
+    
+    public IWizardPage choosenPage(int selection) {
+        do {
+            currentIdx = selection; 
+        } while (currentIdx <= getWizardPages().size() - 1 && getCurrentPage().autoFlip());
+
+        return getCurrentPage();
+    }
 
     public IWizardPage backPage() {
         do {
