@@ -185,7 +185,7 @@ public class TestStepManualComposite {
 		compositeDetails.setLayout(new FormLayout());
 
 		createTestCaseManualTableControls(compositeDetails);
-
+		
 		registerEventBrokerListeners();
 	}
 
@@ -636,7 +636,7 @@ public class TestStepManualComposite {
 		treeTableInput.paste(treeTableInput.getSelectedNode(), NodeAddType.Add);
 	}
 
-	public void loadASTNodesToTreeTable(ScriptNodeWrapper scriptNode) throws Exception {
+	public void loadASTNodesToTreeTable(ScriptNodeWrapper scriptNode) {
 		treeTableInput = new TestCaseTreeTableInput(scriptNode, treeTable, parentPart);
 		treeTableInput.refresh();
 	}

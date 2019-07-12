@@ -266,7 +266,7 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         return testStepManualComposite.getDragNodes();
     }
 
-    public void loadASTNodesToTreeTable(ScriptNodeWrapper scriptNode) throws Exception {
+    public void loadASTNodesToTreeTable(ScriptNodeWrapper scriptNode) {
         testStepManualComposite.loadASTNodesToTreeTable(scriptNode);
     }
 
