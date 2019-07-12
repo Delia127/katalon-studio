@@ -156,6 +156,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private WebElementEntity originalTestObject, cloneTestObject;
 	
+	private  ScrolledComposite scrolledComposite;
 
 	private boolean isSettingsExpanded = true;
 
@@ -523,11 +524,12 @@ public class ObjectPropertyView implements EventHandler {
 	}
 
 	private void createObjectPropertiesComposite(Composite parent) {
-        ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+        scrolledComposite = new ScrolledComposite(parent, SWT.NONE);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
-		propertyTableComposite = new Composite(scrolledComposite, SWT.NONE);
+
+        propertyTableComposite = new Composite(scrolledComposite, SWT.NONE);
 		propertyTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		GridLayout glCompositeTable = new GridLayout();
 		glCompositeTable.marginWidth = 0;
@@ -542,7 +544,7 @@ public class ObjectPropertyView implements EventHandler {
 
 		createPropertyTableDetails(propertyTableComposite);
 
-		createPropertyTableMenu();
+        createPropertyTableMenu();
         scrolledComposite.setMinSize(propertyTableComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
         scrolledComposite.setContent(propertyTableComposite);
 
@@ -998,10 +1000,14 @@ public class ObjectPropertyView implements EventHandler {
 		Composite testObjectDetailsComposite = createTestObjectDetailsComposite(mainComposite);
 
 		mainComposite.setContent(testObjectDetailsComposite);
-		mainComposite.setMinSize(new Point(900, 750));
+        int height = propertyTableComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y
+                + testObjectDetailsComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y
+                + mainComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y + 50
+                + scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+
 		mainComposite.setExpandVertical(true);
 		mainComposite.setExpandHorizontal(true);
-
+		mainComposite.setMinSize(new Point(900, height));
 		hookControlSelectListerners();
 	}
 
