@@ -188,7 +188,7 @@ public class WindowsBuiltinKeywords extends BuiltinKeywords {
 
     /**
      * Fires the Close event of the running application to the Windows System.<br> 
-     * This action is similar with pressing ALT + F4 and also does not force close the application.<p>
+     * This action is similar to pressing ALT + F4 and also does not force close the application.<p>
      * If the application shows a confirmation to close, users need to do some extra steps to actually close the application.
      * 
      * @throws StepFailedException

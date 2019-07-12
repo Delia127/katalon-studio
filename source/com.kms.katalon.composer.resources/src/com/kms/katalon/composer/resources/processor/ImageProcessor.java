@@ -180,6 +180,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.PAUSE_24);
         ImageManager.registerImage(IImageKeys.START_DEVICE_24);
         ImageManager.registerImage(IImageKeys.STOP_DEVICE_24);
+        ImageManager.registerImage(IImageKeys.REFRESH_24);
 
         // Sub-toolbar icon 24 disabled icons
         ImageManager.registerImage(IImageKeys.ADD_TO_OBJECT_REPOSITORY_DISABLED_24);
@@ -192,6 +193,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.PAUSE_DISABLED_24);
         ImageManager.registerImage(IImageKeys.START_DEVICE_DISABLED_24);
         ImageManager.registerImage(IImageKeys.STOP_DEVICE_DISABLED_24);
+        ImageManager.registerImage(IImageKeys.REFRESH_DISABLED_24);
     }
 
     private void registerEntityImages() {

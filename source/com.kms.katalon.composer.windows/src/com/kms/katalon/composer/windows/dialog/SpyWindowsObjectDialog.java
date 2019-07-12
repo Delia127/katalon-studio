@@ -75,6 +75,8 @@ import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.windows.element.BasicWindowsElement;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElementConverter;
@@ -135,13 +137,21 @@ public class SpyWindowsObjectDialog extends Dialog {
         return canceledBeforeOpening;
     }
 
-    public SpyWindowsObjectDialog(Shell parentShell, WindowsAppComposite mobileComposite) throws Exception {
+    public SpyWindowsObjectDialog(Shell parentShell, WindowsAppComposite mobileComposite) {
         super(parentShell);
-        setShellStyle(SWT.SHELL_TRIM | SWT.RESIZE);
+        setShellStyle(getInitShellStyle());
         this.disposed = false;
         this.inspectorController = new WindowsInspectorController();
         this.mobileComposite = mobileComposite;
         instance = this;
+    }
+
+    private int getInitShellStyle() {
+        if (!Platform.OS_LINUX.equals(Platform.getOS())) {
+            return SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER;
+        } else {
+            return SWT.SHELL_TRIM | SWT.CENTER;
+        }
     }
 
     @Override
@@ -628,10 +638,9 @@ public class SpyWindowsObjectDialog extends Dialog {
         contentToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 
         btnCapture = new ToolItem(contentToolbar, SWT.NONE);
-        btnCapture.setImage(ImageConstants.IMG_24_CAPTURE);
-        btnCapture.setDisabledImage(ImageConstants.IMG_24_CAPTURE_DISABLED);
-        btnCapture.setText(StringConstants.DIA_TIP_CAPTURE_OBJ);
-        btnCapture.setToolTipText(StringConstants.DIA_TIP_CAPTURE_OBJ);
+        btnCapture.setImage(ImageManager.getImage(IImageKeys.REFRESH_24));
+        btnCapture.setDisabledImage(ImageManager.getImage(IImageKeys.REFRESH_DISABLED_24));
+        btnCapture.setText("Refresh Screen");
         btnCapture.setEnabled(false);
         btnCapture.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -641,8 +650,8 @@ public class SpyWindowsObjectDialog extends Dialog {
         });
 
         btnStart = new ToolItem(contentToolbar, SWT.NONE);
-        btnStart.setImage(ImageConstants.IMG_24_START_DEVICE);
-        btnStart.setDisabledImage(ImageConstants.IMG_24_START_DEVICE_DISABLED);
+        btnStart.setImage(ImageManager.getImage(IImageKeys.PLAY_24));
+        btnStart.setDisabledImage(ImageManager.getImage(IImageKeys.PLAY_DISABLED_24));
         btnStart.setText(StringConstants.DIA_TIP_START_APP);
         btnStart.setToolTipText(StringConstants.DIA_TIP_START_APP);
         btnStart.setEnabled(false);
@@ -657,8 +666,8 @@ public class SpyWindowsObjectDialog extends Dialog {
         });
 
         btnStop = new ToolItem(contentToolbar, SWT.NONE);
-        btnStop.setImage(ImageConstants.IMG_24_STOP_DEVICE);
-        btnStop.setDisabledImage(ImageConstants.IMG_24_STOP_DEVICE_DISABLED);
+        btnStop.setImage(ImageManager.getImage(IImageKeys.STOP_24));
+        btnStop.setDisabledImage(ImageManager.getImage(IImageKeys.STOP_DISABLED_24));
         btnStop.setText(StringConstants.DIA_TIP_STOP);
         btnStop.setToolTipText(StringConstants.DIA_TIP_STOP);
         btnStop.setEnabled(false);

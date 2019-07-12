@@ -35,15 +35,15 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.impl.control.ScrollableComposite;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.windows.element.BasicWindowsElement;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 
 public class WindowsDeviceDialog extends Dialog {
 
-    private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_DEVICE_VIEW;
+    private static final String DIALOG_TITLE = "Windows Screen View";
 
     private Image currentScreenShot;
 
@@ -86,7 +86,7 @@ public class WindowsDeviceDialog extends Dialog {
         dialogAreaGridLayout.marginWidth = 0;
         dialogAreaGridLayout.marginHeight = 0;
 
-        scrolledComposite = new ScrolledComposite(dialogArea, SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite = new ScrollableComposite(dialogArea, SWT.H_SCROLL | SWT.V_SCROLL);
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
 

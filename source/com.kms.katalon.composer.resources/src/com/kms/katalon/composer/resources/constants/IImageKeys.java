@@ -477,6 +477,10 @@ public interface IImageKeys {
     public static final String PAUSE_16 = "pause_16.png"; //$NON-NLS-1$
 
     public static final String REFRESH_16 = "refresh_16.png"; //$NON-NLS-1$
+    
+    public static final String REFRESH_24 = "refresh_24.png"; //$NON-NLS-1$
+
+    public static final String REFRESH_DISABLED_24 = "refresh_disabled_24.png"; //$NON-NLS-1$
 
     public static final String RESTORE_16 = "restore_16.png"; //$NON-NLS-1$
 
