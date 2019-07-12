@@ -98,11 +98,9 @@ public class ClosureBuilderDialog extends Dialog implements IAstDialogBuilder, I
         testStepManualComposite = new TestStepManualComposite(this, childComposite);
         ScriptNodeWrapper scriptNodeWrapper = new ScriptNodeWrapper();
         scriptNodeWrapper.setMainBlock(tempClosure.getBlock());
-        try {
-            testStepManualComposite.loadASTNodesToTreeTable(scriptNodeWrapper);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
+
+        testStepManualComposite.loadASTNodesToTreeTable(scriptNodeWrapper);
+        
 
         return container;
     }
