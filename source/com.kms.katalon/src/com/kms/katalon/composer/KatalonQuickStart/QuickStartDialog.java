@@ -209,24 +209,11 @@ public class QuickStartDialog extends WizardDialog {
             public void selectionChanged(final SelectionChangedEvent event) {
                 if (!event.getSelection().isEmpty()) {
                     int index = tableViewer.getTable().getSelectionIndex();
-                    showPage(wizardManager.choosenPage(index));
+                    doShowPage(wizardManager.choosenPage(index));
+                    tableViewer.refresh();
                 } else {
                     tableViewer.setSelection(StructuredSelection.EMPTY);
                 }
-            }
-        });
-
-        // Disable color change when selected item changed
-        tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
-            public void handleEvent(Event event) {
-                // Selection:
-                Table table = (Table) event.widget;
-                if ((event.detail & SWT.SELECTED) == 0) {
-                  return;
-                }
-                int clientWidth = table.getClientArea().width;
-                event.gc.fillRectangle(0, event.y, clientWidth, event.height);
-                event.detail &= ~SWT.SELECTED;
             }
         });
 
@@ -256,8 +243,13 @@ public class QuickStartDialog extends WizardDialog {
 
     @Override
     protected void showPage(IWizardPage page) {
-        super.showPage(page);
+        doShowPage(page);
         tableViewer.refresh(true);
+        tableViewer.setSelection(new StructuredSelection(page));
+    }
+    
+    private void doShowPage(IWizardPage page) {
+        super.showPage(page);
     }
 
     @Override
