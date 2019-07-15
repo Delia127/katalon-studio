@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -23,12 +24,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.components.impl.wizard.WizardDialog;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.ImageConstants;
+import com.sun.jna.platform.unix.X11.GC;
 
 public class QuickStartDialog extends WizardDialog {
 
@@ -149,7 +152,7 @@ public class QuickStartDialog extends WizardDialog {
     protected Sash createSash(final Composite composite, final Control rightControl) {
         final Sash sash = new Sash(composite, SWT.VERTICAL);
         sash.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-        // sash.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        sash.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
         sash.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -197,7 +200,6 @@ public class QuickStartDialog extends WizardDialog {
         preferred.height = height;
         getShell().setBounds(getConstrainedShellBounds(preferred));
     }
-
     @Override
     protected void registerControlModifyListeners() {
         super.registerControlModifyListeners();
