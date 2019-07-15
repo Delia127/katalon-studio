@@ -11,16 +11,14 @@ public class SpyWindowsObjectHandler {
 
     @Execute
     public void execute(Shell activeShell) {
-        Shell shell = null;
-        try {
-            SpyWindowsObjectDialog dialog = new SpyWindowsObjectDialog(getShell(activeShell),
-                    new WindowsAppComposite());
-            dialog.open();
-        } finally {
-            if (shell != null) {
-                shell.dispose();
-            }
+        if (SpyWindowsObjectDialog.getInstance() != null) {
+            SpyWindowsObjectDialog.getInstance().getShell().forceActive();
+            return;
         }
+        SpyWindowsObjectDialog dialog = new SpyWindowsObjectDialog(getShell(activeShell),
+                new WindowsAppComposite());
+
+        dialog.open();
     }
 
     private Shell getShell(Shell activeShell) {
