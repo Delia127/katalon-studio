@@ -1,0 +1,3909 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: .
+Bundle-Vendor: Eclipse Orbit
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Name: Apache POI
+Bundle-SymbolicName: org.apache.poi
+Eclipse-SourceReferences: scm:cvs:pserver:dev.eclipse.org:/cvsroot/too
+ ls:org.eclipse.orbit/org.apache.poi;tag=v201405241750
+Bundle-Version: 3.9.0.v201405241750
+Export-Package: org.apache.poi,org.apache.poi.common.usermodel,org.apa
+ che.poi.ddf,org.apache.poi.dev,org.apache.poi.hpsf,org.apache.poi.hps
+ f.extractor,org.apache.poi.hpsf.wellknown,org.apache.poi.hssf,org.apa
+ che.poi.hssf.dev,org.apache.poi.hssf.eventmodel,org.apache.poi.hssf.e
+ ventusermodel,org.apache.poi.hssf.eventusermodel.dummyrecord,org.apac
+ he.poi.hssf.extractor,org.apache.poi.hssf.model,org.apache.poi.hssf.r
+ ecord,org.apache.poi.hssf.record.aggregates,org.apache.poi.hssf.recor
+ d.cf,org.apache.poi.hssf.record.chart,org.apache.poi.hssf.record.comm
+ on,org.apache.poi.hssf.record.cont,org.apache.poi.hssf.record.crypto,
+ org.apache.poi.hssf.record.pivottable,org.apache.poi.hssf.usermodel,o
+ rg.apache.poi.hssf.util,org.apache.poi.poifs.common,org.apache.poi.po
+ ifs.crypt,org.apache.poi.poifs.dev,org.apache.poi.poifs.eventfilesyst
+ em,org.apache.poi.poifs.filesystem,org.apache.poi.poifs.nio,org.apach
+ e.poi.poifs.property,org.apache.poi.poifs.storage,org.apache.poi.ss,o
+ rg.apache.poi.ss.extractor,org.apache.poi.ss.format,org.apache.poi.ss
+ .formula,org.apache.poi.ss.formula.atp,org.apache.poi.ss.formula.cons
+ tant,org.apache.poi.ss.formula.eval,org.apache.poi.ss.formula.eval.fo
+ rked,org.apache.poi.ss.formula.function,org.apache.poi.ss.formula.fun
+ ctions,org.apache.poi.ss.formula.ptg,org.apache.poi.ss.formula.udf,or
+ g.apache.poi.ss.usermodel,org.apache.poi.ss.usermodel.charts,org.apac
+ he.poi.ss.util,org.apache.poi.ss.util.cellwalk,org.apache.poi.util
+Bundle-ManifestVersion: 2
+Import-Package: org.apache.commons.codec.digest
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$5.class
+SHA1-Digest: 5RrBJbQIbv6B9uMzek3j1oKz6M8=
+
+Name: org/apache/poi/ss/usermodel/charts/AxisCrosses.class
+SHA1-Digest: ipQ9+pxjWLkgUu7+oqv0Yehyggw=
+
+Name: org/apache/poi/hssf/usermodel/HSSFSheet.class
+SHA1-Digest: ScBV1zHQgPkl9+/wIKAG4fJQXCo=
+
+Name: org/apache/poi/hssf/record/HyperlinkRecord$GUID.class
+SHA1-Digest: 3kpDbR6WINPRF24HCT7qOrhKnE4=
+
+Name: org/apache/poi/poifs/storage/RawDataBlockList.class
+SHA1-Digest: RHoYWrfErxUXOgVH4A9IDEXcx6c=
+
+Name: META-INF/LICENSE
+SHA1-Digest: skDsOhroUOXZROozPxPxBGVNGv4=
+
+Name: org/apache/poi/ss/util/DateFormatConverter.class
+SHA1-Digest: LKE6cGcKD20qFWR7++gAw1YMZ7s=
+
+Name: org/apache/poi/ss/formula/functions/Offset$LinearOffsetRange.cla
+ ss
+SHA1-Digest: 9sNTYdCO3eIUjJRHefcOi44XK6U=
+
+Name: org/apache/poi/ss/usermodel/charts/ScatterChartSerie.class
+SHA1-Digest: ElxI8kz8sb8/n/O6loAanO5BbpU=
+
+Name: org/apache/poi/ss/formula/functions/Choose.class
+SHA1-Digest: y5CVsqoYVI5Mi3xNeB3hHcNvbo4=
+
+Name: org/apache/poi/poifs/crypt/AgileDecryptor.class
+SHA1-Digest: vTyKakT7vuvlcStAC+IxuB++3yI=
+
+Name: org/apache/poi/ss/format/CellFormatType$5.class
+SHA1-Digest: mVMa+QKljQkKdV/hicEpVmeRBfs=
+
+Name: org/apache/poi/hssf/record/StringRecord.class
+SHA1-Digest: 1Sausz5Dj1/YxuHxtIXSzTqJbRY=
+
+Name: org/apache/poi/ss/formula/OperandClassTransformer.class
+SHA1-Digest: Mp8CLKGqf9T0Ya1ypIwdllDQ7I0=
+
+Name: org/apache/poi/ss/formula/functions/BooleanFunction.class
+SHA1-Digest: 3MdzjgYAbT3ivkrsB3ZnMb0h8tE=
+
+Name: org/apache/poi/ddf/EscherDggRecord$FileIdCluster.class
+SHA1-Digest: YIyVWWU8QHh/Lq8TSPWMi/xbGqA=
+
+Name: org/apache/poi/ss/formula/ptg/NumberPtg.class
+SHA1-Digest: Yl6c9Ocel2vkpkxS6FyNekazJt0=
+
+Name: org/apache/poi/hssf/usermodel/HSSFEvaluationWorkbook$Name.class
+SHA1-Digest: R95fPxtx8B2G8yZoHHYlQq/wPHI=
+
+Name: org/apache/poi/poifs/property/Child.class
+SHA1-Digest: yyODxJQVHKn4wmfNphFuIr3Uaak=
+
+Name: org/apache/poi/hssf/record/DVALRecord.class
+SHA1-Digest: LI9VzEv+bwg0Q4fayfp6H5THXrw=
+
+Name: org/apache/poi/hssf/util/HSSFColor$GOLD.class
+SHA1-Digest: pqszGeBZ14O5IvFOkzyDnxUvNpg=
+
+Name: org/apache/poi/poifs/filesystem/DirectoryEntry.class
+SHA1-Digest: 4uQ5G86lxPusvvHxh2Af41z/5iA=
+
+Name: org/apache/poi/ss/formula/functions/Irr.class
+SHA1-Digest: vueicnom8po4Dz4oOjoljd3Draw=
+
+Name: org/apache/poi/ss/usermodel/ExcelStyleDateFormatter.class
+SHA1-Digest: rDsqIIQqvgolvSaOuK+SMeEE5es=
+
+Name: org/apache/poi/POIOLE2TextExtractor.class
+SHA1-Digest: wdFTBwaNDv7a+wRPVnRAtGE4nwA=
+
+Name: org/apache/poi/util/BoundedInputStream.class
+SHA1-Digest: mL/Z9fLUN3x0FDEuFHnR2HmvkPw=
+
+Name: org/apache/poi/ss/usermodel/ConditionalFormattingRule.class
+SHA1-Digest: 0a3FKmUefPqWiyAmg86RePJKAdg=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$1.class
+SHA1-Digest: erBW6y7JAMAGUl2oTN8i1HK17Is=
+
+Name: org/apache/poi/hssf/usermodel/HSSFClientAnchor.class
+SHA1-Digest: C8+g8G0cqXPk23sbOGC+FP+Y0H8=
+
+Name: org/apache/poi/ss/formula/ptg/AttrPtg.class
+SHA1-Digest: nmsvbXHmx567ntqDgN0pdEgvf+E=
+
+Name: org/apache/poi/ss/formula/OperationEvaluationContext.class
+SHA1-Digest: zTo0rtJ3WvYSIdLbIeGqr22/2g4=
+
+Name: org/apache/poi/ss/formula/eval/NotImplementedException.class
+SHA1-Digest: UxNSSLTIzo4k31Z9oDGIuTCFNIc=
+
+Name: org/apache/poi/ddf/EscherClientDataRecord.class
+SHA1-Digest: vBllEHukISWbgqOr69EG2/ZERv8=
+
+Name: org/apache/poi/ss/format/CellFormat$1.class
+SHA1-Digest: lD9ChRmvT5twqQapvQGIoSaGJIA=
+
+Name: org/apache/poi/ss/formula/functions/RowFunc.class
+SHA1-Digest: zGuRsxoBt8o8/JwRKrvOzZIfjqg=
+
+Name: org/apache/poi/ss/formula/functions/Counta$2.class
+SHA1-Digest: 5VGIk6MJPlY4cJxKBksS+1vyT9A=
+
+Name: org/apache/poi/hssf/record/FnGroupCountRecord.class
+SHA1-Digest: 6c13UfrNEfMYibZUtKlBO+HAvjI=
+
+Name: org/apache/poi/hssf/record/UnknownRecord.class
+SHA1-Digest: B9o0lk9Q2hcPnh2fy9/0PFDc32U=
+
+Name: org/apache/poi/ss/formula/udf/AggregatingUDFFinder.class
+SHA1-Digest: pK/pIs6+qcbuSL6C/UA13NHMfg8=
+
+Name: org/apache/poi/poifs/storage/HeaderBlockConstants.class
+SHA1-Digest: 8Fbu+bdnwyWTGs8c/zrw8gpyMhg=
+
+Name: org/apache/poi/hssf/record/aggregates/RecordAggregate.class
+SHA1-Digest: 05ljAikNfWND3ZC1pmts/JYtvks=
+
+Name: org/apache/poi/poifs/dev/POIFSViewer.class
+SHA1-Digest: oApCt9Ll9u3K5xRanLf13NC0Bek=
+
+Name: org/apache/poi/ss/formula/functions/LogicalFunction$2.class
+SHA1-Digest: QYrg8aDlKQPndJXNXT57khkItxg=
+
+Name: org/apache/poi/hssf/record/WindowOneRecord.class
+SHA1-Digest: yaV0JDgF+O5pSoWYuchjCam0btU=
+
+Name: org/apache/poi/hssf/record/WSBoolRecord.class
+SHA1-Digest: hJ82CvaMUIRjNZfAH+mxiMPPxEI=
+
+Name: org/apache/poi/ss/formula/functions/Fixed1ArgFunction.class
+SHA1-Digest: EV5lcQZh5QoVlbXadoN2n/vA3Qg=
+
+Name: org/apache/poi/ss/formula/eval/MissingArgEval.class
+SHA1-Digest: J+H+rZiCzjmTpGNYo/EgyKu+s6k=
+
+Name: org/apache/poi/ss/usermodel/PictureData.class
+SHA1-Digest: f1tQt6nSXxpMa/cyr4nvlwC+Afg=
+
+Name: org/apache/poi/util/StringUtil.class
+SHA1-Digest: z1HC32oezh0kFemN5CwxHWAX518=
+
+Name: org/apache/poi/ss/usermodel/charts/ManualLayout.class
+SHA1-Digest: yBHKUgND3Bpv3pyTNO4RMmiqZZo=
+
+Name: org/apache/poi/hssf/record/aggregates/RecordAggregate$PositionTr
+ ackingVisitor.class
+SHA1-Digest: +Wcuut9BK4FctIjRzRL86gZPhMs=
+
+Name: org/apache/poi/hssf/record/IterationRecord.class
+SHA1-Digest: 33+Bc76fxiuPDPVe6UNXhLVUGZk=
+
+Name: org/apache/poi/ss/formula/ptg/FuncVarPtg.class
+SHA1-Digest: yitaB7OKvvl0T7bLI6nXoZiBYnI=
+
+Name: org/apache/poi/ss/formula/EvaluationCache.class
+SHA1-Digest: A8s8N4tnk7fpfxw2wWduDcNQ7H4=
+
+Name: org/apache/poi/ss/formula/functions/Function4Arg.class
+SHA1-Digest: TaACIAszdK6aj0LePZEUADlowo0=
+
+Name: org/apache/poi/util/Internal.class
+SHA1-Digest: +9XkhPYyXRL6QcZaNT5PPEZg8O8=
+
+Name: org/apache/poi/poifs/property/DirectoryProperty$PropertyComparat
+ or.class
+SHA1-Digest: v+59qidOrrXNKWOfIM1kR2pgpu4=
+
+Name: org/apache/poi/ss/usermodel/DataFormatter$ConstantStringFormat.c
+ lass
+SHA1-Digest: nuIj5lHBtLsmItOoAxF7eJQzJiM=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$LookupValueCompa
+ rerBase.class
+SHA1-Digest: cxjOhWVREBZskp1g4QJycAF2VHk=
+
+Name: org/apache/poi/ss/formula/LazyAreaEval.class
+SHA1-Digest: hkiCtn43llr892e2lfJEU9v8N6g=
+
+Name: org/apache/poi/ss/formula/functions/Countif.class
+SHA1-Digest: 4LCldEK8t4Gtjcw2zBAt2uW2Wk0=
+
+Name: org/apache/poi/ss/formula/functions/Odd.class
+SHA1-Digest: WmtHdxYMqMCFvndgNHmZIKX5E70=
+
+Name: org/apache/poi/ss/formula/functions/Vlookup.class
+SHA1-Digest: H7SQPRYxG4wIyy+9DuyLWVXhiSM=
+
+Name: org/apache/poi/ss/formula/SharedFormula.class
+SHA1-Digest: OK6669VT16X7Qs/VXjb7Z6nD6LY=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$6.class
+SHA1-Digest: 9/KhJ/wg/GWbARplzESc1SRmzco=
+
+Name: org/apache/poi/POIDocument.class
+SHA1-Digest: Mqj8nlYGpSnWl2Y9n4z9FbxBzEA=
+
+Name: org/apache/poi/hssf/record/NoteRecord.class
+SHA1-Digest: ARg1oz70PfoggqPHD/QbgJGzeMU=
+
+Name: org/apache/poi/hpsf/TypedPropertyValue.class
+SHA1-Digest: oX9DMpgUP8ZVc3OrBDumHuq1pn8=
+
+Name: org/apache/poi/hssf/util/HSSFRegionUtil.class
+SHA1-Digest: eFskcgpzjNrmk2PBZfvQBqXlanc=
+
+Name: org/apache/poi/hssf/record/BookBoolRecord.class
+SHA1-Digest: fh1D0Fwt16mR5ID6BVKePeIYfvc=
+
+Name: org/apache/poi/hssf/model/InternalWorkbook.class
+SHA1-Digest: QazB7YRA4A672RXmFYaQ6s+jor0=
+
+Name: org/apache/poi/hssf/record/FtCblsSubRecord.class
+SHA1-Digest: 4zWQoGCZoXV5UGaQKYDLz+QUYkI=
+
+Name: org/apache/poi/ss/usermodel/Picture.class
+SHA1-Digest: ed90X69hja1BlLlv/z7JFqNpMIY=
+
+Name: org/apache/poi/hssf/record/TabIdRecord.class
+SHA1-Digest: qxBTvNHGUpbxA+5Npv1+rVcxCAk=
+
+Name: org/apache/poi/hssf/usermodel/HSSFAnchor.class
+SHA1-Digest: apJl4/V6u6HVS+wg+cwNIOz+730=
+
+Name: org/apache/poi/hssf/eventusermodel/HSSFRequest.class
+SHA1-Digest: iqMrqfFVHlm9Wo9fEmi4/H3sxvY=
+
+Name: org/apache/poi/ss/formula/constant/ConstantValueParser.class
+SHA1-Digest: B++uUkjXoPaVWYnA2uIsZMjsHug=
+
+Name: org/apache/poi/ddf/EscherOptRecord.class
+SHA1-Digest: l6ZrisQ6SgraH7KyK1tr3ReO3SI=
+
+Name: org/apache/poi/hssf/record/chart/ChartStartBlockRecord.class
+SHA1-Digest: zi8nxj472sn4Gf8RMKtue3/eI3s=
+
+Name: org/apache/poi/ddf/EscherComplexProperty.class
+SHA1-Digest: 9WuaKAJLx/QtJHba46Be3pbu9oY=
+
+Name: org/apache/poi/hssf/record/aggregates/CustomViewSettingsRecordAg
+ gregate.class
+SHA1-Digest: Lbfy18fXGdTkcSpu9D3Z5bCVdZE=
+
+Name: org/apache/poi/hssf/usermodel/HSSFWorkbook$SheetRecordCollector.
+ class
+SHA1-Digest: 8OF1gLOTyeEQ5qXg7rLFHmxGmgc=
+
+Name: org/apache/poi/ss/formula/functions/LogicalFunction$7.class
+SHA1-Digest: JlkI0fpHWssPIBqSpoa8Nfo50j0=
+
+Name: org/apache/poi/hssf/record/BoolErrRecord.class
+SHA1-Digest: bZ6VLfaz0liOOhwcN5ASNAO2aOo=
+
+Name: org/apache/poi/hssf/record/HeaderRecord.class
+SHA1-Digest: mvt0atkzhK/yOTAdlv9cLbNmJPE=
+
+Name: org/apache/poi/ss/formula/eval/FunctionEval.class
+SHA1-Digest: NIXPEfyyINhLKGKqupXZ2Ly/HsM=
+
+Name: org/apache/poi/hpsf/HPSFRuntimeException.class
+SHA1-Digest: gVLQKgAjWpf5kyxM64azry3UYKA=
+
+Name: org/apache/poi/ss/format/CellNumberFormatter$Fraction.class
+SHA1-Digest: 33316m53Ne6RoNYFFVRGUXQ3gKw=
+
+Name: org/apache/poi/ss/usermodel/ErrorConstants.class
+SHA1-Digest: 8dNAay+Dn/hicYXVZ3yRYx0Xcf0=
+
+Name: org/apache/poi/hssf/record/WriteAccessRecord.class
+SHA1-Digest: A64q6nJkp+VXz6XRujPM3KUhwZI=
+
+Name: org/apache/poi/ss/formula/udf/DefaultUDFFinder.class
+SHA1-Digest: oeLMPD4saexK49AwaLV3EVfuIjE=
+
+Name: org/apache/poi/ss/formula/functions/FinanceFunction$4.class
+SHA1-Digest: KWDwAN/J+DChWYnuVynLfiQxTz4=
+
+Name: org/apache/poi/ss/formula/eval/TwoOperandNumericOperation$Subtra
+ ctEvalClass.class
+SHA1-Digest: IMR+uGBq8Lud00ZuPS6MqtkJhyo=
+
+Name: org/apache/poi/ss/formula/ptg/MemFuncPtg.class
+SHA1-Digest: E0Umv8GLCKfmSGYX0xKkWhLtOWE=
+
+Name: org/apache/poi/ss/formula/PlainCellCache.class
+SHA1-Digest: 7UW1CrCnLAPiQUP8pJZE2kmHXNE=
+
+Name: org/apache/poi/ss/formula/ptg/DeletedArea3DPtg.class
+SHA1-Digest: xrSl8ELgeQYUoFWFyNB/rwQOnGU=
+
+Name: org/apache/poi/hpsf/IllegalPropertySetDataException.class
+SHA1-Digest: l7hbtJc5N1y+8lNcir6oFyLlclM=
+
+Name: org/apache/poi/ss/formula/functions/Countblank.class
+SHA1-Digest: 0dBnr37SFxw7q0jflQ8AM0SvjjM=
+
+Name: org/apache/poi/ss/formula/atp/AnalysisToolPak.class
+SHA1-Digest: By8Wk72DzgG2f3JpJEidotN3L6Q=
+
+Name: org/apache/poi/hssf/util/HSSFColor$ORCHID.class
+SHA1-Digest: C10hXESN5oXurvM3Fl5xokg4SPQ=
+
+Name: org/apache/poi/poifs/filesystem/BATManaged.class
+SHA1-Digest: XB8B9CC9Rl53smYn/sY4GIfdnbw=
+
+Name: org/apache/poi/hssf/record/ColumnInfoRecord.class
+SHA1-Digest: UKy254RvRzMwGIINAPRwKhtT+yA=
+
+Name: org/apache/poi/ss/usermodel/BuiltinFormats.class
+SHA1-Digest: 2YHJwVm6ygjdsI52LLQyWgMkbVc=
+
+Name: org/apache/poi/util/BinaryTree$2.class
+SHA1-Digest: J6Rnl0sppfO13E4qX+VhTMvwC40=
+
+Name: org/apache/poi/hssf/record/DeltaRecord.class
+SHA1-Digest: +nIqtUFwiDsiv/s+N5upDMIVf6c=
+
+Name: org/apache/poi/hpsf/ReadingNotSupportedException.class
+SHA1-Digest: 9nDaZZvG+Mj6COB+VEM4L8oZSr8=
+
+Name: org/apache/poi/poifs/storage/BlockList.class
+SHA1-Digest: P58Gs7XQYQ5X9XwSp5z4lI5+osI=
+
+Name: org/apache/poi/ss/formula/ptg/ConcatPtg.class
+SHA1-Digest: 8nZvuk2l8drOe8dbE6TMjfjIePc=
+
+Name: org/apache/poi/hssf/record/SharedValueRecordBase.class
+SHA1-Digest: o3Iwm9jdFIYsHARx3HOqOH1GgEc=
+
+Name: org/apache/poi/hssf/util/AreaReference.class
+SHA1-Digest: 3/wgWbHhqQPyn6sicaZUHqLOlmU=
+
+Name: org/apache/poi/ss/formula/ptg/MissingArgPtg.class
+SHA1-Digest: FU8Gp3tfMB5WbHkGrsLhmoCVFIM=
+
+Name: org/apache/poi/hssf/record/SharedFormulaRecord.class
+SHA1-Digest: LMefvT5X73p223evEfFGsoo6L8w=
+
+Name: org/apache/poi/hssf/util/HSSFColor$PINK.class
+SHA1-Digest: EdY75WjelCheVKx4pP6FnfNaIc8=
+
+Name: org/apache/poi/poifs/filesystem/DocumentOutputStream.class
+SHA1-Digest: gMXJ+7ZtpdodMtDvCd6nyx2uTUg=
+
+Name: org/apache/poi/util/BinaryTree$5$1.class
+SHA1-Digest: jrnnKB+U5A2iWr8kiU1B0scMRp8=
+
+Name: org/apache/poi/poifs/nio/DataSource.class
+SHA1-Digest: Kxtog8SM/MMHdXrLTLkgnZ5kIHU=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$Log.class
+SHA1-Digest: yKgN/600aKjTBaAIBiNJWtcdaVU=
+
+Name: org/apache/poi/hssf/dev/BiffDrawingToXml.class
+SHA1-Digest: RjFrgh4ySPlxmJfYADVTcWE917Y=
+
+Name: org/apache/poi/ss/formula/OperationEvaluationContext$1.class
+SHA1-Digest: 6YltQGCAzno2hl/0c4oiKywtC5E=
+
+Name: org/apache/poi/ss/usermodel/FontCharset.class
+SHA1-Digest: QFRAcOvel5BZmRm1ogBnP06U7jg=
+
+Name: org/apache/poi/ss/formula/functions/Var3or4ArgFunction.class
+SHA1-Digest: 0oWWHb0cxaMYOi6bP4fp1Iq5/OE=
+
+Name: org/apache/poi/hssf/usermodel/HSSFShape.class
+SHA1-Digest: 4uX+JIej8UKefomSijTVT3jor7k=
+
+Name: org/apache/poi/hssf/model/RowBlocksReader.class
+SHA1-Digest: QTQm4LZ94y7c1vdReMdV5hEHQHs=
+
+Name: org/apache/poi/ss/formula/functions/Function.class
+SHA1-Digest: oYGL4TOoKH/1UjFgyaAQKEkJEbo=
+
+Name: org/apache/poi/ddf/EscherTextboxRecord.class
+SHA1-Digest: H1eG81QFgYSofi+WiXBMRrsJN9k=
+
+Name: org/apache/poi/ss/formula/IStabilityClassifier$1.class
+SHA1-Digest: alT9BaKrhSFamoRZ4EKuna0otvk=
+
+Name: org/apache/poi/hpsf/Variant.class
+SHA1-Digest: ycekpABvI+rSyC3sgHfJXmlXQxE=
+
+Name: org/apache/poi/ss/format/CellNumberFormatter$Special.class
+SHA1-Digest: QgYYKtyjUgvkMvP2lVr514EvTwI=
+
+Name: org/apache/poi/poifs/common/POIFSBigBlockSize.class
+SHA1-Digest: RLjH/OYmk52HzYo2aLTeUTbD/1s=
+
+Name: org/apache/poi/ss/formula/eval/RelationalOperationEval$3.class
+SHA1-Digest: AdctdewVDW7nOtt5YBEImNzD+J4=
+
+Name: org/apache/poi/hssf/record/HorizontalPageBreakRecord.class
+SHA1-Digest: SzAQPOR1R6THirwenS0/SsUWMgs=
+
+Name: org/apache/poi/ss/formula/EvaluationCache$1.class
+SHA1-Digest: Ygg29MZBdT2NXoFSp+hVjxvU+Lk=
+
+Name: org/apache/poi/hssf/record/CFRuleRecord.class
+SHA1-Digest: lFjsM9hL34OujiJ/CNq4rFUTj4Q=
+
+Name: org/apache/poi/hssf/eventusermodel/dummyrecord/MissingRowDummyRe
+ cord.class
+SHA1-Digest: Q22jkVX0segoX3NKuCh+yV0a6sw=
+
+Name: org/apache/poi/ss/util/cellwalk/CellHandler.class
+SHA1-Digest: syfeUMe6OGJYQ4T2Rgl3Q/z8Kfc=
+
+Name: org/apache/poi/hssf/record/SaveRecalcRecord.class
+SHA1-Digest: X3b7F14ykF7MFRZnnezV7aFRABM=
+
+Name: org/apache/poi/ss/formula/functions/BooleanFunction$4.class
+SHA1-Digest: aAi7J/uGuUMjKUHoqWatBvDw76g=
+
+Name: org/apache/poi/hssf/record/ProtectionRev4Record.class
+SHA1-Digest: OG8eYVd8QsFOf6JK5T4/a5f4A1A=
+
+Name: org/apache/poi/hssf/record/PaletteRecord.class
+SHA1-Digest: QFObItd86uKepPGCB81M2iHVdhY=
+
+Name: org/apache/poi/ss/formula/eval/StringValueEval.class
+SHA1-Digest: DL2IqRmD9He6jrxxM6m8ma59tLI=
+
+Name: org/apache/poi/ss/usermodel/AutoFilter.class
+SHA1-Digest: PcDdy2TmTCuKyNE4Wevc1MuPBkU=
+
+Name: org/apache/poi/hssf/record/pivottable/ViewSourceRecord.class
+SHA1-Digest: MlXFAAXP6dZXKS+RhtouaPLbUNE=
+
+Name: org/apache/poi/ss/extractor/ExcelExtractor.class
+SHA1-Digest: gzxpU+dU3kCNgOHuYQZpCBejRhI=
+
+Name: org/apache/poi/ss/usermodel/Font.class
+SHA1-Digest: MFtxf7WWo1d1MKFE+O+yd3FJCRQ=
+
+Name: org/apache/poi/ss/formula/functions/Subtotal.class
+SHA1-Digest: 3r2pL5udf8QexZcMWBCbZiQb5tI=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$ColumnVector.cla
+ ss
+SHA1-Digest: I3gWdRD0sDhE2GZhk2qNB8nkBng=
+
+Name: org/apache/poi/ss/usermodel/Textbox.class
+SHA1-Digest: ELQkQjyNLSgtZfDPoU+AlajwE3Y=
+
+Name: org/apache/poi/ss/formula/functions/Countif$MatcherBase.class
+SHA1-Digest: Ej6Dzt2wbb2fM9eakDk3hHGk6zg=
+
+Name: org/apache/poi/poifs/filesystem/NPOIFSStream.class
+SHA1-Digest: Y8HW60+IS6CfKHixReXostXz1HU=
+
+Name: org/apache/poi/ss/formula/atp/YearFrac.class
+SHA1-Digest: GJ4ptKy43JhHIPEdlOiyOzw0P2o=
+
+Name: org/apache/poi/util/HexRead.class
+SHA1-Digest: V8gvRQzHjYHINNBq1LpGlJd85oM=
+
+Name: org/apache/poi/ss/formula/functions/MathX.class
+SHA1-Digest: pJjJmbELtHC+F786bSqsQvvkFWM=
+
+Name: org/apache/poi/hssf/record/SSTDeserializer.class
+SHA1-Digest: Cu7XlD6cyYr/A5VgbjeZoQKtE20=
+
+Name: org/apache/poi/hssf/record/chart/SeriesListRecord.class
+SHA1-Digest: JFwxtGlaPsIWJG1XslR8igtIfZY=
+
+Name: org/apache/poi/ss/util/MutableFPNumber.class
+SHA1-Digest: 95Qr13oh15XzCapZNYFjiOEBAN4=
+
+Name: org/apache/poi/hpsf/GUID.class
+SHA1-Digest: yCAow7qW9Vi6MoZfi5t6+dZjUk8=
+
+Name: org/apache/poi/poifs/filesystem/Ole10NativeException.class
+SHA1-Digest: 1wm0/q2kBgYh9CiC25c8U0odI7k=
+
+Name: org/apache/poi/ss/formula/functions/DateFunc.class
+SHA1-Digest: j46Jr2k3zvDzTsBmxRoT6YDLDJI=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$5.class
+SHA1-Digest: lAFJ95jw16DcJqg2qvlFsZfL9K4=
+
+Name: org/apache/poi/hssf/record/RecordBase.class
+SHA1-Digest: B+PHgwAwfPiHsvd2tZGdiPh+wX0=
+
+Name: org/apache/poi/ss/formula/functions/Columns.class
+SHA1-Digest: yFO6G+JrgnKi1dyTKGQYOR8aFs4=
+
+Name: org/apache/poi/ss/formula/ptg/AreaPtg.class
+SHA1-Digest: cgO5p/pKiKYwYQ1Y3rHe72K+NEk=
+
+Name: org/apache/poi/hssf/record/chart/ChartStartObjectRecord.class
+SHA1-Digest: TIPp2y2Q1sPUiTAZ3Z7eGygTG/0=
+
+Name: org/apache/poi/ss/format/CellFormatCondition$5.class
+SHA1-Digest: YgziYuYcn2cd7u8xri1GUdjE/+0=
+
+Name: org/apache/poi/ss/util/DateFormatConverter$DateFormatTokenizer.c
+ lass
+SHA1-Digest: XEV8fG1XEsVCpWDuR8An2KlOwok=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$BooleanLookupCom
+ parer.class
+SHA1-Digest: XPNl/3AJAQpVMkiWVUsNnOkyP/E=
+
+Name: org/apache/poi/hssf/record/CalcModeRecord.class
+SHA1-Digest: JFuJHJxivvxw7vcAR/cP0LIIBDY=
+
+Name: org/apache/poi/hpsf/PropertySet.class
+SHA1-Digest: XiGAPU1qiHip0Xog9skf/LqQUJ4=
+
+Name: org/apache/poi/ss/formula/eval/NumericValueEval.class
+SHA1-Digest: mr7+wbEp3qikuWLgfosySNjAQRc=
+
+Name: org/apache/poi/ss/formula/functions/Var2or3ArgFunction.class
+SHA1-Digest: iVX6ZeekapiSut4+4+xJGjMle9A=
+
+Name: org/apache/poi/ss/formula/eval/TwoOperandNumericOperation$3.clas
+ s
+SHA1-Digest: srngQ7VTL5FKPaE7yWAd0CxUABg=
+
+Name: org/apache/poi/poifs/dev/POIFSDump.class
+SHA1-Digest: Y8dqMICRNZRssqLtWggW80lp5Kw=
+
+Name: org/apache/poi/ss/formula/constant/ErrorConstant.class
+SHA1-Digest: 2OHirRD4/zwuXljhXf5zev/c0NY=
+
+Name: org/apache/poi/hssf/record/chart/CategorySeriesAxisRecord.class
+SHA1-Digest: FrvBxAifjMFzxelju2nrZ3LSJ9Q=
+
+Name: org/apache/poi/hssf/util/HSSFColor$CORNFLOWER_BLUE.class
+SHA1-Digest: cbs3ioDCQ2qVBTa/QcUlTLse3fY=
+
+Name: org/apache/poi/ss/usermodel/charts/LayoutMode.class
+SHA1-Digest: V8eae9lwbyADvasIOloHgcZJYFM=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$LookupValueCompa
+ rer.class
+SHA1-Digest: FejYrWJg7vWLG5Qa+v+uqTiKK/0=
+
+Name: org/apache/poi/hpsf/TypeWriter.class
+SHA1-Digest: 3DL5OXVHtxofKIjZ+iY0OvWExYc=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$LeftRight.class
+SHA1-Digest: MWf3Ad9GuV0kYA3FOP3YOc5hlqk=
+
+Name: org/apache/poi/ss/usermodel/PaperSize.class
+SHA1-Digest: 0Lv7PZppuNXj1WVZK4affehr8zM=
+
+Name: org/apache/poi/hssf/model/HSSFFormulaParser.class
+SHA1-Digest: nC+1T3ZQyeZDq+0nKEzxmyFeTZM=
+
+Name: org/apache/poi/ss/formula/ptg/Area2DPtgBase.class
+SHA1-Digest: WmH6fm5gTC05JveFTSPTrYpmA6o=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$20.class
+SHA1-Digest: AxxH4o9zS6jgJoH3jSsYFZdWqic=
+
+Name: org/apache/poi/hssf/usermodel/HSSFShapeFactory.class
+SHA1-Digest: 09pUWR+/4bGiw5YpW6e82dO+d4Y=
+
+Name: org/apache/poi/ss/usermodel/ComparisonOperator.class
+SHA1-Digest: 0uE2448W/VX5EebDFwYNoy4J954=
+
+Name: org/apache/poi/ss/util/SheetUtil$1.class
+SHA1-Digest: 3bO4uIS38kknwfRTU4m8SZXPRXg=
+
+Name: org/apache/poi/ddf/EscherSplitMenuColorsRecord.class
+SHA1-Digest: 6kjbMtzmiRQSeFtuRpAGb/NSGTA=
+
+Name: org/apache/poi/hssf/record/chart/TextRecord.class
+SHA1-Digest: f9zhtRpK9JU8yeuBup8VFglK220=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$BinarySearchInde
+ xes.class
+SHA1-Digest: iJ/D8XqOhsH/Z0w1x6VskhvoteI=
+
+Name: org/apache/poi/hssf/record/aggregates/FormulaRecordAggregate.cla
+ ss
+SHA1-Digest: Nwpm9fNareMYIF+GCRwbd5y76/k=
+
+Name: org/apache/poi/hssf/util/HSSFColor$RED.class
+SHA1-Digest: AS7DJiUTjyWrTxNz/yYRmKKFFic=
+
+Name: org/apache/poi/hssf/record/RecalcIdRecord.class
+SHA1-Digest: dHmnVNodGlJsv0jq4wVttqPyAAM=
+
+Name: org/apache/poi/hssf/util/HSSFColor$LAVENDER.class
+SHA1-Digest: mNNQOd+1d7nqhLLvwgUhhZsHf3A=
+
+Name: org/apache/poi/hssf/record/RefreshAllRecord.class
+SHA1-Digest: 3hPuLGyjTI7iBXQig5oNwV7d0ck=
+
+Name: org/apache/poi/ss/formula/functions/Countif$NumberMatcher.class
+SHA1-Digest: SiJfQrdbHZAps2TnYgdc3yM22yk=
+
+Name: org/apache/poi/hssf/record/chart/SeriesRecord.class
+SHA1-Digest: 0IvAwjBKAGER8nOiUiPurvNJ5fM=
+
+Name: org/apache/poi/hssf/usermodel/HSSFConditionalFormattingRule.clas
+ s
+SHA1-Digest: ZxQZzeQFdgxGFD0zYhd4TY9iYag=
+
+Name: org/apache/poi/ss/formula/FormulaParseException.class
+SHA1-Digest: mznHyqTEX2gE82vjqSxmsHaHsBU=
+
+Name: org/apache/poi/hssf/record/FontRecord.class
+SHA1-Digest: nGQn8EqPJ/GtyOm1bAusajukXaA=
+
+Name: org/apache/poi/ss/formula/FormulaParser.class
+SHA1-Digest: V0tXr1PHEXXx9SGk5mKEdsidD4w=
+
+Name: org/apache/poi/hssf/record/PrintSetupRecord.class
+SHA1-Digest: u3yXlLb6KdnsuOKUTRrB85jHxXM=
+
+Name: org/apache/poi/hssf/util/PaneInformation.class
+SHA1-Digest: QQab9giB5GH/VyMoJbwqifbPcYM=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$31.class
+SHA1-Digest: uMfBRtBLh9Gu9TeIIlxZ2jvCBmo=
+
+Name: org/apache/poi/ss/util/ImageUtils.class
+SHA1-Digest: +2LsQpFz0HS/EgBtn3JXrIKJh/U=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$14.class
+SHA1-Digest: 7LlFLydGiwJW+Rw/ITqt6cjtePs=
+
+Name: org/apache/poi/ss/formula/functions/Countif$ErrorMatcher.class
+SHA1-Digest: 9lUFjktUXW/E6lQnJXNU1BWrTAk=
+
+Name: org/apache/poi/ddf/EscherRecordFactory.class
+SHA1-Digest: AR+eLe9lWxtmJWMLukk1Ri7pBy0=
+
+Name: org/apache/poi/hssf/usermodel/HSSFDataValidationHelper.class
+SHA1-Digest: cyi+IIhnU+CmzHQCCQIceJphLP0=
+
+Name: org/apache/poi/hssf/usermodel/HSSFPalette.class
+SHA1-Digest: 7Avkum2gxVawomC7QvrEvwMKw8M=
+
+Name: org/apache/poi/ss/formula/functions/Sumif.class
+SHA1-Digest: jUeRWp/sTZlyL/LLfVw/HmV4vlE=
+
+Name: org/apache/poi/ss/formula/atp/DateParser.class
+SHA1-Digest: 2897E40TznJ3Lo7paS8bAQz9Zsg=
+
+Name: org/apache/poi/poifs/filesystem/DocumentInputStream.class
+SHA1-Digest: Sw0WqcT1uwqG5QeWAeMeLMD+tIc=
+
+Name: org/apache/poi/hssf/record/ObjRecord.class
+SHA1-Digest: YwJxxc6NjhEKcroEFFQVEMafxVU=
+
+Name: org/apache/poi/hpsf/Array.class
+SHA1-Digest: X26dHjYQo8gbnua5f19sg7blZg4=
+
+Name: org/apache/poi/poifs/filesystem/POIFSDocument.class
+SHA1-Digest: 7YI3H/A5VjxjPfZhTG7Nm13P4aA=
+
+Name: org/apache/poi/ss/formula/functions/TimeFunc.class
+SHA1-Digest: 5TajkiCziP0/UexCWfAfm9RjMzM=
+
+Name: org/apache/poi/hssf/usermodel/HSSFPictureData.class
+SHA1-Digest: mJsUgxkC7rZKbGlrV0Dms8V6lx0=
+
+Name: org/apache/poi/ss/usermodel/DataValidationConstraint.class
+SHA1-Digest: hpAj4aya/MydX9/K6SmEjhbLEJQ=
+
+Name: org/apache/poi/poifs/filesystem/POIFSDocumentPath.class
+SHA1-Digest: ENSTmBPKGnx6pqGsCIXsLX+VIQo=
+
+Name: org/apache/poi/hssf/record/WriteProtectRecord.class
+SHA1-Digest: wiANilsatLE8AMwrNL5xR6JrvY4=
+
+Name: org/apache/poi/ss/usermodel/CellStyle.class
+SHA1-Digest: U+BI7Uv+n6kFVggrF5auOUAcnh8=
+
+Name: org/apache/poi/ddf/EscherArrayProperty.class
+SHA1-Digest: jcmnXPqEgQdbL08RGZjvQy2YURY=
+
+Name: org/apache/poi/ddf/EscherBlipWMFRecord.class
+SHA1-Digest: HY+3p2g44enTgcO5m2lyF3RcOBc=
+
+Name: org/apache/poi/common/usermodel/Hyperlink.class
+SHA1-Digest: HIo/aXe3OEQk5rKEsZrESak70IY=
+
+Name: org/apache/poi/poifs/storage/HeaderBlockWriter.class
+SHA1-Digest: hDK3S+rHQB07hTl6rm1Q9u1dt0o=
+
+Name: org/apache/poi/poifs/storage/SmallDocumentBlockList.class
+SHA1-Digest: dFQXWNeBf8PQuswz16VGsanowPo=
+
+Name: org/apache/poi/hssf/util/HSSFColor$AQUA.class
+SHA1-Digest: +MYweYKjjy8gxeHvU+SOnsAb3D0=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$25.class
+SHA1-Digest: +IrSYZgX6aUj3osFT6BYfLczqMk=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$3.class
+SHA1-Digest: GyremCLkEwEuaWZ9ZL1PTjtWhro=
+
+Name: org/apache/poi/hssf/record/common/SharedFeature.class
+SHA1-Digest: to8Xy3E97M2YiB9/YXrn2f0aagw=
+
+Name: org/apache/poi/ss/formula/functions/Countif$StringMatcher.class
+SHA1-Digest: 2Pf79tykkQQ5dcMxMRhhoLfPvqg=
+
+Name: org/apache/poi/poifs/storage/BATBlock$BATBlockAndIndex.class
+SHA1-Digest: F6FTnevGbD+JwbK3xh+VVJvpe10=
+
+Name: org/apache/poi/util/IOUtils.class
+SHA1-Digest: PDsDL0an3+nlnn1uRfaUHZIFUio=
+
+Name: org/apache/poi/hssf/record/MulRKRecord$RkRec.class
+SHA1-Digest: AkxOf9Yo78p4ZhC4CwFCvxwRld4=
+
+Name: org/apache/poi/ss/formula/functions/Var1or2ArgFunction.class
+SHA1-Digest: HrnTcwQLyJYf3FNCFAmNr/qxS0Q=
+
+Name: org/apache/poi/hssf/record/chart/SeriesToChartGroupRecord.class
+SHA1-Digest: usX8l+ZOuSP/hBYFB4h+Y+EVAmc=
+
+Name: org/apache/poi/hssf/record/SSTSerializer.class
+SHA1-Digest: kX7ofkwebtpmo03ULic6/QcuH4Q=
+
+Name: org/apache/poi/ss/formula/IStabilityClassifier.class
+SHA1-Digest: naQCIlChFYxeqSDFZ3ZC5eijA/I=
+
+Name: org/apache/poi/util/BitField.class
+SHA1-Digest: Pvkvl0G3H6or0P7php/sOZAMqJQ=
+
+Name: org/apache/poi/hssf/record/CountryRecord.class
+SHA1-Digest: pOObzUCAux1Gqy0pfLZhZ/K1Ygg=
+
+Name: org/apache/poi/ss/formula/functions/Offset.class
+SHA1-Digest: KPG8b0poNI7iG7cYbvv6THRr0Xg=
+
+Name: org/apache/poi/hssf/usermodel/HSSFPalette$CustomColor.class
+SHA1-Digest: dMJDm1MkmQ2OGR+JaafCv2NpBBM=
+
+Name: org/apache/poi/util/CommonsLogger.class
+SHA1-Digest: XicY/DTCZ9FwmQQ0xVH2iznTbUU=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils.class
+SHA1-Digest: xy+ykjwPx05LWJrlFcl/45h3/lA=
+
+Name: org/apache/poi/hssf/record/UncalcedRecord.class
+SHA1-Digest: 11BePHSX9GKnIfDDjeclX2/nVr0=
+
+Name: org/apache/poi/ss/format/CellFormatType$3.class
+SHA1-Digest: sJSJaeeCbkdnPAUKkfDLu845Rds=
+
+Name: org/apache/poi/hssf/record/DrawingSelectionRecord.class
+SHA1-Digest: nOqXT6o367bCm1RJuFpaG73fD5w=
+
+Name: org/apache/poi/ss/formula/functions/Sumxmy2.class
+SHA1-Digest: EM4Btf15ySz8/SD1W2Na5Tikw6E=
+
+Name: org/apache/poi/ss/formula/eval/RefEvalBase.class
+SHA1-Digest: 4WnTsGQZOw2O0hrSVM1Esz1P6PU=
+
+Name: org/apache/poi/hssf/dev/EFBiffViewer.class
+SHA1-Digest: B5Nz6MyRKQTzC98hTvYEfYOpS1o=
+
+Name: org/apache/poi/hssf/record/chart/NumberFormatIndexRecord.class
+SHA1-Digest: YK3uTh1fLoZCzmGq+UsVCjPv89c=
+
+Name: org/apache/poi/ss/formula/atp/MRound.class
+SHA1-Digest: 4Tc5iM8312SNX+yF1YRNEfamzqc=
+
+Name: org/apache/poi/ss/formula/ptg/AreaI$OffsetArea.class
+SHA1-Digest: vaCF4G74USj6GCS1JnfSHHNPTd4=
+
+Name: org/apache/poi/poifs/filesystem/POIFSFileSystem.class
+SHA1-Digest: EpbSuH7ybUEaV+N/tfH+eF3wAAc=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$36.class
+SHA1-Digest: 2NhEIqimqlIewvbm9zyJf4pu34I=
+
+Name: org/apache/poi/hssf/record/PasswordRecord.class
+SHA1-Digest: yTAgabn5JIPdiDyMl+YjVK8dzIo=
+
+Name: org/apache/poi/hpsf/UnicodeString.class
+SHA1-Digest: XI4XcHB4vEqSL+aozMQL0pTLgNk=
+
+Name: org/apache/poi/ss/util/CellUtil$UnicodeMapping.class
+SHA1-Digest: MIP3j0Ngn7kc5/p2NJWSLD2950Q=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$19.class
+SHA1-Digest: 45bPCDwUiorQcnfa2qW0eeecz2s=
+
+Name: org/apache/poi/ddf/EscherDgRecord.class
+SHA1-Digest: QGZVpwDu2DR/F5aN4EVpOB/3m/M=
+
+Name: org/apache/poi/hssf/usermodel/HSSFPicture.class
+SHA1-Digest: JSTRkAq0Pf0j3vjsorCBEEAoURU=
+
+Name: org/apache/poi/ss/usermodel/BorderStyle.class
+SHA1-Digest: fVjfoV2ASOyqy/u+ud4HA4qAYAs=
+
+Name: org/apache/poi/hssf/record/ContinueRecord.class
+SHA1-Digest: A5vimzQRbaKlJoneyoe+hFNV6aQ=
+
+Name: org/apache/poi/ss/formula/function/FunctionMetadata.class
+SHA1-Digest: kfk5FoWyqfpemGAumZkPN1keTqw=
+
+Name: org/apache/poi/ss/formula/ptg/UnknownPtg.class
+SHA1-Digest: JaOhk6Nm7hYmO54YPA5dzuwTKtg=
+
+Name: org/apache/poi/hssf/model/PolygonShape.class
+SHA1-Digest: ZmWxjiqIgGsg/wCi6CFCvxuBAU0=
+
+Name: org/apache/poi/hssf/record/CalcCountRecord.class
+SHA1-Digest: F2bpqwypUvULUHleLdomB5dxwW4=
+
+Name: org/apache/poi/ss/format/CellFormatter.class
+SHA1-Digest: +F4aMvvcwIqrhrg8DLjfFz1UwDk=
+
+Name: org/apache/poi/hssf/record/EscherAggregate$3.class
+SHA1-Digest: ZVpICoML1dAbbuhuAycxXeB6OKU=
+
+Name: org/apache/poi/hssf/record/DrawingSelectionRecord$OfficeArtRecor
+ dHeader.class
+SHA1-Digest: LLSenqBU+PaG7+72AZbCNmXmaQQ=
+
+Name: org/apache/poi/hssf/dev/FormulaViewer.class
+SHA1-Digest: Q7fE9GBKTEkAyetPpIZKjFjzkno=
+
+Name: org/apache/poi/ss/formula/ptg/RefPtgBase.class
+SHA1-Digest: n4mfzPWiSScrgUorniqrUzMFs+I=
+
+Name: org/apache/poi/ss/usermodel/charts/ManuallyPositionable.class
+SHA1-Digest: MLZRlRHOIZe2GJfTbbYPtOVk9Ow=
+
+Name: org/apache/poi/hssf/record/chart/LinkedDataRecord.class
+SHA1-Digest: SYmz5n4ZoUZbhSwVdNY3L5bTzpo=
+
+Name: org/apache/poi/util/BinaryTree$4$1.class
+SHA1-Digest: yPgcDGk2MqOPKr0ocJuVy/t29D4=
+
+Name: org/apache/poi/hssf/record/chart/AreaFormatRecord.class
+SHA1-Digest: teYMPokI+L6NvwIqWES98na3A4w=
+
+Name: org/apache/poi/hssf/record/common/FtrHeader.class
+SHA1-Digest: fJVqyS7Amy3oGPMVcJ7TXcS/LMg=
+
+Name: org/apache/poi/ss/formula/functions/CountUtils$I_MatchPredicate.
+ class
+SHA1-Digest: LVwXlpoelH9JsXcuZjdNF7pH0MU=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$8.class
+SHA1-Digest: LjsRi8nlYB7uXUBROCAZ1wgl7aU=
+
+Name: org/apache/poi/hssf/record/aggregates/DataValidityTable.class
+SHA1-Digest: huZ+OvtKRzKPhnNkCkgCScDTsh0=
+
+Name: org/apache/poi/ss/formula/EvaluationTracker.class
+SHA1-Digest: LWN3i5JQFNZzKJHIcJ6sxE5LrcA=
+
+Name: org/apache/poi/hssf/record/CellValueRecordInterface.class
+SHA1-Digest: aMVRB2gGwTTt/uBQ5SYforVZI0o=
+
+Name: org/apache/poi/hssf/record/RowRecord.class
+SHA1-Digest: zaZR3ljkRNYN0rrnl/hJ9hbtlyA=
+
+Name: org/apache/poi/hssf/util/HSSFColor$ROSE.class
+SHA1-Digest: uMld5W7draZGAvE1C8vwq6rKILo=
+
+Name: org/apache/poi/hssf/record/DimensionsRecord.class
+SHA1-Digest: IpBE4flEKXepH37g8PItDMLoP6I=
+
+Name: org/apache/poi/ss/util/RegionUtil$CellPropertySetter.class
+SHA1-Digest: 80kMBQOrGNyCsnat1uB0eq2ATA4=
+
+Name: org/apache/poi/hssf/usermodel/HSSFPatriarch.class
+SHA1-Digest: jFiTyLzhK2DeG6UwB9763ygpWS0=
+
+Name: org/apache/poi/ss/formula/FormulaCellCache$IEntryOperation.class
+SHA1-Digest: j42xCcXi2q46ZB5jCXUKns5Rxe0=
+
+Name: org/apache/poi/ss/formula/functions/Sumx2my2.class
+SHA1-Digest: C7UcAqxCAwV069ly3v3tSSd9hbU=
+
+Name: org/apache/poi/hssf/record/chart/SeriesIndexRecord.class
+SHA1-Digest: Mma03D6sjrNqLTU2uywg0IIFMVo=
+
+Name: org/apache/poi/hssf/eventusermodel/FormatTrackingHSSFListener.cl
+ ass
+SHA1-Digest: xiIg3WXOC76xO8BeG1G+iuPzJ/M=
+
+Name: org/apache/poi/ss/formula/ptg/MultiplyPtg.class
+SHA1-Digest: fndqC7fEYEFF8mDXjt93jk9009E=
+
+Name: org/apache/poi/hssf/record/chart/ChartRecord.class
+SHA1-Digest: L7/vHccDTcZZ9sCX/X3OGLhtOBs=
+
+Name: org/apache/poi/hssf/record/NoteStructureSubRecord.class
+SHA1-Digest: YD4aiB84f7DTJMrFzNTLgGKb9tY=
+
+Name: org/apache/poi/poifs/storage/HeaderBlock.class
+SHA1-Digest: 8GqRMYnRCawFb/nw2WboXlC4zgc=
+
+Name: org/apache/poi/hssf/record/CellRecord.class
+SHA1-Digest: p36hoBP/CNomgxZjLlXGg8Jw2CU=
+
+Name: org/apache/poi/hssf/record/pivottable/ViewFieldsRecord$Axis.clas
+ s
+SHA1-Digest: /Jrh/IYFaCVY1Abbc4pQbMxi72g=
+
+Name: org/apache/poi/ss/formula/FormulaUsedBlankCellSet$BookSheetKey.c
+ lass
+SHA1-Digest: XclkpbK7KP6ID2devVxX+pm7Usw=
+
+Name: org/apache/poi/hssf/record/LabelRecord.class
+SHA1-Digest: /wSihct1KYHIwfyfvT0/+JHKDlE=
+
+Name: org/apache/poi/ss/formula/functions/Countif$CmpOp.class
+SHA1-Digest: s3VJdlr1fb4Iur7JxpOwa0ylTEI=
+
+Name: org/apache/poi/hssf/usermodel/StaticFontMetrics.class
+SHA1-Digest: 9+Qkf/ZsPM3adAG13NtIhG1jCdM=
+
+Name: org/apache/poi/ss/formula/ptg/GreaterEqualPtg.class
+SHA1-Digest: /jq9Dv1ojFawJce4BZwCx+RqomY=
+
+Name: org/apache/poi/ss/formula/functions/Countblank$1.class
+SHA1-Digest: Q9XE/lq+wLa75CdeGGjJAlj1emo=
+
+Name: org/apache/poi/hpsf/NoFormatIDException.class
+SHA1-Digest: phTflXSbrbEWGRdZpo9tEQEWhqI=
+
+Name: org/apache/poi/common/usermodel/LineStyle.class
+SHA1-Digest: 4B/ribV5N04gR06XBys2zIFMP00=
+
+Name: org/apache/poi/hssf/util/HSSFColor$ORANGE.class
+SHA1-Digest: alFwuC9NTfyQ8abwplggAgtOAtE=
+
+Name: org/apache/poi/ss/usermodel/DataValidation$ErrorStyle.class
+SHA1-Digest: p7G6i8w4io79Jx1R7BS92/sZWw8=
+
+Name: org/apache/poi/hssf/record/EOFRecord.class
+SHA1-Digest: iZnt7/W5KLw8bcRQ7/iz7woYPgc=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$4.class
+SHA1-Digest: R/IV9mV4j5fsPWnV1OwKJeCRHJU=
+
+Name: org/apache/poi/ss/formula/FormulaCellCacheEntrySet.class
+SHA1-Digest: 1UYbUIfpFVMWEUZb1FsWXDFZcIA=
+
+Name: org/apache/poi/ss/formula/functions/MinaMaxa$1.class
+SHA1-Digest: mGs8kErYjX1JgrhyoJBEWpc3cvg=
+
+Name: org/apache/poi/hssf/dev/RecordLister.class
+SHA1-Digest: xNz5PPQ+RkV0oV0a3I1A+UuKGPg=
+
+Name: org/apache/poi/ss/usermodel/DataFormatter$ZipPlusFourFormat.clas
+ s
+SHA1-Digest: 8JJCeTnpDEjpmSF+OIdL+1EW+2Q=
+
+Name: org/apache/poi/hssf/record/MergeCellsRecord.class
+SHA1-Digest: fIWMwDM7gflMT4xdpUe/ZuZtPsY=
+
+Name: org/apache/poi/poifs/property/PropertyConstants.class
+SHA1-Digest: MDYp/sn8kmr2MSX9rrUIJuWvFZE=
+
+Name: org/apache/poi/hssf/record/chart/AxisOptionsRecord.class
+SHA1-Digest: o4AIDn7ze/JfF0p3J8n3lnJe1p8=
+
+Name: org/apache/poi/ss/usermodel/PageOrder.class
+SHA1-Digest: Zb84EJybklwrEs/oOyTWvHIDSJk=
+
+Name: org/apache/poi/hpsf/DocumentSummaryInformation.class
+SHA1-Digest: ZKkzA6gCrNXRRwBg4/ruJsanIhY=
+
+Name: org/apache/poi/ss/usermodel/DataFormatter.class
+SHA1-Digest: EG/0ePlXqxLho9ZVUAcKnSN7svU=
+
+Name: org/apache/poi/common/usermodel/Fill.class
+SHA1-Digest: vqkYrbQYXim38JBFQMavuwWlINQ=
+
+Name: org/apache/poi/util/IntMapper.class
+SHA1-Digest: Y+Q+5ueQJQ28cCm2Y//GG9ZmKoo=
+
+Name: org/apache/poi/ss/formula/SheetRefEvaluator.class
+SHA1-Digest: YnjusIN92fFGTrXjgjTrJr9Ne2E=
+
+Name: org/apache/poi/ss/formula/eval/AreaEval.class
+SHA1-Digest: 05jl6G1Y38qW3kWasKXnpA9ukA0=
+
+Name: org/apache/poi/ss/formula/functions/LogicalFunction$5.class
+SHA1-Digest: dR93DmO7qCQoTpdJMVRDOBR1pJs=
+
+Name: org/apache/poi/ss/formula/functions/Column.class
+SHA1-Digest: vdMKEjXk8m6osHueLkRsKMmHw+U=
+
+Name: org/apache/poi/hssf/record/DrawingRecord.class
+SHA1-Digest: taM74PQFumPRQZXIs2ZHuUuFw0M=
+
+Name: org/apache/poi/hssf/record/ExternSheetRecord.class
+SHA1-Digest: 8BZ/4FuvUJEynajFCy/NGQZRbJQ=
+
+Name: org/apache/poi/ss/formula/functions/FinanceFunction$2.class
+SHA1-Digest: XFqP5XxMKCVpy0vEHrtXB7G6VMM=
+
+Name: org/apache/poi/ss/formula/IEvaluationListener$ICacheEntry.class
+SHA1-Digest: vJhl3iue5OAnlTZpWUq3aVbDBwI=
+
+Name: org/apache/poi/ss/formula/functions/XYNumericFunction.class
+SHA1-Digest: XK4yLi9pqZyPmVlnLsK0Ia2U6SA=
+
+Name: org/apache/poi/hssf/usermodel/HSSFTextbox.class
+SHA1-Digest: Ot63IfpOpZfEupoWjPUM93p+Kmw=
+
+Name: org/apache/poi/ddf/DefaultEscherRecordFactory.class
+SHA1-Digest: 1Q4RCc4erDZmS4IgDvNvE/a12iA=
+
+Name: org/apache/poi/hpsf/Vector.class
+SHA1-Digest: qpcmI/kJZrlMcfsxx+JuEpYRLVA=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$12.class
+SHA1-Digest: zeaephGqPLla2dXk5RoB3PZ44Lc=
+
+Name: org/apache/poi/hssf/record/chart/BeginRecord.class
+SHA1-Digest: Ba4AsC7NBZmQ5aMccSJFU5ngOEU=
+
+Name: org/apache/poi/util/BlockingInputStream.class
+SHA1-Digest: NBgysVQ268miZ26Fx2YBLp+BFFg=
+
+Name: org/apache/poi/hssf/record/pivottable/ViewDefinitionRecord.class
+SHA1-Digest: ChRAuQ5RpXRnfu2qo2Ebho/y6dA=
+
+Name: org/apache/poi/ss/formula/FormulaShifter.class
+SHA1-Digest: qYj74AKrPnmnKHoCtg+iPUkbzMg=
+
+Name: org/apache/poi/hssf/eventusermodel/HSSFListener.class
+SHA1-Digest: sL+489lBNMoFUnzoEslopghOQCQ=
+
+Name: org/apache/poi/ss/formula/functions/XYNumericFunction$RefValueAr
+ ray.class
+SHA1-Digest: pAr3J8RyxIVkOBQKSYCKP4LETPU=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$9.class
+SHA1-Digest: akFqLg0EgBEBtvUxX7P1DVG9TXU=
+
+Name: org/apache/poi/ss/formula/eval/FunctionEval$FunctionID.class
+SHA1-Digest: C0PSG3oYcOyObz2q/qTHW+b8ScM=
+
+Name: org/apache/poi/util/ShortField.class
+SHA1-Digest: bugYDN2C9shFww8COtXJr2gk8yI=
+
+Name: org/apache/poi/ss/usermodel/Name.class
+SHA1-Digest: kW1KpScnJhZG4arzAo4ijIgiMsY=
+
+Name: org/apache/poi/ss/formula/functions/LogicalFunction.class
+SHA1-Digest: Xf1AYQWABAKHYVjmmsUrhKFUyd0=
+
+Name: org/apache/poi/hpsf/Array$ArrayDimension.class
+SHA1-Digest: aCBN4ukVOCTiOcGtQ/tOMPpYBT0=
+
+Name: org/apache/poi/hssf/extractor/ExcelExtractor$CommandParseExcepti
+ on.class
+SHA1-Digest: N96qLehwWAmtIahHwG3Y5J+dbNc=
+
+Name: org/apache/poi/hssf/record/common/UnicodeString.class
+SHA1-Digest: Rki+h0e/MrSiwuCMdqyT5KQtm7U=
+
+Name: org/apache/poi/hpsf/Thumbnail.class
+SHA1-Digest: 4tPLG5ob7Q5C3z3WkRxHSJTdQ+g=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction.class
+SHA1-Digest: rScQgZPwEvUaAOLyTuKr5bwudi0=
+
+Name: org/apache/poi/util/RecordFormatException.class
+SHA1-Digest: R8mgO85NKK/IA1Tesw141VTp+L8=
+
+Name: org/apache/poi/ss/usermodel/DateUtil.class
+SHA1-Digest: YnK3djhWVDLb4bQ1ZopBezY62LY=
+
+Name: org/apache/poi/ss/formula/FormulaCellCache.class
+SHA1-Digest: n920YsbQPXSQajSy5JPaONb0WEo=
+
+Name: org/apache/poi/util/SystemOutLogger.class
+SHA1-Digest: v8+gjDPPTEmI6++yQYhWgJbJmiw=
+
+Name: org/apache/poi/hssf/record/NameCommentRecord.class
+SHA1-Digest: EIFyvpSB5U5Dq/Ug/+DfyfeJ8Jw=
+
+Name: org/apache/poi/hssf/record/chart/DataLabelExtensionRecord.class
+SHA1-Digest: XV+6kfnpjJRmnjZzONZ5TIt+TDo=
+
+Name: org/apache/poi/hssf/record/common/FeatSmartTag.class
+SHA1-Digest: tLwOJYqU9V7W+PujQALaKiRUorc=
+
+Name: org/apache/poi/hssf/usermodel/HSSFWorkbook.class
+SHA1-Digest: O99iCqjJERDA+7CgfoxphIMtd10=
+
+Name: org/apache/poi/poifs/storage/BATBlock.class
+SHA1-Digest: ZQcjy79LPbzUmetA5GUQkFBkZ2s=
+
+Name: org/apache/poi/util/ByteField.class
+SHA1-Digest: UQkdkVxkDEQrKUaENIyglkrkAzQ=
+
+Name: org/apache/poi/ss/formula/functions/Offset$BaseRef.class
+SHA1-Digest: 7Zf7QYsxQ0ScPs4id2myAlaGr2A=
+
+Name: org/apache/poi/ss/formula/FormulaParser$SimpleRangePart.class
+SHA1-Digest: rZAGaPsx02Lty20h4dwuJKlnxpE=
+
+Name: org/apache/poi/hssf/record/TextObjectRecord.class
+SHA1-Digest: rytkxrrgUaUr7wSl3Pb/4vXTN2w=
+
+Name: org/apache/poi/hssf/model/WorkbookRecordList.class
+SHA1-Digest: F1vbiXYzTs2GRvdKtTOgdJ/6PPU=
+
+Name: org/apache/poi/hssf/record/HCenterRecord.class
+SHA1-Digest: 78qdkmyB+M+70A/gDuNpE490uvs=
+
+Name: org/apache/poi/util/LittleEndianInput.class
+SHA1-Digest: BENxmQbC7YR+8f/V+Avyvj5wUuw=
+
+Name: org/apache/poi/poifs/nio/ByteArrayBackedDataSource.class
+SHA1-Digest: 36DgUwZ2BiBGoc/nHAVPQNmggDo=
+
+Name: org/apache/poi/ss/util/RegionUtil.class
+SHA1-Digest: 6JCtYSpxWOazHw12P27z8NyXGIQ=
+
+Name: org/apache/poi/ss/formula/functions/MultiOperandNumericFunction$
+ DoubleList.class
+SHA1-Digest: UjK7eWPJU63sEmkL0+aabxRSM+8=
+
+Name: org/apache/poi/hssf/usermodel/EscherGraphics.class
+SHA1-Digest: dkYD1J2icordtl1CGaxoHJVoOXE=
+
+Name: org/apache/poi/ss/formula/eval/RelationalOperationEval$1.class
+SHA1-Digest: l8luXNzSjxKoPBZwsM9oLbIT72o=
+
+Name: org/apache/poi/ss/formula/eval/forked/ForkedEvaluator.class
+SHA1-Digest: s2mvNrI1YkCvlZKwIrkVbfJHAyo=
+
+Name: org/apache/poi/hpsf/VariantBool.class
+SHA1-Digest: L5fyBDYzVH96b4NTKXHkw1xKxsA=
+
+Name: org/apache/poi/ss/formula/ptg/UnaryMinusPtg.class
+SHA1-Digest: 2jfRWhNMIYL3Td7koSdOHQDdwo0=
+
+Name: org/apache/poi/ss/usermodel/charts/AxisOrientation.class
+SHA1-Digest: 2kEKvWtHEC36Isej8EQGcHQp2HM=
+
+Name: org/apache/poi/hpsf/ClassID.class
+SHA1-Digest: Lr+KuRqnR/gXnV7pi1QGBLzAJSI=
+
+Name: org/apache/poi/hssf/usermodel/HSSFEvaluationWorkbook.class
+SHA1-Digest: dsIgNHTCO9yCzeHUOIfNhaMQ7FE=
+
+Name: org/apache/poi/poifs/storage/BlockAllocationTableWriter.class
+SHA1-Digest: 1IAsnFkb9Vxp4i0rDGRWSDlJNbM=
+
+Name: org/apache/poi/ss/formula/functions/BooleanFunction$2.class
+SHA1-Digest: P0VXJMxc8EbxDMx49kA5opF5izU=
+
+Name: org/apache/poi/hssf/usermodel/HSSFShapeTypes.class
+SHA1-Digest: N4urojuQobAucm9r3PNVkDEoQQM=
+
+Name: org/apache/poi/ss/usermodel/charts/AxisCrossBetween.class
+SHA1-Digest: U65J3APeM4QFJtx700oZ+9ChLck=
+
+Name: org/apache/poi/ss/formula/functions/Fixed2ArgFunction.class
+SHA1-Digest: t2D6hyyoG4w9+Wyg6ni6vFIYl0E=
+
+Name: org/apache/poi/poifs/filesystem/POIFSWriterEvent.class
+SHA1-Digest: eywgOZulH453NfQbNHiAGQ42km4=
+
+Name: org/apache/poi/util/BinaryTree$5.class
+SHA1-Digest: 0tktjzaDOv1d5QCQw6gQE1gKc3Q=
+
+Name: org/apache/poi/ss/formula/functions/XYNumericFunction$SingleCell
+ ValueArray.class
+SHA1-Digest: 7U9qx1ZgBnj51aqZe+AlDsZfwCw=
+
+Name: org/apache/poi/ss/formula/FormulaType.class
+SHA1-Digest: utc9ATTD53mPOCwj8SVTWCsZLSc=
+
+Name: org/apache/poi/ss/util/AreaReference.class
+SHA1-Digest: uQAkJmsiefFjYG8m3guGdwabea4=
+
+Name: org/apache/poi/ss/usermodel/charts/DataSources$1.class
+SHA1-Digest: 55o4a+0D0mgH3FA56XafVI3uRkU=
+
+Name: org/apache/poi/hssf/record/chart/ChartEndBlockRecord.class
+SHA1-Digest: f77S45Oe14ceCCXWW/HqtwspnDY=
+
+Name: org/apache/poi/poifs/property/PropertyFactory.class
+SHA1-Digest: M5UCyp5/x+YK038T4xIVd2Iabww=
+
+Name: org/apache/poi/poifs/crypt/AgileDecryptor$ChunkedCipherInputStre
+ am.class
+SHA1-Digest: kIY81ilBBE+pKN9Nsg4u+aA8igQ=
+
+Name: org/apache/poi/hssf/usermodel/HSSFSheetConditionalFormatting.cla
+ ss
+SHA1-Digest: sONI0WEfIbe22ts8HhUDtMmwqjQ=
+
+Name: org/apache/poi/ss/formula/FormulaUsedBlankCellSet.class
+SHA1-Digest: S27WCVrfme4yzcis3QukPjpjk2I=
+
+Name: about_files/LICENSE-2.0.txt
+SHA1-Digest: K4uBUimqimHkg/tLoFiLi2xJGJA=
+
+Name: org/apache/poi/hpsf/MissingSectionException.class
+SHA1-Digest: /qBchb3MCofvkEF7u7gjLlTjlwA=
+
+Name: org/apache/poi/poifs/property/DocumentProperty.class
+SHA1-Digest: BpPQM71p9I+9qCtbjh1mDCdEExQ=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$TwoArg.class
+SHA1-Digest: 3ELNZAiGIepg1h6MjzKlv2lqvck=
+
+Name: org/apache/poi/poifs/crypt/Decryptor.class
+SHA1-Digest: RsXxKs25mGu/pOE/Iz+qu1qx4AA=
+
+Name: org/apache/poi/ss/formula/eval/EvaluationException.class
+SHA1-Digest: 35Kr0b3/FanAFZKFiDNvmBidGYA=
+
+Name: org/apache/poi/ss/formula/WorkbookDependentFormula.class
+SHA1-Digest: i2gXbtyvxLpMo1tBg6IvXJqERzg=
+
+Name: org/apache/poi/ddf/EscherBSERecord.class
+SHA1-Digest: yZFFlqE69IZqnWpFKIZvVxGNfNg=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$3.class
+SHA1-Digest: qoEv2g6kgGvvfJ9BP7VNEtS4QsE=
+
+Name: org/apache/poi/hssf/record/LbsDataSubRecord$LbsDropData.class
+SHA1-Digest: TSh4gHb/gvo1NFT8vnqVNBeWH3k=
+
+Name: org/apache/poi/hssf/record/common/FeatProtection.class
+SHA1-Digest: o2L94YtI3Yiu5xEKxfmCfTSKA7w=
+
+Name: org/apache/poi/ss/formula/udf/UDFFinder.class
+SHA1-Digest: AoxDfufAYwk78zvuc9tY2JZGpxQ=
+
+Name: org/apache/poi/ss/usermodel/DateUtil$FormatException.class
+SHA1-Digest: pTds3NbhEfqdTz+OFP8KD+JEMKE=
+
+Name: org/apache/poi/ss/formula/functions/Rows.class
+SHA1-Digest: 0EGY03/772PnVJpHzqBG0X2LWxI=
+
+Name: org/apache/poi/hssf/record/pivottable/ViewFieldsRecord.class
+SHA1-Digest: OQYnfx1WH9pcmQIaxqpCqdSoJ9k=
+
+Name: org/apache/poi/hssf/usermodel/HSSFCellStyle.class
+SHA1-Digest: yuQzEn12jEN8MFfprYpDNBiKz5w=
+
+Name: org/apache/poi/poifs/filesystem/Ole10Native.class
+SHA1-Digest: 0/o9xADi0qH7s8Kui0B8rDndA5c=
+
+Name: org/apache/poi/ss/format/CellFormatCondition$3.class
+SHA1-Digest: N720ruiI/2pk8jBR8GpJ9K/O+nk=
+
+Name: org/apache/poi/hssf/eventusermodel/MissingRecordAwareHSSFListene
+ r.class
+SHA1-Digest: E2v3d+8IKEPsBDjKr4lb80ioaAA=
+
+Name: org/apache/poi/hssf/model/RecordOrderer.class
+SHA1-Digest: lejghBu/LgNm6ONPnO9ze4eAJNw=
+
+Name: org/apache/poi/ss/formula/PlainCellCache$Loc.class
+SHA1-Digest: yfUh3s99JvGSJsHh8n4QvKhYrFY=
+
+Name: org/apache/poi/hssf/record/aggregates/CFRecordsAggregate.class
+SHA1-Digest: 3Do4gIjzWiRKDGHAhrgV4WECWr4=
+
+Name: org/apache/poi/poifs/storage/SmallBlockTableWriter.class
+SHA1-Digest: K320lwZ6PpRUhmZzTWIQUbdOh1A=
+
+Name: org/apache/poi/ss/format/CellElapsedFormatter.class
+SHA1-Digest: 8uiM8IKYLeg8ZfFhouB6El/OXzo=
+
+Name: org/apache/poi/ss/formula/ptg/ParenthesisPtg.class
+SHA1-Digest: s4RRw3GZ/VLOuDG8GyBkjkoVaPg=
+
+Name: org/apache/poi/ss/formula/eval/RelationalOperationEval$6.class
+SHA1-Digest: XL4zm1shxZlLKoetYwx1VIEVp6w=
+
+Name: org/apache/poi/hpsf/Decimal.class
+SHA1-Digest: l5WyFKTHXZongqyuXNQurm9kdlg=
+
+Name: org/apache/poi/hssf/util/HSSFCellUtil.class
+SHA1-Digest: 9l1AyUvfut0PoEeTfZLoLzuOJTo=
+
+Name: org/apache/poi/ss/formula/eval/TwoOperandNumericOperation$1.clas
+ s
+SHA1-Digest: w2hc+JrGiZi6IW5a/K3HVA3ZU+Y=
+
+Name: org/apache/poi/ss/formula/functions/Match$SingleValueVector.clas
+ s
+SHA1-Digest: qe7n2afkfGX83wxDloLsvamZ8kk=
+
+Name: org/apache/poi/ss/formula/functions/Rank.class
+SHA1-Digest: r5wCjdjUDTypES06BLeyOjGS2RA=
+
+Name: org/apache/poi/util/ShortList.class
+SHA1-Digest: NsXGBcX8sDEexlu3uJlcwBSzIQ0=
+
+Name: org/apache/poi/hssf/record/aggregates/PageSettingsBlock.class
+SHA1-Digest: iX6r9NTQIwM2vQ8AfdkaELCoe4k=
+
+Name: org/apache/poi/poifs/storage/BlockAllocationTableReader.class
+SHA1-Digest: aUJwdlN2AWp3tSYNrVZSVrKYU3k=
+
+Name: org/apache/poi/util/BinaryTree$3$1.class
+SHA1-Digest: dp9PzXnAclb7xRG3txpoHyhIVXE=
+
+Name: org/apache/poi/ss/util/CellRangeAddress.class
+SHA1-Digest: ZLX248zbPCqe+NfZOwW/HbvoXEs=
+
+Name: org/apache/poi/ss/formula/ptg/ArrayPtg.class
+SHA1-Digest: 5GVIUAM6nbCXYFywa2FX4pPWdNM=
+
+Name: org/apache/poi/poifs/storage/ListManagedBlock.class
+SHA1-Digest: +AR303ce54GZO73OpDzbfYjawKE=
+
+Name: org/apache/poi/hssf/record/StandardRecord.class
+SHA1-Digest: Q0VCXJ9mFoeqPZk3aP3yEK9vwuA=
+
+Name: org/apache/poi/ss/util/cellwalk/CellWalkContext.class
+SHA1-Digest: 4LkERiS1MMrMKpe5Aw08+qgIH2s=
+
+Name: org/apache/poi/ss/usermodel/PrintCellComments.class
+SHA1-Digest: +5qrgM7Q0w9R6GumKiZ08KVxbUI=
+
+Name: org/apache/poi/util/TempFile.class
+SHA1-Digest: ydUvDgejBUOkQTx+VOBg4y7DvkU=
+
+Name: org/apache/poi/hssf/record/chart/ChartFRTInfoRecord.class
+SHA1-Digest: TiPMCKC4Hn2B0duxXPrhvDxSS0w=
+
+Name: org/apache/poi/poifs/storage/RawDataBlock.class
+SHA1-Digest: 1h2maHM77BmawCDjgJUPlWMNQfk=
+
+Name: org/apache/poi/hssf/record/VerticalPageBreakRecord.class
+SHA1-Digest: jS82AVt4lyyZCI9bu+E1kBncCkI=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$8.class
+SHA1-Digest: aJU3cwiGW+T27wwYVCBRRKHlmaI=
+
+Name: org/apache/poi/hssf/model/RecordStream.class
+SHA1-Digest: HfDznsKvOcdPTa13ekml+ckShDM=
+
+Name: org/apache/poi/ss/usermodel/charts/LayoutTarget.class
+SHA1-Digest: pTHTTIaHpks4Ve/aNNmMTseDg30=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$12.class
+SHA1-Digest: uUwVNkzBqaidQA7i5vcNPoIX0o4=
+
+Name: org/apache/poi/hssf/record/chart/PlotGrowthRecord.class
+SHA1-Digest: IZ+hIbCIsN0mLNbVojoB18vDuMY=
+
+Name: org/apache/poi/ss/formula/functions/Mode.class
+SHA1-Digest: swdyfqRBnlDentlT9pY00oHx+yY=
+
+Name: org/apache/poi/hssf/record/VCenterRecord.class
+SHA1-Digest: EKzjpt/4TVRGB+3sNkXbG6DPiMk=
+
+Name: org/apache/poi/ss/util/cellwalk/CellWalk.class
+SHA1-Digest: mnjS3cPYTs4RaGCbuxdC0DRApvM=
+
+Name: org/apache/poi/util/HexDump.class
+SHA1-Digest: ypftw9VWwbG0OuOy7z7BINGWZSA=
+
+Name: org/apache/poi/hssf/record/chart/SeriesLabelsRecord.class
+SHA1-Digest: MVEkObgnVRXGUzQODmSOQZxvJUc=
+
+Name: org/apache/poi/hssf/record/PaneRecord.class
+SHA1-Digest: ZokdoopHONAVuF0fU3bIyniOK58=
+
+Name: org/apache/poi/ss/formula/functions/Counta.class
+SHA1-Digest: Q1jlzpWN6G7n39mY1yfCqbELkFs=
+
+Name: org/apache/poi/hssf/record/DateWindow1904Record.class
+SHA1-Digest: 9rsznoBil8T3BCuvN66Rf2DBOIQ=
+
+Name: org/apache/poi/ss/util/cellwalk/CellWalk$SimpleCellWalkContext.c
+ lass
+SHA1-Digest: jnSFQSSogLZpPyMVukfUFW3cuHs=
+
+Name: org/apache/poi/poifs/storage/SmallBlockTableReader.class
+SHA1-Digest: rEOtRu6m7lRvNdkt7WoM93uTiQ8=
+
+Name: org/apache/poi/ss/formula/ptg/OperationPtg.class
+SHA1-Digest: c9rMlljlc/FV+NkVKk3GHXV0I3Y=
+
+Name: org/apache/poi/ss/formula/ptg/SubtractPtg.class
+SHA1-Digest: x4As2CZfpL93AbcKNrQRPfOs/Xk=
+
+Name: org/apache/poi/hssf/record/pivottable/DataItemRecord.class
+SHA1-Digest: v9b4TDAR9XIl7H2CnGK5zTifh18=
+
+Name: org/apache/poi/hssf/record/pivottable/ExtendedPivotTableViewFiel
+ dsRecord.class
+SHA1-Digest: 0INhYDaQ7+P3GYW4ijiDBIxbO6E=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$23.class
+SHA1-Digest: 3al0uxXfzF2IN/8mnu0L6XhjN2I=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$1.class
+SHA1-Digest: 8mDfMrO47rrh5YDi31T6FDc8ifA=
+
+Name: org/apache/poi/ss/formula/FormulaUsedBlankCellSet$BlankCellRecta
+ ngleGroup.class
+SHA1-Digest: MqCRUbFJnMr31e8gXmZrl9qpxRA=
+
+Name: org/apache/poi/ddf/EscherClientAnchorRecord.class
+SHA1-Digest: H+lO6znRsC3a11FL4UhDZXtriA0=
+
+Name: org/apache/poi/hssf/record/aggregates/RecordAggregate$RecordSizi
+ ngVisitor.class
+SHA1-Digest: wCV7U0zFkXc80qEkjUIj5INOjb4=
+
+Name: org/apache/poi/hssf/record/Margin.class
+SHA1-Digest: U2xn+0d4busDV+MkSvKWjdsWkp8=
+
+Name: org/apache/poi/ss/util/CellReference$NameType.class
+SHA1-Digest: xFAnMNo5ct44bp+IlxRBCTbCL4A=
+
+Name: org/apache/poi/ss/formula/eval/IntersectionEval.class
+SHA1-Digest: 7rW99wfdVkM81SOP0WgigAHFEFA=
+
+Name: org/apache/poi/ss/formula/ptg/UnionPtg.class
+SHA1-Digest: IU32whF8CeXeVgAKZlCN6k0VU4U=
+
+Name: org/apache/poi/hssf/record/SSTRecord.class
+SHA1-Digest: 4Gyjsn1UwAYTDEgsnfNOlw92w1E=
+
+Name: org/apache/poi/hssf/record/common/UnicodeString$FormatRun.class
+SHA1-Digest: d3ikXYr9iS/gVuNxPw3rjua1m0k=
+
+Name: org/apache/poi/ss/format/CellFormatType$1.class
+SHA1-Digest: Q2rcobEKlWAWOqZhh8uMB2H6xec=
+
+Name: org/apache/poi/hssf/record/AbstractEscherHolderRecord.class
+SHA1-Digest: BT7rLI8eqmNJ4ry1HhU8UHV3cBk=
+
+Name: org/apache/poi/ss/usermodel/PrintOrientation.class
+SHA1-Digest: xWg+Fw27PwJ/BRWpjrOFxPP26HE=
+
+Name: org/apache/poi/ss/formula/eval/TwoOperandNumericOperation.class
+SHA1-Digest: g3ing+GqMMUdyqFL2VkcpmlgtOM=
+
+Name: org/apache/poi/ss/usermodel/FormulaEvaluator.class
+SHA1-Digest: WABmuCdvR+gMt8k/fV0T4LDyFSE=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$34.class
+SHA1-Digest: ZTaHpvmadG3XVlzEoHeFMB55Nfw=
+
+Name: org/apache/poi/hpsf/extractor/HPSFPropertiesExtractor.class
+SHA1-Digest: PULoEB+ueQ9ix36t7vtoc4TOD0Q=
+
+Name: org/apache/poi/util/LittleEndianConsts.class
+SHA1-Digest: AR+9AqsI2dfY6+6bJcPCDvwlZek=
+
+Name: org/apache/poi/ss/util/WorkbookUtil.class
+SHA1-Digest: 7+5BoF3ALdMEC1P2iwUUWxlL0c8=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$17.class
+SHA1-Digest: tUnpCk3Y/qyZT9XJiI57DxzMZC0=
+
+Name: org/apache/poi/ss/format/CellDateFormatter.class
+SHA1-Digest: 5Nci7li4Z5y+UaUZrqRnURv3RTw=
+
+Name: org/apache/poi/hssf/util/HSSFColor$LIGHT_CORNFLOWER_BLUE.class
+SHA1-Digest: FLID/T3tIJYyhMbL+BxmGUns8QQ=
+
+Name: org/apache/poi/ss/formula/ptg/Ref2DPtgBase.class
+SHA1-Digest: 4RhUTY9VWruaO4EMMozRlhp8xXw=
+
+Name: org/apache/poi/hssf/record/aggregates/ChartSubstreamRecordAggreg
+ ate.class
+SHA1-Digest: uEHy8Km9JcSOBjfVjKYkHIbVCyY=
+
+Name: org/apache/poi/hssf/usermodel/HSSFDataFormatter.class
+SHA1-Digest: OjdUC5CIjepnlT9DkavzKFxp1Ok=
+
+Name: org/apache/poi/ddf/EscherDggRecord$1.class
+SHA1-Digest: xEMF+8mptUHKMGswgu+Dc/c8pO0=
+
+Name: org/apache/poi/ss/usermodel/Hyperlink.class
+SHA1-Digest: ND73hhhLRFKusQXLj/xPatCZ2Eg=
+
+Name: org/apache/poi/hssf/record/BOFRecord.class
+SHA1-Digest: 0cSw4JeKAgOaDpXpXNBykp6BeZE=
+
+Name: org/apache/poi/hssf/record/chart/ObjectLinkRecord.class
+SHA1-Digest: A/KomxRdSX/1VHO+PU3YNsDFaWk=
+
+Name: org/apache/poi/ss/formula/functions/Na.class
+SHA1-Digest: M8uLYSzCVK34YDHgey2g1LO2pwQ=
+
+Name: org/apache/poi/hssf/record/EscherAggregate$1.class
+SHA1-Digest: nz1y/nwbO9v/7CQ2zAzdjHojhqo=
+
+Name: org/apache/poi/ss/formula/EvaluationName.class
+SHA1-Digest: AF2RC4SVr3EXfTRnm4ziuuoQFzw=
+
+Name: org/apache/poi/hssf/record/WindowTwoRecord.class
+SHA1-Digest: NJFT65cohRfSV2SdWvuBbABQLGs=
+
+Name: org/apache/poi/hssf/util/CellRangeAddress8Bit.class
+SHA1-Digest: KzEg9g070+eu6Q1/hAdZDk7mpK4=
+
+Name: org/apache/poi/ss/usermodel/DataValidation.class
+SHA1-Digest: VJOlKPl65LMzWjGJ2hzLiFwIfiY=
+
+Name: org/apache/poi/hssf/record/chart/SheetPropertiesRecord.class
+SHA1-Digest: /wBMIqkihmuFVr3oRgKdSbkLHHU=
+
+Name: org/apache/poi/dev/RecordGenerator.class
+SHA1-Digest: C2HsFvVIm/fAYE2Heli0wGruzAA=
+
+Name: org/apache/poi/hssf/record/aggregates/SharedValueManager$SharedF
+ ormulaGroup.class
+SHA1-Digest: xOMCZo9hmJzWjwL2bhUGmwhpjUw=
+
+Name: org/apache/poi/util/LittleEndianByteArrayOutputStream.class
+SHA1-Digest: l3o1p5DYKcD4e/e+7u/Q0ZvSu5k=
+
+Name: org/apache/poi/hssf/record/cf/PatternFormatting.class
+SHA1-Digest: 26jHyiP85z9sZVTxsU7gBUQcpXk=
+
+Name: org/apache/poi/hpsf/UnexpectedPropertySetTypeException.class
+SHA1-Digest: deENu7pSNsB5zBrd/8XGGiFJRIU=
+
+Name: org/apache/poi/hssf/util/CellReference.class
+SHA1-Digest: UKwECTVNfVFdv6Zjl9AW31NwqmA=
+
+Name: org/apache/poi/poifs/property/PropertyTable.class
+SHA1-Digest: UMHgvnezLVpaxw+Fja44FfhKFM8=
+
+Name: org/apache/poi/ss/usermodel/charts/DataSources$ArrayDataSource.c
+ lass
+SHA1-Digest: FOaIQkWKokhHoKauodQCb97/yyw=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$28.class
+SHA1-Digest: xol0ry/oNrje8JDGVoUYTDH6Z3k=
+
+Name: org/apache/poi/ss/formula/eval/forked/ForkedEvaluationCell.class
+SHA1-Digest: BSjaePg+y4dbFwq4DiSTfGJ25Po=
+
+Name: org/apache/poi/ss/usermodel/FontUnderline.class
+SHA1-Digest: lQciqoBIO04HruZDUony7xJin3Q=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$6.class
+SHA1-Digest: ZaSIlTPyQxEs7IEFXKJLMZv+Li4=
+
+Name: org/apache/poi/hssf/record/ProtectRecord.class
+SHA1-Digest: Xrue7gGFN700/Fj/u4ICYCjePSY=
+
+Name: org/apache/poi/hssf/record/aggregates/ValueRecordsAggregate.clas
+ s
+SHA1-Digest: CZeQ+2gXb9ToL5mOHHnD8MESHd8=
+
+Name: org/apache/poi/ss/formula/function/FunctionMetadataRegistry.clas
+ s
+SHA1-Digest: s/fgWtE4devkn4eLexWtWU9WIBM=
+
+Name: org/apache/poi/ss/usermodel/charts/ScatterChartData.class
+SHA1-Digest: jzZfhEEitEQ0/WyWCeP1Qk+lNBU=
+
+Name: org/apache/poi/poifs/crypt/EncryptionInfo.class
+SHA1-Digest: n4Q76tPLFhwNVcYSgdQtzhRGYwE=
+
+Name: org/apache/poi/hssf/eventusermodel/AbortableHSSFListener.class
+SHA1-Digest: 7OuiIVpJNJswtlvr6ArxIKIeHZI=
+
+Name: org/apache/poi/poifs/filesystem/BlockStore$ChainLoopDetector.cla
+ ss
+SHA1-Digest: zy3n9r38bwKPb6gvaq1wa31thsI=
+
+Name: org/apache/poi/hssf/util/HSSFColor$DARK_BLUE.class
+SHA1-Digest: 4l7Lvw+WK6UiIS+yo8UQKOx0fBk=
+
+Name: org/apache/poi/ss/util/NumberComparer.class
+SHA1-Digest: 3wb4BwbBYBD/PNyEEix5hECHZ2w=
+
+Name: org/apache/poi/hssf/record/FormulaRecord.class
+SHA1-Digest: mRXpIulYpUCDNvK0j8ogCywkzTg=
+
+Name: org/apache/poi/hssf/record/RecordInputStream.class
+SHA1-Digest: Y9ZPN8oTmfPAV3c46tVdwEL/1No=
+
+Name: org/apache/poi/ss/usermodel/DataValidationConstraint$ValidationT
+ ype.class
+SHA1-Digest: GtvJn4VNVVrAQLh/h0zU2MrlyWQ=
+
+Name: org/apache/poi/ss/usermodel/CreationHelper.class
+SHA1-Digest: y3CrKXosLOK68Tu2gH1xZT6bY28=
+
+Name: org/apache/poi/hssf/record/aggregates/RecordAggregate$RecordVisi
+ tor.class
+SHA1-Digest: icxnAkTqKc8UPglroWtMewSIRyw=
+
+Name: org/apache/poi/hssf/record/Record.class
+SHA1-Digest: 4LLPaxmJlBtXnlHkzakxFKhwbmM=
+
+Name: org/apache/poi/ss/usermodel/DataFormatter$SSNFormat.class
+SHA1-Digest: CJjtZkAvOb0wcknpKRHjY7BQzY8=
+
+Name: org/apache/poi/ss/formula/functions/Value.class
+SHA1-Digest: 66Mc+9f0KCAo77gxjXy/D6z9EbQ=
+
+Name: org/apache/poi/ss/usermodel/Row$1.class
+SHA1-Digest: 4X5XX+olMvevh2GErGtZ7H28IdU=
+
+Name: org/apache/poi/hpsf/Array$ArrayHeader.class
+SHA1-Digest: jl9cGAtCNAy0gq3kH8q9eB4tiDo=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$2.class
+SHA1-Digest: YX8CImCK4Sbxx7GrfHEUpbBYeb4=
+
+Name: org/apache/poi/ss/formula/ptg/ExternSheetNameResolver.class
+SHA1-Digest: mlPaXhBZQbhZZKGvALqK/xEFgMA=
+
+Name: org/apache/poi/ss/formula/atp/ArgumentsEvaluator.class
+SHA1-Digest: WSjocj5WJD6eYSXtLZSsCElTl3o=
+
+Name: org/apache/poi/hssf/record/MulBlankRecord.class
+SHA1-Digest: bJ9PWY3j5HEujnF51BylicQ5A0Y=
+
+Name: org/apache/poi/poifs/dev/POIFSViewable.class
+SHA1-Digest: rWuAu2KEPylbD1+nQjuHCETqefo=
+
+Name: org/apache/poi/hssf/usermodel/HSSFSimpleShape.class
+SHA1-Digest: sbQnlsWexHlwZUQMyEbYtCauXj8=
+
+Name: org/apache/poi/hssf/usermodel/HSSFErrorConstants.class
+SHA1-Digest: 3crNtzYs+EqRFU5sZDmd3+sHErE=
+
+Name: org/apache/poi/hssf/util/CellRangeAddressList.class
+SHA1-Digest: QnH9ah0o9wgA4I+pZ5EdC6XFkX0=
+
+Name: org/apache/poi/ss/usermodel/Header.class
+SHA1-Digest: O29qkr/tNHn0fxg01Km+8qi7WD8=
+
+Name: org/apache/poi/hssf/record/PaletteRecord$PColor.class
+SHA1-Digest: 4IqLOVMotScAJipvfta9UEFPBEY=
+
+Name: org/apache/poi/ss/formula/functions/LogicalFunction$3.class
+SHA1-Digest: FNgH+QLSvZeMeTrsPb5F8E3jj6A=
+
+Name: org/apache/poi/hssf/record/SubRecord$UnknownSubRecord.class
+SHA1-Digest: UQm7jBl+27YUVWKQYQSGUC6FDns=
+
+Name: org/apache/poi/hssf/util/HSSFColor$LIGHT_TURQUOISE.class
+SHA1-Digest: 6VJnmGWxL3Dtl88uWKUnG1Dx4y8=
+
+Name: org/apache/poi/ss/formula/function/FunctionMetadataReader.class
+SHA1-Digest: j3JQcYPQ+LNwsoNRVtYt6a8Y+kI=
+
+Name: org/apache/poi/hssf/record/chart/DataFormatRecord.class
+SHA1-Digest: 1099hkY6fw6Xf8BhyzkvhAWUT/o=
+
+Name: org/apache/poi/hssf/util/HSSFColor$SKY_BLUE.class
+SHA1-Digest: xcdH98UXbUUOOQXXTd/EDY5jaCk=
+
+Name: org/apache/poi/ss/usermodel/PatternFormatting.class
+SHA1-Digest: xCrC7vG3/QdKrfzTdcvzk0q69mw=
+
+Name: org/apache/poi/poifs/filesystem/NPOIFSMiniStore.class
+SHA1-Digest: gv1vN9JgJnJMkzAXH9S1AA5Cdio=
+
+Name: org/apache/poi/ss/formula/ptg/IntersectionPtg.class
+SHA1-Digest: ume6Q1dmrndnJnsSnlk5uDBrfwA=
+
+Name: org/apache/poi/hssf/model/InternalSheet$1.class
+SHA1-Digest: fc6ibaHDhYhiaugV3DO1+9ip4aM=
+
+Name: org/apache/poi/hssf/record/chart/DefaultDataLabelTextPropertiesR
+ ecord.class
+SHA1-Digest: +XtQU7+B97s31yvhIdvl8UjkwcM=
+
+Name: org/apache/poi/util/BinaryTree$Node.class
+SHA1-Digest: 1LqVEKTfXkzuKEMvP2/095Im2bc=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$10.class
+SHA1-Digest: CF2imcy5Y+Vv636vONQ6ERSZG60=
+
+Name: org/apache/poi/ss/formula/FormulaRenderingWorkbook.class
+SHA1-Digest: BbM5nk8gZRicVf7mMqjRiOH4vgo=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$OneArg.class
+SHA1-Digest: VDt7x/spa+nyZpBs28xltKApUY0=
+
+Name: org/apache/poi/hssf/util/HSSFColor$BROWN.class
+SHA1-Digest: TzYPw49Uge5xNrAkoXqF5COwqRE=
+
+Name: org/apache/poi/ss/util/ExpandedDouble.class
+SHA1-Digest: 0IUftHMcv9tOYGCZfPFLHIc47eY=
+
+Name: org/apache/poi/ss/formula/functions/T.class
+SHA1-Digest: Vz8u3eGO+kBZi9RWzrRX40t5CfQ=
+
+Name: org/apache/poi/ss/usermodel/DataFormat.class
+SHA1-Digest: eNdxESHgQoMLJ/8/vlIiaRbBlEg=
+
+Name: org/apache/poi/hssf/record/FilePassRecord.class
+SHA1-Digest: C+AOoIVOnoZm2ykmWDP9jHeSk3E=
+
+Name: org/apache/poi/ss/format/CellNumberFormatter$1.class
+SHA1-Digest: xs3js02jd4Oe2zfBxbTv93/EbhI=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$7.class
+SHA1-Digest: Y/meXYqHybepzzsTSbsIZh/uyss=
+
+Name: org/apache/poi/hssf/util/HSSFColor$OLIVE_GREEN.class
+SHA1-Digest: hP+nEHMPJy7GVu5zWs5zTXfzupc=
+
+Name: org/apache/poi/hssf/util/HSSFColor$YELLOW.class
+SHA1-Digest: iSosnGmBnWGKEc0iAv+47DZYKfs=
+
+Name: org/apache/poi/ss/formula/ptg/AddPtg.class
+SHA1-Digest: 0DUXcWuiMA+GB1Uo9ek7S6A8MpE=
+
+Name: org/apache/poi/util/BinaryTree$2$1.class
+SHA1-Digest: Oyn1FE9oHyM25yYQHvIAWqQh4AA=
+
+Name: org/apache/poi/hssf/usermodel/FontDetails.class
+SHA1-Digest: TdP4zRrKJKrjaqzyMQr3RAxaLF8=
+
+Name: org/apache/poi/hssf/record/chart/ChartFormatRecord.class
+SHA1-Digest: wz12bSd/ncEzjFVXtNZmBhOxTBI=
+
+Name: org/apache/poi/hssf/util/HSSFColor$GREEN.class
+SHA1-Digest: SAuNePYHxRikttQHUXwyLlIG1oM=
+
+Name: org/apache/poi/util/IntegerField.class
+SHA1-Digest: RfOUEQZWQckdGp0qoBNSAntnDto=
+
+Name: org/apache/poi/ss/formula/eval/UnaryPlusEval.class
+SHA1-Digest: 9DY80qaPUrlJGLEYTxhbtsY8xjQ=
+
+Name: org/apache/poi/hpsf/wellknown/SectionIDMap.class
+SHA1-Digest: KJxWpcE7n935MBG+w5q5xkGJlww=
+
+Name: org/apache/poi/hssf/util/RKUtil.class
+SHA1-Digest: zudUP0AxLsn7GF133YbNczbLnr8=
+
+Name: org/apache/poi/ss/util/SheetBuilder.class
+SHA1-Digest: vzO+cnAqZ0QMmrPIo9whi/aH3SU=
+
+Name: org/apache/poi/hpsf/MutableSection.class
+SHA1-Digest: vubxOemhLTZtvi4SwsaPRsVPPQc=
+
+Name: org/apache/poi/hssf/record/crypto/Biff8RC4.class
+SHA1-Digest: VguQIWmnb7HDRvPjb9Gb2lkmXOg=
+
+Name: org/apache/poi/ss/usermodel/FontFormatting.class
+SHA1-Digest: kC6nKv+QrHY9jqVPeDiAOTbaSBg=
+
+Name: org/apache/poi/hssf/record/cf/CellRangeUtil.class
+SHA1-Digest: 7YeNlnPzzKJqzPdEIDl3YFIuniw=
+
+Name: org/apache/poi/hssf/record/RecordProcessor.class
+SHA1-Digest: fKFM5fuNNsOLi7BfGn1tgq3Ffd0=
+
+Name: org/apache/poi/hssf/record/RecordFactoryInputStream.class
+SHA1-Digest: HdOeBprLWCH5enDMu2k1Bwi6voU=
+
+Name: org/apache/poi/ss/formula/functions/Sumifs.class
+SHA1-Digest: D4/5LT1kiZKLcoHwFMoj5CKzhLA=
+
+Name: org/apache/poi/hssf/record/HideObjRecord.class
+SHA1-Digest: n75h8AyLB7rC7HDJM0wSujJKCYQ=
+
+Name: org/apache/poi/hssf/usermodel/DummyGraphics2d.class
+SHA1-Digest: pTlBajDv2qiWpIaCauJNoUQ/sIs=
+
+Name: org/apache/poi/ss/usermodel/RichTextString.class
+SHA1-Digest: oPrMwQlBqBYgDu5IooRltiQUwDI=
+
+Name: org/apache/poi/hssf/dev/ReSave.class
+SHA1-Digest: N08kpI1RhJ9JzzVZWhV7RFfInP8=
+
+Name: org/apache/poi/util/LittleEndian.class
+SHA1-Digest: +g0Gv665aVLw3B0KRLetirXX1Hk=
+
+Name: org/apache/poi/ss/formula/functions/LogicalFunction$8.class
+SHA1-Digest: yKnlEUZFkacPqc2I2EkV/VgwE0Y=
+
+Name: org/apache/poi/ss/usermodel/Cell.class
+SHA1-Digest: CNCoJHTaU4xYSIpIPLBqDbhdh60=
+
+Name: org/apache/poi/ss/formula/functions/Count$1.class
+SHA1-Digest: whbFzk72Qs8opjyUKZtyAWVWs58=
+
+Name: org/apache/poi/hssf/model/DrawingManager.class
+SHA1-Digest: AMDIzfgSZKwSvJ8MFcQN4m7m6zI=
+
+Name: org/apache/poi/hssf/util/HSSFColor$LIME.class
+SHA1-Digest: Pr1+1Na5nyPmSxCJ3XnWWqaOwvU=
+
+Name: org/apache/poi/hssf/usermodel/HSSFAutoFilter.class
+SHA1-Digest: TNlcd9TUFeSOzsizZPKQ9Afur10=
+
+Name: org/apache/poi/hssf/usermodel/HSSFChildAnchor.class
+SHA1-Digest: 8HgDqEHn4lqa1yWlS6giTv6OqOs=
+
+Name: org/apache/poi/hssf/record/cont/UnknownLengthRecordOutput.class
+SHA1-Digest: 0nnOlbdk3AMds0EAvOeaFZ7vy7M=
+
+Name: org/apache/poi/hssf/record/pivottable/PageItemRecord.class
+SHA1-Digest: 3Nnc8pXzeYLnT15oYof/VaNuIGM=
+
+Name: org/apache/poi/hssf/usermodel/HSSFObjectData.class
+SHA1-Digest: 2vWNVKNtZCoAGHZwgbjeSY4mXrQ=
+
+Name: org/apache/poi/ss/formula/functions/Function0Arg.class
+SHA1-Digest: ypiBcOwN6XhCfRJsuHMjtBAbh20=
+
+Name: org/apache/poi/hssf/util/HSSFColor$DARK_TEAL.class
+SHA1-Digest: E4tiUs0gGtsbKFl75smHDr44kAA=
+
+Name: org/apache/poi/OldFileFormatException.class
+SHA1-Digest: t/ivL/LlmX3Gpf3X2Og/FtXOk9U=
+
+Name: org/apache/poi/hssf/usermodel/HSSFFont.class
+SHA1-Digest: mL3lzBD9hZDcHV5SDx8Z48TQOV0=
+
+Name: org/apache/poi/hssf/util/HSSFColor$AUTOMATIC.class
+SHA1-Digest: zMLTfNSfi8XigXVhZOgGYU6FdP8=
+
+Name: org/apache/poi/poifs/filesystem/NPOIFSDocument.class
+SHA1-Digest: 11WqFJGrT9XSaF+M/sbV5Dc+Zjk=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$ValueVector.clas
+ s
+SHA1-Digest: pag0de3+ByXLpMMGTKzxb6iOyhY=
+
+Name: org/apache/poi/ddf/EscherProperties.class
+SHA1-Digest: +mMfZ5w0dJSj1s38yryyGxiJ06A=
+
+Name: org/apache/poi/ss/formula/eval/RefEval.class
+SHA1-Digest: PDDw73EHeBFuz/GEWiAJBZlNxpw=
+
+Name: org/apache/poi/util/BinaryTree$3.class
+SHA1-Digest: F6dLzv4+WG3DPOwWWfn1nZETRzI=
+
+Name: org/apache/poi/ss/SpreadsheetVersion.class
+SHA1-Digest: YBKS1x1tciLFyfbXpSEpradYXQI=
+
+Name: org/apache/poi/hpsf/MutableProperty.class
+SHA1-Digest: 2tMf2OF5NhIeQ0XqgKJmA5xLgU4=
+
+Name: org/apache/poi/ss/util/CellRangeAddressBase.class
+SHA1-Digest: X/72aBZOr2M5DJmD/vBT8MPr4gY=
+
+Name: org/apache/poi/hssf/usermodel/HSSFShapeGroup.class
+SHA1-Digest: zijC2m/V4VhZEyM685ZmGT/6L48=
+
+Name: org/apache/poi/ss/formula/FormulaParser$Identifier.class
+SHA1-Digest: YHbawHIJG/wgoI/HUEZb6PJZ2SE=
+
+Name: org/apache/poi/ss/formula/ptg/MemErrPtg.class
+SHA1-Digest: Ek/oJLXZHHikI2Yob8m2NVOZ+n0=
+
+Name: org/apache/poi/poifs/crypt/EncryptionVerifier.class
+SHA1-Digest: ZrJyiYJUH/E6ztUGgCKzgV6kHfM=
+
+Name: org/apache/poi/ss/formula/atp/NetworkdaysFunction.class
+SHA1-Digest: P9YihhwVYBZL72qtUDr/DyKfbPQ=
+
+Name: org/apache/poi/ss/format/CellFormatPart.class
+SHA1-Digest: G6UpLFEJ8SU/O/wnT4UI+Ry7Uv0=
+
+Name: org/apache/poi/hssf/record/RecordFactory.class
+SHA1-Digest: xK7nC4NLKqcykQDKG2BHTX2KtBw=
+
+Name: org/apache/poi/ss/usermodel/PrintSetup.class
+SHA1-Digest: dZyLyx69p6F1OIbDnGuP78/5QD4=
+
+Name: org/apache/poi/ss/usermodel/CellRange.class
+SHA1-Digest: WvLzDr5HegpS2feLn8FpqauL9aA=
+
+Name: org/apache/poi/ss/usermodel/FontScheme.class
+SHA1-Digest: WnBV/duy8Tiz8lIsZAlnvH2kfLQ=
+
+Name: org/apache/poi/ss/formula/ptg/RefPtg.class
+SHA1-Digest: i1ocDpC8i9MI1Y4X8jnjMar5gsM=
+
+Name: org/apache/poi/ddf/EscherProperty.class
+SHA1-Digest: PvkRT4IPFLcstjHNIALKWRSBR6A=
+
+Name: org/apache/poi/Version.class
+SHA1-Digest: QfbGrOknkmZdUSLiT432YLJegSA=
+
+Name: org/apache/poi/hssf/usermodel/HeaderFooter$MarkupTag.class
+SHA1-Digest: 3g2F+34nmidJ+jVuhOLjVKtsRlQ=
+
+Name: org/apache/poi/ss/usermodel/Footer.class
+SHA1-Digest: F/vpluS0bLGfvxges47SsVVYDiY=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$1.class
+SHA1-Digest: yD/dRGBDlkWS9V2wTT1HoalEFrs=
+
+Name: org/apache/poi/hssf/usermodel/HSSFCombobox.class
+SHA1-Digest: qtW/c1U6az8m8SWey9H2kn9GA2w=
+
+Name: org/apache/poi/ss/formula/ptg/OperandPtg.class
+SHA1-Digest: qoHlKmffkMDZAOyeg1cCqebBTZA=
+
+Name: org/apache/poi/hssf/eventusermodel/HSSFEventFactory.class
+SHA1-Digest: XDBjQSnvjX7i4UPfZ/WBQv/kAic=
+
+Name: org/apache/poi/ss/usermodel/FontUnderline$1.class
+SHA1-Digest: D8ZjTnY47k1GDn989CurGEqGJ9o=
+
+Name: org/apache/poi/hssf/record/chart/ChartEndObjectRecord.class
+SHA1-Digest: 9b8T9FR4AkzVIgCuL4xtP83lwAw=
+
+Name: org/apache/poi/ss/formula/ptg/PercentPtg.class
+SHA1-Digest: 9ojc6pT+E1WIvWqbHnLD6Jdx42k=
+
+Name: org/apache/poi/POITextExtractor.class
+SHA1-Digest: A/qP1eDn6xMYKEjG/bihbbp8Zc4=
+
+Name: org/apache/poi/hssf/record/ExtendedFormatRecord.class
+SHA1-Digest: rV+LMoXBjuzXffIKIQCe5NmFavU=
+
+Name: org/apache/poi/ss/formula/eval/PercentEval.class
+SHA1-Digest: H75LUXP32TjZuVpRuTxVins3uM8=
+
+Name: org/apache/poi/ss/format/CellFormatCondition$1.class
+SHA1-Digest: IBmGbCPTNsBeSO3c930NwnvuKYs=
+
+Name: org/apache/poi/ss/formula/CellCacheEntry.class
+SHA1-Digest: Ts50i1McsQgaJMUem0VnDHBggQ0=
+
+Name: org/apache/poi/ss/formula/ptg/AreaErrPtg.class
+SHA1-Digest: WXsi0FCXTZyTiAtfYOG7UP0yb3o=
+
+Name: org/apache/poi/ss/formula/eval/RelationalOperationEval$4.class
+SHA1-Digest: gYNMxoqX+FC0YTBo3q1cKPPLfr0=
+
+Name: org/apache/poi/ss/formula/eval/BoolEval.class
+SHA1-Digest: MJe4u7RWpp2QEWOYmwRkVBooN3I=
+
+Name: org/apache/poi/ss/formula/ptg/IntPtg.class
+SHA1-Digest: JXuuGrMi5S4rU+LUG5UL6DrNWBI=
+
+Name: org/apache/poi/ss/formula/functions/Sumx2my2$1.class
+SHA1-Digest: xuumj9V3TB6iT3vNBCBHPrmJqa0=
+
+Name: org/apache/poi/ss/formula/functions/BooleanFunction$5.class
+SHA1-Digest: kfuYZTx+hIxpLiy/vwqA0PP9qtw=
+
+Name: org/apache/poi/hssf/record/cont/ContinuableRecordOutput$1.class
+SHA1-Digest: hls5GoMz2MqHUXV6yUKx6qNGK08=
+
+Name: org/apache/poi/ss/util/cellwalk/CellWalk$1.class
+SHA1-Digest: KDxxdcihPodqP9CrGNHg4AZ2lvs=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$CompareResult.cl
+ ass
+SHA1-Digest: DNI3jxSgc3XrsZHdXJTaqEbNOSc=
+
+Name: org/apache/poi/poifs/crypt/EncryptionHeader.class
+SHA1-Digest: E/2i9ygaHmnnGD3N7R1LxCWqcwI=
+
+Name: org/apache/poi/hssf/record/CFHeaderRecord.class
+SHA1-Digest: A2Os0D3Hu/w7G107qloiuHpfPms=
+
+Name: org/apache/poi/hpsf/Currency.class
+SHA1-Digest: SYwhOocHJ1vJgQvjmzuy8r8GkZI=
+
+Name: org/apache/poi/hssf/model/LinkTable$ExternalBookBlock.class
+SHA1-Digest: +/tVdY8kxB20e/rD9UfNrKGe0iA=
+
+Name: org/apache/poi/ss/formula/functions/FreeRefFunction.class
+SHA1-Digest: 4R86vpa37e/6sDFmXOoh1urHLxk=
+
+Name: org/apache/poi/hssf/record/BiffHeaderInput.class
+SHA1-Digest: VQ/sN8nwS6SjI8AfwfID4dcOITg=
+
+Name: org/apache/poi/hssf/util/HSSFColor.class
+SHA1-Digest: yZ0ONtE8g3MmpRml8U79ZstKdWk=
+
+Name: org/apache/poi/poifs/eventfilesystem/POIFSReaderListener.class
+SHA1-Digest: q655z8XQvG0/xb+zeAR3wARXvkQ=
+
+Name: org/apache/poi/poifs/storage/SmallDocumentBlock.class
+SHA1-Digest: oyTS5/yTJJT+sY97Q3SaJat5T/Y=
+
+Name: org/apache/poi/ss/formula/CellEvaluationFrame.class
+SHA1-Digest: Doxl1is/tGGuUN6Wg4W9KXAv5Oo=
+
+Name: org/apache/poi/hssf/record/UserSViewEnd.class
+SHA1-Digest: kZbMT89RHiE1+Hb9c2p1q88rW8Y=
+
+Name: org/apache/poi/ss/formula/PlainValueCellCacheEntry.class
+SHA1-Digest: fddM4C3BMfiifAIhOBOAxDG8xhw=
+
+Name: org/apache/poi/util/FixedField.class
+SHA1-Digest: 7+KhUwnPraGkbvXRe9K19hq/Kis=
+
+Name: org/apache/poi/ss/formula/ptg/EqualPtg.class
+SHA1-Digest: mZUKXuYL3oh5+CU+aX1xeNG9yIo=
+
+Name: org/apache/poi/hssf/record/RecordInputStream$SimpleHeaderInput.c
+ lass
+SHA1-Digest: RrZBum9QuZiU1tpCtkcSlkt4JVU=
+
+Name: org/apache/poi/poifs/dev/POIFSHeaderDumper.class
+SHA1-Digest: Pye6adcdK2vqxt1nRSH7ip7i95c=
+
+Name: org/apache/poi/ss/formula/eval/NumberEval.class
+SHA1-Digest: 9SZXNU470PgGaa9x3fasDUeA0DE=
+
+Name: org/apache/poi/hssf/record/BackupRecord.class
+SHA1-Digest: aDxiqwFqGVM94dLvCsvvMgL5y2U=
+
+Name: org/apache/poi/hssf/record/BlankRecord.class
+SHA1-Digest: 05cyaMck+i9Czw/2TPsvK8+v8jg=
+
+Name: org/apache/poi/ss/formula/functions/FinanceFunction.class
+SHA1-Digest: t5Tt/x6y3Od194Z12NVlqr0DB+c=
+
+Name: org/apache/poi/hssf/usermodel/HSSFHyperlink.class
+SHA1-Digest: OSnDOpm20qKSHX70OAZm08RCTgU=
+
+Name: org/apache/poi/ss/formula/functions/MultiOperandNumericFunction.
+ class
+SHA1-Digest: CwNjlrBdCHOMwqAa0rtGa3e4jJs=
+
+Name: org/apache/poi/hssf/record/GridsetRecord.class
+SHA1-Digest: rXg28W+3nUNCEJn8ng9nhgayUfg=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$6.class
+SHA1-Digest: +a4IgUGu2RaaqwNmXXkNXA3MqYo=
+
+Name: org/apache/poi/ss/formula/eval/forked/ForkedEvaluationWorkbook$O
+ rderedSheet.class
+SHA1-Digest: ofqOruMqlmaCv/v3S5cEIBZKmSk=
+
+Name: org/apache/poi/hpsf/Section$PropertyListEntry.class
+SHA1-Digest: IX/f+8VoGRGgznLcxFK04UjM+Jo=
+
+Name: org/apache/poi/hssf/model/DrawingManager2.class
+SHA1-Digest: pH07CGg68t49a8OiptmFdDsNvJY=
+
+Name: org/apache/poi/ss/formula/EvaluationWorkbook$ExternalName.class
+SHA1-Digest: p8YigG2Rrr4bTYA/WzdAP/QYiUs=
+
+Name: org/apache/poi/hssf/model/ComboboxShape.class
+SHA1-Digest: P8rvaIYgUbiZETOJt9eyiA4/Hag=
+
+Name: org/apache/poi/ss/formula/ptg/StringPtg.class
+SHA1-Digest: sxywtU0ZwA3gHj0YJ4FkndBNLjg=
+
+Name: org/apache/poi/ss/usermodel/charts/LegendPosition.class
+SHA1-Digest: N8tj7Pv3wVTe5GJ99fm7PemmIQ4=
+
+Name: org/apache/poi/hssf/record/chart/BarRecord.class
+SHA1-Digest: ZzIU0jq7Km3bPaUJ5j1173pU6dk=
+
+Name: org/apache/poi/hssf/util/HSSFColor$TAN.class
+SHA1-Digest: XvG/0ylXgw+epslWctgpZ6xc1H4=
+
+Name: org/apache/poi/hssf/util/HSSFColor$TURQUOISE.class
+SHA1-Digest: Mo/bH7FlorDGLwzvVds2XYKeIRU=
+
+Name: org/apache/poi/poifs/storage/DocumentBlock.class
+SHA1-Digest: +0l0CDp9oXt/AwFoGSkn+H12euY=
+
+Name: org/apache/poi/util/LongField.class
+SHA1-Digest: 6UUqcXA5l7GO3Bp3He3kLnmI0Aw=
+
+Name: org/apache/poi/hpsf/IllegalVariantTypeException.class
+SHA1-Digest: X6wL05PGOx1ZP8xB19uizUDAxEI=
+
+Name: org/apache/poi/ddf/EscherContainerRecord.class
+SHA1-Digest: PgBkUginiM7zQTb0mA/z1lh8pmg=
+
+Name: org/apache/poi/ss/formula/ptg/RangePtg.class
+SHA1-Digest: grzcjhZIikYuUi5Tt+y7x/LTZlo=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$10.class
+SHA1-Digest: qahdjsAOmGzXrIUMAxy/JtRub18=
+
+Name: org/apache/poi/hssf/record/HyperlinkRecord.class
+SHA1-Digest: SD/74/0xHsFu94xPemF4gDAgJAU=
+
+Name: org/apache/poi/ss/format/CellFormatCondition$6.class
+SHA1-Digest: haoUYhv3GMZjw3LAXAoWLz5cmOo=
+
+Name: org/apache/poi/ss/formula/functions/Rate.class
+SHA1-Digest: CZai/mEXWwgTbsSM5ViORvI7aVg=
+
+Name: org/apache/poi/hpsf/WritingNotSupportedException.class
+SHA1-Digest: fAKI1d169fp/vgwS/y5qN/rRim0=
+
+Name: org/apache/poi/poifs/property/Parent.class
+SHA1-Digest: hfDUwMJAxOkCdzVviTZkhf7X1QU=
+
+Name: org/apache/poi/hssf/record/pivottable/PageItemRecord$FieldInfo.c
+ lass
+SHA1-Digest: 004iBsYKCWXke/S5tk9DN8AMQm4=
+
+Name: org/apache/poi/ss/usermodel/charts/DataSources$AbstractCellRange
+ DataSource.class
+SHA1-Digest: IsZUKFScdKe2R8kgD3gVgC0v9EU=
+
+Name: org/apache/poi/hssf/util/HSSFColor$WHITE.class
+SHA1-Digest: yY93pn2S4GelaUbarlbAd2vLDfQ=
+
+Name: org/apache/poi/ss/usermodel/BorderFormatting.class
+SHA1-Digest: ZFdwc/i3YQ9nACkedz+hw3SmaMQ=
+
+Name: org/apache/poi/hpsf/Constants.class
+SHA1-Digest: NsDeCRVjzX1URjrp1TYReHTVvG8=
+
+Name: org/apache/poi/hssf/record/DBCellRecord.class
+SHA1-Digest: oCDWfRDF6tKQ53NnEK7tGCnmjI4=
+
+Name: org/apache/poi/ss/usermodel/HorizontalAlignment.class
+SHA1-Digest: nQQI1OYzpXcINTO9A1dfh5nxYy8=
+
+Name: org/apache/poi/poifs/property/DirectoryProperty.class
+SHA1-Digest: fOhgSPBmO0i7wbJ6Ry6RD+1eiiY=
+
+Name: org/apache/poi/ss/formula/eval/TwoOperandNumericOperation$4.clas
+ s
+SHA1-Digest: DLsnfVQLdmG9G5ir92TUvQ4i8rM=
+
+Name: org/apache/poi/hpsf/CustomProperties.class
+SHA1-Digest: oK3OG1QNVCL2+cyNJr+K4P9Ijx4=
+
+Name: org/apache/poi/ss/formula/ptg/NameXPtg.class
+SHA1-Digest: oqaqchgVGvs/1yVZFb03qT/ZACs=
+
+Name: org/apache/poi/ss/format/CellElapsedFormatter$1.class
+SHA1-Digest: 7ldKg4szhpj14EzFIRGVOO0GRrw=
+
+Name: org/apache/poi/ss/formula/functions/Sumx2py2$1.class
+SHA1-Digest: YXdfcL8FaTOoYDFfhy7qgs5eJ7o=
+
+Name: org/apache/poi/hpsf/Filetime.class
+SHA1-Digest: 0spsjZHBRfZudNdiceVt7ZiZGV8=
+
+Name: org/apache/poi/poifs/property/PropertyTableBase.class
+SHA1-Digest: rmcyLU+2+uLUrQmlpP9abrn8WPo=
+
+Name: org/apache/poi/ss/format/CellDateFormatter$1.class
+SHA1-Digest: b+bbqlm69PV7OZ0r7+HUwz2Twp4=
+
+Name: org/apache/poi/ss/formula/EvaluationSheet.class
+SHA1-Digest: 0ifH+YEfkKhMIN9kDFPLbcqNq4Y=
+
+Name: org/apache/poi/hssf/record/PrecisionRecord.class
+SHA1-Digest: XQ2IgrJ+QK2rhs5YdqyURMkDcp4=
+
+Name: org/apache/poi/ss/util/SheetUtil.class
+SHA1-Digest: SVHRsQv+3CWM3zy3DarxTjNGNt0=
+
+Name: org/apache/poi/hssf/util/HSSFColor$ROYAL_BLUE.class
+SHA1-Digest: 3/Jcw+EtpYvZA44U9bMwqmwEnrQ=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$LargeSmall
+ .class
+SHA1-Digest: THo2M+EsrdY3XkaVc49EKlIZD8c=
+
+Name: org/apache/poi/ss/formula/functions/CountUtils$I_MatchAreaPredic
+ ate.class
+SHA1-Digest: Ul7sZa5cvGOM51fsFeiuYvQS1JI=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$10.class
+SHA1-Digest: 2x2j8KJobq72dNpi9MCF0Iae+Us=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$21.class
+SHA1-Digest: ewjw627Jw+fzXZWw7JhMQ6ksCQg=
+
+Name: org/apache/poi/ddf/EscherSpRecord.class
+SHA1-Digest: PJPMjAlVQI6nuIB7manE9jjAdeY=
+
+Name: org/apache/poi/ss/formula/eval/UnaryMinusEval.class
+SHA1-Digest: uSgvI6uq2VPhT0aguHrFUqJoif4=
+
+Name: org/apache/poi/poifs/storage/BigBlock.class
+SHA1-Digest: oPqGpgyFD1EtfvGIWkWme4fmF5U=
+
+Name: org/apache/poi/hssf/record/SelectionRecord.class
+SHA1-Digest: k0h/x/A87YAirxITJELjaNBGHoQ=
+
+Name: org/apache/poi/hssf/record/RecordInputStream$LeftoverDataExcepti
+ on.class
+SHA1-Digest: +/C9MYuezdfhjQU5gtuEKwtXSm8=
+
+Name: org/apache/poi/ss/formula/ptg/NotEqualPtg.class
+SHA1-Digest: rBTWNEWzK/ay36Q0WDXNMk1fAkw=
+
+Name: org/apache/poi/hssf/eventusermodel/dummyrecord/LastCellOfRowDumm
+ yRecord.class
+SHA1-Digest: CyCpLA5nM4l5Tjh8U1TIn0FaSUE=
+
+Name: org/apache/poi/hssf/dev/BiffViewer$IBiffRecordListener.class
+SHA1-Digest: cW1vuKcq+tTJ1PgUeORKJd8FcKY=
+
+Name: org/apache/poi/util/LittleEndian$BufferUnderrunException.class
+SHA1-Digest: QxOjkotyKM+mINFBHgVHTM5vtUg=
+
+Name: org/apache/poi/ss/formula/functions/WeekdayFunc.class
+SHA1-Digest: ls1/6NhhpVzVmYuRBlLAY8vvuNQ=
+
+Name: org/apache/poi/ss/formula/CollaboratingWorkbooksEnvironment.clas
+ s
+SHA1-Digest: AUKuPbPI1726rKPHF+yzbg2wLHA=
+
+Name: org/apache/poi/ss/formula/functions/Fixed3ArgFunction.class
+SHA1-Digest: ezGczkwyGIqmAl7CbdiA8voU1yA=
+
+Name: org/apache/poi/ss/formula/functions/Count.class
+SHA1-Digest: E+AD+Q2JbdkeUNYl/i92lqZeJYg=
+
+Name: org/apache/poi/hssf/record/common/UnicodeString$1.class
+SHA1-Digest: 99eSV541c5fv86Q+jsUCYfUFgLw=
+
+Name: org/apache/poi/hssf/record/HeaderFooterBase.class
+SHA1-Digest: Ng6gOa8UOx6fWdhDUjJUzJosvy4=
+
+Name: org/apache/poi/hssf/model/AbstractShape.class
+SHA1-Digest: aJolfBeV8cL4jNm8vEEWnb4B8Ts=
+
+Name: org/apache/poi/hpsf/MutableSection$1.class
+SHA1-Digest: WcqxmXDgfh0K+qiaXAuJ/gP/Ur0=
+
+Name: org/apache/poi/ss/formula/ptg/ScalarConstantPtg.class
+SHA1-Digest: /BQm47P/1rbuFPaPSO4W2vtHRIY=
+
+Name: org/apache/poi/ss/formula/eval/ErrorEval.class
+SHA1-Digest: sGrb4ua+xIuz1R4ebBn1YAehDHc=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$32.class
+SHA1-Digest: AnwxgqnU4ACj2p+uxuRzQib3K/Q=
+
+Name: org/apache/poi/hssf/util/HSSFColor$BLUE.class
+SHA1-Digest: XL6GlPd8Bsd7ehWyX4Xy3ULWR/w=
+
+Name: org/apache/poi/hssf/util/HSSFColor$DARK_GREEN.class
+SHA1-Digest: uhMlVpL/gt6CzgkEtpirJFyWoic=
+
+Name: org/apache/poi/ddf/EscherDggRecord.class
+SHA1-Digest: asIDlrpXi+/casc53ibkcoFcxlI=
+
+Name: org/apache/poi/ss/formula/ptg/AreaI.class
+SHA1-Digest: KFNnLNJoY+e8lL8SIeaSF69FYSI=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$15.class
+SHA1-Digest: 56mnZOMIsVaoRqdQ7Y/pYQdMjg4=
+
+Name: org/apache/poi/hssf/util/HSSFColor$BRIGHT_GREEN.class
+SHA1-Digest: yvcNcPdQLSYFacKM3RkPibVZZUU=
+
+Name: org/apache/poi/hssf/record/cf/BorderFormatting.class
+SHA1-Digest: MnBGB9oWd1gXZFL+PBOadT4C200=
+
+Name: org/apache/poi/hssf/record/chart/AreaRecord.class
+SHA1-Digest: 7fVYg/KpyRypGdqJ3iH3otFVYxY=
+
+Name: org/apache/poi/hssf/record/PageBreakRecord.class
+SHA1-Digest: 9PAUuubzVK+5bVl3xnyi9iKQPDo=
+
+Name: org/apache/poi/hssf/util/LazilyConcatenatedByteArray.class
+SHA1-Digest: HEyw2tuu4hnBsWeALj+7Tb3jJmU=
+
+Name: org/apache/poi/ddf/EscherSpgrRecord.class
+SHA1-Digest: 2/SkQhBbraygrK2ghb7Ny8HwogA=
+
+Name: org/apache/poi/ss/format/CellFormat.class
+SHA1-Digest: x/YE34O3L+RI0BmVAsj4mH3Za+k=
+
+Name: org/apache/poi/hssf/record/DConRefRecord.class
+SHA1-Digest: 3TEAdBLWC7pIBAjt+Ch31ARjK3c=
+
+Name: org/apache/poi/ss/formula/eval/forked/ForkedEvaluationSheet$RowC
+ olKey.class
+SHA1-Digest: pe52IZGGPWGUfD3DSiJqHAd4A04=
+
+Name: org/apache/poi/hssf/record/chart/CatLabRecord.class
+SHA1-Digest: JMV+wsCU1zF/0C6OdhNVw7+gi7o=
+
+Name: org/apache/poi/hssf/model/InternalSheet$RecordCloner.class
+SHA1-Digest: uak7vGHhkoMuSy7bxVk/BZI/gqQ=
+
+Name: org/apache/poi/util/LittleEndianInputStream.class
+SHA1-Digest: roVC80+PNp+8gTdOGiJ7ZifalgU=
+
+Name: org/apache/poi/hssf/record/pivottable/StreamIDRecord.class
+SHA1-Digest: 73/GUGlNuGOsS90OutcXfgyGzKI=
+
+Name: org/apache/poi/util/ArrayUtil.class
+SHA1-Digest: in8ILNcxYI6NJNoKEMXA6pWNyY8=
+
+Name: org/apache/poi/util/BinaryTree$1$1.class
+SHA1-Digest: i8/4S1otl394ewZ48BE3D/D9wEQ=
+
+Name: org/apache/poi/ss/formula/ptg/AreaNPtg.class
+SHA1-Digest: tsydNcOihUw7Z4hp+4hYF8hqgxA=
+
+Name: org/apache/poi/ss/formula/FormulaRenderer.class
+SHA1-Digest: B989EgSgMWiBrCLkU0ydSFmD+bM=
+
+Name: org/apache/poi/hssf/usermodel/HeaderFooter.class
+SHA1-Digest: poWcA4hGuj/SNeOHFSJf3BUtR30=
+
+Name: org/apache/poi/hssf/usermodel/HSSFPatternFormatting.class
+SHA1-Digest: l1neA4T48Vmgpn0SRIZBzulpmsE=
+
+Name: org/apache/poi/ss/formula/eval/AreaEvalBase.class
+SHA1-Digest: 0C6G7JwfKHh71NiIzXtn/29wR/c=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$26.class
+SHA1-Digest: jGI9leK2p1m6gT7PWoFTo4JgdFA=
+
+Name: org/apache/poi/ss/formula/functions/Match.class
+SHA1-Digest: GdXQmbUxrF+gnaxQiGsuw0HS9wQ=
+
+Name: org/apache/poi/ss/formula/ptg/FuncPtg.class
+SHA1-Digest: OUn1XkSKlYbGxPeRays7Vc7xtnY=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$4.class
+SHA1-Digest: Rl6tsvrJCQMsu53M7MHoqbuf0aM=
+
+Name: org/apache/poi/ss/formula/eval/ValueEval.class
+SHA1-Digest: tmKz19GpGWpoVnNWVS74HVuGvbs=
+
+Name: org/apache/poi/hpsf/wellknown/PropertyIDMap.class
+SHA1-Digest: uJReRwv+IhTswimtDmdkWxwHJkk=
+
+Name: org/apache/poi/hssf/record/chart/FontIndexRecord.class
+SHA1-Digest: pI61vsqFGKVMNqiFl9h0/G6VXB4=
+
+Name: org/apache/poi/poifs/filesystem/DocumentDescriptor.class
+SHA1-Digest: BDBmJyVSA0zyrfW6U78vRHiZF70=
+
+Name: org/apache/poi/ss/formula/EvaluationCell.class
+SHA1-Digest: BYJ18QKQPGW3I/Z2flZFe0/PVCI=
+
+Name: org/apache/poi/ss/formula/ptg/AreaPtgBase.class
+SHA1-Digest: 9jchuUlxYYcDvqDNE4bDIHm5H08=
+
+Name: org/apache/poi/ss/format/CellFormatCondition.class
+SHA1-Digest: 6JRAHROx3ZD+hPz1X32vI5oCh4k=
+
+Name: org/apache/poi/ss/usermodel/DataFormatter$FractionFormat.class
+SHA1-Digest: cijINIQ695iCLicdV2FmDTfyza8=
+
+Name: org/apache/poi/hssf/usermodel/HSSFEvaluationCell.class
+SHA1-Digest: TkdODS8m7f8h2YE7YO3y+w4DHdI=
+
+Name: org/apache/poi/ss/format/CellTextFormatter$1.class
+SHA1-Digest: mUmkIBtY6La/K3hDx5VqgUQVfCM=
+
+Name: org/apache/poi/ss/formula/functions/Now.class
+SHA1-Digest: PX/2j+OzexL+7QsseRlrd9PPn90=
+
+Name: org/apache/poi/ss/format/CellFormatType$4.class
+SHA1-Digest: RTSEIaGeRf4d4QgknRos5UAAhMI=
+
+Name: org/apache/poi/hssf/usermodel/HSSFOptimiser.class
+SHA1-Digest: 2EdrmxoGEa/zv/EgG4P4wnltAn8=
+
+Name: org/apache/poi/hssf/record/ExtSSTRecord$InfoSubRecord.class
+SHA1-Digest: IWqxAXvfDMuLlXo9h2FhiXMEIgw=
+
+Name: org/apache/poi/ddf/AbstractEscherOptRecord$1.class
+SHA1-Digest: k3jAub0NmBrTJ7tn6eA02oFF2F0=
+
+Name: org/apache/poi/ss/formula/ptg/NamePtg.class
+SHA1-Digest: UsC22k+FbEs4HJHJSgDKqNeoPJo=
+
+Name: org/apache/poi/poifs/filesystem/NDocumentInputStream.class
+SHA1-Digest: At/oU0hshi94Tr2X8tMn1Jf0D8g=
+
+Name: org/apache/poi/ddf/EscherDump$1PropName.class
+SHA1-Digest: 9XyOVWG+vwz7ebY60rkAIkCv/5c=
+
+Name: org/apache/poi/hssf/record/PageBreakRecord$Break.class
+SHA1-Digest: mqtgSgGIyoDFWSD7pD//rqtnISw=
+
+Name: org/apache/poi/hssf/usermodel/HSSFPolygon.class
+SHA1-Digest: lm7mLVZKkq6Bhk8fCU58MtDSHyg=
+
+Name: org/apache/poi/hssf/usermodel/DVConstraint.class
+SHA1-Digest: d1QlaFXieofGSFFfdfTSdNYd3BY=
+
+Name: org/apache/poi/hssf/record/UseSelFSRecord.class
+SHA1-Digest: AYJuj9JM28mwSguLkfH5mwe0l6g=
+
+Name: org/apache/poi/ss/formula/eval/BlankEval.class
+SHA1-Digest: viIwlsxoVylvYIQhmgZJwOXpSlM=
+
+Name: org/apache/poi/hssf/eventusermodel/EventWorkbookBuilder.class
+SHA1-Digest: r+Rpjiu3NyFdqXmz2KjX9FR/gLw=
+
+Name: org/apache/poi/ss/formula/function/FunctionDataBuilder.class
+SHA1-Digest: +hlg7MgdgOz/PttrEm1KxYVBIwY=
+
+Name: org/apache/poi/util/BinaryTree$BinaryTreeIterator.class
+SHA1-Digest: BuT9pCY2406HpnRqdb1wajF9GEE=
+
+Name: org/apache/poi/ss/formula/ptg/DividePtg.class
+SHA1-Digest: 6W2UzALIe4QlX4/Yl20ujwDtqOE=
+
+Name: org/apache/poi/poifs/storage/BlockListImpl.class
+SHA1-Digest: oYzkVSCtdIHezvZ5w+umJRNupVg=
+
+Name: org/apache/poi/ss/formula/functions/Days360.class
+SHA1-Digest: JzW2uYWTFWl5n9Xf95x6/eHVmNo=
+
+Name: org/apache/poi/hssf/record/chart/FrameRecord.class
+SHA1-Digest: O1ajVk4vQ7/a8HVFk7A5zHASABw=
+
+Name: org/apache/poi/ss/formula/function/functionMetadata-asGenerated.
+ txt
+SHA1-Digest: VsSo5qyPo0uM8GfOgceXh2fdc60=
+
+Name: org/apache/poi/ss/formula/ptg/MemAreaPtg.class
+SHA1-Digest: rqehio5jxNTcHWJZ8XncqZccMxQ=
+
+Name: org/apache/poi/ss/formula/FormulaParser$SheetIdentifier.class
+SHA1-Digest: d4Vga7BrMBylhmjgrvS+ZHDWSwM=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$NumberLookupComp
+ arer.class
+SHA1-Digest: Ukra7PpO6I0C48B6I2/iIeXlocU=
+
+Name: org/apache/poi/ss/formula/functions/Function1Arg.class
+SHA1-Digest: PIPImPD/zX9+zupKfd4IMTW24LI=
+
+Name: org/apache/poi/ss/util/CellReference.class
+SHA1-Digest: luO4SsHpUJvxc1OcVggawGrTKqA=
+
+Name: org/apache/poi/ss/formula/functions/Counta$1.class
+SHA1-Digest: k2V97SfTNP3bjkr9jKbShH3ocAE=
+
+Name: org/apache/poi/hssf/record/DBCellRecord$Builder.class
+SHA1-Digest: hFHninmPZxK/MFfGOgDDvfUrntU=
+
+Name: org/apache/poi/ss/formula/functions/Countif$BooleanMatcher.class
+SHA1-Digest: 6P7Jc8d93sIpja0GVi4wv5z0kTE=
+
+Name: org/apache/poi/hssf/record/NameRecord$Option.class
+SHA1-Digest: +hMU7yHqjkweu9VdPQf1aplzLeQ=
+
+Name: org/apache/poi/ss/usermodel/charts/ChartLegend.class
+SHA1-Digest: XMu/5xW8a3Xfw640JLhu/fWWSe0=
+
+Name: org/apache/poi/ss/usermodel/charts/ChartDataFactory.class
+SHA1-Digest: BFCzAkPw5spOBCbW6hI3Q9jdSO0=
+
+Name: org/apache/poi/ss/formula/ParseNode.class
+SHA1-Digest: LYS6B9xgUVSvP5XX8Wt9lGUrKGw=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$ValueColle
+ ctor.class
+SHA1-Digest: 9Ya8u6k/6cdXs1eR1v4TUmT/vN4=
+
+Name: org/apache/poi/poifs/eventfilesystem/POIFSReaderRegistry.class
+SHA1-Digest: GoWtXi3BcY4kpIewW75w77A65p8=
+
+Name: org/apache/poi/ss/format/CellNumberFormatter$NumPartHandler.clas
+ s
+SHA1-Digest: Oup4//dg/z4qZVXXhKL5ftbyEVI=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$9.class
+SHA1-Digest: Ip6Ww2k1AK94y7vyRjbAGfjkq7A=
+
+Name: org/apache/poi/ss/usermodel/DataFormatter$PhoneFormat.class
+SHA1-Digest: 39+iHYlm94sWceI0K9X/bO4ZMUk=
+
+Name: org/apache/poi/ss/formula/functions/LogicalFunction$1.class
+SHA1-Digest: qjHQS7KFvdCqOPxxvt+herSPfeg=
+
+Name: org/apache/poi/hssf/record/SCLRecord.class
+SHA1-Digest: XVqQVT0DROyvhG3fwJknHyhyonM=
+
+Name: org/apache/poi/ss/usermodel/ConditionalFormatting.class
+SHA1-Digest: L3f8RcNSJYC7ctcP/+Lz0HLOAMw=
+
+Name: org/apache/poi/ss/formula/eval/RelationalOperationEval.class
+SHA1-Digest: lCX5l+3HX7ZypkUt1evb/G1VG/w=
+
+Name: org/apache/poi/hssf/dev/BiffViewer$BiffRecordListener.class
+SHA1-Digest: 9HvZl5U1gx7B/N/ds2u7ofZpVGs=
+
+Name: org/apache/poi/hssf/record/chart/AxisUsedRecord.class
+SHA1-Digest: WtksyddG1huqyEFT8PWl5YFV1D4=
+
+Name: org/apache/poi/hpsf/VariantTypeException.class
+SHA1-Digest: bLgi3gXomDIFvP1fsKtCquMTcdk=
+
+Name: org/apache/poi/poifs/filesystem/OfficeXmlFileException.class
+SHA1-Digest: NjfUF9EamDruO1567vsEDv8jNRc=
+
+Name: org/apache/poi/ss/formula/functions/Even.class
+SHA1-Digest: YzDVtFH8RGC+qiaLyriP8FK16H4=
+
+Name: org/apache/poi/poifs/filesystem/POIFSWriterListener.class
+SHA1-Digest: pPjFXYLWoNhIe+crSpS7eEkvbUA=
+
+Name: org/apache/poi/hssf/usermodel/HSSFName.class
+SHA1-Digest: xMmMPdI4NuHwHHcQnYiE1ta0i08=
+
+Name: org/apache/poi/hssf/util/HSSFColor$TEAL.class
+SHA1-Digest: RuOsN8oKatydmSxoMIO0YtrYUYU=
+
+Name: org/apache/poi/poifs/property/NPropertyTable.class
+SHA1-Digest: ldr1KaufeCPFMZE+mH2oROnS61s=
+
+Name: org/apache/poi/ss/usermodel/charts/ChartData.class
+SHA1-Digest: H/z2nK2/ETG6pv6O4w+zCG3UqfM=
+
+Name: org/apache/poi/hssf/record/chart/EndRecord.class
+SHA1-Digest: TN41tr2NA2xYFaoKQiSgBODrRBw=
+
+Name: org/apache/poi/hssf/usermodel/HSSFDateUtil.class
+SHA1-Digest: T7OU0IZt0LA/Fj4w/jiOoaE3xyg=
+
+Name: org/apache/poi/hssf/record/chart/ValueRangeRecord.class
+SHA1-Digest: MLSrWoJ23S0m5f4YPN8iBlg010U=
+
+Name: org/apache/poi/ss/formula/functions/NotImplementedFunction.class
+SHA1-Digest: XXRvbs7ybM6KykB3KYfZTDG4cl0=
+
+Name: org/apache/poi/ss/usermodel/Comment.class
+SHA1-Digest: geHLccGqocrWoMriehEg8lg5B/Q=
+
+Name: org/apache/poi/hssf/record/StyleRecord.class
+SHA1-Digest: r+2y2A+2Pef7RLZQS3nWr60372I=
+
+Name: org/apache/poi/hpsf/HPSFException.class
+SHA1-Digest: P4DpFZOnmgoJBYqjw+7YPEVuuk8=
+
+Name: org/apache/poi/util/DrawingDump.class
+SHA1-Digest: ElcUeFkcZncB0uVNgDYcYxyRoBQ=
+
+Name: org/apache/poi/hssf/record/common/UnicodeString$PhRun.class
+SHA1-Digest: 7lCp5hPu+Rp5nbaasg+eyE5pH2I=
+
+Name: org/apache/poi/hssf/record/aggregates/PageSettingsBlock$PLSAggre
+ gate.class
+SHA1-Digest: X5XlEsZk9IQ7Z0eTeItou3lugfQ=
+
+Name: font_metrics.properties
+SHA1-Digest: YXM5wOTwKUhPAU0fNYJN1+Sd9dQ=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$5.class
+SHA1-Digest: 5/f8lD+wjvnGCIw0EiWqySvodyo=
+
+Name: org/apache/poi/hpsf/ClipboardData.class
+SHA1-Digest: SkJmlnM5GsR3dSfOGJXZTKKGewA=
+
+Name: org/apache/poi/ss/formula/atp/YearFracCalculator$SimpleDate.clas
+ s
+SHA1-Digest: wKDe1zKvHm9diClChtI+QCAuEO4=
+
+Name: org/apache/poi/hssf/record/SubRecord.class
+SHA1-Digest: /SqntKv2Wm4TkR3QpYsAFsXPsJM=
+
+Name: org/apache/poi/ss/usermodel/CellValue.class
+SHA1-Digest: Er1LJ8k3h2afFFluysammayAE7k=
+
+Name: org/apache/poi/ss/formula/functions/MinaMaxa$2.class
+SHA1-Digest: 7rK5ApE/PX4yLsV+Gwe/rcNZbT4=
+
+Name: org/apache/poi/ss/formula/functions/Lookup.class
+SHA1-Digest: BKCGF/PoU1LjZhrjcv9za/lvxzY=
+
+Name: org/apache/poi/ss/util/MutableFPNumber$TenPower.class
+SHA1-Digest: B2vZMezerRtFgGVfs6kIBvAImF4=
+
+Name: org/apache/poi/hssf/record/ExtSSTRecord.class
+SHA1-Digest: tFVkANO/JORBGlKat3B3hbKTkNY=
+
+Name: org/apache/poi/hpsf/extractor/HPSFPropertiesExtractor$Properties
+ OnlyDocument.class
+SHA1-Digest: /jX0Pcf6wWmubO0YisxENXlrvRY=
+
+Name: org/apache/poi/hssf/dev/BiffViewer$CommandParseException.class
+SHA1-Digest: 9m3kkve5MhWidd1VZN7mD7jaNQw=
+
+Name: org/apache/poi/ss/formula/ptg/TblPtg.class
+SHA1-Digest: ceDcENTgxwJf/dNIkkBL8QtEC2c=
+
+Name: org/apache/poi/ss/formula/functions/Today.class
+SHA1-Digest: yRBvEkGUQj9+sp2U9FU4DvtRRbY=
+
+Name: org/apache/poi/hssf/util/CellRangeAddress.class
+SHA1-Digest: ExGH0GwpW57XyuyQqn9vw35L3+Y=
+
+Name: org/apache/poi/hssf/eventusermodel/HSSFUserException.class
+SHA1-Digest: FHqEoDRWHafYW916RKuoUL3MMK0=
+
+Name: org/apache/poi/hssf/record/aggregates/ColumnInfoRecordsAggregate
+ $CIRComparator.class
+SHA1-Digest: hwehagLPlHvPUKLONBeR7TzBzes=
+
+Name: org/apache/poi/hssf/record/cont/ContinuableRecord.class
+SHA1-Digest: J6zTg5I+FTN0vd5gCTKLop9yYh4=
+
+Name: org/apache/poi/poifs/dev/POIFSLister.class
+SHA1-Digest: aeAIgmbjLE517nzAnnE/cMxmDxI=
+
+Name: org/apache/poi/hssf/record/TableStylesRecord.class
+SHA1-Digest: DFBj+D/rlm0BFtUFcgZ4vZ1aKf0=
+
+Name: org/apache/poi/hssf/record/MMSRecord.class
+SHA1-Digest: gBerVNbGSbND2IV9EU2Wuw/T5Vs=
+
+Name: org/apache/poi/ss/formula/functions/LogicalFunction$6.class
+SHA1-Digest: FgT7kAgQwNr4uM0vPxt2E5+x/vg=
+
+Name: org/apache/poi/ss/usermodel/ClientAnchor.class
+SHA1-Digest: F+wk4DnGZssVFLLQ/NvGLuqbMvs=
+
+Name: org/apache/poi/poifs/storage/BATBlock$1.class
+SHA1-Digest: IEphLMgxTacQxMddZS8WO3udpIg=
+
+Name: org/apache/poi/hssf/record/FeatHdrRecord.class
+SHA1-Digest: CjcBXnpflDZA0RFX3pCh4GAsf60=
+
+Name: org/apache/poi/hssf/record/AutoFilterInfoRecord.class
+SHA1-Digest: 8ddMB8L/v7nIE9bLcZBG/UFdypA=
+
+Name: org/apache/poi/ss/formula/functions/FinanceFunction$3.class
+SHA1-Digest: Mg0PmInVXTRuS/S/3BxyMrT4Gxc=
+
+Name: org/apache/poi/ss/formula/functions/Hlookup.class
+SHA1-Digest: YJA5m1MqH6HeUSIWdjuM8JZpukY=
+
+Name: org/apache/poi/ss/formula/atp/WorkdayFunction.class
+SHA1-Digest: qFjpyzCVuK/JA0KICWykmCzYQvo=
+
+Name: org/apache/poi/hssf/record/chart/LineFormatRecord.class
+SHA1-Digest: OQCgk3HigVsg5fHkbiqCwTsIv/Q=
+
+Name: org/apache/poi/hssf/record/aggregates/ConditionalFormattingTable
+ .class
+SHA1-Digest: UWgVNOSZWDDSfKZsxEPDFTsJlp0=
+
+Name: org/apache/poi/ddf/UnknownEscherRecord.class
+SHA1-Digest: zZXPQMQiO74LEMet0yDaQYq6MPA=
+
+Name: org/apache/poi/util/PngUtils.class
+SHA1-Digest: lmXzH3qVoxHrteb2vdrrzZ6h2PY=
+
+Name: org/apache/poi/ss/format/CellFormatResult.class
+SHA1-Digest: Pec/PZ6k8ToBhoWhz6dAo2TTrDM=
+
+Name: org/apache/poi/hssf/record/InterfaceEndRecord.class
+SHA1-Digest: cUo0ow1uadExKSRpQNs4TozV+4E=
+
+Name: org/apache/poi/hpsf/NoPropertySetStreamException.class
+SHA1-Digest: 3o+XDSilGLgvA97QYegXvCll1bo=
+
+Name: org/apache/poi/ss/formula/SheetNameFormatter.class
+SHA1-Digest: r1QPEZFfxknFAYRomVBCTUlIH4Q=
+
+Name: org/apache/poi/util/BinaryTree$1.class
+SHA1-Digest: yF3qBJUptff2+p8zhG4eR2FsKsg=
+
+Name: org/apache/poi/hssf/record/EndSubRecord.class
+SHA1-Digest: sVGnUluO8SbgdYloPDTpH5Pcyik=
+
+Name: org/apache/poi/hssf/usermodel/HSSFEvaluationSheet.class
+SHA1-Digest: FolzdqQERDUynJmu81DkeH2nRoA=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$13.class
+SHA1-Digest: rED2jZwiz4I73XFvvxoknxtEX8w=
+
+Name: about.html
+SHA1-Digest: f5MWhKPpUtoQqTm7FHvnPOfpCKo=
+
+Name: org/apache/poi/util/FontMetricsDumper.class
+SHA1-Digest: l3JqL7VDg4qyQqpddkN0msJ4Qqo=
+
+Name: org/apache/poi/ss/formula/eval/forked/ForkedEvaluationSheet.clas
+ s
+SHA1-Digest: 8Y4F9fn3xQwBcf3sv0L+b1fXpD4=
+
+Name: org/apache/poi/hssf/usermodel/DVConstraint$FormulaPair.class
+SHA1-Digest: ZeQ04trudHAauqcIarqWIuNdwL8=
+
+Name: org/apache/poi/ss/util/CellUtil.class
+SHA1-Digest: 2MOsV/65H9YkIhyt0k4wnxyCQJk=
+
+Name: org/apache/poi/ss/usermodel/DataValidationConstraint$OperatorTyp
+ e.class
+SHA1-Digest: rg3PFMTEZnpovITNt0ziPbaqLMs=
+
+Name: org/apache/poi/ddf/AbstractEscherOptRecord.class
+SHA1-Digest: eUpWjq8oGC0CCRdSJMoaiCfrv9Q=
+
+Name: org/apache/poi/poifs/property/RootProperty.class
+SHA1-Digest: hZU5WdPU5MkaItBKB5i+n23elL0=
+
+Name: org/apache/poi/ss/formula/eval/RangeEval.class
+SHA1-Digest: WwvbM9H4+DA0geIfmq9sfEz4Nis=
+
+Name: org/apache/poi/hssf/record/NameRecord.class
+SHA1-Digest: ZFwDPgPdfOT8upwEKj4UUCVHMW0=
+
+Name: org/apache/poi/ss/formula/ptg/AttrPtg$SpaceType.class
+SHA1-Digest: a+MZWHcJnYhYfUtGDYUdqkjClzg=
+
+Name: org/apache/poi/ss/util/IEEEDouble.class
+SHA1-Digest: MeQuh08ZR7zzPBDVuw4k2+7CU64=
+
+Name: org/apache/poi/ss/formula/ptg/PowerPtg.class
+SHA1-Digest: eKafRHeoynRm4eBUYWJa+1vEja0=
+
+Name: org/apache/poi/ss/usermodel/VerticalAlignment.class
+SHA1-Digest: 4pAVjrFO2jHyj1bz0C0ng+kCrhY=
+
+Name: org/apache/poi/hssf/record/ScenarioProtectRecord.class
+SHA1-Digest: nlot3SJt5DjrjTFgf8+J2ARN5sE=
+
+Name: org/apache/poi/ss/format/CellNumberFormatter$StringMod.class
+SHA1-Digest: 2uFcc8+WarNAd3VwhJHw61X9oas=
+
+Name: org/apache/poi/poifs/common/POIFSConstants.class
+SHA1-Digest: n+koH9K9V/DgRDFjf1HV5PDfMEs=
+
+Name: org/apache/poi/poifs/filesystem/FilteringDirectoryNode$Filtering
+ Iterator.class
+SHA1-Digest: az8S18xfTiApXgjGe9hvCO+SwAk=
+
+Name: org/apache/poi/ss/usermodel/Row$MissingCellPolicy.class
+SHA1-Digest: Fv2mFhiyUvPU0VpXeEUwYh8meTg=
+
+Name: org/apache/poi/util/StringUtil$StringsIterator.class
+SHA1-Digest: Essp3l3DSetS3ckoZyAuzIK4wUY=
+
+Name: org/apache/poi/hssf/record/RecordFactory$I_RecordCreator.class
+SHA1-Digest: k9t0BfChqMX+c6XkKSJqyeqyTn4=
+
+Name: org/apache/poi/ss/formula/eval/RelationalOperationEval$2.class
+SHA1-Digest: +fRg2w1UKsaSz7i8MRG8gqTLTNs=
+
+Name: org/apache/poi/hssf/model/LinkTable$CRNBlock.class
+SHA1-Digest: TcgL0KquAKXHqj+ngnYYFq4oHx0=
+
+Name: org/apache/poi/hssf/record/DrawingRecordForBiffViewer.class
+SHA1-Digest: Xnqs0xkrJsEqJnEcXMM8RFenJdA=
+
+Name: org/apache/poi/ss/usermodel/charts/ValueAxis.class
+SHA1-Digest: h77C+ZLmrZZsNH0gIBgMjG8uCQM=
+
+Name: org/apache/poi/ss/formula/functions/BooleanFunction$3.class
+SHA1-Digest: YqO2NMkR/Y5S2bJUtbQONjodhZo=
+
+Name: org/apache/poi/hpsf/VersionedStream.class
+SHA1-Digest: 0wRgJiqaCsh8ehgedl9JGVTUQtA=
+
+Name: org/apache/poi/hpsf/MarkUnsupportedException.class
+SHA1-Digest: V8vyEOsUOSYgVsLDYanhS7pFnIc=
+
+Name: org/apache/poi/util/BinaryTree$6.class
+SHA1-Digest: j15YJqGg/npoJOgV8g0KowDtxzM=
+
+Name: org/apache/poi/ddf/EscherBitmapBlip.class
+SHA1-Digest: +7eUN7ouvQUqEE74YZ0dUZ4+d2A=
+
+Name: META-INF/NOTICE
+SHA1-Digest: 64llTeWq2vnPrrgf4COsYw7gJZQ=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction.class
+SHA1-Digest: 2+zZhFMn7XTfTE//xqTHV453k/c=
+
+Name: org/apache/poi/hpsf/CodePageString.class
+SHA1-Digest: Gv8CiktcAFd6rlW2HiFLXfFEft8=
+
+Name: org/apache/poi/ss/usermodel/charts/DataSources$2.class
+SHA1-Digest: eTUiQyuw6cNvyTSp11qNR8mHk5Q=
+
+Name: org/apache/poi/ss/usermodel/FormulaError.class
+SHA1-Digest: R7DmV3+PJLO6HVEKKjur9APyFC8=
+
+Name: org/apache/poi/hssf/record/chart/TickRecord.class
+SHA1-Digest: 2d4ozyfW2v2CBrvmCZIP5AU8onU=
+
+Name: org/apache/poi/ss/format/CellGeneralFormatter.class
+SHA1-Digest: w9wfjIZihwIduSYseaqtal/xEFY=
+
+Name: org/apache/poi/hssf/record/chart/AxisRecord.class
+SHA1-Digest: ExeXdDRNr1rq7C6bQhDQApE8Xkc=
+
+Name: org/apache/poi/hssf/record/FeatRecord.class
+SHA1-Digest: Zp0a5fGf1vqZLxB3fjwl2CHS6x4=
+
+Name: org/apache/poi/hssf/util/HSSFColor$GREY_50_PERCENT.class
+SHA1-Digest: tY9gu11byNUnGs86XBc6iJZToIg=
+
+Name: org/apache/poi/ss/format/CellElapsedFormatter$ElapsedPartHandler
+ .class
+SHA1-Digest: uLTGNV46JMisGT6poEgv1LzeLBY=
+
+Name: org/apache/poi/hssf/extractor/ExcelExtractor.class
+SHA1-Digest: zv4Z4bq0rT+kB6babq3Rhy4DNaA=
+
+Name: org/apache/poi/ss/formula/ptg/ExpPtg.class
+SHA1-Digest: I4bPiaiZrMIJjlJPvYqdFeEMXbk=
+
+Name: org/apache/poi/ss/formula/ptg/LessEqualPtg.class
+SHA1-Digest: 3tyaqpvzsQ14c5XmR2BQgjd8OoE=
+
+Name: org/apache/poi/hssf/model/SimpleFilledShape.class
+SHA1-Digest: uB/mm7NCvItu0JZOyzzEXFv1p4I=
+
+Name: org/apache/poi/hssf/record/LbsDataSubRecord.class
+SHA1-Digest: nsUo8L/jgvqfAs//r6PzxmwOPPI=
+
+Name: org/apache/poi/hssf/extractor/ExcelExtractor$CommandArgs.class
+SHA1-Digest: 7JQ90TAajcDFD2+E74fhLSLePYw=
+
+Name: org/apache/poi/hssf/record/BottomMarginRecord.class
+SHA1-Digest: wDzfwPBmOUd2RkYVKxNJ6woAwYU=
+
+Name: org/apache/poi/hssf/record/aggregates/ColumnInfoRecordsAggregate
+ .class
+SHA1-Digest: XtYU9USKaZu7f+TnL0j0e43MUP4=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$StringLookupComp
+ arer.class
+SHA1-Digest: o0Ze/a+N+JaT+8z/tU8fH1WKw0Q=
+
+Name: org/apache/poi/ss/util/MutableFPNumber$Rounder.class
+SHA1-Digest: HN2iejT9GA2MHWy1MVETD4bzCkY=
+
+Name: org/apache/poi/ddf/EscherShapePathProperty.class
+SHA1-Digest: 2rI9upsYAuK4pucAcypdmcdL5qE=
+
+Name: org/apache/poi/ss/formula/functions/XYNumericFunction$ValueArray
+ .class
+SHA1-Digest: 6xVRg8XUcJe670O/oNi017j9qf8=
+
+Name: org/apache/poi/ss/formula/atp/AnalysisToolPak$NotImplemented.cla
+ ss
+SHA1-Digest: 1d3zsL5mBosunLldFLhBrZ/Gf7g=
+
+Name: org/apache/poi/hssf/record/crypto/RC4.class
+SHA1-Digest: 5HDu+QaFCQXjY6CPx56MONbbwsA=
+
+Name: org/apache/poi/poifs/eventfilesystem/POIFSReaderEvent.class
+SHA1-Digest: 0k9sUpV44WC4kJ36RxyaCWm2NPE=
+
+Name: org/apache/poi/ss/formula/functions/Indirect.class
+SHA1-Digest: XvhEQxabfnDdAW6vvv8hfeqQ/AQ=
+
+Name: org/apache/poi/hssf/record/RecordFactory$ReflectionConstructorRe
+ cordCreator.class
+SHA1-Digest: RUj9NI2G0P0wFm25+TG47c9B3SY=
+
+Name: org/apache/poi/hssf/record/ArrayRecord.class
+SHA1-Digest: 5nsqpcC01GYev5TzTmUtxwzFqV8=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$4.class
+SHA1-Digest: Xey5LPRRWNG04P5VWmK3c0REVv8=
+
+Name: org/apache/poi/ddf/EscherTertiaryOptRecord.class
+SHA1-Digest: l57O8y5DoQe4thQ6D7ljFMoR+d8=
+
+Name: org/apache/poi/ss/format/CellFormatCondition$4.class
+SHA1-Digest: 03GDyO52firyen9wfKX3d5LAmRU=
+
+Name: org/apache/poi/hssf/record/chart/DatRecord.class
+SHA1-Digest: CE7XZIuSIieV1VnqlRco8oPx95w=
+
+Name: org/apache/poi/ss/formula/atp/ParityFunction.class
+SHA1-Digest: lqrUps5rOvtgMlZT+z2D2GgepZ4=
+
+Name: org/apache/poi/ss/usermodel/Row.class
+SHA1-Digest: 8nl871zW+5Jrb1jJzG5EyZ3GqKY=
+
+Name: org/apache/poi/ss/formula/functions/XYNumericFunction$Accumulato
+ r.class
+SHA1-Digest: 2EORxWR1v533iDb2wuVXL49oKdM=
+
+Name: org/apache/poi/hssf/record/chart/AxisLineFormatRecord.class
+SHA1-Digest: z4iZmRZhFIw4Vdz+AF1/D+/lqNU=
+
+Name: org/apache/poi/hpsf/PropertySetFactory.class
+SHA1-Digest: EmXRCt3bQD2tg7R5IM1s3CILPAI=
+
+Name: org/apache/poi/poifs/filesystem/FilteringDirectoryNode.class
+SHA1-Digest: aBZ0xxRE6L+CD/dJQW7kNAO9nUA=
+
+Name: org/apache/poi/hssf/dev/EFBiffViewer$1.class
+SHA1-Digest: sVY03RhbaG1djAICaDHN38tyffI=
+
+Name: org/apache/poi/hssf/record/chart/LegendRecord.class
+SHA1-Digest: eryZS0oNycdysgU7xylzjUrOMBw=
+
+Name: org/apache/poi/ss/usermodel/charts/DataSources.class
+SHA1-Digest: HI/skTk22EmA3KfPAMy03NwMemQ=
+
+Name: org/apache/poi/hssf/record/DefaultRowHeightRecord.class
+SHA1-Digest: PEP0EgeC2T6H4FLxvCHDo5S0n9Q=
+
+Name: org/apache/poi/util/IntList.class
+SHA1-Digest: mFT0die+yfK7jeBdF4vtewXp79Y=
+
+Name: org/apache/poi/ss/formula/eval/TwoOperandNumericOperation$2.clas
+ s
+SHA1-Digest: cofXQQ5vSoBpKe3xQePTpBkrj2o=
+
+Name: org/apache/poi/ss/format/CellDateFormatter$DatePartHandler.class
+SHA1-Digest: /2Lb9m2dIaw70yZ43AEQlz8foX4=
+
+Name: org/apache/poi/ss/usermodel/Color.class
+SHA1-Digest: Aicua/GAwsepftVdeK8feqlTDT8=
+
+Name: org/apache/poi/poifs/storage/PropertyBlock$1.class
+SHA1-Digest: mVjdHcF/ibSyR8vW1lXSQrIQdyk=
+
+Name: org/apache/poi/ss/formula/ptg/LessThanPtg.class
+SHA1-Digest: muAUKngRaJ2hlQ5ZIZ70+9O9lY4=
+
+Name: org/apache/poi/ss/formula/ParseNode$TokenCollector.class
+SHA1-Digest: wccsFJovDc8RRMLnjN0eH1j0kW8=
+
+Name: org/apache/poi/util/LittleEndianOutput.class
+SHA1-Digest: ewdi7/IBlN7eDfQm4TaW/kSqgLU=
+
+Name: org/apache/poi/ss/formula/ptg/RefErrorPtg.class
+SHA1-Digest: Afx8xiMH6vwhsd0hMGSdAzH/1B0=
+
+Name: org/apache/poi/hssf/record/CRNCountRecord.class
+SHA1-Digest: oOtwMvdFGX9WFjGx2AGx3+9yDjw=
+
+Name: org/apache/poi/ss/util/SheetReferences.class
+SHA1-Digest: 9SUzINU/DSDG2jPpFsgMZjopvMw=
+
+Name: org/apache/poi/hssf/usermodel/HSSFFormulaEvaluator.class
+SHA1-Digest: 6svjpFOdBhamCiBN7PR8VAIcdoY=
+
+Name: org/apache/poi/ss/formula/ptg/ControlPtg.class
+SHA1-Digest: 4a5bNpvUinZFILFSsYlBrTcfe9g=
+
+Name: org/apache/poi/hssf/record/DefaultColWidthRecord.class
+SHA1-Digest: Km2r3+3Sql/CZgEuBTNGebXIvXE=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$SingleArgTextFu
+ nc.class
+SHA1-Digest: 6+CJThXa8M/C0ogfEss2PBZi01w=
+
+Name: org/apache/poi/poifs/storage/DataInputBlock.class
+SHA1-Digest: QrKBzz/nr1LxMtevLF5QgvH+DfI=
+
+Name: org/apache/poi/ddf/EscherMetafileBlip.class
+SHA1-Digest: 5m+NqEbXp3f7KZ9ee1cKcLv7t/Q=
+
+Name: org/apache/poi/ss/format/CellFormatType.class
+SHA1-Digest: x1NWCZHsz6JkRQ67NZ0FE26JTb8=
+
+Name: org/apache/poi/ss/formula/eval/OperandResolver.class
+SHA1-Digest: KQOgae2IJ+LVR2TPz/0/PaZnW0Y=
+
+Name: org/apache/poi/hssf/record/LabelSSTRecord.class
+SHA1-Digest: aXJpRe1HCJIHqkJMIP2OBqsq6Co=
+
+Name: org/apache/poi/ss/formula/FormulaParser$SimpleRangePart$Type.cla
+ ss
+SHA1-Digest: Xre+qbcu1HSWbaUfMIXEQuqi3sA=
+
+Name: org/apache/poi/ss/formula/atp/WorkdayCalculator.class
+SHA1-Digest: ZjVpqDGY7yhVE2IX33/0cTK0dmU=
+
+Name: org/apache/poi/hpsf/CustomProperty.class
+SHA1-Digest: Q8LxKE6xOW0x1Rh5NFQ7qsF3iBI=
+
+Name: org/apache/poi/ss/formula/functions/Index.class
+SHA1-Digest: tvhyxq04QMMMT9arDrz7t4sZhLw=
+
+Name: org/apache/poi/hssf/record/HeaderFooterRecord.class
+SHA1-Digest: IyvYNLGuuPGXTjmHTZODhUgN4JM=
+
+Name: org/apache/poi/poifs/filesystem/Entry.class
+SHA1-Digest: U2K9mEBYweoe/kLJe6rooy9HHjI=
+
+Name: org/apache/poi/ss/formula/functions/CalendarFieldFunction.class
+SHA1-Digest: A+rq/aKEnXSPRmppxL+ZFQD2nkc=
+
+Name: org/apache/poi/hssf/record/UnicodeString.class
+SHA1-Digest: V40Esgy6P2yS5ibceHtTci8sK1Y=
+
+Name: org/apache/poi/ddf/EscherBlipRecord.class
+SHA1-Digest: C9kDnoZuSGOBupwQ70CxVYnxTNU=
+
+Name: org/apache/poi/hssf/usermodel/HSSFDataValidation.class
+SHA1-Digest: 4XCiVeDCnVtchE2aCLgmsCvIet0=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$9.class
+SHA1-Digest: yMBNzn4ECCCDI77dqJLaRagRFlI=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$30.class
+SHA1-Digest: PInm0W3tGywPCOeA3zaoJUuHJko=
+
+Name: org/apache/poi/ss/formula/functions/Function2Arg.class
+SHA1-Digest: q2C7FnSmn8am688yh3ypnppXV4w=
+
+Name: org/apache/poi/hssf/util/HSSFColor$LIGHT_ORANGE.class
+SHA1-Digest: zNpQHwPQsTVNr1LFzPDo1xvwQhQ=
+
+Name: org/apache/poi/poifs/filesystem/DocumentNode.class
+SHA1-Digest: AYriK8aaxXeRdVISiWwinIAbjMo=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$13.class
+SHA1-Digest: 4KDCrwVDMRlmUCpNKxdssV8BEuo=
+
+Name: org/apache/poi/hssf/record/RKRecord.class
+SHA1-Digest: S+4D6MlTzsxmSIQfQ/YyygNtY2U=
+
+Name: org/apache/poi/hssf/record/PrintHeadersRecord.class
+SHA1-Digest: S1ReSgLK8u/zt4bkFsbDViRZR7w=
+
+Name: org/apache/poi/ss/formula/functions/CountUtils.class
+SHA1-Digest: iKWQ5JZVFPMd5uG8u6lcTCzQEw0=
+
+Name: org/apache/poi/hssf/eventusermodel/EventWorkbookBuilder$SheetRec
+ ordCollectingListener.class
+SHA1-Digest: JbXPqkByLvIWLndM7MvVdUXHOqc=
+
+Name: org/apache/poi/ss/formula/atp/RandBetween.class
+SHA1-Digest: v6b+pBXczuNVa0KOO6pEFWPBm30=
+
+Name: org/apache/poi/hssf/record/EscherAggregate.class
+SHA1-Digest: vJDkxFUzrpLq+m5hRQxmfa2qEVY=
+
+Name: org/apache/poi/hssf/model/LinkTable.class
+SHA1-Digest: qtvmNSv8+6JlW539wVKesKHRoXo=
+
+Name: org/apache/poi/poifs/filesystem/POIFSDocument$SmallBlockStore.cl
+ ass
+SHA1-Digest: PHDIpWgLLduFR/g/6xW7AUSKJHY=
+
+Name: org/apache/poi/ss/usermodel/Chart.class
+SHA1-Digest: ZZvIKMj+V80YmRk89Ggu78GIWrg=
+
+Name: org/apache/poi/ss/formula/atp/YearFracCalculator.class
+SHA1-Digest: K7xy8QTOmdz6gDVzPBCl9tcqhGg=
+
+Name: org/apache/poi/ss/formula/LazyRefEval.class
+SHA1-Digest: 7Ph4SYS6VdGqQhXwsWcj9MDMSUM=
+
+Name: org/apache/poi/ss/usermodel/charts/AxisPosition.class
+SHA1-Digest: yS2Q/7bPUILBoigQgWkxpSdr1qw=
+
+Name: org/apache/poi/hssf/record/DSFRecord.class
+SHA1-Digest: N8Apy9M+iuX+QWzICKKL5PbXzvs=
+
+Name: org/apache/poi/ss/formula/functions/Fixed0ArgFunction.class
+SHA1-Digest: blGj/jpwTbsjeTKZ4Ugtjw95of4=
+
+Name: org/apache/poi/hpsf/VariantSupport.class
+SHA1-Digest: c7ZB8pcklje/xPXuyiiyapqoQcw=
+
+Name: org/apache/poi/poifs/filesystem/EntryNode.class
+SHA1-Digest: C2LBwlblucZSbReSJLeH+kZrkf0=
+
+Name: org/apache/poi/hssf/record/aggregates/RowRecordsAggregate.class
+SHA1-Digest: HxxE1VXmaebv5P/EsVPsurj9QMs=
+
+Name: org/apache/poi/ss/util/SSCellRange$ArrayIterator.class
+SHA1-Digest: KdpqH4guuMDzZ3jGkL7/8bwWL2I=
+
+Name: org/apache/poi/hssf/usermodel/HSSFConditionalFormatting.class
+SHA1-Digest: qLP5HAc6vOyX2XmRwIjbOZfTUOQ=
+
+Name: org/apache/poi/hssf/record/chart/FontBasisRecord.class
+SHA1-Digest: e5R5wiLFlt1+25yJFsRuvZ0KwgA=
+
+Name: org/apache/poi/hssf/util/Region.class
+SHA1-Digest: dYDBBAneN54gMUyoMBW2gMzLx0w=
+
+Name: org/apache/poi/ss/util/Region.class
+SHA1-Digest: PVhGhlae0XKh5HoeEEkTLnmfKUI=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$24.class
+SHA1-Digest: 4OtBDRvhHg1hEVpqQJ906fCVJFE=
+
+Name: org/apache/poi/hssf/usermodel/HSSFCreationHelper.class
+SHA1-Digest: r17AtzcpfOsV++SK7RfaQ4wL59E=
+
+Name: org/apache/poi/ss/formula/ptg/ArrayPtg$Initial.class
+SHA1-Digest: fo6rbw4nlmMCF8sCAx5WeS/39PM=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$2.class
+SHA1-Digest: 88R9kHIYg7UST3hu6SOfunF/acc=
+
+Name: org/apache/poi/hssf/record/aggregates/WorksheetProtectionBlock.c
+ lass
+SHA1-Digest: JR/ZwMkY9cpjkwwXSuJBS069bm0=
+
+Name: org/apache/poi/poifs/filesystem/NPOIFSStream$StreamBlockByteBuff
+ erIterator.class
+SHA1-Digest: 0OL1haepeqPObDQUVpRUzf5H/08=
+
+Name: org/apache/poi/hssf/usermodel/HSSFComment.class
+SHA1-Digest: +yTm/Lg59J9jsOwlhBI3vKGyXW8=
+
+Name: org/apache/poi/hssf/record/chart/ChartTitleFormatRecord.class
+SHA1-Digest: hwMkS6HkKPP0O036JxxDMJOwzL8=
+
+Name: org/apache/poi/util/Beta.class
+SHA1-Digest: fhm+093wHGmNgT3gOtY1+E6Eq2k=
+
+Name: org/apache/poi/ss/format/CellFormatType$2.class
+SHA1-Digest: kw8ko1PRZ+r/cxbV1jpmHvHi+aM=
+
+Name: org/apache/poi/hssf/model/InternalSheet.class
+SHA1-Digest: LTcZwOXMY1G0onh5DbCxut3s8Uw=
+
+Name: org/apache/poi/ss/formula/eval/ConcatEval.class
+SHA1-Digest: G/6Uvls18yDoOq/9FY91NBbCRvc=
+
+Name: org/apache/poi/hssf/record/CRNRecord.class
+SHA1-Digest: 9VvOWQdb05kgbc6TT2rKdK8bB00=
+
+Name: org/apache/poi/hssf/util/HSSFColor$PLUM.class
+SHA1-Digest: yagT3WN3sEBhT9E/QDqFdbaa7qo=
+
+Name: org/apache/poi/hssf/record/crypto/Biff8EncryptionKey.class
+SHA1-Digest: XAwrbAm3A05XBnU+cB30ToXJqGs=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$35.class
+SHA1-Digest: m1NvD4s5s33Cn57Lwa5F0c89KKQ=
+
+Name: org/apache/poi/hssf/usermodel/HSSFHeader.class
+SHA1-Digest: YNs0C5/yi5OadjHq3Y/qdFjIQ1Y=
+
+Name: org/apache/poi/ss/formula/EvaluationWorkbook.class
+SHA1-Digest: +ZOJ6Q1Cc+BpJxYL59zvBmApJbQ=
+
+Name: org/apache/poi/util/CloseIgnoringInputStream.class
+SHA1-Digest: PJM2GK6kv0ZHtlmWovMDnEmECVQ=
+
+Name: org/apache/poi/ss/formula/functions/Sumxmy2$1.class
+SHA1-Digest: 2l9CYtwAd2rX88W/VfaPmLpKZJY=
+
+Name: org/apache/poi/ss/formula/ptg/ValueOperatorPtg.class
+SHA1-Digest: n0fJ1c3sCihMbZPlr468B34n2g4=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$18.class
+SHA1-Digest: cG+8e7jPJdcspGgF+6nmOOgOBS0=
+
+Name: org/apache/poi/hssf/util/HSSFColor$CORAL.class
+SHA1-Digest: prrY9vAonY3g+H7E1mJ/+tSagWE=
+
+Name: org/apache/poi/ss/formula/functions/MinaMaxa.class
+SHA1-Digest: AlauM3nnWgMCPwuMzsZoaFYfq4g=
+
+Name: org/apache/poi/hssf/usermodel/HSSFRow$CellIterator.class
+SHA1-Digest: iKURyf8zCBa88xR57IFcfkA4Bsw=
+
+Name: org/apache/poi/ss/usermodel/charts/ChartAxisFactory.class
+SHA1-Digest: JMt69oWLSgCdvZ+DkxblGjGAwlM=
+
+Name: org/apache/poi/ddf/EscherSerializationListener.class
+SHA1-Digest: v2XCJQugJCI61rhAjM2mt7VpUw0=
+
+Name: org/apache/poi/ss/formula/functions/Npv.class
+SHA1-Digest: jfzB2AGmUHYW7H2rLuy3uasFKEA=
+
+Name: org/apache/poi/hssf/util/HSSFColor$LIGHT_GREEN.class
+SHA1-Digest: unzeTEXLewPOaHkVBPxBWH86xbg=
+
+Name: org/apache/poi/hssf/record/EscherAggregate$2.class
+SHA1-Digest: /G9XXi2z7NYParyPpGTvXvD97jc=
+
+Name: org/apache/poi/hssf/usermodel/HSSFShapeContainer.class
+SHA1-Digest: hycHWIQek6waTGbeqnLDQJ0/uis=
+
+Name: org/apache/poi/hssf/record/MulRKRecord.class
+SHA1-Digest: /MsienYZXW+tlu3TZZ/pbb6DSfw=
+
+Name: org/apache/poi/hpsf/SpecialPropertySet.class
+SHA1-Digest: JzZep4fMzxE/cus9TV2QRjVSxp0=
+
+Name: org/apache/poi/hssf/dev/BiffViewer$CommandArgs.class
+SHA1-Digest: qGpjs1BInnOD8hyevE7sG6/uDYo=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$SearchFind.clas
+ s
+SHA1-Digest: 80UaGHRBK78W9ufTbwjMMeNqdxg=
+
+Name: org/apache/poi/poifs/filesystem/EntryUtils.class
+SHA1-Digest: sFd10bzfam19+pejBOGcmrjSswA=
+
+Name: org/apache/poi/ddf/EscherRecord.class
+SHA1-Digest: Gj0S4uTDuBdsjIzDto6vswjBQVY=
+
+Name: org/apache/poi/ss/usermodel/DataValidationHelper.class
+SHA1-Digest: NhhT7kzPF27PVF0POtNXsdlbzeA=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$29.class
+SHA1-Digest: 7HwpCWa1mIYYWlbLE1Nn47mbC5g=
+
+Name: org/apache/poi/ss/usermodel/FontFamily.class
+SHA1-Digest: YCM18PwB4n/BFDCXxLtnVAlziiw=
+
+Name: org/apache/poi/ss/formula/WorkbookEvaluator.class
+SHA1-Digest: g2aouH66En2ftjondWbh00Q4Pfw=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$7.class
+SHA1-Digest: bxsK2OOJdPnse8BURxUPOkn39vY=
+
+Name: org/apache/poi/hssf/record/CFRuleRecord$ComparisonOperator.class
+SHA1-Digest: rB9BGNpzqdW7spUS5JddSgIz+Ek=
+
+Name: org/apache/poi/hssf/record/BoundSheetRecord.class
+SHA1-Digest: UMMZwgL15LQmdPUR8XllN0Jrrps=
+
+Name: org/apache/poi/ss/formula/eval/NameEval.class
+SHA1-Digest: fyBxHYXO/XwgtGEvjhzzHo8t4zc=
+
+Name: org/apache/poi/ss/formula/CollaboratingWorkbooksEnvironment$Work
+ bookNotFoundException.class
+SHA1-Digest: 5RrdIKPXFM7OJhsFzURRZxV/KxM=
+
+Name: org/apache/poi/hssf/eventusermodel/dummyrecord/DummyRecordBase.c
+ lass
+SHA1-Digest: ysS0wT5KtHyt+ua/nXFdNAq3y/s=
+
+Name: org/apache/poi/ss/formula/FormulaParsingWorkbook.class
+SHA1-Digest: wXHebb3F0Qx09gis8gYtCKI7aGw=
+
+Name: org/apache/poi/util/LittleEndianOutputStream.class
+SHA1-Digest: eEk4/rlUFKJapis8LWentRf4CFc=
+
+Name: org/apache/poi/hssf/usermodel/HSSFDataFormat.class
+SHA1-Digest: kwA6lpZm3Hi+1KV+RTU9dJa30ss=
+
+Name: org/apache/poi/hpsf/Date.class
+SHA1-Digest: d8Zpx7Fj6Gt87ikAOfLPJqg8+bc=
+
+Name: org/apache/poi/hssf/record/LeftMarginRecord.class
+SHA1-Digest: r1vLvwiJplJdLmG4jg4TynNIJIA=
+
+Name: org/apache/poi/ss/formula/ExternSheetReferenceToken.class
+SHA1-Digest: IYC4j2r/oCViwVAUZ8dNf7mZUwo=
+
+Name: org/apache/poi/hssf/record/chart/SeriesChartGroupIndexRecord.cla
+ ss
+SHA1-Digest: YuP8tH5c37b7hKm/8I2HPJYp47E=
+
+Name: org/apache/poi/hssf/record/FooterRecord.class
+SHA1-Digest: rCEehRZdu7eoSczRRCt1U6vnzhE=
+
+Name: org/apache/poi/hssf/record/cont/ContinuableRecordOutput.class
+SHA1-Digest: 2CtgbxRdN/fTBLp5IofORWmq6qE=
+
+Name: org/apache/poi/hssf/usermodel/HSSFFontFormatting.class
+SHA1-Digest: LMdvGS1p+LHIKjy69GgQxLa6TzQ=
+
+Name: META-INF/eclipse.inf
+SHA1-Digest: KyT9FF7C7t86NoBoa2kZT3ZJBfw=
+
+Name: org/apache/poi/ss/formula/ptg/Ptg.class
+SHA1-Digest: v3k0rQGIAskbEWLOTCrN8Zm0AYU=
+
+Name: org/apache/poi/util/LittleEndianByteArrayInputStream.class
+SHA1-Digest: oSeARAEKzjpKFpKjZFMriCU/Gk8=
+
+Name: org/apache/poi/ss/formula/functions/Fixed4ArgFunction.class
+SHA1-Digest: eia5tb5egoHo6dgjiVqSe5dcen0=
+
+Name: org/apache/poi/hssf/util/HSSFColor$SEA_GREEN.class
+SHA1-Digest: j9ur/bQvZO8tbTrKeYrw2TVNyzE=
+
+Name: org/apache/poi/hssf/usermodel/HSSFRichTextString.class
+SHA1-Digest: 8xsb0Yuz6PLwPt5CMXhiN1bw7No=
+
+Name: org/apache/poi/ss/formula/functions/Replace.class
+SHA1-Digest: qvwPOg3MTQcQQ5XQYRN5IPQUSj4=
+
+Name: org/apache/poi/hssf/eventmodel/ERFListener.class
+SHA1-Digest: uBqYYzHIwSdK75zr8YUXSNrxCLs=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$3.class
+SHA1-Digest: k7BgUA6Cso+yDGkDnOHaQlG5Z1g=
+
+Name: org/apache/poi/hssf/record/PasswordRev4Record.class
+SHA1-Digest: GMhZ3ysa6Z77MpNPvKhwuVDVDzA=
+
+Name: org/apache/poi/hssf/util/HSSFColor$MAROON.class
+SHA1-Digest: CaEoulPuuTv09WxN3r3T55zIV/w=
+
+Name: org/apache/poi/hssf/usermodel/HSSFCell.class
+SHA1-Digest: /6yEV9/ktJgyp4mQFiYtJG/J2So=
+
+Name: org/apache/poi/hssf/record/FileSharingRecord.class
+SHA1-Digest: 8VFgcAjTDgkc4F+yQSHWcUJtRPQ=
+
+Name: org/apache/poi/hssf/util/HSSFColor$BLUE_GREY.class
+SHA1-Digest: tJIOLM+pbWdsU7Wk8iYT9fyTDWM=
+
+Name: org/apache/poi/ss/formula/ptg/DeletedRef3DPtg.class
+SHA1-Digest: Pc8Ad8OsAg/9SsVESfK7rf1+MjU=
+
+Name: org/apache/poi/poifs/dev/POIFSViewEngine.class
+SHA1-Digest: sJSVRloUCDQcUbDg0jAM5bBDbA8=
+
+Name: org/apache/poi/hssf/record/CommonObjectDataSubRecord.class
+SHA1-Digest: L3i7HyT67IGkAagXHGLFXJMWbRY=
+
+Name: org/apache/poi/hssf/record/IndexRecord.class
+SHA1-Digest: KClstCh4VqH1PnK0aNAm9P7A6VY=
+
+Name: org/apache/poi/ss/usermodel/IndexedColors.class
+SHA1-Digest: xroHZI4aJ8S7QvWwuUMNuzOJMiU=
+
+Name: org/apache/poi/ss/formula/functions/FinanceLib.class
+SHA1-Digest: 2VbR8Dovv83Y/HrtDmOS1KwMCK4=
+
+Name: org/apache/poi/hssf/record/RefModeRecord.class
+SHA1-Digest: 0Mp8JxzkM5pT1zZTZqF5R5QX53U=
+
+Name: org/apache/poi/hpsf/SummaryInformation.class
+SHA1-Digest: 3mvfYCXXs5LY0rcw6E+O4K8TQnE=
+
+Name: org/apache/poi/ss/formula/functions/LogicalFunction$4.class
+SHA1-Digest: enaSav8DSXV/BzHrj9/TQoblk2U=
+
+Name: org/apache/poi/hssf/record/SupBookRecord.class
+SHA1-Digest: qLHxFJbLPwQ+hkZwz6oXaeXJVWI=
+
+Name: org/apache/poi/ss/format/CellFormatPart$PartHandler.class
+SHA1-Digest: T6FR0CpZfxEbzpOHbdiF+naK480=
+
+Name: org/apache/poi/hssf/record/UserSViewBegin.class
+SHA1-Digest: dNndKAy1+WL8cn+LOs1PrA3sHuU=
+
+Name: org/apache/poi/hssf/record/common/UnicodeString$ExtRst.class
+SHA1-Digest: HqkbE2fuONYA2+MfXQ//DfnmCqk=
+
+Name: org/apache/poi/hssf/usermodel/EscherGraphics2d.class
+SHA1-Digest: xtBPNd5ODq8lpSHIngCIPXZK84k=
+
+Name: org/apache/poi/hssf/record/PrintGridlinesRecord.class
+SHA1-Digest: C48ix/+e2RycwPwps1ij/B/QKP4=
+
+Name: org/apache/poi/hssf/record/BoundSheetRecord$1.class
+SHA1-Digest: khh5annQSo6ts1JRPpP7kuNxeAE=
+
+Name: org/apache/poi/EncryptedDocumentException.class
+SHA1-Digest: i9wTC0LcC0/W45JtpU0mZQ/pQDQ=
+
+Name: org/apache/poi/hpsf/UnsupportedVariantTypeException.class
+SHA1-Digest: JidX/RCJ9yGFpvhVKh6SxxAB8Yw=
+
+Name: org/apache/poi/ss/usermodel/charts/ChartDataSource.class
+SHA1-Digest: 2HWL+tmyrfA74OTL2Jnxd8lIhIE=
+
+Name: org/apache/poi/ss/formula/functions/FinanceFunction$1.class
+SHA1-Digest: qaafjcDfSD0U5peAzUVLIgyqdCs=
+
+Name: org/apache/poi/ss/formula/eval/forked/ForkedEvaluationWorkbook.c
+ lass
+SHA1-Digest: A7gsgUSAw0MeBlbMDQfTKCZUzbk=
+
+Name: org/apache/poi/util/BinaryTree.class
+SHA1-Digest: V4CC6e867g5rkSsSuBg3OF9QYQo=
+
+Name: org/apache/poi/hssf/record/RightMarginRecord.class
+SHA1-Digest: 4G66xhYcwxTOH3sCX+J9H72bmHg=
+
+Name: org/apache/poi/ss/formula/functions/Sumx2py2.class
+SHA1-Digest: J9juj84nTvO/DCo2jSTLoR1UinE=
+
+Name: org/apache/poi/hssf/usermodel/HSSFPrintSetup.class
+SHA1-Digest: A9884+VtdtylKkHPzii2lbPoOk0=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction.class
+SHA1-Digest: Bu0Fc1QacSUAV33CxH7ta/SAL/A=
+
+Name: org/apache/poi/ddf/EscherDump.class
+SHA1-Digest: wawUzef+8KUIpd8HuzuIBfDjEyk=
+
+Name: org/apache/poi/ss/formula/UserDefinedFunction.class
+SHA1-Digest: A3EOpyqfDB/aNDj0lz+sxgAq5Gs=
+
+Name: org/apache/poi/ss/usermodel/Sheet.class
+SHA1-Digest: F78GvneytdVzF/SHBZkjHUUrG/o=
+
+Name: org/apache/poi/hssf/record/RecordFactoryInputStream$StreamEncryp
+ tionInfo.class
+SHA1-Digest: 76lEDK/epL/BnLrfat1fXB71heo=
+
+Name: org/apache/poi/ss/formula/functions/AggregateFunction$11.class
+SHA1-Digest: JdzdaPaGJ8jznVD0ipmFzXqG3Js=
+
+Name: org/apache/poi/hssf/util/HSSFColor$DARK_RED.class
+SHA1-Digest: tm0WZtaMEyYsx+Yfe8/PFzCBNlI=
+
+Name: org/apache/poi/poifs/filesystem/DirectoryNode.class
+SHA1-Digest: /sIIErDazSDa8NbH4egIMlqs8/Q=
+
+Name: org/apache/poi/hssf/model/TextboxShape.class
+SHA1-Digest: j6bjox8I2OScEiDalOxXQ5I8UTo=
+
+Name: org/apache/poi/hssf/record/GroupMarkerSubRecord.class
+SHA1-Digest: gEBq1a0Pxh7++4GNwc5DlxQ00ps=
+
+Name: org/apache/poi/hssf/usermodel/HSSFFooter.class
+SHA1-Digest: Ejafumw9uwxobJEfoN88wZJj6R4=
+
+Name: org/apache/poi/hssf/record/chart/ChartFRTInfoRecord$CFRTID.class
+SHA1-Digest: SlS6+v5v2G2G4W5BUEHhadw33DE=
+
+Name: org/apache/poi/poifs/filesystem/DocumentEntry.class
+SHA1-Digest: uX53zOxOcrrInTuyiLgYTjC+qDY=
+
+Name: org/apache/poi/hssf/dev/BiffViewer.class
+SHA1-Digest: XphtZ49VIPLXDCPiomMvBmpp7Ls=
+
+Name: org/apache/poi/ss/formula/functions/TextFunction$8.class
+SHA1-Digest: WDxVpxWspIsHLa6Sr2GuOTDUNYc=
+
+Name: org/apache/poi/hssf/record/DVRecord.class
+SHA1-Digest: Xl7JrO+yOOevrtYqyUw2CdUIppU=
+
+Name: org/apache/poi/hpsf/Property.class
+SHA1-Digest: 6CRkVXzSlt+Jr9MMQhLUVNpYbkM=
+
+Name: org/apache/poi/hssf/record/EmbeddedObjectRefSubRecord.class
+SHA1-Digest: j1xlRfBicqgVx7LmIxZiUuGHobA=
+
+Name: org/apache/poi/hssf/record/FormatRecord.class
+SHA1-Digest: lnI5zgcEus9aFAgKalE/lWEyRYc=
+
+Name: org/apache/poi/ss/formula/functions/Errortype.class
+SHA1-Digest: /RFJ2q46dGH8PU6ji0EwiOwV6js=
+
+Name: org/apache/poi/hssf/usermodel/HSSFRow.class
+SHA1-Digest: tSR1B4zONZSMpIvCqbxfClFBTjQ=
+
+Name: org/apache/poi/hssf/record/aggregates/ValueRecordsAggregate$Valu
+ eIterator.class
+SHA1-Digest: 7A6x+37K+oZzenbY0PsgqAaX/rA=
+
+Name: org/apache/poi/hssf/record/InterfaceHdrRecord.class
+SHA1-Digest: 1pb4ePcoIJUkuGFxhANNM2OOyOM=
+
+Name: org/apache/poi/hssf/util/HSSFColor$LIGHT_BLUE.class
+SHA1-Digest: oK+KCB/PfbGpOsWGBLgvClzlPK0=
+
+Name: org/apache/poi/hssf/record/DrawingGroupRecord.class
+SHA1-Digest: aeiflutarLSAE49YuWJUAclNI5k=
+
+Name: org/apache/poi/ss/formula/FormulaCellCacheEntry.class
+SHA1-Digest: ObBrcOaP0ahq5Zjd2mkBmskBFc0=
+
+Name: org/apache/poi/util/DelayableLittleEndianOutput.class
+SHA1-Digest: MfikVFJ6GDHuug4x7NHmSdXGv0Q=
+
+Name: org/apache/poi/util/POILogFactory.class
+SHA1-Digest: JtKbTqaVchY3KThoOvAH3HrJgSo=
+
+Name: org/apache/poi/ss/formula/eval/StringEval.class
+SHA1-Digest: awh+HR03sER/hW2hul50GzldJoc=
+
+Name: org/apache/poi/ss/formula/FormulaUsedBlankCellSet$BlankCellSheet
+ Group.class
+SHA1-Digest: juztSiVQuDLwlYtDTkNnijhx3vg=
+
+Name: org/apache/poi/hssf/record/common/FeatFormulaErr2.class
+SHA1-Digest: IeDr5nDk6ooFDdEuYPbNQxZcQpI=
+
+Name: org/apache/poi/poifs/filesystem/NPOIFSFileSystem.class
+SHA1-Digest: atZHtf59nEXpl+s/OaqGlloJRqU=
+
+Name: org/apache/poi/ss/formula/Formula.class
+SHA1-Digest: MGRTzvjj0CTMeXAWd6KvQywIPf8=
+
+Name: org/apache/poi/util/BitFieldFactory.class
+SHA1-Digest: Kg878ru/dtsfNKB0NlZO02yYVmk=
+
+Name: org/apache/poi/hssf/record/FormulaRecord$SpecialCachedValue.clas
+ s
+SHA1-Digest: shaCi915oAZ1STlAUIhybWwTNqg=
+
+Name: org/apache/poi/ss/formula/functions/Count$2.class
+SHA1-Digest: HlzMNMxzN9BBoMmqwe+fY+SwTHk=
+
+Name: org/apache/poi/hpsf/NoSingleSectionException.class
+SHA1-Digest: So3btlXLKJS2Wfz/7+1VYq3sFtA=
+
+Name: org/apache/poi/hssf/record/chart/SeriesTextRecord.class
+SHA1-Digest: Cmlf2ht1HiERgiWznT8Sk4RJt+o=
+
+Name: org/apache/poi/hssf/record/chart/ChartTitleFormatRecord$CTFormat
+ .class
+SHA1-Digest: UuN5v79terHX6z6gltXmE28brro=
+
+Name: org/apache/poi/ss/formula/functions/Hyperlink.class
+SHA1-Digest: zEwEiwxmD3V3J+o9s1/EMk9PVZM=
+
+Name: org/apache/poi/ss/util/NumberToTextConverter.class
+SHA1-Digest: PSZ/gFo3INZr2qbmmcR3VwmQuUM=
+
+Name: org/apache/poi/hssf/record/chart/PlotAreaRecord.class
+SHA1-Digest: q0kHexyuDrFNL65lqbofpyfAJ64=
+
+Name: org/apache/poi/hssf/util/HSSFColor$PALE_BLUE.class
+SHA1-Digest: 4cv9f8KP1FNnfSlEWMweU8UU4oQ=
+
+Name: org/apache/poi/hssf/record/ExternSheetRecord$RefSubRecord.class
+SHA1-Digest: RgavH4uJcCpz0ijvJGBwQTc9dqQ=
+
+Name: org/apache/poi/ss/formula/functions/BooleanFunction$1.class
+SHA1-Digest: 7FQwoUCtNDx4JHX7GuDfEaoEWBQ=
+
+Name: org/apache/poi/util/BinaryTree$4.class
+SHA1-Digest: 62QyWzXLUDv/juZA3gChsXBhPKg=
+
+Name: org/apache/poi/ss/usermodel/FillPatternType.class
+SHA1-Digest: bf/5EEAoHSvzSG8Hq4xxlHld8hU=
+
+Name: org/apache/poi/ss/formula/ptg/UnaryPlusPtg.class
+SHA1-Digest: WmrkvsoMvoGzH4LMNvhcGWGdvtg=
+
+Name: org/apache/poi/poifs/filesystem/FilteringDirectoryNode$1.class
+SHA1-Digest: QBkYjgGT1QhuL1CJQvTNiPKuulw=
+
+Name: org/apache/poi/poifs/storage/BlockWritable.class
+SHA1-Digest: z2VZjKDmirvb2ez2yk0975/6Ox8=
+
+Name: org/apache/poi/hssf/util/HSSFColor$DARK_YELLOW.class
+SHA1-Digest: idCU30iyMorRSqKEyzm99D3Esh4=
+
+Name: org/apache/poi/ss/formula/ptg/Ref3DPtg.class
+SHA1-Digest: 5iiI7Ajltodonw8UQpAVpHFuQpM=
+
+Name: org/apache/poi/hssf/record/WindowProtectRecord.class
+SHA1-Digest: ew7MtA5sGVXPe82RNlaA/Dif5jk=
+
+Name: org/apache/poi/ddf/EscherPropertyMetaData.class
+SHA1-Digest: aGBP5woDnzFFetZ5r8wcqMdj5v4=
+
+Name: org/apache/poi/ss/formula/functions/Function3Arg.class
+SHA1-Digest: OEkxVKvm0YTGBpYaJhT/Z+HaArk=
+
+Name: org/apache/poi/hpsf/Section.class
+SHA1-Digest: EV9xRgVw8wY5MfwHmWr5iwF6viI=
+
+Name: org/apache/poi/hssf/dev/BiffViewer$BiffDumpingStream.class
+SHA1-Digest: Oq3LzWlQJzPS27rTqyZuhKxDW8g=
+
+Name: org/apache/poi/hssf/OldExcelFormatException.class
+SHA1-Digest: fJe5lg243xxNwP3Ufgro5aU7faY=
+
+Name: org/apache/poi/hpsf/Blob.class
+SHA1-Digest: M9Jtx92uFOJEggTkLFHrdeSgVWk=
+
+Name: org/apache/poi/hssf/usermodel/HSSFBorderFormatting.class
+SHA1-Digest: zVVDks33xaZfnkcPUoKAyp7ng8I=
+
+Name: org/apache/poi/ss/formula/function/functionMetadata.txt
+SHA1-Digest: 61nqMmkP/hAnfPC8s7QDNz5Hvoo=
+
+Name: org/apache/poi/ss/formula/ptg/Area3DPtg.class
+SHA1-Digest: RVRSqb6Tb7tG9Mi29xuE2y5+QqQ=
+
+Name: org/apache/poi/hssf/record/RecordFactory$ReflectionMethodRecordC
+ reator.class
+SHA1-Digest: MRDlhRRXbMjz0PRxFHgyWuYieHw=
+
+Name: org/apache/poi/hssf/eventusermodel/dummyrecord/MissingCellDummyR
+ ecord.class
+SHA1-Digest: lhm9uOheo0uipeE6+tsYf+NwGkc=
+
+Name: org/apache/poi/ss/formula/IEvaluationListener.class
+SHA1-Digest: SkHQyz+ywgByitUaDwjPSpUoDj0=
+
+Name: org/apache/poi/ss/formula/ptg/RefNPtg.class
+SHA1-Digest: CUQNveXuUPJi1qQ82RdaB7ftDHM=
+
+Name: org/apache/poi/ss/formula/functions/LookupUtils$RowVector.class
+SHA1-Digest: o5FEO5YimqYeHv28HewQuyMGcmQ=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$2.class
+SHA1-Digest: x6lFoP9DVCxHXwcfhfG42HR5jXA=
+
+Name: org/apache/poi/hssf/record/NumberRecord.class
+SHA1-Digest: iy5QX4M6dE0bGT1WcwG42YTnPtw=
+
+Name: org/apache/poi/poifs/eventfilesystem/POIFSReader$SampleListener.
+ class
+SHA1-Digest: 4zeKiumn/lrAdgWYH4nq5RZA7sI=
+
+Name: org/apache/poi/ss/formula/OperationEvaluatorFactory.class
+SHA1-Digest: RmjJUYpWMfIzFZgPJUUJOQ5w07o=
+
+Name: org/apache/poi/hpsf/IndirectPropertyName.class
+SHA1-Digest: VFGNSwJf6GzKmhAFyB0TbMejiWw=
+
+Name: org/apache/poi/hssf/extractor/EventBasedExcelExtractor.class
+SHA1-Digest: 4s+5stHFg4jzFEWwBfrzGucwe1I=
+
+Name: org/apache/poi/hssf/util/HSSFColor$GREY_80_PERCENT.class
+SHA1-Digest: tWFGUaaQTREFqjen4Z4md2Yw0o4=
+
+Name: org/apache/poi/ddf/EscherSimpleProperty.class
+SHA1-Digest: bsy/BbEdxTMFCrdPK0AR7yOm14w=
+
+Name: org/apache/poi/ss/format/CellFormatCondition$2.class
+SHA1-Digest: e2ydbRGFgYNaOFs4Pdoxxfy2oLQ=
+
+Name: org/apache/poi/ss/formula/ptg/BoolPtg.class
+SHA1-Digest: gmwwDICEDouphtKZmFl1uWjmHT0=
+
+Name: org/apache/poi/ddf/EscherPropertyFactory.class
+SHA1-Digest: rItSoQqWpzuDw1XC3rC9/qVikUE=
+
+Name: org/apache/poi/poifs/filesystem/POIFSDocument$BigBlockStore.clas
+ s
+SHA1-Digest: TsithRzeawKqI+7d2TDHMmcL6+U=
+
+Name: org/apache/poi/poifs/storage/PropertyBlock.class
+SHA1-Digest: zuUrYYKBlmuVqQIg5UxvUJCCTZM=
+
+Name: org/apache/poi/hssf/util/HSSFColor$GREY_25_PERCENT.class
+SHA1-Digest: 2Ejl1bT6Zt1typIa/r/7SJ+6kGM=
+
+Name: org/apache/poi/ss/formula/eval/RelationalOperationEval$5.class
+SHA1-Digest: Zqm7TVOPySqt+B5uHm5RJmAg3lU=
+
+Name: org/apache/poi/ss/format/CellElapsedFormatter$TimeSpec.class
+SHA1-Digest: U5oIiG75X+BgSst6Xp7Bgjbcynk=
+
+Name: org/apache/poi/poifs/eventfilesystem/POIFSReader.class
+SHA1-Digest: OmgY+9wFgHPE0n6/NRPPP5p8pYg=
+
+Name: org/apache/poi/hssf/model/CommentShape.class
+SHA1-Digest: 60iivwan/41crjAnORWkUOeEuEg=
+
+Name: org/apache/poi/ss/usermodel/Workbook.class
+SHA1-Digest: zx1vlcvLhRElLh1ZgNBK8RHhpiU=
+
+Name: org/apache/poi/hssf/model/PictureShape.class
+SHA1-Digest: 1YqgYAB4AhzQqtKXw3u5eu9BGFM=
+
+Name: org/apache/poi/ss/formula/ptg/ErrPtg.class
+SHA1-Digest: 0h+vyYfLmSY7AApuuKGgPAp5Kso=
+
+Name: org/apache/poi/ss/formula/FormulaShifter$ShiftMode.class
+SHA1-Digest: SIB9/c/gQMivaRucqljnhCdq9mo=
+
+Name: org/apache/poi/poifs/crypt/EcmaDecryptor.class
+SHA1-Digest: QShWELCYmjKbdjlIwCXP1kNU62I=
+
+Name: org/apache/poi/hssf/model/ConvertAnchor.class
+SHA1-Digest: UQfO6E6H1eoemNVys+QNQ36xa5o=
+
+Name: org/apache/poi/ss/usermodel/HeaderFooter.class
+SHA1-Digest: whZ2ZQqVDD4/X00eV/w89TeJ56o=
+
+Name: org/apache/poi/hssf/record/ExternalNameRecord.class
+SHA1-Digest: kdCYYEcRlbDCq7/7XTz4Qay9kWw=
+
+Name: org/apache/poi/hssf/model/LineShape.class
+SHA1-Digest: WFPiFxd+P7WioCgdpl5FKkg3Tsc=
+
+Name: org/apache/poi/ss/formula/TwoDEval.class
+SHA1-Digest: Jh0ElY/bV65zNeg1J3ajMMS7Msk=
+
+Name: org/apache/poi/ss/formula/eval/NameXEval.class
+SHA1-Digest: uoLXvMhrlxUfEqC647f/49L7aek=
+
+Name: org/apache/poi/ss/formula/FormulaShifter$1.class
+SHA1-Digest: VuWBOXlzX36cOfcAY0qhnT3lT+A=
+
+Name: org/apache/poi/hssf/record/aggregates/PageSettingsBlock$1.class
+SHA1-Digest: raRPYovDdR5raM8jYxPHVpSJIQw=
+
+Name: org/apache/poi/hssf/record/CodepageRecord.class
+SHA1-Digest: jWv6B6XCl0apgOB8MjiJvUr4wg4=
+
+Name: org/apache/poi/hssf/util/HSSFColor$VIOLET.class
+SHA1-Digest: aGZfdcbaNT2U/qaK8abo1YKvHFI=
+
+Name: org/apache/poi/hssf/record/cont/ContinuableRecordInput.class
+SHA1-Digest: 8VgaRB14CuF/vqBzI6Mqo8w2gtc=
+
+Name: org/apache/poi/hssf/record/ObjectProtectRecord.class
+SHA1-Digest: qHeR9raTRGvSNEQR6EiEWHFAOQE=
+
+Name: org/apache/poi/poifs/property/Property.class
+SHA1-Digest: dGvzsED84IMmExZpOv18CicxIuI=
+
+Name: org/apache/poi/ss/usermodel/ShapeTypes.class
+SHA1-Digest: 4ry0kmtvtcazdPUczOM7ccTPxtM=
+
+Name: org/apache/poi/hssf/record/RecordFormatException.class
+SHA1-Digest: N1NpIjNTbXlaUMUydv0plg29lYA=
+
+Name: org/apache/poi/hssf/util/HSSFColor$LEMON_CHIFFON.class
+SHA1-Digest: /DyuaV+/JKDFM90JGLq3IKSo+jU=
+
+Name: org/apache/poi/ddf/EscherBoolProperty.class
+SHA1-Digest: atT8VaM7fwdrNUFO1VnN/Rncs5w=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$7.class
+SHA1-Digest: Mdp+qBQvAaa6TBqALEYhy+iT1H8=
+
+Name: org/apache/poi/hssf/util/HSSFColor$INDIGO.class
+SHA1-Digest: RMySjvolFkMkkBWlVuwJCcK/Ih0=
+
+Name: org/apache/poi/util/NullLogger.class
+SHA1-Digest: ytb8fOrL+jPESXNFfP+UjanrPTs=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$11.class
+SHA1-Digest: EVyB4JaMY/gcTtEF6D3EEO5Pa2A=
+
+Name: org/apache/poi/ss/usermodel/SheetConditionalFormatting.class
+SHA1-Digest: jzmeWjg40dEZ7KnfAfYiugGwOl0=
+
+Name: org/apache/poi/ss/usermodel/Drawing.class
+SHA1-Digest: wPVdS801GVE5qQVdr4+iw1T99zk=
+
+Name: org/apache/poi/ddf/NullEscherSerializationListener.class
+SHA1-Digest: 4Q9YXzpq5sQpqiTwJlYqUz8woF8=
+
+Name: org/apache/poi/ss/format/CellNumberFormatter.class
+SHA1-Digest: 5zn/z2Y4ET8IRNCSsWoCSSdwA/A=
+
+Name: org/apache/poi/hssf/extractor/EventBasedExcelExtractor$TextListe
+ ner.class
+SHA1-Digest: pVldvSuvOdRNFuGUvP0kQhAgeAk=
+
+Name: org/apache/poi/ss/formula/ptg/AbstractFunctionPtg.class
+SHA1-Digest: Iw9fQ2Oqm0YXmr5F8JKWckyWnIE=
+
+Name: org/apache/poi/hpsf/MutablePropertySet.class
+SHA1-Digest: YxghmzYCXr8UuVFdHoOMwcUSJaE=
+
+Name: org/apache/poi/ss/formula/EvaluationWorkbook$ExternalSheet.class
+SHA1-Digest: bcGTkShZj84oYWwFZChY0Urx1C4=
+
+Name: org/apache/poi/poifs/filesystem/BlockStore.class
+SHA1-Digest: wjbX6mOsZEF2gcHdNM12N+5d9RA=
+
+Name: org/apache/poi/ddf/EscherContainerRecord$ReadOnlyIterator.class
+SHA1-Digest: Y8HTSvfBTjzU3KkjwZq6kZamjiE=
+
+Name: org/apache/poi/hssf/record/aggregates/RecordAggregate$Serializin
+ gRecordVisitor.class
+SHA1-Digest: xxO/mNGqDxUzzjKKT+Z2TzrK4RM=
+
+Name: org/apache/poi/hssf/util/HSSFColor$BLACK.class
+SHA1-Digest: 0ajWosWJXNFLkQiTppRUclR6imY=
+
+Name: org/apache/poi/util/BinaryTree$6$1.class
+SHA1-Digest: h0QVkMrdX1ijeGLC+yO/FNi480c=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$22.class
+SHA1-Digest: 1n7RRujP2ofySKPwyEefOxsb9NE=
+
+Name: org/apache/poi/poifs/nio/FileBackedDataSource.class
+SHA1-Digest: Mm4rSx1B9zHEcnxh7V5cWhzhUDs=
+
+Name: org/apache/poi/hssf/record/TableRecord.class
+SHA1-Digest: VlKUDDoetACEhpHNvb/dWFXBIc0=
+
+Name: org/apache/poi/ss/format/CellTextFormatter.class
+SHA1-Digest: WZsIXT8GtnGG2VcPEM4bTviO98A=
+
+Name: org/apache/poi/hssf/record/cf/FontFormatting.class
+SHA1-Digest: 1UR7Zhks2PwK4VCJJbG6O1abZ/0=
+
+Name: org/apache/poi/ddf/EscherChildAnchorRecord.class
+SHA1-Digest: +vfNMvdlk4r5+gnHHcYYoMhkC5U=
+
+Name: org/apache/poi/hssf/record/crypto/Biff8DecryptingStream.class
+SHA1-Digest: 9wKBLZScnE3cujahhsP6Z26yd2c=
+
+Name: org/apache/poi/ss/util/SSCellRange.class
+SHA1-Digest: Hv7Vtfsgg5jEjeohgckAZ03WViI=
+
+Name: org/apache/poi/util/LZWDecompresser.class
+SHA1-Digest: MYkpaHBtbW6WdRsHzK5YQ6zt0gA=
+
+Name: org/apache/poi/hssf/eventmodel/EventRecordFactory.class
+SHA1-Digest: ANVfLc+f+absAUO+fbCWy9/Vmpo=
+
+Name: org/apache/poi/ss/usermodel/charts/ChartAxis.class
+SHA1-Digest: oMUs2XUmqJpWQQlpvcmIZcwON3U=
+
+Name: org/apache/poi/ss/formula/functions/Substitute.class
+SHA1-Digest: BOYCwiq9EVzQ2yttnhDqUmo/zfY=
+
+Name: org/apache/poi/hssf/record/TopMarginRecord.class
+SHA1-Digest: J1vCLwXUV8MUh9fsof9SmCChFVo=
+
+Name: org/apache/poi/hssf/util/HSSFColor$GREY_40_PERCENT.class
+SHA1-Digest: 0o+/Cqm3pT4NN9E1QB0FM6kE8h8=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$33.class
+SHA1-Digest: W8zbrJy+JcRHlG05XS1t9BAGXKQ=
+
+Name: org/apache/poi/ss/formula/ptg/GreaterThanPtg.class
+SHA1-Digest: MF+TOrxSAmxBVDTI8iwRhiDDjPc=
+
+Name: org/apache/poi/hssf/util/HSSFColor$LIGHT_YELLOW.class
+SHA1-Digest: CtZC/++8SgNOQCbWpxiKfk5NN6k=
+
+Name: org/apache/poi/hssf/record/aggregates/SharedValueManager.class
+SHA1-Digest: 5qlylTlnJoeFUHjxX4LkMxC0Xds=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$16.class
+SHA1-Digest: x0vGKxH3iS3SJ28XK8w6TDklroU=
+
+Name: org/apache/poi/ss/formula/functions/StatsLib.class
+SHA1-Digest: fvVBXcopcpBz9tlTw+fkIFTu0Pg=
+
+Name: org/apache/poi/hpsf/Util.class
+SHA1-Digest: /nll1mmCxTw+WiKKc1ZhYc3Ov9E=
+
+Name: org/apache/poi/hssf/record/aggregates/MergedCellsTable.class
+SHA1-Digest: von3CuGX3E4wC7iygwKGI7VmnoQ=
+
+Name: org/apache/poi/ddf/EscherRGBProperty.class
+SHA1-Digest: +TLORheW/PFZ1rLXrrHeacTmCy4=
+
+Name: org/apache/poi/ddf/EscherPictBlip.class
+SHA1-Digest: DDDK47kKmwvrZXWR3fMVa26tMgw=
+
+Name: org/apache/poi/ss/formula/functions/Address.class
+SHA1-Digest: EXfqfS1NORwioFKbpBLVf2+VwjU=
+
+Name: org/apache/poi/ss/formula/functions/XYNumericFunction$AreaValueA
+ rray.class
+SHA1-Digest: USsge0zvBOlAld7vG4IjlF0CT7E=
+
+Name: org/apache/poi/hssf/record/GutsRecord.class
+SHA1-Digest: XI4YX3NMauh8V5lilFISfx/u4eM=
+
+Name: org/apache/poi/hssf/record/chart/UnitsRecord.class
+SHA1-Digest: XU+cMb2n39goIe57/i1sYuVYTSA=
+
+Name: org/apache/poi/util/POILogger.class
+SHA1-Digest: LAq7TLG9PSnYiApUX/GqfTBvPNU=
+
+Name: org/apache/poi/ss/util/NormalisedDecimal.class
+SHA1-Digest: FBpw+R6vDXNXyqYvZ5pPuw/oaS4=
+
+Name: org/apache/poi/ss/util/CellRangeAddressList.class
+SHA1-Digest: OiU8TndidKDjR7JMsDdYbq7CH8U=
+
+Name: org/apache/poi/poifs/filesystem/ODocumentInputStream.class
+SHA1-Digest: sBittFGlah0Aw+6cgkWzpGcKkQA=
+
+Name: org/apache/poi/ss/formula/functions/IfFunc.class
+SHA1-Digest: vzM0MO4IFBX3676QDf8P/0hNlj0=
+
+Name: org/apache/poi/ss/formula/functions/Sumproduct.class
+SHA1-Digest: 8Xi1sHs2oKySZnJNfk/33QPXBDw=
+
+Name: org/apache/poi/ss/formula/functions/NumericFunction$27.class
+SHA1-Digest: c59aSXy0hjxjQ8KD03ejMTcVao0=
+
+Name: org/apache/poi/hssf/record/chart/AxisParentRecord.class
+SHA1-Digest: xxaldL8TclEkxfyeOKD5lH/kHgo=
+
