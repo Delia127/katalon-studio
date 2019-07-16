@@ -5,7 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
@@ -36,6 +41,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.core.InspectSession;
@@ -49,8 +55,9 @@ import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.util.listener.EventListener;
+import com.kms.katalon.util.listener.EventManager;
 
-public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEvent> {
+public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEvent>, EventManager<ObjectSpyEvent> {
 
     private static final String HIGHLIGHT_JS_PATH = "/resources/js/highlight.js";
 
@@ -58,6 +65,8 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
 
     private Button btnVerifyAndHighlight;
 
+    private Button btnAddScreenShotForElement;
+    
     private Composite connectingComposite;
 
     private GifCLabel connectingLabel;
@@ -99,7 +108,7 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
     public Composite createVerifyAndHighlightView(Composite parent, int layoutStyle) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(layoutStyle));
-        GridLayout gdVerifyView = new GridLayout(4, false);
+        GridLayout gdVerifyView = new GridLayout(5, false);
         gdVerifyView.marginWidth = 0;
         composite.setLayout(gdVerifyView);
 
@@ -123,7 +132,10 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         btnVerifyAndHighlight.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         btnVerifyAndHighlight.setText(ObjectspyMessageConstants.DIA_LBL_VERIFY_AND_HIGHLIGHT);
         
-
+        btnAddScreenShotForElement = new Button(composite, SWT.FLAT);
+        btnAddScreenShotForElement.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        btnAddScreenShotForElement.setText(ObjectspyMessageConstants.DIA_LBL_ADD_SCREENSHOT);
+        
         new HelpCompositeForDialog(composite, DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI) {
      
             @Override
@@ -268,24 +280,63 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
                 }
             }
         });
+        
+        btnAddScreenShotForElement.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+				Thread addScreenShotThread = new Thread(() -> {
+					try {
+						setConnectingCompositeVisibleSync(true);
+						WebDriver driver = null;
+						if (seleniumSession != null) {
+							driver = seleniumSession.getWebDriver();
+						} else if (activeBrowserSession != null) {
+							driver = activeBrowserSession.getRunningDriver();
+						} else {
+							return;
+						}					
+
+						String pathToImage = WebElementUtils.takeScreenShot(driver, webElement);
+						if(pathToImage.equals("")) {
+							displayErrorMessageSync("Fail to take screenshot !");
+							return;
+						}
+						
+						displaySuccessfulMessageSync("Screenshot taken");
+						
+						UISynchronizeService.syncExec(() -> {
+							webElement.getProperties()
+									.removeIf(screenshot -> screenshot.getName().equals("screenshot"));
+							webElement.addProperty(new WebElementPropertyEntity("screenshot", pathToImage, false));
+							invoke(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED, webElement);
+						});
+					} finally {
+						setConnectingCompositeVisibleSync(false);
+					}
+				});
+				addScreenShotThread.start();
+            }
+		});
     }
 
     /**
      * Handles the captured element changed
      */
-    private void onElementChanged() {
-        if (btnVerifyAndHighlight.isDisposed()) {
-            return;
-        }
+	private void onElementChanged() {
+		if (!btnVerifyAndHighlight.isDisposed()) {
+			if (seleniumSession == null && activeBrowserSession == null) {
+				btnVerifyAndHighlight.setEnabled(false);
+			}
+		}
 
-        clearMessage();
-        if (seleniumSession == null && activeBrowserSession == null) {
-            btnVerifyAndHighlight.setEnabled(false);
-            return;
-        }
-
-        changeBtnVerifyAndHighlightState();
-    }
+		if (!btnAddScreenShotForElement.isDisposed()) {
+			if (seleniumSession == null && activeBrowserSession == null) {
+				btnAddScreenShotForElement.setEnabled(false);
+			}
+		}
+		changeBtnAddScreenShotState();
+		changeBtnVerifyAndHighlightState();
+	}
 
     private void changeBtnVerifyAndHighlightState() {
         if (btnVerifyAndHighlight.isDisposed()) {
@@ -301,6 +352,18 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
             }
         }
         btnVerifyAndHighlight.setEnabled(allowEnable);
+    }
+    
+    private void changeBtnAddScreenShotState() {
+        if (btnAddScreenShotForElement.isDisposed()) {
+            return;
+        }
+
+        boolean allowEnable = false;
+        if (webElement != null) {
+        	allowEnable = true;
+        }
+        btnAddScreenShotForElement.setEnabled(allowEnable);
     }
 
     private By getSeleniumSelector(WebElement webElement) {
@@ -389,7 +452,7 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
 
             connectingComposite.setVisible(isConnectingCompositeVisible);
             btnVerifyAndHighlight.setEnabled(!isConnectingCompositeVisible);
-
+            btnAddScreenShotForElement.setEnabled(!isConnectingCompositeVisible);
             connectingComposite.getParent().layout(true, true);
         });
     }
@@ -420,5 +483,24 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
             default:
                 return;
         }
+    }
+
+    private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
+
+    @Override
+    public Iterable<EventListener<ObjectSpyEvent>> getListeners(ObjectSpyEvent event) {
+        return eventListeners.get(event);
+    }
+
+    @Override
+    public void addListener(EventListener<ObjectSpyEvent> listener, Iterable<ObjectSpyEvent> events) {
+        events.forEach(e -> {
+            Set<EventListener<ObjectSpyEvent>> listenerOnEvent = eventListeners.get(e);
+            if (listenerOnEvent == null) {
+                listenerOnEvent = new HashSet<>();
+            }
+            listenerOnEvent.add(listener);
+            eventListeners.put(e, listenerOnEvent);
+        });
     }
 }

@@ -1,7 +1,6 @@
 package com.kms.katalon.core.webui.common;
 
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -20,8 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
@@ -30,8 +27,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -902,51 +897,21 @@ public class WebUiCommonHelper extends KeywordHelper {
 	 */
 	public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
 			throws IOException {
-        // Get entire page screenshot
-        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        BufferedImage fullImg = ImageIO.read(screenshot);
-
-        // Get the location of element on the page
-        Point point = ele.getLocation();
-
-        // Crop the entire page screenshot to get only element screenshot
-        double devicePixelRatio = getDevicePixelRatio(driver);
-        int eleX = (int) Math.round(point.getX() * devicePixelRatio);
-        int eleY = (int) Math.round(point.getY() * devicePixelRatio);
-        int eleWidth = (int) Math.round(ele.getSize().getWidth() * devicePixelRatio);
-        int eleHeight = (int) Math.round(ele.getSize().getHeight() * devicePixelRatio);
-        BufferedImage eleScreenshot = fullImg.getSubimage(eleX, eleY, eleWidth, eleHeight);
-        ImageIO.write(eleScreenshot, "png", screenshot);
-        // Copy the element screenshot to internal folder
-        String screenshotPath = path;
-
-        screenshotPath = screenshotPath.replaceAll("\\\\", "/");
-        if (screenshotPath.endsWith("/")) {
-            screenshotPath += name;
-        } else {
-            screenshotPath += "/" + name;
-        }
-        screenshotPath += ".png";
-        File fileScreenshot = new File(screenshotPath);
-        FileUtils.copyFile(screenshot, fileScreenshot);
-        // Delete temporary image
-        screenshot.deleteOnExit();
-        return screenshotPath;
+		File screenshot = ele.getScreenshotAs(OutputType.FILE);		
+		String screenshotPath = path;
+		screenshotPath = screenshotPath.replaceAll("\\\\", "/");
+		if (screenshotPath.endsWith("/")) {
+			screenshotPath += name;
+		} else {
+			screenshotPath += "/" + name;
+		}
+		screenshotPath += ".png";
+		File fileScreenshot = new File(screenshotPath);
+		FileUtils.copyFile(screenshot, fileScreenshot);
+		// Delete temporary image
+		screenshot.deleteOnExit();
+		return screenshotPath;
 	}
-	
-    private static double getDevicePixelRatio(WebDriver driver) {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        Object executeScriptValue = js.executeScript("return window.devicePixelRatio;");
-        double devicePixelRatio = 1;
-        try {
-            if (executeScriptValue != null) {
-                devicePixelRatio = Double.valueOf(executeScriptValue.toString());
-            }
-        } catch (NumberFormatException e) {
-            devicePixelRatio = 1;
-        }
-        return devicePixelRatio;
-    }
 	    
     @SuppressWarnings("unused")
 	private static List<WebElement> findWebElementsUsingHeuristicMethod(

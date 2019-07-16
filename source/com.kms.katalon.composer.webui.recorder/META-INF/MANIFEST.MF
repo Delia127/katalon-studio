@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.composer.webui.recorder.core,
- com.kms.katalon.composer.webui.recorder.dialog
+ com.kms.katalon.composer.webui.recorder.dialog,
+ com.kms.katalon.composer.webui.recorder.websocket
 Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  com.kms.katalon.core.webui;bundle-version="1.0.0",
  com.kms.katalon.execution,

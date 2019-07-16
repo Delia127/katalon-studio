@@ -19,6 +19,8 @@ import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 @ClientEndpoint
 @ServerEndpoint(value = "/")
 public class RecorderAddonSocket extends AddonSocket {
+	
+	@Override
     protected void handleOldElementMessage(String message) {
         try {
             String key = HTMLElementUtil.decodeURIComponent(message.substring(0, message.indexOf(EQUALS)));
@@ -40,16 +42,15 @@ public class RecorderAddonSocket extends AddonSocket {
         System.out.println("WS: Start recording");        
     }
 
-    private void addNewAction(String value) {
-        try {
-            HTMLActionMapping actionMapping = HTMLActionJsonParser.parseJsonIntoHTMLActionMapping(value);
-            
-            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.RECORDER_HTML_ACTION_CAPTURED,
-                    actionMapping);
-        } catch (JsonSyntaxException | UnsupportedEncodingException e) {
-            LoggerSingleton.logError(e);
-        }
-    }
+	private void addNewAction(String value) {
+		try {
+				HTMLActionMapping actionMapping = HTMLActionJsonParser.parseJsonIntoHTMLActionMapping(value);
+			EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.RECORDER_HTML_ACTION_CAPTURED,
+					actionMapping);
+		} catch (JsonSyntaxException | UnsupportedEncodingException e) {
+			LoggerSingleton.logError(e);
+		}
+	}
     
     @Override
     public void sendMessage(AddonMessage message) {

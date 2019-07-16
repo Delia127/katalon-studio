@@ -2,10 +2,10 @@ package com.kms.katalon.objectspy.util;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +18,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,6 +34,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -38,7 +43,6 @@ import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
-import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -244,7 +248,30 @@ public class WebElementUtils {
         return el;
     }
 
-    private static List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocatorSettings() {
+	public static String takeScreenShot(WebDriver driver, WebElement el) {
+		new WebDriverWait(driver, 30).until(webDriver -> ((JavascriptExecutor) webDriver)
+				.executeScript("return document.readyState").equals("complete"));
+		
+		String currentProjectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+		File imageFolder = new File(currentProjectLocation + "/tmpImages");
+		imageFolder.mkdirs();		
+        TestObject testObject = WebElementUtils.buildTestObject(el);
+        By selectorMethod = WebUiCommonHelper.buildLocator(testObject);
+
+		org.openqa.selenium.WebElement element = driver.findElement(selectorMethod);
+		String screenshotPath = "";
+		if (element != null) {
+			try {
+				screenshotPath = WebUiCommonHelper.saveWebElementScreenshot(driver, element, el.getName(),
+						imageFolder.getAbsolutePath());
+			} catch (Exception e) {
+				LoggerSingleton.logError(e);
+			}
+		}
+		return screenshotPath;
+	}
+
+	private static List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocatorSettings() {
         WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
                 ProjectController.getInstance().getCurrentProject());
         try {

@@ -9,14 +9,12 @@ import java.nio.charset.Charset;
 import java.nio.file.InvalidPathException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -37,6 +35,7 @@ import com.google.gson.Gson;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.helper.screenrecorder.Recorder;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
@@ -121,7 +120,7 @@ public class InspectSession implements Runnable {
     public InspectSession(HTMLElementCaptureServer server, IDriverConnector driverConnector) {
         this(server, driverConnector, null);
     }
-
+    
     protected void setUp() throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
         DefaultExecutionSetting executionSetting = new DefaultExecutionSetting();
         executionSetting.setTimeout(ExecutionUtil.getDefaultImplicitTimeout());
@@ -138,16 +137,16 @@ public class InspectSession implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        try {
-            setUp();
-        } catch (IOException | ExtensionNotFoundException | BrowserNotSupportedException e) {
-            LoggerSingleton.logError(e);
-            showErrorMessageDialog(e.getMessage());
-        }
-        runSeleniumWebDriver();
-    }
+	@Override
+	public void run() {
+		try {
+			setUp();
+		} catch (IOException | ExtensionNotFoundException | BrowserNotSupportedException e) {
+			LoggerSingleton.logError(e);
+			showErrorMessageDialog(e.getMessage());
+		}
+		runSeleniumWebDriver();
+	}
 
     public void setupIE() throws IOException {
         File settingFolder = new File(getIEApplicationDataFolder());
@@ -197,7 +196,9 @@ public class InspectSession implements Runnable {
                     // Invalid url, ignore this
                 }
             }
-
+            
+            setSeleniumDriverToAllAddonSocket(driver);
+            
             while (isRunFlag) {
                 try {
                     Thread.sleep(1000L);
@@ -224,6 +225,19 @@ public class InspectSession implements Runnable {
             dispose();
         }
     }
+    
+	/**
+	 * Make this instance of {@link WebDriver} of this
+	 * InspectSession/RecordSession available to all add-on sockets
+	 * This should be called when the session is about to be disposed
+	 * with a null argument to clean up
+	 * @param driver
+	 */
+	private void setSeleniumDriverToAllAddonSocket(WebDriver driver) {
+		AddonSocketServer.getInstance().getAllAddonSockets().stream().forEach(socket -> {
+			socket.setRunningDriver(driver);
+		});
+	}
 
     protected void handleForFirefoxAddon() throws InterruptedException {
         LoggerSingleton.logInfo("Connecting Firefox Recorder with socket server...");
@@ -347,6 +361,7 @@ public class InspectSession implements Runnable {
             if (serverSettingFile.exists()) {
                 serverSettingFile.delete();
             }
+            setSeleniumDriverToAllAddonSocket(null);
         } catch (UnreachableBrowserException e) {} catch (WebDriverException e) {
             LoggerSingleton.logError(e);
         }

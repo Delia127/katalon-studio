@@ -158,9 +158,6 @@ public class ObjectPropertiesView extends Composite
         addControlListeners();
 
         enableControls();
-
-        subscribeEvents();
-
     }
     
     
@@ -967,19 +964,8 @@ public class ObjectPropertiesView extends Composite
         return webElement.getXpaths();
     }
     
-    private void subscribeEvents() {
-        // TODO Subscribe events
-
-    }
-
-    private void unsubscribeEvents() {
-        // TODO Unsubscribe events
-
-    }
-
     @Override
     public void dispose() {
-        unsubscribeEvents();
         super.dispose();
     }
 
@@ -1004,6 +990,9 @@ public class ObjectPropertiesView extends Composite
             case SELECTED_ELEMENT_CHANGED:
                 setWebElement((WebElement) object);
                 return;
+            case ELEMENT_PROPERTIES_CHANGED:
+            	setWebElement((WebElement) object);
+            	return;
             default:
                 return;
         }
