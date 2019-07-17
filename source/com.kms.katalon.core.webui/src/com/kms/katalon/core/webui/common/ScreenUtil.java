@@ -1,7 +1,6 @@
 package com.kms.katalon.core.webui.common;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -13,9 +12,6 @@ import org.sikuli.api.robot.Keyboard;
 import org.sikuli.api.robot.Mouse;
 import org.sikuli.api.robot.desktop.DesktopKeyboard;
 import org.sikuli.api.robot.desktop.DesktopMouse;
-import org.sikuli.script.Finder;
-import org.sikuli.script.Match;
-import org.sikuli.script.Pattern;
 
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.webui.constants.StringConstants;
@@ -115,7 +111,7 @@ public class ScreenUtil {
         clickImage(screenFolder + File.separator + okImg);
     }
 
-    public ScreenRegion findImage(String imagePath) throws Exception {
+    private ScreenRegion findImage(String imagePath) throws Exception {
         File imgFile = new File(imagePath);
         if (imgFile.exists()) {
             Target target = new ImageTarget(imgFile);
@@ -144,27 +140,4 @@ public class ScreenUtil {
             throw new Exception(StringConstants.COMM_EXC_IMG_FILE_DOES_NOT_EXIST);
         }
     }
-    
-	public static double compare(String src, String dst) {
-		Match matchest = null;
-		Finder finder = null;
-		try {
-			finder = new Finder(src);
-			finder.find(new Pattern(dst).similar((float) 0.6));
-			matchest = finder.next();
-			if (finder.hasNext()) {
-				Match thisMatch = finder.next();
-				if (thisMatch.getScore() > matchest.getScore()) {
-					matchest = thisMatch;
-				}
-			}
-		} catch (IOException e) {
-
-		}
-		if (matchest == null || finder == null) {
-			return -1.0;
-		}
-		finder.destroy();
-		return matchest.getScore();
-	}
 }

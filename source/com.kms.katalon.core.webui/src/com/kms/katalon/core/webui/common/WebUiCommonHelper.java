@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -834,31 +833,8 @@ public class WebUiCommonHelper extends KeywordHelper {
 			
 			if(outerMostElementAtXandY != null) {
 				return Arrays.asList(outerMostElementAtXandY);
-			}
-			
-			System.out.println("outerMostElementAtXandY: " + outerMostElementAtXandY);
-			String pathToBoundingImageName = "src_" + UUID.randomUUID().toString().substring(0, 10);
-			String pathToBoundingImage = WebUiCommonHelper.saveWebElementScreenshot(webDriver, outerMostElementAtXandY,
-					pathToBoundingImageName, path);
-			List<WebElement> innerElements = outerMostElementAtXandY.findElements(By.xpath(".//*"));
-			WebElement closestMatchedElement = null;
-			double closestMatchScore = 0.0;
-			for (WebElement child : innerElements) {
-				String candidateName = "child_" + UUID.randomUUID().toString().substring(0, 10);
-				String candidate = WebUiCommonHelper.saveWebElementScreenshot(webDriver, child, candidateName, path);
-				System.out.println("candidate: " + candidate);
-				double score = ScreenUtil.compare(pathToBoundingImage, candidate);
-				System.out.println(score);
-				if (score >= closestMatchScore) {
-					closestMatchScore = score;
-					closestMatchedElement = child;
-				}
-			}
-			if (closestMatchedElement == null) {
-				return null;
-			}
-			System.out.println(closestMatchedElement.getAttribute("outerHTML"));
-			return Arrays.asList(closestMatchedElement);
+			} 
+			return null;
 		} catch (Exception e) {
 			logger.logError(ExceptionUtils.getFullStackTrace(e));
 		} finally {
