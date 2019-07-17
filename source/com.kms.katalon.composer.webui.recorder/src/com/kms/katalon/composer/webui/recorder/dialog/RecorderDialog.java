@@ -615,6 +615,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         
         selectorEditor.addListener(verifyView, Arrays.asList(ObjectSpyEvent.SELECTOR_HAS_CHANGED));
         objectPropertiesView.addListener(selectorEditor, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
+        objectPropertiesView.addListener(verifyView, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
+
         verifyView.addListener(objectPropertiesView, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
 
         this.addListener(verifyView,

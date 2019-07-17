@@ -203,8 +203,7 @@ public class RunConfiguration {
     }
 
     public static Object getProperty(String propertyKey) {
-        Map<String, Object> mapStorage = localExecutionSettingMapStorage.get();
-        return mapStorage.get(propertyKey);
+        return localExecutionSettingMapStorage.get().get(propertyKey);
     }
 
     public static String getStringProperty(String propertyKey) {
