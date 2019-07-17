@@ -184,8 +184,8 @@ public class RecommendPluginsDialog extends Dialog {
 
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        for (int i = 0; i < idProduct.size(); i++) {
-                            if (buttons.get(i).getSelection() != true) {
+                        for (int i = 0; i < recommendList.size(); i++) {
+                            if (buttons.get(i).getSelection() == false) {
                                 idProduct.remove(recommendList.get(i).getId());
                             }
                             if (buttons.get(i).getSelection() == true
