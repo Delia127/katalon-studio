@@ -200,7 +200,7 @@ public class RecommendPluginsDialog extends Dialog {
 
                     }
                 });
-            } System.out.println(idProduct);
+            }
            
         } catch (KStoreClientException e) {
             LoggerSingleton.logError(e);
