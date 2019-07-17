@@ -186,20 +186,22 @@ public class RecommendPluginsDialog extends Dialog {
                     public void widgetSelected(SelectionEvent e) {
                         for (int i = 0; i < idProduct.size(); i++) {
                             if (buttons.get(i).getSelection() != true) {
-                                idProduct.remove(idProduct.get(i));
-                            } else if (buttons.get(i).getSelection() == true
+                                idProduct.remove(recommendList.get(i).getId());
+                            }
+                            if (buttons.get(i).getSelection() == true
                                     && !idProduct.contains(recommendList.get(i).getId())) {
-                                idProduct.add(idProduct.get(i));
+                                idProduct.add(recommendList.get(i).getId());
                             }
                         }
                     }
-
+                   
                     @Override
                     public void widgetDefaultSelected(SelectionEvent e) {
 
                     }
                 });
-            }
+            } System.out.println(idProduct);
+           
         } catch (KStoreClientException e) {
             LoggerSingleton.logError(e);
         } catch (KStoreClientAuthException e) {
