@@ -12,8 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -118,7 +121,7 @@ public class InspectSession implements Runnable {
     public InspectSession(HTMLElementCaptureServer server, IDriverConnector driverConnector) {
         this(server, driverConnector, null);
     }
-    
+
     protected void setUp() throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
         DefaultExecutionSetting executionSetting = new DefaultExecutionSetting();
         executionSetting.setTimeout(ExecutionUtil.getDefaultImplicitTimeout());
@@ -135,16 +138,16 @@ public class InspectSession implements Runnable {
         }
     }
 
-	@Override
-	public void run() {
-		try {
-			setUp();
-		} catch (IOException | ExtensionNotFoundException | BrowserNotSupportedException e) {
-			LoggerSingleton.logError(e);
-			showErrorMessageDialog(e.getMessage());
-		}
-		runSeleniumWebDriver();
-	}
+    @Override
+    public void run() {
+        try {
+            setUp();
+        } catch (IOException | ExtensionNotFoundException | BrowserNotSupportedException e) {
+            LoggerSingleton.logError(e);
+            showErrorMessageDialog(e.getMessage());
+        }
+        runSeleniumWebDriver();
+    }
 
     public void setupIE() throws IOException {
         File settingFolder = new File(getIEApplicationDataFolder());
@@ -194,7 +197,7 @@ public class InspectSession implements Runnable {
                     // Invalid url, ignore this
                 }
             }
-            
+
             while (isRunFlag) {
                 try {
                     Thread.sleep(1000L);
