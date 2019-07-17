@@ -248,13 +248,29 @@ public class WebElementUtils {
         return el;
     }
 
+	/**
+	 * Take screenshot of the given
+	 * {@link com.kms.katalon.objectspy.element.WebElement} and store it in the
+	 * default folder ProjectFolder/screenshots.
+	 * 
+	 * Note that this has a different signature than
+	 * {@link WebUiCommonHelper#saveWebElementScreenshot(WebDriver, org.openqa.selenium.WebElement, String, String)}
+	 * in term of WebElement's type
+	 * 
+	 * @param driver
+	 *            Current running {@link WebDriver} instance
+	 * @param el
+	 *            The given {@link com.kms.katalon.objectspy.element.WebElement}
+	 * @return An absolute path to the screenshot if available, otherwise empty
+	 *         string
+	 */
 	public static String takeScreenShot(WebDriver driver, WebElement el) {
 		new WebDriverWait(driver, 30).until(webDriver -> ((JavascriptExecutor) webDriver)
 				.executeScript("return document.readyState").equals("complete"));
 		
 		String currentProjectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-		File imageFolder = new File(currentProjectLocation + "/tmpImages");
-		imageFolder.mkdirs();		
+		File imageFolder = new File(currentProjectLocation + "/screenshots");
+		imageFolder.mkdirs();
         TestObject testObject = WebElementUtils.buildTestObject(el);
         By selectorMethod = WebUiCommonHelper.buildLocator(testObject);
 

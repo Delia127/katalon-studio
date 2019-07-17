@@ -1,6 +1,9 @@
 package com.kms.katalon.core.webui.common;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -13,14 +16,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -32,6 +39,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
+import org.sikuli.api.ScreenRegion;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
@@ -774,9 +782,14 @@ public class WebUiCommonHelper extends KeywordHelper {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
             // Only apply Smart XPath to test objects that have selector method of XPath AND if Smart XPath is enabled
             if(testObject.getSelectorMethod().equals(SelectorMethod.XPATH) && smartXPathsEnabled){
-                List<WebElement> elementsByOtherMethods = findWebElementsWithSmartXPath(webDriver, objectInsideShadowDom, testObject);
-                return elementsByOtherMethods;
+                List<WebElement> elementsFoundBySmartXPath = findWebElementsWithSmartXPath(webDriver, objectInsideShadowDom, testObject);
+                return elementsFoundBySmartXPath;
             }
+            
+			return testObject.getProperties().stream().filter(a -> a.getName().equals("screenshot")).findAny()
+					.map(present -> {
+						return findElementByScreenShot(webDriver, present.getValue());
+					}).orElse(Collections.emptyList());
 
         } catch (TimeoutException e) {
             // timeOut, do nothing
@@ -792,6 +805,70 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
+	private static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot) {
+		JavascriptExecutor js = (JavascriptExecutor) webDriver;
+		double viewportWidth = ((Number) js.executeScript("return window.innerWidth")).doubleValue();
+		double viewportHeight = ((Number) js.executeScript("return window.innerHeight")).doubleValue();
+		double driverWidth = webDriver.manage().window().getSize().getWidth();
+		double driverHeight = webDriver.manage().window().getSize().getHeight();
+		
+		System.out.println("driver: " + driverWidth + " , " + driverHeight);
+		System.out.println("viewport: " + viewportWidth + " , " + viewportHeight);
+		ScreenUtil screen = new ScreenUtil(0.6);
+		logger.logInfo("Attempting to find element by its screenshot !");
+		String path = new File(pathToScreenshot).getParent() + "/sikuli-generated";
+		File tmpFile = new File(path);
+		try {
+			List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
+			ScreenRegion matchedRegion = matchedRegions.get(0);
+			System.out.println("screenshot:" + pathToScreenshot);
+			double matchedRegionX = matchedRegion.getBounds().getX();
+			double matchedRegionY = matchedRegion.getBounds().getY();
+			System.out.println("matchedRegion: " + matchedRegionX + " , " + matchedRegionY);
+			double xRelativeToDriver = matchedRegionX;
+			double yRelativeToDriver = matchedRegionY - (driverHeight - viewportHeight);
+			System.out.println("relativeToDriver: " + xRelativeToDriver + " , " + yRelativeToDriver);
+			WebElement outerMostElementAtXandY = (WebElement) ((JavascriptExecutor) webDriver).executeScript(
+					"return document.elementFromPoint(arguments[0], arguments[1])", (int) xRelativeToDriver,
+					(int) yRelativeToDriver);
+			
+			if(outerMostElementAtXandY != null) {
+				return Arrays.asList(outerMostElementAtXandY);
+			}
+			
+			System.out.println("outerMostElementAtXandY: " + outerMostElementAtXandY);
+			String pathToBoundingImageName = "src_" + UUID.randomUUID().toString().substring(0, 10);
+			String pathToBoundingImage = WebUiCommonHelper.saveWebElementScreenshot(webDriver, outerMostElementAtXandY,
+					pathToBoundingImageName, path);
+			List<WebElement> innerElements = outerMostElementAtXandY.findElements(By.xpath(".//*"));
+			WebElement closestMatchedElement = null;
+			double closestMatchScore = 0.0;
+			for (WebElement child : innerElements) {
+				String candidateName = "child_" + UUID.randomUUID().toString().substring(0, 10);
+				String candidate = WebUiCommonHelper.saveWebElementScreenshot(webDriver, child, candidateName, path);
+				System.out.println("candidate: " + candidate);
+				double score = ScreenUtil.compare(pathToBoundingImage, candidate);
+				System.out.println(score);
+				if (score >= closestMatchScore) {
+					closestMatchScore = score;
+					closestMatchedElement = child;
+				}
+			}
+			if (closestMatchedElement == null) {
+				return null;
+			}
+			System.out.println(closestMatchedElement.getAttribute("outerHTML"));
+			return Arrays.asList(closestMatchedElement);
+		} catch (Exception e) {
+			logger.logError(ExceptionUtils.getFullStackTrace(e));
+		} finally {
+			if (tmpFile.exists()) {
+				tmpFile.delete();
+			}
+		}
+		return null;
+	}
+
 	private static List<WebElement> findWebElementsWithSmartXPath(WebDriver webDriver, boolean objectInsideShadowDom,
 			TestObject testObject) {
 
@@ -875,10 +952,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     
 	/**
 	 * Take and save screenshot of a web element on the web page WebDriver is
-	 * currently on. The web page's screenshot is first taken and converted into
-	 * a BufferedImage, then the web element's location is retrieved and used to
-	 * sub-image from the BufferedImage. The image (if saved successfully) will
-	 * be under PNG extension.
+	 * currently on. The image will be resized to the web element's width and height
 	 * 
 	 * @param driver
 	 *            A WebDriver instance that's being used at the time calling
@@ -897,7 +971,12 @@ public class WebUiCommonHelper extends KeywordHelper {
 	 */
 	public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
 			throws IOException {
-		File screenshot = ele.getScreenshotAs(OutputType.FILE);		
+		File screenshot = ele.getScreenshotAs(OutputType.FILE);
+		BufferedImage screenshotBeforeResized = ImageIO.read(screenshot);
+		int eleWidth = ele.getRect().getWidth();
+		int eleHeight = ele.getRect().getHeight();
+		BufferedImage screenshotAfterResized = resize(screenshotBeforeResized, eleHeight, eleWidth);
+		ImageIO.write(screenshotAfterResized, "png", screenshot);
 		String screenshotPath = path;
 		screenshotPath = screenshotPath.replaceAll("\\\\", "/");
 		if (screenshotPath.endsWith("/")) {
@@ -912,6 +991,15 @@ public class WebUiCommonHelper extends KeywordHelper {
 		screenshot.deleteOnExit();
 		return screenshotPath;
 	}
+	
+	private static BufferedImage resize(BufferedImage img, int height, int width) {
+        Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+        return resized;
+    }
 	    
     @SuppressWarnings("unused")
 	private static List<WebElement> findWebElementsUsingHeuristicMethod(

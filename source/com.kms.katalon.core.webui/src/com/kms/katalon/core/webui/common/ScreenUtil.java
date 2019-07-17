@@ -1,6 +1,9 @@
 package com.kms.katalon.core.webui.common;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
 
 import org.sikuli.api.DesktopScreenRegion;
 import org.sikuli.api.ImageTarget;
@@ -10,6 +13,9 @@ import org.sikuli.api.robot.Keyboard;
 import org.sikuli.api.robot.Mouse;
 import org.sikuli.api.robot.desktop.DesktopKeyboard;
 import org.sikuli.api.robot.desktop.DesktopMouse;
+import org.sikuli.script.Finder;
+import org.sikuli.script.Match;
+import org.sikuli.script.Pattern;
 
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.webui.constants.StringConstants;
@@ -26,7 +32,7 @@ public class ScreenUtil {
         mainScreen = new DesktopScreenRegion();
     }
 
-    public ScreenUtil(int similarity) {
+    public ScreenUtil(double similarity) {
         this();
         this.similarity = similarity;
     }
@@ -109,7 +115,7 @@ public class ScreenUtil {
         clickImage(screenFolder + File.separator + okImg);
     }
 
-    private ScreenRegion findImage(String imagePath) throws Exception {
+    public ScreenRegion findImage(String imagePath) throws Exception {
         File imgFile = new File(imagePath);
         if (imgFile.exists()) {
             Target target = new ImageTarget(imgFile);
@@ -120,4 +126,45 @@ public class ScreenUtil {
             throw new Exception(StringConstants.COMM_EXC_IMG_FILE_DOES_NOT_EXIST);
         }
     }
+    
+    public List<ScreenRegion> findImages(String imagePath) throws Exception {
+        File imgFile = new File(imagePath);
+        if (imgFile.exists()) {
+            Target target = new ImageTarget(imgFile);
+            target.setMinScore(this.similarity);
+            List<ScreenRegion> regions = this.mainScreen.findAll(target);
+            regions.sort(new Comparator<ScreenRegion>(){
+				@Override
+				public int compare(ScreenRegion o1, ScreenRegion o2) {
+					return Double.compare(o1.getScore(), o2.getScore());
+				}
+            });
+            return regions;
+        } else {
+            throw new Exception(StringConstants.COMM_EXC_IMG_FILE_DOES_NOT_EXIST);
+        }
+    }
+    
+	public static double compare(String src, String dst) {
+		Match matchest = null;
+		Finder finder = null;
+		try {
+			finder = new Finder(src);
+			finder.find(new Pattern(dst).similar((float) 0.6));
+			matchest = finder.next();
+			if (finder.hasNext()) {
+				Match thisMatch = finder.next();
+				if (thisMatch.getScore() > matchest.getScore()) {
+					matchest = thisMatch;
+				}
+			}
+		} catch (IOException e) {
+
+		}
+		if (matchest == null || finder == null) {
+			return -1.0;
+		}
+		finder.destroy();
+		return matchest.getScore();
+	}
 }
