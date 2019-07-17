@@ -9,7 +9,6 @@ import java.nio.charset.Charset;
 import java.nio.file.InvalidPathException;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -35,7 +34,6 @@ import com.google.gson.Gson;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.helper.screenrecorder.Recorder;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
@@ -197,8 +195,6 @@ public class InspectSession implements Runnable {
                 }
             }
             
-            setSeleniumDriverToAllAddonSocket(driver);
-            
             while (isRunFlag) {
                 try {
                     Thread.sleep(1000L);
@@ -225,19 +221,6 @@ public class InspectSession implements Runnable {
             dispose();
         }
     }
-    
-	/**
-	 * Make this instance of {@link WebDriver} of this
-	 * InspectSession/RecordSession available to all add-on sockets
-	 * This should be called when the session is about to be disposed
-	 * with a null argument to clean up
-	 * @param driver
-	 */
-	private void setSeleniumDriverToAllAddonSocket(WebDriver driver) {
-		AddonSocketServer.getInstance().getAllAddonSockets().stream().forEach(socket -> {
-			socket.setRunningDriver(driver);
-		});
-	}
 
     protected void handleForFirefoxAddon() throws InterruptedException {
         LoggerSingleton.logInfo("Connecting Firefox Recorder with socket server...");
@@ -361,7 +344,6 @@ public class InspectSession implements Runnable {
             if (serverSettingFile.exists()) {
                 serverSettingFile.delete();
             }
-            setSeleniumDriverToAllAddonSocket(null);
         } catch (UnreachableBrowserException e) {} catch (WebDriverException e) {
             LoggerSingleton.logError(e);
         }

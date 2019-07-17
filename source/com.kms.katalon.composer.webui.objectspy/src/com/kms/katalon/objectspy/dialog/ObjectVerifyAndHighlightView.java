@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -59,7 +58,7 @@ import com.kms.katalon.util.listener.EventManager;
 
 public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEvent>, EventManager<ObjectSpyEvent> {
 
-    private static final String HIGHLIGHT_JS_PATH = "/resources/js/highlight.js";
+	private static final String HIGHLIGHT_JS_PATH = "/resources/js/highlight.js";
 
     private Label lblMessageVerifyObject;
 
@@ -283,39 +282,34 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         
         btnAddScreenShotForElement.addSelectionListener(new SelectionAdapter() {
             @Override
-            public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent e) {
 				Thread addScreenShotThread = new Thread(() -> {
 					try {
 						setConnectingCompositeVisibleSync(true);
 						WebDriver driver = null;
 						if (seleniumSession != null) {
 							driver = seleniumSession.getWebDriver();
-						} else if (activeBrowserSession != null) {
-							driver = activeBrowserSession.getRunningDriver();
 						} else {
-							return;
-						}					
-
-						String pathToImage = WebElementUtils.takeScreenShot(driver, webElement);
-						if(pathToImage.equals("")) {
-							displayErrorMessageSync("Fail to take screenshot !");
+							displayErrorMessageSync(ObjectspyMessageConstants.FAIL_TO_TAKE_SCREENSHOT);
 							return;
 						}
-						
-						displaySuccessfulMessageSync("Screenshot taken");
-						
-						UISynchronizeService.syncExec(() -> {
-							webElement.getProperties()
-									.removeIf(screenshot -> screenshot.getName().equals("screenshot"));
-							webElement.addProperty(new WebElementPropertyEntity("screenshot", pathToImage, false));
-							invoke(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED, webElement);
-						});
+						String pathToImage = WebElementUtils.takeScreenShot(driver, webElement);
+						if (pathToImage.equals("")) {
+							displayErrorMessageSync(ObjectspyMessageConstants.FAIL_TO_TAKE_SCREENSHOT);
+							return;
+						}
+						webElement.getProperties().removeIf(screenshot -> screenshot.getName().equals("screenshot"));
+						webElement.addProperty(new WebElementPropertyEntity("screenshot", pathToImage, false));
+						displaySuccessfulMessageSync(ObjectspyMessageConstants.SCREENSHOT_TAKEN);
+						invoke(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED, webElement);
+					} catch (Exception ex) {
+						LoggerSingleton.logError(ex);
 					} finally {
 						setConnectingCompositeVisibleSync(false);
 					}
 				});
 				addScreenShotThread.start();
-            }
+			}
 		});
     }
 
@@ -323,17 +317,6 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
      * Handles the captured element changed
      */
 	private void onElementChanged() {
-		if (!btnVerifyAndHighlight.isDisposed()) {
-			if (seleniumSession == null && activeBrowserSession == null) {
-				btnVerifyAndHighlight.setEnabled(false);
-			}
-		}
-
-		if (!btnAddScreenShotForElement.isDisposed()) {
-			if (seleniumSession == null && activeBrowserSession == null) {
-				btnAddScreenShotForElement.setEnabled(false);
-			}
-		}
 		changeBtnAddScreenShotState();
 		changeBtnVerifyAndHighlightState();
 	}
@@ -351,6 +334,11 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
                 allowEnable = true;
             }
         }
+
+        if(seleniumSession == null && activeBrowserSession == null) {
+        	allowEnable = false;
+        }
+        
         btnVerifyAndHighlight.setEnabled(allowEnable);
     }
     
@@ -363,6 +351,9 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         if (webElement != null) {
         	allowEnable = true;
         }
+		if (seleniumSession == null) {
+			allowEnable = false;
+		}
         btnAddScreenShotForElement.setEnabled(allowEnable);
     }
 

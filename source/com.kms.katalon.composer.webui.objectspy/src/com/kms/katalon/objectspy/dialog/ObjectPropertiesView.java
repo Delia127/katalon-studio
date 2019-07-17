@@ -89,11 +89,11 @@ public class ObjectPropertiesView extends Composite
 
     private TableViewerColumn cvProperty, cvCondition, cvValue, cvSelected;
     
-    private TableViewerColumn cvXpathName, cvXpathValue, cvXpathSelected;
+    private TableViewerColumn cvXpathName, cvXpathValue;
 
     private TableColumn cName, cCondition, cValue, cSelected;
     
-    private TableColumn cXpathName, cXpathValue, cXpathSelected;
+    private TableColumn cXpathName, cXpathValue;
 
     private Text txtName;
 
@@ -607,18 +607,6 @@ public class ObjectPropertiesView extends Composite
                 && WebElementXpathEntity.class.getSimpleName().equals(element.getClass().getSimpleName());
     }
     
-
-    // Set all xpaths to de-selected state
-    private void deselectAllXpaths(){
-    	List<WebElementXpathEntity> xpaths = getXpaths();
-    	
-    	for(WebElementXpathEntity xpath : xpaths){
-    		xpath.setIsSelected(false);
-    	}
-    	
-    }
-    
-
     private void addControlListeners() {
         txtName.addModifyListener(new ModifyListener() {
             @Override
@@ -813,18 +801,6 @@ public class ObjectPropertiesView extends Composite
         return properties.stream().filter(property -> property.getIsSelected()).count() == properties.size();
     }
     
-    private boolean isAllXpathEnabled() {
-        if (webElement == null) {
-            return false;
-        }
-
-        List<WebElementXpathEntity> xpaths = getXpaths();
-        if (xpaths == null || xpaths.isEmpty()) {
-            return false;
-        }
-
-        return xpaths.stream().filter(xpath -> xpath.getIsSelected()).count() == xpaths.size();
-    }
 
     private void setAllProperty(boolean isSelected) {
         if (webElement == null) {
@@ -840,20 +816,6 @@ public class ObjectPropertiesView extends Composite
         updateWebObjectProperties();
     }
     
-    private void setAllXpath(boolean isSelected) {
-        if (webElement == null) {
-            return;
-        }
-
-        List<WebElementXpathEntity> xpaths = getXpaths();
-        if (xpaths == null || xpaths.isEmpty()) {
-            return;
-        }
-
-        xpaths.forEach(xpath -> xpath.setIsSelected(isSelected));
-        updateWebObjectXpaths();
-    }
-
     private WebElementPropertyEntity openAddPropertyDialog() {
         AddTestObjectPropertyDialog dialog = new AddTestObjectPropertyDialog(shell);
 
@@ -876,23 +838,25 @@ public class ObjectPropertiesView extends Composite
         });
     }
 
-    private void enableControls() {
-        boolean isEnabled = webElement != null;
-        boolean isEnabledForNoneWebPage = isEnabled
-                && !webElement.getClass().getSimpleName().equals(WebPage.class.getSimpleName());
-        if (radioBtnComposite != null && !radioBtnComposite.isDisposed()) {
-            Arrays.stream(radioBtnComposite.getChildren())
-                    .forEach(radioBtn -> radioBtn.setEnabled(isEnabledForNoneWebPage));
-        }
-        if (isReady(toolbar)) {
-            btnAdd.setEnabled(isEnabledForNoneWebPage);
-            btnDelete.setEnabled(isEnabled);
-            btnClear.setEnabled(isEnabled);
-        }
-        if (isReady(txtName)) {
-            txtName.setEditable(isEnabled);
-        }
-    }
+	private void enableControls() {
+		boolean isEnabled = webElement != null;
+		boolean isEnabledForNoneWebPage = isEnabled
+				&& !webElement.getClass().getSimpleName().equals(WebPage.class.getSimpleName());
+		if (radioBtnComposite != null && !radioBtnComposite.isDisposed()) {
+
+			Arrays.stream(radioBtnComposite.getChildren())
+					.forEach(radioBtn -> radioBtn.setEnabled(isEnabledForNoneWebPage));
+		}
+
+		if (isReady(toolbar)) {
+			btnAdd.setEnabled(isEnabledForNoneWebPage);
+			btnDelete.setEnabled(isEnabled);
+			btnClear.setEnabled(isEnabled);
+		}
+		if (isReady(txtName)) {
+			txtName.setEditable(isEnabled);
+		}
+	}
     
     private void disableControls(){
     	
@@ -991,7 +955,9 @@ public class ObjectPropertiesView extends Composite
                 setWebElement((WebElement) object);
                 return;
             case ELEMENT_PROPERTIES_CHANGED:
-            	setWebElement((WebElement) object);
+            	Display.getDefault().syncExec(() -> {
+                	setWebElement((WebElement) object);
+            	});
             	return;
             default:
                 return;

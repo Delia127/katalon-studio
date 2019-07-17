@@ -15,7 +15,6 @@ import javax.websocket.server.ServerEndpoint;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.openqa.selenium.WebDriver;
 import org.w3c.dom.Document;
 
 import com.google.gson.Gson;
@@ -62,8 +61,6 @@ public class AddonSocket {
 	private AddonSocketServer socketServer;
 
 	private boolean isConnected = false;
-
-	private WebDriver runningDriver;
 
 	public AddonBrowserType getBrowserType() {
 		return browserType;
@@ -211,29 +208,5 @@ public class AddonSocket {
 		} catch (IOException e) {
 			LoggerSingleton.logError(e);
 		}
-	}
-
-	/**
-	 * Set a {@link WebDriver} instance for this addon socket. This instance
-	 * will be delegated into other controllers as long as the text message
-	 * received from the add-on.
-	 * 
-	 * @param driver
-	 */
-	public void setRunningDriver(WebDriver driver) {
-		if(this.runningDriver == null) {
-			this.runningDriver = driver;
-		}
-	}
-
-	/**
-	 * Get
-	 * 
-	 * @return {@link WebDriver} set by
-	 *         {@link AddonSocket#setRunningDriver(WebDriver)} if it was called,
-	 *         otherwise return null
-	 */
-	public WebDriver getRunningDriver() {
-		return this.runningDriver;
 	}
 }

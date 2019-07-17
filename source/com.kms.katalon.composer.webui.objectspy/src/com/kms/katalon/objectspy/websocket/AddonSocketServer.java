@@ -10,7 +10,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
-import org.openqa.selenium.WebDriver;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 
@@ -72,13 +71,6 @@ public class AddonSocketServer {
 			server.stop();
 		} catch (Exception e) {
 			LoggerSingleton.logError(e);
-		}
-
-		for (AddonSocket socket : activeSockets) {
-			WebDriver driver = socket.getRunningDriver();
-			if (driver != null) {
-				driver.close();
-			}
 		}
 	}
 
