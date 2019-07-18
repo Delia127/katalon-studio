@@ -79,6 +79,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         startTime = new Date();
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
+    
+    protected void addTestSuiteToQueue() {
+    	
+    }
 
     @Override
     protected void preExecutionComplete() {
@@ -96,7 +100,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
 
-            uploadReportToIntegratingProduct(suiteLogRecord);
+//            uploadReportToIntegratingProduct(suiteLogRecord);
 
             sendReport(suiteLogRecord);
 
