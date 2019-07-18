@@ -2,6 +2,8 @@ package com.kms.katalon.composer.project.dialog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +16,7 @@ import javax.xml.bind.MarshalException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
@@ -40,6 +43,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -91,7 +96,7 @@ public class NewProjectDialog extends TitleAreaDialog {
 
     private String title;
 
-    private Combo cbProjects;
+    private Combo cboProjects;
 
     private Text txtRepoUrl;
 
@@ -102,6 +107,10 @@ public class NewProjectDialog extends TitleAreaDialog {
     private Button rbWebProjectType;
 
     private Button rbMobileProjectType;
+    
+    private Button cbGenerateGitignoreFile;
+    
+    private Button cbGenerateGradleFile;
 
     private boolean okButtonClicked = false;
 
@@ -224,8 +233,8 @@ public class NewProjectDialog extends TitleAreaDialog {
         Label lblProject = new Label(container, SWT.NONE);
         lblProject.setText(StringConstants.VIEW_LBL_PROJECT);
 
-        cbProjects = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
-        cbProjects.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        cboProjects = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
+        cboProjects.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         Label lblRepoUrl = new Label(container, SWT.NONE);
         lblRepoUrl.setText(StringConstants.VIEW_LBL_REPOSITORY_URL);
@@ -262,6 +271,16 @@ public class NewProjectDialog extends TitleAreaDialog {
             txtProjectDescription.setText(project.getDescription());
             txtProjectLocation.setEnabled(false);
         }
+        
+        new Label(container, SWT.NONE);
+        
+        cbGenerateGitignoreFile = new Button(container, SWT.CHECK);
+        cbGenerateGitignoreFile.setText(StringConstants.CB_GENERATE_GITIGNORE_FILE);
+        
+        new Label(container, SWT.NONE);
+        
+        cbGenerateGradleFile = new Button(container, SWT.CHECK);
+        cbGenerateGradleFile.setText(StringConstants.CB_GENERATE_GRADLE_FILE);
 
         // Build the separator line
         Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
@@ -286,14 +305,16 @@ public class NewProjectDialog extends TitleAreaDialog {
                 populateWebServiceProjects();
                 rbWebServiceProjectType.setSelection(true);
             }
-            cbProjects.select(cbProjects.indexOf(initialSampleProject.getName()));
+            cboProjects.select(cboProjects.indexOf(initialSampleProject.getName()));
         } else {
             populateWebProjects();
             rbWebProjectType.setSelection(true);
             rbWebProjectType.notifyListeners(SWT.Selection, new Event());
-            cbProjects.select(0);
+            cboProjects.select(0);
         }
         showRepoUrlBySelectedProject();
+        enableGenerateGitignoreFileBySelectedProject();
+        enableGenerateGradleFileBySelectedProject();
 
         addControlModifyListeners();
 
@@ -331,16 +352,18 @@ public class NewProjectDialog extends TitleAreaDialog {
     private void populateProjects(SampleProjectType... sampleProjectTypes) {
         List<SampleProjectType> sampleProjectTypeList = Arrays.asList(sampleProjectTypes);
 
-        cbProjects.removeAll();
+        cboProjects.removeAll();
 
-        cbProjects.add(BLANK_PROJECT);
+        cboProjects.add(BLANK_PROJECT);
 
         sampleProjects.stream().filter(sample -> sampleProjectTypeList.contains(sample.getType())).forEach(sample -> {
-            cbProjects.add(sample.getName());
-            cbProjects.setData(sample.getName(), sample);
+            cboProjects.add(sample.getName());
+            cboProjects.setData(sample.getName(), sample);
         });
 
-        cbProjects.select(0);
+        cboProjects.select(0);
+        enableGenerateGitignoreFileBySelectedProject();
+        enableGenerateGradleFileBySelectedProject();
     }
 
     private Composite createFileChooserComposite(Composite parent) {
@@ -360,6 +383,30 @@ public class NewProjectDialog extends TitleAreaDialog {
         }
 
         return container;
+    }
+    
+    private void enableGenerateGitignoreFileBySelectedProject() {
+        if (isBlankProjectSelected()) {
+            cbGenerateGitignoreFile.setEnabled(true);
+            cbGenerateGitignoreFile.setSelection(true);
+        } else {
+            cbGenerateGitignoreFile.setEnabled(false);
+            cbGenerateGitignoreFile.setSelection(false);
+        }
+    }
+    
+    private void enableGenerateGradleFileBySelectedProject() {
+        if (isBlankProjectSelected()) {
+            cbGenerateGradleFile.setEnabled(true);
+            cbGenerateGradleFile.setSelection(true);
+        } else {
+            cbGenerateGradleFile.setEnabled(false);
+            cbGenerateGradleFile.setSelection(false);
+        }
+    }
+    
+    private boolean isBlankProjectSelected() {
+        return StringConstants.BLANK_PROJECT.equals(cboProjects.getText());
     }
 
     private void addControlModifyListeners() {
@@ -393,10 +440,12 @@ public class NewProjectDialog extends TitleAreaDialog {
             }
         });
 
-        cbProjects.addSelectionListener(new SelectionAdapter() {
+        cboProjects.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 showRepoUrlBySelectedProject();
+                enableGenerateGitignoreFileBySelectedProject();
+                enableGenerateGradleFileBySelectedProject();
             }
         });
     }
@@ -404,10 +453,10 @@ public class NewProjectDialog extends TitleAreaDialog {
     private void showRepoUrlBySelectedProject() {
         txtRepoUrl.setText(StringUtils.EMPTY);
 
-        int selectionIdx = cbProjects.getSelectionIndex();
-        String selectedProjectName = cbProjects.getItem(selectionIdx);
+        int selectionIdx = cboProjects.getSelectionIndex();
+        String selectedProjectName = cboProjects.getItem(selectionIdx);
         if (!selectedProjectName.equals(BLANK_PROJECT)) {
-            Object sampleProject = cbProjects.getData(selectedProjectName);
+            Object sampleProject = cboProjects.getData(selectedProjectName);
             if (sampleProject instanceof SampleRemoteProject) {
                 txtRepoUrl.setText(((SampleRemoteProject) sampleProject).getSourceUrl());
             }
@@ -523,10 +572,10 @@ public class NewProjectDialog extends TitleAreaDialog {
         loc = getProjectLocationInput();
         desc = txtProjectDescription.getText();
 
-        int selectionIdx = cbProjects.getSelectionIndex();
-        String selectedProjectName = cbProjects.getItem(selectionIdx);
+        int selectionIdx = cboProjects.getSelectionIndex();
+        String selectedProjectName = cboProjects.getItem(selectionIdx);
         if (!selectedProjectName.equals(BLANK_PROJECT)) {
-            Object selectedSampleProject = cbProjects.getData(selectedProjectName);
+            Object selectedSampleProject = cboProjects.getData(selectedProjectName);
             if (selectedSampleProject instanceof SampleRemoteProject) {
                 handleCreatingSampleRemoteProject((SampleRemoteProject) selectedSampleProject);
             } else if (selectedSampleProject instanceof SampleLocalProject) {
@@ -592,8 +641,11 @@ public class NewProjectDialog extends TitleAreaDialog {
             String projectLocation = getProjectLocation();
             String projectDescription = getProjectDescription();
             ProjectType projectType = getSelectedProjectType();
+            boolean generateGitignoreFile = cbGenerateGitignoreFile.isEnabled() && cbGenerateGitignoreFile.getSelection();
+            boolean generateGradleFile = cbGenerateGradleFile.isEnabled() && cbGenerateGradleFile.getSelection();
 
-            ProjectEntity newProject = createNewProject(projectName, projectLocation, projectDescription);
+            ProjectEntity newProject = createNewProject(projectName, projectLocation, projectDescription,
+                    generateGitignoreFile, generateGradleFile);
             if (newProject == null) {
                 return;
             }
@@ -621,12 +673,20 @@ public class NewProjectDialog extends TitleAreaDialog {
     }
 
     @SuppressWarnings("restriction")
-    private ProjectEntity createNewProject(String projectName, String projectLocation, String projectDescription)
+    private ProjectEntity createNewProject(String projectName, String projectLocation, String projectDescription,
+            boolean generateGitignoreFile, boolean generateGradleFile)
             throws Exception {
         try {
             ProjectEntity newProject = ProjectController.getInstance().addNewProject(projectName, projectDescription,
                     projectLocation);
             // EntityTrackingHelper.trackProjectCreated();
+            if (generateGitignoreFile) {
+                initGitignoreFile(newProject);
+            }
+            
+            if (generateGradleFile) {
+                initGradleFile(newProject);
+            }
             return newProject;
         } catch (MarshalException ex) {
             if (!(ex.getLinkedException() instanceof FileNotFoundException)) {
@@ -637,6 +697,32 @@ public class NewProjectDialog extends TitleAreaDialog {
                     StringConstants.HAND_ERROR_MSG_NEW_PROJ_LOCATION_INVALID);
         }
         return null;
+    }
+    
+    public static void initGitignoreFile(ProjectEntity project) throws IOException {
+        Bundle bundle = FrameworkUtil.getBundle(NewProjectDialog.class);
+        URL url = FileLocator.find(bundle,
+                new org.eclipse.core.runtime.Path("/resources/gitignore/gitignore_template"), null);
+        File templateFile = FileUtils.toFile(FileLocator.toFileURL(url));
+
+        File gitignoreFile = new File(project.getFolderLocation(), ".gitignore");
+        if (!gitignoreFile.exists()) {
+            gitignoreFile.createNewFile();
+            FileUtils.copyFile(templateFile, gitignoreFile);
+        }
+    }
+    
+    public static void initGradleFile(ProjectEntity project) throws IOException {
+        Bundle bundle = FrameworkUtil.getBundle(NewProjectDialog.class);
+        URL url = FileLocator.find(bundle,
+                new org.eclipse.core.runtime.Path("/resources/gradle/gradle_template"), null);
+        File templateFile = FileUtils.toFile(FileLocator.toFileURL(url));
+
+        File gradleFile = new File(project.getFolderLocation(), "build.gradle");
+        if (!gradleFile.exists()) {
+            gradleFile.createNewFile();
+            FileUtils.copyFile(templateFile, gradleFile);
+        }
     }
 
     private void updateProjectType(ProjectEntity project, ProjectType type) throws Exception {

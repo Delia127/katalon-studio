@@ -387,6 +387,11 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             initDefaultSelectedPart();
             if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX) {
                 setScriptContentToManual();
+            } else {
+                if (scriptNode == null) {
+                    scriptNode = new ScriptNodeWrapper();
+                }
+            	childTestCasePart.loadASTNodesToTreeTable(scriptNode);
             }
             propertiesPart.loadInput();
             isInitialized = true;

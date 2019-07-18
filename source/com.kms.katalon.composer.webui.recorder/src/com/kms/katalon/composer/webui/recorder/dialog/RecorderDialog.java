@@ -104,6 +104,7 @@ import com.kms.katalon.composer.testcase.preferences.StoredKeyword;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
+import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrapper;
 import com.kms.katalon.composer.webui.recorder.constants.ComposerWebuiRecorderMessageConstants;
@@ -113,7 +114,6 @@ import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.core.HTMLElementRecorderServer;
 import com.kms.katalon.composer.webui.recorder.core.RecordSession;
 import com.kms.katalon.composer.webui.recorder.core.RecordSession.BrowserStoppedListener;
-import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.composer.webui.recorder.websocket.RecorderAddonSocket;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -207,8 +207,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private List<WebPage> elements;
 
-    private List<HTMLActionMapping> recordedActions;
-
     private boolean isPauseRecording;
 
     private ToolBar toolBar;
@@ -266,7 +264,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         this.testCaseEntity = testCaseEntity;
         store = PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
         elements = new ArrayList<>();
-        recordedActions = new ArrayList<HTMLActionMapping>();
         isPauseRecording = false;
         disposed = false;
         setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
@@ -344,7 +341,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmPauseAndResume.setEnabled(true);
             tltmStop.setEnabled(true);
             resume();
-            resetInput();
             Trackings.trackWebRecord(getSelectedBrowserType(), isInstant, getWebLocatorConfig());
         } catch (final IEAddonNotInstalledException e) {
             stop();
@@ -442,10 +438,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             return;
         }
         desktop.open(new File(ieAddonSetupPath));
-    }
-
-    private void resetInput() {
-        recordedActions.clear();
     }
 
     private void startRecordSession() throws Exception {
@@ -1647,7 +1639,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     public void addNewActionMapping(final HTMLActionMapping newAction) {
-        if (isPauseRecording || !HTMLActionUtil.verifyActionMapping(newAction, recordedActions)) {
+        if (isPauseRecording || (newAction.getAction().equals(HTMLAction.Navigate)
+                && (recordStepsView.getNodes().size() > 0 || (newAction.getData().length == 0
+                        || String.valueOf(newAction.getData()[0].getValue()).equals("\"about:blank\""))))) {
             return;
         }
         WebElement targetElement = newAction.getTargetElement();
@@ -1658,7 +1652,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         	}
             addNewElement(targetElement, newAction);
         }
-        recordedActions.add(newAction);
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
@@ -1768,10 +1761,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 .isEquals();
     }
 
-    public List<HTMLActionMapping> getActions() {
-        return recordedActions;
-    }
-
     public List<WebPage> getElements() {
         return elements;
     }
@@ -1797,18 +1786,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                     return;
                 }
                 addNewActionMapping((HTMLActionMapping) dataObject);
-                return;
-            case EventConstants.RECORDER_ACTION_OBJECT_REORDERED:
-                if (!(dataObject instanceof WebElement[])) {
-                    return;
-                }
-
-                WebElement[] oldNewElement = (WebElement[]) dataObject;
-                if (oldNewElement.length != 2) {
-                    return;
-                }
-                replaceCapturedObjectInActionMapping(oldNewElement[0], oldNewElement[1]);
-                return;
+                return;            
             case EventConstants.WORKSPACE_CLOSED:
                 cancelPressed();
                 return;
@@ -1833,17 +1811,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             case EventConstants.WEBUI_VERIFICATION_RUN_FROM_STEP_CMD:
                 runFromStep();
                 return;
-        }
-    }
-
-    private void replaceCapturedObjectInActionMapping(WebElement oldElement, WebElement newElement) {
-        if (recordedActions == null || recordedActions.isEmpty()) {
-            return;
-        }
-        for (HTMLActionMapping action : recordedActions) {
-            if (oldElement.equals(action.getTargetElement())) {
-                action.setTargetElement(newElement);
-            }
         }
     }
 

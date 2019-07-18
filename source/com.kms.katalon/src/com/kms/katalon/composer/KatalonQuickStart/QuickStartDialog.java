@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -23,14 +24,16 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
-import com.kms.katalon.composer.components.impl.wizard.SimpleWizardDialog;
+import com.kms.katalon.composer.components.impl.wizard.WizardDialog;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.ImageConstants;
+import com.sun.jna.platform.unix.X11.GC;
 
-public class QuickStartDialog extends SimpleWizardDialog {
+public class QuickStartDialog extends WizardDialog {
 
     private int lastTreeWidth;
 
@@ -197,7 +200,6 @@ public class QuickStartDialog extends SimpleWizardDialog {
         preferred.height = height;
         getShell().setBounds(getConstrainedShellBounds(preferred));
     }
-
     @Override
     protected void registerControlModifyListeners() {
         super.registerControlModifyListeners();
@@ -206,23 +208,12 @@ public class QuickStartDialog extends SimpleWizardDialog {
             @Override
             public void selectionChanged(final SelectionChangedEvent event) {
                 if (!event.getSelection().isEmpty()) {
+                    int index = tableViewer.getTable().getSelectionIndex();
+                    doShowPage(wizardManager.choosenPage(index));
+                    tableViewer.refresh();
+                } else {
                     tableViewer.setSelection(StructuredSelection.EMPTY);
                 }
-            }
-        });
-
-        // Disable color change when selected item changed
-        tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
-            public void handleEvent(Event event) {
-                // Selection:
-                event.detail &= ~SWT.SELECTED;
-                // Expect: selection now has no visual effect.
-                // Actual: selection remains but changes from light blue to white.
-
-                // MouseOver:
-                event.detail &= ~SWT.HOT;
-                // Expect: mouse over now has no visual effect.
-                // Actual: behavior remains unchanged.
             }
         });
 
@@ -252,23 +243,24 @@ public class QuickStartDialog extends SimpleWizardDialog {
 
     @Override
     protected void showPage(IWizardPage page) {
-        super.showPage(page);
+        doShowPage(page);
         tableViewer.refresh(true);
+        tableViewer.setSelection(new StructuredSelection(page));
+    }
+    
+    private void doShowPage(IWizardPage page) {
+        super.showPage(page);
     }
 
     @Override
     protected Point getInitialSize() {
-        return new Point(1070, 850);
+        return new Point(1050, 750);
+
     }
 
     @Override
     protected String getDialogTitle() {
         return "Katalon Studio Quick Start";
-    }
-
-    @Override
-    protected void finishPressed() {
-        super.okPressed();
     }
 
     @Override
@@ -279,5 +271,10 @@ public class QuickStartDialog extends SimpleWizardDialog {
     @Override
     public boolean isChild() {
         return false;
+    }
+
+    @Override
+    protected void finishPressed() {
+        super.okPressed();
     }
 }

@@ -1702,13 +1702,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.kms.katalon.jasper"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.commons.logging"
          download-size="0"
          install-size="0"
@@ -2044,20 +2037,6 @@
 
    <plugin
          id="org.zeroturnaround.zt-process"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.composer.integration.jira"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.integration.jira"
          download-size="0"
          install-size="0"
          version="0.0.0"
