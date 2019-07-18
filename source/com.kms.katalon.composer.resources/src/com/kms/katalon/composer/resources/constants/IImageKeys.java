@@ -439,6 +439,8 @@ public interface IImageKeys {
     public static final String JAVA_16 = "entity/java_16.png"; //$NON-NLS-1$
     
     public static final String GIT_FILE_16 = "entity/git_file_16.png"; //$NON-NLS-1$
+    
+    public static final String WINDOWS_ENTITY_16 = "windows_application_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar
@@ -475,6 +477,10 @@ public interface IImageKeys {
     public static final String PAUSE_16 = "pause_16.png"; //$NON-NLS-1$
 
     public static final String REFRESH_16 = "refresh_16.png"; //$NON-NLS-1$
+    
+    public static final String REFRESH_24 = "refresh_24.png"; //$NON-NLS-1$
+
+    public static final String REFRESH_DISABLED_24 = "refresh_disabled_24.png"; //$NON-NLS-1$
 
     public static final String RESTORE_16 = "restore_16.png"; //$NON-NLS-1$
 
@@ -574,6 +580,8 @@ public interface IImageKeys {
     public static final String DEBUG_PERSPECTIVE_16 = "debug_perspective_16.png"; //$NON-NLS-1$
 
     public static final String DESKTOP_16 = "desktop_16.png"; //$NON-NLS-1$
+    
+    public static final String WEB_16 = "web_16.png"; //$NON-NLS-1$
 
     public static final String OK_16 = "ok_16.png"; //$NON-NLS-1$
     

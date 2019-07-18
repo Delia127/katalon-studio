@@ -28,6 +28,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.main.ScriptEngine;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
+import com.kms.katalon.core.testobject.internal.impl.WindowsObjectRepository;
 import com.kms.katalon.core.util.StrSubstitutor;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -172,6 +173,16 @@ public class ObjectRepository {
             return null;
         }
         return readTestObjectFile(testObjectId, objectFile, RunConfiguration.getProjectDir(), variables);
+    }
+    
+    public static WindowsTestObject findWindowsObject(final String windowsObjectId) {
+        File objectFile = new File(RunConfiguration.getProjectDir(), windowsObjectId + ".wrs");
+        return WindowsObjectRepository.readWindowsTestObjectFile(windowsObjectId, objectFile, RunConfiguration.getProjectDir(), Collections.emptyMap());
+    }
+    
+    public static WindowsTestObject findWindowsObject(final String windowsObjectId, Map<String, Object> variables) {
+        File objectFile = new File(RunConfiguration.getProjectDir(), windowsObjectId + ".wrs");
+        return WindowsObjectRepository.readWindowsTestObjectFile(windowsObjectId, objectFile, RunConfiguration.getProjectDir(), variables);
     }
 
     private static Map<String, TestObject> getCapturedTestObjects() {

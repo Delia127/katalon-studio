@@ -4,7 +4,6 @@ import com.kms.katalon.dal.IEntityDataProvider;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
 import com.kms.katalon.entity.file.FileEntity;
-import com.kms.katalon.entity.global.ExecutionProfileEntity;
 
 public class EntityFileServiceDataProvider implements IEntityDataProvider {
 

@@ -30,6 +30,7 @@ import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.project.handlers.SettingHandler;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
@@ -144,7 +145,7 @@ public class RemoteAppComposite implements MobileAppComposite {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 SettingHandler settingHander = SettingHandler.getInstance();
-                settingHander.openSettingsPage("com.kms.katalon.composer.execution.settings.default.4");
+                settingHander.openSettingsPage(IdConstants.SETTING_CAPABILITIES_REMOTE);
                 try {
                     updateRunConfigurationDetails();
                     parentDialog.refreshButtonsState();

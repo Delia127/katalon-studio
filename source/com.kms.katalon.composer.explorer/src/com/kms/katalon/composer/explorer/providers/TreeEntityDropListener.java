@@ -11,6 +11,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TreeDropTargetEffect;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.SystemFileTreeEntity;
@@ -19,6 +20,7 @@ import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityProcessingUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -26,11 +28,14 @@ import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.SystemFileController;
+import com.kms.katalon.controller.WindowsElementController;
+import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
@@ -139,9 +144,23 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                if (newSystemFile != null) {
                    lastMovedTreeEntity = new SystemFileTreeEntity(newSystemFile, targetTreeEntity);
                }
-
+            } else if (treeEntity instanceof WindowsElementTreeEntity) {
+                moveWindowsObject((WindowsElementEntity) treeEntity.getObject(), targetTreeEntity);
             }
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity.getParent());
+        }
+    }
+    
+    private void moveWindowsObject(WindowsElementEntity windowsElement, FolderTreeEntity targetFolder) throws Exception {
+        String oldId = windowsElement.getIdForDisplay();
+        WindowsElementEntity newsWindowsElement = WindowsElementController.getInstance()
+                .moveWindowsElementEntity(windowsElement, targetFolder.getObject());
+        if (newsWindowsElement != null) {
+            lastMovedTreeEntity = new WindowsElementTreeEntity(newsWindowsElement,
+                    targetFolder);
+
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM,
+                    new Object[] { oldId, newsWindowsElement.getIdForDisplay() });
         }
     }
 
