@@ -162,8 +162,8 @@ public class OpenProjectHandler {
                         public void run() {
                             try {
                                 if (project != null) {
-                                	// Set project name on window title
-                                	OpenProjectHandler.updateProjectTitle(project, modelService, application);
+                                    // Set project name on window title
+                                    OpenProjectHandler.updateProjectTitle(project, modelService, application);
                                     Trackings.trackOpenProject(project);
                                     
                                     AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
