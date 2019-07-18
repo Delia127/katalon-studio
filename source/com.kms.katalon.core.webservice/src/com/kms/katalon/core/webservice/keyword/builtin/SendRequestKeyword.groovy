@@ -37,14 +37,11 @@ public class SendRequestKeyword extends WebserviceAbstractKeyword {
     public ResponseObject sendRequest(RequestObject request, FailureHandling flowControl) throws Exception {
             Object object = KeywordMain.runKeyword({
                 WebServiceCommonHelper.checkRequestObject(request)
-                ResponseObject responseObject = null;
-                HarLogger harLogger = new HarLogger();
-                try {
-                    harLogger.initHarFile();
-                    responseObject = ServiceRequestFactory.getInstance(request).send(request)
-                } finally {
-                    harLogger.logHarFile(request, responseObject, RunConfiguration.getReportFolder());
-                }
+                HarLogger harLogger = new HarLogger()
+                harLogger.initHarFile()
+                ResponseObject responseObject = ServiceRequestFactory.getInstance(request).send(request)
+                harLogger.logHarFile(request, responseObject, RunConfiguration.getReportFolder())
+                
                 logger.logPassed(StringConstants.KW_LOG_PASSED_SEND_REQUEST_SUCCESS)
                 return responseObject
             }, flowControl, StringConstants.KW_LOG_FAILED_CANNOT_SEND_REQUEST)
