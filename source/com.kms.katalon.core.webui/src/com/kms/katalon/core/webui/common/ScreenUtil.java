@@ -123,6 +123,15 @@ public class ScreenUtil {
         }
     }
     
+	/**
+	 * Get all {@link ScreenRegion} on the screen matching the image specified
+	 * in imagePath. The returned array is sorted by matched score descending
+	 * 
+	 * @param imagePath
+	 *            Path to target image
+	 * @return A list of matched {@link ScreenRegion}
+	 * @throws Exception
+	 */
     public List<ScreenRegion> findImages(String imagePath) throws Exception {
         File imgFile = new File(imagePath);
         if (imgFile.exists()) {

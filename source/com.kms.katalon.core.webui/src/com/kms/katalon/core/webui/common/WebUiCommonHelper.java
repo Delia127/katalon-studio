@@ -1,8 +1,10 @@
 package com.kms.katalon.core.webui.common;
 
+import java.awt.AWTException;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -803,22 +806,40 @@ public class WebUiCommonHelper extends KeywordHelper {
         }
         return Collections.emptyList();
     }
-    
+
+	/**
+	 * Look for the image in the given path, look for similar images using
+	 * Sikuli. Use the coordinates to retrieve the element at that location
+	 * using:
+	 * 
+	 * <pre>
+	 * ((JavascriptExecutor) driver)
+	 * .executeJavascript('document.elementsFromPoint(args[0], args[1])', x, y)
+	 * </pre>
+	 * 
+	 * @param webDriver
+	 * @param pathToScreenshot
+	 * @return
+	 */
 	private static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot) {
 		JavascriptExecutor js = (JavascriptExecutor) webDriver;
+		
 		double viewportWidth = ((Number) js.executeScript("return window.innerWidth")).doubleValue();
 		double viewportHeight = ((Number) js.executeScript("return window.innerHeight")).doubleValue();
 		double driverWidth = webDriver.manage().window().getSize().getWidth();
 		double driverHeight = webDriver.manage().window().getSize().getHeight();
 		
-		System.out.println("driver: " + driverWidth + " , " + driverHeight);
-		System.out.println("viewport: " + viewportWidth + " , " + viewportHeight);
 		ScreenUtil screen = new ScreenUtil(0.6);
 		logger.logInfo("Attempting to find element by its screenshot !");
-		String path = new File(pathToScreenshot).getParent() + "/sikuli-generated";
+		File screenshotFile = new File(pathToScreenshot);
+		String path = screenshotFile.getParent() + "/sikuli-generated";
 		File tmpFile = new File(path);
 		try {
 			List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
+			// sikuliDebug(screenshotFile, matchedRegions, pathToScreenshot);
+			if(matchedRegions.size() == 0) {
+				return Collections.emptyList();
+			}
 			ScreenRegion matchedRegion = matchedRegions.get(0);
 			System.out.println("screenshot:" + pathToScreenshot);
 			double matchedRegionX = matchedRegion.getBounds().getX();
@@ -843,6 +864,26 @@ public class WebUiCommonHelper extends KeywordHelper {
 			}
 		}
 		return null;
+	}
+
+	private static void sikuliDebug(File screenshotFile, List<ScreenRegion> matchedRegions, String pathToScreenshot)
+			throws IOException {
+		String imageFolderPath = screenshotFile.getParent() + "/sikuli/"
+				+ screenshotFile.getName().replaceAll(".png", "");
+		File imageFolder = new File(imageFolderPath + "/target.png");
+		imageFolder.mkdirs();
+		imageFolder.createNewFile();
+		FileUtils.copyFileToDirectory(new File(pathToScreenshot), imageFolder);
+		matchedRegions.forEach(a -> {
+			try {
+				Robot robot = new Robot();
+				BufferedImage image = robot.createScreenCapture(a.getBounds());
+				File imageFile = new File(imageFolderPath + "/candidate_" + a.getScore() + ".png");
+				ImageIO.write(image, "png", imageFile);
+			} catch (IOException | AWTException e) {
+				logger.logError(ExceptionUtils.getFullStackTrace(e));
+			}
+		});
 	}
 
 	private static List<WebElement> findWebElementsWithSmartXPath(WebDriver webDriver, boolean objectInsideShadowDom,
