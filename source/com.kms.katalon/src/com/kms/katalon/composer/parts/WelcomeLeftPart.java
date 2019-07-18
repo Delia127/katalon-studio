@@ -3,10 +3,12 @@ package com.kms.katalon.composer.parts;
 import java.text.MessageFormat;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -32,7 +34,11 @@ public class WelcomeLeftPart extends Composite {
     private static final Cursor CURSOR_HAND = Display.getDefault().getSystemCursor(SWT.CURSOR_HAND);
 
     private static final int MIN_WIDTH = 300;
-
+    
+    private static final Color BACKGROUND_COLOR = ColorUtil.getColor("#70746F");
+    
+    private static final Color PLUGIN_STORE_ITEM_BACKGROUND_COLOR = ColorUtil.getColor("#FFD966");
+    
     public WelcomeLeftPart(Composite parent, int style) {
         super(parent, style);
         setBackground(ColorUtil.getColor("#70746F"));
@@ -102,11 +108,65 @@ public class WelcomeLeftPart extends Composite {
         addMenuItem(lowerComposite, ImageConstants.IMG_FAQ, StringConstants.PA_LBL_FAQ, StringConstants.PA_LBL_FAQ_URL);
 
         addMenuSeparator(lowerComposite);
-        addMenuItem(lowerComposite, ImageConstants.IMG_KATALON_STORE, StringConstants.PA_LBL_PLUGIN_STORE, StringConstants.PA_LBL_PLUGIN_STORE_URL);
-        
+        addPluginStoreMenuItem(lowerComposite);
         addMenuSeparator(lowerComposite);
         addMenuItem(lowerComposite, ImageConstants.IMG_BUSSINESS_SUPPORT, StringConstants.PA_LBL_BUSINESS_SUPPORT,
                 StringConstants.URL_KATALON_SUPPORT_SERVICE);
+    }
+    
+    private void addPluginStoreMenuItem(Composite parent) {
+        Composite marginTop = new Composite(parent, SWT.NONE);
+        GridData gdMarginTop = new GridData(SWT.FILL, SWT.TOP, true, false);
+        gdMarginTop.minimumWidth = MIN_WIDTH;
+        gdMarginTop.heightHint = 5;
+        marginTop.setLayoutData(gdMarginTop);
+        marginTop.setBackground(BACKGROUND_COLOR);
+        
+        Composite holder = new Composite(parent, SWT.NONE);
+        GridData gdHolder = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gdHolder.minimumWidth = MIN_WIDTH;
+        holder.setLayoutData(gdHolder);
+        holder.setBackground(PLUGIN_STORE_ITEM_BACKGROUND_COLOR);
+        GridLayout glHolder = new GridLayout(1, false);
+        glHolder.marginTop = 15;
+        glHolder.marginBottom = 10;
+        holder.setLayout(glHolder);
+        holder.setCursor(CURSOR_HAND);
+        
+        Composite inner = new Composite(holder, SWT.NONE);
+        GridData gdInner = new GridData(SWT.CENTER , SWT.FILL, true, true);
+        gdInner.minimumWidth = 170;
+        inner.setLayoutData(gdInner);
+        inner.setBackground(PLUGIN_STORE_ITEM_BACKGROUND_COLOR);
+        GridLayout glInner = new GridLayout(1, false);
+        inner.setLayout(glInner);
+        inner.setCursor(CURSOR_HAND);
+
+        CLabel menuItem = new CLabel(inner, SWT.NONE);
+        menuItem.setAlignment(SWT.CENTER);
+        menuItem.setImage(ImageConstants.IMG_KATALON_STORE);
+        menuItem.setText(StringConstants.PA_LBL_PLUGIN_STORE);
+        menuItem.setForeground(ColorUtil.getDefaultTextColor());
+        menuItem.setCursor(CURSOR_HAND);
+        ControlUtils.setFontSize(menuItem, 12);
+        
+        Composite marginBottom = new Composite(parent, SWT.NONE);
+        GridData gdMarginBottom = new GridData(SWT.FILL, SWT.TOP, true, false);
+        gdMarginBottom.minimumWidth = MIN_WIDTH;
+        gdMarginBottom.heightHint = 5;
+        marginBottom.setLayoutData(gdMarginBottom);
+        marginBottom.setBackground(BACKGROUND_COLOR);
+
+        MouseAdapter mouseAdapter = new MouseAdapter() {
+
+            @Override
+            public void mouseUp(MouseEvent e) {
+                openURL(StringConstants.PA_LBL_PLUGIN_STORE_URL);
+            }
+        };
+        menuItem.addMouseListener(mouseAdapter);
+        holder.addMouseListener(mouseAdapter);
+        inner.addMouseListener(mouseAdapter);
     }
     
     private void addMenuItem(Composite parent, Image icon, String label, String url) {
