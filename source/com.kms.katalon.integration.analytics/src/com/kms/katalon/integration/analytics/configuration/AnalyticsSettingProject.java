@@ -107,7 +107,8 @@ public class AnalyticsSettingProject {
                 }
             }
             PermissionAccessAnalyticsDialog.showErrorDialog(GlobalStringConstants.WARN,
-                    String.format(IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT, server + "/user/teams"));
+                    String.format(IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT,
+                    server + "/team/" + String.valueOf(teams.get(0).getId())));
         } catch (IOException | GeneralSecurityException error) {
             LogUtil.logError(error);
         }

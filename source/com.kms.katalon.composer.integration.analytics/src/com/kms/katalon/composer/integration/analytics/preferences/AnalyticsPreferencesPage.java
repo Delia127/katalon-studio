@@ -376,7 +376,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         projects.add(selectProjectFromConfig);
                         linkStatusAccessProject.setText(String.format(
                                 ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT,
-                                serverUrl + "/user/teams"));
+                                serverUrl + "/team/" + String.valueOf(teams.get(0).getId())));
 
                     } else {
                         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email,
