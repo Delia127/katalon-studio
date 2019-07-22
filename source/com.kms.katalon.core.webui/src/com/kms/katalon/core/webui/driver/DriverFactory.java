@@ -592,7 +592,7 @@ public class DriverFactory {
                 case CHROME_DRIVER:
                     System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
                     if (options instanceof DesiredCapabilities) {
-                        ChromeDriver chromeDriver = new ChromeDriver((DesiredCapabilities) options);
+                        CChromeDriver chromeDriver = new CChromeDriver((DesiredCapabilities) options, 0);
                         return chromeDriver;
                     }
                     break;
