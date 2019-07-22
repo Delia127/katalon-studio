@@ -69,6 +69,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
     private EPartService partService;
 
     private TestCaseCompositePart parentTestCaseCompositePart;
+    
+    private boolean scriptLoaded = false;
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
@@ -267,6 +269,7 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
     }
 
     public void loadASTNodesToTreeTable(ScriptNodeWrapper scriptNode) {
+        scriptLoaded = true;
         testStepManualComposite.loadASTNodesToTreeTable(scriptNode);
     }
 
@@ -423,5 +426,9 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
             }
         }
         return map;
+    }
+
+    public boolean isScriptLoaded() {
+        return scriptLoaded;
     }
 }
