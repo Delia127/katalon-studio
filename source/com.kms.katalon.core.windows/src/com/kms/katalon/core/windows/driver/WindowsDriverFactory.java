@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.http.HttpClient;
@@ -79,7 +80,15 @@ public class WindowsDriverFactory {
             windowsDriver.getWindowHandle();
             WindowsDriverFactory.setWindowsDrivers(windowsDriver);
             return windowsDriver;
-        } catch (NoSuchWindowException e) {
+        } catch (NoSuchWindowException | SessionNotCreatedException e) {
+            if (e.getMessage().contains("The system cannot find the file specified")) {
+                //appFile is not correct
+                throw e;
+            }
+            if ("Root".equals(appFile)) {
+                throw e;
+            }
+
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("app", "Root");
             WindowsDriver<WebElement> desktopSession = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxy);
