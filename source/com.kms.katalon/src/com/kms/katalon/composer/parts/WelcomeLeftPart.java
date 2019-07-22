@@ -76,6 +76,7 @@ public class WelcomeLeftPart extends Composite {
         Link lblReleaseNote = new Link(headerComposite, SWT.NONE);
         ControlUtils.setFontStyle(lblReleaseNote, SWT.ITALIC, 12);
         lblReleaseNote.setText(RELEASE_NOTES_URL);
+        lblReleaseNote.setLinkForeground(ColorUtil.getColor("#4DE1FF"));
         lblReleaseNote.addSelectionListener(new SelectionAdapter() {
 
             @Override
