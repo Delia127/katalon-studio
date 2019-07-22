@@ -189,7 +189,13 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
         LogUtil.logInfo("Launcher status after execution process completed: " + getStatus());
         if (getStatus() != LauncherStatus.TERMINATED) {
         	preExecutionComplete(); 
-            if (parentLauncher == null) {
+            if (parentLauncher != null) {
+            	long number = manager.getWaitingLaunchers();
+            	if (number <= 0) {
+            		System.out.print(number);
+            	}
+            } else {
+            	//Only test suite
             }
             setStatus(LauncherStatus.DONE);
         } else {

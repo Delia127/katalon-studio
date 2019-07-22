@@ -247,4 +247,8 @@ public class LauncherManager {
         }
         return launcherMessageStatus.toString();
     }
+    
+    public long getWaitingLaunchers() {
+    	return waitingLaunchers.size();
+    }
 }

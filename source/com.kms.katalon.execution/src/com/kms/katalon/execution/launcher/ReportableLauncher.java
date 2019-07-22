@@ -80,7 +80,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
     
-    protected void addTestSuiteToQueue() {
+    protected void sendReport() {
     	
     }
 
@@ -100,7 +100,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
 
-//            uploadReportToIntegratingProduct(suiteLogRecord);
+            uploadReportToIntegratingProduct(suiteLogRecord);
 
             sendReport(suiteLogRecord);
 
@@ -345,7 +345,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     protected IExecutedEntity getExecutedEntity() {
         return getRunConfig().getExecutionSetting().getExecutedEntity();
     }
-
+    
     protected File getReportFolder() {
         return new File(getRunConfig().getExecutionSetting().getFolderPath());
     }
