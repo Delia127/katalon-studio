@@ -134,7 +134,7 @@ public class TestCaseBindingStringBuilder {
                     throw new NotImplementedException(variableLink.getType().name());
             }
 
-//            SyntaxUtil.checkVariableSyntax(GroovyStringUtil.toGroovyStringFormat(variableName), variableValue);
+            SyntaxUtil.checkVariableSyntax(GroovyStringUtil.toGroovyStringFormat(variableName), variableValue.toString());
             return variableValue;
         } catch (IOException | IllegalArgumentException ex) {
             throw new SyntaxErrorException(
