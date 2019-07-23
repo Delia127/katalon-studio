@@ -114,8 +114,14 @@ public class EmailSettingStore extends BundleSettingStore {
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_USE_USERNAME_AS_SENDER, useUsernameAsSender);
     }
     
-    public String getSender() throws IOException {
-        return getString(ExecutionPreferenceConstants.MAIL_CONFIG_SENDER, StringUtils.EMPTY);
+    public String getSender() throws IOException, GeneralSecurityException {
+        String sender = getString(ExecutionPreferenceConstants.MAIL_CONFIG_SENDER, StringUtils.EMPTY);
+        if (StringUtils.isBlank(sender)) {
+            if (useUsernameAsSender()) {
+                sender = getUsername(isEncryptionEnabled());
+            }
+        }
+        return sender;
     }
     
     public void setSender(String sender) throws IOException {
