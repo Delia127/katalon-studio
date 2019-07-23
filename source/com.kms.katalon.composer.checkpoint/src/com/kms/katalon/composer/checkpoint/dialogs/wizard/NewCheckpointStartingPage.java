@@ -171,7 +171,7 @@ public class NewCheckpointStartingPage extends AbstractCheckpointWizardPage {
 
     @Override
     public Point getPageSize() {
-        return getShell().computeSize(500, 300);
+        return getShell().computeSize(600, 350);
     }
 
 }
