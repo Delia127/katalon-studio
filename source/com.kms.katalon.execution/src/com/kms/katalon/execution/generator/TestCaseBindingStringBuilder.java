@@ -3,12 +3,10 @@ package com.kms.katalon.execution.generator;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ObjectUtils;
 
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testcase.TestCaseBinding;
@@ -22,10 +20,7 @@ import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestDataExecutedEntity;
 import com.kms.katalon.execution.exception.SyntaxErrorException;
 import com.kms.katalon.execution.util.SyntaxUtil;
-import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.logging.LogUtil;
-
-import groovy.json.JsonOutput;
 
 public class TestCaseBindingStringBuilder {
 
@@ -134,7 +129,7 @@ public class TestCaseBindingStringBuilder {
                     throw new NotImplementedException(variableLink.getType().name());
             }
 
-            SyntaxUtil.checkVariableSyntax(GroovyStringUtil.toGroovyStringFormat(variableName), variableValue.toString());
+//            SyntaxUtil.checkVariableSyntax(GroovyStringUtil.toGroovyStringFormat(variableName), variableValue.toString());
             return variableValue;
         } catch (IOException | IllegalArgumentException ex) {
             throw new SyntaxErrorException(

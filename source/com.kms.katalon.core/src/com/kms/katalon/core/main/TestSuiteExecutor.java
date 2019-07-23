@@ -117,19 +117,14 @@ public class TestSuiteExecutor {
         }
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(testCaseBindingFile));
-            String binding;
-            int index = -1;
-            while ((binding = reader.readLine()) != null) {
-                index++;
-                logger.logInfo(binding);
-                TestCaseBinding testCaseBinding = JsonUtil.fromJson(binding, TestCaseBinding.class);
-                accessTestCaseMainPhase(index, testCaseBinding);
+            List<String> bindings = FileUtils.readLines(testCaseBindingFile);
+            for (int i = 0; i < bindings.size(); i++) {
+                TestCaseBinding testCaseBinding = JsonUtil.fromJson(bindings.get(i), TestCaseBinding.class);
+                accessTestCaseMainPhase(i, testCaseBinding);
             }
         } catch (IOException e) {
             errorCollector.addError(e);
         }
-       
 
         invokeTestSuiteMethod(TearDown.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true);
     }
