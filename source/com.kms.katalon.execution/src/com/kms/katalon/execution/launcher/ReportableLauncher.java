@@ -151,6 +151,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     @Override
     protected void uploadReportTestSuiteCollection(List<TestSuiteLogRecord> testSuiteCollection) {
+    	setStatus(LauncherStatus.UPLOAD_REPORT);
     	testSuiteCollection.forEach((tsc) -> {
     		uploadReportToIntegratingProduct(tsc);
     	});
