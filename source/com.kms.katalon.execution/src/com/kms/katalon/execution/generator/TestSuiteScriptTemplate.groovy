@@ -49,7 +49,7 @@ RunConfiguration.setExecutionSettingFile("<%= executionConfigFilePath %>")
 
 TestCaseMain.beforeStart()
 
-TestCaseMain.startTestSuite('<%= testSuite.getIdForDisplay() %>', suiteProperties, <%=  testCaseBindings %>)
+TestCaseMain.startTestSuite('<%= testSuite.getIdForDisplay() %>', suiteProperties, new File("<%=  testCaseBindingFile %>"))
 '''
     private static final String STATIC = "static";
 
@@ -58,7 +58,7 @@ TestCaseMain.startTestSuite('<%= testSuite.getIdForDisplay() %>', suitePropertie
     }
 
     @CompileStatic
-    def static generateTestSuiteScriptFile(File file, TestSuiteEntity testSuite, List<String> testCaseBindings,
+    def static generateTestSuiteScriptFile(File file, TestSuiteEntity testSuite, File testCaseBindingFile,
             IRunConfiguration runConfig, TestSuiteExecutedEntity testSuiteExecutedEntity) {
 
         def importNames = [
@@ -95,7 +95,7 @@ TestCaseMain.startTestSuite('<%= testSuite.getIdForDisplay() %>', suitePropertie
             "importNames": importNames,
             "testSuite" : testSuite,
             "testCaseIds": testCaseIds,
-            "testCaseBindings": testCaseBindings,
+            "testCaseBindingFile": GroovyStringUtil.escapeGroovy(testCaseBindingFile.getAbsolutePath()),
             "configProperties" : ExecutionUtil.escapeGroovy(testSuiteExecutedEntity.getAttributes()),
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(runConfig.getExecutionSetting().getSettingFilePath()),
             "driverCleaners" : driverCleaners,

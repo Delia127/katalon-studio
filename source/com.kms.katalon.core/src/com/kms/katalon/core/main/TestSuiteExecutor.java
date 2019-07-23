@@ -2,7 +2,9 @@ package com.kms.katalon.core.main;
 
 import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -16,7 +18,6 @@ import java.util.Stack;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.groovy.ast.MethodNode;
 
-import com.beust.jcommander.internal.Maps;
 import com.google.common.base.Optional;
 import com.kms.katalon.core.annotation.SetUp;
 import com.kms.katalon.core.annotation.SetupTestCase;
@@ -35,6 +36,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseBinding;
+import com.kms.katalon.core.util.internal.JsonUtil;
 
 import groovy.lang.Binding;
 
@@ -75,14 +77,14 @@ public class TestSuiteExecutor {
         eventManger.addListenerEventHandle(videoRecorderService);
     }
 
-    public void execute(Map<String, String> suiteProperties, List<TestCaseBinding> testCaseBindings) {
+    public void execute(Map<String, String> suiteProperties, File testCaseBindingFile) {
         eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_EXECUTION, new Object[0]);
 
         logger.startSuite(testSuiteId, suiteProperties);
 
         eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_SUITE, new Object[] { testSuiteContext });
 
-        accessTestSuiteMainPhase(testCaseBindings);
+        accessTestSuiteMainPhase(testCaseBindingFile);
 
         String status = "COMPLETE";
         if (ErrorCollector.getCollector().containsErrors()) {
@@ -101,7 +103,7 @@ public class TestSuiteExecutor {
         eventManger.publicEvent(ExecutionListenerEvent.AFTER_TEST_EXECUTION, new Object[0]);
     }
 
-    private void accessTestSuiteMainPhase(List<TestCaseBinding> testCaseBindings) {
+    private void accessTestSuiteMainPhase(File testCaseBindingFile) {
         ErrorCollector errorCollector = ErrorCollector.getCollector();
         try {
             this.scriptCache = new ScriptCache(testSuiteId);
@@ -114,9 +116,20 @@ public class TestSuiteExecutor {
             return;
         }
 
-        for (int i = 0; i < testCaseBindings.size(); i++) {
-            accessTestCaseMainPhase(i, testCaseBindings.get(i));
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(testCaseBindingFile));
+            String binding;
+            int index = -1;
+            while ((binding = reader.readLine()) != null) {
+                index++;
+                logger.logInfo(binding);
+                TestCaseBinding testCaseBinding = JsonUtil.fromJson(binding, TestCaseBinding.class);
+                accessTestCaseMainPhase(index, testCaseBinding);
+            }
+        } catch (IOException e) {
+            errorCollector.addError(e);
         }
+       
 
         invokeTestSuiteMethod(TearDown.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true);
     }

@@ -1,6 +1,10 @@
 package com.kms.katalon.execution.generator;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,8 +69,13 @@ public class TestSuiteScriptGenerator {
                 new Object[] { null, testSuite, createTestCaseBindings(), config });
     }
 
-    public List<String> createTestCaseBindings() {
-        List<String> testCaseBindings = new ArrayList<String>();
+    public File createTestCaseBindings() throws IOException {
+        File testCaseBindingFile = new File(config.getExecutionSetting().getFolderPath(), "testCaseBinding");
+        testCaseBindingFile.createNewFile();
+        
+        FileOutputStream fos = new FileOutputStream(testCaseBindingFile);
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+        
         syntaxErrorCollector = new StringBuilder();
 
         List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(
@@ -91,11 +100,15 @@ public class TestSuiteScriptGenerator {
 
             List<String> testCaseBinding = getTestCaseBindingString(testCaseLink,
                     (TestCaseExecutedEntity) testCaseExecuted);
-            testCaseBindings.addAll(testCaseBinding);
+            for (String binding : testCaseBinding) {
+                bw.write(binding);
+                bw.newLine();
+            }
         }
+        bw.close();
 
         if (syntaxErrorCollector.toString().isEmpty()) {
-            return testCaseBindings;
+            return testCaseBindingFile;
         } else {
             throw new IllegalArgumentException(syntaxErrorCollector.toString());
         }
