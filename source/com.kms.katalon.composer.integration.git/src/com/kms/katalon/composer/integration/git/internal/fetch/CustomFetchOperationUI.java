@@ -28,7 +28,9 @@ import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.TagOpt;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
 
 /**
@@ -141,7 +143,11 @@ public class CustomFetchOperationUI {
             @Override
             public void done(IJobChangeEvent event) {
                 if (event.getResult().isOK()) {
-                    FetchResultDialog.show(repository, op.getOperationResult(), sourceString);
+                    UISynchronizeService.syncExec(() -> {
+                        FetchResultDialog dialog = new FetchResultDialog(Display.getCurrent().getActiveShell(),
+                                repository, op.getOperationResult(), getSourceString());
+                        dialog.open();
+                    });
                 } else {
                     Activator.handleError(event.getResult().getMessage(), event.getResult().getException(), true);
                 }

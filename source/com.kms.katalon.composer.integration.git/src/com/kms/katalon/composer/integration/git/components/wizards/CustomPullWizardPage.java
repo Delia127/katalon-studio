@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.egit.core.op.CreateLocalBranchOperation.UpstreamConfig;
+import org.eclipse.egit.core.op.CreateLocalBranchOperation;
 import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.UIUtils;
 import org.eclipse.egit.ui.internal.UIIcons;
@@ -30,6 +30,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.jgit.lib.BranchConfig;
+import org.eclipse.jgit.lib.BranchConfig.BranchRebaseMode;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -67,7 +68,7 @@ public class CustomPullWizardPage extends WizardPage {
 
     private String fullBranch;
 
-    private UpstreamConfig upstreamConfig;
+    private BranchRebaseMode upstreamConfig;
 
     private ComboViewer remoteBranchNameComboViewer;
 
@@ -271,10 +272,10 @@ public class CustomPullWizardPage extends WizardPage {
     }
 
     boolean isRebaseSelected() {
-        return upstreamConfig == UpstreamConfig.REBASE;
+        return upstreamConfig == BranchRebaseMode.REBASE;
     }
 
-    UpstreamConfig getUpstreamConfig() {
+    BranchRebaseMode getUpstreamConfig() {
         return this.upstreamConfig;
     }
 
@@ -300,9 +301,9 @@ public class CustomPullWizardPage extends WizardPage {
     private void setDefaultUpstreamConfig() {
         String branchName = Repository.shortenRefName(fullBranch);
         BranchConfig branchConfig = new BranchConfig(repository.getConfig(), branchName);
-        UpstreamConfig config = (branchConfig.isRebase() ? UpstreamConfig.REBASE : UpstreamConfig.MERGE);
+        BranchRebaseMode config = (branchConfig.isRebase() ? BranchRebaseMode.REBASE : BranchRebaseMode.NONE);
         if (branchConfig.getMerge() == null) {
-            config = UpstreamConfig.getDefault(repository, Constants.R_REMOTES + Constants.DEFAULT_REMOTE_NAME + "/"
+            config = CreateLocalBranchOperation.getDefaultUpstreamConfig(repository, Constants.R_REMOTES + Constants.DEFAULT_REMOTE_NAME + "/"
                     + branchName);
         }
         this.upstreamConfig = config;
