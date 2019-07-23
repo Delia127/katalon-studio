@@ -1,5 +1,6 @@
 package com.kms.katalon.execution.launcher.manager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
@@ -22,11 +24,13 @@ public class LauncherManager {
     private List<ILauncher> runningLaunchers;
     private List<ILauncher> waitingLaunchers;
     private List<ILauncher> terminatedLaunchers;
+    private List<TestSuiteLogRecord> fileReports;
 
     protected LauncherManager() {
         runningLaunchers = new ArrayList<ILauncher>();
         waitingLaunchers = new ArrayList<ILauncher>();
         terminatedLaunchers = new ArrayList<ILauncher>();
+        fileReports = new ArrayList<TestSuiteLogRecord>();
     }
 
     public static LauncherManager getInstance() {
@@ -250,5 +254,13 @@ public class LauncherManager {
     
     public long getWaitingLaunchers() {
     	return waitingLaunchers.size();
+    }
+    
+    public void addFolderReport(TestSuiteLogRecord report) {
+    	fileReports.add(report);
+    }
+    
+    public List<TestSuiteLogRecord> getFolderReport() {
+    	return fileReports;
     }
 }

@@ -80,12 +80,12 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
     
-    protected void sendReport() {
-    	
+    public TestSuiteLogRecord folderReport() {
+    	return prepareReport();
     }
 
     @Override
-    protected void preExecutionComplete() {
+    protected void preExecutionComplete(boolean isRunTestSuite) {
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
@@ -99,8 +99,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT);
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
-
-            uploadReportToIntegratingProduct(suiteLogRecord);
+            
+            if (isRunTestSuite) {
+            	uploadReportToIntegratingProduct(suiteLogRecord);            	
+            }
 
             sendReport(suiteLogRecord);
 
@@ -145,6 +147,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 LogUtil.logError(e);
             }
         }
+    }
+    
+    @Override
+    protected void uploadReportTestSuiteCollection(List<TestSuiteLogRecord> testSuiteCollection) {
+    	testSuiteCollection.forEach((tsc) -> {
+    		uploadReportToIntegratingProduct(tsc);
+    	});
     }
 
     private boolean needToRerun() {
