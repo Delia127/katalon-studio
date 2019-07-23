@@ -132,6 +132,7 @@ public class DialogServiceImpl implements DialogActionService {
         }
     }
 
+    @Override
     public TestObjectEntity[] showTestObjectSelectionDialog(Shell parentShell, String dialogTitle)
             throws PlatformException {
         EntityLabelProvider labelProvider = new EntityLabelProvider();

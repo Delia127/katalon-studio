@@ -355,7 +355,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     protected IExecutedEntity getExecutedEntity() {
         return getRunConfig().getExecutionSetting().getExecutedEntity();
     }
-    
+
     protected File getReportFolder() {
         return new File(getRunConfig().getExecutionSetting().getFolderPath());
     }
