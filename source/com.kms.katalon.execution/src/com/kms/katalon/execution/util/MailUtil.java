@@ -235,7 +235,15 @@ public class MailUtil {
             EmailConfig conf = new EmailConfig();
             conf.setHost(store.getHost(encryptionEnabled));
             conf.setPort(store.getPort(encryptionEnabled));
-            conf.setFrom(store.getSender());
+            
+            String sender = store.getSender();
+            if (StringUtils.isBlank(sender)) {
+                if (store.useUsernameAsSender()) {
+                    sender = store.getUsername(encryptionEnabled);
+                }
+            }
+            conf.setFrom(sender);
+            
             conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(store.getProtocol(encryptionEnabled)));
             conf.setUsername(store.getUsername(encryptionEnabled));
             conf.setPassword(store.getPassword(encryptionEnabled));
