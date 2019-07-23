@@ -1,7 +1,7 @@
 package com.kms.katalon.composer.webui.recorder.handler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -137,11 +137,15 @@ public class RecordHandler {
             final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
             final List<WebPage> recordedElements = recordDialog.getElements();
             boolean shouldOverride = true;
+            if (recordedActions.isEmpty()) {
+                return;
+            }
             if (testCaseCompositePart == null || testCaseCompositePart.isDisposed()) {
                 testCaseCompositePart = createNewTestCase();
                 shouldOverride = false;
             }
-            updateRecordedElementsAfterSavingToObjectRepository(recordedElements, folderSelectionResult.getEntitySavedMap());
+            updateRecordedElementsAfterSavingToObjectRepository(recordedElements,
+                    folderSelectionResult != null ? folderSelectionResult.getEntitySavedMap() : Collections.emptyMap());
             doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements,
                     recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
         } catch (Exception e) {
@@ -159,6 +163,7 @@ public class RecordHandler {
      * Update the structure of recorded elements with the structures decided by user
      * via entitySavedMap. Cloned WebPages will be created in recordedElements
      * and references of their children are removed from the original WebPages
+     * 
      * @see com.kms.katalon.objectspy.dialog.ObjectRepositoryService#saveObject(SaveToObjectRepositoryDialogResult)
      * @param recordedElements The list of WebPages and their children of a test case
      * @param entitySavedMap A map of physical folders indexed by WebPage and WebEntity
@@ -243,19 +248,12 @@ public class RecordHandler {
                                 if (children.isEmpty()) {
                                     return;
                                 }
-                                if (!shouldOverride) {
-                                    testCasePart.addDefaultImports();
-                                    testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
+                                testCasePart.addDefaultImports();
+                                testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
 
-                                    // append generated steps at the end of test case's steps
-                                    testCasePart.addStatements(children, NodeAddType.Add, true);
-                                    testCasePart.addVariables(variables);
-                                } else {
-                                    testCasePart.clearStatements();
-                                    testCasePart.addStatements(children, NodeAddType.Add, true);
-                                    testCasePart.deleteVariables(Arrays.asList(testCasePart.getVariables()));
-                                    testCasePart.addVariables(variables);
-                                }
+                                // append generated steps at the end of test case's steps
+                                testCasePart.addStatements(children, NodeAddType.Add, true);
+                                testCasePart.addVariables(variables);
                                 testCaseCompositePart.refreshScript();
                                 testCaseCompositePart.save();
                             } catch (Exception e) {
