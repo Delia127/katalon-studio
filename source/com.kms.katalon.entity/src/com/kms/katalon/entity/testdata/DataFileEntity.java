@@ -1,6 +1,7 @@
 package com.kms.katalon.entity.testdata;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -293,7 +294,7 @@ public class DataFileEntity extends FileEntity {
 
     public void setProperty(String key, String value) {
         if (properties == null) {
-            return;
+        	properties = new HashMap<String, String>();
         }
         properties.put(key, value);
     }
