@@ -139,10 +139,8 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             chckUseUsernameAsSender.setSelection(settingStore.useUsernameAsSender());
             
             String sender = settingStore.getSender();
-            if (StringUtils.isBlank(sender)) {
-                if (settingStore.useUsernameAsSender()) {
-                    sender = txtUsername.getText();
-                }
+            if (settingStore.useUsernameAsSender()) {
+                sender = txtUsername.getText();
             }
             txtSender.setText(sender);
             

@@ -237,10 +237,8 @@ public class MailUtil {
             conf.setPort(store.getPort(encryptionEnabled));
             
             String sender = store.getSender();
-            if (StringUtils.isBlank(sender)) {
-                if (store.useUsernameAsSender()) {
-                    sender = store.getUsername(encryptionEnabled);
-                }
+            if (store.useUsernameAsSender()) {
+                sender = store.getUsername(encryptionEnabled);
             }
             conf.setFrom(sender);
             
