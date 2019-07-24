@@ -10,6 +10,8 @@ public interface ReportIntegrationContribution extends ConsoleOptionContributor 
     
     void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception;
     
+    void uploadTestSuiteCollection(String folderTestSuiteCollection) throws Exception;
+    
     default void notifyProccess(Object event, ExecutionEntityResult executedEntity) {
     	
     }

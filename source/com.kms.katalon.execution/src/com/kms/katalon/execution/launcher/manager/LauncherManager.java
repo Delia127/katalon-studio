@@ -24,13 +24,11 @@ public class LauncherManager {
     private List<ILauncher> runningLaunchers;
     private List<ILauncher> waitingLaunchers;
     private List<ILauncher> terminatedLaunchers;
-    private List<TestSuiteLogRecord> fileReports;
 
     protected LauncherManager() {
-        runningLaunchers = new ArrayList<ILauncher>();
-        waitingLaunchers = new ArrayList<ILauncher>();
-        terminatedLaunchers = new ArrayList<ILauncher>();
-        fileReports = new ArrayList<TestSuiteLogRecord>();
+        runningLaunchers = Collections.synchronizedList(new ArrayList<ILauncher>());
+        waitingLaunchers = Collections.synchronizedList(new ArrayList<ILauncher>());
+        terminatedLaunchers = Collections.synchronizedList(new ArrayList<ILauncher>());
     }
 
     public static LauncherManager getInstance() {
@@ -250,17 +248,5 @@ public class LauncherManager {
             launcherMessageStatus.append(consoleLauncher.getStatusMessage(consoleWidth));
         }
         return launcherMessageStatus.toString();
-    }
-    
-    public long getWaitingLaunchers() {
-    	return waitingLaunchers.size();
-    }
-    
-    public void addFolderReport(TestSuiteLogRecord report) {
-    	fileReports.add(report);
-    }
-    
-    public List<TestSuiteLogRecord> getFolderReport() {
-    	return fileReports;
     }
 }

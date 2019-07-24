@@ -32,6 +32,7 @@ import com.kms.katalon.core.testdata.reader.CSVReader;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
+import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
@@ -79,11 +80,6 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         startTime = new Date();
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
-    
-    public TestSuiteLogRecord folderReport() {
-    	return prepareReport();
-    }
-
     @Override
     protected void preExecutionComplete(boolean isRunTestSuite) {
         if (getStatus() == LauncherStatus.TERMINATED) {
@@ -101,7 +97,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             TestSuiteLogRecord suiteLogRecord = prepareReport();
             
             if (isRunTestSuite) {
-            	uploadReportToIntegratingProduct(suiteLogRecord);            	
+            	uploadReportToIntegratingProduct(suiteLogRecord);
             }
 
             sendReport(suiteLogRecord);
@@ -149,12 +145,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
     
-    @Override
-    protected void uploadReportTestSuiteCollection(List<TestSuiteLogRecord> testSuiteCollection) {
+    protected void uploadReportTestSuiteCollection() {
     	setStatus(LauncherStatus.UPLOAD_REPORT);
-    	testSuiteCollection.forEach((tsc) -> {
-    		uploadReportToIntegratingProduct(tsc);
-    	});
+    	String sessionId = runConfig.getExecutionSessionId();
+    	String rootReport = reportEntity.getProject().getFolderLocation() + File.separator + "Reports" + File.separator + sessionId;
+    	uploadReportTSCToIntegratingProduct(rootReport);
     }
 
     private boolean needToRerun() {
@@ -293,6 +288,36 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             }
         } catch (IOException ex) {
             LogUtil.logError(ex);
+        }
+    }
+    
+    protected void uploadReportTSCToIntegratingProduct(String folderLog) {
+        if (!(getExecutedEntity() instanceof Reportable)) {
+            return;
+        }
+        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
+                .getInstance().getIntegrationContributorMap().entrySet()) {
+            ReportIntegrationContribution contribution = reportContributorEntry.getValue();
+            if (contribution != null && !contribution.isIntegrationActive(getTestSuite())) {
+                contribution.printIntegrateMessage();
+            }
+            if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
+                continue;
+            }
+            String integratingProductName = reportContributorEntry.getKey();
+            setStatus(LauncherStatus.UPLOAD_REPORT,
+                    MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
+            try {
+                writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
+
+                reportContributorEntry.getValue().uploadTestSuiteCollection(folderLog);
+
+                writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
+            } catch (Exception e) {
+                writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
+                        integratingProductName, ExceptionUtils.getStackTrace(e)));
+                LogUtil.logError(e);
+            }
         }
     }
 

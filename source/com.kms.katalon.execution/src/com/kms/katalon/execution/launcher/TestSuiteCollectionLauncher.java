@@ -48,6 +48,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     private ExecutionMode executionMode;
 
     private ReportCollectionEntity reportCollection;
+    
+    private ReportableLauncher flag;
 
     private Date startTime;
 
@@ -76,6 +78,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             childLauncher.addListener(this);
             childLauncher.setParentLauncher(this);
         }
+        this.flag = subLaunchers.get(0);
     }
 
     @Override
@@ -114,6 +117,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                         return;
                     }
                 }
+                flag.uploadReportTestSuiteCollection();
                 setStatus(LauncherStatus.DONE);
                 postExecution();
             }
@@ -305,4 +309,5 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     public Date getEndTime() {
         return endTime;
     }
+
 }

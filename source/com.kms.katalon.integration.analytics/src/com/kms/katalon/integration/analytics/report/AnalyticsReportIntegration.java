@@ -47,6 +47,11 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     }
     
     @Override
+    public void uploadTestSuiteCollection(String folderTestSuiteCollection) throws Exception {
+    	reportService.upload(folderTestSuiteCollection);
+    }
+    
+    @Override
     public void printIntegrateMessage() {
         LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_INTEGRATE_WITH_KA);
     }
