@@ -162,6 +162,10 @@ public class OpenProjectHandler {
                         public void run() {
                             try {
                                 if (project != null) {
+                                    // Set project name on window title
+                                    OpenProjectHandler.updateProjectTitle(project, modelService, application);
+                                    Trackings.trackOpenProject(project);
+                                    
                                     AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                                             ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
@@ -171,11 +175,7 @@ public class OpenProjectHandler {
 
                                     if (teamKA.getId() != null && projectKA.getId() != null) {
                                         analyticsConfigutionProject.checkUserAccessProject();
-                                    }
-
-                                    // Set project name on window title
-                                    OpenProjectHandler.updateProjectTitle(project, modelService, application);
-                                    Trackings.trackOpenProject(project);
+                                    } 
                                 }
                                 eventBrokerService.post(EventConstants.EXPLORER_RELOAD_INPUT,
                                         TreeEntityUtil.getAllTreeEntity(project));
