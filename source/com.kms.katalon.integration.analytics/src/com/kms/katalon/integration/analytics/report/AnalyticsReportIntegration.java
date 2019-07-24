@@ -42,13 +42,13 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     }
 
     @Override
-    public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {
-        reportService.upload(suiteLog.getLogFolder());
+    public void uploadTestSuiteResult(TestSuiteEntity testSuite, String logFolder) throws Exception {
+        reportService.upload(logFolder);
     }
     
     @Override
-    public void uploadTestSuiteCollection(String folderTestSuiteCollection) throws Exception {
-    	reportService.upload(folderTestSuiteCollection);
+    public void uploadTestSuiteCollection(String logFolder) throws Exception {
+    	reportService.upload(logFolder);
     }
     
     @Override

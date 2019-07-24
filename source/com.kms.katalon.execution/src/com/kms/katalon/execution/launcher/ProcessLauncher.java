@@ -3,7 +3,6 @@ package com.kms.katalon.execution.launcher;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -108,7 +107,7 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
 
             if (process != null) {
                 watchdog.setProcess(process);
-
+                
                 onStartExecutionComplete();
             } else {
                 stop();
@@ -204,7 +203,7 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
 
         postExecutionComplete();
     }
-    
+
     protected void postExecutionComplete() {
         try {
             if (process == null) {
@@ -233,12 +232,8 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
     /**
      * Children may override this
      */
-    protected void preExecutionComplete(boolean isRunTestSuite) {
+    protected void preExecutionComplete(boolean runTestSuite) {
         // For children
-    }
-    
-    protected TestSuiteLogRecord folderReport() {
-    	return null;
     }
 
     /**

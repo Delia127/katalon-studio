@@ -32,7 +32,6 @@ import com.kms.katalon.core.testdata.reader.CSVReader;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
-import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
@@ -81,7 +80,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
     @Override
-    protected void preExecutionComplete(boolean isRunTestSuite) {
+    protected void preExecutionComplete(boolean runTestSuite) {
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
@@ -96,8 +95,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
             
-            if (isRunTestSuite) {
-            	uploadReportToIntegratingProduct(suiteLogRecord);
+            if (runTestSuite) {
+            	uploadReportToIntegratingProduct(suiteLogRecord.getLogFolder(), true);
             }
 
             sendReport(suiteLogRecord);
@@ -146,10 +145,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
     
     protected void uploadReportTestSuiteCollection() {
-    	setStatus(LauncherStatus.UPLOAD_REPORT);
+    	setStatus(LauncherStatus.PREPARE_REPORT);
     	String sessionId = runConfig.getExecutionSessionId();
     	String rootReport = reportEntity.getProject().getFolderLocation() + File.separator + "Reports" + File.separator + sessionId;
-    	uploadReportTSCToIntegratingProduct(rootReport);
+    	uploadReportToIntegratingProduct(rootReport, false);
     }
 
     private boolean needToRerun() {
@@ -290,8 +289,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             LogUtil.logError(ex);
         }
     }
-    
-    protected void uploadReportTSCToIntegratingProduct(String folderLog) {
+
+    protected void uploadReportToIntegratingProduct(String logFolder, boolean isTestSuite) {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -309,39 +308,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
-
-                reportContributorEntry.getValue().uploadTestSuiteCollection(folderLog);
-
-                writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
-            } catch (Exception e) {
-                writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
-                        integratingProductName, ExceptionUtils.getStackTrace(e)));
-                LogUtil.logError(e);
-            }
-        }
-    }
-
-    protected void uploadReportToIntegratingProduct(TestSuiteLogRecord suiteLog) {
-        if (!(getExecutedEntity() instanceof Reportable)) {
-            return;
-        }
-        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
-                .getInstance().getIntegrationContributorMap().entrySet()) {
-            ReportIntegrationContribution contribution = reportContributorEntry.getValue();
-            if (contribution != null && !contribution.isIntegrationActive(getTestSuite())) {
-                contribution.printIntegrateMessage();
-            }
-            if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
-                continue;
-            }
-            String integratingProductName = reportContributorEntry.getKey();
-            setStatus(LauncherStatus.UPLOAD_REPORT,
-                    MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
-            try {
-                writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
-
-                reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), suiteLog);
-
+                if (isTestSuite) {
+                	reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), logFolder);
+                } else {
+                	reportContributorEntry.getValue().uploadTestSuiteCollection(logFolder);
+                }
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,

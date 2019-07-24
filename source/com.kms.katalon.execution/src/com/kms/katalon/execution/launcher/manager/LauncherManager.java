@@ -1,6 +1,5 @@
 package com.kms.katalon.execution.launcher.manager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +10,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.controller.ReportController;
-import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
