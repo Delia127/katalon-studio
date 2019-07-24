@@ -290,7 +290,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    protected void uploadReportToIntegratingProduct(String logFolder, boolean isTestSuite) {
+    protected void uploadReportToIntegratingProduct(String logFolder, boolean runTestSuite) {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -308,7 +308,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
-                if (isTestSuite) {
+                if (runTestSuite) {
                 	reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), logFolder);
                 } else {
                 	reportContributorEntry.getValue().uploadTestSuiteCollection(logFolder);

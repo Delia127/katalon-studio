@@ -107,7 +107,7 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
 
             if (process != null) {
                 watchdog.setProcess(process);
-                
+
                 onStartExecutionComplete();
             } else {
                 stop();
