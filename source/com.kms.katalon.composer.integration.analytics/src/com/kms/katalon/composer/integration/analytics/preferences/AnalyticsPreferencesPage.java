@@ -276,7 +276,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         if (cbbTeams.getSelectionIndex() == -1) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                    ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_CONNECT_SUCCESSFULLY);
+                    ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_SET_TEAM);
+            return false;
+        }
+        
+        if (cbbProjects.getSelectionIndex() == -1) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_SET_PROJECT);
             return false;
         }
 
@@ -345,13 +351,17 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             teams.clear();
             projects.clear();
             
-            teams.add(selectTeamFromConfig);
-            projects.add(selectProjectFromConfig);
-            
-            cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-            int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-            cbbTeams.select(indexSelectTeam);
-            setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+            if (selectTeamFromConfig != null) {
+            	teams.add(selectTeamFromConfig);
+            	cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+            	int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+            	cbbTeams.select(indexSelectTeam);
+            	setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+            	
+            	if (selectProjectFromConfig != null) {
+            		projects.add(selectProjectFromConfig);
+            	}
+            }
             
             if (enableAnalyticsIntegration.getSelection()) {
                 AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
@@ -377,17 +387,15 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         linkStatusAccessProject.setText(String.format(
                                 ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT,
                                 serverUrl + "/team/" + String.valueOf(teams.get(0).getId())));
-
                     } else {
                         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email,
                                 password, teams.get(AnalyticsAuthorizationHandler
                                         .getDefaultTeamIndex(analyticsSettingStore, teams)),
                                 tokenInfo, new ProgressMonitorDialog(getShell()));
                     }
-
                     cbbTeams.setItems(
                             AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-                    indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                    int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
                     cbbTeams.select(indexSelectTeam);
                     setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
                 }
@@ -465,9 +473,10 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             analyticsSettingStore.enableEncryption(encryptionEnabled);
             if (!teams.isEmpty()) {
                 analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
+                if (!projects.isEmpty()) {
+                	analyticsSettingStore.setProject(projects.get(cbbProjects.getSelectionIndex()));                	
+                }
             }
-            analyticsSettingStore.setProject(
-                    cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
             analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());
             analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
             analyticsSettingStore.setAttachLog(enableAnalyticsIntegration.getSelection());
