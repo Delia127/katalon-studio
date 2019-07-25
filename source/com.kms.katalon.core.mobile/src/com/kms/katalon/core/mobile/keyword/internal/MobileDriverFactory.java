@@ -85,6 +85,11 @@ public class MobileDriverFactory {
         return RunConfiguration.getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, "browserType");
     }
 
+    public static MobileDriverType getRemoteMobileDriver() {
+        return MobileDriverType.valueOf(RunConfiguration
+                .getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, "remoteMobileDriver"));
+    }
+
     /**
      * @return the remote web driver url if running Mobile keyword on cloud services
      */
@@ -361,10 +366,11 @@ public class MobileDriverFactory {
         AppiumDriver<?> driver;
         String remoteWebUrl = getRemoteWebDriverServerUrl();
         if (StringUtils.isNotEmpty(remoteWebUrl)) {
-            driver = startRemoteMobileDriver(remoteWebUrl, new DesiredCapabilities(getRemoteWebDriverPreferences()), appFile);
+            driver = startRemoteMobileDriver(remoteWebUrl, new DesiredCapabilities(getRemoteWebDriverPreferences()),
+                    getRemoteMobileDriver(), appFile);
         } else {
             driver = startLocalMobileDriver(getMobileDriverType(), getDeviceId(), getDeviceName(), getDeviceOSVersion(),
-                appFile, uninstallAfterCloseApp);
+                    appFile, uninstallAfterCloseApp);
         }
         if (driver != null) {
             saveWebDriverSessionData(driver);
@@ -453,21 +459,9 @@ public class MobileDriverFactory {
                 createCapabilities(osType, deviceId, deviceName, platformVersion, appFile, uninstallAfterCloseApp));
     }
 
-    public static AppiumDriver<?> startRemoteMobileDriver(String remoteWebUrl, DesiredCapabilities desiredCapabilities, String appFile)
-            throws MalformedURLException, MobileDriverInitializeException {
-        MobileDriverType driverType = getMobileDriverTypeFromDesiredCapabilities(desiredCapabilities);
+    public static AppiumDriver<?> startRemoteMobileDriver(String remoteWebUrl, DesiredCapabilities desiredCapabilities,
+            MobileDriverType driverType, String appFile) throws MalformedURLException, MobileDriverInitializeException {
         desiredCapabilities.setCapability("app", appFile);
         return AppiumDriverManager.createMobileDriver(driverType, desiredCapabilities, new URL(remoteWebUrl));
-    }
-
-    public static MobileDriverType getMobileDriverTypeFromDesiredCapabilities(
-            DesiredCapabilities desiredCapabilities) {
-        MobileDriverType driverType = MobileDriverType.ANDROID_DRIVER;
-        if (desiredCapabilities != null) {
-            String platformName = (String) desiredCapabilities.getCapability("platformName");
-            driverType = StringUtils.containsIgnoreCase(platformName, "android") ? MobileDriverType.ANDROID_DRIVER
-                    : MobileDriverType.IOS_DRIVER;
-        }
-        return driverType;
     }
 }

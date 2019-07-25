@@ -144,6 +144,8 @@ public class DriverFactory {
 
     public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
 
+    public static final String REMOTE_MOBILE_DRIVER = "remoteMobileDriver";
+
     public static final String DEBUG_PORT = "debugPort";
 
     public static final String DEBUG_HOST = "debugHost";
