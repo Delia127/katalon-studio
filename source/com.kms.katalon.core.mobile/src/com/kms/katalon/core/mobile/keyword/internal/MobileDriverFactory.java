@@ -462,6 +462,7 @@ public class MobileDriverFactory {
     public static AppiumDriver<?> startRemoteMobileDriver(String remoteWebUrl, DesiredCapabilities desiredCapabilities,
             MobileDriverType driverType, String appFile) throws MalformedURLException, MobileDriverInitializeException {
         desiredCapabilities.setCapability("app", appFile);
+        desiredCapabilities.setCapability("automationFramework", "Katalon");
         return AppiumDriverManager.createMobileDriver(driverType, desiredCapabilities, new URL(remoteWebUrl));
     }
 }
