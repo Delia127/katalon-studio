@@ -6,7 +6,6 @@ import java.net.UnknownHostException;
 import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
@@ -66,18 +65,12 @@ public class ActivationInfoCollector {
 
     private static String collectActivationInfo(String userName, String pass) {
         JsonObject traits = traitsWithAppInfo();
-        // Need to escape Java string for password and single quote character for EcmaScript
-        // NOTE that StringEscapeUtils.escapeEcmaScript() will do the same as StringEscapeUtils.escapeJava()
-        // and escape single quote (') and slash (/) also. But we do not want to escape slash in Java
-        traits.addProperty("password", StringEscapeUtils.escapeJava(pass).replace("'", "\\'"));
+        traits.addProperty("password", pass);
 
         JsonObject activationObject = new JsonObject();
         activationObject.addProperty("userId", userName);
         activationObject.add("traits", traits);
 
-        // IMPORTANT: Please do NOT use Gson nor GsonBuilder to build the JSON string
-        // They will encode single quote (') character as \u0027
-        // The better way is use JsonObject.toString()
         return activationObject.toString();
     }
 
