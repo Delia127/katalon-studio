@@ -151,7 +151,7 @@ public class AnalyticsAuthorizationHandler {
         return names;
     }
     
-    public static int getProjectWithName(AnalyticsProject analyticsProject,
+    public static int getProjectIndex(AnalyticsProject analyticsProject,
             List<AnalyticsProject> projects) {
         int selectionIndex = 0;
         try {
