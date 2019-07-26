@@ -21,6 +21,7 @@ import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -44,17 +45,27 @@ public class NewProjectDialog extends AbstractDialog {
     
     private AnalyticsTeam team;
     
+    private boolean permissionCreateTeam;
+    
     public NewProjectDialog(Shell parentShell, String serverUrl, String email, String password, AnalyticsTeam team) {
         super(parentShell);
         this.serverUrl = serverUrl;
         this.email = email;
         this.password = password;
         this.team = team;
+        
+        if (this.team.getRole().contains("OWNER") || this.team.getRole().contains("ADMIN")) {
+        	permissionCreateTeam = true;
+        } else {
+        	permissionCreateTeam = false;
+        }
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, ComposerIntegrationAnalyticsMessageConstants.BTN_CREATE, true);
+    	if (!permissionCreateTeam) {
+    		createButton(parent, IDialogConstants.OK_ID, ComposerIntegrationAnalyticsMessageConstants.BTN_CREATE, true);
+    	}
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
@@ -70,7 +81,9 @@ public class NewProjectDialog extends AbstractDialog {
 
     @Override
     protected void setInput() {
-        txtProject.setText(StringUtils.EMPTY);
+    	if (txtProject != null) {
+    		txtProject.setText(StringUtils.EMPTY);
+    	}
     }
     
     @Override
@@ -88,19 +101,18 @@ public class NewProjectDialog extends AbstractDialog {
         glContainer.horizontalSpacing = ControlUtils.DF_HORIZONTAL_SPACING;
         container.setLayout(glContainer);
         
-        if (team.getRole().contains("OWNER") || team.getRole().contains("ADMIN")) {
+        if (permissionCreateTeam) {
         	Label lblNewProject = new Label(container, SWT.NONE);
         	lblNewProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_NEW_PROJECT);
-        	
         	txtProject = new Text(container, SWT.BORDER | SWT.FLAT);
         	GridData txtProjectGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
         	txtProjectGridData.widthHint = 300;
         	txtProject.setLayoutData(txtProjectGridData);        	
         } else {
             Label lblPermissions = new Label(container, SWT.NONE);
-            lblPermissions.setText("You do not have premission to create new projects");
+            lblPermissions.setForeground(ColorUtil.getTextErrorColor());
+            lblPermissions.setText("You do not have premission to create new projects");  
         }
-
         return container;
     }
     
