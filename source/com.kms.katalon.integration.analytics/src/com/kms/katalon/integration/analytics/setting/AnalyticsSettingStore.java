@@ -71,16 +71,17 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public AnalyticsProject getProject() throws IOException {
-        AnalyticsProject project = new AnalyticsProject();
         String projectJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_PROJECT, StringUtils.EMPTY);
-        if (StringUtils.isNotBlank(projectJson)) {
+        if (StringUtils.isNotBlank(projectJson) || !StringUtils.contains(projectJson, "null")) {
             try {
+            	AnalyticsProject project = new AnalyticsProject();
                 project = JsonUtil.fromJson(projectJson, AnalyticsProject.class);
+                return project;
             } catch (IllegalArgumentException e) {
                 // do nothing
             }
         }
-        return project;
+        return null;
     }
 
     public void setProject(AnalyticsProject project) throws IOException {
@@ -88,16 +89,17 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public AnalyticsTeam getTeam() throws IOException {
-        AnalyticsTeam team = new AnalyticsTeam();
         String teamJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_TEAM, StringUtils.EMPTY);
         if (StringUtils.isNotBlank(teamJson)) {
             try {
+            	AnalyticsTeam team = new AnalyticsTeam();
                 team = JsonUtil.fromJson(teamJson, AnalyticsTeam.class);
+                return team;
             } catch (IllegalArgumentException e) {
                 // do nothing
             }
         }
-        return team;
+        return null;
     }
 
     public void setTeam(AnalyticsTeam team) throws IOException {
