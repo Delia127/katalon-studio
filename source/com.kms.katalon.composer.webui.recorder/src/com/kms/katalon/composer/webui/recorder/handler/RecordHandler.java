@@ -263,13 +263,14 @@ public class RecordHandler {
                                 testCasePart.addDefaultImports();
                                 testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
                                 if (shouldOverride) {
-                                    testCasePart.clearAndAddStatements(children, NodeAddType.Add, true);
+                                    testCasePart.clearAndAddStatementsToMainBlock(children, NodeAddType.Add, true);
                                 } else {    
                                     // append generated steps at the end of test case's steps
-                                    testCasePart.addStatements(children, NodeAddType.Add, true);
+                                    testCasePart.addStatementsToMainBlock(children, NodeAddType.Add, true);
                                 }
                                 testCasePart.addVariables(variables);
                                 testCasePart.getTreeTableInput().setChanged(true);
+                                testCaseCompositePart.changeScriptNode(testCasePart.getTreeTableInput().getMainClassNode());
                                 testCaseCompositePart.save();
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);

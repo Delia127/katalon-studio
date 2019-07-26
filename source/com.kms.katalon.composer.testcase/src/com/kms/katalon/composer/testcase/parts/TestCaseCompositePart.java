@@ -1082,4 +1082,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     public boolean isDirty() {
         return compositePart.isDirty();
     }
+    
+    public void changeScriptNode(ScriptNodeWrapper scriptNode) {
+        this.scriptNode = scriptNode;
+    }
 }
