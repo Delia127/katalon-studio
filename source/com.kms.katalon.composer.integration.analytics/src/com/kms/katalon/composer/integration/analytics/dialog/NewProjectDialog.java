@@ -55,16 +55,16 @@ public class NewProjectDialog extends AbstractDialog {
         this.team = team;
         
         if (this.team.getRole().contains("OWNER") || this.team.getRole().contains("ADMIN")) {
-        	permissionCreateTeam = true;
+            permissionCreateTeam = true;
         } else {
-        	permissionCreateTeam = false;
+            permissionCreateTeam = false;
         }
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
     	if (permissionCreateTeam) {
-    		createButton(parent, IDialogConstants.OK_ID, ComposerIntegrationAnalyticsMessageConstants.BTN_CREATE, true);
+            createButton(parent, IDialogConstants.OK_ID, ComposerIntegrationAnalyticsMessageConstants.BTN_CREATE, true);
     	}
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
@@ -82,7 +82,7 @@ public class NewProjectDialog extends AbstractDialog {
     @Override
     protected void setInput() {
     	if (txtProject != null) {
-    		txtProject.setText(StringUtils.EMPTY);
+            txtProject.setText(StringUtils.EMPTY);
     	}
     }
     
@@ -102,12 +102,12 @@ public class NewProjectDialog extends AbstractDialog {
         container.setLayout(glContainer);
         
         if (permissionCreateTeam) {
-        	Label lblNewProject = new Label(container, SWT.NONE);
-        	lblNewProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_NEW_PROJECT);
-        	txtProject = new Text(container, SWT.BORDER | SWT.FLAT);
-        	GridData txtProjectGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
-        	txtProjectGridData.widthHint = 300;
-        	txtProject.setLayoutData(txtProjectGridData);
+            Label lblNewProject = new Label(container, SWT.NONE);
+            lblNewProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_NEW_PROJECT);
+            txtProject = new Text(container, SWT.BORDER | SWT.FLAT);
+            GridData txtProjectGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+            txtProjectGridData.widthHint = 300;
+            txtProject.setLayoutData(txtProjectGridData);
         } else {
             Label lblPermissions = new Label(container, SWT.NONE);
             lblPermissions.setForeground(ColorUtil.getTextErrorColor());
