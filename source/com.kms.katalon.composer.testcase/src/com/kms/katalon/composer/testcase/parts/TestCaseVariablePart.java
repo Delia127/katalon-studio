@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testcase.parts;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -71,7 +70,6 @@ import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSuppo
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.controller.LocalVariableController;
-import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.entity.variable.VariableEntityWrapper;
@@ -225,7 +223,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
 
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNo = tableViewerColumnNo.getColumn();
-        tblclmnNo.setWidth(40);
+        tblclmnNo.setWidth(70);
         tblclmnNo.setText(StringConstants.PA_COL_NO);
         tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -454,7 +452,9 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
 
     public void setDirty(boolean isDirty) {
         mpart.setDirty(isDirty);
-        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables(getVariables());
+        if (parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput() != null) {
+            parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables(getVariables());
+        }
         parentTestCaseCompositePart.updateDirty();
     }
 
