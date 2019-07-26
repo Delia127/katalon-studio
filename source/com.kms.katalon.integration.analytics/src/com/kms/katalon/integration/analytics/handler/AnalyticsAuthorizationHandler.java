@@ -151,6 +151,25 @@ public class AnalyticsAuthorizationHandler {
         return names;
     }
     
+    public static int getProjectIndex(AnalyticsProject analyticsProject,
+            List<AnalyticsProject> projects) {
+        int selectionIndex = 0;
+        try {
+            if (analyticsProject != null && analyticsProject.getId() != null) {
+                for (int i = 0; i < projects.size(); i++) {
+                    AnalyticsProject p = projects.get(i);
+                    if (analyticsProject.getId().equals(p.getId())) {
+                        selectionIndex = i;
+                        return selectionIndex;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return selectionIndex;
+    }
+    
     public static int getDefaultProjectIndex(AnalyticsSettingStore analyticsSettingStore,
             List<AnalyticsProject> projects) {
         int selectionIndex = 0;
