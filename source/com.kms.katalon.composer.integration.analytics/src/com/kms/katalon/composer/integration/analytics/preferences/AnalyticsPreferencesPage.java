@@ -565,7 +565,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
                 AnalyticsTeam team = null;
                 if (teams != null && teams.size() > 0) {
-                    team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
+                    team = teams.get(cbbTeams.getSelectionIndex());
                 }
 
                 NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(), serverUrl,
@@ -582,7 +582,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         cbbProjects.setItems(AnalyticsAuthorizationHandler.getProjectNames(projects)
                                 .toArray(new String[projects.size()]));
                         cbbProjects.select(
-                                AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+                                AnalyticsAuthorizationHandler.getProjectWithName(createdProject, projects));
                     }
                 }
             }
