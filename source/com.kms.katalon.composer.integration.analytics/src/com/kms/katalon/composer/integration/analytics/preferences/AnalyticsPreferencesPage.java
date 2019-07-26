@@ -359,7 +359,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             	setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
             	
             	if (selectProjectFromConfig != null) {
-            		projects.add(selectProjectFromConfig);
+                    projects.add(selectProjectFromConfig);
             	}
             }
             
@@ -474,7 +474,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             if (!teams.isEmpty()) {
                 analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
                 if (!projects.isEmpty()) {
-                	analyticsSettingStore.setProject(projects.get(cbbProjects.getSelectionIndex()));                	
+                    analyticsSettingStore.setProject(projects.get(cbbProjects.getSelectionIndex()));                	
                 }
             }
             analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());
