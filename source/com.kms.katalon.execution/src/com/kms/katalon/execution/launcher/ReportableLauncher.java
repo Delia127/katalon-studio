@@ -79,9 +79,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         startTime = new Date();
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
-
     @Override
-    protected void preExecutionComplete() {
+    protected void preExecutionComplete(boolean runTestSuite) {
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
@@ -95,8 +94,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT);
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
-
-            uploadReportToIntegratingProduct(suiteLogRecord);
+            
+            if (runTestSuite) {
+            	uploadReportToIntegratingProduct(suiteLogRecord.getLogFolder(), true);
+            }
 
             sendReport(suiteLogRecord);
 
@@ -141,6 +142,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 LogUtil.logError(e);
             }
         }
+    }
+    
+    protected void uploadReportTestSuiteCollection() {
+    	setStatus(LauncherStatus.PREPARE_REPORT);
+    	String sessionId = runConfig.getExecutionSessionId();
+    	String rootReport = reportEntity.getProject().getFolderLocation() + File.separator + "Reports" + File.separator + sessionId;
+    	uploadReportToIntegratingProduct(rootReport, false);
     }
 
     private boolean needToRerun() {
@@ -282,7 +290,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    protected void uploadReportToIntegratingProduct(TestSuiteLogRecord suiteLog) {
+    protected void uploadReportToIntegratingProduct(String logFolder, boolean runTestSuite) {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -300,9 +308,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
-
-                reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), suiteLog);
-
+                if (runTestSuite) {
+                	reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), logFolder);
+                } else {
+                	reportContributorEntry.getValue().uploadTestSuiteCollection(logFolder);
+                }
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
