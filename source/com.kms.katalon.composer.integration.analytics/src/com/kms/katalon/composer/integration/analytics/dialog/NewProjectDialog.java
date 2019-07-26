@@ -63,7 +63,7 @@ public class NewProjectDialog extends AbstractDialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-    	if (!permissionCreateTeam) {
+    	if (permissionCreateTeam) {
     		createButton(parent, IDialogConstants.OK_ID, ComposerIntegrationAnalyticsMessageConstants.BTN_CREATE, true);
     	}
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
@@ -107,11 +107,11 @@ public class NewProjectDialog extends AbstractDialog {
         	txtProject = new Text(container, SWT.BORDER | SWT.FLAT);
         	GridData txtProjectGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
         	txtProjectGridData.widthHint = 300;
-        	txtProject.setLayoutData(txtProjectGridData);        	
+        	txtProject.setLayoutData(txtProjectGridData);
         } else {
             Label lblPermissions = new Label(container, SWT.NONE);
             lblPermissions.setForeground(ColorUtil.getTextErrorColor());
-            lblPermissions.setText("You do not have premission to create new projects");  
+            lblPermissions.setText(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_PREMISSTION_CREATE_PROJECT);  
         }
         return container;
     }
