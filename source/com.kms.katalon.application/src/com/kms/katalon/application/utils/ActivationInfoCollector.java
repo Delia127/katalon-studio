@@ -69,7 +69,7 @@ public class ActivationInfoCollector {
         // Need to escape Java string for password and single quote character for EcmaScript
         // NOTE that StringEscapeUtils.escapeEcmaScript() will do the same as StringEscapeUtils.escapeJava()
         // and escape single quote (') and slash (/) also. But we do not want to escape slash in Java
-        traits.addProperty("password", StringEscapeUtils.escapeJava(pass).replace("'", "\\'"));
+        traits.addProperty("password", pass);
 
         JsonObject activationObject = new JsonObject();
         activationObject.addProperty("userId", userName);
