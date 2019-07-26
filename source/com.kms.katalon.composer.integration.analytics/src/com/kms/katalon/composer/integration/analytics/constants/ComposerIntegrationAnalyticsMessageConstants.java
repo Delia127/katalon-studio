@@ -104,6 +104,10 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION;
     
     public static String REPORT_MSG_MUST_CONNECT_SUCCESSFULLY;
+    
+    public static String REPORT_MSG_MUST_SET_TEAM;
+    
+    public static String REPORT_MSG_MUST_SET_PROJECT;
 
     public static String MSG_REQUEST_TOKEN_ERROR;
     
