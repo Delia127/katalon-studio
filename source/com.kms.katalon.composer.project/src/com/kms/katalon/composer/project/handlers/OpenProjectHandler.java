@@ -45,10 +45,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.project.ProjectType;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.integration.analytics.configuration.AnalyticsSettingProject;
-import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
-import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
-import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
@@ -165,17 +161,6 @@ public class OpenProjectHandler {
                                     // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, application);
                                     Trackings.trackOpenProject(project);
-                                    
-                                    AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
-                                            ProjectController.getInstance().getCurrentProject().getFolderLocation());
-
-                                    AnalyticsTeam teamKA = analyticsSettingStore.getTeam();
-                                    AnalyticsProject projectKA = analyticsSettingStore.getProject();
-                                    AnalyticsSettingProject analyticsConfigutionProject = new AnalyticsSettingProject();
-
-                                    if (teamKA.getId() != null && projectKA.getId() != null) {
-                                        analyticsConfigutionProject.checkUserAccessProject();
-                                    } 
                                 }
                                 eventBrokerService.post(EventConstants.EXPLORER_RELOAD_INPUT,
                                         TreeEntityUtil.getAllTreeEntity(project));
