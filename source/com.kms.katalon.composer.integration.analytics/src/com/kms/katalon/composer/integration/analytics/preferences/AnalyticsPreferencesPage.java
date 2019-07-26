@@ -68,7 +68,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Label lblStatus;
     
-    private Link linkStatusAccessProject;
+    private Label lblStatusAccessProject;
 
     private Combo cbbProjects;
 
@@ -204,10 +204,10 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         btnCreate.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         btnCreate.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_NEW_PROJECT);
         
-        linkStatusAccessProject = new Link(grpSelect, SWT.NONE);
-        linkStatusAccessProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+        lblStatusAccessProject = new Label(grpSelect, SWT.NONE);
+        lblStatusAccessProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 
-        linkStatusAccessProject.setForeground(ColorUtil.getTextErrorColor());
+        lblStatusAccessProject.setForeground(ColorUtil.getTextErrorColor());
     }
 
     private void createTestResultGroup() {
@@ -384,9 +384,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         projects.clear();
                         teams.add(selectTeamFromConfig);
                         projects.add(selectProjectFromConfig);
-                        linkStatusAccessProject.setText(String.format(
-                                ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT,
-                                serverUrl + "/team/" + String.valueOf(teams.get(0).getId())));
+                        lblStatusAccessProject.setText(ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
                     } else {
                         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email,
                                 password, teams.get(AnalyticsAuthorizationHandler
@@ -529,7 +527,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     cbbTeams.select(indexSelectTeam);
                                         
                     setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
-                    linkStatusAccessProject.setText("");
+                    lblStatusAccessProject.setText("");
                 }
                 changeEnabled();
             }
@@ -548,7 +546,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         int indexSelectTeam = teams.indexOf(selectTeamFromUser);
                         
                         cbbTeams.select(indexSelectTeam);
-                        linkStatusAccessProject.setText("");
+                        lblStatusAccessProject.setText("");
                         canAccessProject = true;
                     }
                 }
@@ -601,13 +599,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
-            }
-        });
-        
-        linkStatusAccessProject.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Program.launch(e.text);
             }
         });
     }
