@@ -88,13 +88,18 @@ public class NewProjectDialog extends AbstractDialog {
         glContainer.horizontalSpacing = ControlUtils.DF_HORIZONTAL_SPACING;
         container.setLayout(glContainer);
         
-        Label lblServerUrl = new Label(container, SWT.NONE);
-        lblServerUrl.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_NEW_PROJECT);
-
-        txtProject = new Text(container, SWT.BORDER | SWT.FLAT);
-        GridData txtProjectGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
-        txtProjectGridData.widthHint = 300;
-        txtProject.setLayoutData(txtProjectGridData);
+        if (team.getRole().contains("OWNER") || team.getRole().contains("ADMIN")) {
+        	Label lblNewProject = new Label(container, SWT.NONE);
+        	lblNewProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_NEW_PROJECT);
+        	
+        	txtProject = new Text(container, SWT.BORDER | SWT.FLAT);
+        	GridData txtProjectGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+        	txtProjectGridData.widthHint = 300;
+        	txtProject.setLayoutData(txtProjectGridData);        	
+        } else {
+            Label lblPermissions = new Label(container, SWT.NONE);
+            lblPermissions.setText("You do not have premission to create new projects");
+        }
 
         return container;
     }
