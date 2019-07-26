@@ -385,7 +385,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         teams.add(selectTeamFromConfig);
                         projects.add(selectProjectFromConfig);
                         lblStatusAccessProject.setText(ComposerIntegrationAnalyticsMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
-
                     } else {
                         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email,
                                 password, teams.get(AnalyticsAuthorizationHandler
