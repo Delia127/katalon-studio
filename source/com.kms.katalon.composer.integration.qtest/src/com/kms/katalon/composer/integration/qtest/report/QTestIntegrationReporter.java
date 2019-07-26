@@ -346,4 +346,16 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             destType = argumentValue.trim();
         }
     }
+
+	@Override
+	public void uploadTestSuiteCollection(String logFolder) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uploadTestSuiteResult(TestSuiteEntity testSuite, String logFolder) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
