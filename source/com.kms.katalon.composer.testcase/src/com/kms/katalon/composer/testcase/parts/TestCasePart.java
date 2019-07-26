@@ -208,6 +208,20 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         }
         return false;
     }
+    
+    public void clearAndAddStatements(List<StatementWrapper> statements, NodeAddType addType, boolean commitEditting) {
+        getTreeTableInput().getMainClassNode().getRunMethod().getBlock().clearStaments();
+        getTreeTableInput().getMainClassNode().getRunMethod().getBlock().addStatements(statements);
+        if (commitEditting) {
+            getTestCaseTreeTable().applyEditorValue();
+        }
+        try {
+            getTreeTableInput().reloadTreeTableNodes();
+        } catch (InvocationTargetException | InterruptedException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
 
     public void clearStatements() {
         getTreeTableInput().getMainClassNode().getRunMethod().getBlock().clearStaments();

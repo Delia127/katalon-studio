@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -115,6 +116,7 @@ import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestca
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -830,7 +832,9 @@ public class TestStepManualComposite {
 	}
 
 	private void openRecentKeywordItems() {
-		List<StoredKeyword> recentKeywords = TestCasePreferenceDefaultValueInitializer.getRecentKeywords();
+		List<StoredKeyword> recentKeywords = TestCasePreferenceDefaultValueInitializer.getRecentKeywords()
+		        .stream().filter(k -> k.getKeywordClass() != null && 
+		        KeywordContributorCollection.getContributor(k.getKeywordClass()) != null).collect(Collectors.toList());
 		if (recentKeywords.isEmpty()) {
 			return;
 		}
