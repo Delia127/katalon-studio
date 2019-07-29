@@ -102,6 +102,9 @@ public class TreeEntityUtil {
                 } else if (childrenEntities[i] instanceof SystemFileEntity) {
                     treeEntities.add(new SystemFileTreeEntity((SystemFileEntity) childrenEntities[i],
                             folderTreeEntity));
+                } else if (childrenEntities[i] instanceof ExecutionProfileEntity) {
+                    treeEntities.add(new ProfileTreeEntity((ExecutionProfileEntity) childrenEntities[i],
+                            folderTreeEntity));
                 } else if (childrenEntities[i] instanceof UserFileEntity) {
                     treeEntities.add(new UserFileTreeEntity((UserFileEntity) childrenEntities[i],
                             folderTreeEntity));
