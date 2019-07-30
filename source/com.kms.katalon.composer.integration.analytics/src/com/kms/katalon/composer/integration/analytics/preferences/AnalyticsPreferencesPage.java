@@ -236,7 +236,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbxAttachCaptureVideo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAttachCaptureVideo
                 .setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_CAPTURED_VIDEO);
-        cbxAttachCaptureVideo.setVisible(false);
     }
 
     @Override
