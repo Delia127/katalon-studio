@@ -332,37 +332,41 @@ public class ObjectRepository {
         String serviceType = reqElement.elementText("serviceType");
         requestObject.setServiceType(serviceType);
         
-        Map<String, String> rawVariables = new HashMap<>();
+        Map<String, Object> defaultVariables = new HashMap<>();
         // Use default value of variables if available in case user passes nothing or null
-        if(variables == null || variables.size() == 0){ 
-        	
-        	List<Element> variableElements = reqElement.elements("variables");
-        	if(variableElements != null && variableElements.size() > 0 ){
-        		for(Element variableElement : variableElements){
-                	if(variableElement != null){
-                		Element defaultValue = variableElement.element("defaultValue");
-                		Element name = variableElement.element("name");
-                		
-                		if(!defaultValue.equals(StringUtils.EMPTY)){                			
-                			rawVariables.put(name.getData().toString(), defaultValue.getData().toString());
-                		}
-                	}
-        		}
-        	}
-        	boolean exception = false;
-        	try {
-				variables = evaluateVariables(rawVariables);
-			} catch (Exception e){
-				exception = true;
-			}
-        	finally{
-				if(exception == true){
-					variables = new HashMap<>();	
-				}				
-			}
-        }
         
-       
+    	List<Element> variableElements = reqElement.elements("variables");
+    	if(variableElements != null && variableElements.size() > 0 ){
+    	    Map<String, String> rawVariables = new HashMap<>();
+    		for(Element variableElement : variableElements){
+            	if(variableElement != null){
+            		Element defaultValue = variableElement.element("defaultValue");
+            		Element name = variableElement.element("name");
+            		
+            		if(!defaultValue.equals(StringUtils.EMPTY)){                			
+            			rawVariables.put(name.getData().toString(), defaultValue.getData().toString());
+            		}
+            	}
+    		}
+            boolean exception = false;
+            try {
+                defaultVariables = evaluateVariables(rawVariables);
+            } catch (Exception e){
+                exception = true;
+            }
+            finally{
+                if(exception == true){
+                    defaultVariables = new HashMap<>(); 
+                }               
+            }
+    	}
+
+    	Map<String, Object> mergedVariables = new HashMap<>();
+        mergedVariables.putAll(defaultVariables);
+        
+        if (variables != null && variables.size() > 0) {
+            mergedVariables.putAll(variables);
+        }
             
         try {
             ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
@@ -371,7 +375,7 @@ public class ObjectRepository {
         }
 
         
-        StrSubstitutor substitutor = new StrSubstitutor(variables);
+        StrSubstitutor substitutor = new StrSubstitutor(mergedVariables);
         if ("SOAP".equals(serviceType)) {
             requestObject.setWsdlAddress(substitutor.replace(reqElement.elementText("wsdlAddress")));
             requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
@@ -410,7 +414,7 @@ public class ObjectRepository {
             }
         }
         
-        requestObject.setVariables(variables);
+        requestObject.setVariables(mergedVariables);
 
         String verificationScript = reqElement.elementText("verificationScript");
         requestObject.setVerificationScript(verificationScript);
