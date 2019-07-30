@@ -448,7 +448,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         chckEncrypt.setEnabled(isAnalyticsIntegrated);
         cbbProjects.setEnabled(isAnalyticsIntegrated);
         cbbTeams.setEnabled(isAnalyticsIntegrated);
-        btnCreate.setEnabled(isAnalyticsIntegrated);
+        if (canAccessProject && isAnalyticsIntegrated) {
+        	btnCreate.setEnabled(true);
+        } else {
+        	btnCreate.setEnabled(false);
+        }
         cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
         cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
         cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
