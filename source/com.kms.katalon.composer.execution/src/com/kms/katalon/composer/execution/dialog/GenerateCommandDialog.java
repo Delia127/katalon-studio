@@ -918,7 +918,6 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         } else {
             args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
-            return args;
         }
         
         if (chkAPIKey.getSelection()) {
