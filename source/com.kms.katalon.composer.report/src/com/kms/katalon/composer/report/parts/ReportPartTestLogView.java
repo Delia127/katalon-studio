@@ -1025,6 +1025,7 @@ public class ReportPartTestLogView {
         range.underline = true;
         range.data = styleText.getText();
         range.underlineStyle = SWT.UNDERLINE_LINK;
+        range.foreground = ColorUtil.getHyperlinkTextColor();
 
         styleText.setStyleRanges(new StyleRange[] { range });
 

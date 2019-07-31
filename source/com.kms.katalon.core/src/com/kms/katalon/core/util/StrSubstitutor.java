@@ -3,6 +3,7 @@ package com.kms.katalon.core.util;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -32,6 +33,7 @@ public class StrSubstitutor {
         if (str == null || str.equals(StringUtils.EMPTY)) {
             return StringUtils.EMPTY;
         }
+        str = str.replaceAll("\\$(?!\\{)", "\\\\\\$");
         try {
             GStringTemplateEngine engine = new GStringTemplateEngine();
             return engine.createTemplate(str).make(variables).toString();

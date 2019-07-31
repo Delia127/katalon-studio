@@ -335,6 +335,9 @@ public class WebServiceAPIControl extends Composite implements EventHandler {
 
     @Override
     public void handleEvent(org.osgi.service.event.Event event) {
+        if (cbRequestMethod == null || cbRequestMethod.isDisposed()) {
+            return;
+        }
         if (EventConstants.UPDATE_WEBSERVICE_METHODS.equals(event.getTopic())) {
             if (!isSOAP()) {
                 //reset methods with updated ones

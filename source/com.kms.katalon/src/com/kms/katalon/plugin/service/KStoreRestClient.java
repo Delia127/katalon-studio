@@ -80,7 +80,7 @@ public class KStoreRestClient {
         } catch (Exception e) {
             propagateIfInstanceOf(e, KStoreClientExceptionWithInfo.class);
             throw new KStoreClientExceptionWithInfo("Unexpected error occurs during executing get latest plugins",
-                    credentials, getPluginsAPIUrl(appVersion));
+                    credentials, getPluginsAPIUrl(appVersion), e);
         }
         return plugins.get();
     }

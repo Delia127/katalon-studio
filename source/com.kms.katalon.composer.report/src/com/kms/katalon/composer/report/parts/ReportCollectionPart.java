@@ -1,35 +1,62 @@
 package com.kms.katalon.composer.report.parts;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
-import com.kms.katalon.composer.components.impl.util.EventUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
+import com.kms.katalon.composer.report.platform.ExportReportProviderPlugin;
+import com.kms.katalon.composer.report.platform.ExportReportProviderReflection;
 import com.kms.katalon.composer.report.provider.ReportActionColumnLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportCollectionTableLabelProvider;
 import com.kms.katalon.constants.DocumentationMessageConstants;
@@ -51,6 +78,9 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
     @Inject
     private MPart mpart;
+    
+    @Inject
+    private Shell shell;
     
     private boolean isInitialized;
     
@@ -98,6 +128,10 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         composite.setLayout(new GridLayout(1, false));
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
+        ToolBar tbExportReport = new ToolBar(composite, SWT.RIGHT);
+        tbExportReport.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+        createExportReportMenu(tbExportReport);
+        
         tableViewer = new CTableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         table.setLinesVisible(ControlUtils.shouldLineVisble(table.getDisplay()));
@@ -156,6 +190,90 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         }
     }
 
+    private void createExportReportMenu(ToolBar toolBar) {
+        List<ExportReportProviderPlugin> exportReportPluginProviders = ReportComposerIntegrationFactory.getInstance()
+                .getExportReportPluginProviders();
+        if (exportReportPluginProviders.isEmpty()) {
+            return;
+        }
+        
+        ToolItem btnExportReport = new ToolItem(toolBar, SWT.DROP_DOWN);
+        btnExportReport.setText(ComposerReportMessageConstants.BTN_EXPORT_REPORT);
+        
+        Menu exportReportMenu = new Menu(btnExportReport.getParent().getShell());
+        for (ExportReportProviderPlugin provider : exportReportPluginProviders) {
+            ExportReportProviderReflection reflection = new ExportReportProviderReflection(provider);
+            try {
+                for (String supportedType : reflection.getSupportedFormatTypeForTestSuiteCollection()) {
+                    createExportReportMenuItem(supportedType, exportReportMenu, provider);
+                }
+            } catch (CoreException | MalformedURLException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        
+        btnExportReport.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Rectangle rect = btnExportReport.getBounds();
+                Point pt = btnExportReport.getParent().toDisplay(new Point(rect.x, rect.y));
+                exportReportMenu.setLocation(pt.x, pt.y + rect.height);
+                exportReportMenu.setVisible(true);
+            }
+        });
+    }
+    
+    private MenuItem createExportReportMenuItem(String reportType, Menu exportReportMenu,
+            ExportReportProviderPlugin provider) {
+        MenuItem menuItem = new MenuItem(exportReportMenu, SWT.PUSH);
+        menuItem.setText(reportType);
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String reportType = menuItem.getText();
+                DirectoryDialog directoryDialog = new DirectoryDialog(shell);
+                directoryDialog.open();
+
+                if (directoryDialog.getFilterPath() == null) {
+                    MessageDialog.openWarning(null, "Warning", "Directory not found.");
+                    return;
+                }
+
+                File exportDirectory = new File(directoryDialog.getFilterPath());
+                if (exportDirectory != null && exportDirectory.exists() && exportDirectory.isDirectory()) {
+                    Job job = new Job("Export test suite report") {
+
+                        @Override
+                        protected IStatus run(IProgressMonitor monitor) {
+                            try {
+                                monitor.beginTask("Exporting report to " + reportType + " format...",
+                                        SubMonitor.UNKNOWN);
+                                ExportReportProviderReflection reflection = new ExportReportProviderReflection(
+                                        provider);
+                                File exportedFile = (File) reflection.exportTestSuiteCollection(reportCollectionEntity,
+                                        reportType, exportDirectory);
+                                UISynchronizeService.syncExec(() -> Program.launch(exportedFile.toURI().toString()));
+                                return Status.OK_STATUS;
+                            } catch (Exception e) {
+                                LoggerSingleton.logError(e);
+                                UISynchronizeService.syncExec(() -> MessageDialog.openError(shell, "Error",
+                                        "Unable to export report (" + e.getMessage() + ")"));
+                                return Status.CANCEL_STATUS;
+                            } finally {
+                                monitor.done();
+                            }
+                        }
+                    };
+                    job.setUser(true);
+                    job.schedule();
+                }
+            }
+        });
+
+        return menuItem;
+    }
+    
+    
     @Override
     public String getEntityId() {
         return reportCollectionEntity.getIdForDisplay();
