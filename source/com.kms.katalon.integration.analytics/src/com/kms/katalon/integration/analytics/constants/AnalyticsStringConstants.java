@@ -30,9 +30,13 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_API_KATALON_TEST_REPORTS = "/api/v1/katalon-test-reports";
     
+    public static final String ANALYTICS_API_KATALON_MULTIPLE_TEST_REPORTS = "/api/v1/katalon/test-reports/multiple";
+    
     public static final String ANALYTICS_API_KATALON_TEST_RUN_RESULT = "/api/v1/katalon/test-reports/update-result";
     
     public static final String ANALYTICS_API_UPLOAD_URL = "/api/v1/files/upload-url";
+    
+    public static final String ANALYTICS_API_UPLOAD_URLS = "/api/v1/files/upload-urls";
     
     public static final String ANALYTICS_API_UPLOAD_TEST_PROJECT = "/api/v1/test-projects/upload";
     

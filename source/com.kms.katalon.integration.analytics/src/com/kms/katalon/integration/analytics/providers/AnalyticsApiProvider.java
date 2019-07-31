@@ -38,6 +38,7 @@ import com.google.gson.GsonBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
+import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsRunConfiguration;
@@ -190,6 +191,22 @@ public class AnalyticsApiProvider {
         }
     }
 
+    public static List<AnalyticsUploadInfo> getMultipleUploadInfo(String serverUrl, String token, long projectId,
+            long numberUploadInfo) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_UPLOAD_URLS);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("projectId", String.valueOf(projectId));
+            uriBuilder.setParameter("numberUrl", String.valueOf(numberUploadInfo));
+            HttpGet httpGet = new HttpGet(uriBuilder.build());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            return executeRequest(httpGet, new TypeToken<ArrayList<AnalyticsUploadInfo>>() {});
+        } catch (Exception e) {
+            LogUtil.logError(e);
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
     public static void uploadFile(String url, File file) throws AnalyticsApiExeception {
         try (InputStream content = new FileInputStream(file)) {
             HttpEntity entity = new InputStreamEntity(content, file.length());
@@ -217,6 +234,30 @@ public class AnalyticsApiProvider {
 
             HttpPost httpPost = new HttpPost(uriBuilder.build());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+
+            return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
+        } catch (Exception e) {
+            LogUtil.logError(e);
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
+    public static List<AnalyticsExecution> uploadMultipleFileInfo(String serverUrl, long projectId, long timestamp,
+            List<AnalyticsFileInfo> fileInfoList, String token) throws AnalyticsApiExeception {
+        try {
+            LogUtil.logInfo("KA: Start uploading report to KA server: " + serverUrl);
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_KATALON_MULTIPLE_TEST_REPORTS);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("projectId", String.valueOf(projectId));
+            uriBuilder.setParameter("batch", String.valueOf(timestamp));
+
+            HttpPost httpPost = new HttpPost(uriBuilder.build());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            Gson gson = new GsonBuilder().create();
+            StringEntity entity = new StringEntity(gson.toJson(fileInfoList));
+            httpPost.setEntity(entity);
 
             return executeRequest(httpPost, new TypeToken<ArrayList<AnalyticsExecution>>() {});
         } catch (Exception e) {

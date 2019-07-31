@@ -24,6 +24,7 @@ import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
+import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
@@ -103,20 +104,36 @@ public class AnalyticsReportService implements AnalyticsComponent {
         Path reportFolder = Paths.get(FolderController.getInstance().getReportRoot(project).getLocation());
         
         List<AnalyticsExecution> executions = null;
-        for (int i = 0; i < files.size(); i++) {
-        	Path filePath = files.get(i);
-        	String folderPath = reportFolder.relativize(filePath.getParent()).toString();
-        	boolean isEnd = i == (files.size() - 1);
-        	
-            LogUtil.printOutputLine("Sending file: " + filePath.toAbsolutePath());
-            if (AnalyticsStringConstants.ANALYTICS_STOREAGE.equalsIgnoreCase("s3")) {
+        if (AnalyticsStringConstants.ANALYTICS_STOREAGE.equalsIgnoreCase("s3")) {
+            List<AnalyticsUploadInfo> uploadInfoList = AnalyticsApiProvider.getMultipleUploadInfo(serverUrl, token,
+                    projectId, files.size());
+            List<AnalyticsFileInfo> fileInfoList = new ArrayList<>();
+            for (int i = 0; i < files.size(); i++) {
+                Path filePath = files.get(i);
+                String folderPath = reportFolder.relativize(filePath.getParent()).toString();
+                boolean isEnd = i == (files.size() - 1);
                 File file = filePath.toFile();
-                AnalyticsUploadInfo uploadInfo = AnalyticsApiProvider.getUploadInfo(serverUrl, token, projectId);
+                LogUtil.printOutputLine("Sending file: " + filePath.toAbsolutePath());
+                AnalyticsUploadInfo uploadInfo = uploadInfoList.get(i);
                 AnalyticsApiProvider.uploadFile(uploadInfo.getUploadUrl(), file);
-                executions = AnalyticsApiProvider.uploadFileInfo(serverUrl,
-                        projectId, timestamp, folderPath, file.getName(), uploadInfo.getPath(), isEnd, token);
-            } else {
-                executions = AnalyticsApiProvider.sendLog(serverUrl, projectId, timestamp, folderPath, filePath.toFile(), isEnd, token);
+                AnalyticsFileInfo fileInfo = new AnalyticsFileInfo();
+                fileInfo.setFolderPath(folderPath);
+                fileInfo.setFileName(file.getName());
+                fileInfo.setUploadedPath(uploadInfo.getPath());
+                fileInfo.setEnd(isEnd);
+                fileInfoList.add(fileInfo);
+            }
+            executions = AnalyticsApiProvider.uploadMultipleFileInfo(serverUrl, projectId, timestamp, fileInfoList,
+                    token);
+        } else {
+            for (int i = 0; i < files.size(); i++) {
+                Path filePath = files.get(i);
+                String folderPath = reportFolder.relativize(filePath.getParent()).toString();
+                boolean isEnd = i == (files.size() - 1);
+
+                LogUtil.printOutputLine("Sending file: " + filePath.toAbsolutePath());
+                executions = AnalyticsApiProvider.sendLog(serverUrl, projectId, timestamp, folderPath,
+                        filePath.toFile(), isEnd, token);
             }
         }
         if (executions != null && !executions.isEmpty()) {

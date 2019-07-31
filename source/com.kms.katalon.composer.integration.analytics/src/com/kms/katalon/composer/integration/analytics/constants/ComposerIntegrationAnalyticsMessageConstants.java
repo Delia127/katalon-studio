@@ -93,6 +93,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String MSG_DLG_PRG_GETTING_TEAMS;
     
+    public static String MSG_DLG_PRG_PREMISSTION_CREATE_PROJECT;
+    
     public static String REPORT_MSG_UPLOADING_TO_ANALYTICS;
     
     public static String REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING;
