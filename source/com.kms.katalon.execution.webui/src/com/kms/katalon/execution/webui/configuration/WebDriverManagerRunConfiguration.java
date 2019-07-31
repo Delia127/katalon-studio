@@ -17,6 +17,8 @@ import com.kms.katalon.execution.preferences.ProxyPreferences;
 
 public class WebDriverManagerRunConfiguration {
 
+    private static final String GECKO_RELEASES_JSON = "https://raw.githubusercontent.com/katalon-studio/katalon-studio/master/gecko-releases.json";
+
     public File getWebDriverManagerFatJar() throws IOException {
         if (Platform.inDevelopmentMode()) {
             File parentFolder = new File(ClassPathResolver
@@ -38,6 +40,7 @@ public class WebDriverManagerRunConfiguration {
         List<String> commands = new ArrayList<>();
         commands.add(ClassPathResolver.getInstalledJRE());
         commands.add(String.format("-Dwdm.targetPath=%s", driverLocation.getCanonicalPath()));
+        commands.add(String.format("-Dwdm.geckoDriverUrl=%s", GECKO_RELEASES_JSON));
         if (StringUtils.isNotEmpty(proxyCommand)) {
             commands.add(proxyCommand);
         }

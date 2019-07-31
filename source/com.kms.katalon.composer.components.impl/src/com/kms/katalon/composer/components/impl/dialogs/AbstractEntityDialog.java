@@ -2,7 +2,6 @@ package com.kms.katalon.composer.components.impl.dialogs;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;

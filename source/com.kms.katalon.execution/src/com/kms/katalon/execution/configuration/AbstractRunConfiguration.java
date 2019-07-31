@@ -63,6 +63,12 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private String executionSessionId;
 
     public AbstractRunConfiguration() {
+        doInitExecutionSetting();
+    }
+    
+    protected void doInitExecutionSetting() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        this.executionSessionId =  dateFormat.format(new Date());
         initExecutionSetting();
     }
 
@@ -116,8 +122,6 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     protected void initExecutionSetting() {
         executionSetting = new DefaultExecutionSetting();
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        this.executionSessionId =  dateFormat.format(new Date());
     }
 
     protected String getTemporaryLogFolderLocation(FileEntity testCase) {

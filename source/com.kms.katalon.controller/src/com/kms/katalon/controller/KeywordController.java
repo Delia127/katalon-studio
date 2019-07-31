@@ -148,7 +148,7 @@ public class KeywordController extends EntityController {
 
     private void parseCustomKeywordInStore(ProjectEntity project, IFolder libFolder)
             throws MalformedURLException, CoreException, Exception, ControllerException {
-        ClassLoader projectClassLoader = GroovyUtil.getProjectClasLoader(project);
+        ClassLoader projectClassLoader = ProjectController.getInstance().getProjectClassLoader(project);
         CustomKeywordParser.getInstance().parsePluginKeywords(projectClassLoader,
                 CustomKeywordPluginFactory.getInstance().getStoredPluginFiles(), libFolder, false);
     }
@@ -175,7 +175,7 @@ public class KeywordController extends EntityController {
 
     private void parseCustomKeywordInPluginDirectory(ProjectEntity project, IFolder libFolder) throws Exception {
         IFolder pluginFolder = GroovyUtil.getPluginsFolder(project);
-        ClassLoader projectClassLoader = GroovyUtil.getProjectClasLoader(project);
+        ClassLoader projectClassLoader = ProjectController.getInstance().getProjectClassLoader(project);
         File pluginDir = pluginFolder.getRawLocation().toFile();
         File[] jarFiles = pluginDir.listFiles();
         File firstJar = Arrays.asList(jarFiles)

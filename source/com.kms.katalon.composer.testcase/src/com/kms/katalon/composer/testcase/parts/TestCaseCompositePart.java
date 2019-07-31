@@ -244,7 +244,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             if (tabFolder.getSelectionIndex() != CHILD_TEST_CASE_EDITOR_PART_INDEX) {
                 setSelectedPart(getChildCompatibilityPart());
             } else if (childTestCasePart.isManualScriptChanged()) {
-                setChildEditorContents(scriptNode);
+              setChildEditorContents(scriptNode);
             }
         }
 
@@ -340,7 +340,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                             return;
                         }
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX
-                                && (isScriptChanged || scriptNode == null)) {
+                                && (isScriptChanged || scriptNode == null || !childTestCasePart.isScriptLoaded())) {
                             setScriptContentToManual();
                             return;
                         }
@@ -1082,5 +1082,9 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     @Override
     public boolean isDirty() {
         return compositePart.isDirty();
+    }
+    
+    public void changeScriptNode(ScriptNodeWrapper scriptNode) {
+        this.scriptNode = scriptNode;
     }
 }

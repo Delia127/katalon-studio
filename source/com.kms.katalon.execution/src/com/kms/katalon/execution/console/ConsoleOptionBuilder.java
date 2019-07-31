@@ -22,7 +22,9 @@ public class ConsoleOptionBuilder {
         Map<String, String> argsMap = new HashMap<>();
         argsMap.put("browserType", contributor.getId());
         contributor.getConsoleOptions(description).forEach(opt -> {
-            argsMap.put(opt.getOption(), String.valueOf(opt.getValue()));
+            if (opt.hasArgument()) {
+                argsMap.put(opt.getOption(), String.valueOf(opt.getValue()));
+            }
         });
         argsMap.put("executionProfile", description.getProfileName());
         return argsMap;

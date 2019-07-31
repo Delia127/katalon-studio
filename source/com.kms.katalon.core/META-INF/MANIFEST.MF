@@ -77,6 +77,7 @@ Require-Bundle: net.sf.supercsv.super-csv,
  ch.qos.logback.core,
  slf4j.api,
  org.fusesource.jansi,
- com.kms.katalon.netlightbody
+ com.kms.katalon.netlightbody,
+ xml-apis
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

@@ -7,7 +7,7 @@ import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.RequestObject
 import com.kms.katalon.core.testobject.ResponseObject
-import com.kms.katalon.core.webservice.common.HarLogUtil
+import com.kms.katalon.core.webservice.common.HarLogger
 import com.kms.katalon.core.webservice.common.ServiceRequestFactory
 import com.kms.katalon.core.webservice.constants.StringConstants
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
@@ -37,13 +37,11 @@ public class SendRequestKeyword extends WebserviceAbstractKeyword {
     public ResponseObject sendRequest(RequestObject request, FailureHandling flowControl) throws Exception {
             Object object = KeywordMain.runKeyword({
                 WebServiceCommonHelper.checkRequestObject(request)
-                ResponseObject responseObject = null;
-                try {
-                    responseObject = ServiceRequestFactory.getInstance(request).send(request)
-                } finally {
-                    RequestObject requestObject = (RequestObject) findTestObject(request.getObjectId());
-                    HarLogUtil.logHarFile(requestObject, responseObject, RunConfiguration.getReportFolder());
-                }
+                HarLogger harLogger = new HarLogger()
+                harLogger.initHarFile()
+                ResponseObject responseObject = ServiceRequestFactory.getInstance(request).send(request)
+                harLogger.logHarFile(request, responseObject, RunConfiguration.getReportFolder())
+                
                 logger.logPassed(StringConstants.KW_LOG_PASSED_SEND_REQUEST_SUCCESS)
                 return responseObject
             }, flowControl, StringConstants.KW_LOG_FAILED_CANNOT_SEND_REQUEST)
