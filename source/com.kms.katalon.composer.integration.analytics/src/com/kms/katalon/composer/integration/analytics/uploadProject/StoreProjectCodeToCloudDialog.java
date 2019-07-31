@@ -231,7 +231,6 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
             Long teamId = sellectProject.getTeamId();
             Long projectId = sellectProject.getId();
             URIBuilder builder = new URIBuilder(serverUrl);
-            builder.setScheme(AnalyticsStringConstants.ANALYTICS_SCHEME_HTTPS);
             builder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_URL_TEST_PROJECT, teamId, projectId));
             Program.launch(builder.toString());
         } catch (URISyntaxException e) {
