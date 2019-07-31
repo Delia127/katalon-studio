@@ -335,35 +335,34 @@ public class ObjectRepository {
         Map<String, Object> defaultVariables = new HashMap<>();
         // Use default value of variables if available in case user passes nothing or null
         
-    	List<Element> variableElements = reqElement.elements("variables");
-    	if(variableElements != null && variableElements.size() > 0 ){
-    	    Map<String, String> rawVariables = new HashMap<>();
-    		for(Element variableElement : variableElements){
-            	if(variableElement != null){
-            		Element defaultValue = variableElement.element("defaultValue");
-            		Element name = variableElement.element("name");
-            		
-            		if(!defaultValue.equals(StringUtils.EMPTY)){                			
-            			rawVariables.put(name.getData().toString(), defaultValue.getData().toString());
-            		}
-            	}
-    		}
+        List<Element> variableElements = reqElement.elements("variables");
+        if (variableElements != null && variableElements.size() > 0) {
+            Map<String, String> rawVariables = new HashMap<>();
+            for (Element variableElement : variableElements) {
+                if (variableElement != null) {
+                    Element defaultValue = variableElement.element("defaultValue");
+                    Element name = variableElement.element("name");
+
+                    if (!defaultValue.equals(StringUtils.EMPTY)) {
+                        rawVariables.put(name.getData().toString(), defaultValue.getData().toString());
+                    }
+                }
+            }
             boolean exception = false;
             try {
                 defaultVariables = evaluateVariables(rawVariables);
-            } catch (Exception e){
+            } catch (Exception e) {
                 exception = true;
+            } finally {
+                if (exception == true) {
+                    defaultVariables = new HashMap<>();
+                }
             }
-            finally{
-                if(exception == true){
-                    defaultVariables = new HashMap<>(); 
-                }               
-            }
-    	}
+        }
 
-    	Map<String, Object> mergedVariables = new HashMap<>();
+        Map<String, Object> mergedVariables = new HashMap<>();
         mergedVariables.putAll(defaultVariables);
-        
+
         if (variables != null && variables.size() > 0) {
             mergedVariables.putAll(variables);
         }
