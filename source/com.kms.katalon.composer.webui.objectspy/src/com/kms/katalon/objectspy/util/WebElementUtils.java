@@ -169,8 +169,12 @@ public class WebElementUtils {
             i.setIsSelected(customSettings.get(i.getName()));
         });
         
-        if (!customSettings.containsValue(Boolean.TRUE) || !customSettings.containsKey(XPATH_KEY)) {
-            properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, true));
+        if (!customSettings.containsKey(XPATH_KEY)) {
+            if (!customSettings.containsValue(Boolean.TRUE)) {
+                properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, true));
+            } else {
+                properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, false));
+            }
         }
 
         // Change default selected properties by user settings
@@ -365,7 +369,7 @@ public class WebElementUtils {
         if (!isValidElementContent(contentArray)) {
             return;
         }
-        properties.add(new WebElementPropertyEntity(ELEMENT_TEXT_KEY, contentArray.get(0).getAsString()));
+        properties.add(new WebElementPropertyEntity(ELEMENT_TEXT_KEY, contentArray.get(0).getAsString(), false));
     }
 
     private static boolean isElementContent(JsonObject elementJsonObject) {
