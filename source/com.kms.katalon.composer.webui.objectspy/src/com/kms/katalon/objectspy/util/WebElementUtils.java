@@ -168,13 +168,16 @@ public class WebElementUtils {
         properties.stream().filter(i -> customSettings.get(i.getName()) != null).forEach(i -> {
             i.setIsSelected(customSettings.get(i.getName()));
         });
-        
+
         if (!customSettings.containsKey(XPATH_KEY)) {
-            if (!customSettings.containsValue(Boolean.TRUE)) {
-                properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, true));
-            } else {
-                properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, false));
+            boolean shouldHaveXpath = true;
+            for (WebElementPropertyEntity property:  properties) {
+                if (property.getIsSelected()) {
+                    shouldHaveXpath = false;
+                    break;
+                }
             }
+            properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, shouldHaveXpath));
         }
 
         // Change default selected properties by user settings
