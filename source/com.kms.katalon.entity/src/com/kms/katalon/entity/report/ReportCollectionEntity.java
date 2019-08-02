@@ -12,6 +12,8 @@ public class ReportCollectionEntity extends FileEntity {
 
     public static final String FILE_EXTENSION = ".rp";
     
+    private String testSuiteCollectionId;
+    
     private List<ReportItemDescription> reportItemDescriptions;
     
     private String displayName;
@@ -48,4 +50,11 @@ public class ReportCollectionEntity extends FileEntity {
         this.displayName = displayName;
     }
 
+    public String getTestSuiteCollectionId() {
+		return testSuiteCollectionId;
+	}
+    
+    public void setTestSuiteCollectionId(String testSuiteCollectionId) {
+		this.testSuiteCollectionId = testSuiteCollectionId;
+	}
 }
