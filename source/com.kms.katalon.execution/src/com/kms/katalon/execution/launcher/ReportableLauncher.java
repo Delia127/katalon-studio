@@ -316,9 +316,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
                 if (reportFolder.isRunTestSuite()) {
-                	reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), reportFolder);
+                    reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), reportFolder);
                 } else {
-                	reportContributorEntry.getValue().uploadTestSuiteCollectionResult(reportFolder);
+                    reportContributorEntry.getValue().uploadTestSuiteCollectionResult(reportFolder);
                 }
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
