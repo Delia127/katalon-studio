@@ -54,6 +54,8 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_HAR_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(har))$)";
     
+    public static final String ANALYTICS_RP_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(rp))$)";
+    
     public static final String ANALYTICS_UUID_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(uuid))$)";
     
     public static final String ANALYTICS_URL_TEST_PLAN = "/team/%d/project/%d/grid/plan/%d/job";
