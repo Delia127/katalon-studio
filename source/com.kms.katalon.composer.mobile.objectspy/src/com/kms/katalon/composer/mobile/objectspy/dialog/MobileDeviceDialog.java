@@ -35,7 +35,7 @@ import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 
 public class MobileDeviceDialog extends Dialog {
 
-    private static final String DIALOG_TITLE = "Windows Screen View";
+    private static final String DIALOG_TITLE = "Device View";
 
     private Image currentScreenShot;
 
