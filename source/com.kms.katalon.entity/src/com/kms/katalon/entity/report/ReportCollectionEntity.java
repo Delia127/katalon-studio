@@ -51,10 +51,10 @@ public class ReportCollectionEntity extends FileEntity {
     }
 
     public String getTestSuiteCollectionId() {
-		return testSuiteCollectionId;
+        return testSuiteCollectionId;
 	}
     
     public void setTestSuiteCollectionId(String testSuiteCollectionId) {
-		this.testSuiteCollectionId = testSuiteCollectionId;
+        this.testSuiteCollectionId = testSuiteCollectionId;
 	}
 }
