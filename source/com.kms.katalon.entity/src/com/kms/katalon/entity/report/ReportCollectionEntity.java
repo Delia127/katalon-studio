@@ -52,9 +52,9 @@ public class ReportCollectionEntity extends FileEntity {
 
     public String getTestSuiteCollectionId() {
         return testSuiteCollectionId;
-	}
+    }
     
     public void setTestSuiteCollectionId(String testSuiteCollectionId) {
         this.testSuiteCollectionId = testSuiteCollectionId;
-	}
+    }
 }
