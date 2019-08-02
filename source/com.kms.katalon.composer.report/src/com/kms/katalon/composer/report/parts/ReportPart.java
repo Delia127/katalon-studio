@@ -136,6 +136,7 @@ import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.util.internal.DateUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -1059,7 +1060,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                     try {
                         monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
-                        analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
+                        ReportFolder reportFolder = new ReportFolder(testSuiteLogRecord.getLogFolder());
+                        analyticsReportService.upload(reportFolder);
                         UISynchronizeService.syncExec(() -> {
                             uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
                         });

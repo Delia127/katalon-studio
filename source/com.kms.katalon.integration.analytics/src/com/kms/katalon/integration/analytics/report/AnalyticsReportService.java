@@ -19,6 +19,7 @@ import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.util.ApiKey;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
@@ -55,13 +56,13 @@ public class AnalyticsReportService implements AnalyticsComponent {
         return isEncryptionEnabled;
     }
     
-    public void upload(String folderPath) throws AnalyticsApiExeception {
+    public void upload(ReportFolder reportFolder) throws AnalyticsApiExeception {
         if (isIntegrationEnabled()) {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_START);
             try {
                 AnalyticsTokenInfo token = getKAToken();
                 if (token != null) {
-                    perform(token.getAccess_token(), folderPath);
+                    perform(token.getAccess_token(), reportFolder);
                 } else {
                     LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
                 }
@@ -94,14 +95,18 @@ public class AnalyticsReportService implements AnalyticsComponent {
         return AnalyticsApiProvider.requestToken(serverUrl, email, password);
     }
 
-    private void perform(String token, String path) throws Exception {
-        LogUtil.printOutputLine("Uploading log files in folder path: " + path);
+    private void perform(String token, ReportFolder reportFolder) throws Exception {
+    	if (reportFolder.isRunTestSuite()) {
+    		LogUtil.printOutputLine("Uploading log files of test suite");
+    	} else {
+    		LogUtil.printOutputLine("Uploading log files of test suite collection");
+    	}
         String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         Long projectId = getSettingStore().getProject().getId();
-        List<Path> files = scanFiles(path);
+        List<Path> files = scanFiles(reportFolder);
         long timestamp = System.currentTimeMillis();
-        Path reportFolder = Paths.get(FolderController.getInstance().getReportRoot(project).getLocation());
+        Path reportLocation = Paths.get(FolderController.getInstance().getReportRoot(project).getLocation());
         
         List<AnalyticsExecution> executions = null;
         if (AnalyticsStringConstants.ANALYTICS_STOREAGE.equalsIgnoreCase("s3")) {
@@ -110,7 +115,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
             List<AnalyticsFileInfo> fileInfoList = new ArrayList<>();
             for (int i = 0; i < files.size(); i++) {
                 Path filePath = files.get(i);
-                String folderPath = reportFolder.relativize(filePath.getParent()).toString();
+                String folderPath = reportLocation.relativize(filePath.getParent()).toString();
                 boolean isEnd = i == (files.size() - 1);
                 File file = filePath.toFile();
                 LogUtil.printOutputLine("Sending file: " + filePath.toAbsolutePath());
@@ -128,7 +133,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
         } else {
             for (int i = 0; i < files.size(); i++) {
                 Path filePath = files.get(i);
-                String folderPath = reportFolder.relativize(filePath.getParent()).toString();
+                String folderPath = reportLocation.relativize(filePath.getParent()).toString();
                 boolean isEnd = i == (files.size() - 1);
 
                 LogUtil.printOutputLine("Sending file: " + filePath.toAbsolutePath());
@@ -144,18 +149,20 @@ public class AnalyticsReportService implements AnalyticsComponent {
         }
     }
     
-    private List<Path> scanFiles(String path) {
+    private List<Path> scanFiles(ReportFolder reportFolder) {
         List<Path> files = new ArrayList<>();
-        try {
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_REPORT_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachScreenshot(), AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachLog(), AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
-            addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachScreenshot(), AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
-            addToList(files, scanHarFiles(path));
-        } catch (IOException e) {
-            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
-        }
+        for (String path : reportFolder.getReportFolders()) {
+        	try {
+        		addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
+        		addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_REPORT_FILE_EXTENSION_PATTERN));
+        		addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachScreenshot(), AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
+        		addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachLog(), AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
+        		addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachScreenshot(), AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
+        		addToList(files, scanHarFiles(path));
+        	} catch (IOException e) {
+        		LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
+        	}
+		}
         return files;
     }
     
