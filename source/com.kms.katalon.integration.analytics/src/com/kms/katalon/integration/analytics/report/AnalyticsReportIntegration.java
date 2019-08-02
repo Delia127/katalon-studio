@@ -48,7 +48,7 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     }
     
     @Override
-    public void uploadTestSuiteCollection(ReportFolder reportFolder) throws Exception {
+    public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
     	reportService.upload(reportFolder);
     }
     

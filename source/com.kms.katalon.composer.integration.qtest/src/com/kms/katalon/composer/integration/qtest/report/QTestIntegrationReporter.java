@@ -355,7 +355,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
 	}
 
 	@Override
-	public void uploadTestSuiteCollection(ReportFolder reportFolder) throws Exception {
+	public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}

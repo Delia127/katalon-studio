@@ -13,7 +13,7 @@ public interface ReportIntegrationContribution extends ConsoleOptionContributor 
     
     void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception;
     
-    void uploadTestSuiteCollection(ReportFolder reportFolder) throws Exception;
+    void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception;
     
     default void notifyProccess(Object event, ExecutionEntityResult executedEntity) {
     	

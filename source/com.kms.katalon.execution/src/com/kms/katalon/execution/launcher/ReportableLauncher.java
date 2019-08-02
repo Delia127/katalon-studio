@@ -151,9 +151,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     	String projectFolder = reportEntity.getProject().getFolderLocation();
     	List<String> paths = new ArrayList<>();
     	for (ReportItemDescription reportItemDescription : reports) {
-			String path = projectFolder + File.separator + reportItemDescription.getReportLocation();
-			paths.add(path);
-		}
+            String path = projectFolder + File.separator + reportItemDescription.getReportLocation();
+            paths.add(path);
+        }
     	ReportFolder reportFolder = new ReportFolder(paths);
     	uploadReportToIntegratingProduct(reportFolder);
     }
@@ -318,7 +318,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 if (reportFolder.isRunTestSuite()) {
                 	reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), reportFolder);
                 } else {
-                	reportContributorEntry.getValue().uploadTestSuiteCollection(reportFolder);
+                	reportContributorEntry.getValue().uploadTestSuiteCollectionResult(reportFolder);
                 }
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
