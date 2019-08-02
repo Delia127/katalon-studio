@@ -184,7 +184,9 @@ public class TestCaseVariableView implements TableActionOperator, EventManager<T
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         compositeTable.setLayout(new FillLayout(SWT.HORIZONTAL));
-        compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        GridData gridData = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
+        gridData.heightHint = 175;
+        compositeTable.setLayoutData(gridData);
 
         tableViewer = new CTableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerUtil.setTableActivation(tableViewer);
