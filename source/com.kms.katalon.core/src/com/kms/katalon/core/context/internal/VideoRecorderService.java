@@ -104,7 +104,7 @@ public class VideoRecorderService implements ExecutionListenerEventHandler {
                         String message = MessageFormat.format(CoreMessageConstants.EXEC_LOG_VIDEO_RECORDING_COMPLETED,
                                 lastestTestCaseContext.getTestCaseId());
                         logger.startKeyword("Video", new HashMap<>(), new Stack<>());
-                        logger.logPassed(message, attributes);
+                        logger.logInfo(message, attributes);
                         logger.endKeyword("Video", new HashMap<>(), new Stack<>());
                         System.out.println(message);
                     }
