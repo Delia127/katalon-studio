@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 import groovy.text.GStringTemplateEngine;
@@ -30,15 +31,20 @@ public class StrSubstitutor {
      * @return A string with variable values if the template string is not null. Otherwise return an empty string
      */
     public String replace(String str) {
-        if (str == null || str.equals(StringUtils.EMPTY)) {
+        if (StringUtils.isBlank(str)) {
             return StringUtils.EMPTY;
         }
         str = str.replaceAll("\\$(?!\\{)", "\\\\\\$");
         try {
             GStringTemplateEngine engine = new GStringTemplateEngine();
-            return engine.createTemplate(str).make(variables).toString();
+            String escaped = escapeString(str);
+            return engine.createTemplate(escaped).make(variables).toString();
         } catch (IOException | CompilationFailedException | ClassNotFoundException e) {
             return str;
         }
+    }
+    
+    private String escapeString(String str) {
+        return StringEscapeUtils.escapeJava(str).replace("'", "\\'");
     }
 }
