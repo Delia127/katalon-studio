@@ -79,7 +79,7 @@ public class MobileDeviceDialog extends Dialog {
         scrolledComposite.setLayout(new GridLayout());
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        Composite container = new Composite(scrolledComposite, SWT.NULL);
+        Composite container = new Composite(scrolledComposite, SWT.BORDER);
         container.setLayout(new FillLayout());
         scrolledComposite.setContent(container);
 
@@ -287,19 +287,6 @@ public class MobileDeviceDialog extends Dialog {
                         currentScreenShot.getImageData().height);
             }
         });
-    }
-
-    private void refreshViewForMac() {
-        // if (scrolledComposite == null || icon == null || frame == null) {
-        // return;
-        // }
-        // Display.getDefault().syncExec(new Runnable() {
-        // @Override
-        // public void run() {
-        // scrolledComposite.setMinSize(icon.getIconWidth(), icon.getIconHeight());
-        // }
-        // });
-        // frame.pack();
     }
 
     @Override
