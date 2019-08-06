@@ -317,7 +317,7 @@ public class MobileElementCommonHelper {
         int relativeX = Math.round(width * percentValue);
         TouchAction<?> tap = new TouchAction<>(driver)
                 .tap(PointOption.point(startX + ANDROID_SEEKBAR_PADDING + relativeX, element.getLocation().getY()))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(DEFAULT_TAP_DURATION));
+                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(DEFAULT_TAP_DURATION)));
         tap.perform();
     }
 
