@@ -93,6 +93,8 @@ public class MobileLocalAppComposite implements MobileAppComposite {
 
     private StackLayout slAppComposite;
 
+    private Label appFileLabel;
+
     public MobileLocalAppComposite(MobileDriverType driverType) {
         this.driverType = driverType;
     }
@@ -271,7 +273,6 @@ public class MobileLocalAppComposite implements MobileAppComposite {
         Label lblDeviceName = new Label(deviceNameCompposite, SWT.NONE);
         lblDeviceName.setText(StringConstants.DIA_LBL_DEVICE_NAME);
         GridData gdDeviceNameLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdDeviceNameLabel.widthHint = 100;
         lblDeviceName.setLayoutData(gdDeviceNameLabel);
 
         cbbDevices = new Combo(deviceNameCompposite, SWT.READ_ONLY);
@@ -312,7 +313,6 @@ public class MobileLocalAppComposite implements MobileAppComposite {
         startTypeComposite.setLayout(glStartTypeComposite);
         Label lblStartType = new Label(startTypeComposite, SWT.NONE);
         GridData gdStartWithLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdStartWithLabel.widthHint = 100;
         lblStartType.setLayoutData(gdStartWithLabel);
         lblStartType.setText("Start with");
 
@@ -351,15 +351,13 @@ public class MobileLocalAppComposite implements MobileAppComposite {
         appFileChooserComposite.setLayout(glAppFileChooserComposite);
 
         // Application File location
-        Label appFileLabel = new Label(appFileChooserComposite, SWT.NONE);
+        appFileLabel = new Label(appFileChooserComposite, SWT.NONE);
         appFileLabel.setText(StringConstants.DIA_LBL_APP_FILE);
         GridData gdAppFileLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdAppFileLabel.widthHint = 100;
         appFileLabel.setLayoutData(gdAppFileLabel);
 
         txtAppFile = new Text(appFileChooserComposite, SWT.BORDER);
         GridData gdText = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdText.widthHint = 100;
         txtAppFile.setLayoutData(gdText);
         txtAppFile.addModifyListener(new ModifyListener() {
             @Override
@@ -405,7 +403,6 @@ public class MobileLocalAppComposite implements MobileAppComposite {
         Label appIdLabel = new Label(appIdComposite, SWT.NONE);
         appIdLabel.setText("Application ID");
         GridData gdAppIdLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdAppIdLabel.widthHint = 100;
         appIdLabel.setLayoutData(gdAppIdLabel);
 
         txtAppId = new Text(appIdComposite, SWT.BORDER);
@@ -424,6 +421,19 @@ public class MobileLocalAppComposite implements MobileAppComposite {
             @Override
             public void handleEvent(Event event) {
                 gdAppId.widthHint = 100;
+            }
+        });
+        
+        appFileLabel.addListener(SWT.Resize, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                int appFileLabelWidth = appFileLabel.getBounds().width;
+                if (appFileLabelWidth == 0) {
+                    return;
+                }
+                gdDeviceNameLabel.widthHint = appFileLabelWidth;
+                gdStartWithLabel.widthHint = appFileLabel.getBounds().width;
+                composite.layout(true, true);
             }
         });
 
@@ -490,6 +500,7 @@ public class MobileLocalAppComposite implements MobileAppComposite {
         updateLocalDevices();
         cbbStartType.select(0);
         cbbStartType.notifyListeners(SWT.Selection, new Event());
+        appFileLabel.notifyListeners(SWT.Resize, new Event());
     }
 
     @Override

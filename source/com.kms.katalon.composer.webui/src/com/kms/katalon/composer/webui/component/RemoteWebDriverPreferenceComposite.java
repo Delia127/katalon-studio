@@ -31,6 +31,8 @@ public class RemoteWebDriverPreferenceComposite extends DriverPreferenceComposit
     private Combo cbbAppiumDriver;
 
     private GridData gdMobileComposite;
+
+    private GridData gdLblDriverType;
     
     private static final String[] MOBILE_DRIVER_NAMES;
     
@@ -100,14 +102,13 @@ public class RemoteWebDriverPreferenceComposite extends DriverPreferenceComposit
 
         Label lblRemoteServerUrl = new Label(remoteUrlComposite, SWT.NONE);
         GridData gdLblServerUrl = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblServerUrl.widthHint = 150;
         lblRemoteServerUrl.setLayoutData(gdLblServerUrl);
         lblRemoteServerUrl.setText(StringConstants.LBL_REMOTE_SERVER_URL);
 
         txtRemoteServerUrl = new Text(remoteUrlComposite, SWT.BORDER);
         GridData gdTxtUrl = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtRemoteServerUrl.setLayoutData(gdTxtUrl);
-        gdTxtUrl.widthHint = 300;
+        gdTxtUrl.widthHint = 250;
         txtRemoteServerUrl.setText(((RemoteWebDriverConnector) driverConnector).getRemoteServerUrl());
         txtRemoteServerUrl.setToolTipText(txtRemoteServerUrl.getText());
 
@@ -116,6 +117,7 @@ public class RemoteWebDriverPreferenceComposite extends DriverPreferenceComposit
             @Override
             public void handleEvent(Event event) {
                 gdTxtUrl.widthHint = event.width;
+                gdLblDriverType.widthHint = lblRemoteServerUrl.getBounds().width;
             }
         });
 
@@ -128,7 +130,7 @@ public class RemoteWebDriverPreferenceComposite extends DriverPreferenceComposit
 
         Label lblRemoteServerType = new Label(remoteUrlComposite, SWT.NONE);
         GridData gdLblRemoteServerType = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblRemoteServerType.widthHint = 150;
+        lblRemoteServerType.setLayoutData(gdLblRemoteServerType);
         lblRemoteServerType.setText(StringConstants.LBL_REMOTE_SERVER_TYPE);
 
         cmbRemoteServerType = new Combo(remoteUrlComposite, SWT.READ_ONLY);
@@ -143,8 +145,8 @@ public class RemoteWebDriverPreferenceComposite extends DriverPreferenceComposit
         mobileDriverComposite.setLayout(glMobileComposite);
 
         Label lblDriverType = new Label(mobileDriverComposite, SWT.NONE);
-        GridData gdLblDriverType = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblDriverType.widthHint = 150;
+        gdLblDriverType = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblDriverType.setLayoutData(lblDriverType);
         lblDriverType.setLayoutData(gdLblDriverType);
         lblDriverType.setText("Appium driver");
 
