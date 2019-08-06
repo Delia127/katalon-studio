@@ -432,7 +432,8 @@ public class MobileLocalAppComposite implements MobileAppComposite {
                     return;
                 }
                 gdDeviceNameLabel.widthHint = appFileLabelWidth;
-                gdStartWithLabel.widthHint = appFileLabel.getBounds().width;
+                gdStartWithLabel.widthHint = appFileLabelWidth;
+                gdAppIdLabel.widthHint = appFileLabelWidth;
                 composite.layout(true, true);
             }
         });
