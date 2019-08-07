@@ -224,6 +224,7 @@ public class PluginService {
         if (currentProject != null) {
             GroovyUtil.initGroovyProjectClassPath(currentProject,
                     projectController.getCustomKeywordPlugins(currentProject), false, monitor);
+            projectController.updateProjectClassLoader(currentProject);
             KeywordController.getInstance().parseAllCustomKeywords(currentProject, null);
             if (ApplicationRunningMode.get() == RunningMode.GUI) {
                 eventBroker.post(EventConstants.KEYWORD_BROWSER_REFRESH, null);
