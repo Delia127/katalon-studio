@@ -349,11 +349,15 @@ public class DriverFactory {
     }
 
     private static boolean isEdgeBrowser(DesiredCapabilities desiredCapibilities) {
-        if (!desiredCapibilities.getCapabilityNames().contains("browserName")) {
-            return false;
-        }
-        if (desiredCapibilities.getCapability("browserName") instanceof String) {
+        Set<String> capabilityNames = desiredCapibilities.getCapabilityNames();
+        if (capabilityNames.contains("browserName")
+                && desiredCapibilities.getCapability("browserName") instanceof String) {
             return ((String) desiredCapibilities.getCapability("browserName")).toLowerCase().contains("edge");
+        }
+
+        if (capabilityNames.contains("browser")
+                && desiredCapibilities.getCapability("browser") instanceof String) {
+            return ((String) desiredCapibilities.getCapability("browser")).toLowerCase().contains("edge");
         }
         return false;
     }

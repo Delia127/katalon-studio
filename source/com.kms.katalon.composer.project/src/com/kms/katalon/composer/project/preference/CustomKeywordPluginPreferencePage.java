@@ -27,6 +27,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.keyword.ActionProviderFactory;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.keyword.BuiltinKeywords;
 import com.kms.katalon.core.keyword.IActionProvider;
 import com.kms.katalon.core.keyword.IControlSelectionEventHandler;
 import com.kms.katalon.core.setting.BundleSettingStore;
@@ -34,6 +35,7 @@ import com.kms.katalon.custom.keyword.CustomKeywordSettingPage.SettingPageCompon
 import com.kms.katalon.custom.keyword.KeywordsManifest;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.webui.keyword.Context;
+import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class CustomKeywordPluginPreferencePage extends PreferencePage {
 
@@ -51,7 +53,7 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
         this.keywordsManifest = keywordsManifest;
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         try {
-            classLoader = ProjectController.getInstance().getProjectClassLoader(projectEntity);
+        	classLoader = GroovyUtil.getClassLoaderFromParent(projectEntity, BuiltinKeywords.class.getClassLoader());
         } catch (MalformedURLException | CoreException exception) {
             LoggerSingleton.logError(exception);
         }

@@ -168,9 +168,16 @@ public class WebElementUtils {
         properties.stream().filter(i -> customSettings.get(i.getName()) != null).forEach(i -> {
             i.setIsSelected(customSettings.get(i.getName()));
         });
-        
-        if (!customSettings.containsValue(Boolean.TRUE) || !customSettings.containsKey(XPATH_KEY)) {
-            properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, true));
+
+        if (!customSettings.containsKey(XPATH_KEY)) {
+            boolean shouldHaveXpath = true;
+            for (WebElementPropertyEntity property:  properties) {
+                if (property.getIsSelected()) {
+                    shouldHaveXpath = false;
+                    break;
+                }
+            }
+            properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, shouldHaveXpath));
         }
 
         // Change default selected properties by user settings
@@ -365,7 +372,7 @@ public class WebElementUtils {
         if (!isValidElementContent(contentArray)) {
             return;
         }
-        properties.add(new WebElementPropertyEntity(ELEMENT_TEXT_KEY, contentArray.get(0).getAsString()));
+        properties.add(new WebElementPropertyEntity(ELEMENT_TEXT_KEY, contentArray.get(0).getAsString(), false));
     }
 
     private static boolean isElementContent(JsonObject elementJsonObject) {

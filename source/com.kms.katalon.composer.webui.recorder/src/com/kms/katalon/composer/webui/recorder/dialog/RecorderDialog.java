@@ -1954,8 +1954,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             List<? extends ASTNodeWrapper> nodes) {
         Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeIndex = new HashMap<>();
         for (ASTNodeWrapper wrapper : nodes) {
-            Map<String, List<RecordedElementMethodCallWrapper>> childNodeMap = getTestObjectReferences(wrapper);
-            merge(keywordNodeIndex, childNodeMap);
+            if (wrapper != null) {
+                Map<String, List<RecordedElementMethodCallWrapper>> childNodeMap = getTestObjectReferences(wrapper);
+                merge(keywordNodeIndex, childNodeMap);
+            }
         }
         return keywordNodeIndex;
     }
