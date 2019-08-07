@@ -151,7 +151,6 @@ public class AnalyticsReportService implements AnalyticsComponent {
     
     private List<Path> scanFiles(ReportFolder reportFolder) {
         List<Path> files = new ArrayList<>();
-<<<<<<< HEAD
         for (String path : reportFolder.getReportFolders()) {
             try {
                 addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
