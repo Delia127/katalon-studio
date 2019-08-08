@@ -8,6 +8,7 @@ import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.entity.IExecutedEntity;
+import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
@@ -42,13 +43,13 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     }
 
     @Override
-    public void uploadTestSuiteResult(TestSuiteEntity testSuite, String logFolder) throws Exception {
-        reportService.upload(logFolder);
+    public void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception {
+        reportService.upload(reportFolder);
     }
     
     @Override
-    public void uploadTestSuiteCollection(String logFolder) throws Exception {
-    	reportService.upload(logFolder);
+    public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
+    	reportService.upload(reportFolder);
     }
     
     @Override
