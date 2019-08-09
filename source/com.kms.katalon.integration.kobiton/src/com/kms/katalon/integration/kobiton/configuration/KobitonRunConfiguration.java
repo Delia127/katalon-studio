@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
 import com.kms.katalon.integration.kobiton.driver.KobitonDriverConnector;
