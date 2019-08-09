@@ -71,6 +71,8 @@ public class ConsoleMain {
 
     public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
     
+    public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
+    
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
 
     private ConsoleMain() {
@@ -95,8 +97,13 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
-            if (options.has(KATALON_STORE_API_KEY_OPTION)) {
+            if (options.has(KATALON_STORE_API_KEY_OPTION) || options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
                 String apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
+                
+                if (apiKeyValue.isEmpty() || apiKeyValue.contains("null")) {
+                	apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
+                }
+                
                 reloadPlugins(apiKeyValue);
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
