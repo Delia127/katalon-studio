@@ -35,16 +35,12 @@ public class StrSubstitutor {
             return StringUtils.EMPTY;
         }
         str = str.replaceAll("\\$(?!\\{)", "\\\\\\$");
+        str = str.replaceAll("\\\\", "\\\\\\\\");
         try {
             GStringTemplateEngine engine = new GStringTemplateEngine();
-            String escaped = escapeString(str);
-            return engine.createTemplate(escaped).make(variables).toString();
+            return engine.createTemplate(str).make(variables).toString();
         } catch (IOException | CompilationFailedException | ClassNotFoundException e) {
             return str;
         }
-    }
-    
-    private String escapeString(String str) {
-        return StringEscapeUtils.escapeJava(str).replace("'", "\\'");
     }
 }
