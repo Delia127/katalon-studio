@@ -247,6 +247,7 @@ public class MobileInspectorController {
         KobitonDriverConnector connector = new KobitonDriverConnector(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         connector.setKobitonDevice(kobitonDevice);
+        connector.setMobileDriverType(getMobileDriverType(kobitonDevice));
         connector.setApiKey(KobitonPreferencesProvider.getKobitonApiKey());
         connector.setUserName(KobitonPreferencesProvider.getKobitonUserName());
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(2);
