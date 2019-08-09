@@ -193,6 +193,7 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
             FolderEntity parentFolder = FolderFileServiceManager.getFolder(folder.getAbsolutePath());
 
             ReportCollectionEntity reportCollection = new ReportCollectionEntity();
+            reportCollection.setTestSuiteCollectionId(tsEntity.getIdForDisplay());
             reportCollection.setName(newName);
             reportCollection.setParentFolder(parentFolder);
             reportCollection.setProject(parentFolder.getProject());
