@@ -12,13 +12,15 @@ public class ReportFolder {
     public ReportFolder() {
     }
 	
+    //For run test suite
     public ReportFolder(String path) {
-        runTestSuite = false;
+        runTestSuite = true;
         reportFolders.add(path);
     }
 	
+    //For run test suite collection
     public ReportFolder(List<String> reports) {
-        runTestSuite = true;
+        runTestSuite = false;
         reportFolders = reports;
     }
 		

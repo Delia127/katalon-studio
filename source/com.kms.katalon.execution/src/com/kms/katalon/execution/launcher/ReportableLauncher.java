@@ -147,13 +147,14 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
     
-    protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports) {
+    protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports, String reportCollectionFile) {
     	String projectFolder = reportEntity.getProject().getFolderLocation();
     	List<String> paths = new ArrayList<>();
     	for (ReportItemDescription reportItemDescription : reports) {
             String path = projectFolder + File.separator + reportItemDescription.getReportLocation();
             paths.add(path);
         }
+    	paths.add(reportCollectionFile);
     	ReportFolder reportFolder = new ReportFolder(paths);
     	uploadReportToIntegratingProduct(reportFolder);
     }

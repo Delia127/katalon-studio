@@ -117,7 +117,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                     }
                 }
                 setStatus(LauncherStatus.UPLOAD_REPORT);
-                reportLauncher.uploadReportTestSuiteCollection(reportCollection.getReportItemDescriptions());
+                reportLauncher.uploadReportTestSuiteCollection(reportCollection.getReportItemDescriptions(),
+                        reportCollection.getLocation());
                 setStatus(LauncherStatus.DONE);
                 postExecution();
             }
