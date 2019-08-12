@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testdata.TestData;
-import com.kms.katalon.core.testdata.decorator.TestDataCellDecorator;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.link.TestDataCombinationType;
 import com.kms.katalon.entity.link.VariableLink;
@@ -224,14 +223,7 @@ public class TestCaseBindingStringBuilder {
             TestData testData = testDataMap.get(testDataExecutedEntity.getTestDataId());
             int rowIndex = getRowIndex(testDataExecutedEntity);
 
-            Object value = TestDataCellDecorator.decorate(testData,
-                    testData.getObjectValue(getColumnIndex(testData), rowIndex));
-            // Ensure backward compatibility for old test data in general
-            String readAsString = testData.getProperty("readAsString");
-            if (readAsString == null || (Boolean.valueOf(readAsString).booleanValue()) || value instanceof String) {
-                return value.toString();
-            }
-            return value;
+            return testData.getObjectValue(getColumnIndex(testData), rowIndex);
         }
     }
 }

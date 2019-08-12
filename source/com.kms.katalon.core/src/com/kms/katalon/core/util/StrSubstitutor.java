@@ -1,13 +1,11 @@
 package com.kms.katalon.core.util;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import groovy.text.GStringTemplateEngine;
 
@@ -34,12 +32,18 @@ public class StrSubstitutor {
         if (StringUtils.isBlank(str)) {
             return StringUtils.EMPTY;
         }
-        str = str.replaceAll("\\$(?!\\{)", "\\\\\\$");
-        str = str.replaceAll("\\\\", "\\\\\\\\");
         try {
+            // escape special characters
+            // do not switch the order of two replaceAll()
+            // otherwise \ will be generated repeatedly
+            // replace \ with \\ https://stackoverflow.com/a/1701876
+            str = str.replaceAll("\\\\", "\\\\\\\\");
+            // replace any $ that is not followed immediately by a { with \$
+            str = str.replaceAll("\\$(?!\\{)", "\\\\\\$");
             GStringTemplateEngine engine = new GStringTemplateEngine();
             return engine.createTemplate(str).make(variables).toString();
-        } catch (IOException | CompilationFailedException | ClassNotFoundException e) {
+        } catch (Exception e) {
+            // return the original string if anything went wrong
             return str;
         }
     }
