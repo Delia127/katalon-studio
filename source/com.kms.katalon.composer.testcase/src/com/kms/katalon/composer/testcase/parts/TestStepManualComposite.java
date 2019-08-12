@@ -263,7 +263,7 @@ public class TestStepManualComposite {
 					try {
 						if (analyticsReportService.isIntegrationEnabled()
 								&& analyticsSettingStore.getProject() != null) {
-							Program.launch(createPath(analyticsSettingStore.getTeam(),
+							Program.launch(createPath(analyticsSettingStore.getServerEndpoint(true), analyticsSettingStore.getTeam(),
 									analyticsSettingStore.getProject(), parentPart.getTestCase().getIdForDisplay(),
 									analyticsSettingStore.getToken(true)));
 						} else {
@@ -397,9 +397,9 @@ public class TestStepManualComposite {
 		}
 	}
 
-	private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
+	private String createPath(String serve, AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
 		String result = "";
-		result = ComposerTestcaseMessageConstants.KA_HOMEPAGE + "teamId=" + team.getId() + "&projectId="
+		result = serve + "/from-ks?teamId=" + team.getId() + "&projectId="
 				+ project.getId() + "&type=TEST_CASE" + "&path=" + UrlEncoder.encode(path) + "&token=" + tokenInfo;
 		return result;
 

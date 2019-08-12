@@ -345,9 +345,9 @@ public class FilteringTestCaseView {
         });
 
         btnViewHistory.addSelectionListener(new SelectionAdapter() {
-            private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
+            private String createPath(String serve, AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
                 String result = "";
-                result = ComposerTestcaseMessageConstants.KA_HOMEPAGE + "teamId=" + team.getId() + "&projectId="
+                result = serve + "/from-ks?teamId=" + team.getId() + "&projectId="
                         + project.getId() + "&type=TEST_SUITE" + "&path=" + UrlEncoder.encode(path) + "&token="
                         + tokenInfo;
                 return result;
@@ -358,7 +358,8 @@ public class FilteringTestCaseView {
             public void widgetSelected(SelectionEvent e) {
                 try {
                     if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null) {
-                        Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
+                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(true),
+                        		analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
                                 parentPart.getOriginalTestSuite().getIdForDisplay(),
                                 analyticsSettingStore.getToken(true)));
                     } else {
