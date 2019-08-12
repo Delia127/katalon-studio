@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -39,6 +40,9 @@ import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.util.internal.JsonUtil;
 
 import groovy.lang.Binding;
+import groovy.util.GroovyScriptEngine;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 public class TestSuiteExecutor {
 
@@ -120,6 +124,21 @@ public class TestSuiteExecutor {
             List<String> bindings = FileUtils.readLines(testCaseBindingFile);
             for (int i = 0; i < bindings.size(); i++) {
                 TestCaseBinding testCaseBinding = JsonUtil.fromJson(bindings.get(i), TestCaseBinding.class);
+                Map<String, Object> values = testCaseBinding.getBindedValues();
+                Map<String, Object> bindedValues = new HashMap<>();
+
+                scriptEngine.changeConfigForCollectingVariable();
+                for (Entry<String, Object> entry : values.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    try {
+                        Object runScript = scriptEngine.runScriptWithoutLogging(value != null ? value.toString() : null, new Binding());
+                        bindedValues.put(key, runScript);
+                    } catch (Exception e) {
+                        bindedValues.put(key, value);
+                    }
+                }
+                testCaseBinding.setBindedValues(bindedValues);
                 accessTestCaseMainPhase(i, testCaseBinding);
             }
         } catch (IOException e) {
