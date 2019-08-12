@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Locale;
+
 import org.apache.poi.ss.format.CellDateFormatter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
@@ -163,18 +164,20 @@ public class TestDataCellDecorator {
         switch (testData.getType()) {
             case EXCEL_FILE:
                 try {
-                    File excelFile = new File(testData.getSourceUrl());
-                    if (!excelFile.exists()) {
-                        throw new FileNotFoundException(excelFile.toString());
+                    if (input instanceof Cell) {
+                        File excelFile = new File(testData.getSourceUrl());
+                        if (!excelFile.exists()) {
+                            throw new FileNotFoundException(excelFile.toString());
+                        }
+                        FileInputStream fis = new FileInputStream(excelFile);
+                        Workbook workbook = WorkbookFactory.create(fis);
+                        // Ensure backward compatibility for old Excel test data
+                        String readAsString = testData.getProperty("readAsString");
+                        if (readAsString == null || (Boolean.valueOf(readAsString).booleanValue())) {
+                            return decorateExcelCellAsString(workbook, (Cell) input);
+                        }
+                        rawValue = decorateExcelCellAsIs(workbook, (Cell) input);
                     }
-                    FileInputStream fis = new FileInputStream(excelFile);
-                    Workbook workbook = WorkbookFactory.create(fis);
-                    // Ensure backward compatibility for old Excel test data
-                    String readAsString = testData.getProperty("readAsString");
-                    if (readAsString == null || (Boolean.valueOf(readAsString).booleanValue())) {
-                        return decorateExcelCellAsString(workbook, (Cell) input);
-                    }
-                    rawValue = decorateExcelCellAsIs(workbook, (Cell) input);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -92,7 +92,7 @@ public class SheetPOI extends ExcelData {
         return getCellAt(col, row + getHeaderRowIdx());
     }
     
-    private Cell getCellAt(int col, int row) {
+    private Object getCellAt(int col, int row) {
         Row curRow = sheet.getRow(row);
 
         if (curRow == null) {
@@ -104,7 +104,7 @@ public class SheetPOI extends ExcelData {
         if (curCell == null) {
             return null;
         }
-        return curCell;
+        return TestDataCellDecorator.decorate(this, curCell);
     }
 
     protected int getColumnIndex(String colName) throws IOException {
@@ -167,7 +167,7 @@ public class SheetPOI extends ExcelData {
             columnNames = new String[maxColumnCounts];
             if (hasHeaders) {
                 for (int i = 0; i < maxColumnCounts; i++) {
-                    columnNames[i] = TestDataCellDecorator.decorateExcelCellAsString(workbook, getCellAt(i, COLUMN_HEADER_ROW_NUMBER));
+                    columnNames[i] = (String) getCellAt(i, COLUMN_HEADER_ROW_NUMBER);
                 }
             }
         }
