@@ -33,9 +33,12 @@ public class StrSubstitutor {
             return StringUtils.EMPTY;
         }
         try {
+            // escape special characters
             // do not switch the order of two replaceAll()
             // otherwise \ will be generated repeatedly
+            // replace \ with \\ https://stackoverflow.com/a/1701876
             str = str.replaceAll("\\\\", "\\\\\\\\");
+            // replace any $ that is not followed immediately by a { with \$
             str = str.replaceAll("\\$(?!\\{)", "\\\\\\$");
             GStringTemplateEngine engine = new GStringTemplateEngine();
             return engine.createTemplate(str).make(variables).toString();
