@@ -97,13 +97,17 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
-            if (options.has(KATALON_STORE_API_KEY_OPTION) || options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
-                String apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
-                
-                if (apiKeyValue.isEmpty() || apiKeyValue.contains("null")) {
-                	apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
-                }
-                
+            String apiKeyValue = null;
+            
+            if (options.has(KATALON_STORE_API_KEY_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
+            }
+            
+            if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
+            }
+            
+            if (apiKeyValue != null) {
                 reloadPlugins(apiKeyValue);
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
