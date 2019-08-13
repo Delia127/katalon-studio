@@ -150,6 +150,9 @@ public class TestCaseBindingStringBuilder {
             }
 
         }.getVariableValue();
+        if (object == null) {
+            return object;
+        }
         if (object instanceof String) {
             return "'" + object + "'";
         }
@@ -172,6 +175,9 @@ public class TestCaseBindingStringBuilder {
             }
 
         }.getVariableValue();
+        if (object == null) {
+            return object;
+        }
         if (object instanceof String) {
             return "'" + object + "'";
         }
