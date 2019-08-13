@@ -5,10 +5,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
@@ -98,7 +100,8 @@ public class TestSuiteScriptGenerator {
 
             List<String> testCaseBinding = getTestCaseBindingString(testCaseLink,
                     (TestCaseExecutedEntity) testCaseExecuted);
-            FileUtils.writeLines(testCaseBindingFile, testCaseBinding, true);
+            FileUtils.write(testCaseBindingFile, 
+                    StringUtils.join(testCaseBinding, "\n"), StandardCharsets.UTF_8, true);
         }
 
         if (syntaxErrorCollector.toString().isEmpty()) {
