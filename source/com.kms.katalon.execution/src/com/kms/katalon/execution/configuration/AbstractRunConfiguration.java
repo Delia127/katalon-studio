@@ -104,7 +104,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
             }
             throw new ExecutionException("The execution is not supported for this file");
         } catch (Exception ex) {
-            throw new ExecutionException(ex.getMessage());
+            throw new ExecutionException(ex);
         }
     }
 

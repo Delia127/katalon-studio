@@ -100,8 +100,7 @@ public class TestSuiteScriptGenerator {
 
             List<String> testCaseBinding = getTestCaseBindingString(testCaseLink,
                     (TestCaseExecutedEntity) testCaseExecuted);
-            FileUtils.write(testCaseBindingFile, 
-                    StringUtils.join(testCaseBinding, "\n"), StandardCharsets.UTF_8, true);
+            FileUtils.writeLines(testCaseBindingFile, "UTF-8", testCaseBinding, true);
         }
 
         if (syntaxErrorCollector.toString().isEmpty()) {
