@@ -414,6 +414,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String KA_HOMEPAGE_NOTOKEN;
     
+    public static String KA_API_FROM_KS;
+    
     public static String ManageTestCaseTagDialog_SEARCH_MSG;
     
     public static String ManageTestCaseTagDialog_TAG_TABLE_COL_TAG;

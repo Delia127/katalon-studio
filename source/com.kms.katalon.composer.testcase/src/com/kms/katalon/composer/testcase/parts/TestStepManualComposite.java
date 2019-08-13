@@ -397,9 +397,9 @@ public class TestStepManualComposite {
 		}
 	}
 
-	private String createPath(String serve, AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
+	private String createPath(String server, AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
 		String result = "";
-		result = serve + "/from-ks?teamId=" + team.getId() + "&projectId="
+		result = server + ComposerTestcaseMessageConstants.KA_API_FROM_KS + "teamId=" + team.getId() + "&projectId="
 				+ project.getId() + "&type=TEST_CASE" + "&path=" + UrlEncoder.encode(path) + "&token=" + tokenInfo;
 		return result;
 
