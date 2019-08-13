@@ -82,11 +82,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             @Override
             public void done(IJobChangeEvent event) {
                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
-
+                
                 if (!reloadPluginsJob.getResult().isOK()) {
                     LoggerSingleton.logError("Failed to reload plugins.");
                     return;
                 }
+                
 
                 List<ReloadItem> results = resultHolder[0];
 
@@ -99,7 +100,9 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                         // wait for Reloading Plugins dialog to close
                         TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
                     } catch (InterruptedException ignored) {}
-                    UISynchronizeService.syncExec(() -> openResultDialog(resultHolder[0]));
+                    UISynchronizeService.syncExec(() -> {
+                        openResultDialog(resultHolder[0]);
+                    });
                 });
             }
         });

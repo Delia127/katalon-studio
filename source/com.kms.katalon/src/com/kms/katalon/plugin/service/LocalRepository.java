@@ -2,6 +2,7 @@ package com.kms.katalon.plugin.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,16 +12,28 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kms.katalon.core.util.ApplicationRunningMode;
+import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
+import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.util.ZipManager;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.ResolutionException;
 import com.kms.katalon.plugin.models.ResolutionItem;
+import com.kms.katalon.plugin.util.PluginFactory;
 import com.kms.katalon.plugin.util.PluginHelper;
 import com.kms.katalon.plugin.util.PluginSettings;
 import com.kms.katalon.tracking.service.Trackings;

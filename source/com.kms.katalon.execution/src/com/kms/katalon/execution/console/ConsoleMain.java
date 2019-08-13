@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -117,6 +118,8 @@ public class ConsoleMain {
                     .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
+            
+            installBasicReportPluginIfNotAvailable();
 
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
@@ -174,6 +177,17 @@ public class ConsoleMain {
                 .orElse(null);
         if (reloadMethod != null) {
             reloadMethod.invoke(handler, apiKey);
+        }
+    }
+    
+    private static void installBasicReportPluginIfNotAvailable() throws Exception {
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
+        Class<?> installBasicReportPluginHandlerClass = katalonBundle
+                .loadClass("com.kms.katalon.composer.handlers.InstallBasicReportPluginHandler");
+        Object handler = installBasicReportPluginHandlerClass.newInstance();
+        Method method = installBasicReportPluginHandlerClass.getMethod("installIfNotAvailable");
+        if (method != null) {
+            method.invoke(handler);
         }
     }
 
