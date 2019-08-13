@@ -124,7 +124,7 @@ public class TestSuiteExecutor {
             List<String> bindings = FileUtils.readLines(testCaseBindingFile);
             for (int i = 0; i < bindings.size(); i++) {
                 TestCaseBinding testCaseBinding = JsonUtil.fromJson(bindings.get(i), TestCaseBinding.class);
-                Map<String, Object> values = testCaseBinding.getBindedValues();
+                Map<String, Object> values = testCaseBinding.getBindedValues() != null ? testCaseBinding.getBindedValues() : new HashMap<>();
                 Map<String, Object> bindedValues = new HashMap<>();
 
                 scriptEngine.changeConfigForCollectingVariable();
