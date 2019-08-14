@@ -359,7 +359,7 @@ public class FilteringTestCaseView {
                 try {
                     if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null) {
                         Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()),
-                        		analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
+                                analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
                                 parentPart.getOriginalTestSuite().getIdForDisplay(),
                                 analyticsSettingStore.getToken(true)));
                     } else {

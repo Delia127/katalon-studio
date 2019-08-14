@@ -564,7 +564,7 @@ public class TestSuitePartTestCaseView {
                 try {
                     if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null) {
                         Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()),
-                        		analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
+                                analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
                                 testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
                     } else {
                         Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
