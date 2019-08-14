@@ -14,19 +14,22 @@ public class UpdateChromeWebdriverHandler {
 	 
 	@Execute
 	public void execute(Shell shell) {
-		try {
-			String chromeDriverPath = SeleniumWebDriverProvider.getChromeDriverPath();
-			
-			WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
-			webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.CHROME_DRIVER,
-					 new File(chromeDriverPath).getParentFile());
-               
-			System.out.print(chromeDriverPath);
-			MessageDialog.openInformation(shell, "Path", chromeDriverPath);
-		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			String chromeDriverPath = SeleniumWebDriverProvider.getChromeDriverPath();
+//			
+//			WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
+//			webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.CHROME_DRIVER,
+//					 new File(chromeDriverPath).getParentFile());
+//               
+//			System.out.print(chromeDriverPath);
+//			MessageDialog.openInformation(shell, "Path", chromeDriverPath);
+//		} catch (IOException | InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		DriverDownloadManager.downloadDriver("Chrome");
+		
 	}
     
 
