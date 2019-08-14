@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.impl.HttpFileBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
@@ -49,6 +50,8 @@ public class RequestObject extends TestObject implements HttpMessage {
     private boolean followRedirects;
     
     private int redirectTimes = 0;
+    
+    private ProxyInformation proxyInfo;
 
     public RequestObject(String objectId) {
         this.objectId = objectId;
@@ -346,5 +349,13 @@ public class RequestObject extends TestObject implements HttpMessage {
 
     public void setRedirectTimes(int redirectTimes) {
         this.redirectTimes = redirectTimes;
+    }
+
+    public ProxyInformation getProxyInformation() {
+        return proxyInfo;
+    }
+
+    public void setProxyInformation(ProxyInformation proxyInfo) {
+        this.proxyInfo = proxyInfo;
     }
 }
