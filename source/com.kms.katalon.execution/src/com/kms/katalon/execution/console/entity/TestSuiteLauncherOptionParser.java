@@ -87,6 +87,17 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             return false;
         };
     };
+    
+    private StringConsoleOption katalonStoreApiKeySecondOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_STORE_API_KEY_SECOND_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        };
+    };
 
     protected StringConsoleOption installPluginOption = new StringConsoleOption() {
 
@@ -130,6 +141,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(browserTypeOption);
         allOptions.add(executionProfileOption);
         allOptions.add(katalonApiKeyOption);
+        allOptions.add(katalonStoreApiKeySecondOption);
         allOptions.add(installPluginOption);
         allOptions.add(katalonAnalyticsProjectId);
         allOptions.add(testSuiteQuery);

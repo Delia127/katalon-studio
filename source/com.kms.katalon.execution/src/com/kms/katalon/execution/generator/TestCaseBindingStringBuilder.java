@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testdata.TestData;
-import com.kms.katalon.core.testdata.decorator.TestDataCellDecorator;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.link.TestDataCombinationType;
 import com.kms.katalon.entity.link.VariableLink;
@@ -48,8 +47,7 @@ public class TestCaseBindingStringBuilder {
     }
 
     private String getDeclarationWithTestCaseName() {
-        return new StringBuilder("new TestCaseBinding('")
-                .append(getTestCaseBindingName())
+        return new StringBuilder("new TestCaseBinding('").append(getTestCaseBindingName())
                 .append("', '")
                 .append(testCaseExecutedEntity.getSourceId())
                 .append("', ")
@@ -58,8 +56,7 @@ public class TestCaseBindingStringBuilder {
 
     public String build() {
         TestCaseBinding testCaseBinding = new TestCaseBinding(getTestCaseBindingName(),
-                testCaseExecutedEntity.getSourceId(),
-                variableBinding.isEmpty() ? null : variableBinding);
+                testCaseExecutedEntity.getSourceId(), variableBinding.isEmpty() ? null : variableBinding);
         String testCaseBindingJson = JsonUtil.toJson(testCaseBinding, false);
         return testCaseBindingJson;
     }
@@ -129,7 +126,8 @@ public class TestCaseBindingStringBuilder {
                     throw new NotImplementedException(variableLink.getType().name());
             }
 
-//            SyntaxUtil.checkVariableSyntax(GroovyStringUtil.toGroovyStringFormat(variableName), variableValue.toString());
+            // SyntaxUtil.checkVariableSyntax(GroovyStringUtil.toGroovyStringFormat(variableName),
+            // variableValue.toString());
             return variableValue;
         } catch (IOException | IllegalArgumentException ex) {
             throw new SyntaxErrorException(
@@ -139,7 +137,7 @@ public class TestCaseBindingStringBuilder {
 
     private Object getValueByColumnName(String variableName, VariableLink variableLink,
             Map<String, TestData> testDataMap) throws SyntaxErrorException, IOException {
-        return new TestDataValueFinder(variableName, variableLink, testDataMap) {
+        Object object = new TestDataValueFinder(variableName, variableLink, testDataMap) {
 
             @Override
             protected int getColumnIndex(TestData testData) throws SyntaxErrorException, IOException {
@@ -152,11 +150,18 @@ public class TestCaseBindingStringBuilder {
             }
 
         }.getVariableValue();
+        if (object == null) {
+            return object;
+        }
+        if (object instanceof String) {
+            return "'" + object + "'";
+        }
+        return object.toString();
     }
 
     private Object getValueByColumnIndex(String variableName, VariableLink variableLink,
             Map<String, TestData> testDataMap) throws IOException, SyntaxErrorException {
-        return new TestDataValueFinder(variableName, variableLink, testDataMap) {
+        Object object = new TestDataValueFinder(variableName, variableLink, testDataMap) {
 
             @Override
             protected int getColumnIndex(TestData testData) throws SyntaxErrorException, IOException {
@@ -170,6 +175,13 @@ public class TestCaseBindingStringBuilder {
             }
 
         }.getVariableValue();
+        if (object == null) {
+            return object;
+        }
+        if (object instanceof String) {
+            return "'" + object + "'";
+        }
+        return object.toString();
     }
 
     private boolean isIntegerFormat(String integerAsString) {
@@ -177,8 +189,7 @@ public class TestCaseBindingStringBuilder {
     }
 
     private String getErrorSyntaxMessageWithReason(String variableName, String variableValue, String reason) {
-        return new StringBuilder("Wrong syntax at [Test case ID: ")
-                .append(testCaseExecutedEntity.getSourceId())
+        return new StringBuilder("Wrong syntax at [Test case ID: ").append(testCaseExecutedEntity.getSourceId())
                 .append(", Variable name: ")
                 .append(variableName)
                 .append(", Variable value: ")
@@ -219,19 +230,12 @@ public class TestCaseBindingStringBuilder {
                 throw new SyntaxErrorException(getErrorSyntaxMessageWithReason(variableName, variableLink.getValue(),
                         "Test data value cannot be empty."));
             }
-            TestDataExecutedEntity testDataExecutedEntity = 
-                    testCaseExecutedEntity.getTestDataExecuted(variableLink.getTestDataLinkId());
+            TestDataExecutedEntity testDataExecutedEntity = testCaseExecutedEntity
+                    .getTestDataExecuted(variableLink.getTestDataLinkId());
             TestData testData = testDataMap.get(testDataExecutedEntity.getTestDataId());
             int rowIndex = getRowIndex(testDataExecutedEntity);
 
-            Object value = TestDataCellDecorator.decorate(testData,
-                    testData.getObjectValue(getColumnIndex(testData), rowIndex));
-            // Ensure backward compatibility for old test data in general
-            String readAsString = testData.getProperty("readAsString");
-            if (readAsString == null || (Boolean.valueOf(readAsString).booleanValue()) || value instanceof String) {
-                return value.toString();
-            }
-            return value;
+            return testData.getObjectValue(getColumnIndex(testData), rowIndex);
         }
     }
 }
