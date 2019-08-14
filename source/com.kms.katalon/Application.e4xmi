@@ -151,10 +151,10 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_CJOFUL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.menu.tools" label="Tools">
         <children xsi:type="menu:Menu" xmi:id="_Lw3VAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.menu.updateWebDrivers" label="Update WebDrivers">
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_QyJdkL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.chrome" label="Chrome" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_16.png"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_RX0WcL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.Firefox" label="Firefox" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_16.png"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_RvyKgL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.IE" label="IE" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/ie_16.png"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_SKQgAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.edge" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/edge_16.png"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_QyJdkL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.chrome" label="Chrome" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_16.png" command="_yVAB0L5HEemxF-U6MZYPPA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_RX0WcL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.Firefox" label="Firefox" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_16.png" command="_n2vrgL5NEemxF-U6MZYPPA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_RvyKgL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.IE" label="IE" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/ie_16.png" command="_vs_PAL5NEemxF-U6MZYPPA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_SKQgAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.edge" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/edge_16.png" command="_rzz-AL5NEemxF-U6MZYPPA"/>
         </children>
       </children>
     </mainMenu>
@@ -292,12 +292,9 @@
   <handlers xmi:id="_cIfyICRyEem3k_cDce2KKQ" elementId="com.kms.katalon.handler.managekstoreclikeys" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler" command="_TIr-gCRyEem3k_cDce2KKQ"/>
   <handlers xmi:id="_Ah91IDHSEemAoL-JB9vDaQ" elementId="com.kms.katalon.handler.pluginHelp" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenPluginHelpPageHandler" command="_31emIDHREemAoL-JB9vDaQ"/>
   <handlers xmi:id="_727iAEVcEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.searchForum" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl" command="_S1u1gEVcEem5YYH0D7Rhiw"/>
-  <handlers xmi:id="_Tsnm8EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.tweetaboutus" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.intro.Tweetaboutus" command="_QJZX0EVsEem5YYH0D7Rhiw"/>
+  <handlers xmi:id="_Tsnm8EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.tweetaboutus" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateIEWebdriverHandler" command="_QJZX0EVsEem5YYH0D7Rhiw"/>
   <handlers xmi:id="_3aIMQEVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.feedback" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.intro.FeedbackUser" command="_0jpHUEVsEem5YYH0D7Rhiw"/>
-  <handlers xmi:id="_Jfw_oL5FEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.updateChrome" command="_yVAB0L5HEemxF-U6MZYPPA"/>
-  <handlers xmi:id="_3YKyAL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.UpdateFirefox" command="_n2vrgL5NEemxF-U6MZYPPA"/>
-  <handlers xmi:id="_YenOcL5OEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.UpdateIE" command="_vs_PAL5NEemxF-U6MZYPPA"/>
-  <handlers xmi:id="_bnbZgL5OEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.updateEdge" command="_rzz-AL5NEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_Jfw_oL5FEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.updateChrome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateChromeWebdriverHandler" command="_yVAB0L5HEemxF-U6MZYPPA"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
