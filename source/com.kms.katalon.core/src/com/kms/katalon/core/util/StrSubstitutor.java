@@ -28,23 +28,23 @@ public class StrSubstitutor {
      * @param str A template string
      * @return A string with variable values if the template string is not null. Otherwise return an empty string
      */
-    public String replace(String str) {
+	public String replace(String str) {
         if (StringUtils.isBlank(str)) {
             return StringUtils.EMPTY;
         }
+        // Pass 1: use simple substitutor
         try {
-            // escape special characters
-            // do not switch the order of two replaceAll()
-            // otherwise \ will be generated repeatedly
-            // replace \ with \\ https://stackoverflow.com/a/1701876
-            str = str.replaceAll("\\\\", "\\\\\\\\");
-            // replace any $ that is not followed immediately by a { with \$
-            str = str.replaceAll("\\$(?!\\{)", "\\\\\\$");
+        	str = org.apache.commons.lang3.text.StrSubstitutor.replace(str, variables);
+        } catch (Exception ignored) {
+        	// keep the original string if anything went wrong
+        }
+        // Pass 2: use GStringTemplateEngine to handle leftover
+        try {
             GStringTemplateEngine engine = new GStringTemplateEngine();
             return engine.createTemplate(str).make(variables).toString();
         } catch (Exception e) {
-            // return the original string if anything went wrong
-            return str;
+        	// keep the original string if anything went wrong
         }
+        return str;
     }
 }
