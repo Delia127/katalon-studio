@@ -149,6 +149,14 @@
         <children xsi:type="menu:DirectMenuItem" xmi:id="_nemYcOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.installPlugin" label="Install Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.InstallPluginHandler"/>
         <children xsi:type="menu:DirectMenuItem" xmi:id="_X471sOJsEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.uninstallPlugin" label="Uninstall Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UninstallPluginHandler"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_CJOFUL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.menu.tools" label="Tools">
+        <children xsi:type="menu:Menu" xmi:id="_Lw3VAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.menu.updateWebDrivers" label="Update WebDrivers">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_QyJdkL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.chrome" label="Chrome" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_16.png"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_RX0WcL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.Firefox" label="Firefox" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_16.png"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_RvyKgL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.IE" label="IE" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/ie_16.png"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_SKQgAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.edge" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/edge_16.png"/>
+        </children>
+      </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
     <sharedElements xsi:type="advanced:Area" xmi:id="_2Ev6oD8CEeSqW-o8jtXO1g" elementId="org.eclipse.ui.editorss" containerData="50">
@@ -286,6 +294,10 @@
   <handlers xmi:id="_727iAEVcEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.searchForum" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl" command="_S1u1gEVcEem5YYH0D7Rhiw"/>
   <handlers xmi:id="_Tsnm8EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.tweetaboutus" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.intro.Tweetaboutus" command="_QJZX0EVsEem5YYH0D7Rhiw"/>
   <handlers xmi:id="_3aIMQEVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.feedback" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.intro.FeedbackUser" command="_0jpHUEVsEem5YYH0D7Rhiw"/>
+  <handlers xmi:id="_Jfw_oL5FEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.updateChrome" command="_yVAB0L5HEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_3YKyAL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.UpdateFirefox" command="_n2vrgL5NEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_YenOcL5OEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.UpdateIE" command="_vs_PAL5NEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_bnbZgL5OEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.updateEdge" command="_rzz-AL5NEemxF-U6MZYPPA"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -326,6 +338,10 @@
   <commands xmi:id="_S1u1gEVcEem5YYH0D7Rhiw" elementId="com.kms.katalon.command.searchForum" commandName="SearchForum"/>
   <commands xmi:id="_QJZX0EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.command.tweetaboutus" commandName="Tweet about us"/>
   <commands xmi:id="_0jpHUEVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.command.feedback" commandName="Feedback"/>
+  <commands xmi:id="_yVAB0L5HEemxF-U6MZYPPA" elementId="com.kms.katalon.command.updateChrome" commandName="UpdateChrome"/>
+  <commands xmi:id="_n2vrgL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateFirefox" commandName="UpdateFirefox"/>
+  <commands xmi:id="_rzz-AL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateEdge" commandName="UpdateEdge"/>
+  <commands xmi:id="_vs_PAL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateIE" commandName="UpdateIE"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
