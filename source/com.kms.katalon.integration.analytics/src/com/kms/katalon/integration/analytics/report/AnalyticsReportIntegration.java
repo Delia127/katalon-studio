@@ -70,7 +70,7 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
 					if (result.getTestStatusValue() != null) {
 						testRun.setStatus(result.getTestStatusValue().name());
 					}
-					testRun.setTestSuiteId(executedEntity.getSourceName());
+					testRun.setTestSuiteId(executedEntity.getSourceId());
 					testRun.setEnd(result.isEnd());
 					reportService.updateExecutionProccess(testRun);
 				} else if (executedEntity instanceof TestSuiteCollectionExecutedEntity) {
