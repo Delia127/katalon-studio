@@ -263,7 +263,8 @@ public class TestStepManualComposite {
 					try {
 						if (analyticsReportService.isIntegrationEnabled()
 								&& analyticsSettingStore.getProject() != null) {
-							Program.launch(createPath(analyticsSettingStore.getServerEndpoint(true), analyticsSettingStore.getTeam(),
+							Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()), 
+									analyticsSettingStore.getTeam(),
 									analyticsSettingStore.getProject(), parentPart.getTestCase().getIdForDisplay(),
 									analyticsSettingStore.getToken(true)));
 						} else {

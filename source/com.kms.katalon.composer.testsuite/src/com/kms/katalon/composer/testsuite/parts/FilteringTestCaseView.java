@@ -358,7 +358,7 @@ public class FilteringTestCaseView {
             public void widgetSelected(SelectionEvent e) {
                 try {
                     if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null) {
-                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(true),
+                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()),
                         		analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
                                 parentPart.getOriginalTestSuite().getIdForDisplay(),
                                 analyticsSettingStore.getToken(true)));
