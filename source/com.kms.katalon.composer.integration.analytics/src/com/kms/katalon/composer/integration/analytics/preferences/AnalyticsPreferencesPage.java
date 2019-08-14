@@ -602,8 +602,28 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
+                cbxAttachCaptureVideo.setSelection(cbxAutoSubmit.getSelection());
             }
         });
+
+        cbxAttachScreenshot.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (cbxAttachScreenshot.getSelection()) {
+                    cbxAutoSubmit.setSelection(true);
+                }
+            }
+        });
+
+        cbxAttachCaptureVideo.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (cbxAttachCaptureVideo.getSelection()) {
+                    cbxAutoSubmit.setSelection(true);
+                }
+            }
+        });
+
     }
 
     private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
