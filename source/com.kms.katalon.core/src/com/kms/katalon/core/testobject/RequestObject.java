@@ -2,11 +2,11 @@ package com.kms.katalon.core.testobject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.impl.HttpFileBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
@@ -51,7 +51,7 @@ public class RequestObject extends TestObject implements HttpMessage {
     
     private int redirectTimes = 0;
     
-    private ProxyInformation proxyInfo;
+    private Proxy proxy;
 
     public RequestObject(String objectId) {
         this.objectId = objectId;
@@ -351,11 +351,11 @@ public class RequestObject extends TestObject implements HttpMessage {
         this.redirectTimes = redirectTimes;
     }
 
-    public ProxyInformation getProxyInformation() {
-        return proxyInfo;
+    public Proxy getProxy() {
+        return proxy;
     }
 
-    public void setProxyInformation(ProxyInformation proxyInfo) {
-        this.proxyInfo = proxyInfo;
+    public void setProxy(Proxy proxy) {
+        this.proxy = proxy;
     }
 }
