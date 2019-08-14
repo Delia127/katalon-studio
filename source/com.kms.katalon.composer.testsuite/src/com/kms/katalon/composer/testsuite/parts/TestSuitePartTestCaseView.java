@@ -563,7 +563,8 @@ public class TestSuitePartTestCaseView {
             public void widgetSelected(SelectionEvent e) {
                 try {
                     if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null) {
-                        Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
+                        Program.launch(createPath(analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled()),
+                                analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
                                 testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
                     } else {
                         Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
@@ -628,9 +629,9 @@ public class TestSuitePartTestCaseView {
         }
     }
 
-    private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
+    private String createPath(String server, AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
         String result = "";
-        result = ComposerTestcaseMessageConstants.KA_HOMEPAGE + "teamId=" + team.getId() + "&projectId="
+        result = server + ComposerTestcaseMessageConstants.KA_API_FROM_KS + "teamId=" + team.getId() + "&projectId="
                 + project.getId() + "&type=TEST_SUITE" + "&path=" + UrlEncoder.encode(path) + "&token=" + tokenInfo;
         return result;
 
