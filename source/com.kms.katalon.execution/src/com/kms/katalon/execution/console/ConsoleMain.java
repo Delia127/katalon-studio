@@ -100,8 +100,9 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
-            if (options.has(KATALON_STORE_API_KEY_OPTION)) {
-                apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
+            String apiKeyValue = null;
+            if (options.has(KATALON_API_KEY_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
             }
             
             if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
