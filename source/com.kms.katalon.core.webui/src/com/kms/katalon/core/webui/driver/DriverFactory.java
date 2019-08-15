@@ -17,7 +17,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.BuildInfo;
 import org.openqa.selenium.Capabilities;
@@ -49,6 +55,7 @@ import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.safari.SafariDriver;
+import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
@@ -69,6 +76,7 @@ import com.kms.katalon.core.webui.driver.firefox.CGeckoDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FileExcutableUtil;
+import com.kms.katalon.core.webui.util.FileUtil;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.OSUtil;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
@@ -159,6 +167,8 @@ public class DriverFactory {
     public static final String DEFAULT_DEBUG_HOST = "localhost";
 
     private static final int REMOTE_BROWSER_CONNECT_TIMEOUT = 60000;
+    
+    private static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
 
     private static final ThreadLocal<WebDriver> localWebServerStorage = new ThreadLocal<WebDriver>() {
         @Override
@@ -326,7 +336,7 @@ public class DriverFactory {
     private static WebDriver createNewChromeDriver(DesiredCapabilities desireCapibilities) {
         return new CChromeDriver(addCapbilitiesForChrome(desireCapibilities), getActionDelay());
     }
-
+    
     private static DesiredCapabilities addCapbilitiesForChrome(DesiredCapabilities desireCapibilities) {
         System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
 
@@ -339,7 +349,28 @@ public class DriverFactory {
                 desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
             }
         }
-        return desireCapibilities;
+        return installSmartWaitExtensionForChrome(desireCapibilities);
+    }
+    
+    private static DesiredCapabilities installSmartWaitExtensionForChrome(DesiredCapabilities capabilities) {
+        try {
+            File chromeExtensionFolder = getChromeExtensionFile();
+            WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
+            WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
+                    LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
+            logger.logInfo(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
+        } catch (Exception e) {
+            logger.logError("Error installing smart extension: " + ExceptionUtils.getFullStackTrace(e));
+        }
+        return capabilities;
+    }
+
+    private static File getChromeExtensionFile() {
+        try {
+            return new File(FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(DriverFactory.class)),
+                    "/chrome/Smart Wait");
+        } catch (IOException e) {}
+        return null;
     }
 
     private static WebDriver createHeadlessChromeDriver(DesiredCapabilities desireCapibilities) {
@@ -516,7 +547,32 @@ public class DriverFactory {
         if (firefoxMajorVersion >= USING_MARIONETTEE_VERSION) {
             return CFirefoxDriver47.from(desiredCapabilities, actionDelay);
         }
-        return CGeckoDriver.from(desiredCapabilities, actionDelay);
+        CFirefoxDriver firefoxDriver = (CFirefoxDriver) CGeckoDriver.from(desiredCapabilities, actionDelay);
+        installSmartWaitExtensionForFirefox(firefoxDriver);
+        return firefoxDriver;
+    }
+    
+    private static void installSmartWaitExtensionForFirefox(CFirefoxDriver firefoxDriver) {
+        try {
+            URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
+            CloseableHttpClient client = HttpClientBuilder.create().build();
+            HttpPost httpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
+                    + ((RemoteWebDriver) firefoxDriver).getSessionId() + "/moz/addon/install");
+            String bodyContent = String.format("{\"path\": \"%s\"}",
+                    StringEscapeUtils.escapeJava(getFirefoxAddonFile().getAbsolutePath()));
+            httpPost.setEntity(new StringEntity(bodyContent));
+            client.execute(httpPost);
+        } catch (Exception e) {
+            logger.logError(e.getMessage());
+        }
+    }
+
+    private static File getFirefoxAddonFile() {
+        try {
+            return new File(FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(DriverFactory.class)),
+                    "/firefox/smartwait.xpi");
+        } catch (IOException e) {}
+        return null;
     }
 
     private static WebDriver createHeadlessFirefoxDriver(DesiredCapabilities desiredCapibilities) {
