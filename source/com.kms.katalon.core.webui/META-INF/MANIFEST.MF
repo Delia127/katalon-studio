@@ -26,6 +26,7 @@ Export-Package: com.kms.katalon.core.webui.common,
  com.kms.katalon.core.webui.keyword,
  com.kms.katalon.core.webui.util
 Bundle-ClassPath: .,
+ resources/lib/repackaged-guava-19.0.jar,
  resources/lib/repackaged-sikuli-api-1.0.2-standalone.jar
 
 
