@@ -145,6 +145,8 @@ public class DriverFactory {
     public static final String REMOTE_WEB_DRIVER_URL = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_URL;
 
     public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
+    
+    public static final String REMOTE_MOBILE_DRIVER = "remoteMobileDriver";
 
     public static final String DEBUG_PORT = "debugPort";
 
@@ -525,9 +527,9 @@ public class DriverFactory {
 
     protected static WebDriver startExistingBrowser()
             throws MalformedURLException, MobileDriverInitializeException, ConnectException {
-        String remoteDriverType = RunConfiguration.getExisingSessionDriverType();
-        String sessionId = RunConfiguration.getExisingSessionSessionId();
-        String remoteServerUrl = RunConfiguration.getExisingSessionServerUrl();
+        String remoteDriverType = RunConfiguration.getExistingSessionDriverType();
+        String sessionId = RunConfiguration.getExistingSessionSessionId();
+        String remoteServerUrl = RunConfiguration.getExistingSessionServerUrl();
         if (WebUIDriverType.ANDROID_DRIVER.toString().equals(remoteDriverType)
                 || WebUIDriverType.IOS_DRIVER.toString().equals(remoteDriverType)) {
             return WebMobileDriverFactory.startExisitingMobileDriver(WebUIDriverType.fromStringValue(remoteDriverType),
@@ -1081,7 +1083,7 @@ public class DriverFactory {
     public static DriverType getExecutedBrowser() {
         DriverType webDriverType = null;
         if (isUsingExistingDriver()) {
-            webDriverType = WebUIDriverType.fromStringValue(RunConfiguration.getExisingSessionDriverType());
+            webDriverType = WebUIDriverType.fromStringValue(RunConfiguration.getExistingSessionDriverType());
         }
 
         if (webDriverType != null) {
