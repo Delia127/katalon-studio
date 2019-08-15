@@ -351,10 +351,16 @@ public class RequestObject extends TestObject implements HttpMessage {
         this.redirectTimes = redirectTimes;
     }
 
+    /**
+     * Get the proxy of this request. This proxy will take precedence over proxy settings in Preferences.
+     */
     public Proxy getProxy() {
         return proxy;
     }
 
+    /**
+     * Set the proxy for this request. This proxy will take precedence over proxy settings in Preferences.
+     */
     public void setProxy(Proxy proxy) {
         this.proxy = proxy;
     }
