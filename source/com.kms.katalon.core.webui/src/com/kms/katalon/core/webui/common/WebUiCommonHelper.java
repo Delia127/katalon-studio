@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -50,12 +49,10 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.TestObjectXpath;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webui.common.XPathBuilder.PropertyType;
-import com.kms.katalon.core.webui.common.internal.SmartWaitHelper;
 import com.kms.katalon.core.webui.common.internal.SmartXPathController;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
-import com.kms.katalon.core.webui.driver.SmartWaitWebDriver;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
 
 public class WebUiCommonHelper extends KeywordHelper {
@@ -1176,30 +1173,4 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static boolean switchToParentFrame(TestObject testObject) throws WebElementNotFoundException {
         return switchToParentFrame(testObject, RunConfiguration.getTimeOut());
     }
-    
-    public static void enableSmartWaiting() {
-        boolean smartWaitEnabled = (boolean) Optional
-                .ofNullable(RunConfiguration.getExecutionProperties().get("smartWaitEnabled")).orElse(false);
-        if (!smartWaitEnabled) {
-            logger.logInfo("Smart Waiting is enabled !");
-            RunConfiguration.getExecutionProperties().put("smartWaitEnabled", true);
-            WebDriver currentWebDriver = DriverFactory.getWebDriver();
-            SmartWaitWebDriver smartWaitWebDriver = SmartWaitHelper.getSmartWaitWebDriver(currentWebDriver);
-            smartWaitWebDriver.register(SmartWaitHelper.getEventListener());
-            DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver);
-        }
-    }
-
-    public static void disableSmartWaiting() {
-        boolean smartWaitEnabled = (boolean) Optional
-                .ofNullable(RunConfiguration.getExecutionProperties().get("smartWaitEnabled")).orElse(false);
-        if (smartWaitEnabled) {
-            logger.logInfo("Smart Waiting is disabled !");
-            RunConfiguration.getExecutionProperties().put("smartWaitEnabled", false);
-            SmartWaitWebDriver smartWaitWebDriver = (SmartWaitWebDriver) DriverFactory.getWebDriver();
-            smartWaitWebDriver.unregister();
-            DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver.getWrappedDriver());
-        }
-    }
-
 }

@@ -3851,4 +3851,26 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static TestObject convertWebElementToTestObject(WebElement webElement) throws StepFailedException {
         return (TestObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "convertWebElementToTestObject", webElement)
     }
+    
+    /**
+     * Enable Katalon's smart auto waiting functionality, actions on elements will be preceded by waiting activities
+     * @return
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void enableSmartWait() throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "enableSmartWait")
+    }
+
+    /**
+     * Disable Katalon's smart auto waiting functionality
+     * @return
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void disableSmartWait() throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "disableSmartWait")
+    }
 }

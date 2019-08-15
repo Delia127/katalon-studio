@@ -14,6 +14,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -57,6 +58,7 @@ import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 import com.kms.katalon.selenium.driver.CFirefoxDriver;
 
 public class InspectSession implements Runnable {
+    
     private static final String HTTP = "http";
 
     private static final String ABOUT_BLANK = "about:blank";
@@ -83,14 +85,17 @@ public class InspectSession implements Runnable {
 
     protected static final String IE_32BIT_ABSOLUTE_PATH = "C:\\Program Files (x86)\\Internet Explorer\\iexplore.exe";
 
-    protected static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
+    protected static final String CHROME_RECORD_SPY_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
             + OBJECT_SPY_ADD_ON_NAME + File.separator + "KR";
 
-    protected static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
+    protected static final String FIREFOX_RECORD_SPY_EXTENSION_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy.xpi";
 
-    protected static final String FIREFOX_ADDON_FOLDER_RELATIVE_PATH = File.separator + "Firefox" + File.separator
+    protected static final String FIREFOX_RECORD_SPY_FOLDER_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy";
+    
+    protected static final String CHROME_SMART_WAIT_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
+            + "Smart Wait";
 
     protected String projectDir;
 
@@ -217,7 +222,7 @@ public class InspectSession implements Runnable {
             }
         } catch (WebDriverException e) {
             showErrorMessageDialog(e.getMessage());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LoggerSingleton.logError(e);
             showErrorMessageDialog(e.getMessage());
         } finally {
@@ -277,15 +282,27 @@ public class InspectSession implements Runnable {
 
     protected DesiredCapabilities createChromDriverOptions(DesiredCapabilities capabilities)
             throws IOException, ExtensionNotFoundException {
-        File chromeExtensionFolder = getChromeExtensionFile();
+        File chromeExtensionFolder = getRecordSpyExtensionFile();
         if (chromeExtensionFolder == null || !chromeExtensionFolder.isDirectory() || !chromeExtensionFolder.exists()) {
-            throw new ExtensionNotFoundException(getChromeExtensionPath(), WebUIDriverType.CHROME_DRIVER);
+            throw new ExtensionNotFoundException(getChromeRecordSpyExtensionPath(), WebUIDriverType.CHROME_DRIVER);
         }
         generateVariableInitFileForChrome(chromeExtensionFolder);
         WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
         // TODO - Thanh: investigate why getAbsolutePath() suddenly stops working
         WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
                 LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
+        installSmartWaitExtensionForChrome(capabilities);
+        return capabilities;
+    }
+    
+    private DesiredCapabilities installSmartWaitExtensionForChrome(DesiredCapabilities capabilities) {
+        try {
+            File chromeExtensionFolder = getSmartWaitExtensionFile();
+            System.out.println(chromeExtensionFolder.getAbsolutePath());
+            WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
+            WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
+                    LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
+        } catch (Exception e) {}
         return capabilities;
     }
 
@@ -301,11 +318,20 @@ public class InspectSession implements Runnable {
                 Charset.defaultCharset());
     }
 
-    protected File getChromeExtensionFile() throws IOException {
+    protected File getRecordSpyExtensionFile() throws IOException {
         File chromeExtension = null;
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
-            chromeExtension = new File(extensionFolder.getAbsolutePath() + getChromeExtensionPath());
+            chromeExtension = new File(extensionFolder.getAbsolutePath() + getChromeRecordSpyExtensionPath());
+        }
+        return chromeExtension;
+    }
+    
+    protected File getSmartWaitExtensionFile() throws IOException {
+        File chromeExtension = null;
+        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
+        if (extensionFolder.exists() && extensionFolder.isDirectory()) {
+            chromeExtension = new File(extensionFolder.getAbsolutePath() + CHROME_SMART_WAIT_EXTENSION_RELATIVE_PATH);
         }
         return chromeExtension;
     }
@@ -314,7 +340,7 @@ public class InspectSession implements Runnable {
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
             File firefoxExtensionFolder = FileUtil.getExtensionBuildFolder();
-            File firefoxAddonExtracted = new File(firefoxExtensionFolder, FIREFOX_ADDON_FOLDER_RELATIVE_PATH);
+            File firefoxAddonExtracted = new File(firefoxExtensionFolder, FIREFOX_RECORD_SPY_FOLDER_RELATIVE_PATH);
             if (firefoxAddonExtracted.exists()) {
                 FileUtils.cleanDirectory(firefoxAddonExtracted);
             }
@@ -328,7 +354,7 @@ public class InspectSession implements Runnable {
     protected File getFirefoxAddonFile() throws IOException {
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
-            return new File(extensionFolder.getAbsolutePath(), FIREFOX_ADDON_RELATIVE_PATH);
+            return new File(extensionFolder.getAbsolutePath(), FIREFOX_RECORD_SPY_EXTENSION_RELATIVE_PATH);
         }
         return null;
     }
@@ -360,13 +386,13 @@ public class InspectSession implements Runnable {
         return OBJECT_SPY_ADD_ON_NAME;
     }
 
-    protected String getChromeExtensionPath() {
+    protected String getChromeRecordSpyExtensionPath() {
         // return CHROME_EXTENSION_RELATIVE_PATH;
-        return CHROME_EXTENSION_RELATIVE_PATH;
+        return CHROME_RECORD_SPY_EXTENSION_RELATIVE_PATH;
     }
 
     protected String getFirefoxExtensionPath() {
-        return FIREFOX_ADDON_RELATIVE_PATH;
+        return FIREFOX_RECORD_SPY_EXTENSION_RELATIVE_PATH;
     }
 
     protected String getIEAddonRegistryKey() {

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -55,7 +56,6 @@ import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.safari.SafariDriver;
-import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
@@ -367,7 +367,7 @@ public class DriverFactory {
 
     private static File getChromeExtensionFile() {
         try {
-            return new File(FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(DriverFactory.class)),
+            return new File(FileUtil.getExtensionsDirectory(),
                     "/chrome/Smart Wait");
         } catch (IOException e) {}
         return null;
@@ -561,15 +561,16 @@ public class DriverFactory {
             String bodyContent = String.format("{\"path\": \"%s\"}",
                     StringEscapeUtils.escapeJava(getFirefoxAddonFile().getAbsolutePath()));
             httpPost.setEntity(new StringEntity(bodyContent));
-            client.execute(httpPost);
+            CloseableHttpResponse response = client.execute(httpPost);
+            logger.logInfo("Installed");
         } catch (Exception e) {
-            logger.logError(e.getMessage());
+            logger.logError(ExceptionUtils.getFullStackTrace(e));
         }
     }
 
     private static File getFirefoxAddonFile() {
         try {
-            return new File(FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(DriverFactory.class)),
+            return new File(FileUtil.getExtensionsDirectory(),
                     "/firefox/smartwait.xpi");
         } catch (IOException e) {}
         return null;

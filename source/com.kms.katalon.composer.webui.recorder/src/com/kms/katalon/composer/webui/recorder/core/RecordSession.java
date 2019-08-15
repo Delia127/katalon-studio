@@ -36,16 +36,16 @@ public class RecordSession extends InspectSession {
         super(server, driverConnector, startUrl);
     }
 
-    protected String getChromeExtensionPath() {
+    protected String getChromeRecordSpyExtensionPath() {
     	return CHROME_EXTENSION_RELATIVE_PATH;
     }     
     
     @Override
-    protected File getChromeExtensionFile() throws IOException {
+    protected File getRecordSpyExtensionFile() throws IOException {
         File chromeExtension = null;
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(RecordSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
-            chromeExtension = new File(extensionFolder.getAbsolutePath() + getChromeExtensionPath());
+            chromeExtension = new File(extensionFolder.getAbsolutePath() + getChromeRecordSpyExtensionPath());
         }
         return chromeExtension;
     }

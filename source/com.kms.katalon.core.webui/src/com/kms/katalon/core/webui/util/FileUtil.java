@@ -92,7 +92,7 @@ public class FileUtil {
         }
     }
 
-    public static File getExtensionsDirectory(Bundle bundle) throws IOException {
+    public static File getExtensionsDirectory() throws IOException {
         String path = FileUtil.class.getProtectionDomain().getCodeSource().getLocation().getFile();
         path = URLDecoder.decode(path, "utf-8");
         File jarFile = new File(path);
