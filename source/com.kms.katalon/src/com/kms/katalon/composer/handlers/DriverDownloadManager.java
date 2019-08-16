@@ -39,7 +39,7 @@ public class DriverDownloadManager {
                         new File(chromeDriverPath).getParentFile());
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
-                throw new IOException();
+                throw new IOException("Process Timeout");
             }
             break;
         case FIREFOX_DRIVER:
@@ -61,7 +61,7 @@ public class DriverDownloadManager {
                         new File(firefoxDriverPath).getParentFile());
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
-                throw new IOException();
+                throw new IOException("Process Timeout");
             }
             break;
         case IE_DRIVER:
@@ -83,7 +83,7 @@ public class DriverDownloadManager {
                         new File(ieDriverPath).getParentFile());
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
-                throw new IOException();
+                throw new IOException("Process Timeout");
             }
             break;
         case EDGE_DRIVER:
@@ -105,7 +105,7 @@ public class DriverDownloadManager {
                         new File(edgeDriverPath).getParentFile());
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
-                throw new IOException();
+                throw new IOException("Process Timeout");
             }
             break;
         default:

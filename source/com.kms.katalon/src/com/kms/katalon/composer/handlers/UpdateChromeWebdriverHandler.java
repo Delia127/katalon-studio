@@ -16,7 +16,7 @@ public class UpdateChromeWebdriverHandler {
     @Execute
     public void execute(Shell shell) throws InterruptedException, IOException {
 
-        DriverDownloadManager.downloadDriver(WebUIDriverType.EDGE_DRIVER);
+        DriverDownloadManager.downloadDriver(WebUIDriverType.CHROME_DRIVER);
     }
 
 }
