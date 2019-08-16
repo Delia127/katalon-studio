@@ -37,10 +37,9 @@ public class DriverDownloadManager {
                 WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.CHROME_DRIVER,
                         new File(chromeDriverPath).getParentFile());
-                
-                LoggerSingleton.logInfo("Downloaded.");
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
+                throw new IOException();
             }
             break;
         case FIREFOX_DRIVER:
@@ -60,10 +59,9 @@ public class DriverDownloadManager {
                 WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.FIREFOX_DRIVER,
                         new File(firefoxDriverPath).getParentFile());
-                
-                LoggerSingleton.logInfo("Downloaded.");
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
+                throw new IOException();
             }
             break;
         case IE_DRIVER:
@@ -83,10 +81,9 @@ public class DriverDownloadManager {
                 WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.IE_DRIVER,
                         new File(ieDriverPath).getParentFile());
-                
-                LoggerSingleton.logInfo("Downloaded.");
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
+                throw new IOException();
             }
             break;
         case EDGE_DRIVER:
@@ -106,10 +103,9 @@ public class DriverDownloadManager {
                 WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.EDGE_DRIVER,
                         new File(edgeDriverPath).getParentFile());
-                
-                LoggerSingleton.logInfo("Downloaded.");
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
+                throw new IOException();
             }
             break;
         default:

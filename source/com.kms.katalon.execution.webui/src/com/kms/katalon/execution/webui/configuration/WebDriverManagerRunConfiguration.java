@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
@@ -23,10 +24,10 @@ public class WebDriverManagerRunConfiguration {
         if (Platform.inDevelopmentMode()) {
             File parentFolder = new File(ClassPathResolver
                     .getBundleLocation(FrameworkUtil.getBundle(WebDriverManagerRunConfiguration.class)));
-            return new File(parentFolder, "resources/tools/webdriver/webdrivermanager-3.4.0-fat.jar");
+            return new File(parentFolder, "resources/tools/webdriver/webdrivermanager-3.6.2-fat.jar");
         } else {
             File parentFolder = ClassPathResolver.getConfigurationFolder();
-            return new File(parentFolder, "resources/tools/webdriver/webdrivermanager-3.4.0-fat.jar");
+            return new File(parentFolder, "resources/tools/webdriver/webdrivermanager-3.6.2-fat.jar");
         }
     }
 
@@ -49,7 +50,10 @@ public class WebDriverManagerRunConfiguration {
         commands.add(getDriverName(webUIDriverType));
         ProcessBuilder builder = new ProcessBuilder(commands).directory(new File(webdriverFatJarFile.getParent()));
         builder.inheritIO();
-        builder.start().waitFor();
+//        builder.start().waitFor();
+        if (!builder.start().waitFor(50, TimeUnit.SECONDS)) {
+            throw new IOException();
+        }
     }
 
     private String getDriverName(WebUIDriverType webUIDriverType) {
