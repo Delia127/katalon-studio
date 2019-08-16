@@ -1742,7 +1742,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         responseComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
         Composite header = new Composite(responseComposite, SWT.NONE);
-        GridLayout glHeader = new GridLayout(2, false);
+        GridLayout glHeader = new GridLayout(1, false);
         glHeader.marginWidth = 0;
         glHeader.marginHeight = 0;
         header.setLayout(glHeader);
