@@ -50,7 +50,6 @@ public class WebDriverManagerRunConfiguration {
         commands.add(getDriverName(webUIDriverType));
         ProcessBuilder builder = new ProcessBuilder(commands).directory(new File(webdriverFatJarFile.getParent()));
         builder.inheritIO();
-//        builder.start().waitFor();
         if (!builder.start().waitFor(120, TimeUnit.SECONDS)) {
             throw new IOException("Process Timeout");
         }

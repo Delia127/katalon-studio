@@ -3,6 +3,7 @@ package com.kms.katalon.composer.handlers;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -17,11 +18,11 @@ import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 
-public class UpdateChromeWebdriverHandler {
-
+public class UpdateIEWebdriverHandler {
+    
     @CanExecute
     public boolean canExecute() {
-        return true;
+        return SystemUtils.IS_OS_WINDOWS;
     }
     
     @Execute
@@ -32,7 +33,7 @@ public class UpdateChromeWebdriverHandler {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(StringConstants.MSG_UPDATING_WEB_DRIVER, IProgressMonitor.UNKNOWN);
                     try {
-                        DriverDownloadManager.downloadDriver(WebUIDriverType.CHROME_DRIVER);
+                        DriverDownloadManager.downloadDriver(WebUIDriverType.IE_DRIVER);
                     } catch (InterruptedException | IOException e) {
                         throw new InvocationTargetException(e);
                     } finally {
@@ -46,5 +47,4 @@ public class UpdateChromeWebdriverHandler {
             MultiStatusErrorDialog.showErrorDialog(StringConstants.MSG_FAIL_TO_UPDATE_WEB_DRIVER, e.getMessage(), ExceptionsUtil.getStackTraceForThrowable(e));
         }
     }
-
 }

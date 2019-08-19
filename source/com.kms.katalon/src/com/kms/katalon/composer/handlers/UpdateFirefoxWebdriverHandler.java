@@ -17,7 +17,7 @@ import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 
-public class UpdateChromeWebdriverHandler {
+public class UpdateFirefoxWebdriverHandler {
 
     @CanExecute
     public boolean canExecute() {
@@ -32,7 +32,7 @@ public class UpdateChromeWebdriverHandler {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(StringConstants.MSG_UPDATING_WEB_DRIVER, IProgressMonitor.UNKNOWN);
                     try {
-                        DriverDownloadManager.downloadDriver(WebUIDriverType.CHROME_DRIVER);
+                        DriverDownloadManager.downloadDriver(WebUIDriverType.FIREFOX_DRIVER);
                     } catch (InterruptedException | IOException e) {
                         throw new InvocationTargetException(e);
                     } finally {
@@ -46,5 +46,4 @@ public class UpdateChromeWebdriverHandler {
             MultiStatusErrorDialog.showErrorDialog(StringConstants.MSG_FAIL_TO_UPDATE_WEB_DRIVER, e.getMessage(), ExceptionsUtil.getStackTraceForThrowable(e));
         }
     }
-
 }

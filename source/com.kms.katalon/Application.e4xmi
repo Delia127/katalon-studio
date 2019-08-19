@@ -295,6 +295,9 @@
   <handlers xmi:id="_Tsnm8EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.tweetaboutus" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateIEWebdriverHandler" command="_QJZX0EVsEem5YYH0D7Rhiw"/>
   <handlers xmi:id="_3aIMQEVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.feedback" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.intro.FeedbackUser" command="_0jpHUEVsEem5YYH0D7Rhiw"/>
   <handlers xmi:id="_Jfw_oL5FEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.updateChrome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateChromeWebdriverHandler" command="_yVAB0L5HEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_MRFsEMJIEemeR-pO8kw5dQ" elementId="com.kms.katalon.handler.updateFirefox" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateFirefoxWebdriverHandler" command="_n2vrgL5NEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_Usxe8MJIEemeR-pO8kw5dQ" elementId="com.kms.katalon.handler.updateEdge" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateEdgeWebdriverHandler" command="_rzz-AL5NEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_ZwkwAMJIEemeR-pO8kw5dQ" elementId="com.kms.katalon.handler.updateIE" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateIEWebdriverHandler" command="_vs_PAL5NEemxF-U6MZYPPA"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
