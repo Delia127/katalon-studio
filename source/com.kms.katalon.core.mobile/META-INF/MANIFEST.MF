@@ -17,8 +17,7 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.validator,
  com.kms.katalon.core.appium,
  com.google.guava,
- com.kms.katalon.selenium-standalone,
- org.slf4j.api
+ com.kms.katalon.selenium-standalone
 Export-Package: com.kms.katalon.core.mobile.constants,
  com.kms.katalon.core.mobile.contribution,
  com.kms.katalon.core.mobile.driver,

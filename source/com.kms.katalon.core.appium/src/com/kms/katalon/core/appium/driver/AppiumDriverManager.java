@@ -40,6 +40,7 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.ProcessUtil;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 
@@ -574,7 +575,7 @@ public class AppiumDriverManager {
         if (logger != null) {
             String remoteUrl = getRemoteWebDriverServerUrl(); 
             if (StringUtils.isNotEmpty(remoteUrl)) {
-                logger.logRunData("desiredCapabilities", desiredCapabilities.toString());
+                logger.logRunData("desiredCapabilities", JsonUtil.toJson(desiredCapabilities.toJson()));
                 logger.logRunData("remoteDriverUrl", remoteUrl);
             } else {
                 logger.logRunData(EXECUTED_DEVICE_ID, getDeviceId(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));

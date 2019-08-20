@@ -109,6 +109,9 @@ public class LogRecordTreeViewer extends TreeViewer {
                 break;
             }
             default: {
+                if (currentParentTreeNode == null) {
+                    return;
+                }
                 ILogTreeNode newChildTreeNode = new LogChildTreeNode(currentParentTreeNode, record);
                 currentParentTreeNode.addChild(newChildTreeNode);
                 refresh(currentParentTreeNode);

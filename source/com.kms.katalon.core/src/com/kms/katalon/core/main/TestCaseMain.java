@@ -152,9 +152,9 @@ public class TestCaseMain {
     }
 
     public static void startTestSuite(String testSuiteId, Map<String, String> suiteProperties,
-            List<TestCaseBinding> testCaseBindings) {
+            File testCaseBindingFile) {
         TestSuiteExecutor testSuiteExecutor = new TestSuiteExecutor(testSuiteId, engine, eventManager);
-        testSuiteExecutor.execute(suiteProperties, testCaseBindings);
+        testSuiteExecutor.execute(suiteProperties, testCaseBindingFile);
     }
 
     public static void invokeStartSuite(String testSuiteId) {

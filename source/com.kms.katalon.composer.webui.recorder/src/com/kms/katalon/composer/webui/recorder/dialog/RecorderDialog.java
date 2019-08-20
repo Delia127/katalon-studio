@@ -129,6 +129,7 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
@@ -1883,7 +1884,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             } catch (Exception ex) {
                 return null;
             }
-        }).filter(we -> we != null).collect(Collectors.toList());
+        }).filter(we -> we != null && !(we instanceof WebServiceRequestEntity)).collect(Collectors.toList());
         for (WebElementEntity entity : webElementEntities) {
             FolderEntity folder = entity.getParentFolder();
             WebPage webPage = pageIndex.getOrDefault(folder.getIdForDisplay(), null);
@@ -1943,7 +1944,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                         : "Object Repository/" + testObjectId;
                 WebElementEntity entity = ObjectRepositoryController.getInstance()
                         .getWebElementByDisplayPk(testObjectId);
-                if (entity != null) {
+                if (entity != null && !(entity instanceof WebServiceRequestEntity)) {
                     List<RecordedElementMethodCallWrapper> refNodes = keywordNodeIndex
                             .getOrDefault(entity.getIdForDisplay(), null);
                     if (refNodes == null) {
@@ -1986,8 +1987,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             List<? extends ASTNodeWrapper> nodes) {
         Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeIndex = new HashMap<>();
         for (ASTNodeWrapper wrapper : nodes) {
-            Map<String, List<RecordedElementMethodCallWrapper>> childNodeMap = getTestObjectReferences(wrapper);
-            merge(keywordNodeIndex, childNodeMap);
+            if (wrapper != null) {
+                Map<String, List<RecordedElementMethodCallWrapper>> childNodeMap = getTestObjectReferences(wrapper);
+                merge(keywordNodeIndex, childNodeMap);
+            }
         }
         return keywordNodeIndex;
     }

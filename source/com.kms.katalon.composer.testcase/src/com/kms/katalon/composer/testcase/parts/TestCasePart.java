@@ -69,6 +69,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
     private EPartService partService;
 
     private TestCaseCompositePart parentTestCaseCompositePart;
+    
+    private boolean scriptLoaded = false;
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
@@ -206,6 +208,32 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         }
         return false;
     }
+    
+    public void clearAndAddStatementsToMainBlock(List<StatementWrapper> statements, NodeAddType addType, boolean commitEditting) {
+        getTreeTableInput().getMainClassNode().getRunMethod().getBlock().clearStaments();
+        getTreeTableInput().getMainClassNode().getRunMethod().getBlock().addStatements(statements);
+        if (commitEditting) {
+            getTestCaseTreeTable().applyEditorValue();
+        }
+        try {
+            getTreeTableInput().reloadTreeTableNodes();
+        } catch (InvocationTargetException | InterruptedException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+    
+    public void addStatementsToMainBlock(List<StatementWrapper> statements, NodeAddType addType, boolean commitEditting) {
+        getTreeTableInput().getMainClassNode().getRunMethod().getBlock().addStatements(statements);
+        if (commitEditting) {
+            getTestCaseTreeTable().applyEditorValue();
+        }
+        try {
+            getTreeTableInput().reloadTreeTableNodes();
+        } catch (InvocationTargetException | InterruptedException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
 
     public void clearStatements() {
         getTreeTableInput().getMainClassNode().getRunMethod().getBlock().clearStaments();
@@ -266,7 +294,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         return testStepManualComposite.getDragNodes();
     }
 
-    public void loadASTNodesToTreeTable(ScriptNodeWrapper scriptNode) throws Exception {
+    public void loadASTNodesToTreeTable(ScriptNodeWrapper scriptNode) {
+        scriptLoaded = true;
         testStepManualComposite.loadASTNodesToTreeTable(scriptNode);
     }
 
@@ -423,5 +452,9 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
             }
         }
         return map;
+    }
+
+    public boolean isScriptLoaded() {
+        return scriptLoaded;
     }
 }

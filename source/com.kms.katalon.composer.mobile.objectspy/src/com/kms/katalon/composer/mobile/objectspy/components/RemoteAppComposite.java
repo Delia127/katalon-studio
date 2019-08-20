@@ -35,6 +35,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
+import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 
 public class RemoteAppComposite implements MobileAppComposite {
 
@@ -95,9 +96,8 @@ public class RemoteAppComposite implements MobileAppComposite {
         if (runConfiguration == null || runConfiguration.getRemoteDriverConnector() == null) {
             return MobileDriverType.ANDROID_DRIVER;
         }
-        DesiredCapabilities desiredCapabilities = new DesiredCapabilities(
-                runConfiguration.getRemoteDriverConnector().getUserConfigProperties());
-        return MobileDriverFactory.getMobileDriverTypeFromDesiredCapabilities(desiredCapabilities);
+        RemoteWebDriverConnector remoteDriverConnector = runConfiguration.getRemoteDriverConnector();
+        return remoteDriverConnector.getMobileDriverType();
     }
 
     @Override

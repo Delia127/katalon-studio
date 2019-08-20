@@ -42,7 +42,6 @@ import com.kms.katalon.composer.mobile.recorder.components.MobileRecorderDialog;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.utils.MobileElementConverter;
-import com.kms.katalon.composer.mobile.util.MobileUtil;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
@@ -90,7 +89,6 @@ public class OpenRemoteDeviceRecorderHander {
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
-        MobileUtil.detectAppiumAndNodeJs(activeShell);
         openRecorderDialog(activeShell);
     }
 

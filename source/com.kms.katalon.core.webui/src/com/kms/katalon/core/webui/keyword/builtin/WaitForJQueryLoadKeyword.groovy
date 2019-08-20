@@ -44,7 +44,6 @@ public class WaitForJQueryLoadKeyword extends WebUIAbstractKeyword {
      * @return true if jQuery is ready. Otherwise, false.
      * @throws StepFailedException If browser has not started yet or jQuery is not ready
      */
-    @CompileStatic
     public boolean waitForJQueryLoad(int timeout, FailureHandling flowControl)
             throws StepFailedException {
         return WebUIKeywordMain.runKeyword({

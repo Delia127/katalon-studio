@@ -15,7 +15,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -23,6 +22,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -35,9 +35,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -49,7 +47,6 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
-import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
@@ -122,15 +119,11 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
     private ExpressionWrapper objectExpressionWrapper;
 
-    private int fWidth = 60;
-
-    private int fHeight = 18;
-
     private boolean haveOtherTypes;
 
     private StackLayout stackLayout;
 
-    private Composite objectFinderComposite;
+    private SashForm objectFinderComposite;
 
     private Composite otherTypesInputTableComposite;
 
@@ -148,8 +141,6 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
     private StackLayout compositeVariablesDetailsLayout;
 
-    private ImageButton btnExpandVariablesComposite;
-
     private TableViewer variableTableViewer;
 
     private IVariablePart webServiceRequestVariablesPart;
@@ -165,18 +156,6 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
     private List<VariableEntity> initialRequestVariables = null;
 
     private List<MapEntryExpressionWrapper> initialVariableMapEntries = null;
-
-    private boolean isVariablesCompositeExpanded = true;
-
-    private Listener layoutExecutionCompositeListener = new Listener() {
-
-        @Override
-        public void handleEvent(org.eclipse.swt.widgets.Event event) {
-            isVariablesCompositeExpanded = !isVariablesCompositeExpanded;
-            layoutExecutionInfo();
-        }
-    };
-
     private ITestCasePart testCasePart;
 
     private ToolItem recentTestObjectItem;
@@ -190,7 +169,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         this.objectExpressionWrapper = objectExpressionWrapper.clone();
         initVariableMap();
         setAllowMultiple(false);
-        setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | getDefaultOrientation());
+        setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | getDefaultOrientation() | SWT.RESIZE);
         try {
             setInput(TreeEntityUtil.getChildren(null, FolderController.getInstance()
                     .getObjectRepositoryRoot(ProjectController.getInstance().getCurrentProject())));
@@ -395,6 +374,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
     protected Control createDialogArea(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout(1, false));
+        container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         createTopCompiste(container);
 
@@ -404,14 +384,15 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         stackComposite.setLayout(stackLayout);
         stackComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        objectFinderComposite = new Composite(stackComposite, SWT.NONE);
+        objectFinderComposite = new SashForm(stackComposite, SWT.VERTICAL);
         objectFinderComposite.setLayout(new GridLayout(1, false));
 
-        TreeViewer treeViewer = createTreeViewer(objectFinderComposite);
+        Composite treeComposite = new Composite(objectFinderComposite, SWT.NONE);
+        treeComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        TreeViewer treeViewer = createTreeViewer(treeComposite);
 
         GridData data = new GridData(GridData.FILL_BOTH);
-        data.widthHint = convertWidthInCharsToPixels(fWidth);
-        data.heightHint = convertHeightInCharsToPixels(fHeight);
 
         Tree treeWidget = treeViewer.getTree();
         treeWidget.setLayoutData(data);
@@ -430,7 +411,10 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
         treeWidget.setEnabled(true);
 
-        createVariableComposite();
+        createVariableComposite(objectFinderComposite);
+        
+        objectFinderComposite.setSashWidth(3);
+        objectFinderComposite.setWeights(new int[] {6, 4});
 
         stackLayout.topControl = objectFinderComposite;
 
@@ -486,8 +470,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         return container;
     }
 
-    private void createVariableComposite() {
-        compositeVariables = new Composite(objectFinderComposite, SWT.NONE);
+    private void createVariableComposite(Composite parent) {
+        compositeVariables = new Composite(parent, SWT.NONE);
         compositeVariables.setBackground(ColorUtil.getCompositeBackgroundColor());
         GridLayout glCompositeExecution = new GridLayout(1, true);
         glCompositeExecution.verticalSpacing = 0;
@@ -495,33 +479,17 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         glCompositeExecution.marginHeight = 0;
         glCompositeExecution.marginWidth = 0;
         compositeVariables.setLayout(glCompositeExecution);
-        compositeVariables.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        compositeVariables.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        Composite compositeExecutionCompositeHeader = new Composite(compositeVariables, SWT.NONE);
-        compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(3, false);
-        glCompositeExecutionCompositeHeader.marginHeight = 0;
-        glCompositeExecutionCompositeHeader.marginWidth = 0;
-        compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
-        compositeExecutionCompositeHeader
-                .setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-        compositeExecutionCompositeHeader
-                .setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-
-        btnExpandVariablesComposite = new ImageButton(compositeExecutionCompositeHeader, SWT.NONE);
-        redrawBtnExpandExecutionInfo();
-
-        lblVariables = new Label(compositeExecutionCompositeHeader, SWT.NONE);
-        lblVariables.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblVariables = new Label(compositeVariables, SWT.NONE);
+        GridData gdVariable = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+        gdVariable.horizontalIndent = 5;
+        lblVariables.setLayoutData(gdVariable);
         lblVariables.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblVariables.setText(ComposerTestcaseMessageConstants.OBJECT_VARIABLE_LABEL);
 
-        lblVariables.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
-
-        btnExpandVariablesComposite.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
-
         compositeVariablesDetails = new Composite(compositeVariables, SWT.NONE);
-        compositeVariablesDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        compositeVariablesDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         compositeVariablesDetailsLayout = new StackLayout();
         compositeVariablesDetails.setLayout(compositeVariablesDetailsLayout);
 
@@ -841,41 +809,6 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         return composite;
     }
 
-    private void layoutExecutionInfo() {
-        Display.getDefault().timerExec(10, new Runnable() {
-            @Override
-            public void run() {
-                compositeVariablesDetails.setVisible(isVariablesCompositeExpanded);
-                if (!isVariablesCompositeExpanded) {
-                    ((GridData) compositeVariablesDetails.getLayoutData()).exclude = true;
-                } else {
-                    ((GridData) compositeVariablesDetails.getLayoutData()).exclude = false;
-                }
-                compositeVariables.layout(true, true);
-                compositeVariables.getParent().layout();
-                redrawBtnExpandExecutionInfo();
-                showSelectedTestObject();
-            }
-
-            private void showSelectedTestObject() {
-                IStructuredSelection selection = getTreeViewer().getStructuredSelection();
-                if (selection != null) {
-                    getTreeViewer().getTree().showSelection();
-                }
-            }
-        });
-    }
-
-    private void redrawBtnExpandExecutionInfo() {
-        btnExpandVariablesComposite.getParent().setRedraw(false);
-        if (isVariablesCompositeExpanded) {
-            btnExpandVariablesComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN);
-        } else {
-            btnExpandVariablesComposite.setImage(ImageConstants.IMG_16_ARROW);
-        }
-        btnExpandVariablesComposite.getParent().setRedraw(true);
-    }
-
     private void clearVariables() {
         variableMaps.clearExpressions();
         variableTableViewer.refresh();
@@ -1157,5 +1090,10 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                         (WebElementEntity) ((WebElementTreeEntity) getFirstResult()).getObject());
             } catch (Exception ignored) {}
         }
-    };
+    }
+    
+    @Override
+    protected Point getInitialSize() {
+        return new Point(super.getInitialSize().x, 700);
+    }
 }

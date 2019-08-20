@@ -137,7 +137,13 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             updateReportFormatOptionsStatus();
 
             chckUseUsernameAsSender.setSelection(settingStore.useUsernameAsSender());
-            txtSender.setText(settingStore.getSender());
+            
+            String sender = settingStore.getSender();
+            if (settingStore.useUsernameAsSender()) {
+                sender = txtUsername.getText();
+            }
+            txtSender.setText(sender);
+            
             if (chckUseUsernameAsSender.getSelection()) {
                 txtSender.setEnabled(false);;
             } else {

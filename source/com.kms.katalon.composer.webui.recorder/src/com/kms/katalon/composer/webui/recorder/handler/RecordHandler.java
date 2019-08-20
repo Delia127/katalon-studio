@@ -1,7 +1,8 @@
 package com.kms.katalon.composer.webui.recorder.handler;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -45,7 +47,7 @@ import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
-import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
+import com.kms.katalon.composer.webui.recorder.constants.ComposerWebuiRecorderMessageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
 import com.kms.katalon.constants.EventConstants;
@@ -112,6 +114,7 @@ public class RecordHandler {
             List<? extends ASTNodeWrapper> wrapper = new ArrayList<>();
             List<VariableEntity> variables = new ArrayList<>();
             TestCaseEntity testCaseEntity = null;
+            boolean shouldOverride = true;
             if (testCaseCompositePart != null) {
                 String scriptContent = StringUtils.defaultString(testCaseCompositePart.getScriptContent());
 
@@ -134,15 +137,28 @@ public class RecordHandler {
                 return;
             }
             final SaveToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
-            final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
             final List<WebPage> recordedElements = recordDialog.getElements();
-            boolean shouldOverride = true;
+            if (recordDialog.getScriptWrapper() == null 
+                    || recordDialog.getScriptWrapper().getBlock() == null
+                    || recordDialog.getScriptWrapper().getBlock().getAstChildren() == null
+                    || recordDialog.getScriptWrapper().getBlock().getAstChildren().isEmpty()) {
+                return;
+            }
             if (testCaseCompositePart == null || testCaseCompositePart.isDisposed()) {
                 testCaseCompositePart = createNewTestCase();
                 shouldOverride = false;
+            } else if (!wrapper.isEmpty()) {
+                MessageDialog dialog = new MessageDialog(activeShell, StringConstants.CONFIRMATION, null,
+                        MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_APPEND_TEST_CASE_SCRIPT,
+                                testCaseEntity.getName()),
+                        MessageDialog.CONFIRM, MessageDialog.OK,
+                        ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_APPEND_TEST_CASE_SCRIPT,
+                        ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_REPLACE_TEST_CASE_SCRIPT);
+                shouldOverride = (dialog.open() != MessageDialog.OK);
             }
-            updateRecordedElementsAfterSavingToObjectRepository(recordedElements, folderSelectionResult.getEntitySavedMap());
-            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements,
+            updateRecordedElementsAfterSavingToObjectRepository(recordedElements,
+                    folderSelectionResult != null ? folderSelectionResult.getEntitySavedMap() : Collections.emptyMap());
+            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedElements,
                     recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
         } catch (Exception e) {
             MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
@@ -159,6 +175,7 @@ public class RecordHandler {
      * Update the structure of recorded elements with the structures decided by user
      * via entitySavedMap. Cloned WebPages will be created in recordedElements
      * and references of their children are removed from the original WebPages
+     * 
      * @see com.kms.katalon.objectspy.dialog.ObjectRepositoryService#saveObject(SaveToObjectRepositoryDialogResult)
      * @param recordedElements The list of WebPages and their children of a test case
      * @param entitySavedMap A map of physical folders indexed by WebPage and WebEntity
@@ -215,8 +232,7 @@ public class RecordHandler {
     }
 
     private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
-            final SaveToObjectRepositoryDialogResult folderSelectionResult,
-            final List<HTMLActionMapping> recordedActions, final List<WebPage> recordedElements,
+            final SaveToObjectRepositoryDialogResult folderSelectionResult, final List<WebPage> recordedElements,
             final ScriptNodeWrapper wrapper, final VariableEntity[] variables, final boolean shouldOverride) {
         if (testCaseCompositePart == null) {
             return;
@@ -230,7 +246,7 @@ public class RecordHandler {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE,
-                            recordedActions.size() + recordedElements.size());
+                            SubMonitor.UNKNOWN);
 
                     addRecordedElements(recordedElements, folderSelectionResult, monitor);
                     sync.syncExec(new Runnable() {
@@ -243,20 +259,18 @@ public class RecordHandler {
                                 if (children.isEmpty()) {
                                     return;
                                 }
-                                if (!shouldOverride) {
-                                    testCasePart.addDefaultImports();
-                                    testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
 
+                                testCasePart.addDefaultImports();
+                                testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
+                                if (shouldOverride) {
+                                    testCasePart.clearAndAddStatementsToMainBlock(children, NodeAddType.Add, true);
+                                } else {    
                                     // append generated steps at the end of test case's steps
-                                    testCasePart.addStatements(children, NodeAddType.Add, true);
-                                    testCasePart.addVariables(variables);
-                                } else {
-                                    testCasePart.clearStatements();
-                                    testCasePart.addStatements(children, NodeAddType.Add, true);
-                                    testCasePart.deleteVariables(Arrays.asList(testCasePart.getVariables()));
-                                    testCasePart.addVariables(variables);
+                                    testCasePart.addStatementsToMainBlock(children, NodeAddType.Add, true);
                                 }
-                                testCaseCompositePart.refreshScript();
+                                testCasePart.addVariables(variables);
+                                testCasePart.getTreeTableInput().setChanged(true);
+                                testCaseCompositePart.changeScriptNode(testCasePart.getTreeTableInput().getMainClassNode());
                                 testCaseCompositePart.save();
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);

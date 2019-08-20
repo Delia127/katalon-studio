@@ -2,7 +2,6 @@ package com.kms.katalon.core.appium.driver;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -13,6 +12,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kms.katalon.core.appium.constants.AppiumStringConstants;
+import com.kms.katalon.core.appium.constants.CoreAppiumMessageConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
 
@@ -47,6 +47,7 @@ public class AppiumRequestService {
                     .getAsString();
 
             logger.logRunData(AppiumStringConstants.XML_LOG_APPIUM_VERSION, appiumVersion);
+            logger.logRunData(CoreAppiumMessageConstants.XML_LOG_APPIUM_STATUS, parser.toString());
         } catch (UnsupportedOperationException | IOException e) {
             logger.logWarning(MessageFormat.format(AppiumStringConstants.MSG_UNABLE_TO_GET_APPIUM_STATUS,
                     e.getMessage()), null, e);

@@ -161,7 +161,7 @@ public class MobileElementCommonHelper {
         if (!isElementChecked(element)) {
             TouchAction<?> tap = new TouchAction<>(MobileDriverFactory.getDriver())
                     .tap(TapOptions.tapOptions().withElement(ElementOption.element(element, 1, 1)));
-            tap.release().perform();
+            tap.perform();
         }
         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_CHECK_ELEMENT, to.getObjectId()));
     }
@@ -183,7 +183,7 @@ public class MobileElementCommonHelper {
         if (isElementChecked(element)) {
             TouchAction<?> tap = new TouchAction<>(MobileDriverFactory.getDriver())
                     .tap(TapOptions.tapOptions().withElement(ElementOption.element(element, 1, 1)));
-            tap.release().perform();
+            tap.perform();
         }
         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_UNCHECK_ELEMENT, to.getObjectId()));
     }
@@ -209,7 +209,7 @@ public class MobileElementCommonHelper {
             // Click on element
             TouchAction<?> tap = new TouchAction<>(driver)
                     .tap(TapOptions.tapOptions().withElement(ElementOption.element(itemElement, 1, 1)));
-            tap.release().perform();
+            tap.perform();
         } else if (driver instanceof AndroidDriver) {
             throw new StepFailedException(StringConstants.KW_LOG_FAILED_FEATURE_NOT_AVAILABLE);
         }
@@ -264,7 +264,7 @@ public class MobileElementCommonHelper {
             // Click on element
             TouchAction<?> tap = new TouchAction<>(driver)
                     .tap(TapOptions.tapOptions().withElement(ElementOption.element(itemElement, 1, 1)));
-            tap.release().perform();
+            tap.perform();
         } else {
             throw new StepFailedException(MessageFormat.format(StringConstants.KW_LOG_FAILED_LABELED_ITEM_NOT_FOUND,
                     label, to.getObjectId()));
@@ -317,8 +317,7 @@ public class MobileElementCommonHelper {
         int relativeX = Math.round(width * percentValue);
         TouchAction<?> tap = new TouchAction<>(driver)
                 .tap(PointOption.point(startX + ANDROID_SEEKBAR_PADDING + relativeX, element.getLocation().getY()))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(DEFAULT_TAP_DURATION)))
-                .release();
+                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(DEFAULT_TAP_DURATION)));
         tap.perform();
     }
 
@@ -343,8 +342,7 @@ public class MobileElementCommonHelper {
 
         TouchAction<?> tap = new TouchAction<>(MobileDriverFactory.getDriver())
                 .tap(PointOption.point(x.intValue(), y.intValue()))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(DEFAULT_TAP_DURATION)))
-                .release();
+                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(DEFAULT_TAP_DURATION)));
         tap.perform();
         logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_AT_X_Y, x, y));
     }
