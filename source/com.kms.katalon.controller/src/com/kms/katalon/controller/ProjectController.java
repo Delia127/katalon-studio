@@ -310,4 +310,10 @@ public class ProjectController extends EntityController {
         classLoaderLookup.put(projectLocation, classLoader);
         return classLoader;
     }
+
+    public void updateProjectClassLoader(ProjectEntity projectEntity) throws MalformedURLException, CoreException {
+        String projectLocation = projectEntity.getLocation();
+        URLClassLoader classLoader = GroovyUtil.getProjectClasLoader(projectEntity);
+        classLoaderLookup.put(projectLocation, classLoader);
+    }
 }

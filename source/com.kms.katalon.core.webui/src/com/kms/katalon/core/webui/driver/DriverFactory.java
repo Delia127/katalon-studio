@@ -144,6 +144,10 @@ public class DriverFactory {
 
     public static final String REMOTE_WEB_DRIVER_TYPE = StringConstants.CONF_PROPERTY_REMOTE_WEB_DRIVER_TYPE;
 
+    public static final String AUTOMATION_FRAMEWORK_PROPERTY = "automationFramework";
+
+    public static final String REMOTE_MOBILE_DRIVER = "remoteMobileDriver";
+
     public static final String DEBUG_PORT = "debugPort";
 
     public static final String DEBUG_HOST = "debugHost";
@@ -215,7 +219,7 @@ public class DriverFactory {
     private static boolean isUsingExistingDriver() {
         return RunConfiguration.getDriverSystemProperties(EXISTING_DRIVER_PROPERTY) != null;
     }
-    
+
     private static WebDriver startRemoteBrowser() throws MalformedURLException, MobileDriverInitializeException,
             IOException, InterruptedException, AppiumStartException, Exception {
 
@@ -325,9 +329,9 @@ public class DriverFactory {
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
         if (ProxyOption.MANUAL_CONFIG.name().equals(proxyInformation.getProxyOption())) {
             if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
-                WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, 
+                WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities,
                         "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
-            } else  {
+            } else {
                 desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
             }
         }
@@ -344,23 +348,40 @@ public class DriverFactory {
         return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
     }
 
+    private static boolean isEdgeBrowser(DesiredCapabilities desiredCapibilities) {
+        Set<String> capabilityNames = desiredCapibilities.getCapabilityNames();
+        if (capabilityNames.contains("browserName")
+                && desiredCapibilities.getCapability("browserName") instanceof String) {
+            return ((String) desiredCapibilities.getCapability("browserName")).toLowerCase().contains("edge");
+        }
+
+        if (capabilityNames.contains("browser")
+                && desiredCapibilities.getCapability("browser") instanceof String) {
+            return ((String) desiredCapibilities.getCapability("browser")).toLowerCase().contains("edge");
+        }
+        return false;
+    }
+
     @SuppressWarnings("rawtypes")
     private static WebDriver createNewRemoteWebDriver(Map<String, Object> driverPreferenceProps,
-            DesiredCapabilities desireCapibilities) throws URISyntaxException, IOException, GeneralSecurityException {
+            DesiredCapabilities desiredCapabilities) throws URISyntaxException, IOException, GeneralSecurityException {
         String remoteWebServerUrl = getRemoteWebDriverServerUrl();
         String remoteWebServerType = getRemoteWebDriverServerType();
         if (remoteWebServerType == null) {
             remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
         }
-        desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        if (!desiredCapabilities.getCapabilityNames().contains("proxy") && !isEdgeBrowser(desiredCapabilities)) {
+            desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        }
+        desiredCapabilities.setCapability(AUTOMATION_FRAMEWORK_PROPERTY, "Katalon");
 
         logger.logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
                 remoteWebServerUrl, remoteWebServerType));
         if (!remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
             HttpCommandExecutor seleniumExecutor = getSeleniumExecutorForRemoteDriver(remoteWebServerUrl);
-            return new CRemoteWebDriver(seleniumExecutor, desireCapibilities, getActionDelay());
+            return new CRemoteWebDriver(seleniumExecutor, desiredCapabilities, getActionDelay());
         }
-        Object platformName = desireCapibilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
+        Object platformName = desiredCapabilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
         if (platformName == null || !(platformName instanceof String)) {
             throw new StepFailedException(
                     MessageFormat.format(StringConstants.DRI_MISSING_PROPERTY_X_FOR_APPIUM_REMOTE_WEB_DRIVER,
@@ -368,13 +389,9 @@ public class DriverFactory {
         }
         if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
             AppiumCommandExecutor appiumExecutor = getAppiumExecutorForRemoteDriver(remoteWebServerUrl);
-            DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
-                    DesiredCapabilities.android(), false);
             return new SwipeableAndroidDriver(appiumExecutor, desiredCapabilities);
         } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
             AppiumCommandExecutor appiumExecutor = getAppiumExecutorForRemoteDriver(remoteWebServerUrl);
-            DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
-                    DesiredCapabilities.iphone(), false);
             return new IOSDriver(appiumExecutor, desiredCapabilities);
         }
         throw new StepFailedException(MessageFormat.format(
@@ -465,8 +482,8 @@ public class DriverFactory {
         }
         DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
                 DesiredCapabilities.edge(), false);
-        //Edge driver doesn't support proxy: https://docs.microsoft.com/en-us/microsoft-edge/webdriver
-        //desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        // Edge driver doesn't support proxy: https://docs.microsoft.com/en-us/microsoft-edge/webdriver
+        // desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         return new CEdgeDriver(edgeService, desiredCapabilities, getActionDelay());
     }
 
@@ -1152,7 +1169,8 @@ public class DriverFactory {
      * is remote, or null if it is not
      */
     public static String getRemoteWebDriverServerType() {
-        return RunConfiguration.getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_TYPE);
+        return RunConfiguration.getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY,
+                REMOTE_WEB_DRIVER_TYPE);
     }
 
     /**

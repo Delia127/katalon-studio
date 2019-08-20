@@ -156,7 +156,6 @@ public class ObjectPropertyView implements EventHandler {
 
 	private WebElementEntity originalTestObject, cloneTestObject;
 	
-	private  ScrolledComposite scrolledComposite;
 
 	private boolean isSettingsExpanded = true;
 
@@ -295,7 +294,7 @@ public class ObjectPropertyView implements EventHandler {
 		});
 
 		Composite radioSelectionComposite = new Composite(selectionMethodComposite, SWT.NONE);
-		radioSelectionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		radioSelectionComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 		GridLayout glRadioSelection = new GridLayout(3, false);
 		glRadioSelection.marginHeight = 0;
 		glRadioSelection.marginWidth = 0;
@@ -524,12 +523,7 @@ public class ObjectPropertyView implements EventHandler {
 	}
 
 	private void createObjectPropertiesComposite(Composite parent) {
-        scrolledComposite = new ScrolledComposite(parent, SWT.NONE);
-        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        scrolledComposite.setExpandHorizontal(true);
-        scrolledComposite.setExpandVertical(true);
-
-        propertyTableComposite = new Composite(scrolledComposite, SWT.NONE);
+		propertyTableComposite = new Composite(parent, SWT.NONE);
 		propertyTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		GridLayout glCompositeTable = new GridLayout();
 		glCompositeTable.marginWidth = 0;
@@ -544,10 +538,7 @@ public class ObjectPropertyView implements EventHandler {
 
 		createPropertyTableDetails(propertyTableComposite);
 
-        createPropertyTableMenu();
-        scrolledComposite.setMinSize(propertyTableComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-        scrolledComposite.setContent(propertyTableComposite);
-
+		createPropertyTableMenu();
 	}
 
 	private void createObjectXpathsComposite(Composite parent) {
@@ -1000,14 +991,10 @@ public class ObjectPropertyView implements EventHandler {
 		Composite testObjectDetailsComposite = createTestObjectDetailsComposite(mainComposite);
 
 		mainComposite.setContent(testObjectDetailsComposite);
-        int height = propertyTableComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y
-                + testObjectDetailsComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y
-                + mainComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y + 50
-                + scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-
+		mainComposite.setMinSize(testObjectDetailsComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		mainComposite.setExpandVertical(true);
 		mainComposite.setExpandHorizontal(true);
-		mainComposite.setMinSize(new Point(900, height));
+
 		hookControlSelectListerners();
 	}
 

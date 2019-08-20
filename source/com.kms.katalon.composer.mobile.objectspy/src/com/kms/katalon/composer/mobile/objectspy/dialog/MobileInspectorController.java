@@ -64,6 +64,7 @@ import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
+import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.integration.kobiton.driver.KobitonDriverConnector;
 import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
 import com.kms.katalon.integration.kobiton.entity.KobitonDevice;
@@ -227,11 +228,11 @@ public class MobileInspectorController {
         RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting,
                 runConfiguration.getDriverConnectors(), null));
 
-        Map<String, Object> userConfigProperties = runConfiguration.getRemoteDriverConnector()
-                .getUserConfigProperties();
+        RemoteWebDriverConnector remoteDriverConnector = runConfiguration.getRemoteDriverConnector();
+        Map<String, Object> userConfigProperties = remoteDriverConnector.getUserConfigProperties();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(userConfigProperties);
         driver = MobileDriverFactory.startRemoteMobileDriver(runConfiguration.getRemoteServerUrl(), desiredCapabilities,
-                applicationId);
+                remoteDriverConnector.getMobileDriverType(), applicationId);
     }
 
     public void startMobileApp(KobitonDevice kobitonDevice, KobitonApplication kobitonApplication)
@@ -246,6 +247,7 @@ public class MobileInspectorController {
         KobitonDriverConnector connector = new KobitonDriverConnector(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         connector.setKobitonDevice(kobitonDevice);
+        connector.setMobileDriverType(getMobileDriverType(kobitonDevice));
         connector.setApiKey(KobitonPreferencesProvider.getKobitonApiKey());
         connector.setUserName(KobitonPreferencesProvider.getKobitonUserName());
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(2);
@@ -259,7 +261,7 @@ public class MobileInspectorController {
                 ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(kobitonDevice.toDesireCapabilitiesMap());
         driver = MobileDriverFactory.startRemoteMobileDriver(connector.getRemoteServerUrl(), desiredCapabilities,
-                kobitonApplication.buildAutomationKey());
+                connector.getMobileDriverType(), kobitonApplication.buildAutomationKey());
     }
 
     public static MobileDriverType getMobileDriverType(KobitonDevice kobitonDevice) {
