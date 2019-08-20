@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
-import com.kms.katalon.composer.windows.dialog.SpyWindowsObjectDialog;
+import com.kms.katalon.composer.windows.dialog.WindowsSpyObjectDialog;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElementConverter;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
@@ -18,9 +18,9 @@ public class CapturedWindowsObjectTableViewer extends CTableViewer {
 
     private List<CapturedWindowsElement> capturedElements;
 
-    private SpyWindowsObjectDialog dialog;
+    private WindowsSpyObjectDialog dialog;
 
-    public CapturedWindowsObjectTableViewer(Composite parent, int style, SpyWindowsObjectDialog dialog) {
+    public CapturedWindowsObjectTableViewer(Composite parent, int style, WindowsSpyObjectDialog dialog) {
         super(parent, style);
         this.dialog = dialog;
     }

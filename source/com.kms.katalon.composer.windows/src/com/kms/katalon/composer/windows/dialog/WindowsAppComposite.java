@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -26,14 +28,21 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.project.handlers.SettingHandler;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.windows.action.WindowsAction;
+import com.kms.katalon.composer.windows.action.WindowsActionMapping;
 import com.kms.katalon.composer.windows.spy.WindowsInspectorController;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.windows.WindowsDriverConnector;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class WindowsAppComposite {
+
+    private static final String PREF_LAST_STARTED_APP = "lastStartedApp";
 
     private static final String[] FILTER_FILE_NAMES = new String[] { "Windows Executable Files (*.exe)",
             "All Files (*.*)" };
@@ -42,13 +51,15 @@ public class WindowsAppComposite {
 
     private Text txtAppFile;
 
-    private SpyWindowsObjectDialog parentDialog;
+    private WindowsObjectDialog parentDialog;
 
     private Button btnBrowse;
 
     private Label lblDriverConnector;
 
-    public Composite createComposite(Composite parent, int type, SpyWindowsObjectDialog parentDialog) {
+    private ScopedPreferenceStore store;
+
+    public Composite createComposite(Composite parent, int type, WindowsObjectDialog parentDialog) {
         this.parentDialog = parentDialog;
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout glComposite = new GridLayout(2, false);
@@ -107,6 +118,7 @@ public class WindowsAppComposite {
         txtAppFile.addModifyListener(new ModifyListener() {
 
             public void modifyText(ModifyEvent e) {
+                txtAppFile.setToolTipText(txtAppFile.getText());
                 parentDialog.refreshButtonsState();
             }
         });
@@ -126,6 +138,18 @@ public class WindowsAppComposite {
                     return;
                 }
                 txtAppFile.setText(absolutePath);
+            }
+        });
+        
+        txtAppFile.addDisposeListener(new DisposeListener() {
+            
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                try {
+                    store.save();
+                } catch (IOException ex) {
+                    LoggerSingleton.logError(ex);
+                }
             }
         });
 
@@ -148,7 +172,7 @@ public class WindowsAppComposite {
         return true;
     }
 
-    public boolean startApp(WindowsInspectorController controller, AppiumMonitorDialog progressDlg)
+    public WindowsActionMapping startApp(WindowsInspectorController controller, AppiumMonitorDialog progressDlg)
             throws InvocationTargetException, InterruptedException {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         final WindowsDriverConnector driverConnector = getDriverConnector(projectDir);
@@ -162,6 +186,7 @@ public class WindowsAppComposite {
 
                     public Object call() throws Exception {
                         controller.startApplication(driverConnector, appFile);
+                        store.setValue(PREF_LAST_STARTED_APP, appFile);
                         return null;
                     }
                 });
@@ -171,7 +196,9 @@ public class WindowsAppComposite {
         };
 
         progressDlg.run(true, true, processToRun);
-        return true;
+        WindowsActionMapping actionMapping = new WindowsActionMapping(WindowsAction.StartApplication, null);
+        actionMapping.getData()[0].setValue(new ConstantExpressionWrapper(txtAppFile.getText()));
+        return actionMapping;
     }
 
     private WindowsDriverConnector getDriverConnector(String projectDir) throws InvocationTargetException {
@@ -184,6 +211,9 @@ public class WindowsAppComposite {
 
     public void setInput() throws InvocationTargetException, InterruptedException {
         try {
+            store = PreferenceStoreManager.getPreferenceStore(WindowsAppComposite.class);
+            String appPath = store.getString(PREF_LAST_STARTED_APP);
+            txtAppFile.setText(StringUtils.defaultString(appPath));
             updateRunConfigurationDetails();
         } catch (IOException e) {
             throw new InvocationTargetException(e);
@@ -202,10 +232,7 @@ public class WindowsAppComposite {
         return StringUtils.isNotEmpty(txtAppFile.getText());
     }
 
-    public void loadDevices() throws InvocationTargetException, InterruptedException {
-    }
-
-    public SpyWindowsObjectDialog getParentDialog() {
+    public WindowsObjectDialog getParentDialog() {
         return parentDialog;
     }
 }

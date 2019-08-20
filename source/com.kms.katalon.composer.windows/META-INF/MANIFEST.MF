@@ -44,5 +44,11 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.execution.windows,
  com.kms.katalon.composer.project,
  com.kms.katalon.composer.preferences,
- com.kms.katalon.preferences
+ com.kms.katalon.preferences,
+ com.kms.katalon.composer.testcase,
+ com.kms.katalon.composer.mobile.recorder,
+ com.kms.katalon.custom,
+ com.kms.katalon.groovy,
+ com.kms.katalon.util,
+ org.eclipse.ui.workbench
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

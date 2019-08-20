@@ -126,16 +126,6 @@ public class SnapshotWindowsElement implements TreeWindowsElement {
     }
 
     private void buildLocator(WindowsDriver<WebElement> windowsDriver) {
-        String accessibilityId = getPropertyValue("AutomationId");
-        if (StringUtils.isNotEmpty(accessibilityId)) {
-            List<WebElement> elements = windowsDriver.findElementsByAccessibilityId(accessibilityId);
-            if (elements != null && elements.size() == 1) {
-                this.locator = accessibilityId;
-                this.locatorStrategy = LocatorStrategy.ACCESSIBILITY_ID;
-                return;
-            }
-        }
-
         String name = getPropertyValue("Name");
         if (StringUtils.isNotEmpty(name)) {
             List<WebElement> elements = windowsDriver.findElementsByName(name);

@@ -52,7 +52,6 @@ public class TestCaseFolderSelectionDialog extends AbstractDialog {
     protected Control createDialogContainer(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout(1, false));
-        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
         EntityProvider contentProvider = new EntityProvider();
         folderTreeComposite = new TreeEntitySelectionComposite(container, SWT.BORDER, contentProvider,

@@ -13,6 +13,7 @@ import com.kms.katalon.core.keyword.internal.SupportLevel;
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 
 import io.appium.java_client.windows.WindowsDriver
 
@@ -39,10 +40,7 @@ public class TakeScreenshotKeyword extends AbstractKeyword {
             if (windowsDriver == null) {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
-            logger.logDebug('Taking screenshot')
-            File srcFile = windowsDriver.getScreenshotAs(OutputType.FILE)
-            logger.logDebug('Copying screenshot from temporary location: ' + srcFile.getAbsolutePath() + ' to report folder at: ' + screenshotLocation)
-            FileUtils.copyFile(srcFile, new File(screenshotLocation))
+            WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).takeScreenshot(screenshotLocation)
             logger.logPassed('Take screenshot of current Windows to location: ' + screenshotLocation + ' succesfully')
         }, flowControl)
     }
