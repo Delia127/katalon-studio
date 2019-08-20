@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
@@ -31,7 +33,7 @@ public class EdgeRunConfiguration extends WebUiRunConfiguration {
         ScopedPreferenceStore store = PreferenceStoreManager
                 .getPreferenceStore(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
         boolean isUpdateDriverAllowed = store.getBoolean(WebUIConsoleOptionContributor.WEB_UI_AUTO_UPDATE_DRIVERS);
-        if (isUpdateDriverAllowed) {
+        if (isUpdateDriverAllowed && ApplicationRunningMode.get() == RunningMode.CONSOLE) {
             WebDriverManagerRunConfiguration webDriverManagerRunConfiguration = new WebDriverManagerRunConfiguration();
             try {
                 webDriverManagerRunConfiguration.downloadDriver(WebUIDriverType.EDGE_DRIVER,
