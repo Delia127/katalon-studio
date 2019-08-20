@@ -32,6 +32,10 @@ public interface IRunConfiguration {
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException;
     
     public IRunConfiguration cloneConfig() throws IOException, ExecutionException;
+    
+    public String getExecutionSessionId();
+
+    public void setExecutionSessionId(String executionSessionId);
 
     boolean allowsRecording();
     

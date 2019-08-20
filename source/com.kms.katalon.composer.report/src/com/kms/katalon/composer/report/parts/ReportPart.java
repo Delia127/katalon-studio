@@ -3,6 +3,7 @@ package com.kms.katalon.composer.report.parts;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,8 +18,13 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -69,6 +75,7 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -87,6 +94,7 @@ import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -105,6 +113,8 @@ import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFact
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
+import com.kms.katalon.composer.report.platform.ExportReportProviderPlugin;
+import com.kms.katalon.composer.report.platform.ExportReportProviderReflection;
 import com.kms.katalon.composer.report.provider.HyperlinkTestCaseVideoLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
@@ -116,6 +126,7 @@ import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -204,6 +215,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private List<TableViewerColumn> testCaseIntergrationColumn;
 
     private TableColumnLayout tclCompositeTestCaseTableDetails;
+    
+    private boolean isInitialized = false;
+    
+    private Composite mainComposite;
 
     private Composite parent;
 
@@ -288,16 +303,22 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @PostConstruct
     public void init(Composite parent, ReportEntity report, MPart part) {
         this.report = report;
+        this.mpart = part;
         this.parent = parent;
+        mainComposite = parent;
+        if (report == null) {
+            return;
+        }
         setTestSuiteLogRecord(LogRecordLookup.getInstance().getTestSuiteLogRecord(report, new NullProgressMonitor()));
         testLogView = new ReportPartTestLogView(this);
         isSearching = false;
         registerListeners();
-        new HelpToolBarForMPart(part, DocumentationMessageConstants.REPORT_TEST_SUITE);
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE);
         createControls(parent);
         registerControlModifyListeners();
         updateInput();
-        setPartLabel(report.getDisplayName());
+//        setPartLabel(report.getDisplayName());
+        isInitialized = true;
     }
 
     private void registerControlModifyListeners() {
@@ -428,7 +449,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         range.underline = true;
         range.data = txtTestSuiteId.getText();
         range.underlineStyle = SWT.UNDERLINE_LINK;
-        range.foreground = JFaceColors.getHyperlinkText(getDisplay());
+        range.foreground = ColorUtil.getHyperlinkTextColor();
 
         txtTestSuiteId.setStyleRanges(new StyleRange[] { range });
 
@@ -457,6 +478,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     }
 
     public void updateReportAndInput(ReportEntity report) {
+        if (!isInitialized) {
+            init(mainComposite, report, getMPart());
+            return;
+        }
 
         this.report = report;
 
@@ -634,6 +659,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         ToolBar tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
         tbShowHideDetails.setForeground(ColorUtil.getToolBarForegroundColor());
 
+        createExportReportMenu(tbShowHideDetails);
         createKatalonAnalyticsMenu(tbShowHideDetails);
 
         btnShowHideTestCaseDetails = new ToolItem(tbShowHideDetails, SWT.NONE);
@@ -674,6 +700,125 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         return PreferenceStoreManager.getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
     }
 
+    private void createExportReportMenu(ToolBar toolBar) {
+        List<ExportReportProviderPlugin> exportReportPluginProviders = ReportComposerIntegrationFactory.getInstance()
+                .getExportReportPluginProviders();
+        if (exportReportPluginProviders.isEmpty()) {
+            return;
+        }
+        ToolItem btnExportReport = new ToolItem(toolBar, SWT.DROP_DOWN);
+        btnExportReport.setText(ComposerReportMessageConstants.BTN_EXPORT_REPORT);
+        
+        Menu exportReportMenu = new Menu(btnExportReport.getParent().getShell());
+        for (ExportReportProviderPlugin provider : exportReportPluginProviders) {
+            ExportReportProviderReflection reflection = new ExportReportProviderReflection(provider);
+            try {
+                for (String supportedType : reflection.getSupportedFormatTypeForTestSuite()) {
+                    createExportReportMenuItem(supportedType, exportReportMenu, provider);
+                }
+            } catch (CoreException | MalformedURLException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        
+        btnExportReport.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Rectangle rect = btnExportReport.getBounds();
+                Point pt = btnExportReport.getParent().toDisplay(new Point(rect.x, rect.y));
+                exportReportMenu.setLocation(pt.x, pt.y + rect.height);
+                exportReportMenu.setVisible(true);
+            }
+        });
+    }
+    
+    private MenuItem createExportReportMenuItem(String reportType, Menu exportReportMenu, ExportReportProviderPlugin provider) {
+        MenuItem menuItem = new MenuItem(exportReportMenu, SWT.PUSH);
+        menuItem.setText(reportType);
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String supportedType = menuItem.getText();
+                DirectoryDialog directoryDialog = new DirectoryDialog(shell);
+                directoryDialog.open();
+
+                if (directoryDialog.getFilterPath() == null) {
+                    MessageDialog.openWarning(null, "Warning", "Directory not found.");
+                    return;
+                }
+
+                File exportDirectory = new File(directoryDialog.getFilterPath());
+                if (exportDirectory != null && exportDirectory.exists() && exportDirectory.isDirectory()) {
+                    try {
+                        ReportEntity report = getReport();
+
+                        File exportedFile = new File(exportDirectory,
+                                report.getDisplayName() + getExtension(supportedType));
+
+                        Job job = new Job("Export test suite report") {
+
+                            @Override
+                            protected IStatus run(IProgressMonitor monitor) {
+                                try {
+                                    monitor.beginTask("Exporting report to " + supportedType + " format...",
+                                            SubMonitor.UNKNOWN);
+                                    ExportReportProviderReflection reflection = new ExportReportProviderReflection(
+                                            provider);
+
+                                    reflection.exportTestSuite(report, supportedType, exportedFile);
+                                    UISynchronizeService
+                                            .syncExec(() -> Program.launch(exportedFile.toURI().toString()));
+                                    return Status.OK_STATUS;
+                                } catch (MalformedURLException | CoreException | ReflectiveOperationException e) {
+                                    LoggerSingleton.logError(e);
+                                    UISynchronizeService.syncExec(() -> MessageDialog.openError(shell, "Error",
+                                            "Unable to export report (" + e.getMessage() + ")"));
+                                    return Status.CANCEL_STATUS;
+                                } finally {
+                                    monitor.done();
+                                }
+                            }
+                        };
+
+                        job.setUser(true);
+                        job.schedule();
+                    } catch (Exception exception) {
+                        LoggerSingleton.logError(exception);
+                    }
+                }
+            }
+        });
+        
+        return menuItem;
+    }
+    
+    private String getExtension(String formatType) {
+        if (StringUtils.containsIgnoreCase(formatType, "html")) {
+            return ".html";
+        }
+
+        if (StringUtils.containsIgnoreCase(formatType, "csv")) {
+            return ".csv";
+        }
+
+        if (StringUtils.containsIgnoreCase(formatType, "pdf")) {
+            return ".pdf";
+        }
+
+        if (StringUtils.containsIgnoreCase(formatType, "junit")) {
+            return ".xml";
+        }
+
+        if (StringUtils.containsIgnoreCase(formatType, "xml")) {
+            return ".xml";
+        }
+
+        if (StringUtils.containsIgnoreCase(formatType, "json")) {
+            return ".json";
+        }
+        return "";
+    }
+    
     private void createKatalonAnalyticsMenu(ToolBar toolBar) {
 
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
@@ -1347,7 +1492,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     }
 
     public MPart getMPart() {
-        return null;
+        return mpart;
     }
 
     public ReportEntity getReport() {
@@ -1429,6 +1574,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) org.osgi.service.event.Event event) {
+        if (getReport() == null) {
+            return;
+        }
         MPart selectedPart = EventUtil.getPart(event);
         if (selectedPart == null) {
             return;

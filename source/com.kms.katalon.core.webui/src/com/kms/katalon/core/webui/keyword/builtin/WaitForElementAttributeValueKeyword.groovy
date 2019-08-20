@@ -70,7 +70,6 @@ public class WaitForElementAttributeValueKeyword extends WebUIAbstractKeyword {
         return waitForElementAttributeValue(to,attributeName,attributeValue,timeOut,flowControl)
     }
 
-    @CompileStatic
     public boolean waitForElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeOut, FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false

@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,6 +28,7 @@ import net.lightbody.bmp.core.har.HarPostData;
 import net.lightbody.bmp.core.har.HarPostDataParam;
 import net.lightbody.bmp.core.har.HarRequest;
 import net.lightbody.bmp.core.har.HarResponse;
+import net.lightbody.bmp.core.har.HarTimings;
 import net.lightbody.bmp.exception.UnsupportedCharsetException;
 import net.lightbody.bmp.util.BrowserMobHttpUtil;
 
@@ -38,13 +41,23 @@ public class HarConverter {
     private HarRequest harRequest;
     
     private HarResponse harResponse;
+    
+    private Date startTime;
+    
+    private Date endTime;
 
-    public Har convertToHarFormat(RequestObject request, ResponseObject response) {
+    public void initHarFile() {
         har = new Har();
         har.setLog(new HarLog());
         
         harEntry = new HarEntry();
         har.getLog().addEntry(harEntry);
+        
+        startTime = new Date();
+    }
+    
+    public Har endHar(RequestObject request, ResponseObject response) {
+        endTime = new Date();
         
         if (request != null) {
             convertToHarRequest(request);
@@ -53,6 +66,8 @@ public class HarConverter {
         if (response != null) {
             convertToHarResponse(response);
         }
+        
+        captureHarTimings(startTime, endTime);
         
         return har;        
     }
@@ -83,6 +98,13 @@ public class HarConverter {
         captureResponseContent(response);
         
         captureResponseBodySize(response);
+    }
+    
+    private void captureHarTimings(Date startTime, Date endTime) {
+        harEntry.setStartedDateTime(startTime);
+        HarTimings timings = new HarTimings();
+        timings.setConnect(endTime.getTime() - startTime.getTime(), TimeUnit.MILLISECONDS);
+        harEntry.setTimings(timings);
     }
     
     private HarRequest createHarRequest(RequestObject request) {

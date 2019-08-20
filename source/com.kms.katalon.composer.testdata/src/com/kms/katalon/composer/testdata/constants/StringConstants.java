@@ -121,6 +121,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_LBL_NAME = NAME;
 
     public static final String VIEW_LBL_DATA_TYPE = ComposerTestdataMessageConstants.VIEW_LBL_DATA_TYPE;
+    
+    public static final String VIEW_LBL_READ_AS_STRING = ComposerTestdataMessageConstants.VIEW_LBL_READ_AS_STRING;
 
     public static final String VIEW_TITLE_TEST_DATA = TEST_DATA;
 

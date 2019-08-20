@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,6 +27,7 @@ import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
 import com.kms.katalon.plugin.models.KStoreCredentials;
@@ -37,6 +39,7 @@ import com.kms.katalon.plugin.util.PlatformHelper;
 import com.kms.katalon.plugin.util.PluginFactory;
 import com.kms.katalon.plugin.util.PluginHelper;
 import com.kms.katalon.plugin.util.PluginSettings;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class PluginService {
     private static final String EXCEPTION_UNAUTHORIZED_SINGAL = "Unauthorized";
@@ -169,6 +172,8 @@ public class PluginService {
             
             refreshClasspathMonitor.done();
 
+            trackInstallPlugins(PluginFactory.getInstance().getPlugins(), credentials, ApplicationRunningMode.get());
+            
             monitor.done();
     
             return results;
@@ -219,6 +224,7 @@ public class PluginService {
         if (currentProject != null) {
             GroovyUtil.initGroovyProjectClassPath(currentProject,
                     projectController.getCustomKeywordPlugins(currentProject), false, monitor);
+            projectController.updateProjectClassLoader(currentProject);
             KeywordController.getInstance().parseAllCustomKeywords(currentProject, null);
             if (ApplicationRunningMode.get() == RunningMode.GUI) {
                 eventBroker.post(EventConstants.KEYWORD_BROWSER_REFRESH, null);
@@ -229,5 +235,16 @@ public class PluginService {
     private void markWork(int work, int totalWork, SubMonitor monitor) {
         int subwork = Math.round((float) work * 100 / totalWork);
         monitor.worked(subwork);
+    }
+    
+    private void trackInstallPlugins(List<KStorePlugin> plugins, KStoreCredentials credentials, RunningMode runningMode) {
+        List<Long> installedPluginIds = PluginFactory.getInstance().getPlugins().stream()
+                .map(p -> p.getProduct().getId()).collect(Collectors.toList());
+        if (credentials instanceof KStoreApiKeyCredentials) {
+            Trackings.trackInstallPlugins(installedPluginIds, ((KStoreApiKeyCredentials) credentials).getApiKey(),
+                    runningMode);
+        } else {
+            Trackings.trackInstallPlugins(installedPluginIds, StringUtils.EMPTY, runningMode);
+        }
     }
 }

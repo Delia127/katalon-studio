@@ -21,4 +21,4 @@ Require-Bundle: io.cucumber.core,
  org.codehaus.groovy,
  org.apache.commons.io,
  org.apache.commons.lang3,
- org.slf4j.api
+ slf4j.api

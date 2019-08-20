@@ -9,8 +9,6 @@ import static com.kms.katalon.groovy.util.GroovyUtil.getTestCaseScriptFolder;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URLClassLoader;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
@@ -21,16 +19,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.launching.JavaRuntime;
 
 import com.kms.katalon.core.ast.GroovyParser;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
-import com.kms.katalon.groovy.util.GroovyUtil;
 
 @SuppressWarnings("restriction")
 public class GroovyGuiUtil {
@@ -92,11 +86,5 @@ public class GroovyGuiUtil {
             return;
         }
         FileUtils.copyInputStreamToFile(content, unit.getResource().getLocation().toFile());
-    }
-
-    public static URLClassLoader getProjectClasLoader(ProjectEntity projectEntity) throws MalformedURLException,
-            CoreException {
-        IJavaProject project = JavaCore.create(GroovyUtil.getGroovyProject(projectEntity));
-        return GroovyUtil.getProjectClasLoader(project, JavaRuntime.computeDefaultRuntimeClassPath(project));
     }
 }

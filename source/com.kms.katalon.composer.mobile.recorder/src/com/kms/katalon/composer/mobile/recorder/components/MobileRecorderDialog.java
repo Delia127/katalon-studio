@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -333,7 +334,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         sashForm.setSashWidth(3);
         sashForm.setLayout(new FillLayout());
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        sashForm.setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
         return sashForm;
     }
 
@@ -354,7 +354,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         SashForm hSashForm = new SashForm(middlePane, SWT.VERTICAL);
         hSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        hSashForm.setBackground(hSashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
         createActionListComposite(hSashForm);
 
@@ -380,8 +379,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         actionTableViewer = new TableViewer(actionTableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         actionTableViewer.getTable().setHeaderVisible(true);
-        actionTableViewer.getTable().setLinesVisible(
-        		ControlUtils.shouldLineVisble(actionTableViewer.getTable().getDisplay()));
+        actionTableViewer.getTable()
+                .setLinesVisible(ControlUtils.shouldLineVisble(actionTableViewer.getTable().getDisplay()));
 
         ColumnViewerToolTipSupport.enableFor(actionTableViewer);
         ColumnViewerUtil.setTableActivation(actionTableViewer);
@@ -815,7 +814,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     private void captureObjectAction() {
-        final String appName = getAppName();
         final ProgressMonitorDialogWithThread dialog = new ProgressMonitorDialogWithThread(getShell());
 
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
@@ -828,7 +826,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                     @Override
                     public Object call() throws Exception {
                         TreeMobileElement appRootElement = inspectorController.getMobileObjectRoot();
-                        appRootElement.setName(appName);
                         return appRootElement;
                     }
                 });
@@ -1088,7 +1085,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         if (appRootElement == null) {
             return;
         }
-        final TreeMobileElement foundElement = recursivelyFindElementByLocation(appRootElement, x, y);
+        final TreeMobileElement foundElement = findElementByLocation(appRootElement, x, y);
         if (foundElement == null) {
             return;
         }
@@ -1104,6 +1101,39 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         });
     }
 
+    private TreeMobileElement findElementByLocation(TreeMobileElement currentElement, int x, int y) {
+        List<TreeMobileElement> potentialElements = recursivelyFindListElementByLocation(currentElement, x, y);
+        int nearestDistance = Integer.MAX_VALUE;
+        TreeMobileElement foundElement = null;
+        for (TreeMobileElement element : potentialElements) {
+            int elementNearestDistance = findNearestDistance(element, x, y);
+            if (elementNearestDistance <= nearestDistance) {
+                nearestDistance = elementNearestDistance;
+                foundElement = element;
+            }
+        }
+        return foundElement;
+    }
+
+    private int findNearestDistance(TreeMobileElement element, int x, int y) {
+        Rectangle elementBounds = getElementBounds(element);
+        int leftDistance = Math.abs(elementBounds.x - x);
+        int rightDistance = Math.abs(elementBounds.x + elementBounds.width - x);
+        int topDistance = Math.abs(elementBounds.y - y);
+        int bottomDistance = Math.abs(elementBounds.y + elementBounds.height - y);
+        return minNumber(Arrays.asList(leftDistance, rightDistance, topDistance, bottomDistance));
+    }
+
+    private int minNumber(List<Integer> list) {
+        int min = Integer.MAX_VALUE;
+        for (int number : list) {
+            if (number < min) {
+                min = number;
+            }
+        }
+        return min;
+    }
+
     /**
      * Recursively find element that is positioned at [x, y]. This is by assumed that mobile elements don't overlap each
      * other.
@@ -1111,22 +1141,46 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
      * @param currentElement
      * @param x
      * @param y
-     * @return element that were found
+     * @return list of elements that were found
      */
-    private TreeMobileElement recursivelyFindElementByLocation(TreeMobileElement currentElement, int x, int y) {
+    private List<TreeMobileElement> recursivelyFindListElementByLocation(TreeMobileElement currentElement, int x,
+            int y) {
+        List<TreeMobileElement> childrenElements = new ArrayList<>();
         for (TreeMobileElement childElement : currentElement.getChildrenElement()) {
-            Map<String, String> attributes = childElement.getAttributes();
-            Double elementX = Double.parseDouble(attributes.get(GUIObject.X));
-            Double elementY = Double.parseDouble(attributes.get(GUIObject.Y));
-            Double elementWidth = Double.parseDouble(attributes.get(GUIObject.WIDTH));
-            Double elementHeight = Double.parseDouble(attributes.get(GUIObject.HEIGHT));
-            Rectangle rectangle = new Rectangle(safeRoundDouble(elementX), safeRoundDouble(elementY),
-                    safeRoundDouble(elementWidth), safeRoundDouble(elementHeight));
-            if (rectangle.contains(x, y)) {
-                return recursivelyFindElementByLocation(childElement, x, y);
-            }
+            childrenElements.addAll(recursivelyFindListElementByLocation(childElement, x, y));
         }
-        return currentElement;
+        if (!childrenElements.isEmpty()) {
+            return childrenElements;
+        }
+        if (isPointInElementBounds(currentElement, x, y)) {
+            return Arrays.asList(currentElement);
+        }
+        return Collections.emptyList();
+    }
+
+    private boolean isPointInElementBounds(TreeMobileElement currentElement, int x, int y) {
+        if (currentElement.getAttributes() == null) {
+            return false;
+        }
+        Map<String, String> attributes = currentElement.getAttributes();
+        if (attributes.containsKey(GUIObject.X) && attributes.containsKey(GUIObject.Y)
+                && attributes.containsKey(GUIObject.WIDTH) && attributes.containsKey(GUIObject.HEIGHT)) {
+            Rectangle rectangle = getElementBounds(currentElement);
+            return rectangle.contains(x, y);
+        } else {
+            return false;
+        }
+    }
+
+    private Rectangle getElementBounds(TreeMobileElement currentElement) {
+        Map<String, String> attributes = currentElement.getAttributes();
+        Double elementX = Double.parseDouble(attributes.get(GUIObject.X));
+        Double elementY = Double.parseDouble(attributes.get(GUIObject.Y));
+        Double elementWidth = Double.parseDouble(attributes.get(GUIObject.WIDTH));
+        Double elementHeight = Double.parseDouble(attributes.get(GUIObject.HEIGHT));
+        Rectangle rectangle = new Rectangle(safeRoundDouble(elementX), safeRoundDouble(elementY),
+                safeRoundDouble(elementWidth), safeRoundDouble(elementHeight));
+        return rectangle;
     }
 
     @Override

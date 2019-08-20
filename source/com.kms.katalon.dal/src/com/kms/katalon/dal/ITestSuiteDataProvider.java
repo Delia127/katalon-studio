@@ -5,6 +5,7 @@ import java.io.File;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 /**
@@ -28,6 +29,8 @@ public interface ITestSuiteDataProvider {
     public TestSuiteEntity saveNewTestSuite(TestSuiteEntity newTestSuite) throws Exception;
 
     public String getIdForDisplay(TestSuiteEntity entity) throws Exception;
+    
+    public String getTestSuiteCollectionIdForDisplay(TestSuiteCollectionEntity entity) throws Exception;
 
     public TestSuiteTestCaseLink getTestCaseLink(TestSuiteEntity testSuite, String testCaseId);
 

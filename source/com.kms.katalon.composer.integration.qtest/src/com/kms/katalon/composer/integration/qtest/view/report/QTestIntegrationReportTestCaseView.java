@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateReportHandler;
@@ -173,6 +174,7 @@ public class QTestIntegrationReportTestCaseView extends TestCaseLogDetailsIntegr
         range.length = txtTestLogId.getText().length();
         range.underline = true;
         range.data = txtTestLogId.getText();
+        range.foreground = ColorUtil.getHyperlinkTextColor();
         range.underlineStyle = SWT.UNDERLINE_LINK;
 
         txtTestLogId.setStyleRanges(new StyleRange[] { range });

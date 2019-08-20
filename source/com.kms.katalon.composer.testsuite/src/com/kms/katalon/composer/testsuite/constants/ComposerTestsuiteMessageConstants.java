@@ -84,6 +84,8 @@ public class ComposerTestsuiteMessageConstants extends NLS {
     public static String PA_TAB_SCRIPT;
 
     public static String PA_TAB_INTEGRATION;
+    
+    public static String PA_TAB_RESULT;
 
     public static String PA_ERROR_MSG_UNABLE_TO_SAVE_PART;
 

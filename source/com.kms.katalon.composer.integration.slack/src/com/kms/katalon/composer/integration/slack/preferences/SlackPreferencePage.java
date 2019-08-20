@@ -337,9 +337,12 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
 
     private void enableFields(boolean isEnabled) {
         token.setEnabled(isEnabled, fieldsetSlack);
+        token.getLabelControl(fieldsetSlack).setEnabled(true);
         channel.setEnabled(isEnabled, fieldsetSlack);
+        channel.getLabelControl(fieldsetSlack).setEnabled(true);
         asUser.setEnabled(isEnabled, fieldsetSlack);
         username.setEnabled(isEnabled && !asUserValue, fieldsetSlack);
+        username.getLabelControl(fieldsetSlack).setEnabled(true);
         sendOpenProject.setEnabled(isEnabled, fieldsetSend);
         sendCloseProject.setEnabled(isEnabled, fieldsetSend);
         sendCreateTestCase.setEnabled(isEnabled, fieldsetSend);

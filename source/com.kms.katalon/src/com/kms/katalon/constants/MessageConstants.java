@@ -456,6 +456,12 @@ public class MessageConstants extends NLS {
     public static String PAGE_LBL_PLUGIN_DIRECTORY;
     
     public static String PAGE_BTN_BROWSE_FOLDER;
+    
+    public static String MSG_UPDATING_WEB_DRIVER;
+    
+    public static String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
+    
+    public static String MSG_FAIL_TO_UPDATE_WEB_DRIVER;
 
     static {
         // initialize resource bundle

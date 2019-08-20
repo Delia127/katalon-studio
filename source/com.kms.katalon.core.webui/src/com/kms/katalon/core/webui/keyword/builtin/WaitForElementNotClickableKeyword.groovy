@@ -68,7 +68,6 @@ public class WaitForElementNotClickableKeyword extends WebUIAbstractKeyword {
         return waitForElementNotClickable(to,timeOut,flowControl)
     }
 
-    @CompileStatic
     public boolean waitForElementNotClickable(TestObject to, int timeOut, FailureHandling flowControl) throws StepFailedException {
         return WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false

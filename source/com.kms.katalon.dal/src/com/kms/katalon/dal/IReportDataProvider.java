@@ -14,9 +14,9 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 public interface IReportDataProvider {
     public String getTemporaryLogDirectory(FileEntity testCase) throws DALException;
 
-    public String getLogDirectory(TestSuiteEntity testSuite) throws Exception;
+    public String getLogDirectory(TestSuiteEntity testSuite, String executionSessionId) throws Exception;
 
-    public ReportEntity getReportEntity(ProjectEntity project, TestSuiteEntity testSuite, String reportName)
+    public ReportEntity getReportEntity(ProjectEntity project, TestSuiteEntity testSuite, String reportName, String executionSessionId)
             throws Exception;
 
     public String getEntityPk(ReportEntity report);
@@ -31,19 +31,21 @@ public interface IReportDataProvider {
 
     public List<ReportEntity> listReportEntities(TestSuiteEntity testSuite, ProjectEntity project) throws Exception;
 
-    public FolderEntity getReportFolder(TestSuiteEntity testSuite, ProjectEntity project) throws Exception;
+    public FolderEntity getReportFolder(TestSuiteEntity testSuite, ProjectEntity project, String executionSessionId) throws Exception;
 
     ReportCollectionEntity getReportCollectionEntity(String id) throws DALException;
 
     ReportCollectionEntity getReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity entity,
-            String reportName) throws DALException;
+            String executionSessionId, String reportName) throws DALException;
 
     void updateReportCollectionEntity(ReportCollectionEntity entity) throws DALException;
     
     public ReportCollectionEntity renameCollectionReport(ReportCollectionEntity collectionReport, String newName) throws DALException;
 
-    ReportCollectionEntity newReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity tsEntity,
+    ReportCollectionEntity newReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity tsEntity, String executionSessionId,
             String newName) throws DALException;
 
     void deleteReportCollection(ReportCollectionEntity reportCollection) throws DALException;
+
+    List<ReportCollectionEntity> listReportCollectionEntities(TestSuiteCollectionEntity testSuiteCollection, ProjectEntity project) throws Exception;
 }

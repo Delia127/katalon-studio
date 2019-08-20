@@ -4,12 +4,14 @@ import java.util.Random;
 
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.activation.ActivationService;
 import com.kms.katalon.activation.ActivationServiceConsumer;
 import com.kms.katalon.activation.dialog.ActivationDialogV2;
 import com.kms.katalon.activation.dialog.ActivationOfflineDialogV2;
 import com.kms.katalon.activation.dialog.SignupDialog;
+import com.kms.katalon.activation.dialog.SignupSurveyDialog;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
@@ -42,15 +44,23 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
                 return false;
             }
         } else {
-            if (!isActivated && !checkActivationDialog()) {
-                return false;
+            if (!isActivated) {
+                if (checkActivationDialog()) {
+                    showFunctionsIntroductionForTheFirstTime();
+                    openSignupSurveyDialog(Display.getCurrent().getActiveShell());
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
 
-        if (!isActivated) {
-            showFunctionsIntroductionForTheFirstTime();
-        }
         return true;
+    }
+    
+    private static void openSignupSurveyDialog(Shell activeShell) {
+        SignupSurveyDialog dialog = new SignupSurveyDialog(activeShell);
+        dialog.open();
     }
 
     private static boolean checkActivationDialog() {

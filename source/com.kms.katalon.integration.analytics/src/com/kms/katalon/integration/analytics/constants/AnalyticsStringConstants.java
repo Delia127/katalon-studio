@@ -40,7 +40,7 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_LOG_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(properties|xml|json))$)";
     
-    public static final String ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(avi|mov))$)";
+    public static final String ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(avi|mov|srt))$)";
     
     public static final String ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(png|jpg))$)";
     

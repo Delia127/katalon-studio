@@ -11,22 +11,20 @@ import com.kms.katalon.execution.webui.driver.FirefoxDriverConnector;
 import com.kms.katalon.execution.webui.driver.FirefoxHeadlessDriverConnector;
 import com.kms.katalon.execution.webui.driver.HeadlessDriverConnector;
 import com.kms.katalon.execution.webui.driver.IEDriverConnector;
-import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.execution.webui.driver.SafariDriverConnector;
 
 public class WebUIDriverConnectorContributor implements IDriverConnectorContributor {
 
-    @Override
-    public IDriverConnector[] getDriverConnector(String configFolderPath) throws IOException {
-        return new IDriverConnector[] { new ChromeDriverConnector(configFolderPath),
-                new EdgeDriverConnector(configFolderPath), new FirefoxDriverConnector(configFolderPath),
-                new IEDriverConnector(configFolderPath), new RemoteWebDriverConnector(configFolderPath),
-                new SafariDriverConnector(configFolderPath), new HeadlessDriverConnector(configFolderPath),
-                new FirefoxHeadlessDriverConnector(configFolderPath) };
-    }
+	@Override
+	public IDriverConnector[] getDriverConnector(String configFolderPath) throws IOException {
+		return new IDriverConnector[] { new ChromeDriverConnector(configFolderPath),
+				new EdgeDriverConnector(configFolderPath), new FirefoxDriverConnector(configFolderPath),
+				new IEDriverConnector(configFolderPath), new SafariDriverConnector(configFolderPath),
+				new HeadlessDriverConnector(configFolderPath), new FirefoxHeadlessDriverConnector(configFolderPath) };
+	}
 
-    @Override
-    public String getName() {
-        return DriverFactory.WEB_UI_DRIVER_PROPERTY;
-    }
+	@Override
+	public String getName() {
+		return DriverFactory.WEB_UI_DRIVER_PROPERTY;
+	}
 }

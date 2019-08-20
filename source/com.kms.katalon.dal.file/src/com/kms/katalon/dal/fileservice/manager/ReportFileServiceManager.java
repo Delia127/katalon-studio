@@ -26,6 +26,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class ReportFileServiceManager {
@@ -47,13 +48,23 @@ public class ReportFileServiceManager {
         folder.mkdirs();
     }
 
-    public static String getReportFolderOfTestSuite(ProjectEntity project, TestSuiteEntity testSuite) throws Exception {
+    public static String getReportFolderOfTestSuite(ProjectEntity project, TestSuiteEntity testSuite, String executionSessionId) throws Exception {
         ITestSuiteDataProvider testSuiteProvider = new FileServiceDataProviderSetting().getTestSuiteDataProvider();
         String testSuiteIdWithoutRoot = testSuiteProvider.getIdForDisplay(testSuite)
                 .substring(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME.length() + 1);
         String reportRootFolderPath = FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation());
 
-        return reportRootFolderPath + File.separator + testSuiteIdWithoutRoot;
+        return reportRootFolderPath + File.separator + executionSessionId + File.separator + testSuiteIdWithoutRoot;
+    }
+    
+    public static String getReportFolderOfTestSuiteCollection(ProjectEntity project, TestSuiteCollectionEntity testSuiteCollection) throws Exception {
+        ITestSuiteDataProvider testSuiteProvider = new FileServiceDataProviderSetting().getTestSuiteDataProvider();
+        String testSuiteCollectionIdWithoutRoot = testSuiteProvider.getTestSuiteCollectionIdForDisplay(testSuiteCollection)
+                .substring(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME.length() + 1);
+        String reportRootFolderPath = FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation());
+        
+        return reportRootFolderPath + File.separator + testSuiteCollectionIdWithoutRoot;
+        
     }
 
     public static void deleteReport(ReportEntity report) throws Exception {
@@ -77,6 +88,24 @@ public class ReportFileServiceManager {
         if (entity != null && entity instanceof ReportEntity) {
             return (ReportEntity) entity;
         }
+        return null;
+    }
+    
+    public static ReportCollectionEntity getReportCollectionEntity(String path) throws Exception {
+        File reportFolder = new File(path);
+        File reportCollectionFile = new File(reportFolder,
+                reportFolder.getName() + FileServiceConstant.REPORT_COLLECTION_FILE_EXTENSION);
+        if (reportCollectionFile.exists()) {
+            FileEntity entity = EntityService.getInstance().loadEntityFromFile(reportCollectionFile.getAbsolutePath());
+            entity.setParentFolder(FolderFileServiceManager.getFolder(reportCollectionFile.getParent()));
+            entity.setProject(DataProviderState.getInstance().getCurrentProject());
+            entity.setName(FilenameUtils.getBaseName(path));
+    
+            if (entity != null && entity instanceof ReportCollectionEntity) {
+                return (ReportCollectionEntity) entity;
+            }
+        }
+
         return null;
     }
 
