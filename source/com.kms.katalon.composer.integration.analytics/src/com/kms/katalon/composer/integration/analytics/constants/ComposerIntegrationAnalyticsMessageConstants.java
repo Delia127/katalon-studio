@@ -6,10 +6,14 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.integration.analytics.constants.composerIntegrationAnalyticsMessages"; //$NON-NLS-1$
 
     public static String BTN_CONNECT;
+    
+    public static String BTN_UPLOAD;
 
     public static String WARN_MSG_NO_PROJECT;
 
     public static String LBL_AUTHENTICATE_GROUP;
+    
+    public static String LBL_CODE_REPO_NAME;
 
     public static String LBL_DLG_AUTHENTICATE_PASSWORD;
 
@@ -38,10 +42,16 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String MSG_DLG_PRG_RETRIEVING_PROJECTS;
 
     public static String MSG_DLG_PRG_SUCCESSFULLY;
+    
+    public static String MSG_DLG_PRG_TITLE_UPLOAD_CODE;
+    
+    public static String MSG_DLG_PRG_GETTING_UPLOAD_CODE;
 
     public static String MSG_INFO_DLG_AUTHENTICATE_ENTER_EMAIL_PASSWORD;
 
     public static String TITLE_DLG_AUTHENTICATE;
+    
+    public static String TITLE_DLG_QUICK_ANALYTICS_INTEGRATION;
 
     public static String LBL_NEW_PROJECT;
 
@@ -64,6 +74,16 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String LBL_TEST_RESULT_ATTACH_LOG;
 
     public static String LBL_TEST_RESULT_ATTACH_CAPTURED_VIDEO;
+    
+    public static String LBL_QUICK_TITLE_ANALYTICS_INTEGRATION;
+    
+    public static String LBL_QUICK_ANALYTICS_INTEGRATION_RECOMMEND;
+    
+    public static String LBL_QUICK_ANALYTICS_INTEGRATION_UPLOAD;
+    
+    public static String LBL_QUICK_ANALYTICS_INTEGRATION_TO_CONFIG;
+    
+    public static String LBL_QUICK_ANALYTICS_INTEGRATION_AUTO_SUBMIT;
 
     public static String DIA_TITLE_CREATE_NEW_PROJECT;
 
@@ -72,6 +92,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String MSG_DLG_PRG_RETRIEVING_TEAMS;
 
     public static String MSG_DLG_PRG_GETTING_TEAMS;
+    
+    public static String MSG_DLG_PRG_PREMISSTION_CREATE_PROJECT;
     
     public static String REPORT_MSG_UPLOADING_TO_ANALYTICS;
     
@@ -84,8 +106,30 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION;
     
     public static String REPORT_MSG_MUST_CONNECT_SUCCESSFULLY;
+    
+    public static String REPORT_MSG_MUST_SET_TEAM;
+    
+    public static String REPORT_MSG_MUST_SET_PROJECT;
 
     public static String MSG_REQUEST_TOKEN_ERROR;
+    
+    public static String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
+  
+    public static String STORE_CODE_COMPRESSING_PROJECT;
+    
+    public static String STORE_CODE_REQUEST_SERVER;
+    
+    public static String STORE_CODE_GET_TEAM_PROJECT;
+    
+    public static String STORE_CODE_UPLOAD;
+    
+    public static String STORE_CODE_OPEN_BROWSER;
+    
+    public static String STORE_CODE_ERROR_COMPRESS;
+    
+    public static String STORE_CODE_ERROR_NO_FILE_NAME;
+    
+    public static String STORE_CODE_ERROR_NO_NAME;
     
     static {
         // initialize resource bundle

@@ -297,7 +297,17 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_CHK_FOR_FAILED_TEST_CASES = ComposerExecutionMessageConstants.DIA_CHK_FOR_FAILED_TEST_CASES;
     
-    public static final String DIA_LBL_KSTORE_API_KEY_USAGE = ComposerExecutionMessageConstants.KSTORE_API_KEY_USAGE;
+    public static final String DIA_LBL_API_KEY_USAGE = ComposerExecutionMessageConstants.API_KEY_USAGE;
+    
+    public static final String DIA_API_KEY = ComposerExecutionMessageConstants.DIA_API_KEY;
+    
+    public static final String DIA_ANALYTICS_PROJECT = ComposerExecutionMessageConstants.DIA_ANALYTICS_PROJECT;
+    
+    public static final String DIA_TITLE_TEAM = ComposerExecutionMessageConstants.DIA_TITLE_TEAM;
+    
+    public static final String DIA_TITLE_PROJECT = ComposerExecutionMessageConstants.DIA_TITLE_PROJECT;
+    
+    public static final String VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT = ComposerExecutionMessageConstants.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT;
 
     // TestSuiteSelectionDialog
     public static final String DIA_TITLE_TEST_SUITE_BROWSER = ComposerExecutionMessageConstants.DIA_TITLE_TEST_SUITE_BROWSER;
@@ -315,4 +325,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES = ComposerExecutionMessageConstants.DIA_MSG_SEND_EMAIL_REPORT_FOR_ALL_CASES;
 
     public static final String DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE = ComposerExecutionMessageConstants.DIA_TITLE_UNABLE_TO_OPEN_HAR_FILE;
+    
+    public static final String REPORT_MSG_MUST_ENTER_API_KEY = ComposerExecutionMessageConstants.REPORT_MSG_MUST_ENTER_API_KEY;
 }

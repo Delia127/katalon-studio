@@ -35,6 +35,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -85,6 +86,8 @@ import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.tracking.service.Trackings;
@@ -110,6 +113,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Text txtRetry;
 
     private Text txtStatusDelay;
+    
+    private Text txtAPIKey;
 
     private Button btnBrowseTestSuite;
 
@@ -118,6 +123,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private Button chkKeepConsoleLog;
 
     private Button chkRetryFailedTestCase;
+    
+    private Button chkAPIKey;
 
     private ProjectEntity project;
 
@@ -146,6 +153,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY = DefaultRerunSetting.RETRY_OPTION;
 
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
+    
+    private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
 
     private Group grpPlatform;
 
@@ -166,6 +175,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private CLabel lblProfileName;
 
     private Button btnChangeProfile;
+    
+    private AnalyticsSettingStore analyticsSettingStore;
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
@@ -195,6 +206,9 @@ public class GenerateCommandDialog extends AbstractDialog {
         createTestSuitePart(main);
         createPlatformPart(main);
         createOptionsPart(main);
+        getConfigurationAnalytics();
+        changeEnabled();
+        
         return main;
     }
 
@@ -387,15 +401,28 @@ public class GenerateCommandDialog extends AbstractDialog {
         Label lblSeconds = new Label(grpOptionsContainer, SWT.NONE);
         lblSeconds.setText(StringConstants.DIA_LBL_SECONDS);
         
+        chkAPIKey = new Button(grpOptionsContainer, SWT.CHECK);
+        chkAPIKey.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        chkAPIKey.setText(StringConstants.DIA_API_KEY);
+        
+        txtAPIKey = new Text(grpOptionsContainer, SWT.BORDER);
+        GridData gdTxtAPIKey = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 3, 1);
+        gdTxtAPIKey.widthHint = 600;
+        txtAPIKey.setLayoutData(gdTxtAPIKey);
+        
         Composite pluginOptionsComposite = new Composite(grpOptionsContainer, SWT.NONE);
         pluginOptionsComposite.setLayout(new GridLayout(2, false));
         pluginOptionsComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
         
-        Label lblKStoreApiKeyUsage = new Label(pluginOptionsComposite, SWT.NONE);
-        ControlUtils.setFontStyle(lblKStoreApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
-        lblKStoreApiKeyUsage.setText(StringConstants.DIA_LBL_KSTORE_API_KEY_USAGE);
-        
+        Label lblApiKeyUsage = new Label(pluginOptionsComposite, SWT.NONE);
+        ControlUtils.setFontStyle(lblApiKeyUsage, SWT.BOLD | SWT.ITALIC, -1);
+        lblApiKeyUsage.setText(StringConstants.DIA_LBL_API_KEY_USAGE);
+
         new HelpComposite(pluginOptionsComposite, DocumentationMessageConstants.KSTORE_API_KEYS_USAGE);
+    }
+    
+    private void changeEnabled() {
+    	txtAPIKey.setEnabled(chkAPIKey.getSelection());
     }
 
     @Override
@@ -606,6 +633,13 @@ public class GenerateCommandDialog extends AbstractDialog {
                 }
             }
         });
+                
+        chkAPIKey.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                changeEnabled();
+            }
+        });
     }
 
     private void onRunConfigurationDataChanged() {
@@ -790,6 +824,13 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void generateCommandPressed() {
         try {
+        	if (chkAPIKey.getSelection() && StringUtils.isEmpty(txtAPIKey.getText())) {
+                MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                        ComposerAnalyticsStringConstants.ERROR,
+                        StringConstants.REPORT_MSG_MUST_ENTER_API_KEY);
+                return;
+            }
+        	
             GeneratedCommandDialog generatedCommandDialog = new GeneratedCommandDialog(getShell(), generateCommand());
             generatedCommandDialog.open();
 
@@ -877,7 +918,10 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
         } else {
             args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
-            return args;
+        }
+        
+        if (chkAPIKey.getSelection()) {
+        	args.put(ARG_API_KEY, wrapArgumentValue(txtAPIKey.getText()));
         }
 
         return args;
@@ -1034,7 +1078,19 @@ public class GenerateCommandDialog extends AbstractDialog {
             LoggerSingleton.logError(e);
         }
     }
+    
+    private void getConfigurationAnalytics() {
+        analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
+        try {
+            boolean enableApiKey = analyticsSettingStore.isIntegrationEnabled() && analyticsSettingStore.isAutoSubmit();
+            chkAPIKey.setSelection(enableApiKey);
+
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+    
     private RunConfigurationDescription getStoredConfigurationDescription() {
         ScopedPreferenceStore prefs = getPreference();
         String runConfigAsJson = prefs

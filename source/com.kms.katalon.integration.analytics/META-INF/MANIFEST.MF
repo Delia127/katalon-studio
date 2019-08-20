@@ -29,15 +29,24 @@ Require-Bundle: com.kms.katalon.core,
  com.google.guava,
  com.kms.katalon.util,
  com.kms.katalon.composer.components,
- com.kms.katalon.constant
+ com.kms.katalon.constant,
+ com.kms.katalon.application,
+ org.apache.commons.lang,
+ com.kms.katalon.composer.components.impl,
+ org.eclipse.e4.core.di,
+ org.eclipse.e4.core.services,
+ org.eclipse.e4.ui.di,
+ org.eclipse.e4.ui.services,
+ org.apache.commons.io
 Export-Package: com.kms.katalon.integration.analytics,
+ com.kms.katalon.integration.analytics.configuration,
  com.kms.katalon.integration.analytics.constants,
  com.kms.katalon.integration.analytics.entity,
  com.kms.katalon.integration.analytics.exceptions,
+ com.kms.katalon.integration.analytics.handler,
  com.kms.katalon.integration.analytics.preferences,
  com.kms.katalon.integration.analytics.providers,
  com.kms.katalon.integration.analytics.report,
  com.kms.katalon.integration.analytics.setting,
  com.kms.katalon.integration.analytics.util
 Bundle-ActivationPolicy: lazy
-Import-Package: com.kms.katalon.custom.contribution

@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
@@ -36,6 +37,7 @@ import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KStoreProduct;
+import com.kms.katalon.plugin.models.KStoreProductID;
 import com.kms.katalon.plugin.models.KatalonStoreToken;
 import com.kms.katalon.plugin.util.KStoreTokenService;
 
@@ -83,6 +85,33 @@ public class KStoreRestClient {
         return plugins.get();
     }
     
+    public List<KStoreProduct> getRecommendPlugins() throws KStoreClientException {
+        AtomicReference<List<KStoreProduct>> products = new AtomicReference<>();
+        try {
+            executeGetRequest(getKSRecommendPlugins(), credentials, response -> {
+                try {
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null) {
+                        String responseContent = EntityUtils.toString(response.getEntity());
+                        //LogService.getInstance().logInfo("Latest plugins responses: " + responseContent);
+                        responseContent = responseContent.replace("{}", "null");
+                        //LogService.getInstance().logInfo("Katalon version: " + appVersion);
+                        //LogService.getInstance().logInfo("Plugin info URL: " + getKSRecommendPlugins());
+                        products.set(parseProductListJson(responseContent));
+                    } else {
+                        throw new KStoreClientException("Failed to get latest plugin. No content returned from server.");
+                    }
+                } catch (Exception e) {
+                    propagateIfInstanceOf(e, KStoreClientException.class);
+                    throw new KStoreClientException("Unexpected error occurs during executing get latest plugins", e);
+                }
+            });
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during executing get latest plugins", e);
+        }
+        return products.get() ;
+    }
     private List<KStorePlugin> parsePluginListJson(String json) 
             throws ParseException {
         Gson gson = new GsonBuilder()
@@ -92,6 +121,14 @@ public class KStoreRestClient {
         return gson.fromJson(json, listType);
     }
     
+    private List<KStoreProduct> parseProductListJson(String json) 
+            throws ParseException {
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
+        Type listType = new TypeToken<List<KStoreProduct>>() {}.getType();
+        return gson.fromJson(json, listType);
+    }
     public void downloadPlugin(long productId, File downloadFile, String pluginVersion) throws KStoreClientException {
         try {
             executeGetRequest(getPluginDownloadAPIUrl(productId, pluginVersion), credentials, response -> {
@@ -153,6 +190,33 @@ public class KStoreRestClient {
             propagateIfInstanceOf(e, KStoreClientException.class);
             throw new KStoreClientException("Unexpected error occurs during executing authenticate", e);
         }
+    }
+    
+    public void postRecommended(List<Long> productsID) throws KStoreClientException {
+        try {
+            HttpPost post = new HttpPost(postAPIProduct());
+            addAuthenticationHeaders(credentials, post);
+            KStoreProductID ks = new KStoreProductID(productsID);
+            String content = JsonUtil.toJson(ks);
+            StringEntity requestEntity = new StringEntity(content);
+            post.setEntity(requestEntity);
+            post.setHeader("Accept", "application/json");
+            post.setHeader("Content-type", "application/json");
+
+            try (CloseableHttpClient client = getHttpClient(); CloseableHttpResponse response = client.execute(post);) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode == HttpStatus.SC_OK) {
+                    LoggerSingleton.logInfo("Successful");
+                } else {
+                    throw new KStoreClientException(String.format("Invalid Request. Status Code: %d. Message: %s",
+                            response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                }
+            }
+        } catch (Exception e) {
+            propagateIfInstanceOf(e, KStoreClientException.class);
+            throw new KStoreClientException("Unexpected error occurs during executing authenticate", e);
+        }
+
     }
 
     public void goToSearchPluginPage() throws KStoreClientException {
@@ -294,6 +358,10 @@ public class KStoreRestClient {
         return getKatalonStoreUrl() + "/settings?token=" + token;
     }
     
+    public String postAPIProduct() {
+        return getKatalonStoreAPIUrl() + "/products/ks/recommended-plugins/install";
+    }
+    
     private String getProductReviewPageUrl(KStoreProduct product, String token) {
         return getProductPageUrl(product, token) + "#rating-content";
     }
@@ -312,6 +380,10 @@ public class KStoreRestClient {
     
     private String getPluginsAPIUrl(String appVersion) {
         return getKatalonStoreAPIUrl() + "/products/ks?appVersion=" + appVersion;
+    }
+    
+    private String getKSRecommendPlugins() {
+        return getKatalonStoreAPIUrl() + "/products/ks/recommended";
     }
     
     private String getPluginDownloadAPIUrl(long pluginId, String pluginVersion) {

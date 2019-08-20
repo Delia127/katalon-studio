@@ -18,13 +18,33 @@ public interface IImageKeys {
     public static final String INTRO_SCREEN_WELCOME = "intro/welcome_screen_BG.png"; //$NON-NLS-1$
 
     public static final String INTRO_SCREEN_WELCOME_SMALL = "intro/welcome_screen_BG_small.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_TITLE = "temp/title.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_WEB_TESTING = "temp/WebTesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_API_TESTING = "temp/APITesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_MOBILE_TESTING = "temp/MobileTesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING = "temp/Data-drivenTesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_BDD_TESTING = "temp/BDDTesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_SDLC_INTEGRATION = "temp/CIIntegration.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_PLUGIN_STORE = "temp/plugin.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_ADVANCED_REPORT = "temp/report.png"; //$NON-NLS-1$
+    
+    
     // End Intro
 
     // Welcome
     public static final String FAQ_34 = "welcome/faqs_34.png"; //$NON-NLS-1$
 
     public static final String USER_GUIDE_34 = "welcome/user_guide_34.png"; //$NON-NLS-1$
-    
+        
     public static final String KATALON_STORE_34 = "welcome/katalon_store_34.png"; //$NON-NLS-1$
 
     public static final String TUTORIAL_34 = "welcome/tutorial_34.png"; //$NON-NLS-1$
@@ -295,6 +315,8 @@ public interface IImageKeys {
     public static final String PROFILE_16 = "toolbar/profile_16.png";
     
     public static final String KATALON_STORE_24 = "toolbar/katalon_store_32x24.png"; //$NON-NLS-1$
+    
+    public static final String KATALON_ACCOUNT_24 = "toolbar/account_32x24.png"; //$NON-NLS-1$
     // End Toolbar
 
     // Test Case steps

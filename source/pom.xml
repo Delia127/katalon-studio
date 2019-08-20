@@ -26,9 +26,6 @@
 		<module>com.kms.katalon.composer.import</module>
 		<module>com.kms.katalon.composer.integration.analytics</module>
 		<module>com.kms.katalon.composer.integration.qtest</module>
-		<module>com.kms.katalon.composer.integration.qtest.activation</module>
-		<module>com.kms.katalon.composer.integration.jira</module>
-		<module>com.kms.katalon.composer.integration.slack</module>
 		<module>com.kms.katalon.composer.integration.git</module>
 		<module>com.kms.katalon.composer.integration.kobiton</module>
 		<module>com.kms.katalon.composer.integration.cucumber</module>
@@ -76,8 +73,6 @@
 		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
 		<module>com.kms.katalon.integration.kobiton</module>
-		<module>com.kms.katalon.integration.jira</module>
-		<module>com.kms.katalon.jasper</module>
 		<module>com.kms.katalon.logging</module>
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.util</module>
@@ -102,7 +97,7 @@
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		<platform.version>1.0.11</platform.version>
+		<platform.version>1.0.12</platform.version>
 
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
 		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>

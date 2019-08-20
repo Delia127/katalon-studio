@@ -31,16 +31,16 @@ public class ShowPluginMenuHandler {
 
     @Execute
     public void execute() {
-        MToolBar pluginToolbar = (MToolBar) modelService.find(ToolbarProcessor.KATALON_PLUGIN_TOOLBAR_ID, application);
-        MToolItem mPluginToolItem = (MToolItem) modelService.find(IdConstants.MANAGE_PLUGIN_TOOL_ITEM_ID,
-                pluginToolbar);
-        ToolItem pluginToolItem = (ToolItem) mPluginToolItem.getWidget();
-        Listener[] listeners = pluginToolItem.getListeners(SWT.Selection);
+        MToolBar accountToolbar = (MToolBar) modelService.find(ToolbarProcessor.KATALON_ACCOUNT_TOOLBAR_ID, application);
+        MToolItem mAccountToolItem = (MToolItem) modelService.find(IdConstants.MANAGE_ACCOUNT_TOOL_ITEM_ID,
+                accountToolbar);
+        ToolItem accountToolItem = (ToolItem) mAccountToolItem.getWidget();
+        Listener[] listeners = accountToolItem.getListeners(SWT.Selection);
         if (listeners.length > 0) {
             Listener listener = listeners[0];
             Event e = new Event();
             e.type = SWT.Selection;
-            e.widget = pluginToolItem;
+            e.widget = accountToolItem;
             e.detail = SWT.DROP_DOWN;
             listener.handleEvent(e);
         }

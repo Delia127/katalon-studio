@@ -26,6 +26,7 @@ import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.MessageConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 public class ActivationOfflineDialogV2 extends AbstractDialog {
@@ -49,6 +50,8 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     private Button btnActivate;
     
     private boolean navigateFromSignUp;
+    
+    private Link lnkAgreeTerm;
 
     public ActivationOfflineDialogV2(Shell parentShell, boolean navigateFromSignUp) {
         super(parentShell, false);
@@ -90,6 +93,13 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch(MessageConstants.ActivationOfflineDialogV2_ACTIVATION_URL);
+            }
+        });
+        
+        lnkAgreeTerm.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(StringConstants.AGREE_TERM_URL);
             }
         });
 
@@ -176,6 +186,9 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         lblProgressMessage = new Label(messageComposite, SWT.NONE);
         lblProgressMessage.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
+        lnkAgreeTerm = new Link(messageComposite, SWT.WRAP);
+        lnkAgreeTerm.setText(MessageConstants.ActivationDialogV2_LBL_AGREE_TERM);
+        
         return container;
     }
 

@@ -391,6 +391,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 if (scriptNode == null) {
                     scriptNode = new ScriptNodeWrapper();
                 }
+            	childTestCasePart.loadASTNodesToTreeTable(scriptNode);
             }
             propertiesPart.loadInput();
             isInitialized = true;

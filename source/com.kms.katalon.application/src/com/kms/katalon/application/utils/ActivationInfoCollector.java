@@ -8,7 +8,6 @@ import java.util.Objects;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
-
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
@@ -45,11 +44,37 @@ public class ActivationInfoCollector {
             }
 
             int activatedHashVal = Integer.parseInt(activateParts[1]);
-            return activatedHashVal == getHostNameHashValue();
+            return (activatedHashVal == getHostNameHashValue()) && isActivatedByAccount();
         } catch (Exception ex) {
             LogUtil.logError(ex);
             return false;
         }
+    }
+
+    private static boolean isActivatedByAccount() {
+        String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+
+        StringBuilder errorMessage = new StringBuilder();
+        try {
+            if (StringUtils.isBlank(username)) {
+                return false;
+            }
+
+            String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+            boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
+            if (result) {
+                return true;
+            }
+            if (!StringUtils.isBlank(activationCode)) {
+                return true;
+            }
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
+        }
+        
+        return false;
     }
 
     private static int getHostNameHashValue() throws Exception {
@@ -119,7 +144,7 @@ public class ActivationInfoCollector {
 
         return activatedResult;
     }
-    
+
     public static boolean activate(String activationCode, StringBuilder errorMessage) {
         try {
             String checkCode = activationCode.substring(0, 2);
@@ -148,7 +173,7 @@ public class ActivationInfoCollector {
         String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
     }
-    
+
     private static void markActivated(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
@@ -163,10 +188,10 @@ public class ActivationInfoCollector {
     }
 
     public static void markActivatedViaUpgradation(String versionNumber) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME, 
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME,
                 getVersionNo(versionNumber), true);
     }
-    
+
     private static String getVersionNo(String versionNumber) {
         if (versionNumber == null) {
             return versionNumber;

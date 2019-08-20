@@ -245,8 +245,7 @@ public class RecordHandler {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE,
-                            SubMonitor.UNKNOWN);
+                    monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE, SubMonitor.UNKNOWN);
 
                     addRecordedElements(recordedElements, folderSelectionResult, monitor);
                     sync.syncExec(new Runnable() {

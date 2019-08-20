@@ -5,12 +5,15 @@ import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsSettingStoreConstants;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.util.CryptoUtil;
 
 public class AnalyticsSettingStore extends BundleSettingStore {
 
@@ -37,23 +40,26 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getEmail(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, StringUtils.EMPTY,
-                encryptionEnabled);
+        // return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, StringUtils.EMPTY,
+        // encryptionEnabled);
+        return ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
     }
 
     public void setEmail(String email, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, email, encryptionEnabled);
+        // setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, email, encryptionEnabled);
     }
 
     public String getPassword(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, StringUtils.EMPTY,
-                encryptionEnabled);
+        // return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, StringUtils.EMPTY,
+        // encryptionEnabled);
+        String passwordDecode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        return CryptoUtil.decode(CryptoUtil.getDefault(passwordDecode));
     }
 
     public void setPassword(String rawPassword, boolean encryptionEnabled)
             throws IOException, GeneralSecurityException {
-        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, rawPassword,
-                encryptionEnabled);
+        // setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, rawPassword,
+        // encryptionEnabled);
     }
 
     public boolean isEncryptionEnabled() throws IOException {
@@ -65,16 +71,17 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public AnalyticsProject getProject() throws IOException {
-        AnalyticsProject project = new AnalyticsProject();
         String projectJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_PROJECT, StringUtils.EMPTY);
-        if (StringUtils.isNotBlank(projectJson)) {
+        if (StringUtils.isNotBlank(projectJson) || !StringUtils.contains(projectJson, "null")) {
             try {
+            	AnalyticsProject project = new AnalyticsProject();
                 project = JsonUtil.fromJson(projectJson, AnalyticsProject.class);
+                return project;
             } catch (IllegalArgumentException e) {
                 // do nothing
             }
         }
-        return project;
+        return null;
     }
 
     public void setProject(AnalyticsProject project) throws IOException {
@@ -82,16 +89,17 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public AnalyticsTeam getTeam() throws IOException {
-        AnalyticsTeam team = new AnalyticsTeam();
         String teamJson = getString(AnalyticsSettingStoreConstants.ANALYTICS_TEAM, StringUtils.EMPTY);
         if (StringUtils.isNotBlank(teamJson)) {
             try {
+            	AnalyticsTeam team = new AnalyticsTeam();
                 team = JsonUtil.fromJson(teamJson, AnalyticsTeam.class);
+                return team;
             } catch (IllegalArgumentException e) {
                 // do nothing
             }
         }
-        return team;
+        return null;
     }
 
     public void setTeam(AnalyticsTeam team) throws IOException {

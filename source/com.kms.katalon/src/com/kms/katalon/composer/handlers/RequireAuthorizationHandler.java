@@ -21,7 +21,7 @@ public abstract class RequireAuthorizationHandler {
 
     private static PluginPreferenceStore store = new PluginPreferenceStore();
 
-    public KStoreUsernamePasswordCredentials getUsernamePasswordCredentials() throws KStoreClientAuthException {
+    public static KStoreUsernamePasswordCredentials getUsernamePasswordCredentials() throws KStoreClientAuthException {
         try {
             String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
             String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);

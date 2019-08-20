@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.osgi.framework.BundleException;
 
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -32,6 +31,7 @@ import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
+import com.kms.katalon.plugin.models.KStoreProduct;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResolutionItem;
@@ -194,16 +194,20 @@ public class PluginService {
             throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins", e);
         }
     }
-
-    private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientExceptionWithInfo {
+    private List<KStorePlugin> fetchLatestPlugins(KStoreCredentials credentials) throws KStoreClientException {
         KStoreRestClient restClient = new KStoreRestClient(credentials);
         String appVersion = VersionUtil.getCurrentVersion().getVersion();
-        List<KStorePlugin> latestPlugins = restClient.getLatestPlugins(appVersion);
+        List<KStorePlugin> latestPlugins = null;
+        try {
+            latestPlugins = restClient.getLatestPlugins(appVersion);
+        } catch (KStoreClientExceptionWithInfo e) {
+            LoggerSingleton.logError(e);
+        }
         latestPlugins.stream().forEach(p -> logPluginInfo(p));
         return latestPlugins;
     }
     
-    private void logPluginInfo(KStorePlugin plugin) {
+    public void logPluginInfo(KStorePlugin plugin) {
         try {
             Map<String, Object> infoMap = new HashMap<>(); 
             infoMap.put("id", plugin.getId());
@@ -218,6 +222,20 @@ public class PluginService {
         } catch (Exception ignored) {}
     }
     
+    public void logPluginProductInfo(KStoreProduct plugin) {
+        try {
+            Map<String, Object> infoMap = new HashMap<>();
+            infoMap.put("id", plugin.getId());
+            infoMap.put("productId", plugin.getId());
+            infoMap.put("name", plugin.getName());
+            if (ApplicationRunningMode.get() == RunningMode.GUI) {
+                LoggerSingleton.logInfo("Plugin info: " + JsonUtil.toJson(infoMap));
+            } else {
+                LogUtil.printOutputLine("Plugin info: " + JsonUtil.toJson(infoMap));
+            }
+        } catch (Exception ignored) {}
+    }
+
     private void refreshProjectClasspath(SubMonitor monitor) throws Exception {
         ProjectController projectController = ProjectController.getInstance();
         ProjectEntity currentProject = projectController.getCurrentProject();

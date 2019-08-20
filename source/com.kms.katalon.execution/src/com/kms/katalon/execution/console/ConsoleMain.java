@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptio
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
+import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
@@ -69,11 +71,13 @@ public class ConsoleMain {
 
     public final static String TESTSUITE_QUERY = "testSuiteQuery";
 
-    public static final String KATALON_STORE_API_KEY_OPTION = "apiKey";
+    public static final String KATALON_API_KEY_OPTION = "apiKey";
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
+    
+    public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
 
     private ConsoleMain() {
         // hide constructor
@@ -98,9 +102,8 @@ public class ConsoleMain {
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
             String apiKeyValue = null;
-            
-            if (options.has(KATALON_STORE_API_KEY_OPTION)) {
-                apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_OPTION));
+            if (options.has(KATALON_API_KEY_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
             }
             
             if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
@@ -108,6 +111,7 @@ public class ConsoleMain {
             }
             
             if (apiKeyValue != null) {
+                ApiKeyHandler.setApiKeyToProject(apiKeyValue);
                 reloadPlugins(apiKeyValue);
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
@@ -121,13 +125,15 @@ public class ConsoleMain {
                     .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
+            
+            installBasicReportPluginIfNotAvailable();
 
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
                 addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
             }
-
+            
             // Set option value to application configuration
             for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
                 String optionName = opt.getOption();
@@ -153,6 +159,7 @@ public class ConsoleMain {
             waitForExecutionToFinish(options);
 
             List<ILauncher> consoleLaunchers = LauncherManager.getInstance().getSortedLaunchers();
+            
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
@@ -165,7 +172,7 @@ public class ConsoleMain {
             LauncherManager.getInstance().removeAllTerminated();
         }
     }
-
+    
     private static void reloadPlugins(String apiKey) throws Exception {
         Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
         Class<?> reloadPluginsHandlerClass = katalonBundle
@@ -177,6 +184,17 @@ public class ConsoleMain {
                 .orElse(null);
         if (reloadMethod != null) {
             reloadMethod.invoke(handler, apiKey);
+        }
+    }
+    
+    private static void installBasicReportPluginIfNotAvailable() throws Exception {
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
+        Class<?> installBasicReportPluginHandlerClass = katalonBundle
+                .loadClass("com.kms.katalon.composer.handlers.InstallBasicReportPluginHandler");
+        Object handler = installBasicReportPluginHandlerClass.newInstance();
+        Method method = installBasicReportPluginHandlerClass.getMethod("installIfNotAvailable");
+        if (method != null) {
+            method.invoke(handler);
         }
     }
 

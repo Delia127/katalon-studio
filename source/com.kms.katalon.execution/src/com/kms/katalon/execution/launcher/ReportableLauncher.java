@@ -33,6 +33,7 @@ import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
+import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
@@ -40,6 +41,7 @@ import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.IExecutedEntity;
+import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.Reportable;
 import com.kms.katalon.execution.entity.Rerunable;
@@ -79,9 +81,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         startTime = new Date();
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
-
     @Override
-    protected void preExecutionComplete() {
+    protected void preExecutionComplete(boolean runTestSuite) {
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
@@ -95,8 +96,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT);
 
             TestSuiteLogRecord suiteLogRecord = prepareReport();
-
-            uploadReportToIntegratingProduct(suiteLogRecord);
+            
+            if (runTestSuite) {
+            	ReportFolder reportFolder = new ReportFolder(suiteLogRecord.getLogFolder());
+            	uploadReportToIntegratingProduct(reportFolder);
+            }
 
             sendReport(suiteLogRecord);
 
@@ -141,6 +145,18 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 LogUtil.logError(e);
             }
         }
+    }
+    
+    protected void uploadReportTestSuiteCollection(List<ReportItemDescription> reports, String reportCollectionFile) {
+    	String projectFolder = reportEntity.getProject().getFolderLocation();
+    	List<String> paths = new ArrayList<>();
+    	for (ReportItemDescription reportItemDescription : reports) {
+            String path = projectFolder + File.separator + reportItemDescription.getReportLocation();
+            paths.add(path);
+        }
+    	paths.add(reportCollectionFile);
+    	ReportFolder reportFolder = new ReportFolder(paths);
+    	uploadReportToIntegratingProduct(reportFolder);
     }
 
     private boolean needToRerun() {
@@ -282,7 +298,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    protected void uploadReportToIntegratingProduct(TestSuiteLogRecord suiteLog) {
+    protected void uploadReportToIntegratingProduct(ReportFolder reportFolder) {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -300,9 +316,11 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
-
-                reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), suiteLog);
-
+                if (reportFolder.isRunTestSuite()) {
+                    reportContributorEntry.getValue().uploadTestSuiteResult(getTestSuite(), reportFolder);
+                } else {
+                    reportContributorEntry.getValue().uploadTestSuiteCollectionResult(reportFolder);
+                }
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,

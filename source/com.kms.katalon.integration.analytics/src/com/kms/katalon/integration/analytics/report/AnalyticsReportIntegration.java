@@ -8,6 +8,7 @@ import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.entity.IExecutedEntity;
+import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
@@ -42,8 +43,13 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
     }
 
     @Override
-    public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {
-        reportService.upload(suiteLog.getLogFolder());
+    public void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception {
+        reportService.upload(reportFolder);
+    }
+    
+    @Override
+    public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
+    	reportService.upload(reportFolder);
     }
     
     @Override
@@ -64,7 +70,7 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
 					if (result.getTestStatusValue() != null) {
 						testRun.setStatus(result.getTestStatusValue().name());
 					}
-					testRun.setTestSuiteId(executedEntity.getSourceName());
+					testRun.setTestSuiteId(executedEntity.getSourceId());
 					testRun.setEnd(result.isEnd());
 					reportService.updateExecutionProccess(testRun);
 				} else if (executedEntity instanceof TestSuiteCollectionExecutedEntity) {
@@ -79,4 +85,9 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
 		}
     }
 
+	@Override
+	public void uploadTestSuiteResult(TestSuiteEntity testSuite, TestSuiteLogRecord suiteLog) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
