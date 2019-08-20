@@ -159,6 +159,7 @@ public class AnalyticsReportService implements AnalyticsComponent {
                 addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachLog(), AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
                 addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachCapturedVideos(), AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
                 addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_RP_FILE_EXTENSION_PATTERN));
+                addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_BASIC_REPORT_FILE_EXTENSION_PATTERN));
                 addToList(files, scanHarFiles(path));
             } catch (IOException e) {
                 LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
