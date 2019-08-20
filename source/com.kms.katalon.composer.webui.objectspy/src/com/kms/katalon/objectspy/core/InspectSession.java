@@ -12,12 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -282,27 +278,21 @@ public class InspectSession implements Runnable {
 
     protected DesiredCapabilities createChromDriverOptions(DesiredCapabilities capabilities)
             throws IOException, ExtensionNotFoundException {
-        File chromeExtensionFolder = getRecordSpyExtensionFile();
-        if (chromeExtensionFolder == null || !chromeExtensionFolder.isDirectory() || !chromeExtensionFolder.exists()) {
+        File chromeRecordSpyExtensionFolder = getRecordSpyExtensionFile();
+        if (chromeRecordSpyExtensionFolder == null || !chromeRecordSpyExtensionFolder.isDirectory()
+                || !chromeRecordSpyExtensionFolder.exists()) {
             throw new ExtensionNotFoundException(getChromeRecordSpyExtensionPath(), WebUIDriverType.CHROME_DRIVER);
         }
-        generateVariableInitFileForChrome(chromeExtensionFolder);
+        File chromeSmartWaitExtensionFolder = getSmartWaitExtensionFile();
+        if (chromeSmartWaitExtensionFolder == null || !chromeSmartWaitExtensionFolder.isDirectory()
+                || !chromeSmartWaitExtensionFolder.exists()) {
+            throw new ExtensionNotFoundException(getChromeSmartWaitExtensionPath(), WebUIDriverType.CHROME_DRIVER);
+        }
+        generateVariableInitFileForChrome(chromeRecordSpyExtensionFolder);
         WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
-        // TODO - Thanh: investigate why getAbsolutePath() suddenly stops working
         WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
-                LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
-        installSmartWaitExtensionForChrome(capabilities);
-        return capabilities;
-    }
-    
-    private DesiredCapabilities installSmartWaitExtensionForChrome(DesiredCapabilities capabilities) {
-        try {
-            File chromeExtensionFolder = getSmartWaitExtensionFile();
-            System.out.println(chromeExtensionFolder.getAbsolutePath());
-            WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
-            WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
-                    LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
-        } catch (Exception e) {}
+                LOAD_EXTENSION_CHROME_PREFIX + chromeRecordSpyExtensionFolder.getCanonicalPath() + ","
+                        + chromeSmartWaitExtensionFolder.getCanonicalPath());
         return capabilities;
     }
 
@@ -389,6 +379,10 @@ public class InspectSession implements Runnable {
     protected String getChromeRecordSpyExtensionPath() {
         // return CHROME_EXTENSION_RELATIVE_PATH;
         return CHROME_RECORD_SPY_EXTENSION_RELATIVE_PATH;
+    }
+    
+    protected String getChromeSmartWaitExtensionPath() {
+        return CHROME_SMART_WAIT_EXTENSION_RELATIVE_PATH;
     }
 
     protected String getFirefoxExtensionPath() {

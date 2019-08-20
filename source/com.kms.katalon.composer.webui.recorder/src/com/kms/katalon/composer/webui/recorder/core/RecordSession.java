@@ -21,8 +21,11 @@ import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 public class RecordSession extends InspectSession {
     public static final String RECORDER_ADDON_NAME = "Recorder";
 
-    private static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
+    private static final String CHROME_RECORD_SPY_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
             + RECORDER_ADDON_NAME + File.separator + "KR";
+    
+    private static final String CHROME_SMART_WAIT_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
+            + "Smart Wait";
 
     private static final String RECORDER_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator
             + "AppData" + File.separator + "Local" + File.separator + "KMS" + File.separator + "qAutomate"
@@ -37,8 +40,12 @@ public class RecordSession extends InspectSession {
     }
 
     protected String getChromeRecordSpyExtensionPath() {
-    	return CHROME_EXTENSION_RELATIVE_PATH;
+    	return CHROME_RECORD_SPY_EXTENSION_RELATIVE_PATH;
     }     
+    
+    protected String getChromeSmartWaitExtensionPath() {
+        return CHROME_SMART_WAIT_EXTENSION_RELATIVE_PATH;
+    }
     
     @Override
     protected File getRecordSpyExtensionFile() throws IOException {
