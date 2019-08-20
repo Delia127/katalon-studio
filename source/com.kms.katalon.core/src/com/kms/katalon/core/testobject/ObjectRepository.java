@@ -375,7 +375,7 @@ public class ObjectRepository {
             
         try {
             ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
-            variables.put("GlobalVariable", scriptEngine.runScriptWithoutLogging("internal.GlobalVariable", new Binding()));
+            mergedVariables.put("GlobalVariable", scriptEngine.runScriptWithoutLogging("internal.GlobalVariable", new Binding()));
         } catch (ClassNotFoundException | ResourceException | ScriptException | IOException e) {
         }
 
