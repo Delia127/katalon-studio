@@ -13,7 +13,7 @@ import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
-import com.kms.katalon.core.windows.keyword.helper.WindowsElementHelper
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 
 import io.appium.java_client.windows.WindowsDriver
 
@@ -38,20 +38,11 @@ public class DoubleClickKeyword extends AbstractKeyword {
 
         KeywordMain.runKeyword({
             WindowsDriver windowsDriver = WindowsDriverFactory.getWindowsDriver()
-
-            WebElement webElement = WindowsElementHelper.findElement(testObject)
-
-            if (webElement == null) {
-                throw new StepFailedException("Element: " + testObject.getObjectId() + " not found")
+            if (windowsDriver == null) {
+                KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
 
-
-            logger.logInfo('Double clicking on element: ' + testObject.getObjectId())
-
-            Actions action = new Actions(windowsDriver)
-            action.moveToElement(webElement)
-            action.doubleClick()
-            action.perform()
+            WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).doubleClick(testObject)
 
             logger.logPassed('Double click on element: ' + testObject.getObjectId() + ' succesfully')
         }, flowControl)

@@ -17,7 +17,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -41,7 +40,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -97,7 +95,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class SpyWindowsObjectDialog extends Dialog {
+public class WindowsSpyObjectDialog extends Dialog implements WindowsObjectDialog {
 
     public static final Point DIALOG_SIZE = new Point(800, 800);
 
@@ -131,13 +129,13 @@ public class SpyWindowsObjectDialog extends Dialog {
 
     private WindowsAppComposite mobileComposite;
 
-    private static SpyWindowsObjectDialog instance;
+    private static WindowsSpyObjectDialog instance;
 
     public boolean isCanceledBeforeOpening() {
         return canceledBeforeOpening;
     }
 
-    public SpyWindowsObjectDialog(Shell parentShell, WindowsAppComposite mobileComposite) {
+    public WindowsSpyObjectDialog(Shell parentShell, WindowsAppComposite mobileComposite) {
         super(parentShell);
         setShellStyle(SWT.SHELL_TRIM | SWT.CENTER);
         this.disposed = false;
@@ -376,7 +374,7 @@ public class SpyWindowsObjectDialog extends Dialog {
 
         Label lblAllObjects = new Label(allObjectsComposite, SWT.NONE);
         lblAllObjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        lblAllObjects.setFont(getFontBold(lblAllObjects));
+        ControlUtils.setFontToBeBold(lblAllObjects);
         lblAllObjects.setText(StringConstants.DIA_LBL_ALL_OBJECTS);
 
         allElementTreeViewer = new CheckboxTreeViewer(allObjectsComposite,
@@ -475,7 +473,7 @@ public class SpyWindowsObjectDialog extends Dialog {
 
         Label lblConfiguration = new Label(settingComposite, SWT.NONE);
         lblConfiguration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        lblConfiguration.setFont(getFontBold(lblConfiguration));
+        ControlUtils.setFontToBeBold(lblConfiguration);
         lblConfiguration.setText(StringConstants.DIA_LBL_CONFIGURATIONS);
 
         appsComposite = new Composite(settingComposite, SWT.NONE);
@@ -526,23 +524,6 @@ public class SpyWindowsObjectDialog extends Dialog {
         });
     }
 
-    public void updateDeviceNames() {
-        UISynchronizeService.asyncExec(() -> {
-            try {
-                mobileComposite.loadDevices();
-            } catch (InvocationTargetException exception) {
-                Throwable targetException = exception.getTargetException();
-                LoggerSingleton.logError(targetException);
-                MultiStatusErrorDialog.showErrorDialog(targetException, "Error",
-                        targetException.getClass().getSimpleName());
-            } catch (InterruptedException ignored) {
-                // ignore this
-            } finally {
-                refreshButtonsState();
-            }
-        });
-    }
-
     @Override
     public int open() {
         try {
@@ -553,11 +534,6 @@ public class SpyWindowsObjectDialog extends Dialog {
                 close();
             }
         }
-    }
-
-    private Font getFontBold(Label label) {
-        FontDescriptor boldDescriptor = FontDescriptor.createFrom(label.getFont()).setStyle(SWT.BOLD);
-        return boldDescriptor.createFont(label.getDisplay());
     }
 
     private void addElementTreeToolbar(Composite explorerComposite) {
@@ -751,6 +727,8 @@ public class SpyWindowsObjectDialog extends Dialog {
             return;
         }
         deviceView = new WindowsDeviceDialog(getParentShell(), this, calculateInitPositionForDeviceViewDialog());
+
+        deviceView.setBlockOnOpen(false);
         deviceView.open();
         setDeviceView(deviceView);
     }
@@ -917,10 +895,7 @@ public class SpyWindowsObjectDialog extends Dialog {
         };
         try {
             inspectorController.setStreamHandler(progressDlg);
-            if (!mobileComposite.startApp(inspectorController, progressDlg)) {
-                btnStart.setEnabled(true);
-                return;
-            }
+            mobileComposite.startApp(inspectorController, progressDlg);
 
             captureObjectAction();
             // If no exception, application has been successful started, enable more features
@@ -990,12 +965,6 @@ public class SpyWindowsObjectDialog extends Dialog {
     }
 
     @Override
-    protected Control createButtonBar(Composite parent) {
-        // No need bottom Button bar
-        return parent;
-    }
-
-    @Override
     public boolean close() {
         stopObjectInspectorAction();
         boolean result = super.close();
@@ -1030,7 +999,7 @@ public class SpyWindowsObjectDialog extends Dialog {
         verifyCapturedElementsStates(capturedObjectsTableViewer.getSelectedElements());
     }
 
-    public static SpyWindowsObjectDialog getInstance() {
+    public static WindowsSpyObjectDialog getInstance() {
         return instance;
     }
 

@@ -16,8 +16,8 @@ import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 
 import io.appium.java_client.windows.WindowsDriver
 
-@Action(value = "click")
-public class ClickKeyword extends AbstractKeyword {
+@Action(value = "rightClick")
+public class RightClickKeyword extends AbstractKeyword {
 
     private KeywordLogger logger = KeywordLogger.getInstance(ClickKeyword.class)
 
@@ -40,9 +40,9 @@ public class ClickKeyword extends AbstractKeyword {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
 
-            WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).click(testObject)
+            WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).rightClick(testObject)
 
-            logger.logPassed("Click on element: " + testObject.getObjectId() + " succesfully")
+            logger.logPassed("Right click on element: " + testObject.getObjectId() + " succesfully")
         }, flowControl)
     }
 }

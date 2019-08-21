@@ -113,6 +113,14 @@ public class ColorUtil {
             return ColorUtil.getWhiteBackgroundColor();
         }
     }
+    
+    public static Color getCompositeBackgroundColorForSashform() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME_DIALOG);
+        } else {
+            return ColorUtil.getDefaultBackgroundColor();
+        }
+    }
 
     public static Color getCompositeHeaderBackgroundColor() {
         return getColor(COMPOSITE_HEADER_BACKGROUND_COLOR);

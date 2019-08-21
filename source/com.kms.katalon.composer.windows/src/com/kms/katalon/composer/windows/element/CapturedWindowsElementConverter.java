@@ -13,6 +13,9 @@ public class CapturedWindowsElementConverter implements Converter<CapturedWindow
 
     @Override
     public WindowsElementEntity convert(CapturedWindowsElement capturedElement) {
+        if (capturedElement == null) {
+            return null;
+        }
         WindowsElementEntity windowsElementEntity = new WindowsElementEntity();
         windowsElementEntity.setName(capturedElement.getName());
         windowsElementEntity.setLocator(capturedElement.getLocator());
@@ -31,6 +34,9 @@ public class CapturedWindowsElementConverter implements Converter<CapturedWindow
 
     @Override
     public CapturedWindowsElement revert(WindowsElementEntity windowsElement) {
+        if (windowsElement == null) {
+            return null;
+        }
         CapturedWindowsElement capturedWindowsElement = new CapturedWindowsElement();
         capturedWindowsElement.setName(windowsElement.getName());
         capturedWindowsElement.setLocator(windowsElement.getLocator());

@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
-import com.kms.katalon.composer.windows.dialog.SpyWindowsObjectDialog;
+import com.kms.katalon.composer.windows.dialog.WindowsObjectDialog;
 import com.kms.katalon.composer.windows.element.CapturedWindowsElement;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity.LocatorStrategy;
@@ -54,7 +54,7 @@ public class WindowsElementPropertiesComposite {
 
     private TableViewer attributesTableViewer;
 
-    private SpyWindowsObjectDialog dialog;
+    private WindowsObjectDialog dialog;
 
     private Combo cbbLocatorStrategy;
 
@@ -62,7 +62,7 @@ public class WindowsElementPropertiesComposite {
 
     private static String[] strategies = WindowsElementEntity.LocatorStrategy.getStrategies();
 
-    public WindowsElementPropertiesComposite(SpyWindowsObjectDialog dialog) {
+    public WindowsElementPropertiesComposite(WindowsObjectDialog dialog) {
         this.dialog = dialog;
     }
 
@@ -71,7 +71,7 @@ public class WindowsElementPropertiesComposite {
         refreshAttributesTable();
     }
 
-    public void createObjectPropertiesComposite(Composite parent) {
+    public Composite createObjectPropertiesComposite(Composite parent) {
         Composite objectPropertiesComposite = new Composite(parent, SWT.NONE);
         GridLayout glObjectPropertiesComposite = new GridLayout(2, false);
         glObjectPropertiesComposite.horizontalSpacing = 10;
@@ -92,7 +92,7 @@ public class WindowsElementPropertiesComposite {
         txtObjectName = new Text(objectPropertiesComposite, SWT.BORDER);
         txtObjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtObjectName.setToolTipText(StringConstants.DIA_TOOLTIP_OBJECT_NAME);
-        
+
         Composite locatorComposite = new Composite(objectPropertiesComposite, SWT.NONE);
         GridLayout glLocatorComposite = new GridLayout(2, false);
         glLocatorComposite.marginWidth = 0;
@@ -126,8 +126,8 @@ public class WindowsElementPropertiesComposite {
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         attributesTableComposite.setLayout(tableColumnLayout);
 
-        attributesTableViewer = new CTableViewer(attributesTableComposite, SWT.MULTI | SWT.FULL_SELECTION
-                | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+        attributesTableViewer = new CTableViewer(attributesTableComposite,
+                SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 
         createColumns(attributesTableViewer, tableColumnLayout);
 
@@ -141,6 +141,7 @@ public class WindowsElementPropertiesComposite {
         attributesTableViewer.setInput(Collections.emptyList());
 
         registerControlModifyListeners();
+        return objectPropertiesComposite;
     }
 
     private void commitEditingName() {
@@ -158,7 +159,7 @@ public class WindowsElementPropertiesComposite {
 
     private void registerControlModifyListeners() {
         txtLocator.addModifyListener(new ModifyListener() {
-            
+
             @Override
             public void modifyText(ModifyEvent e) {
                 if (editingElement != null) {
@@ -166,7 +167,7 @@ public class WindowsElementPropertiesComposite {
                 }
             }
         });
-        
+
         cbbLocatorStrategy.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -178,7 +179,7 @@ public class WindowsElementPropertiesComposite {
         txtObjectName.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-               commitEditingName();
+                commitEditingName();
             }
         });
 
@@ -306,7 +307,8 @@ public class WindowsElementPropertiesComposite {
         if (editingElement != null) {
             txtObjectName.setText(editingElement.getName());
             txtLocator.setText(editingElement.getLocator());
-            int selectedIndex = Arrays.asList(strategies).indexOf(editingElement.getLocatorStrategy().getLocatorStrategy());
+            int selectedIndex = Arrays.asList(strategies)
+                    .indexOf(editingElement.getLocatorStrategy().getLocatorStrategy());
             cbbLocatorStrategy.select(selectedIndex);
             attributesTableViewer.setInput(new ArrayList<>(editingElement.getProperties().entrySet()));
         } else {
@@ -320,5 +322,9 @@ public class WindowsElementPropertiesComposite {
     public void focusAndEditCapturedElementName() {
         txtObjectName.setFocus();
         txtObjectName.selectAll();
+    }
+
+    public CapturedWindowsElement getEditingElement() {
+        return editingElement;
     }
 }

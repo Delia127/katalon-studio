@@ -12,7 +12,7 @@ import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
-import com.kms.katalon.core.windows.keyword.helper.WindowsElementHelper
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 
 import io.appium.java_client.windows.WindowsDriver
 
@@ -39,14 +39,8 @@ public class GetTextKeyword extends AbstractKeyword {
                 KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
             }
 
-            WebElement webElement = WindowsElementHelper.findElement(testObject)
-
-            if (webElement == null) {
-                throw new StepFailedException("Element: " + testObject.getObjectId() + " not found")
-            }
-            logger.logDebug('Getting text of test object: ' + testObject.getObjectId())
-            String text = webElement.getText()
-            logger.logPassed('Get text of test object: ' + testObject.getObjectId() + ' successfully')
+            String text = WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).getText(testObject)
+            logger.logPassed('Text of test object: ' + testObject.getObjectId() + ' is: ' + text)
             return text
         }, flowControl)
     }

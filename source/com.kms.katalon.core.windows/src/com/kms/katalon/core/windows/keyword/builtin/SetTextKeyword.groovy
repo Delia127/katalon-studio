@@ -1,7 +1,5 @@
 package com.kms.katalon.core.windows.keyword.builtin;
 
-import org.openqa.selenium.WebElement
-
 import com.kms.katalon.core.annotation.internal.Action;
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
@@ -12,7 +10,7 @@ import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.WindowsTestObject
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
-import com.kms.katalon.core.windows.keyword.helper.WindowsElementHelper
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 
 import io.appium.java_client.windows.WindowsDriver
 
@@ -40,10 +38,8 @@ public class SetTextKeyword extends AbstractKeyword {
                     KeywordMain.stepFailed("WindowsDriver has not started. Please try Windows.startApplication first.", flowControl)
                 }
 
-                WebElement windowElement = WindowsElementHelper.findElement(testObject)
-                logger.logDebug('Setting text of test object: ' + testObject.getObjectId())
-                windowElement.sendKeys(text)
-                logger.logPassed('Set text to test object: ' + testObject.getObjectId() + ' successfully')
+                WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).setText(testObject, text)
+                logger.logPassed('Text ' + text + ' is set')
             }, flowControl)
         }
 }
