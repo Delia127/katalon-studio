@@ -25,6 +25,8 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     public static final String EXECUTION_DEFAULT_CONFIGURATION_FOR_WEBSERVICE_PROJECT = "Web Service";
     
     public static final Boolean DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED = false;
+    
+    public static final Boolean DEFAULT_SMART_WAIT_MODE = true;
 
     public static ExecutionDefaultSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
@@ -162,5 +164,18 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
         } catch ( IOException e){
             return DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED;
         }
+    }
+
+    public Boolean getDefaultSmartWaitMode() {
+        try {
+            return getBoolean(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_SMART_WAIT_MODE, DEFAULT_SMART_WAIT_MODE);
+        } catch (IOException e) {
+            return DEFAULT_SMART_WAIT_MODE;
+        }
+    }
+    
+    public void setDefaultSmartWaitMode(Boolean value) throws IOException {
+        setProperty(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_SMART_WAIT_MODE,
+                value);
     }
 }

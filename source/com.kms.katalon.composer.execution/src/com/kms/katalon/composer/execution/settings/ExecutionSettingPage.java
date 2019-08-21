@@ -57,6 +57,8 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
     private Composite container;
 
     private Combo cbDefaultBrowser;
+    
+    private Combo cbDefaultSmartWait;
 
     private Text txtDefaultElementTimeout, txtDefaultPageLoadTimeout, txtActionDelay, txtDefaultIEHangTimeout;
 
@@ -117,6 +119,16 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         GridData gdCbDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdCbDefaultBrowser.widthHint = INPUT_WIDTH * 2;
         cbDefaultBrowser.setLayoutData(gdCbDefaultBrowser);
+        
+        Label lblDefaultSmartWait = new Label(comp, SWT.NONE);
+        lblDefaultSmartWait.setText("Default Smart Wait");
+        GridData gdLblDefaultSmartWait = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblDefaultSmartWait.setLayoutData(gdLblDefaultSmartWait);
+
+        cbDefaultSmartWait = new Combo(comp, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
+        GridData gdCbDefaultSmartWait = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdCbDefaultSmartWait.widthHint = INPUT_WIDTH * 2;
+        cbDefaultSmartWait.setLayoutData(gdCbDefaultSmartWait);
 
         Label lblDefaultElementTimeout = new Label(comp, SWT.NONE);
         lblDefaultElementTimeout.setText(StringConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT);
@@ -299,6 +311,11 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             cbDefaultBrowser.setItems(runConfigIdList);
             cbDefaultBrowser.select(selectedIndex);
         }
+        
+        Boolean selectedSmartWaitMode = defaultSettingStore.getDefaultSmartWaitMode();
+        cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
+        cbDefaultSmartWait.select(selectedSmartWaitMode.booleanValue() ? 0 : 1);
+        
         txtDefaultElementTimeout.setText(Integer.toString(defaultSettingStore.getElementTimeout()));
         
 		/*		
@@ -337,6 +354,10 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             cbDefaultBrowser.setItems(runConfigIdList);
             cbDefaultBrowser.select(selectedIndex);
         }
+        
+        cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
+        cbDefaultSmartWait.select(ExecutionDefaultSettingStore.DEFAULT_SMART_WAIT_MODE ? 0 : 1);
+        
         txtDefaultElementTimeout
                 .setText(Integer.toString(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_TIMEOUT_VALUE));
         chckOpenReport.setSelection(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_OPEN_REPORT_REPORT_VALUE);
@@ -377,6 +398,10 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
                     && !StringUtils.equals(cbDefaultBrowser.getText(), selectedExecutionConfiguration)) {
                 selectedExecutionConfiguration = cbDefaultBrowser.getText();
                 defaultSettingStore.setExecutionConfiguration(selectedExecutionConfiguration);
+            }
+            
+            if(cbDefaultSmartWait != null) {
+                defaultSettingStore.setDefaultSmartWaitMode(cbDefaultSmartWait.getSelectionIndex() == 0 ? Boolean.valueOf(true) : Boolean.valueOf(false));
             }
             
             /* 

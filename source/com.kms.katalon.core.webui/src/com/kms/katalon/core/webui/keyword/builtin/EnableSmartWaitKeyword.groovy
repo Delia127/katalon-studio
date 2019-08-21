@@ -35,9 +35,9 @@ class EnableSmartWaitKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public void smartWait() throws StepFailedException {
         WebUIKeywordMain.runKeyword({
-            boolean smartWaitEnabled = RunConfiguration.getExecutionProperties().getOrDefault("smartWaitEnabled", false);
+            boolean smartWaitEnabled = RunConfiguration.getExecutionProperties().get(RunConfiguration.SMART_WAIT_MODE, false);
             if (!smartWaitEnabled) {
-                RunConfiguration.getExecutionProperties().put("smartWaitEnabled", true);
+                RunConfiguration.getExecutionProperties().put(RunConfiguration.SMART_WAIT_MODE, true);
                 WebDriver currentWebDriver = DriverFactory.getWebDriver();
                 SmartWaitWebDriver smartWaitWebDriver = SmartWaitHelper.getSmartWaitWebDriver(currentWebDriver);
                 smartWaitWebDriver.register(SmartWaitHelper.getEventListener());

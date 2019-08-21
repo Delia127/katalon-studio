@@ -71,6 +71,7 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
+import com.kms.katalon.core.webui.common.internal.SmartWaitHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.firefox.CFirefoxDriver47;
@@ -213,6 +214,7 @@ public class DriverFactory {
             }
             if (webDriver != null) {
                 changeWebDriver(webDriver);
+                checkAndSwitchToSmartWaitWebDriver(webDriver);
             }
             return webDriver;
         } catch (Error e) {
@@ -329,6 +331,23 @@ public class DriverFactory {
         }
         saveWebDriverSessionData(webDriver);
         return webDriver;
+    }
+    
+    /**
+     * Check property {@link RunConfiguration#SMART_WAIT_MODE}
+     * and switch to SmartWaitWebDriver if the property is true
+     * 
+     * @param webDriver
+     */
+    private static void checkAndSwitchToSmartWaitWebDriver(WebDriver webDriver) {
+        boolean smartWaitEnabled = (boolean) RunConfiguration.getExecutionProperties()
+                .get(RunConfiguration.SMART_WAIT_MODE);
+        if (smartWaitEnabled) {
+            WebDriver currentWebDriver = webDriver;
+            SmartWaitWebDriver smartWaitWebDriver = SmartWaitHelper.getSmartWaitWebDriver(currentWebDriver);
+            smartWaitWebDriver.register(SmartWaitHelper.getEventListener());
+            DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver);
+        }
     }
 
     private static CSafariDriver createNewSafariDriver(DesiredCapabilities desireCapibilities) {
