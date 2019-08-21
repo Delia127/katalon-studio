@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebElement;
@@ -33,14 +34,14 @@ public class WindowsDriverFactory {
 
     public static final String WIN_APP_DRIVER_PROPERTY = "winAppDriverUrl";
 
-    private static WindowsDriver<WebElement> windowsDriver;
+    private static WindowsSession windowsSession;
 
     public static WindowsDriver<WebElement> getWindowsDriver() {
-        return windowsDriver;
+        return windowsSession.getRunningDriver();
     }
 
-    public static void setWindowsDrivers(WindowsDriver<WebElement> newWindowsDriver) {
-        windowsDriver = newWindowsDriver;
+    public static WindowsSession getWindowsSession() {
+        return windowsSession;
     }
 
     @SuppressWarnings("unchecked")
@@ -55,7 +56,8 @@ public class WindowsDriverFactory {
         URL remoteAddressURL = StringUtils.isNotEmpty(remoteAddressURLAsString) ? new URL(remoteAddressURLAsString)
                 : null;
         if (remoteAddressURL != null) {
-            logger.logInfo(String.format("Starting application %s on the test machine at address %s", appFile, remoteAddressURL.toString()));
+            logger.logInfo(String.format("Starting application %s on the test machine at address %s", appFile,
+                    remoteAddressURL.toString()));
             logger.logRunData(WIN_APP_DRIVER_PROPERTY, remoteAddressURL.toString());
         } else {
             logger.logInfo(String.format("Starting application %s on local machine", appFile));
@@ -66,34 +68,44 @@ public class WindowsDriverFactory {
                 ? new DesiredCapabilities((Map<String, Object>) desiredCapabilitiesAsObject)
                 : new DesiredCapabilities();
         logger.logRunData(DESIRED_CAPABILITIES_PROPERTY, JsonUtil.toJson(desiredCapabilities.toJson(), false));
-        
+
         Proxy proxy = ProxyUtil.getProxy(RunConfiguration.getProxyInformation());
-        return startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy);
+        return startApplication(remoteAddressURL, appFile, desiredCapabilities, proxy).getRunningDriver();
     }
 
-    public static WindowsDriver<WebElement> startApplication(URL remoteAddressURL, String appFile,
-            DesiredCapabilities initCapabilities, Proxy proxy) throws SeleniumException, IOException, URISyntaxException {
+    public static WindowsSession startApplication(URL remoteAddressURL, String appFile,
+            DesiredCapabilities initCapabilities, Proxy proxy)
+            throws SeleniumException, IOException, URISyntaxException {
         try {
+            windowsSession = new WindowsSession(remoteAddressURL, appFile, initCapabilities, proxy);
+
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities(initCapabilities);
             desiredCapabilities.setCapability("app", appFile);
             WindowsDriver<WebElement> windowsDriver = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxy);
             windowsDriver.getWindowHandle();
-            WindowsDriverFactory.setWindowsDrivers(windowsDriver);
-            return windowsDriver;
+
+            windowsSession.setApplicationDriver(windowsDriver);
+            return windowsSession;
         } catch (NoSuchWindowException | SessionNotCreatedException e) {
             if (e.getMessage().contains("The system cannot find the file specified")) {
-                //appFile is not correct
+                // appFile is not correct
                 throw e;
             }
             if ("Root".equals(appFile)) {
                 throw e;
             }
-
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("app", "Root");
-            WindowsDriver<WebElement> desktopSession = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxy);
+            WindowsDriver<WebElement> desktopDriver = newWindowsDriver(remoteAddressURL, desiredCapabilities, proxy);
 
-            WebElement webElement = desktopSession.findElementByTagName("Window");
+            long startTime = System.currentTimeMillis();
+            WebElement webElement = null;
+            while (System.currentTimeMillis() - startTime <= 20000L) {
+                try {
+                    webElement = desktopDriver.findElementByTagName("Window");
+                } catch (NoSuchElementException ignored) {}
+                break;
+            }
             if (webElement == null) {
                 throw e;
             }
@@ -104,9 +116,12 @@ public class WindowsDriverFactory {
                 DesiredCapabilities retryDesiredCapabilities = new DesiredCapabilities(initCapabilities);
                 retryDesiredCapabilities.setCapability("appTopLevelWindow",
                         Integer.toHexString(Integer.parseInt(appTopLevelWindow)));
-                WindowsDriver<WebElement> windowsDriver = newWindowsDriver(remoteAddressURL, retryDesiredCapabilities, proxy);
-                WindowsDriverFactory.setWindowsDrivers(windowsDriver);
-                return windowsDriver;
+                WindowsDriver<WebElement> windowsDriver = newWindowsDriver(remoteAddressURL, retryDesiredCapabilities,
+                        proxy);
+
+                windowsSession.setApplicationDriver(windowsDriver);
+                windowsSession.setDesktopDriver(desktopDriver);
+                return windowsSession;
             }
             throw e;
         }
@@ -122,7 +137,7 @@ public class WindowsDriverFactory {
         }
     }
 
-    private static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl, Proxy proxy)
+    public static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl, Proxy proxy)
             throws IOException, URISyntaxException {
         Factory clientFactory = getClientFactoryForRemoteDriverExecutor(proxy);
         AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, remoteWebServerUrl,

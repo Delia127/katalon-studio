@@ -3,7 +3,6 @@ package com.kms.katalon.composer.windows.dialog;
 import java.io.File;
 import java.util.Map;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -21,29 +20,23 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.control.ScrollableComposite;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.windows.element.BasicWindowsElement;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 
-public class WindowsDeviceDialog extends Dialog {
-
-    private static final String DIALOG_TITLE = "Screen View";
+public class WindowsScreenView {
 
     private Image currentScreenShot;
 
     private Canvas canvas;
-
-    public static final int DIALOG_WIDTH = 400;
-
-    public static final int DIALOG_HEIGHT = 600;
 
     private double currentX = 0, currentY = 0, currentWidth = 0, currentHeight = 0;
 
@@ -51,32 +44,27 @@ public class WindowsDeviceDialog extends Dialog {
 
     private boolean isDisposed;
 
-    private Point initialLocation;
-
-    private WindowsObjectDialog mobileInspetorDialog;
+    private WindowsObjectDialog parentDialog;
 
     private ScrolledComposite scrolledComposite;
 
-    public WindowsDeviceDialog(Shell parentShell, WindowsObjectDialog mobileInspectorDialog, Point location) {
-        super(parentShell);
-        this.mobileInspetorDialog = mobileInspectorDialog;
-        this.initialLocation = location;
-        this.isDisposed = false;
+    public WindowsScreenView(WindowsObjectDialog parentDialog) {
+        this.parentDialog = parentDialog;
     }
 
-    @Override
-    protected Control createDialogArea(Composite parent) {
-        Composite dialogArea = (Composite) super.createDialogArea(parent);
-        final GridLayout dialogAreaGridLayout = (GridLayout) dialogArea.getLayout();
-        dialogAreaGridLayout.marginWidth = 0;
-        dialogAreaGridLayout.marginHeight = 0;
+    public Composite createControls(Composite parent) {
+        Composite mainComposite = new Composite(parent, SWT.NONE);
+        mainComposite.setLayout(new GridLayout());
+        Label lblScreenComposite = new Label(mainComposite, SWT.NONE);
+        lblScreenComposite.setText("SCREEN VIEW");
+        ControlUtils.setFontToBeBold(lblScreenComposite);
 
-        scrolledComposite = new ScrollableComposite(dialogArea, SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite = new ScrollableComposite(mainComposite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
 
         scrolledComposite.setLayout(new GridLayout());
-        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         Composite container = new Composite(scrolledComposite, SWT.NULL);
         container.setLayout(new FillLayout());
@@ -118,18 +106,13 @@ public class WindowsDeviceDialog extends Dialog {
             }
         });
 
-        return dialogArea;
-    }
-
-    @Override
-    protected boolean isResizable() {
-        return true;
+        return mainComposite;
     }
 
     private void inspectElementAt(int x, int y) {
         Double realX = x / hRatio;
         Double realY = y / hRatio;
-        mobileInspetorDialog.setSelectedElementByLocation(safeRoundDouble(realX), safeRoundDouble(realY));
+        parentDialog.setSelectedElementByLocation(safeRoundDouble(realX), safeRoundDouble(realY));
     }
 
     private boolean isElementOnScreen(final Double x, final Double y, final Double width, final Double height) {
@@ -172,20 +155,24 @@ public class WindowsDeviceDialog extends Dialog {
             public void run() {
                 for (int i = 0; i < 9; i++) {
                     if (i % 2 == 1) {
-                        WindowsDeviceDialog.this.currentX = x * hRatio;
-                        WindowsDeviceDialog.this.currentY = y * hRatio;
-                        WindowsDeviceDialog.this.currentWidth = width * hRatio;
-                        WindowsDeviceDialog.this.currentHeight = height * hRatio;
+                        WindowsScreenView.this.currentX = x * hRatio;
+                        WindowsScreenView.this.currentY = y * hRatio;
+                        WindowsScreenView.this.currentWidth = width * hRatio;
+                        WindowsScreenView.this.currentHeight = height * hRatio;
                     } else {
-                        WindowsDeviceDialog.this.currentX = 0;
-                        WindowsDeviceDialog.this.currentY = 0;
-                        WindowsDeviceDialog.this.currentWidth = 0;
-                        WindowsDeviceDialog.this.currentHeight = 0;
+                        WindowsScreenView.this.currentX = 0;
+                        WindowsScreenView.this.currentY = 0;
+                        WindowsScreenView.this.currentWidth = 0;
+                        WindowsScreenView.this.currentHeight = 0;
                     }
                     try {
                         Thread.sleep(200L);
                     } catch (InterruptedException e) {}
-                    UISynchronizeService.syncExec(() -> canvas.redraw());
+                    UISynchronizeService.syncExec(() -> {
+                        if (!canvas.isDisposed()) {
+                            canvas.redraw();
+                        }
+                    });
                 }
             }
         });
@@ -204,27 +191,6 @@ public class WindowsDeviceDialog extends Dialog {
         return scaled;
     }
 
-    @Override
-    protected Point getInitialSize() {
-        return new Point(DIALOG_WIDTH, DIALOG_HEIGHT + 57);
-    }
-
-    @Override
-    protected void configureShell(Shell shell) {
-        super.configureShell(shell);
-        shell.setText(DIALOG_TITLE);
-    }
-
-    @Override
-    protected void setShellStyle(int newShellStyle) {
-        super.setShellStyle(SWT.SHELL_TRIM);
-        setBlockOnOpen(false);
-    }
-
-    public void closeApp() {
-        handleShellCloseEvent();
-    }
-
     public void highlightElement(BasicWindowsElement selectedElement) {
         Map<String, String> attributes = selectedElement.getProperties();
         if (attributes == null || !attributes.containsKey(GUIObject.X) || !attributes.containsKey(GUIObject.Y)
@@ -240,24 +206,28 @@ public class WindowsDeviceDialog extends Dialog {
 
     public void refreshDialog(File imageFile) {
         try {
-            ImageDescriptor imgDesc = ImageDescriptor.createFromURL(imageFile.toURI().toURL());
-            Image img = imgDesc.createImage();
+            if (imageFile == null) {
+                currentScreenShot = null;
+            } else {
+                ImageDescriptor imgDesc = ImageDescriptor.createFromURL(imageFile.toURI().toURL());
+                Image img = imgDesc.createImage();
+    
+                hRatio = 1.0d;
+    
+                currentScreenShot = scaleImage(img, ((double) img.getBounds().width) * hRatio, ((double) img.getBounds().height) * hRatio);
+            }
 
-            hRatio = 1;
-
-            currentScreenShot = scaleImage(img, ((double) img.getBounds().width) * hRatio, ((double) img.getBounds().height) * hRatio);
-
-            // Save scaled version
-            getShell().getDisplay().asyncExec(new Runnable() {
+            UISynchronizeService.asyncExec(new Runnable() {
 
                 @Override
                 public void run() {
-                    canvas.redraw();
+                    if (!canvas.isDisposed()) {
+                        canvas.redraw();
+                    }
                 }
             });
 
             refreshView();
-            
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
         }
@@ -270,16 +240,14 @@ public class WindowsDeviceDialog extends Dialog {
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                scrolledComposite.setMinSize(currentScreenShot.getImageData().width,
-                        currentScreenShot.getImageData().height);
+                if (currentScreenShot != null) {
+                    scrolledComposite.setMinSize(currentScreenShot.getImageData().width + 10,
+                            currentScreenShot.getImageData().height + 10);
+                } else {
+                    scrolledComposite.setMinSize(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+                }
             }
         });
-    }
-
-    @Override
-    protected void handleShellCloseEvent() {
-        super.handleShellCloseEvent();
-        dispose();
     }
 
     public void dispose() {
@@ -290,20 +258,8 @@ public class WindowsDeviceDialog extends Dialog {
         return isDisposed;
     }
 
-    @Override
-    protected Point getInitialLocation(Point initialSize) {
-        if ((getShell().getStyle() & SWT.RESIZE) == 0) {
-            return new Point(initialLocation.x, initialLocation.y + 5);
-        }
-        return initialLocation;
-    }
-
     public static int safeRoundDouble(double d) {
         long rounded = Math.round(d);
         return (int) Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, rounded));
-    }
-    
-    @Override
-    protected void createButtonsForButtonBar(Composite parent) {
     }
 }

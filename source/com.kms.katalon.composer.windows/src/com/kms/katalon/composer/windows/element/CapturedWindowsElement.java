@@ -2,6 +2,8 @@ package com.kms.katalon.composer.windows.element;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 
 public class CapturedWindowsElement implements BasicWindowsElement {
@@ -16,6 +18,8 @@ public class CapturedWindowsElement implements BasicWindowsElement {
     private WindowsElementEntity.LocatorStrategy locatorStrategy;
     
     private String locator;
+    
+    private String scriptId;
 
     public TreeWindowsElement getLink() {
         return link;
@@ -63,5 +67,13 @@ public class CapturedWindowsElement implements BasicWindowsElement {
 
     public void setLocator(String locator) {
         this.locator = locator;
+    }
+
+    public String getScriptId() {
+        return StringUtils.isNotEmpty(scriptId) ? scriptId: name;
+    }
+
+    public void setScriptId(String scriptId) {
+        this.scriptId = scriptId;
     }
 }

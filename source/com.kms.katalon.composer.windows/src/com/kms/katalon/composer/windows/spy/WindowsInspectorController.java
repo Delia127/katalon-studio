@@ -34,6 +34,7 @@ import com.kms.katalon.composer.windows.element.SnapshotWindowsElement;
 import com.kms.katalon.composer.windows.element.TreeWindowsElement;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory;
+import com.kms.katalon.core.windows.driver.WindowsSession;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.execution.windows.WindowsDriverConnector;
 import com.thoughtworks.selenium.SeleniumException;
@@ -42,7 +43,7 @@ import io.appium.java_client.windows.WindowsDriver;
 
 public class WindowsInspectorController {
 
-    private WindowsDriver<WebElement> driver;
+    private WindowsSession session;
 
     private AppiumStreamHandler streamHandler;
 
@@ -59,11 +60,12 @@ public class WindowsInspectorController {
     }
 
     public WindowsDriver<WebElement> getDriver() {
-        return driver;
+        return session != null ? session.getRunningDriver() : null;
     }
 
     public boolean closeApp() {
         try {
+            WindowsDriver<WebElement> driver = getDriver();
             if (null != driver && null != ((RemoteWebDriver) driver).getSessionId()) {
                 driver.quit();
             }
@@ -72,14 +74,12 @@ public class WindowsInspectorController {
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             return false;
-        } finally {
-            driver = null;
         }
     }
 
     public String captureScreenshot() throws Exception {
         String screenshotFolder = Util.getDefaultMobileScreenshotPath();
-        File screenshot = driver.getScreenshotAs(OutputType.FILE);
+        File screenshot = getDriver().getScreenshotAs(OutputType.FILE);
         if (!screenshot.exists()) {
             throw new Exception(StringConstants.DIA_ERROR_MSG_UNABLE_TO_CAPTURE_SCREEN);
         }
@@ -94,7 +94,7 @@ public class WindowsInspectorController {
 
     public TreeWindowsElement getWindowsObjectRoot() {
         try {
-            String pageSource = driver.getPageSource();
+            String pageSource = getDriver().getPageSource();
             DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = null;
             try {
@@ -145,6 +145,14 @@ public class WindowsInspectorController {
         String url = driverConnector.getWinAppDriverUrl();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities(driverConnector.getDesiredCapabilities());
         Proxy proxy = ProxyUtil.getProxy(ProxyPreferences.getProxyInformation());
-        driver = WindowsDriverFactory.startApplication(new URL(url), appFile, desiredCapabilities, proxy);
+        session = WindowsDriverFactory.startApplication(new URL(url), appFile, desiredCapabilities, proxy);
+    }
+
+    public void resetDriver() {
+        session = null;
+    }
+
+    public WindowsSession getWindowsSession() {
+        return session;
     }
 }

@@ -9,6 +9,7 @@ import com.kms.katalon.core.keyword.internal.SupportLevel;
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.windows.driver.WindowsDriverFactory
+import com.kms.katalon.core.windows.keyword.helper.WindowsActionHelper
 
 import io.appium.java_client.windows.WindowsDriver
 
@@ -35,7 +36,7 @@ public class CloseApplicationKeyword extends AbstractKeyword {
                 logger.logWarning('No application opens')
                 return
             }
-            windowsDriver.closeApp()
+            WindowsActionHelper.create(WindowsDriverFactory.getWindowsSession()).closeApp()
             logger.logPassed('Fire Close event sucessfully.')
         }, flowControl)
     }

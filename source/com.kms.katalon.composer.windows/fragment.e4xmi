@@ -13,13 +13,13 @@
     <elements xsi:type="menu:HandledToolItem" xmi:id="_-bOo0JySEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.handledtoolitem.spy" label="Spy Windows Object" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/spy_desktop_32x24.png" tooltip="Spy Windows Object" command="_KyEpsJyTEemdYrYS1JLsZA">
       <persistedState key="index" value="11"/>
     </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_ifs8oJyTEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.handledtoolitem.record" toBeRendered="false" visible="false" label="Record Windows Object" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/record_desktop_32x24.png" tooltip="Record Windows Object" command="_nf-YkJyTEemdYrYS1JLsZA">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_ifs8oJyTEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.handledtoolitem.record" label="Record Windows Action" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/record_desktop_32x24.png" tooltip="Record Windows Action" command="_nf-YkJyTEemdYrYS1JLsZA">
       <persistedState key="index" value="12"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_JL4vAJyTEemdYrYS1JLsZA" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_KyEpsJyTEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.command.spy" commandName="Spy Windows Objects"/>
-    <elements xsi:type="commands:Command" xmi:id="_nf-YkJyTEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.command.record" commandName="Record Windows Objects"/>
+    <elements xsi:type="commands:Command" xmi:id="_nf-YkJyTEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.command.record" commandName="Record Windows Actions"/>
     <elements xsi:type="commands:Command" xmi:id="_M-pvoJ78EemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.execution.command" commandName="Execute Windows Application">
       <parameters xmi:id="_QI9vgJ78EemdYrYS1JLsZA" elementId="com.kms.katalon.composer.execution.runMode" name="Run Mode"/>
     </elements>

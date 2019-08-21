@@ -42,8 +42,12 @@ public class TestCaseController extends EntityController {
      * @return {@link TestCaseEntity}
      * @throws Exception
      */
-    public TestCaseEntity newTestCase(FolderEntity parentFolder, String testCaseName) throws Exception {
-        return saveNewTestCase(newTestCaseWithoutSave(parentFolder, testCaseName));
+    public TestCaseEntity newTestCase(FolderEntity parentFolder, String testCaseName) throws ControllerException {
+        try {
+            return saveNewTestCase(newTestCaseWithoutSave(parentFolder, testCaseName));
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     /**
@@ -112,11 +116,12 @@ public class TestCaseController extends EntityController {
     }
 
     public List<String> getSibblingTestCaseNames(TestCaseEntity testCase) throws Exception {
-        List<TestCaseEntity> sibblingTestCases = FolderController.getInstance().getTestCaseChildren(
-                testCase.getParentFolder());
+        List<TestCaseEntity> sibblingTestCases = FolderController.getInstance()
+                .getTestCaseChildren(testCase.getParentFolder());
         List<String> sibblingName = new ArrayList<String>();
         for (TestCaseEntity sibblingTestCase : sibblingTestCases) {
-            if (!getDataProviderSetting().getEntityPk(sibblingTestCase).equals(getDataProviderSetting().getEntityPk(testCase))) {
+            if (!getDataProviderSetting().getEntityPk(sibblingTestCase)
+                    .equals(getDataProviderSetting().getEntityPk(testCase))) {
                 sibblingName.add(sibblingTestCase.getName());
             }
         }
@@ -179,8 +184,12 @@ public class TestCaseController extends EntityController {
         return null;
     }
 
-    public String getAvailableTestCaseName(FolderEntity parentFolder, String name) throws Exception {
-        return getDataProviderSetting().getTestCaseDataProvider().getAvailableTestCaseName(parentFolder, name);
+    public String getAvailableTestCaseName(FolderEntity parentFolder, String name) throws ControllerException {
+        try {
+            return getDataProviderSetting().getTestCaseDataProvider().getAvailableTestCaseName(parentFolder, name);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
     }
 
     public TestCaseEntity getTestCaseByScriptName(String scriptFileName) throws Exception {
