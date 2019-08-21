@@ -53,7 +53,7 @@ public class KeywordMain {
 
     @CompileStatic
     protected static StringBuilder buildReasonMessage(String message, String reason) {
-        StringBuilder failMessage = new StringBuilder(message);
+        StringBuilder failMessage = new StringBuilder(org.apache.commons.lang3.StringUtils.defaultString(message));
         if (StringUtils.isNotEmpty(reason)) {
             failMessage.append(" (Root cause: ");
             failMessage.append(reason);

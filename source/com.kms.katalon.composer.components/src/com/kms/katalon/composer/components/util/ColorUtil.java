@@ -98,6 +98,14 @@ public class ColorUtil {
         }
     }
     
+    public static Color getPartBackgroundColor() {
+        if (ComponentBundleActivator.isDarkTheme(display)) {
+            return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME);
+        } else {
+            return getWhiteBackgroundColor();
+        }
+    }
+    
     public static Color getCompositeBackgroundColorForDialog() {
         if (ComponentBundleActivator.isDarkTheme(display)) {
             return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR_FOR_DARK_THEME_DIALOG);

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="com.kms.katalon.composer.windows.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.explorer.delete">
+      <client
+            handler="com.kms.katalon.composer.windows.handler.DeleteWindowsObjectHandler">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+      <page
+            category="com.kms.katalon.composer.execution.desiredcapabilities"
+            class="com.kms.katalon.composer.windows.preferences.WindowsExecutionSettingPage"
+            id="com.kms.katalon.composer.execution.settings.default.5"
+            name="Windows">
+      </page>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.execution.driverConnectorEditor">
+      <client
+            driver.connector.editor="com.kms.katalon.composer.windows.contributor.WindowsDriverConnectorContributor">
+      </client>
+   </extension>
+   <extension
+         point="com.kms.katalon.composer.execution.tetSuiteExecutionItem">
+      <client
+            item="com.kms.katalon.composer.windows.entry.DesktopExecutionGroup">
+      </client>
+   </extension>
+
+</plugin>

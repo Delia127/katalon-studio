@@ -96,7 +96,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog {
+public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog, MobileElementDialog {
 
     public static final Point DIALOG_SIZE = new Point(800, 800);
 
@@ -459,7 +459,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         mobileComposite.createComposite(appsComposite, SWT.NONE, this);
     }
 
-    /* package */ void updateSelectedElement(CapturedMobileElement selectedElement) {
+    public void updateSelectedElement(CapturedMobileElement selectedElement) {
         capturedObjectsTableViewer.refresh(selectedElement, true);
         TreeMobileElement element = selectedElement.getLink();
         if (element != null) {
