@@ -1641,7 +1641,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     public void addNewActionMapping(final HTMLActionMapping newAction) {
         if (isPauseRecording || (newAction.getAction().equals(HTMLAction.Navigate)
-                && (recordStepsView.getNodes().size() > 0 || (newAction.getData().length == 0
+                && (recordStepsView.getNodes().size() > 1 || (newAction.getData().length == 0
                         || String.valueOf(newAction.getData()[0].getValue()).equals("\"about:blank\""))))) {
             return;
         }
