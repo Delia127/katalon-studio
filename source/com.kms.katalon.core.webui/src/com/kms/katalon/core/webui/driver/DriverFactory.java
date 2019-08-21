@@ -33,6 +33,7 @@ import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Timeouts;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WrapsDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
@@ -56,6 +57,7 @@ import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.http.HttpClient;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
 
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
@@ -1344,9 +1346,15 @@ public class DriverFactory {
 
     private static SessionId getRemoteSessionId(WebDriver webDriver) {
         try {
+            if (webDriver != null && webDriver instanceof EventFiringWebDriver) {
+                WebDriver wrappedWebDriver = ((EventFiringWebDriver) webDriver).getWrappedDriver();
+                if (wrappedWebDriver != null && wrappedWebDriver instanceof RemoteWebDriver) {
+                    return ((RemoteWebDriver) wrappedWebDriver).getSessionId();
+                }
+            }
             return ((RemoteWebDriver) webDriver).getSessionId();
         } catch (Exception e) {
-            // FiringEventWebDriver can't be casted to RemoteWebDriver, but it's still usable
+            logger.logInfo(e.getMessage());
         }
         return null;
     }

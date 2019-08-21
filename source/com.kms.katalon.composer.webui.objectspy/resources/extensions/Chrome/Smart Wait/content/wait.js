@@ -4,10 +4,10 @@ if (window === window.top && typeof window.katalonWaiter == 'undefined') {
     this.ajaxObjects = [];
   };
 
-  KatalonWaiter.prototype.doDomWait = function (callback) {
+  KatalonWaiter.prototype.katalon_smart_waiter_do_dom_wait = function (callback) {
     var domCount = 0;
     var domTime = '';
-    function doDomWait() {
+    function katalon_smart_waiter_do_dom_wait() {
       setTimeout(() => {
         if (domTime && (Date.now() - domTime) > 30000) {
           domTime = '';
@@ -17,7 +17,7 @@ if (window === window.top && typeof window.katalonWaiter == 'undefined') {
           if (domCount === 1) {
             domTime = Date.now();
           }
-          return doDomWait();
+          return katalon_smart_waiter_do_dom_wait();
         } else {
 	        console.log('content script: ' + Date.now() + ' is now, no changes since ' + window.katalonWaiter.domModifiedTime);
           console.log('content script: Dom waiting is done !');
@@ -26,14 +26,14 @@ if (window === window.top && typeof window.katalonWaiter == 'undefined') {
         }
       }, 100);
     }
-    return doDomWait();
+    return katalon_smart_waiter_do_dom_wait();
   };
 
-  KatalonWaiter.prototype.doAjaxWait = function (callback) {
+  KatalonWaiter.prototype.katalon_smart_waiter_do_ajax_wait = function (callback) {
     var ajaxCount = 0;
     var ajaxTime = '';
 
-    function doAjaxWait() {
+    function katalon_smart_waiter_do_ajax_wait() {
       function isAjaxDone() {
         if (window.katalonWaiter.ajaxObjects) {
           if (window.katalonWaiter.ajaxObjects.length === 0) {
@@ -71,27 +71,27 @@ if (window === window.top && typeof window.katalonWaiter == 'undefined') {
           if (ajaxCount === 1) {
             ajaxTime = Date.now();
           }
-          return doAjaxWait();
+          return katalon_smart_waiter_do_ajax_wait();
         }
       }, 100);
     };
-    return doAjaxWait();
+    return katalon_smart_waiter_do_ajax_wait();
   };
 
-  (function doPreWait() {
+  (function katalon_smart_waiter_do_prewait() {
     window.katalonWaiter = new KatalonWaiter();
     console.log('content script: Katalon Waiter is up and running !');
     var document = window.document;
-    function  setDOMModifiedTime() {
+    function  katalon_smart_waiter_setDOMModifiedTime() {
       window.katalonWaiter.domModifiedTime = Date.now();
       console.log('content script: ' + window.katalonWaiter.domModifiedTime);
     }
-    document.addEventListener("DOMNodeInserted", setDOMModifiedTime, false);
-    document.addEventListener("DOMNodeInsertedIntoDocument", setDOMModifiedTime, false);
-    document.addEventListener("DOMNodeRemoved", setDOMModifiedTime, false);
-    document.addEventListener("DOMNodeRemovedFromDocument", setDOMModifiedTime, false);
-    document.addEventListener("DOMSubtreeModified", setDOMModifiedTime, false);
-    document.addEventListener("DOMContentLoaded", setDOMModifiedTime, false);
+    document.addEventListener("DOMNodeInserted", katalon_smart_waiter_setDOMModifiedTime, false);
+    document.addEventListener("DOMNodeInsertedIntoDocument", katalon_smart_waiter_setDOMModifiedTime, false);
+    document.addEventListener("DOMNodeRemoved", katalon_smart_waiter_setDOMModifiedTime, false);
+    document.addEventListener("DOMNodeRemovedFromDocument", katalon_smart_waiter_setDOMModifiedTime, false);
+    document.addEventListener("DOMSubtreeModified", katalon_smart_waiter_setDOMModifiedTime, false);
+    document.addEventListener("DOMContentLoaded", katalon_smart_waiter_setDOMModifiedTime, false);
     if (window.XMLHttpRequest) {
       if (!window.originXMLHttpRequest || !window.katalonWaiter.ajaxObjects) {
         window.katalonWaiter.ajaxObjects = [];

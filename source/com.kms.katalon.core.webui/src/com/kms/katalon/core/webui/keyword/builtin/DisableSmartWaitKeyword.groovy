@@ -36,8 +36,7 @@ class DisableSmartWaitKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     public void smartWait() throws StepFailedException {
         WebUIKeywordMain.runKeyword({
-            boolean smartWaitEnabled = (boolean) Optional
-                    .ofNullable(RunConfiguration.getExecutionProperties().get("smartWaitEnabled")).orElse(false);
+            boolean smartWaitEnabled = RunConfiguration.getExecutionProperties().getOrDefault("smartWaitEnabled", false);
             if (smartWaitEnabled) {
                 RunConfiguration.getExecutionProperties().remove("smartWaitEnabled");
                 SmartWaitWebDriver smartWaitWebDriver = (SmartWaitWebDriver) DriverFactory.getWebDriver();

@@ -13,9 +13,7 @@ import com.kms.katalon.core.webui.common.internal.SmartWaitHelper;
 /**
  * Event listener that triggers smart waiting on
  * <ul>
- * <li>before click</li>
  * <li>before find element</li>
- * <li>before get text</li>
  * </ul>
  * 
  * @author thanhto
@@ -24,17 +22,7 @@ import com.kms.katalon.core.webui.common.internal.SmartWaitHelper;
 public class SmartWaitWebEventListener extends AbstractWebDriverEventListener {
 
     @Override
-    public void beforeClickOn(WebElement arg0, WebDriver arg1) {
-        doSmartWait();
-    }
-
-    @Override
     public void beforeFindBy(By arg0, WebElement arg1, WebDriver arg2) {
-        doSmartWait();
-    }
-
-    @Override
-    public void beforeGetText(WebElement arg0, WebDriver arg1) {
         doSmartWait();
     }
 
