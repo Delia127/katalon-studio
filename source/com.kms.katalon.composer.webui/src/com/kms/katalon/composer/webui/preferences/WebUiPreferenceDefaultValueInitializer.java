@@ -20,7 +20,6 @@ public class WebUiPreferenceDefaultValueInitializer extends AbstractPreferenceIn
     @Override
     public void initializeDefaultPreferences() {
         IPreferenceStore prefStore = getPreferenceStore();
-        prefStore.setDefault(PreferenceConstants.AUTO_UPDATE_WEBDRIVERS, false);
         save();
     }
     
