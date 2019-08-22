@@ -86,6 +86,9 @@ public class InspectSession implements Runnable {
 
     protected static final String FIREFOX_RECORD_SPY_EXTENSION_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy.xpi";
+    
+    protected static final String FIREFOX_RECORD_SMART_WAIT_RELATIVE_PATH = File.separator + "Firefox" + File.separator
+            + "smartwait.xpi";
 
     protected static final String FIREFOX_RECORD_SPY_FOLDER_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy";
@@ -180,13 +183,26 @@ public class InspectSession implements Runnable {
                 // Fix KAT-3652: Cannot Record/Spy with Firefox latest version (v.62.0)
                 CFirefoxDriver firefoxDriver = (CFirefoxDriver) driver;
                 URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
-                CloseableHttpClient client = HttpClientBuilder.create().build();
-                HttpPost httpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
+                
+                CloseableHttpClient recordSpyInstallclient = HttpClientBuilder.create().build();
+                HttpPost httpRecordSpyInstallPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
                         + ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
-                String bodyContent = String.format("{\"path\": \"%s\"}",
-                        StringEscapeUtils.escapeJava(getFirefoxAddonFile().getAbsolutePath()));
-                httpPost.setEntity(new StringEntity(bodyContent));
-                client.execute(httpPost);
+                String recordSpyInstallBodyContent = String.format("{\"path\": \"%s\"}",
+                        StringEscapeUtils.escapeJava(getFirefoxRecordSpyAddonFile().getAbsolutePath()));
+                httpRecordSpyInstallPost.setEntity(new StringEntity(recordSpyInstallBodyContent));
+                recordSpyInstallclient.execute(httpRecordSpyInstallPost);
+                
+                LoggerSingleton.logInfo("Installed Katalon Recorder");
+                
+                CloseableHttpClient smartWaitInstallclient = HttpClientBuilder.create().build();
+                HttpPost smartWaitHttpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
+                        + ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
+                String smartWaitBodyContent = String.format("{\"path\": \"%s\"}",
+                        StringEscapeUtils.escapeJava(getFirefoxSmartWaitAddonFile().getAbsolutePath()));
+                smartWaitHttpPost.setEntity(new StringEntity(smartWaitBodyContent));
+                smartWaitInstallclient.execute(smartWaitHttpPost);
+                
+                LoggerSingleton.logInfo("Installed Smart Wait");
 
                 handleForFirefoxAddon();
             }
@@ -272,7 +288,8 @@ public class InspectSession implements Runnable {
 
     protected FirefoxProfile createFireFoxProfile() throws IOException {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
-        firefoxProfile.addExtension(getFirefoxAddonFile());
+        firefoxProfile.addExtension(getFirefoxRecordSpyAddonFile());
+        firefoxProfile.addExtension(getFirefoxSmartWaitAddonFile());
         return firefoxProfile;
     }
 
@@ -341,10 +358,18 @@ public class InspectSession implements Runnable {
         return null;
     }
 
-    protected File getFirefoxAddonFile() throws IOException {
+    protected File getFirefoxRecordSpyAddonFile() throws IOException {
         File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
             return new File(extensionFolder.getAbsolutePath(), FIREFOX_RECORD_SPY_EXTENSION_RELATIVE_PATH);
+        }
+        return null;
+    }
+    
+    protected File getFirefoxSmartWaitAddonFile() throws IOException {
+        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
+        if (extensionFolder.exists() && extensionFolder.isDirectory()) {
+            return new File(extensionFolder.getAbsolutePath(), FIREFOX_RECORD_SMART_WAIT_RELATIVE_PATH);
         }
         return null;
     }

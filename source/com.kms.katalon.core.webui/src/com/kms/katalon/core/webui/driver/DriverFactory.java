@@ -560,6 +560,10 @@ public class DriverFactory {
     private static WebDriver createNewFirefoxDriver(DesiredCapabilities desiredCapabilities) {
         int actionDelay = getActionDelay();
         int firefoxMajorVersion = FirefoxExecutable.getFirefoxVersion(desiredCapabilities);
+        
+        FirefoxProfile firefoxProfile = new FirefoxProfile();
+        firefoxProfile.addExtension(getFirefoxAddonFile());
+        desiredCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
 
         desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         if (firefoxMajorVersion >= USING_GECKO_VERSION) {
@@ -568,25 +572,7 @@ public class DriverFactory {
         if (firefoxMajorVersion >= USING_MARIONETTEE_VERSION) {
             return CFirefoxDriver47.from(desiredCapabilities, actionDelay);
         }
-        CFirefoxDriver firefoxDriver = (CFirefoxDriver) CGeckoDriver.from(desiredCapabilities, actionDelay);
-        installSmartWaitExtensionForFirefox(firefoxDriver);
-        return firefoxDriver;
-    }
-    
-    private static void installSmartWaitExtensionForFirefox(CFirefoxDriver firefoxDriver) {
-        try {
-            URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
-            CloseableHttpClient client = HttpClientBuilder.create().build();
-            HttpPost httpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
-                    + ((RemoteWebDriver) firefoxDriver).getSessionId() + "/moz/addon/install");
-            String bodyContent = String.format("{\"path\": \"%s\"}",
-                    StringEscapeUtils.escapeJava(getFirefoxAddonFile().getAbsolutePath()));
-            httpPost.setEntity(new StringEntity(bodyContent));
-            CloseableHttpResponse response = client.execute(httpPost);
-            logger.logInfo("Installed");
-        } catch (Exception e) {
-            logger.logError(ExceptionUtils.getFullStackTrace(e));
-        }
+        return CGeckoDriver.from(desiredCapabilities, actionDelay);
     }
 
     private static File getFirefoxAddonFile() {

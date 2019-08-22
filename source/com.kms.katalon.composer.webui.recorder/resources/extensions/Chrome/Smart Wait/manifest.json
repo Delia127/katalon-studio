@@ -1,8 +1,8 @@
 {
   "description": "",
   "manifest_version": 2,
-  "name": "Katalon Wait",
-  "version": "1.0.0",
+  "name": "Katalon Smart Wait","applications": { "gecko": { "id": "{4594ce82-4426-40d7-bfa6-d2e5d3d15573}", "strict_min_version": "48.0" } },
+  "version": "1.0.1",
   "homepage_url":"https://www.katalon.com/",
   "icons":
   {
