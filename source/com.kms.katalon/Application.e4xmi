@@ -155,7 +155,7 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_QyJdkL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.chrome" label="Chrome" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_16.png" command="_yVAB0L5HEemxF-U6MZYPPA"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_RX0WcL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.Firefox" label="Firefox" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_16.png" command="_n2vrgL5NEemxF-U6MZYPPA"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_RvyKgL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.IE" label="IE" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/ie_16.png" command="_vs_PAL5NEemxF-U6MZYPPA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_SKQgAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.edge" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/edge_16.png" command="_rzz-AL5NEemxF-U6MZYPPA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_SKQgAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.edge" toBeRendered="false" visible="false" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/edge_16.png" command="_rzz-AL5NEemxF-U6MZYPPA"/>
         </children>
       </children>
     </mainMenu>
