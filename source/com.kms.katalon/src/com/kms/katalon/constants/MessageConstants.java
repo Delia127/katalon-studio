@@ -291,8 +291,6 @@ public class MessageConstants extends NLS {
 
     public static String DIA_TITLE_KS_UPDATE;
 
-    public static String MSG_FORUM_SEARCH;
-
     public static String URL_MOBILE_RECORD;
 
     public static String URL_MOBILE_CONFIG_AND_RECORD_STEP_WINDOWS;
