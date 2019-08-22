@@ -372,7 +372,7 @@ public class DriverFactory {
         }
         return installSmartWaitExtensionForChrome(desireCapibilities);
     }
-    
+
     private static DesiredCapabilities installSmartWaitExtensionForChrome(DesiredCapabilities capabilities) {
         try {
             File chromeExtensionFolder = getChromeExtensionFile();

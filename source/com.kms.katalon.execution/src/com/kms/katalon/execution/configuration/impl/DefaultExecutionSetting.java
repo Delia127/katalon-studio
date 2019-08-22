@@ -38,7 +38,7 @@ public class DefaultExecutionSetting implements IExecutionSetting {
 
     public DefaultExecutionSetting() {
         timeout = 0;
-        setAutoApplyNeighborXpaths(ExecutionUtil.getAutoApplyNeighborXpaths());        
+        setAutoApplyNeighborXpaths(ExecutionUtil.getAutoApplyNeighborXpaths());
     }
 
     @Override
