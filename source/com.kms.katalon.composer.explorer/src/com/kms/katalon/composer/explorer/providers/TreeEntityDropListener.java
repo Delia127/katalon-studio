@@ -94,7 +94,6 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 moveKeyword(file, packageFragment, null);
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, lastMovedTreeEntity);
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetTreeEntity.getParent());
-
             }
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
@@ -118,9 +117,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
             EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
                     targetPackageFragment);
         }
-
         return keywordFile;
-
     }
 
     private static String getPastedFilePath(IFile keywordFile, IPackageFragment targetPackageFragment, String newName) {
@@ -140,7 +137,6 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         } else {
             return (PackageTreeEntity) ((ITreeEntity) dest).getParent();
         }
-
     }
     
     private FolderTreeEntity getDropDestinationFolder(DropTargetEvent event) throws Exception {
