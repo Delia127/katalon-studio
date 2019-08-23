@@ -76,10 +76,10 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity);
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, lastMovedTreeEntity);
             }
-            else{
+            else {
                 TreeItem[] selection = treeViewer.getTree().getSelection();
                 List<ITreeEntity> treeEntity = new ArrayList<ITreeEntity>();
-                for(TreeItem item : selection){
+                for (TreeItem item : selection) {
                     treeEntity.add((ITreeEntity) item.getData());
                 }
                 event.data = treeEntity.toArray(new ITreeEntity[treeEntity.size()]);
@@ -88,46 +88,46 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 PackageFragment packageFragment = (PackageFragment) targetTreeEntity.getObject();
                 IFile file = null;
                 for (int i = 0; i < treeEntities.length; i++) {
-                    ICompilationUnit unit = (ICompilationUnit)treeEntities[i].getObject();
+                    ICompilationUnit unit = (ICompilationUnit) treeEntities[i].getObject();
                     file = (IFile) unit.getResource();
                 }
-                moveKeyword(file, packageFragment,null);
+                moveKeyword(file, packageFragment, null);
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, lastMovedTreeEntity);
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetTreeEntity.getParent());
-            
+
             }
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
                     MessageFormat.format(StringConstants.LIS_ERROR_MSG_CANNOT_MOVE_THE_SELECTION, e.getMessage()));
         }
     }
-    public static IFile moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName) throws JavaModelException{
+
+    public static IFile moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
+            throws JavaModelException {
         if (keywordFile == null || targetPackageFragment == null) {
             return null;
         }
         String oldRelativeKwLocation = keywordFile.getLocation().toString();
         String cutKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
-      
+
         GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, newName);
-       
+
         if (!oldRelativeKwLocation.equals(cutKeywordFilePath)) {
-            EventBrokerSingleton.getInstance()
-            .getEventBroker()
-            .post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM,
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM,
                     new Object[] { keywordFile.getProjectRelativePath().toString(), cutKeywordFilePath });
-            EventBrokerSingleton.getInstance()
-            .getEventBroker().send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetPackageFragment);
+            EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                    targetPackageFragment);
         }
-        
+
         return keywordFile;
-        
+
     }
+
     private static String getPastedFilePath(IFile keywordFile, IPackageFragment targetPackageFragment, String newName) {
         String keywordRootPath = targetPackageFragment.getParent().getElementName() + IPath.SEPARATOR;
         String packageName = targetPackageFragment.getElementName();
-        String packagePath = keywordRootPath
-                + (packageName.isEmpty() ? packageName : packageName.replaceAll("[.]", String.valueOf(IPath.SEPARATOR))
-                        + IPath.SEPARATOR);
+        String packagePath = keywordRootPath + (packageName.isEmpty() ? packageName
+                : packageName.replaceAll("[.]", String.valueOf(IPath.SEPARATOR)) + IPath.SEPARATOR);
         String kwFileName = (newName != null) ? newName + GroovyConstants.GROOVY_FILE_EXTENSION : keywordFile.getName();
         String copiedKeywordFilePath = packagePath + kwFileName;
         return copiedKeywordFilePath;
@@ -135,10 +135,10 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
 
     private PackageTreeEntity getDragDestinationPackage(DropTargetEvent event) throws Exception {
         Object dest = event.item.getData();
-        if(dest instanceof PackageTreeEntity){
+        if (dest instanceof PackageTreeEntity) {
             return (PackageTreeEntity) dest;
-        }else{
-            return (PackageTreeEntity)((ITreeEntity) dest).getParent();
+        } else {
+            return (PackageTreeEntity) ((ITreeEntity) dest).getParent();
         }
 
     }
@@ -164,8 +164,6 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
             rootTargetFolder = FolderController.getInstance().getTestDataRoot(targetFolder.getProject());
         } else if (targetFolder.getFolderType().equals(FolderType.CHECKPOINT)) {
             rootTargetFolder = FolderController.getInstance().getCheckpointRoot(targetFolder.getProject());
-        } else if(targetFolder.getFolderType().equals(FolderType.KEYWORD)){
-            rootTargetFolder = FolderController.getInstance().getKeywordRoot(targetFolder.getProject());
         }
 
         for (ITreeEntity treeEntity : treeEntities) {
