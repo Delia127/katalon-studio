@@ -89,6 +89,8 @@ import io.appium.java_client.remote.AppiumCommandExecutor;
 
 public class DriverFactory {
 
+    private static final String SMART_WAIT_ADDON_CHROME_RELATIVE_PATH = File.separator + "chrome" + File.separator + "Smart Wait";
+
     private static final String SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH = File.separator + "firefox" + File.separator + "smartwait.xpi";
 
     private static final KeywordLogger logger = KeywordLogger.getInstance(DriverFactory.class);
@@ -375,15 +377,14 @@ public class DriverFactory {
             WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
                     LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
         } catch (Exception e) {
-            logger.logError("Error installing smart extension: " + ExceptionUtils.getFullStackTrace(e));
+            logger.logError(ExceptionUtils.getFullStackTrace(e));
         }
         return capabilities;
     }
 
     private static File getChromeExtensionFile() {
         try {
-            return new File(FileUtil.getExtensionsDirectory(),
-                    "/chrome/Smart Wait");
+            return new File(FileUtil.getExtensionsDirectory(), SMART_WAIT_ADDON_CHROME_RELATIVE_PATH);
         } catch (IOException e) {}
         return null;
     }
@@ -573,8 +574,7 @@ public class DriverFactory {
 
     private static File getFirefoxAddonFile() {
         try {
-            return new File(FileUtil.getExtensionsDirectory(),
-                    SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH);
+            return new File(FileUtil.getExtensionsDirectory(), SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH);
         } catch (IOException e) {}
         return null;
     }
