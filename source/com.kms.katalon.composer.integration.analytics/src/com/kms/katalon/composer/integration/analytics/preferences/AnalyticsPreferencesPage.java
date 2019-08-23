@@ -132,7 +132,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         Group grpAuthentication = new Group(mainComposite, SWT.NONE);
         grpAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glGrpAuthentication = new GridLayout(2, false);
-//        glGrpAuthentication.horizontalSpacing = 10;
+        glGrpAuthentication.horizontalSpacing = 15;
         grpAuthentication.setLayout(glGrpAuthentication);
         grpAuthentication.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_AUTHENTICATE_GROUP);
 
@@ -156,10 +156,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         glPassword.marginWidth = 0;
         glPassword.marginHeight = 0;
         passwordComposite.setLayout(glPassword);
-
-//        txtPassword = new Text(passwordComposite, SWT.BORDER);
-//        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-//        txtPassword.setEnabled(false);
 
         chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
         chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, true, 2, 1));
@@ -284,7 +280,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             return false;
         }
 
-        if (StringUtils.isEmpty(txtEmail.getText()) || StringUtils.isEmpty(this.password)
+        if (StringUtils.isEmpty(txtEmail.getText()) || StringUtils.isEmpty(password)
                 || StringUtils.isEmpty(txtServerUrl.getText())) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
                     ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION);
@@ -402,7 +398,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
             if (!StringUtils.isEmpty(preferenceEmail) && !StringUtils.isEmpty(preferencePassword)) {
                 txtEmail.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail)));
-                this.password = CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword));
+                password = CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword));
                 // empty preference store password
                 preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);
             }
