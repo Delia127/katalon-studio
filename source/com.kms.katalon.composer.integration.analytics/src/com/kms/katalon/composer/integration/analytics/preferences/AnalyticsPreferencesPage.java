@@ -64,7 +64,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Button cbxAutoSubmit, cbxAttachScreenshot, cbxAttachCaptureVideo;
 
-    private Text txtServerUrl, txtEmail, txtPassword;
+    private Text txtServerUrl, txtEmail;
 
     private Label lblStatus;
     
@@ -89,6 +89,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private AnalyticsSettingStore analyticsSettingStore;
 
     private Button chckEncrypt;
+    
+    private String password;
        
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
@@ -130,7 +132,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         Group grpAuthentication = new Group(mainComposite, SWT.NONE);
         grpAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glGrpAuthentication = new GridLayout(2, false);
-        glGrpAuthentication.horizontalSpacing = 15;
+//        glGrpAuthentication.horizontalSpacing = 10;
         grpAuthentication.setLayout(glGrpAuthentication);
         grpAuthentication.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_AUTHENTICATE_GROUP);
 
@@ -148,9 +150,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         txtEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtEmail.setEnabled(false);
 
-        Label lblPassword = new Label(grpAuthentication, SWT.NONE);
-        lblPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PASSWORD);
-
         Composite passwordComposite = new Composite(grpAuthentication, SWT.NONE);
         passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         GridLayout glPassword = new GridLayout(2, false);
@@ -158,9 +157,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         glPassword.marginHeight = 0;
         passwordComposite.setLayout(glPassword);
 
-        txtPassword = new Text(passwordComposite, SWT.BORDER);
-        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtPassword.setEnabled(false);
+//        txtPassword = new Text(passwordComposite, SWT.BORDER);
+//        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+//        txtPassword.setEnabled(false);
 
         chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
         chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, true, 2, 1));
@@ -285,7 +284,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             return false;
         }
 
-        if (StringUtils.isEmpty(txtEmail.getText()) || StringUtils.isEmpty(txtPassword.getText())
+        if (StringUtils.isEmpty(txtEmail.getText()) || StringUtils.isEmpty(this.password)
                 || StringUtils.isEmpty(txtServerUrl.getText())) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
                     ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION);
@@ -331,14 +330,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             cbbTeams.setItems();
             cbbProjects.setItems();
             
-            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+            password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
             String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
             String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
 
             txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
-            txtPassword.setText(password);
             chckEncrypt.setSelection(analyticsSettingStore.isEncryptionEnabled());
-            maskPasswordField();
             txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
             cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
             cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
@@ -369,7 +366,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 if (tokenInfo == null) {
                     txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
                     txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
-                    maskPasswordField();
                     return;
                 }
                 teams = AnalyticsAuthorizationHandler.getTeams(
@@ -406,7 +402,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
             if (!StringUtils.isEmpty(preferenceEmail) && !StringUtils.isEmpty(preferencePassword)) {
                 txtEmail.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail)));
-                txtPassword.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword)));
+                this.password = CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword));
                 // empty preference store password
                 preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);
             }
@@ -432,10 +428,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             return false;
         } 
         return true;
-    }
-    
-    private void maskPasswordField() {
-        txtPassword.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
     }
 
     private void changeEnabled() {
@@ -504,7 +496,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             public void widgetSelected(SelectionEvent e) {
                 String serverUrl = txtServerUrl.getText();
                 String email = txtEmail.getText();
-                String password = txtPassword.getText();
                 if (StringUtils.isEmpty(serverUrl) || StringUtils.isEmpty(email) || StringUtils.isEmpty(password)) {
                     MessageDialog.openError(Display.getCurrent().getActiveShell(),
                             ComposerAnalyticsStringConstants.ERROR,
@@ -556,7 +547,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 
                 String serverUrl = txtServerUrl.getText();
                 String email = txtEmail.getText();
-                String password = txtPassword.getText();
                 AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
                 projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
                         selectTeamFromUser, tokenInfo, new ProgressMonitorDialog(getShell()));
@@ -571,7 +561,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             public void widgetSelected(SelectionEvent e) {
                 String serverUrl = txtServerUrl.getText();
                 String email = txtEmail.getText();
-                String password = txtPassword.getText();
 
                 AnalyticsTeam team = null;
                 if (teams != null && teams.size() > 0) {
