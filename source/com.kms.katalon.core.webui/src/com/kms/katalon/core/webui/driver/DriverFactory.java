@@ -89,6 +89,8 @@ import io.appium.java_client.remote.AppiumCommandExecutor;
 
 public class DriverFactory {
 
+    private static final String SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH = File.separator + "firefox" + File.separator + "smartwait.xpi";
+
     private static final KeywordLogger logger = KeywordLogger.getInstance(DriverFactory.class);
 
     private static final int USING_MARIONETTEE_VERSION = 47;
@@ -362,10 +364,11 @@ public class DriverFactory {
                 desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
             }
         }
-        return installSmartWaitExtensionForChrome(desireCapibilities);
+        addSmartWaitExtensionToChrome(desireCapibilities);
+        return desireCapibilities;
     }
 
-    private static DesiredCapabilities installSmartWaitExtensionForChrome(DesiredCapabilities capabilities) {
+    private static DesiredCapabilities addSmartWaitExtensionToChrome(DesiredCapabilities capabilities) {
         try {
             File chromeExtensionFolder = getChromeExtensionFile();
             WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
@@ -551,11 +554,7 @@ public class DriverFactory {
     private static WebDriver createNewFirefoxDriver(DesiredCapabilities desiredCapabilities) {
         int actionDelay = getActionDelay();
         int firefoxMajorVersion = FirefoxExecutable.getFirefoxVersion(desiredCapabilities);
-        
-        FirefoxProfile firefoxProfile = new FirefoxProfile();
-        firefoxProfile.addExtension(getFirefoxAddonFile());
-        desiredCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
-
+        addSmartWaitExtensionToFirefox(desiredCapabilities);
         desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         if (firefoxMajorVersion >= USING_GECKO_VERSION) {
             return CGeckoDriver.from(desiredCapabilities, actionDelay);
@@ -565,11 +564,17 @@ public class DriverFactory {
         }
         return CGeckoDriver.from(desiredCapabilities, actionDelay);
     }
+    
+    private static void addSmartWaitExtensionToFirefox(DesiredCapabilities desiredCapabilities) {
+        FirefoxProfile firefoxProfile = new FirefoxProfile();
+        firefoxProfile.addExtension(getFirefoxAddonFile());
+        desiredCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
+    }
 
     private static File getFirefoxAddonFile() {
         try {
             return new File(FileUtil.getExtensionsDirectory(),
-                    "/firefox/smartwait.xpi");
+                    SMART_WAIT_ADDON_FIREFOX_RELATIVE_PATH);
         } catch (IOException e) {}
         return null;
     }
@@ -1342,15 +1347,17 @@ public class DriverFactory {
 
     private static SessionId getRemoteSessionId(WebDriver webDriver) {
         try {
-            if (webDriver != null && webDriver instanceof EventFiringWebDriver) {
+            if (webDriver instanceof EventFiringWebDriver) {
                 WebDriver wrappedWebDriver = ((EventFiringWebDriver) webDriver).getWrappedDriver();
-                if (wrappedWebDriver != null && wrappedWebDriver instanceof RemoteWebDriver) {
+                if (wrappedWebDriver instanceof RemoteWebDriver) {
                     return ((RemoteWebDriver) wrappedWebDriver).getSessionId();
                 }
             }
-            return ((RemoteWebDriver) webDriver).getSessionId();
+            if (webDriver instanceof RemoteWebDriver) {
+                return ((RemoteWebDriver) webDriver).getSessionId();
+            }
         } catch (Exception e) {
-            logger.logInfo(e.getMessage());
+            logger.logInfo(ExceptionUtils.getFullStackTrace(e));
         }
         return null;
     }
