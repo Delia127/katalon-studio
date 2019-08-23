@@ -3,21 +3,9 @@ package com.kms.katalon.core.webui.common.internal;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
-import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.driver.DriverFactory;
-import com.kms.katalon.core.webui.driver.SmartWaitWebDriver;
-import com.kms.katalon.core.webui.driver.SmartWaitWebEventListener;
 
 public class SmartWaitHelper {
-    private static final KeywordLogger logger = KeywordLogger.getInstance(SmartWaitHelper.class);
-
-    public static SmartWaitWebEventListener getEventListener() {
-        return new SmartWaitWebEventListener();
-    }
-
-    public static SmartWaitWebDriver getSmartWaitWebDriver(WebDriver currentWebDriver) {
-        return new SmartWaitWebDriver(currentWebDriver);
-    }
 
     public static void doSmartWait() {
         WebDriver main = DriverFactory.getWebDriver();

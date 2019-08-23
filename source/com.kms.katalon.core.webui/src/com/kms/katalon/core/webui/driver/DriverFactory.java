@@ -18,13 +18,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.BuildInfo;
 import org.openqa.selenium.Capabilities;
@@ -33,7 +27,6 @@ import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Timeouts;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WrapsDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
@@ -71,7 +64,6 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
-import com.kms.katalon.core.webui.common.internal.SmartWaitHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.firefox.CFirefoxDriver47;
@@ -335,17 +327,17 @@ public class DriverFactory {
     
     /**
      * Check property {@link RunConfiguration#SMART_WAIT_MODE}
-     * and switch to SmartWaitWebDriver if the property is true
+     * and switch to SmartWaitWebDriver if smart wait is enabled
      * 
-     * @param webDriver
+     * @param webDriver Current WebDriver instance
      */
     private static void checkAndSwitchToSmartWaitWebDriver(WebDriver webDriver) {
         boolean smartWaitEnabled = (boolean) RunConfiguration.getExecutionProperties()
                 .get(RunConfiguration.SMART_WAIT_MODE);
         if (smartWaitEnabled) {
             WebDriver currentWebDriver = webDriver;
-            SmartWaitWebDriver smartWaitWebDriver = SmartWaitHelper.getSmartWaitWebDriver(currentWebDriver);
-            smartWaitWebDriver.register(SmartWaitHelper.getEventListener());
+            SmartWaitWebDriver smartWaitWebDriver = new SmartWaitWebDriver(currentWebDriver);
+            smartWaitWebDriver.register(new SmartWaitWebEventListener());
             DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver);
         }
     }
@@ -379,7 +371,6 @@ public class DriverFactory {
             WebDriverPropertyUtil.removeArgumentsForChrome(capabilities, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
             WebDriverPropertyUtil.addArgumentsForChrome(capabilities,
                     LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
-            logger.logInfo(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
         } catch (Exception e) {
             logger.logError("Error installing smart extension: " + ExceptionUtils.getFullStackTrace(e));
         }

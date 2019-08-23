@@ -13,6 +13,7 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.webui.common.internal.SmartWaitHelper
 import com.kms.katalon.core.webui.driver.DriverFactory
 import com.kms.katalon.core.webui.driver.SmartWaitWebDriver
+import com.kms.katalon.core.webui.driver.SmartWaitWebEventListener
 import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
 import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
 import groovy.transform.CompileStatic
@@ -39,8 +40,8 @@ class EnableSmartWaitKeyword extends WebUIAbstractKeyword {
             if (!smartWaitEnabled) {
                 RunConfiguration.getExecutionProperties().put(RunConfiguration.SMART_WAIT_MODE, true);
                 WebDriver currentWebDriver = DriverFactory.getWebDriver();
-                SmartWaitWebDriver smartWaitWebDriver = SmartWaitHelper.getSmartWaitWebDriver(currentWebDriver);
-                smartWaitWebDriver.register(SmartWaitHelper.getEventListener());
+                SmartWaitWebDriver smartWaitWebDriver = new SmartWaitWebDriver(currentWebDriver);
+                smartWaitWebDriver.register(new SmartWaitWebEventListener());
                 DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver);
             }
         }, FailureHandling.CONTINUE_ON_FAILURE, true, "Unable to enable smart wait !");
