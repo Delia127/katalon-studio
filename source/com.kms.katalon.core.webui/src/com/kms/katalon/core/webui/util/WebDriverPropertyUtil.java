@@ -14,6 +14,7 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.selenium.firefox.CFirefoxProfile;
