@@ -5,8 +5,16 @@ import org.openqa.selenium.WebDriver;
 
 import com.kms.katalon.core.webui.driver.DriverFactory;
 
-public class SmartWaitHelper {
+/**
+ * Smart Wait functionality's core implementations
+ */
+public class SmartWait {
 
+    /**
+     * Inject javascript into the page that invokes functions
+     * in Smart Wait extension to ensure that the page is not
+     * loading elements or executing ajax calls
+     */
     public static void doSmartWait() {
         WebDriver main = DriverFactory.getWebDriver();
         JavascriptExecutor js = (JavascriptExecutor) main;
@@ -14,7 +22,7 @@ public class SmartWaitHelper {
             js.executeAsyncScript(WAIT_AJAX_SCRIPT);
             js.executeAsyncScript(WAIT_DOM_SCRIPT);
         } catch (Exception e) {
-            // Ignore exceptions for now
+            // Ignore exceptions to avoid clogging user's console log
         }
     }
 

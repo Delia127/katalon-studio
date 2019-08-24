@@ -70,6 +70,7 @@ import com.kms.katalon.core.webui.driver.firefox.CFirefoxDriver47;
 import com.kms.katalon.core.webui.driver.firefox.CGeckoDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
 import com.kms.katalon.core.webui.util.FileExcutableUtil;
 import com.kms.katalon.core.webui.util.FileUtil;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
@@ -190,9 +191,12 @@ public class DriverFactory {
     private static int actionDelay = -1;
 
     /**
-     * Open a new web driver based on the execution configuration
+     * Open a new web driver based on the execution configuration.
+     * If smart wait functionality is enabled (either globally or via
+     * invocation of {@link WebUiBuiltInKeywords#enableSmartWait()} keyword)
+     * then the returned web driver will be a {@link SmartWaitWebDriver}
      * 
-     * @return the created WebDriver
+     * @return An instance of {@link WebDriver}
      * @throws Exception
      */
     public static WebDriver openWebDriver() throws Exception {
@@ -210,13 +214,25 @@ public class DriverFactory {
             }
             if (webDriver != null) {
                 changeWebDriver(webDriver);
-                checkAndSwitchToSmartWaitWebDriver(webDriver);
+                
+                boolean smartWaitEnabled = (boolean) RunConfiguration.getExecutionProperties()
+                        .get(RunConfiguration.SMART_WAIT_MODE);
+                if (smartWaitEnabled) {
+                    switchToSmartWaitWebDriver(webDriver);
+                }
             }
             return webDriver;
         } catch (Error e) {
             logger.logMessage(LogLevel.WARNING, e.getMessage(), e);
             throw new StepFailedException(e);
         }
+    }
+
+    private static void switchToSmartWaitWebDriver(WebDriver webDriver) {
+        WebDriver currentWebDriver = webDriver;
+        SmartWaitWebDriver smartWaitWebDriver = new SmartWaitWebDriver(currentWebDriver);
+        smartWaitWebDriver.register(new SmartWaitWebEventListener());
+        DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver);
     }
 
     private static void changeWebDriver(WebDriver webDriver) {
@@ -327,23 +343,6 @@ public class DriverFactory {
         }
         saveWebDriverSessionData(webDriver);
         return webDriver;
-    }
-    
-    /**
-     * Check property {@link RunConfiguration#SMART_WAIT_MODE}
-     * and switch to SmartWaitWebDriver if smart wait is enabled
-     * 
-     * @param webDriver Current WebDriver instance
-     */
-    private static void checkAndSwitchToSmartWaitWebDriver(WebDriver webDriver) {
-        boolean smartWaitEnabled = (boolean) RunConfiguration.getExecutionProperties()
-                .get(RunConfiguration.SMART_WAIT_MODE);
-        if (smartWaitEnabled) {
-            WebDriver currentWebDriver = webDriver;
-            SmartWaitWebDriver smartWaitWebDriver = new SmartWaitWebDriver(currentWebDriver);
-            smartWaitWebDriver.register(new SmartWaitWebEventListener());
-            DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver);
-        }
     }
 
     private static CSafariDriver createNewSafariDriver(DesiredCapabilities desireCapibilities) {

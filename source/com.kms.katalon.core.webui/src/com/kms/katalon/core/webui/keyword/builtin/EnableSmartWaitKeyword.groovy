@@ -1,7 +1,5 @@
 package com.kms.katalon.core.webui.keyword.builtin
 
-import java.util.Optional
-
 import org.openqa.selenium.WebDriver
 
 import com.kms.katalon.core.annotation.internal.Action
@@ -9,13 +7,12 @@ import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.model.FailureHandling
-import com.kms.katalon.core.testobject.TestObject
-import com.kms.katalon.core.webui.common.internal.SmartWaitHelper
 import com.kms.katalon.core.webui.driver.DriverFactory
 import com.kms.katalon.core.webui.driver.SmartWaitWebDriver
 import com.kms.katalon.core.webui.driver.SmartWaitWebEventListener
 import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
 import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
+
 import groovy.transform.CompileStatic
 
 @Action(value = "enableSmartWait")

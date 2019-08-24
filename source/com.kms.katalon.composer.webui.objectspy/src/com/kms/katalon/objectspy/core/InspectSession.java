@@ -184,6 +184,7 @@ public class InspectSession implements Runnable {
                 CFirefoxDriver firefoxDriver = (CFirefoxDriver) driver;
                 URL geckoDriverServiceUrl = firefoxDriver.getGeckoDriverService().getUrl();
                 
+                // Install Record-Spy extension
                 CloseableHttpClient recordSpyInstallclient = HttpClientBuilder.create().build();
                 HttpPost httpRecordSpyInstallPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
                         + ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
@@ -192,8 +193,7 @@ public class InspectSession implements Runnable {
                 httpRecordSpyInstallPost.setEntity(new StringEntity(recordSpyInstallBodyContent));
                 recordSpyInstallclient.execute(httpRecordSpyInstallPost);
                 
-                LoggerSingleton.logInfo("Installed Katalon Recorder");
-                
+                // Install Smart Wait extension
                 CloseableHttpClient smartWaitInstallclient = HttpClientBuilder.create().build();
                 HttpPost smartWaitHttpPost = new HttpPost(geckoDriverServiceUrl.toString() + "/session/"
                         + ((RemoteWebDriver) driver).getSessionId() + "/moz/addon/install");
@@ -202,7 +202,6 @@ public class InspectSession implements Runnable {
                 smartWaitHttpPost.setEntity(new StringEntity(smartWaitBodyContent));
                 smartWaitInstallclient.execute(smartWaitHttpPost);
                 
-                LoggerSingleton.logInfo("Installed Smart Wait");
 
                 handleForFirefoxAddon();
             }
@@ -234,7 +233,7 @@ public class InspectSession implements Runnable {
             }
         } catch (WebDriverException e) {
             showErrorMessageDialog(e.getMessage());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
             showErrorMessageDialog(e.getMessage());
         } finally {

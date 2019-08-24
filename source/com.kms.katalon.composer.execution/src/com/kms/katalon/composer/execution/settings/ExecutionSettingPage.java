@@ -356,7 +356,7 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         }
         
         cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
-        cbDefaultSmartWait.select(ExecutionDefaultSettingStore.DEFAULT_SMART_WAIT_MODE ? 0 : 1);
+        cbDefaultSmartWait.select(0);
         
         txtDefaultElementTimeout
                 .setText(Integer.toString(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_TIMEOUT_VALUE));
@@ -400,8 +400,9 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
                 defaultSettingStore.setExecutionConfiguration(selectedExecutionConfiguration);
             }
             
-            if(cbDefaultSmartWait != null) {
-                defaultSettingStore.setDefaultSmartWaitMode(cbDefaultSmartWait.getSelectionIndex() == 0 ? Boolean.valueOf(true) : Boolean.valueOf(false));
+            if (cbDefaultSmartWait != null) {
+                defaultSettingStore.setDefaultSmartWaitMode(
+                        cbDefaultSmartWait.getSelectionIndex() == 0 ? Boolean.valueOf(true) : Boolean.valueOf(false));
             }
             
             /* 

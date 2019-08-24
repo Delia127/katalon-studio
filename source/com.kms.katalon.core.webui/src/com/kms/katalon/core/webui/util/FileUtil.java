@@ -13,7 +13,6 @@ import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
-import org.osgi.framework.Bundle;
 
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.webui.driver.DriverFactory;
@@ -92,6 +91,12 @@ public class FileUtil {
         }
     }
 
+    /**
+     * Return a file representing directory resources/extensions
+     * 
+     * @return {@link File}
+     * @throws IOException
+     */
     public static File getExtensionsDirectory() throws IOException {
         String path = FileUtil.class.getProtectionDomain().getCodeSource().getLocation().getFile();
         path = URLDecoder.decode(path, "utf-8");
