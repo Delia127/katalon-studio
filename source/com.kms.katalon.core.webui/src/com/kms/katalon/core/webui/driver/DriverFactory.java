@@ -1247,26 +1247,24 @@ public class DriverFactory {
             return;
         }
         WebDriver webDriver = localWebServerStorage.get();
-        if (null != webDriver) {
+        if (null != webDriver && null != getRemoteSessionId(webDriver)) {
             try {
                 webDriver.quit();
-                if (null != getRemoteSessionId(webDriver)) {
-                    if (driverType instanceof WebUIDriverType) {
-                        switch ((WebUIDriverType) driverType) {
-                            case ANDROID_DRIVER:
-                            case IOS_DRIVER:
-                                WebMobileDriverFactory.closeDriver();
-                                break;
-                            case EDGE_DRIVER:
-                                EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
-                                if (edgeDriverService.isRunning()) {
-                                    edgeDriverService.stop();
-                                }
-                                break;
-                            default:
-                                break;
+                if (driverType instanceof WebUIDriverType) {
+                    switch ((WebUIDriverType) driverType) {
+                        case ANDROID_DRIVER:
+                        case IOS_DRIVER:
+                            WebMobileDriverFactory.closeDriver();
+                            break;
+                        case EDGE_DRIVER:
+                            EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
+                            if (edgeDriverService.isRunning()) {
+                                edgeDriverService.stop();
+                            }
+                            break;
+                        default:
+                            break;
 
-                        }
                     }
                 }
             } catch (UnreachableBrowserException e) {
