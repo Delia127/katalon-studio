@@ -24,11 +24,7 @@ public class SmartWaitWebEventListener extends AbstractWebDriverEventListener {
     public void beforeFindBy(By arg0, WebElement arg1, WebDriver arg2) {
         doSmartWait();
     }
-
-    /**
-     * Check and invoke smart wait functionality if enabled (either globally or via
-     * {@link WebUiBuiltInKeywords#enableSmartWait()} keyword)
-     */
+    
     public void doSmartWait() {
         boolean smartWaitEnabled = (boolean) Optional
                 .ofNullable(RunConfiguration.getExecutionProperties().get("smartWaitEnabled")).orElse(false);

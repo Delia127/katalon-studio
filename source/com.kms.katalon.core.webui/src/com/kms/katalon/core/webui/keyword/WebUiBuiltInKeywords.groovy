@@ -3853,9 +3853,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Enable smart wait functionality. Katalon will wait for the page
-     * to be loaded completely before finding elements. The invocation of this 
-     * keyword is only meaningful if global smart wait option is disabled. 
+     * Enable smart wait functionality. Katalon will precede actions on elements by waiting
+     * activities to ensure that the page is not loading elements or executing AJAX calls. 
+     * Such waiting activities greatly increase the chance that elements are available or interactable. 
+     * <p>
+     * It is recommended to always enable smart wait functionality globally in project setting. 
+     * </p>
      * 
      * @since 6.3.4
      * @throws StepFailedException

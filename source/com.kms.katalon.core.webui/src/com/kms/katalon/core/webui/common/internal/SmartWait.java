@@ -10,11 +10,6 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
  */
 public class SmartWait {
 
-    /**
-     * Inject javascript into the page that invokes functions
-     * in Smart Wait extension to ensure that the page is not
-     * loading elements or executing ajax calls
-     */
     public static void doSmartWait() {
         WebDriver main = DriverFactory.getWebDriver();
         JavascriptExecutor js = (JavascriptExecutor) main;
