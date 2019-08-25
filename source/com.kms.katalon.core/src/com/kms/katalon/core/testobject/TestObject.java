@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.openqa.selenium.WebElement;
 
 public class TestObject implements SelectorCollector {
 
@@ -26,6 +27,8 @@ public class TestObject implements SelectorCollector {
     private SelectorMethod selectorMethod = SelectorMethod.BASIC;
     
     private Map<SelectorMethod, String> selectorCollection;
+
+    private WebElement cachedWebElement;
 
     public TestObject(String objectId) {
         this.properties = new ArrayList<TestObjectProperty>();
@@ -373,5 +376,25 @@ public class TestObject implements SelectorCollector {
 
     public Map<SelectorMethod, String> getSelectorCollection() {
         return selectorCollection;
+    }
+    
+    /**
+     * Set a cached WebElement to this TestObject. This cached
+     * WebElement will be used by built-in keywords instead of calling Selenium API
+     * to retrieve WebElement from TestObject's properties
+     * 
+     * @param cachedWebElement
+     */
+    public void setCachedWebElement(WebElement cachedWebElement) {
+        this.cachedWebElement = cachedWebElement;
+    }
+
+    /**
+     * Retrieve cached WebElement set by {@link TestObject#setCachedWebElement(WebElement)}
+     * 
+     * @return The cached {@link WebElement} if exists, null otherwise
+     */
+    public WebElement getCachedWebElement() {
+        return cachedWebElement;
     }
 }

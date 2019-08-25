@@ -62,41 +62,9 @@ public class ConvertWebElementToTestObjectKeyword extends AbstractKeyword {
     public Object convertWebElementToTestObject(WebElement webElement, FailureHandling flowControl) throws StepFailedException {
         return KeywordMain.runKeyword({
             logger.logDebug(StringConstants.KW_LOG_INFO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT);
-
-            String outerHtmlContent = webElement.getAttribute("outerHTML");
-            String regex = "(\\S+)=[\"']?((?:.(?![\"']?\\s+(?:\\S+)=|[>\"']))+.)[\"']?";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(outerHtmlContent);
-            List<TestObjectProperty> properties = new ArrayList<>();
-            while (matcher.find()) {
-                properties.add(new TestObjectProperty(matcher.group(1), ConditionType.EQUALS, matcher.group(2), true));
-            }
-
-            if (outerHtmlContent == null || outerHtmlContent.equals("")) {
-                return null;
-            }
-            TestObject resultTestObject = new TestObjectBuilder(webElement.getTagName())
-                    .withProperties(properties)
-                    .withSelectorMethod(SelectorMethod.BASIC)
-                    .build();
-
-            String cssLocatorValue = findActiveEqualsObjectProperty(resultTestObject, "css");
-            if (cssLocatorValue != null) {
-                resultTestObject.setSelectorValue(SelectorMethod.BASIC, cssLocatorValue);
-            }
-            XPathBuilder xpathBuilder = new XPathBuilder(resultTestObject.getActiveProperties());
-            resultTestObject.setSelectorValue(SelectorMethod.BASIC, xpathBuilder.build());
-            return resultTestObject;
+            TestObject testObject = new TestObject();
+            testObject.setCachedWebElement(webElement);
+            return testObject;
         }, flowControl, StringConstants.KW_LOG_INFO_FAIL_TO_CONVERT_WEB_ELEMENT_TO_TEST_OBJECT)
-    }
-
-    @CompileStatic
-    public static String findActiveEqualsObjectProperty(TestObject to, String propertyName) {
-        for (TestObjectProperty property : to.getActiveProperties()) {
-            if (property.getName().equals(propertyName) && property.getCondition() == ConditionType.EQUALS) {
-                return property.getValue();
-            }
-        }
-        return null;
     }
 }
