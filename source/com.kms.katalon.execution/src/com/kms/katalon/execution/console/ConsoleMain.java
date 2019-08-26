@@ -36,7 +36,7 @@ import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptio
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
-import com.kms.katalon.execution.handler.OrganizationHandler;
+import com.kms.katalon.execution.handler.OrganizationIdHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
@@ -121,7 +121,7 @@ public class ConsoleMain {
 
             if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
                 orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
-                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
+                OrganizationIdHandler.setOrgnizationIdToProject(orgIdValue);
             }
             if (orgIdValue != null) {
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance()
