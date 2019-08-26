@@ -70,7 +70,6 @@ import com.kms.katalon.core.webui.driver.firefox.CFirefoxDriver47;
 import com.kms.katalon.core.webui.driver.firefox.CGeckoDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
-import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
 import com.kms.katalon.core.webui.util.FileExcutableUtil;
 import com.kms.katalon.core.webui.util.FileUtil;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
