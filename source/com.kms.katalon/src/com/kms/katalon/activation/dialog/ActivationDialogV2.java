@@ -60,7 +60,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private Button btnActivate;
 
-    private Button btnSaveOrg;
+    private Button btnSaveOrganization;
     
     private Combo cbbOrganization;
 
@@ -153,7 +153,7 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
         
-        btnSaveOrg.addSelectionListener(new SelectionAdapter() {
+        btnSaveOrganization.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int index = cbbOrganization.getSelectionIndex();
@@ -205,7 +205,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 	                    cbbOrganization.select(0);
 	                    setProgressMessage("", false);
 	                    cbbOrganization.setEnabled(true);
-	                    btnSaveOrg.setEnabled(true);
+	                    btnSaveOrganization.setEnabled(true);
 	                }
                 } catch (AnalyticsApiExeception e) {
                     e.printStackTrace();
@@ -319,9 +319,9 @@ public class ActivationDialogV2 extends AbstractDialog {
         cbbOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
         cbbOrganization.setEnabled(false);
         
-        btnSaveOrg = new Button(ogranizationBar, SWT.NONE);
-        btnSaveOrg.setText(MessageConstants.ActuvationDialogV2_BTN_SAVE_ORGANIZATION_TITLE);
-        btnSaveOrg.setEnabled(false);
+        btnSaveOrganization = new Button(ogranizationBar, SWT.NONE);
+        btnSaveOrganization.setText(MessageConstants.ActuvationDialogV2_BTN_SAVE_ORGANIZATION_TITLE);
+        btnSaveOrganization.setEnabled(false);
         
         Composite linkBar = new Composite(buttonBar, SWT.NONE);
         linkBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
