@@ -14,7 +14,7 @@ public class FeatureServiceConsumer {
      */
     public static IFeatureService getServiceInstance() {
         if (serviceInstance == null) {
-            return new SimpleFeatureService();
+            serviceInstance = new SimpleFeatureService();
         }
         return serviceInstance;
     }
