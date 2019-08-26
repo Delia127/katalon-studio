@@ -40,6 +40,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.logging.LogUtil;
 
 public class ActivationDialogV2 extends AbstractDialog {
 
@@ -208,7 +209,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 	                    btnSaveOrganization.setEnabled(true);
 	                }
                 } catch (AnalyticsApiExeception e) {
-                    e.printStackTrace();
+                    LogUtil.logError(e);
                 }
             });
         });
