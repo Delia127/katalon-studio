@@ -22,7 +22,6 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.impl.util.WorkspaceUtils;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -108,6 +107,7 @@ public class CloseProjectHandler {
     }
 
     private static void closeProject(EPartService partService, IEventBroker eventBroker, ProjectEntity project) {
+
         LauncherManager.getInstance().removeAllTerminated();
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
         // Find and close all opened editor parts which is managed by PartService
@@ -121,7 +121,6 @@ public class CloseProjectHandler {
         try {
             if (project != null) {
                 ProjectController.getInstance().closeProject(project.getId(), null);
-                WorkspaceUtils.cleanWorkspace();
                 eventBroker.send(EventConstants.PROJECT_CLOSED, project.getId());
             }
         } catch (Exception e) {
