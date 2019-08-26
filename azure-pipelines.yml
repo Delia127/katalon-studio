@@ -6,10 +6,21 @@
 trigger:
 - qui-azure
 
+variables:
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+
+
 pool:
   vmImage: 'macOS-latest'
 
 steps:
+- task: CacheBeta@0
+  inputs:
+    key: maven | **/pom.xml
+    path: $(MAVEN_CACHE_FOLDER)
+  displayName: Cache Maven local repo
+
 - checkout: self
   fetchDepth: 1
   clean: true
