@@ -15,15 +15,17 @@ pool:
   vmImage: 'macOS-latest'
 
 steps:
+
+- checkout: self
+  fetchDepth: 1
+  clean: true
+
 - task: CacheBeta@0
   inputs:
     key: maven | **/pom.xml
     path: $(MAVEN_CACHE_FOLDER)
   displayName: Cache Maven local repo
 
-- checkout: self
-  fetchDepth: 1
-  clean: true
 - task: Bash@3
   inputs:
     filePath: 'build.sh'
