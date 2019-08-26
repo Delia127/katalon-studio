@@ -73,6 +73,8 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
+    public static final String KATALON_STORE_ORG_ID_OPTION = "orgId";
+    
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
 
     private ConsoleMain() {
@@ -113,7 +115,20 @@ public class ConsoleMain {
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
+            
+            String orgIdValue = null;
 
+            if (options.has(KATALON_STORE_ORG_ID_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_STORE_ORG_ID_OPTION));
+            }
+            if (orgIdValue != null) {
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance()
+                        .getBuilders()
+                        .stream()
+                        .map(a -> a.getPluginLauncherOptionParser())
+                        .collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if (options.has(INSTALL_PLUGIN_OPTION)){
                 installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
