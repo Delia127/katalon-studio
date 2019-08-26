@@ -1,0 +1,20 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- qui-azure
+
+pool:
+  vmImage: 'ubuntu-16.04'
+
+steps:
+- script: docker pull maven
+  displayName: 'Pull image'
+- script: docker run -t --rm -v "$(pwd)":/katalon maven /katalon/build.sh
+  displayName: 'Build'
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'JUnit Report' 
+    targetPath: report/
