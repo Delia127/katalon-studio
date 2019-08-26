@@ -44,6 +44,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeamPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.logging.LogUtil;
@@ -139,6 +140,24 @@ public class AnalyticsApiProvider {
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsProject.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public static void sendTrackingActivity(String serverUrl, String accessToken, AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_TRACKING_ACTIVITY);
+            HttpPost httpPost = new HttpPost(uri);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+
+            Gson gson = new Gson();
+            StringEntity entity = new StringEntity(gson.toJson(trackingInfo));
+            httpPost.setEntity(entity);
+
+            executeRequest(httpPost, Object.class);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }

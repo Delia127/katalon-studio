@@ -56,6 +56,10 @@ import com.kms.katalon.logging.LogUtil;
             }
         }
     }
+    
+    public String getMachineId() {
+        return "machineId";
+    }
 
     public void addListener(LauncherListener l) {
         listeners.add(l);

@@ -34,6 +34,8 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_API_UPLOAD_URL = "/api/v1/files/upload-url";
     
+    public static final String ANALYTICS_API_TRACKING_ACTIVITY = "/api/v1/tracking";
+    
     public static final String ANALYTICS_STOREAGE = "s3";
     
     public static final String ANALYTICS_REPORT_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(log))$)";

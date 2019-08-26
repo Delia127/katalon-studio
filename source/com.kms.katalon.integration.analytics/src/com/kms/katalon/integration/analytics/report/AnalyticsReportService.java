@@ -23,6 +23,7 @@ import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessa
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
@@ -175,6 +176,21 @@ public class AnalyticsReportService implements AnalyticsComponent {
             	String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
             	long projectId = getSettingStore().getProject().getId();
             	AnalyticsApiProvider.updateTestRunResult(serverUrl, projectId, token.getAccess_token(), testRun);
+            } else {
+                LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+            }
+        } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
+            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public void sendTrackingActivity(AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
+        try {
+            AnalyticsTokenInfo token = getKAToken();
+            if (token != null) {
+                String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+                AnalyticsApiProvider.sendTrackingActivity(serverUrl, token.getAccess_token(), trackingInfo);
             } else {
                 LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
             }
