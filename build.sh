@@ -2,9 +2,11 @@
 
 set -xe
 
+printenv
+
 ulimit -c unlimited
-cd /katalon/source/com.kms.katalon.repo && mvn p2:site
-cd /katalon/source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &
+cd source/com.kms.katalon.repo && mvn p2:site
+cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &
 
 until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
     printf '.'
