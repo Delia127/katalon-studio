@@ -317,8 +317,16 @@ public class MessageConstants extends NLS {
 
     // ActivationDialogV2
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
+    
+    public static String ActivationDialogV2_LBL_SELECT_ORGANIZATION;
+    
+    public static String ActuvationDialogV2_BTN_SAVE_ORGANIZATION_TITLE;
 
     public static String ActivationDialogV2_MSG_ACTIVATING;
+    
+    public static String ActivationDialogV2_MSG_GETTING_ORGANIZATION;
+    
+    public static String ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION;
 
     public static String ActivationDialogV2_LNK_REGISTER;
 
@@ -462,6 +470,13 @@ public class MessageConstants extends NLS {
     public static String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static String MSG_FAIL_TO_UPDATE_WEB_DRIVER;
+    
+    //KAServer
+    public static String KAServerProduction;
+    
+    public static String KAServerStaging;
+    
+    public static String KAServerDev;
 
     static {
         // initialize resource bundle

@@ -193,4 +193,11 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static final String MSG_FAIL_TO_UPDATE_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_UPDATE_WEB_DRIVER;
+    
+    //KAServer
+    public static final String KAServerProduction = MessageConstants.KAServerProduction;
+    
+    public static final String KAServerStaging = MessageConstants.KAServerStaging;
+    
+    public static final String KAServerDev = MessageConstants.KAServerDev;
 }
