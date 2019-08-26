@@ -24,7 +24,7 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
+import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 import com.kms.katalon.plugin.service.KStoreRestClient.AuthenticationResult;
 
@@ -202,7 +202,7 @@ public class KStoreLoginDialog extends Dialog {
     }
 
     protected void authenticate() {
-        KStoreUsernamePasswordCredentials credentials = new KStoreUsernamePasswordCredentials();
+        KStoreBasicCredentials credentials = new KStoreBasicCredentials();
         credentials.setUsername(username);
         credentials.setPassword(password);
         try {
