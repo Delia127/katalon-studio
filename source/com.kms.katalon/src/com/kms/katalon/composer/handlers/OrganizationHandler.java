@@ -9,6 +9,7 @@ import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.util.Organization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
+import com.kms.katalon.logging.LogUtil;
 
 public class OrganizationHandler {
 
@@ -23,7 +24,7 @@ public class OrganizationHandler {
                 try {
                      org = JsonUtil.fromJson(jsonObject, AnalyticsOrganization.class);
                 } catch (IllegalArgumentException e) {
-                   
+                     LogUtil.logError(e);
                 }
             }
             return org.getId();
