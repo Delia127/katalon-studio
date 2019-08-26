@@ -3851,4 +3851,35 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static TestObject convertWebElementToTestObject(WebElement webElement) throws StepFailedException {
         return (TestObject) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "convertWebElementToTestObject", webElement)
     }
+    
+    /**
+     * Enable smart wait functionality. Katalon will precede actions on elements by waiting
+     * activities to ensure that the page is not loading elements or executing AJAX calls. 
+     * Such waiting activities greatly increase the chance that elements are available or interactable. 
+     * <p>
+     * It is recommended to always enable smart wait functionality globally in project setting. 
+     * </p>
+     * 
+     * @since 6.3.4
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void enableSmartWait() throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "enableSmartWait")
+    }
+
+    /**
+     * Disable smart wait functionality. If global smart wait option
+     * is enabled, then this keyword will turn off the smart wait functionality until the end of 
+     * the calling test case or until the keyword {@link WebUiBuiltinKeywords#enableSmartWait} is called.
+     * 
+     * @since 6.3.4
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void disableSmartWait() throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "disableSmartWait")
+    }
 }
