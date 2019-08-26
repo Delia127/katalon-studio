@@ -6,9 +6,7 @@ printenv
 
 ulimit -c unlimited
 
-echo $(MAVEN_OPTS)
-
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && mvn $(MAVEN_OPTS) p2:site 
+cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && mvn p2:site 
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &
 
 until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
