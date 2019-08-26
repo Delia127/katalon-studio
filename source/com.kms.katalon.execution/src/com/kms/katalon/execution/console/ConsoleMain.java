@@ -73,7 +73,7 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
-    public static final String KATALON_STORE_ORG_ID_OPTION = "orgId";
+    public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
 
@@ -118,8 +118,8 @@ public class ConsoleMain {
             
             String orgIdValue = null;
 
-            if (options.has(KATALON_STORE_ORG_ID_OPTION)) {
-                orgIdValue = String.valueOf(options.valueOf(KATALON_STORE_ORG_ID_OPTION));
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
             }
             if (orgIdValue != null) {
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance()
