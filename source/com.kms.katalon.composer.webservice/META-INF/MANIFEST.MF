@@ -82,16 +82,9 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.eclipse.osgi.services,
  com.kms.katalon.ansiconsole,
  org.eclipse.core.filesystem,
- com.kms.katalon.netlightbody,
- com.google.guava,
- org.apache.log4j,
- org.apache.xmlbeans
+ com.kms.katalon.netlightbody
 Export-Package: com.kms.katalon.composer.webservice.constants,
  com.kms.katalon.composer.webservice.util,
  com.kms.katalon.composer.webservice.editor,
  com.kms.katalon.composer.webservice.parser
-Bundle-ClassPath: resources/lib/soap-builder-1.0.0.jar,
- resources/lib/soap-common-1.0.0.jar,
- resources/lib/soap-legacy-1.0.0.jar,
- .
  
