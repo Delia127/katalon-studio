@@ -7,14 +7,12 @@ trigger:
 - qui-azure
 
 pool:
-  vmImage: 'ubuntu-16.04'
+  vmImage: 'macOS-latest'
 
 steps:
-- script: docker pull maven
-  displayName: 'Pull image'
-- script: docker run -t --rm -v "$(pwd)":/katalon maven /katalon/build.sh
-  displayName: 'Build'
-- task: PublishPipelineArtifact@0
+- checkout: self
+  fetchDepth: 1
+  clean: true
+- task: Bash@3
   inputs:
-    artifactName: 'JUnit Report' 
-    targetPath: report/
+    filePath: 'build.sh'
