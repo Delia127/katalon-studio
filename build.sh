@@ -2,8 +2,6 @@
 
 set -xe
 
-cd katalon
-
 ulimit -c unlimited
 cd source/com.kms.katalon.repo && mvn p2:site
 cd source/com.kms.katalon.repo && nohup mvn -Djetty.port=9999 jetty:run > /tmp/9999.log &
