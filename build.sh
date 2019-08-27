@@ -24,7 +24,16 @@ until $(curl --output /dev/null --silent --head --fail http://localhost:33333/si
     sleep 5
 done
 
-cd $BUILD_REPOSITORY_LOCALPATH/source && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
+isQtest=true
+cd $BUILD_REPOSITORY_LOCALPATH/source
+if [ "$isQtest" = "true" ]
+then
+    echo "Building: qTest Prod"
+    $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -pl '!com.kms.katalon.product' clean verify -P prod
+else
+    echo "Building: Standard Prod"
+    $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
+fi
 
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} clean ${command} 
 
