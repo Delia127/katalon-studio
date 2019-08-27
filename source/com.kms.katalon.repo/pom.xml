@@ -302,6 +302,18 @@
                                 <artifact>
                                 	<id>ca.juliusdavies:not-yet-commons-ssl:0.3.11</id>
                                 </artifact>
+                                <artifact>
+                                	<id>org.bouncycastle:bcprov-jdk15on:1.51</id>
+                                </artifact>
+                                <artifact>
+                                	<id>io.jsonwebtoken:jjwt-api:0.10.7</id>
+                                </artifact>
+                                <artifact>
+                                	<id>io.jsonwebtoken:jjwt-impl:0.10.7</id>
+                                </artifact>
+                                <artifact>
+                                	<id>io.jsonwebtoken:jjwt-jackson:0.10.7</id>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>
