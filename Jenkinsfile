@@ -80,7 +80,6 @@ pipeline {
                         def versionMapping = readFile(encoding: 'UTF-8', file: 'about.mappings')
                         versionMapping = versionMapping.replaceAll(/3=.*/, "3=${titleVersion}")
                         writeFile(encoding: 'UTF-8', file: 'about.mappings', text: versionMapping)
-
                     }
                 }
             }
@@ -92,9 +91,11 @@ pipeline {
                     def releaseBeta = (isBeta) ? "release-beta/" : "";
                     def firstArg = (isBeta) ? tag : version;
                     def secondArg = version;
+/* temporarily disable dmg
+https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon+Studio.dmg
+*/
                     def templateString = """
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon+Studio.app.zip
-https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon+Studio.dmg
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Linux_64-${secondArg}.tar.gz
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Windows_32-${secondArg}.zip
 https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/Katalon_Studio_Windows_64-${secondArg}.zip
@@ -113,6 +114,13 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             steps {
                 script {
                         def latestRelease =
+/* temporarily disable dmg build
+    {
+        "location": "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
+        "file": "mac_64"
+    },
+*/
+
 """[
     {
         "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_32-${version}.zip",
@@ -121,10 +129,6 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
     {
         "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_64-${version}.zip",
         "file": "win_64"
-    },
-    {
-        "location": "https://download.katalon.com/${version}/Katalon%20Studio.dmg",
-        "file": "mac_64"
     },
     {
         "location": "https://download.katalon.com/${version}/Katalon_Studio_Linux_64-${version}.tar.gz",
@@ -143,18 +147,20 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             steps {
                 script {
                         def releases =
+/* temporarily disable dmg build
+    {
+        "os": "macOS (dmg)",
+        "version": "${version}",
+        "filename": "Katalon.Studio.dmg",
+        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.dmg"
+    },
+*/
 """
     {
         "os": "macOS (app)",
         "version": "${version}",
         "filename": "Katalon.Studio.app.zip",
         "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.app.zip"
-    },
-    {
-        "os": "macOS (dmg)",
-        "version": "${version}",
-        "filename": "Katalon.Studio.dmg",
-        "url": "https://github.com/katalon-studio/katalon-studio/releases/download/v${version}/Katalon.Studio.dmg"
     },
     {
         "os": "Linux",
@@ -308,18 +314,18 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
             }
         }
 
-        stage('Package .DMG file') {
-            steps {
-                lock('dropdmg') {
-                    script {
-                        // For release branches, execute codesign command to package .DMG file for macOS
-                        if (isRelease) {
-                            sh "./dropdmg.sh ${env.tmpDir}"
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Package .DMG file') {
+        //     steps {
+        //         lock('dropdmg') {
+        //             script {
+        //                 // For release branches, execute codesign command to package .DMG file for macOS
+        //                 if (isRelease) {
+        //                     sh "./dropdmg.sh ${env.tmpDir}"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Generate update packages') {
             steps {
@@ -406,6 +412,9 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                             nodejs(nodeJSInstallationName: 'nodejs') {
                                 sh 'npm prune && npm install'
                                 withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+/* temporarily disable dmg
+                                        '${env.tmpDir}/Katalon Studio.dmg' \
+*/
                                     sh """node app.js ${env.GITHUB_TOKEN} v${tag} \
                                         '${env.tmpDir}/lastest_release.json' \
                                         '${env.tmpDir}/latest_version.json' \
@@ -413,7 +422,6 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
                                         '${env.tmpDir}/apidocs.zip' \
                                         '${env.tmpDir}/commit.txt' \
                                         '${env.tmpDir}/Katalon Studio.app.zip' \
-                                        '${env.tmpDir}/Katalon Studio.dmg' \
                                         '${env.tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz' \
                                         '${env.tmpDir}/Katalon_Studio_Windows_32-${version}.zip' \
                                         '${env.tmpDir}/Katalon_Studio_Windows_64-${version}.zip'
