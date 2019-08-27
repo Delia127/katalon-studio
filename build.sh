@@ -4,7 +4,8 @@ set -xe
 
 ulimit -c unlimited
 
-mvn -N io.takari:maven:wrapper -Dmaven=3.5.4
+cd $BUILD_REPOSITORY_LOCALPATH && mvn ${MAVEN_OPTS} -N io.takari:maven:wrapper -Dmaven=3.5.4
+ls -al
 
 # cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && mvn ${MAVEN_OPTS} p2:site 
 # cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && nohup mvn ${MAVEN_OPTS} -Djetty.port=9999 jetty:run > /tmp/9999.log &
