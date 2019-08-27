@@ -1,6 +1,6 @@
 import sys
 from string import Template
-import build_utils
+from build_utils import write_file, read_file
 
 def generate_latest_version_json_file(file_path, version):
     latest_version_template = Template("""

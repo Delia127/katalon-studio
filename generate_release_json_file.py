@@ -1,6 +1,6 @@
 import sys
 from string import Template
-import build_utils
+from build_utils import write_file, read_file
 
 def generate_release_json_file(file_path, version):
     releases_template = Template(

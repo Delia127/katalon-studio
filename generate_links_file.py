@@ -1,6 +1,6 @@
 import sys
 from string import Template
-import build_utils
+from build_utils import write_file, read_file
 
 def generate_links_file(file_path, version, tag, is_beta):
     second_arg = version;
@@ -21,8 +21,8 @@ https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/changeLogs.txt
 https://s3.amazonaws.com/katalon/${release_beta}${first_arg}/commit.txt""")
     template_string = template.substitute(release_beta = release_beta, first_arg = first_arg, second_arg = second_arg)
   
-    build_utils.write_file(file_path = file_path, text = template_string)
-    links_from_file = build_utils.read_file(file_path = file_path)
+    write_file(file_path = file_path, text = template_string)
+    links_from_file = read_file(file_path = file_path)
     print(links_from_file)
 
 file_path = sys.argv[1]
