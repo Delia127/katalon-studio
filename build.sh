@@ -35,8 +35,4 @@ else
     cd $BUILD_REPOSITORY_LOCALPATH/source && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
 fi
 
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product
-ls -al
-cd target/products
-
-# cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} clean ${command} && cp -R 'target/resources/apidocs' '/tmp/katabuild'              
+cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} clean verify && cp -R 'target/resources/apidocs' '/tmp/katabuild'              
