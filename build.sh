@@ -11,63 +11,65 @@ isBeta=true
 withUpdate=true
 tag="6.3.3"
 
+mkdir tmpDir
+
 cd $BUILD_REPOSITORY_LOCALPATH
 python3 generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta
 python3 generate_lastest_release_file.py "${tmpDir}/lastest_release.json" $version
 python3 generate_release_json_file.py "${tmpDir}/releases.json" $version
 python3 generate_latest_version_json_file.py "${tmpDir}/latest_version.json" $version
 
-# Building
-ulimit -c unlimited
+# # Building
+# ulimit -c unlimited
 
-cd $BUILD_REPOSITORY_LOCALPATH/source && mvn ${MAVEN_OPTS} -N io.takari:maven:wrapper -Dmaven=$mavenVersion
+# cd $BUILD_REPOSITORY_LOCALPATH/source && mvn ${MAVEN_OPTS} -N io.takari:maven:wrapper -Dmaven=$mavenVersion
 
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} p2:site 
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && nohup $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -Djetty.port=9999 jetty:run > /tmp/9999.log &
+# cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} p2:site 
+# cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && nohup $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -Djetty.port=9999 jetty:run > /tmp/9999.log &
 
-until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
-    printf '.'
-    cat /tmp/9999.log
-    sleep 5
-done
+# until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
+#     printf '.'
+#     cat /tmp/9999.log
+#     sleep 5
+# done
 
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.p2site && nohup $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -Djetty.port=33333 jetty:run > /tmp/33333.log &
+# cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.p2site && nohup $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -Djetty.port=33333 jetty:run > /tmp/33333.log &
                     
-until $(curl --output /dev/null --silent --head --fail http://localhost:33333/site); do
-    printf '.'
-    cat /tmp/33333.log
-    sleep 5
-done
+# until $(curl --output /dev/null --silent --head --fail http://localhost:33333/site); do
+#     printf '.'
+#     cat /tmp/33333.log
+#     sleep 5
+# done
 
-if [ "$isQtest" = "true" ]
-then
-    echo "Building: qTest Prod"
-    cd $BUILD_REPOSITORY_LOCALPATH/source && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -pl '!com.kms.katalon.product' clean verify -P prod
-else
-    echo "Building: Standard Prod"
-    cd $BUILD_REPOSITORY_LOCALPATH/source && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
-fi
+# if [ "$isQtest" = "true" ]
+# then
+#     echo "Building: qTest Prod"
+#     cd $BUILD_REPOSITORY_LOCALPATH/source && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -pl '!com.kms.katalon.product' clean verify -P prod
+# else
+#     echo "Building: Standard Prod"
+#     cd $BUILD_REPOSITORY_LOCALPATH/source && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
+# fi
 
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} clean verify && cp -R 'target/resources/apidocs' ${tmpDir}      
+# cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} clean verify && cp -R 'target/resources/apidocs' ${tmpDir}      
 
-# Copy builds
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product/target/products
-if [ "$isQtest" = "false" ]
-then
-    # cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
-    cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product/target/products
-    cp *.zip ${tmpDir}
-    cp *.tar.gz ${tmpDir}
-fi
+# # Copy builds
+# cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product/target/products
+# if [ "$isQtest" = "false" ]
+# then
+#     # cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+#     cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product/target/products
+#     cp *.zip ${tmpDir}
+#     cp *.tar.gz ${tmpDir}
+# fi
 
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product.qtest_edition/target/products
-if [ "$isQtest" = "true" ]
-then
-    # cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
-    cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product.qtest_edition/target/products
-    cp *.zip ${tmpDir}
-    cp *.tar.gz ${tmpDir}
-fi
+# cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product.qtest_edition/target/products
+# if [ "$isQtest" = "true" ]
+# then
+#     # cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+#     cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product.qtest_edition/target/products
+#     cp *.zip ${tmpDir}
+#     cp *.tar.gz ${tmpDir}
+# fi
 
 # # Sign file
 # cd $BUILD_REPOSITORY_LOCALPATH
