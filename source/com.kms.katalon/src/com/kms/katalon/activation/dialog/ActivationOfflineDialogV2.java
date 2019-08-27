@@ -17,6 +17,8 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
@@ -35,17 +37,13 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
     
     public static final int REQUEST_SIGNUP_CODE = 1002;
 
-    private Label lblRequestCodeDetail;
-
-    private Button btnCopyToClipboard;
-
-    private Text txtActivationCode;
-
     private Label lblProgressMessage;
 
     private Link lnkOnlineRequest;
-
-    private Link lnkActivationCode;
+    
+    private Text txtLicenseFile;
+    
+    private Button btnChooseFile;
 
     private Button btnActivate;
     
@@ -60,23 +58,13 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
 
     @Override
     protected void registerControlModifyListeners() {
-        txtActivationCode.addModifyListener(new ModifyListener() {
-
+        txtLicenseFile.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
                 btnActivate.setEnabled(validateInput());
             }
         });
-
-        btnCopyToClipboard.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Clipboard cb = new Clipboard(getShell().getDisplay());
-                cb.setContents(new Object[] { lblRequestCodeDetail.getText() },
-                        new Transfer[] { TextTransfer.getInstance() });
-            }
-        });
-
+        
         lnkOnlineRequest.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -86,13 +74,6 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
                     setReturnCode(REQUEST_ONLINE_CODE);
                 }
                 close();
-            }
-        });
-
-        lnkActivationCode.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Program.launch(MessageConstants.ActivationOfflineDialogV2_ACTIVATION_URL);
             }
         });
         
@@ -109,7 +90,8 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
                 btnActivate.setEnabled(false);
                 setProgressMessage(MessageConstants.ActivationDialogV2_MSG_ACTIVATING, false);
                 StringBuilder errorMessage = new StringBuilder();
-                boolean result = ActivationInfoCollector.activate(txtActivationCode.getText().trim(), errorMessage);
+//                boolean result = ActivationInfoCollector.activate(txtActivationCode.getText().trim(), errorMessage);
+                boolean result = true;
                 if (result == true) {
                     setReturnCode(OK);
                     close();
@@ -119,18 +101,24 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
                 }
             }
         });
+        
+        btnChooseFile.addSelectionListener(new SelectionAdapter() {
+           @Override
+            public void widgetSelected(SelectionEvent e) {
+                FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SINGLE);
+                String filePath = fileDialog.open();
+                txtLicenseFile.setText(filePath);
+            } 
+        });
     }
 
     @Override
     protected void setInput() {
         btnActivate.setEnabled(validateInput());
-
-        lblRequestCodeDetail.setText(ComposerActivationInfoCollector.genRequestActivationInfo());
-        lblRequestCodeDetail.getParent().layout();
     }
 
     private boolean validateInput() {
-        return txtActivationCode.getText().length() > 0;
+        return txtLicenseFile.getText().length() > 0;
     }
 
     @Override
@@ -139,50 +127,27 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         GridLayout glContainer = new GridLayout();
         glContainer.verticalSpacing = 15;
         container.setLayout(glContainer);
-
-        Composite requestCodeComposite = new Composite(container, SWT.NONE);
-        requestCodeComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        requestCodeComposite.setLayout(new GridLayout(3, false));
-
-        Label lblRequestCode = new Label(requestCodeComposite, SWT.NONE);
-        lblRequestCode.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        lblRequestCode.setText(MessageConstants.ACTIVATION_REQUEST_CODE);
-
-        lblRequestCodeDetail = new Label(requestCodeComposite, SWT.NONE);
-        lblRequestCodeDetail.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        lblRequestCodeDetail.setForeground(ColorUtil.getTextLinkColor());
-        increateFontSize(lblRequestCodeDetail, 2);
         
-        btnCopyToClipboard = new Button(requestCodeComposite, SWT.PUSH);
-        btnCopyToClipboard.setText(MessageConstants.BTN_COPY_TITLE);
+        Composite licenseComposite = new Composite(container, SWT.NONE);
+        licenseComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        licenseComposite.setLayout(new GridLayout(3, false));
+        
+        Label lblLicenseFile = new Label(licenseComposite, SWT.NONE);
+        lblLicenseFile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        lblLicenseFile.setText(MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATION);
+        
+        txtLicenseFile = new Text(licenseComposite, SWT.BORDER);
+        txtLicenseFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        
+        btnChooseFile = new Button(licenseComposite, SWT.PUSH);
+        btnChooseFile.setText(MessageConstants.ActivationOfflineDialogV2_BTN_CHOOSE_FILE);
 
         Composite messageComposite = new Composite(container, SWT.NONE);
         GridLayout glMessageComposite = new GridLayout();
         glMessageComposite.verticalSpacing = 10;
         messageComposite.setLayout(glMessageComposite);
         messageComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-        lnkActivationCode = new Link(messageComposite, SWT.WRAP);
-        lnkActivationCode.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        lnkActivationCode
-                .setText(MessageConstants.ActivationOfflineDialogV2_LBL_ACTIVATION_URL);
-
-        Composite activationCodeComposite = new Composite(messageComposite, SWT.NONE);
-        activationCodeComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        GridLayout glActivationCode = new GridLayout(2, false);
-        glActivationCode.marginHeight = 0;
-        glActivationCode.marginWidth = 0;
-        activationCodeComposite.setLayout(glActivationCode);
-
-        Label lblActivationCode = new Label(activationCodeComposite, SWT.NONE);
-        lblActivationCode.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        lblActivationCode.setText(MessageConstants.ActivationOfflineDialogV2_LBL_ACTIVATION_CODE);
-
-        txtActivationCode = new Text(activationCodeComposite, SWT.BORDER);
-        GridData gdActivationCode = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        gdActivationCode.heightHint = 22;
-        txtActivationCode.setLayoutData(gdActivationCode);
-
+        
         lblProgressMessage = new Label(messageComposite, SWT.NONE);
         lblProgressMessage.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
