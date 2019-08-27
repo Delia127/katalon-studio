@@ -144,7 +144,7 @@
 <unit id="com.katalon.platform" version="1.0.12"/>
 <unit id="org.apache.xmlbeans" version="2.6.0"/>
 <unit id="org.apache.commons.digester" version="1.8.1"/>
-<unit id="org.apache.commons.codec" version="1.9.0"/>
+<unit id="org.apache.commons.codec" version="1.7.0"/>
 <unit id="org.apache.commons.email" version="1.4.0"/>
 <unit id="stax.api" version="1.0.1"/>
 <unit id="stax2-api" version="3.1.4"/>
@@ -299,7 +299,6 @@
 <plugin id="org.apache.commons.beanutils"/>
 <plugin id="org.apache.commons.cli"/>
 <plugin id="org.apache.commons.codec" version="1.7.0"/>
-<plugin id="org.apache.commons.codec" version="1.9.0"/>
 <plugin id="org.apache.commons.collections"/>
 <plugin id="org.apache.commons.commons-text"/>
 <plugin id="org.apache.commons.compress"/>
