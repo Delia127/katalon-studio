@@ -13,7 +13,8 @@ import com.kms.katalon.logging.LogUtil;
 
 public class OrganizationHandler {
 
-    public Long getOrganizationId() {
+	//For execute job, get orgId from CLI or GUI
+    public static Long getOrganizationId() {
         RunningMode mode = ApplicationRunningMode.get();
         if (mode == RunningMode.CONSOLE) {
             return Long.parseLong(Organization.getId());
@@ -29,5 +30,18 @@ public class OrganizationHandler {
             }
             return org.getId();
         }
+    }
+    
+    public static Long getAnalyticsOrganizationId() {
+    	 AnalyticsOrganization org = new AnalyticsOrganization();
+         String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+         if (StringUtils.isNotBlank(jsonObject)) {
+             try {
+                  org = JsonUtil.fromJson(jsonObject, AnalyticsOrganization.class);
+             } catch (IllegalArgumentException e) {
+                  LogUtil.logError(e);
+             }
+         }
+         return org.getId();
     }
 }
