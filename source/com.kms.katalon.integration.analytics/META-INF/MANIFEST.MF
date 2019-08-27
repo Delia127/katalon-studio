@@ -40,4 +40,5 @@ Export-Package: com.kms.katalon.integration.analytics,
  com.kms.katalon.integration.analytics.setting,
  com.kms.katalon.integration.analytics.util
 Bundle-ActivationPolicy: lazy
-Import-Package: com.kms.katalon.custom.contribution
+Import-Package: com.kms.katalon.application.utils,
+ com.kms.katalon.custom.contribution

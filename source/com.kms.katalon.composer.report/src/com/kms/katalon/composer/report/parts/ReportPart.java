@@ -926,7 +926,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 analyticsSettingStore.enableEncryption(encryptionEnabled);
                 analyticsSettingStore.setEmail(analyticsEmail, encryptionEnabled);
                 analyticsSettingStore.setPassword(analyticsPassword, encryptionEnabled);
-                analyticsSettingStore.setServerEndPoint(serverUrl, encryptionEnabled);
+//                analyticsSettingStore.setServerEndPoint(serverUrl, encryptionEnabled);
                 analyticsSettingStore.enableIntegration(true);
                 analyticsSettingStore.setAttachLog(true);
                 analyticsSettingStore.setAttachCapturedVideos(true);
