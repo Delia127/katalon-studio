@@ -336,7 +336,7 @@ public class MessageConstants extends NLS {
 
     public static String ActivationDialogV2_LBL_ERROR;
 
-    public static String AcivationDialogV2_LBL_ERROR_ORGANIZATION;
+    public static String ActivationDialogV2_LBL_ERROR_ORGANIZATION;
 
     // ActivationOfflineDialogV2
     public static String ActivationOfflineDialogV2_LNK_BACK;
