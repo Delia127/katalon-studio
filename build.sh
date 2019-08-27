@@ -37,7 +37,11 @@ fi
 
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} clean ${command} 
 
-pwd
+cd $BUILD_REPOSITORY_LOCALPATH/source
+ls -al 
+cd target
+ls -al
+
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs
 ls -al
 
