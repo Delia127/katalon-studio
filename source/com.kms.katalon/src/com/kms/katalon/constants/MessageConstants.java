@@ -334,6 +334,10 @@ public class MessageConstants extends NLS {
 
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
 
+    public static String ActivationDialogV2_LBL_ERROR;
+
+    public static String AcivationDialogV2_LBL_ERROR_ORGANIZATION;
+
     // ActivationOfflineDialogV2
     public static String ActivationOfflineDialogV2_LNK_BACK;
 
@@ -470,13 +474,6 @@ public class MessageConstants extends NLS {
     public static String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static String MSG_FAIL_TO_UPDATE_WEB_DRIVER;
-    
-    //KAServer
-    public static String KAServerProduction;
-    
-    public static String KAServerStaging;
-    
-    public static String KAServerDev;
 
     static {
         // initialize resource bundle
