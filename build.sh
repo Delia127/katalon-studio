@@ -7,8 +7,15 @@ tmpDir="/tmp/katabuild"
 version=6.3.3
 isQtest=true
 isRelease=true
+isBeta=true
 withUpdate=true
 tag="6.3.3"
+
+cd $BUILD_REPOSITORY_LOCALPATH
+python generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta
+python generate_lastest_release_file.py "${tmpDir}/lastest_release.json" $version
+python generate_release_json_file.py "${tmpDir}/releases.json" $version
+python generate_latest_version_json_file.py "${tmpDir}/latest_version.json" $version
 
 # Building
 ulimit -c unlimited
@@ -62,9 +69,9 @@ then
     cp *.tar.gz ${tmpDir}
 fi
 
-# Sign file
-cd $BUILD_REPOSITORY_LOCALPATH
-./codesign.sh $tmpDir
+# # Sign file
+# cd $BUILD_REPOSITORY_LOCALPATH
+# ./codesign.sh $tmpDir
 
 # # Package .DMG file
 # cd $BUILD_REPOSITORY_LOCALPATH
@@ -78,17 +85,9 @@ cd $BUILD_REPOSITORY_LOCALPATH
 # if [ "$withUpdate" = "true" ]
 # then
 #     cd tools/updater
-#     def updateInfo = [
-#         buildDir: "${WORKSPACE}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product",
-#         destDir: "${tmpDir}/update",
-#         version: "${version}"
-#     ]
-#     def json = JsonOutput.toJson(updateInfo)
-#     json = JsonOutput.prettyPrint(json)
-#     writeFile(file: 'scan_info.json', text: json)
+#     python generate_scan_info_file.py "scan_info.json" $version "${BUILD_REPOSITORY_LOCALPATH}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product" "${tmpDir}/update"
 #     java -jar json-map-builder-1.0.0.jar
-# }
-               
+# }  
 
 # # Repackage
 # cd $BUILD_REPOSITORY_LOCALPATH
@@ -105,7 +104,7 @@ cd $BUILD_REPOSITORY_LOCALPATH
 # rm -rf ${env.tmpDir}/output
 # cd '${tmpDir}' && zip -r '${tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'
 
-# rm -rf '${env.tmpDir}/Katalon Studio.app'
+# rm -rf '${tmpDir}/Katalon Studio.app'
 
 # cd '${tmpDir}' && zip -r '${tmpDir}/apidocs.zip' 'apidocs'
 # rm -rf '${tmpDir}/apidocs'
