@@ -70,19 +70,17 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
     private AnalyticsTokenInfo tokenInfo;
 
     public KatalonAnalyticsIntegrationDialog(Shell parentShell) {
-    	super(parentShell);
-    	analyticsSettingStore = new AnalyticsSettingStore(
-    			ProjectController.getInstance().getCurrentProject().getFolderLocation());
-    	try {
-    		password = analyticsSettingStore.getPassword(true);
-    		serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
-    		email = analyticsSettingStore.getEmail(true);
-    		
-    		tokenInfo = AnalyticsAuthorizationHandler.getTokenNew(serverUrl, email, password,
-    				analyticsSettingStore);
-    	} catch (Exception e) {
-    		LoggerSingleton.logError(e);
-    	} 
+        super(parentShell);
+        analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        try {
+            password = analyticsSettingStore.getPassword(true);
+            serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
+            email = analyticsSettingStore.getEmail(true);
+ 
+            tokenInfo = AnalyticsAuthorizationHandler.getTokenNew(serverUrl, email, password, analyticsSettingStore);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        } 
     }
 
     @Override
@@ -92,10 +90,10 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
     }
     
     public boolean checkConnection() {
-    	if (tokenInfo == null) {
-    		return false;
-    	}
-    	return true;
+        if (tokenInfo == null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -176,27 +174,24 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         cbbTeams.setItems();
         cbbProjects.setItems();
 
-		cbxAutoSubmit.setSelection(true);
-		cbxAttachScreenshot.setSelection(true);
+        cbxAutoSubmit.setSelection(true);
+        cbxAttachScreenshot.setSelection(true);
 
-		teams.clear();
-		projects.clear();
+        teams.clear();
+        projects.clear();
 
-		
-		teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo,
-				new ProgressMonitorDialog(getShell()));
-		projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-				teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
-				new ProgressMonitorDialog(getShell()));
+        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo,
+                new ProgressMonitorDialog(getShell()));
+        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
+                new ProgressMonitorDialog(getShell()));
 
-		if (teams != null && teams.size() > 0) {
-			cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-
-			int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-			cbbTeams.select(indexSelectTeam);
-
-			setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
-		}
+        if (teams != null && teams.size() > 0) {
+            cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+            int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+            cbbTeams.select(indexSelectTeam);
+            setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+        }
     }
 
     private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
