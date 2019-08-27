@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -21,6 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
@@ -30,7 +32,6 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -159,7 +160,7 @@ public class ActivationDialogV2 extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int index = cbbOrganization.getSelectionIndex();
-                saveOrganization(index);
+                save(index);
             }
         });
         
@@ -171,7 +172,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         });
     }
 
-    private void saveOrganization(int index) {
+    private void save(int index) {
         try {
             AnalyticsOrganization organization = organizations.get(index);
             String email = txtEmail.getText();
@@ -196,19 +197,13 @@ public class ActivationDialogV2 extends AbstractDialog {
             UISynchronizeService.syncExec(() -> {
                 AnalyticsTokenInfo token;
                 try {
-                    String serverUrl = MessageConstants.KAServerProduction;
-                    if (VersionUtil.isStagingBuild()) {
-                        serverUrl = MessageConstants.KAServerStaging;
-                    } else if (VersionUtil.isDevelopmentBuild()) {
-                        serverUrl = MessageConstants.KAServerDev;
-                    }
-
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
                     String email = txtEmail.getText();
                     String password = txtPassword.getText();
                     token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                     organizations = AnalyticsApiProvider.getOrganization(serverUrl, token.getAccess_token());
                     if (organizations.size() == 1) {
-                        saveOrganization(0);
+                        save(0);
 	                } else {
 	                    cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
 	                    cbbOrganization.select(0);
@@ -218,6 +213,9 @@ public class ActivationDialogV2 extends AbstractDialog {
 	                }
                 } catch (AnalyticsApiExeception e) {
                     LogUtil.logError(e);
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), 
+                            MessageConstants.ActivationDialogV2_LBL_ERROR, 
+                            MessageConstants.AcivationDialogV2_LBL_ERROR_ORGANIZATION);
                 }
             });
         });
