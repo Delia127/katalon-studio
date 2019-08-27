@@ -11,7 +11,7 @@ isBeta=true
 withUpdate=true
 tag="6.3.3"
 
-mkdir tmpDir
+mkdir -p $tmpDir
 
 cd $BUILD_REPOSITORY_LOCALPATH
 python3 generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta
