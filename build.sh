@@ -12,11 +12,10 @@ withUpdate=true
 tag="6.3.3"
 
 cd $BUILD_REPOSITORY_LOCALPATH
-python --version
-python generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta
-python generate_lastest_release_file.py "${tmpDir}/lastest_release.json" $version
-python generate_release_json_file.py "${tmpDir}/releases.json" $version
-python generate_latest_version_json_file.py "${tmpDir}/latest_version.json" $version
+python3 generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta
+python3 generate_lastest_release_file.py "${tmpDir}/lastest_release.json" $version
+python3 generate_release_json_file.py "${tmpDir}/releases.json" $version
+python3 generate_latest_version_json_file.py "${tmpDir}/latest_version.json" $version
 
 # Building
 ulimit -c unlimited
@@ -86,7 +85,7 @@ fi
 # if [ "$withUpdate" = "true" ]
 # then
 #     cd tools/updater
-#     python generate_scan_info_file.py "scan_info.json" $version "${BUILD_REPOSITORY_LOCALPATH}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product" "${tmpDir}/update"
+#     python3 generate_scan_info_file.py "scan_info.json" $version "${BUILD_REPOSITORY_LOCALPATH}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product" "${tmpDir}/update"
 #     java -jar json-map-builder-1.0.0.jar
 # }  
 
