@@ -4,6 +4,8 @@ set -xe
 
 ulimit -c unlimited
 
+mvn -v
+
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && mvn ${MAVEN_OPTS} p2:site 
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.repo && nohup mvn ${MAVEN_OPTS} -Djetty.port=9999 jetty:run > /tmp/9999.log &
 
@@ -21,7 +23,9 @@ until $(curl --output /dev/null --silent --head --fail http://localhost:33333/si
     sleep 5
 done
 
-cd $BUILD_REPOSITORY_LOCALPATH/source && mvn ${MAVEN_OPTS} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
+cd $BUILD_REPOSITORY_LOCALPATH/source && mvn ${MAVEN_OPTS} clean verify
 
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && mvn ${MAVEN_OPTS} clean ${command} && cp -R 'target/resources/apidocs' '/tmp/katabuild'
+# cd $BUILD_REPOSITORY_LOCALPATH/source && mvn ${MAVEN_OPTS} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
+
+# cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && mvn ${MAVEN_OPTS} clean ${command} && cp -R 'target/resources/apidocs' '/tmp/katabuild'
                  
