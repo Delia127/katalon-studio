@@ -93,6 +93,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         startWatchDog();
 
         startTime = new Date();
+        
+        sendTrackingActivity();
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_COLLECTION_STARTED_EVENT);
     }
     
@@ -139,6 +141,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         schedule();
 
         endTime = new Date();
+        
+        sendTrackingActivity();
         
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_COLLECTION_FINISHED_EVENT);
     }

@@ -19,6 +19,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestCaseExecutionContext;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -71,12 +72,23 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
+    
+    private void sendTrackingActivity() {
+        ReportIntegrationContribution analyticsProvider = ReportIntegrationFactory.getInstance().getAnalyticsProvider();
+        String machineId = getMachineId();
+        String sessionId = getExecutionUUID();
+        Date startTime = getStartTime(); 
+        Date endTime = getEndTime(); 
+        String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+        analyticsProvider.sendTrackingActivity(machineId, sessionId, startTime, endTime, ksVersion);
+     }
 
     @Override
     protected void onStartExecution() {
         super.onStartExecution();
 
         startTime = new Date();
+        sendTrackingActivity();
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
 
@@ -87,6 +99,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         this.endTime = new Date();
+        
+        sendTrackingActivity();
+        
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }

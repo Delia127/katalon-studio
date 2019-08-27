@@ -82,15 +82,21 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
 		}
     }
     
+    private Long getOrganizationId() {
+        return 1L;
+    }
+    
     @Override
     public void sendTrackingActivity(String machineId, String sessionId, Date startTime, Date endTime, String ksVersion) {
         try {
+            Long orgId = getOrganizationId();
             AnalyticsTracking trackingInfo = new AnalyticsTracking();
             trackingInfo.setMachineId(machineId);
             trackingInfo.setSessionId(sessionId);
             trackingInfo.setStartTime(startTime);
             trackingInfo.setEndTime(endTime);
             trackingInfo.setKsVersion(ksVersion);
+            trackingInfo.setOrganizationId(orgId);
             reportService.sendTrackingActivity(trackingInfo);
         } catch (Exception e) {
             LogUtil.logError(e);
