@@ -2,7 +2,7 @@
 
 set -xe
 
-printenv
+echo  ${MAVEN_OPTS}
 
 ulimit -c unlimited
 
@@ -23,11 +23,7 @@ until $(curl --output /dev/null --silent --head --fail http://localhost:33333/si
     sleep 5
 done
 
-cd $BUILD_REPOSITORY_LOCALPATH/source
+cd $BUILD_REPOSITORY_LOCALPATH/source && mvn -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod
 
-command=verify
-
-mvn -pl \\!com.kms.katalon.product.qtest_edition clean ${command} -P prod
-
-cd com.kms.katalon.apidocs && mvn clean ${command} && cp -R 'target/resources/apidocs' '/tmp/katabuild'
+cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && mvn clean ${command} && cp -R 'target/resources/apidocs' '/tmp/katabuild'
                  
