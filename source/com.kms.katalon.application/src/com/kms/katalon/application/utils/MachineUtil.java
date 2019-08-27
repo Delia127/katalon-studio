@@ -55,10 +55,16 @@ public class MachineUtil {
 
     private static String parseMachineIdForWindows() {
         try {
-            String commandLineResult = ConsoleCommandExecutor
-                    .runConsoleCommandAndCollectFirstResult(WINDOWS_GET_MACHINE_ID_COMMAND);
+            List<String> commandLineResults = ConsoleCommandExecutor
+                    .runConsoleCommandAndCollectResults(WINDOWS_GET_MACHINE_ID_COMMAND);
 
             // Example: MachineGuid REG_SZ efc790ec-91b4-4e8d-aaa1-5c3e815669bc
+            String commandLineResult = commandLineResults.stream()
+            .filter(item -> {
+                return item.indexOf(WINDOWS_GET_MACHINE_ID_DELIMITER) > 0;
+            })
+            .findFirst()
+            .orElse(UNAVAILABLE);
             String parsedResult = Arrays.asList(commandLineResult.split(WINDOWS_GET_MACHINE_ID_DELIMITER))
                     .stream()
                     .map(result -> result.trim())
