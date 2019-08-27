@@ -130,7 +130,7 @@ https://s3.amazonaws.com/katalon/${releaseBeta}${firstArg}/commit.txt
         "location": "https://download.katalon.com/${version}/Katalon_Studio_Windows_64-${version}.zip",
         "file": "win_64"
     },
-        {
+    {
         "location": "https://download.katalon.com/${version}/Katalon%20Studio.app.zip",
         "file": "mac_64"
     },
