@@ -5,6 +5,7 @@ set -xe
 mavenVersion=3.5.4
 tmpDir="/tmp/katabuild"
 
+# Building
 ulimit -c unlimited
 
 cd $BUILD_REPOSITORY_LOCALPATH/source && mvn ${MAVEN_OPTS} -N io.takari:maven:wrapper -Dmaven=$mavenVersion
@@ -39,8 +40,23 @@ fi
 
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} clean verify && cp -R 'target/resources/apidocs' $tmpDir      
 
+# Copy builds
+cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product/target/products
+if [ "$isQtest" = "false" ]
+then
+    cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' $tmpDir
+fi
+
+cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product.qtest_edition/target/products
+if [ "$isQtest" = "true" ]
+then
+    cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' $tmpDir
+fi
+
+# Sign file
 cd $BUILD_REPOSITORY_LOCALPATH
 ./codesign.sh $tmpDir
 
+# Package .DMG file
 cd $BUILD_REPOSITORY_LOCALPATH
 ./dropdmg.sh $tmpDir
