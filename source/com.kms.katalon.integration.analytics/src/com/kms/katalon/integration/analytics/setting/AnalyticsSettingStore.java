@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsSettingStoreConstants;
@@ -27,13 +28,14 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getServerEndpoint(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT,
-                AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT, encryptionEnabled);
+//        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT,
+//                AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT, encryptionEnabled);
+    	return ApplicationInfo.getTestOpsServer();
     }
 
     public void setServerEndPoint(String serverEndpoint, boolean encryptionEnabled)
             throws IOException, GeneralSecurityException {
-        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT, serverEndpoint, encryptionEnabled);
+//        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT, serverEndpoint, encryptionEnabled);
     }
 
     public String getEmail(boolean encryptionEnabled) throws IOException, GeneralSecurityException {

@@ -128,6 +128,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         txtServerUrl = new Text(grpAuthentication, SWT.BORDER);
         txtServerUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtServerUrl.setEnabled(false);
 
         Label lblEmail = new Label(grpAuthentication, SWT.NONE);
         lblEmail.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_EMAIL);
@@ -373,7 +374,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         btnConnect.setEnabled(isAnalyticsIntegrated);
         txtPassword.setEnabled(isAnalyticsIntegrated);
         txtEmail.setEnabled(isAnalyticsIntegrated);
-        txtServerUrl.setEnabled(isAnalyticsIntegrated);
         cbbProjects.setEnabled(isAnalyticsIntegrated);
         btnCreate.setEnabled(isAnalyticsIntegrated);
         cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
@@ -395,7 +395,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         try {
             boolean encryptionEnabled = chckEncrypt.getSelection();
             analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
-            analyticsSettingStore.setServerEndPoint(txtServerUrl.getText(), encryptionEnabled);
+//            analyticsSettingStore.setServerEndPoint(txtServerUrl.getText(), encryptionEnabled);
             analyticsSettingStore.setEmail(txtEmail.getText(), encryptionEnabled);
             analyticsSettingStore.setPassword(txtPassword.getText(), encryptionEnabled);
             analyticsSettingStore.enableEncryption(encryptionEnabled);

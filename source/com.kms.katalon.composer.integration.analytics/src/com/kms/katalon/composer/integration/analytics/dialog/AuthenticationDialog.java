@@ -158,7 +158,7 @@ public class AuthenticationDialog extends Dialog {
             boolean encryptionEnabled = true;
             analyticsSettingStore.enableIntegration(true);
             analyticsSettingStore.enableEncryption(encryptionEnabled);
-            analyticsSettingStore.setServerEndPoint(serverUrl.getText(), encryptionEnabled);
+//            analyticsSettingStore.setServerEndPoint(serverUrl.getText(), encryptionEnabled);
             analyticsSettingStore.setEmail(email, encryptionEnabled);
             analyticsSettingStore.setPassword(password, encryptionEnabled);
         } catch (IOException | GeneralSecurityException e) {

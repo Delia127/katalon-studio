@@ -35,4 +35,7 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     public static final String HTTP_PROXY_TYPE = "HTTP";
 
     public static final String SOCKS_PROXY_TYPE = "SOCKS";
+    
+    // Server
+    public static final String KA_SERVER_PRODUCTION = "https://analytics.katalon.com";
 }

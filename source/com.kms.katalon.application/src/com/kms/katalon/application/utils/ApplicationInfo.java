@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.logging.LogManager;
 import com.kms.katalon.logging.LogMode;
 import com.kms.katalon.logging.LogUtil;
@@ -39,6 +40,8 @@ public class ApplicationInfo {
     private static final String ABOUT_VERSION_TAG = "3";
     
     private static final String PROFILE_PROPERTY_KEY = "katalonProfile";
+
+    private static final String KATALON_ANALYTICS_SERVER = "testOpsServer";
 
     private static Properties aboutMappingsProperties;
 
@@ -183,5 +186,13 @@ public class ApplicationInfo {
             appProps.remove(key);
             saveAppProperties();
         }
+    }
+
+    public static String getTestOpsServer() {
+        String server = System.getProperty(KATALON_ANALYTICS_SERVER);
+        if (server == null) {
+            server = ApplicationStringConstants.KA_SERVER_PRODUCTION;
+        }
+        return server;
     }
 }
