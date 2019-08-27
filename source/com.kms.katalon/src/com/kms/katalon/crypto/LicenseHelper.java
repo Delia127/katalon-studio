@@ -17,10 +17,10 @@ import org.bouncycastle.util.io.pem.PemReader;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
-public class CryptoService {
-	private static CryptoService serviceInstance;
+public class LicenseHelper {
+	private static LicenseHelper serviceInstance;
 	
-	private CryptoService() { }
+	private LicenseHelper() { }
 
     private String defaultKeyStoreFolder = ".";
 
@@ -30,7 +30,10 @@ public class CryptoService {
 
     private PublicKey publicKey;
     
-    public static CryptoService getInstance() {
+    public static LicenseHelper getInstance() {
+    	if (serviceInstance == null) {
+    		serviceInstance = new LicenseHelper();
+    	}
     	return serviceInstance;
     }
 
