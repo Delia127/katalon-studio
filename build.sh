@@ -3,7 +3,7 @@
 set -xe
 
 mavenVersion=3.5.4
-tmpDir="/tmp/katabuild
+tmpDir="/tmp/katabuild"
 
 ulimit -c unlimited
 
