@@ -2,7 +2,7 @@ package com.kms.katalon.application.utils;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -12,14 +12,30 @@ import com.kms.katalon.logging.LogUtil;
 
 public class MachineUtil {
 
+    private static final String MAC_GET_MACHINE_ID_FIELD = "IOPlatformUUID";
+
+    private static final String MAC_GET_MACHINE_ID_DELIMITER = "=";
+
+    private static final String[] MAC_GET_MACHINE_ID_COMMAND = new String[] { "ioreg", "-rd1", "-c",
+            "IOPlatformExpertDevice", "|", "grep", MAC_GET_MACHINE_ID_FIELD };
+
+    private static final String[] LINUX_GET_MACHINE_ID_COMMAND_2 = new String[] { "cat", "/etc/machine-id" };
+
+    private static final String[] LINUX_GET_MACHINE_ID_COMMAND_1 = new String[] { "cat", "/var/lib/dbus/machine-id" };
+
+    private static final String WINDOWS_GET_MACHINE_ID_DELIMITER = "REG_SZ";
+
+    private static final String[] WINDOWS_GET_MACHINE_ID_COMMAND = new String[] { "reg", "query",
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography", "/v", "MachineGuid" };
+
     private static final String UNAVAILABLE = "N/A";
 
     private static final String UUID_REGEX = "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
 
-    private String machineId = StringUtils.EMPTY;
+    private static String machineId = StringUtils.EMPTY;
 
-    public String getMachineId() throws IOException, InterruptedException {
-
+    public static String getMachineId() throws IOException, InterruptedException {
+        // Only load machine id once if not loaded
         if (!machineId.equals(StringUtils.EMPTY)) {
             return machineId;
         }
@@ -34,54 +50,69 @@ public class MachineUtil {
             machineId = UNAVAILABLE;
         }
 
-        return machineId;
+        return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
     }
 
-    private String parseMachineIdForWindows() {
-        try {
-            String commandLineResult = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(
-                    new String[] { "reg query HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography /v MachineGuid" });
-            // Example: MachineGuid REG_SZ efc790ec-91b4-4e8d-aaa1-5c3e815669bc
-            String parsedResult = Arrays.asList(commandLineResult.split("REG_SZ"))
-                    .stream()
-                    .map(result -> result.trim())
-                    .map(result -> result.toLowerCase())
-                    .collect(Collectors.toList())
-                    .get(1);
-            return (parsedResult.matches(UUID_REGEX) ? parsedResult : UNAVAILABLE);
-        } catch (IOException | InterruptedException e) {
-            LogUtil.logError(e);
-        }
-
-        return UNAVAILABLE;
-    }
-
-    private String parseMachineIdForLinux() {
+    private static String parseMachineIdForWindows() {
         try {
             String commandLineResult = ConsoleCommandExecutor
-                    .runConsoleCommandAndCollectFirstResult(new String[] { "cat /var/lib/dbus/machine-id" });
-            ;
-            return (commandLineResult.matches(UUID_REGEX) ? commandLineResult : UNAVAILABLE);
+                    .runConsoleCommandAndCollectFirstResult(WINDOWS_GET_MACHINE_ID_COMMAND);
+
+            // Example: MachineGuid REG_SZ efc790ec-91b4-4e8d-aaa1-5c3e815669bc
+            String parsedResult = Arrays.asList(commandLineResult.split(WINDOWS_GET_MACHINE_ID_DELIMITER))
+                    .stream()
+                    .map(result -> result.trim())
+                    .map(result -> result.toLowerCase())
+                    .filter(result -> result.matches(UUID_REGEX))
+                    .findAny()
+                    .orElse(UNAVAILABLE);
+
+            return parsedResult;
+        } catch (IOException | InterruptedException e) {
+            LogUtil.logError(e);
+        }
+
+        return UNAVAILABLE;
+    }
+
+    private static String parseMachineIdForLinux() {
+        try {
+            String commandLineResult = ConsoleCommandExecutor
+                    .runConsoleCommandAndCollectFirstResult(LINUX_GET_MACHINE_ID_COMMAND_1);
+            if (!commandLineResult.matches(UUID_REGEX)) {
+                commandLineResult = ConsoleCommandExecutor
+                        .runConsoleCommandAndCollectFirstResult(LINUX_GET_MACHINE_ID_COMMAND_2);
+            }
+            return commandLineResult;
         } catch (IOException | InterruptedException e) {
             LogUtil.logError(e);
         }
         return UNAVAILABLE;
     }
 
-    private String parseMachineIdForMac() {
-        String commandLineResult;
+    private static String parseMachineIdForMac() {
         try {
-            commandLineResult = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(
-                    new String[] { "ioreg -rd1 -c IOPlatformExpertDevice | grep IOPlatformUUID" });
+            // Returns a list of information about the device
+            List<String> commandLineResult = ConsoleCommandExecutor
+                    .runConsoleCommandAndCollectResults(MAC_GET_MACHINE_ID_COMMAND);
+
+            // Extract the field of interest
+            String parsedResult = commandLineResult.stream()
+                    .filter(result -> result.contains(MAC_GET_MACHINE_ID_FIELD))
+                    .findAny()
+                    .orElse(UNAVAILABLE);
+
             // Example: "IOPlatformUUID" = "D84B28E0-B054-5C67-8A5D-8F6FF1639F0B"
-            String parsedResult = Arrays.asList(commandLineResult.split("="))
+            parsedResult = Arrays.asList(parsedResult.split(MAC_GET_MACHINE_ID_DELIMITER))
                     .stream()
                     .map(result -> result.trim())
-                    .map(result -> result.toLowerCase())
                     .map(result -> result.replace("\"", ""))
-                    .collect(Collectors.toList())
-                    .get(2);
-            return (parsedResult.matches(UUID_REGEX) ? parsedResult : UNAVAILABLE);
+                    .map(result -> result.toLowerCase())
+                    .filter(result -> result.matches(UUID_REGEX))
+                    .findAny()
+                    .orElse(UNAVAILABLE);
+
+            return parsedResult;
         } catch (IOException | InterruptedException e) {
             LogUtil.logError(e);
         }
