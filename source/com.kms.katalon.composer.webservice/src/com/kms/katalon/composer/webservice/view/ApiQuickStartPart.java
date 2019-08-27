@@ -2,22 +2,31 @@ package com.kms.katalon.composer.webservice.view;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.control.ScrollableComposite;
+import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -35,7 +44,7 @@ import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class ApiQuickStartDialog extends Dialog {
+public class ApiQuickStartPart {
 
     private static final Color RIGHT_PART_BACKGROUND_COLOR = ColorUtil.getColor("#F7F7F7");
 
@@ -47,10 +56,98 @@ public class ApiQuickStartDialog extends Dialog {
 
     private ProjectType projectType;
 
-    public ApiQuickStartDialog(ITreeEntity parentTreeEntity, Shell parentShell, ProjectType projectType) {
-        super(parentShell);
-        this.parentTreeEntity = parentTreeEntity;
-        this.projectType = projectType;
+    @Inject
+    private IEventBroker eventBroker;
+
+    @Inject
+    private EPartService partService;
+
+    private MPart part;
+
+    private Composite mainComposite;
+
+    @PostConstruct
+    public void initialize(final Composite parent, MPart part) {
+        this.part = part;
+        projectType = ProjectController.getInstance().getCurrentProject().getType();
+        createDialogArea(parent);
+        registerEventListeners();
+    }
+
+    private void registerEventListeners() {
+        eventBroker.subscribe(EventConstants.PROJECT_CREATED, new EventServiceAdapter() {
+            @Override
+            public void handleEvent(org.osgi.service.event.Event event) {
+                if (part.isVisible()) {
+                    partService.hidePart(part, true);
+                }
+                part.setVisible(true);
+                partService.activate(part, true);
+                partService.bringToTop(part);
+
+            }
+        });
+    }
+
+    protected void createDialogArea(Composite parent) {
+
+        FillLayout parentLayout = new FillLayout();
+        parentLayout.marginHeight = 0;
+        parentLayout.marginWidth = 0;
+        parent.setLayout(parentLayout);
+
+        final ScrollableComposite container = new ScrollableComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+
+        mainComposite = new Composite(container, SWT.NONE);
+        mainComposite.setBackground(ColorUtil.getCompositeBackgroundColor());
+        mainComposite.setBackgroundMode(SWT.INHERIT_FORCE);
+        GridLayout mainGridLayout = new GridLayout(2, false);
+        mainGridLayout.verticalSpacing = 0;
+        mainGridLayout.horizontalSpacing = 0;
+        mainGridLayout.marginWidth = 0;
+        mainGridLayout.marginHeight = 0;
+        mainComposite.setLayout(mainGridLayout);
+
+        mainComposite.addListener(SWT.Paint, new Listener() {
+
+            @Override
+            public void handleEvent(Event event) {
+                Point size = mainComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                if (container.getMinHeight() < size.y) {
+                    container.setMinHeight(size.y);
+                }
+            }
+        });
+
+        container.setContent(mainComposite);
+        container.setMinSize(getLeftPartSize());
+        container.setExpandHorizontal(true);
+        container.setExpandVertical(true);
+
+        switch (projectType) {
+            case WEBSERVICE: {
+                createLeftPart(mainComposite);
+                createRightPart(mainComposite);
+                break;
+            }
+            case GENERIC:
+            case WEBUI: {
+                mainComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
+                mainGridLayout.marginLeft = 170;
+                createLeftPart(mainComposite);
+                break;
+            }
+            case MOBILE: {
+                mainComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
+                mainGridLayout.marginLeft = 170;
+                createLeftPart(mainComposite);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
     }
 
     private Point getLeftPartSize() {
@@ -66,76 +163,38 @@ public class ApiQuickStartDialog extends Dialog {
         }
     }
 
-    @Override
-    protected Control createDialogArea(Composite parent) {
-        Composite body = new Composite(parent, SWT.NONE);
-
-        GridData gdBody = new GridData(SWT.FILL, SWT.FILL, true, true);
-        body.setLayoutData(gdBody);
-        GridLayout glBody = new GridLayout(2, false);
-        glBody.marginWidth = 0;
-        glBody.marginHeight = 0;
-        glBody.horizontalSpacing = 0;
-        glBody.verticalSpacing = 0;
-        body.setLayout(glBody);
-
-        switch (projectType) {
-            case WEBSERVICE: {
-                createLeftPart(body);
-                createRightPart(body);
-                break;
-            }
-            case GENERIC:
-            case WEBUI: {
-                createLeftPart(body);
-                break;
-            }
-            case MOBILE: {
-                createLeftPart(body);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-        return super.createDialogArea(parent);
-    }
-
     public void createLeftPart(Composite parent) {
-        ScrolledComposite c1 = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CENTER);
-        c1.setExpandHorizontal(true);
-        c1.setExpandVertical(true);
-        c1.setMinSize(getLeftPartSize());
-
-        Composite leftComposite = new Composite(c1, SWT.NONE);
-        c1.setContent(leftComposite);
-        GridLayout glLeft = new GridLayout(1, false);
-        glLeft.marginWidth = 0;
-        glLeft.marginHeight = 0;
-        glLeft.marginLeft = 0;
-        glLeft.horizontalSpacing = 0;
-        glLeft.verticalSpacing = 0;
-        leftComposite.setLayout(glLeft);
-        GridData gdLeft = new GridData(SWT.FILL, SWT.FILL, true, true);
-        c1.setLayoutData(gdLeft);
-        c1.setVisible(true);
 
         switch (projectType) {
             case WEBSERVICE: {
+                Composite imageComposite = new Composite(parent, SWT.LEFT);
+                GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false);
                 Image backgroundImg = ImageConstants.API_QUICKSTART_BACKGROUND_LEFT;
-                leftComposite.setBackgroundImage(backgroundImg);
+                gridData.widthHint = backgroundImg.getBounds().width;
+                gridData.heightHint = backgroundImg.getBounds().height;
+                imageComposite.setLayoutData(gridData);
+                imageComposite.setBackgroundImage(backgroundImg);
                 break;
             }
             case GENERIC:
             case WEBUI: {
+                Composite imageComposite = new Composite(parent, SWT.CENTER);
+                GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false);
                 Image backgroundWImg = ImageConstants.API_QUICKSTART_BACKGROUND_WEB_LEFT;
-                leftComposite.setBackgroundImage(backgroundWImg);
+                gridData.widthHint = backgroundWImg.getBounds().width;
+                gridData.heightHint = backgroundWImg.getBounds().height;
+                imageComposite.setLayoutData(gridData);
+                imageComposite.setBackgroundImage(backgroundWImg);
                 break;
             }
             case MOBILE: {
+                Composite imageComposite = new Composite(parent, SWT.CENTER);
+                GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false);
                 Image backgroundMImg = ImageConstants.API_QUICKSTART_BACKGROUND_MOBILE_LEFT;
-                leftComposite.setBackgroundImage(backgroundMImg);
+                gridData.widthHint = backgroundMImg.getBounds().width;
+                gridData.heightHint = backgroundMImg.getBounds().height;
+                imageComposite.setLayoutData(gridData);
+                imageComposite.setBackgroundImage(backgroundMImg);
                 break;
             }
             default: {
@@ -146,12 +205,12 @@ public class ApiQuickStartDialog extends Dialog {
     }
 
     public void createRightPart(Composite parent) {
-        Composite rightComposite = new Composite(parent, SWT.NONE);
+        Composite rightComposite = new Composite(parent, SWT.RIGHT);
         GridLayout glRight = new GridLayout(1, false);
         glRight.marginWidth = 0;
         glRight.marginHeight = 0;
         glRight.marginLeft = 0;
-        glRight.marginTop = 200;
+        glRight.marginTop = 250;
         rightComposite.setLayout(glRight);
         rightComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         rightComposite.setBackground(RIGHT_PART_BACKGROUND_COLOR);
@@ -162,7 +221,7 @@ public class ApiQuickStartDialog extends Dialog {
         glQuickStartItemComposite.marginWidth = 0;
         glQuickStartItemComposite.marginHeight = 0;
         glQuickStartItemComposite.horizontalSpacing = 0;
-        glQuickStartItemComposite.verticalSpacing = 20;
+        glQuickStartItemComposite.verticalSpacing = 0;
         quickStartItemComposite.setLayout(glQuickStartItemComposite);
         quickStartItemComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         quickStartItemComposite.setBackground(RIGHT_PART_BACKGROUND_COLOR);
@@ -171,27 +230,6 @@ public class ApiQuickStartDialog extends Dialog {
         createNewSoapRequestItem(quickStartItemComposite);
         createImportRestRequestItem(quickStartItemComposite);
         createImportSoapRequestItem(quickStartItemComposite);
-
-        /*
-         * Composite closeComposite = new Composite(rightComposite, SWT.NONE);
-         * GridLayout glClose = new GridLayout(1, false);
-         * glClose.marginWidth = 0;
-         * glClose.marginHeight = 0;
-         * glClose.marginRight = 20;
-         * glClose.marginBottom = 10;
-         * closeComposite.setLayout(glClose);
-         * closeComposite.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
-         * closeComposite.setBackground(RIGHT_PART_BACKGROUND_COLOR);
-         * Button btnClose = new Button(closeComposite, SWT.NONE);
-         * btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false));
-         * btnClose.setText(IDialogConstants.CLOSE_LABEL);
-         * btnClose.addSelectionListener(new SelectionAdapter() {
-         * @Override
-         * public void widgetSelected(SelectionEvent e) {
-         * ApiQuickStartDialog.this.close();
-         * }
-         * });
-         */
     }
 
     private Composite createQuickStartItem(Composite parent, Image image, String toolTip, Listener selectionListener) {
@@ -207,18 +245,6 @@ public class ApiQuickStartDialog extends Dialog {
         lblItem.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
         lblItem.addListener(SWT.MouseDown, selectionListener);
         return lblItem;
-    }
-
-    @Override
-    protected void configureShell(Shell shell) {
-        super.configureShell(shell);
-
-        shell.setText(StringConstants.TITLE_QUICKSTART);
-    }
-
-    @Override
-    protected Control createButtonBar(Composite parent) {
-        return parent;
     }
 
     private Composite createNewRestRequestItem(Composite parent) {
@@ -251,7 +277,7 @@ public class ApiQuickStartDialog extends Dialog {
         entity.setServiceType(DraftWebServiceRequestEntity.RESTFUL);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_OPEN_DRAFT_WEBSERVICE, entity);
         Trackings.trackOpenDraftRequest(entity.getServiceType(), "apiQuickStart");
-        close();
+        partService.hidePart(part);
     }
 
     private void createNewSoapRequest() {
@@ -260,7 +286,7 @@ public class ApiQuickStartDialog extends Dialog {
         entity.setServiceType(DraftWebServiceRequestEntity.SOAP);
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_OPEN_DRAFT_WEBSERVICE, entity);
         Trackings.trackOpenDraftRequest(entity.getServiceType(), "apiQuickStart");
-        close();
+        partService.hidePart(part);
     }
 
     private void importSwaggerFromFileOrUrl() {
@@ -283,12 +309,11 @@ public class ApiQuickStartDialog extends Dialog {
                         parentTreeEntity);
                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
                         parentTreeEntity);
-                close();
+                partService.hidePart(part);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-
     }
 
     private void importWsdlFromUrl() {
@@ -324,16 +349,15 @@ public class ApiQuickStartDialog extends Dialog {
                         parentTreeEntity);
                 EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
                         parentTreeEntity);
-                close();
+                partService.hidePart(part);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
     }
 
-    @Override
-    protected Point getInitialSize() {
-        int dialogSize = projectType == ProjectType.WEBSERVICE ? 1300 : 1000;
-        return getShell().computeSize(dialogSize, 650, true);
+    @Focus
+    public void setFocus() {
+        mainComposite.forceFocus();
     }
 }
