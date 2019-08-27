@@ -21,7 +21,7 @@ until $(curl --output /dev/null --silent --head --fail http://localhost:33333/si
     sleep 5
 done
 
-cd $BUILD_REPOSITORY_LOCALPATH/source && mvn ${MAVEN_OPTS} -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod
+# cd $BUILD_REPOSITORY_LOCALPATH/source && mvn ${MAVEN_OPTS} -pl \\!com.kms.katalon.product.qtest_edition clean verify -P prod
 
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && mvn ${MAVEN_OPTS} clean ${command} && cp -R 'target/resources/apidocs' '/tmp/katabuild'
+# cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && mvn ${MAVEN_OPTS} clean ${command} && cp -R 'target/resources/apidocs' '/tmp/katabuild'
                  
