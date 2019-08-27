@@ -21,7 +21,7 @@ steps:
 
 - task: CacheBeta@0
   inputs:
-    key: maven | **/build.sh
+    key: maven | **/pom.xml
     path: $(MAVEN_CACHE_FOLDER)
   displayName: Cache Maven local repo
 
