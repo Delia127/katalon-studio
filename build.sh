@@ -2,9 +2,6 @@
 
 set -xe
 
-BUILD_REPOSITORY_LOCALPATH='/Users/quiducle/Documents/Projects/katalon'
-MAVEN_OPTS=''
-
 mavenVersion=3.5.4
 tmpDir="/tmp/katabuild"
 version=6.3.3
