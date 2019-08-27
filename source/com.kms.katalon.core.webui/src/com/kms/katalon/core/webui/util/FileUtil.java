@@ -102,12 +102,11 @@ public class FileUtil {
         path = URLDecoder.decode(path, "utf-8");
         File jarFile = new File(path);
         if (jarFile.isFile()) {
-            String kmsIePath = jarFile.getAbsolutePath() + File.separator + EXTENSIONS_FOLDER_NAME;
+            String kmsIePath = jarFile.getParentFile().getParentFile().getAbsolutePath() + "/configuration/" + EXTENSIONS_FOLDER_NAME;
             return new File(kmsIePath);
         } else { // Run with IDE
             File folder = new File(path + ".." + File.separator + EXTENSIONS_FOLDER_NAME);
             return folder;
         }
     }
-
 }
