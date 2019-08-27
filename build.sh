@@ -12,6 +12,7 @@ withUpdate=true
 tag="6.3.3"
 
 cd $BUILD_REPOSITORY_LOCALPATH
+python --version
 python generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta
 python generate_lastest_release_file.py "${tmpDir}/lastest_release.json" $version
 python generate_release_json_file.py "${tmpDir}/releases.json" $version
