@@ -1,8 +1,12 @@
 package com.kms.katalon.activation.dialog;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -15,19 +19,30 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.constants.ApplicationMessageConstants;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.logging.LogUtil;
 
 public class ActivationDialogV2 extends AbstractDialog {
 
@@ -48,11 +63,19 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private Button btnActivate;
 
+    private Button btnSaveOrganization;
+    
+    private Combo cbbOrganization;
+
     private Link lnkConfigProxy;
 
     private Link lnkOfflineActivation;
 
     private Link lnkForgotPassword;
+    
+    private Link lblHelpOrganization;
+
+    private List<AnalyticsOrganization> organizations = new ArrayList<>();
 
     public ActivationDialogV2(Shell parentShell) {
         super(parentShell, false);
@@ -121,13 +144,80 @@ public class ActivationDialogV2 extends AbstractDialog {
                         btnActivate.setEnabled(true);
                         if (result) {
                             setReturnCode(Window.OK);
-                            close();
+                            txtEmail.setEnabled(false);
+                            txtPassword.setEnabled(false);
+                            btnActivate.setEnabled(false);
+                            getOrganizations();
                         } else {
                             setProgressMessage(errorMessage.toString(), true);
                         }
                     });
                 });
             }
+        });
+        
+        btnSaveOrganization.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int index = cbbOrganization.getSelectionIndex();
+                save(index);
+            }
+        });
+        
+        lblHelpOrganization.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
+    }
+
+    private void save(int index) {
+        try {
+            AnalyticsOrganization organization = organizations.get(index);
+            String email = txtEmail.getText();
+            String password = txtPassword.getText();
+            ActivationInfoCollector.markActivated(email, password);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION, JsonUtil.toJson(organization), true);
+            close();
+        } catch (Exception e) {
+            LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+        }
+    }
+    
+    private static List<String> getOrganizationNames(List<AnalyticsOrganization> organizations) {
+        List<String> names = organizations.stream().map(organization -> organization.getName()).collect(Collectors.toList());
+        return names;
+    }
+    
+    private void getOrganizations() {
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService.syncExec(
+                    () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_ORGANIZATION, false));
+            UISynchronizeService.syncExec(() -> {
+                AnalyticsTokenInfo token;
+                try {
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    String email = txtEmail.getText();
+                    String password = txtPassword.getText();
+                    token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                    organizations = AnalyticsApiProvider.getOrganization(serverUrl, token.getAccess_token());
+                    if (organizations.size() == 1) {
+                        save(0);
+	                } else {
+	                    cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
+	                    cbbOrganization.select(0);
+	                    setProgressMessage("", false);
+	                    cbbOrganization.setEnabled(true);
+	                    btnSaveOrganization.setEnabled(true);
+	                }
+                } catch (AnalyticsApiExeception e) {
+                    LogUtil.logError(e);
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), 
+                            MessageConstants.ActivationDialogV2_LBL_ERROR, 
+                            MessageConstants.AcivationDialogV2_LBL_ERROR_ORGANIZATION);
+                }
+            });
         });
     }
 
@@ -225,9 +315,28 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
         getShell().setDefaultButton(btnActivate);
 
+        Composite ogranizationBar = new Composite(buttonBar, SWT.NONE);
+        ogranizationBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        ogranizationBar.setLayout(new GridLayout(5, false));
+        
+        Label lblOrganization = new Label(ogranizationBar, SWT.NONE);
+        lblOrganization.setText(MessageConstants.ActivationDialogV2_LBL_SELECT_ORGANIZATION);
+        
+        cbbOrganization = new Combo(ogranizationBar, SWT.READ_ONLY);
+        cbbOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        cbbOrganization.setEnabled(false);
+        
+        btnSaveOrganization = new Button(ogranizationBar, SWT.NONE);
+        btnSaveOrganization.setText(MessageConstants.ActuvationDialogV2_BTN_SAVE_ORGANIZATION_TITLE);
+        btnSaveOrganization.setEnabled(false);
+        
         Composite linkBar = new Composite(buttonBar, SWT.NONE);
         linkBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         linkBar.setLayout(new GridLayout(5, false));
+        
+        lblHelpOrganization = new Link(ogranizationBar, SWT.NONE);
+        lblHelpOrganization.setText(MessageConstants.ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION);
+        lblHelpOrganization.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2, 1));
 
         lnkForgotPassword = new Link(linkBar, SWT.NONE);
         lnkForgotPassword.setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_RESET_PASSWORD));

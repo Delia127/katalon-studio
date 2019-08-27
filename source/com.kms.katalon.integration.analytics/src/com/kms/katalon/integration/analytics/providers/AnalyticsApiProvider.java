@@ -38,6 +38,8 @@ import com.google.gson.GsonBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
@@ -83,6 +85,19 @@ public class AnalyticsApiProvider {
                     HEADER_AUTHORIZATION_PREFIX + Base64.getEncoder().encodeToString(clientCredentials.getBytes()));
 
             return executeRequest(httpPost, AnalyticsTokenInfo.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
+    public static List<AnalyticsOrganization> getOrganization(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            AnalyticsOrganizationPage organizationPage = executeRequest(httpGet, AnalyticsOrganizationPage.class);
+            return organizationPage.getOrganizations();
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
