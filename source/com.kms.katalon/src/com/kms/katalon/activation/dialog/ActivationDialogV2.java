@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
@@ -171,9 +172,16 @@ public class ActivationDialogV2 extends AbstractDialog {
     }
 
     private void saveOrganization(int index) {
-        AnalyticsOrganization organization = organizations.get(index);
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION, JsonUtil.toJson(organization), true);
-        close();
+        try {
+            AnalyticsOrganization organization = organizations.get(index);
+            String email = txtEmail.getText();
+            String password = txtPassword.getText();
+            ActivationInfoCollector.markActivated(email, password);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION, JsonUtil.toJson(organization), true);
+            close();
+        } catch (Exception e) {
+            LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+        }
     }
     
     private static List<String> getOrganizationNames(List<AnalyticsOrganization> organizations) {
