@@ -9,7 +9,6 @@ import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.webui.common.internal.SmartWait;
-import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
 
 /**
  * Event listener that triggers smart wait functionality on
