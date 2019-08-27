@@ -11,6 +11,7 @@ import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
@@ -82,21 +83,16 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
 		}
     }
     
-    private Long getOrganizationId() {
-        return 1L;
-    }
-    
     @Override
-    public void sendTrackingActivity(String machineId, String sessionId, Date startTime, Date endTime, String ksVersion) {
+    public void sendTrackingActivity(Long organizationId, String machineId, String sessionId, Date startTime, Date endTime, String ksVersion) {
         try {
-            Long orgId = getOrganizationId();
             AnalyticsTracking trackingInfo = new AnalyticsTracking();
             trackingInfo.setMachineId(machineId);
             trackingInfo.setSessionId(sessionId);
             trackingInfo.setStartTime(startTime);
             trackingInfo.setEndTime(endTime);
             trackingInfo.setKsVersion(ksVersion);
-            trackingInfo.setOrganizationId(orgId);
+            trackingInfo.setOrganizationId(organizationId);
             reportService.sendTrackingActivity(trackingInfo);
         } catch (Exception e) {
             LogUtil.logError(e);

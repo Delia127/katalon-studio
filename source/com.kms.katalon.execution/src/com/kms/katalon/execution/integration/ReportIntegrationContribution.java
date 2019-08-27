@@ -16,7 +16,7 @@ public interface ReportIntegrationContribution extends ConsoleOptionContributor 
     	
     }
     
-    default void sendTrackingActivity(String machineId, String sessionId, Date startTime, Date endTime, String ksVersion) {
+    default void sendTrackingActivity(Long organizationId, String machineId, String sessionId, Date startTime, Date endTime, String ksVersion) {
     }
     
     default void printIntegrateMessage() {

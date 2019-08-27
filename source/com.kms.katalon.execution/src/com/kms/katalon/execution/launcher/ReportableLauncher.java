@@ -58,7 +58,6 @@ import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.tracking.service.Trackings;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
     private ReportEntity reportEntity;
@@ -81,8 +80,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         Date startTime = getStartTime(); 
         Date endTime = getEndTime(); 
         String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-        OrganizationHandler.getOrganizationId();
-        analyticsProvider.sendTrackingActivity(machineId, sessionId, startTime, endTime, ksVersion);
+        Long organizationId = OrganizationHandler.getOrganizationId();
+        analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
      }
 
     @Override

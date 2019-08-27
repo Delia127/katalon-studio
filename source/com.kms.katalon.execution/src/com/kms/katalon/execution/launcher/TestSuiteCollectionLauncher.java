@@ -19,6 +19,7 @@ import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutionContextImpl;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.listener.LauncherEvent;
@@ -105,7 +106,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
        Date startTime = getStartTime(); 
        Date endTime = getEndTime(); 
        String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-       analyticsProvider.sendTrackingActivity(machineId, sessionId, startTime, endTime, ksVersion);
+       Long organizationId = OrganizationHandler.getOrganizationId();
+       analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
     }
 
     private void scheduleSubLaunchers() {
