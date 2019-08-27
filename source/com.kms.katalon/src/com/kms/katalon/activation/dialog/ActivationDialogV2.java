@@ -160,7 +160,7 @@ public class ActivationDialogV2 extends AbstractDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int index = cbbOrganization.getSelectionIndex();
-                saveOrganization(index);
+                save(index);
             }
         });
         
@@ -172,7 +172,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         });
     }
 
-    private void saveOrganization(int index) {
+    private void save(int index) {
         try {
             AnalyticsOrganization organization = organizations.get(index);
             String email = txtEmail.getText();
@@ -203,7 +203,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                     organizations = AnalyticsApiProvider.getOrganization(serverUrl, token.getAccess_token());
                     if (organizations.size() == 1) {
-                        saveOrganization(0);
+                        save(0);
 	                } else {
 	                    cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
 	                    cbbOrganization.select(0);
