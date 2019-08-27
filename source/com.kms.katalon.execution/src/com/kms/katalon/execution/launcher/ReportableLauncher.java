@@ -88,19 +88,22 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         super.onStartExecution();
 
         startTime = new Date();
-        sendTrackingActivity();
+        if (parentLauncher == null) {
+            sendTrackingActivity();
+        }
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
 
     @Override
     protected void preExecutionComplete() {
+        this.endTime = new Date();
+        if (parentLauncher == null) {
+            sendTrackingActivity();
+        }
+        
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
-
-        this.endTime = new Date();
-        
-        sendTrackingActivity();
         
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
