@@ -50,31 +50,31 @@ cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && $BUILD_REPOSITO
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product/target/products
 if [ "$isQtest" = "false" ]
 then
-    cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+    # cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+    cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product/target/products
     cp *.zip ${tmpDir}
     cp *.tar.gz ${tmpDir}
-    cp *.app ${tmpDir}
 fi
 
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product.qtest_edition/target/products
 if [ "$isQtest" = "true" ]
 then
-    cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+    # cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+    cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product.qtest_edition/target/products
     cp *.zip ${tmpDir}
     cp *.tar.gz ${tmpDir}
-    cp *.app ${tmpDir}
 fi
 
 # Sign file
 cd $BUILD_REPOSITORY_LOCALPATH
 ./codesign.sh $tmpDir
 
-# Package .DMG file
-cd $BUILD_REPOSITORY_LOCALPATH
-if [ "$isRealease" = "true" ]
-then
-    ./dropdmg.sh $tmpDir
-fi
+# # Package .DMG file
+# cd $BUILD_REPOSITORY_LOCALPATH
+# if [ "$isRelease" = "true" ]
+# then
+#     ./dropdmg.sh $tmpDir
+# fi
 
 # # Generate update packages
 # cd $BUILD_REPOSITORY_LOCALPATH
