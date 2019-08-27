@@ -49,6 +49,7 @@ import com.kms.katalon.execution.entity.TestCaseExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutionEvent;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -80,6 +81,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         Date startTime = getStartTime(); 
         Date endTime = getEndTime(); 
         String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+        OrganizationHandler.getOrganizationId();
         analyticsProvider.sendTrackingActivity(machineId, sessionId, startTime, endTime, ksVersion);
      }
 
