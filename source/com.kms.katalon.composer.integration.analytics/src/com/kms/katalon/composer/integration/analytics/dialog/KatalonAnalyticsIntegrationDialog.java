@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
@@ -65,19 +66,36 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
     private String serverUrl;
 
     private String email;
+    
+    private AnalyticsTokenInfo tokenInfo;
 
     public KatalonAnalyticsIntegrationDialog(Shell parentShell) {
-        super(parentShell);
+    	super(parentShell);
+    	analyticsSettingStore = new AnalyticsSettingStore(
+    			ProjectController.getInstance().getCurrentProject().getFolderLocation());
+    	try {
+    		password = analyticsSettingStore.getPassword(true);
+    		serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
+    		email = analyticsSettingStore.getEmail(true);
+    		
+    		tokenInfo = AnalyticsAuthorizationHandler.getTokenNew(serverUrl, email, password,
+    				analyticsSettingStore);
+    	} catch (Exception e) {
+    		LoggerSingleton.logError(e);
+    	} 
     }
 
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-
-        analyticsSettingStore = new AnalyticsSettingStore(
-                ProjectController.getInstance().getCurrentProject().getFolderLocation());
-
         shell.setText(ComposerIntegrationAnalyticsMessageConstants.TITLE_DLG_QUICK_ANALYTICS_INTEGRATION);
+    }
+    
+    public boolean checkConnection() {
+    	if (tokenInfo == null) {
+    		return false;
+    	}
+    	return true;
     }
 
     @Override
@@ -158,39 +176,27 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         cbbTeams.setItems();
         cbbProjects.setItems();
 
-        try {
-            password = analyticsSettingStore.getPassword(true);
-            serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
-            email = analyticsSettingStore.getEmail(true);
+		cbxAutoSubmit.setSelection(true);
+		cbxAttachScreenshot.setSelection(true);
 
-            cbxAutoSubmit.setSelection(true);
-            cbxAttachScreenshot.setSelection(true);
+		teams.clear();
+		projects.clear();
 
-            teams.clear();
-            projects.clear();
+		
+		teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo,
+				new ProgressMonitorDialog(getShell()));
+		projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+				teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
+				new ProgressMonitorDialog(getShell()));
 
-            AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
-                    analyticsSettingStore);
-            if (tokenInfo == null) {
-                return;
-            }
-            teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo,
-                    new ProgressMonitorDialog(getShell()));
-            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-                    teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
-                    tokenInfo, new ProgressMonitorDialog(getShell()));
+		if (teams != null && teams.size() > 0) {
+			cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
 
-            if (teams != null && teams.size() > 0) {
-                cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+			int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+			cbbTeams.select(indexSelectTeam);
 
-                int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
-                cbbTeams.select(indexSelectTeam);
-
-                setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
-            }
-        } catch (IOException | GeneralSecurityException e) {
-            e.printStackTrace();
-        }
+			setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+		}
     }
 
     private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {

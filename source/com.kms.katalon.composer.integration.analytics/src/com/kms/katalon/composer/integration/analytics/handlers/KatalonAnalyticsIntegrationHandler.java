@@ -36,6 +36,8 @@ public class KatalonAnalyticsIntegrationHandler {
 	@Execute
 	public void execute() {
 		KatalonAnalyticsIntegrationDialog quickStartDialog = new KatalonAnalyticsIntegrationDialog(Display.getCurrent().getActiveShell());
-		quickStartDialog.open();
+		if (quickStartDialog.checkConnection()) {
+			quickStartDialog.open();
+		}
 	}
 }
