@@ -36,6 +36,7 @@ import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptio
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
@@ -73,7 +74,7 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
-    public static final String KATALON_STORE_ORG_ID_OPTION = "orgId";
+    public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
 
@@ -118,9 +119,11 @@ public class ConsoleMain {
             
             String orgIdValue = null;
 
-            if (options.has(KATALON_STORE_ORG_ID_OPTION)) {
-                orgIdValue = String.valueOf(options.valueOf(KATALON_STORE_ORG_ID_OPTION));
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
             }
+            
             if (orgIdValue != null) {
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance()
                         .getBuilders()

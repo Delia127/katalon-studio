@@ -103,7 +103,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 
         @Override
         public String getOption() {
-            return ConsoleMain.KATALON_STORE_ORG_ID_OPTION;
+            return ConsoleMain.KATALON_ORGANIZATION_ID_OPTION;
         };
 
         public boolean isRequired() {
