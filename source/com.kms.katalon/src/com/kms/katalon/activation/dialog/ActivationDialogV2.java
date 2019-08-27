@@ -215,7 +215,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     LogUtil.logError(e);
                     MessageDialog.openError(Display.getCurrent().getActiveShell(), 
                             MessageConstants.ActivationDialogV2_LBL_ERROR, 
-                            MessageConstants.AcivationDialogV2_LBL_ERROR_ORGANIZATION);
+                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION);
                 }
             });
         });

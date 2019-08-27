@@ -41,7 +41,7 @@ public class ApplicationInfo {
     
     private static final String PROFILE_PROPERTY_KEY = "katalonProfile";
 
-    private static final String KATALON_ANALYTICS_SERVER = "testOpsServer";
+    private static final String KATALON_ANALYTICS_SERVER = "testOps.serverUrl";
 
     private static Properties aboutMappingsProperties;
 
