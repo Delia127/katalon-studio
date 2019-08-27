@@ -2,6 +2,7 @@ package com.kms.katalon.plugin.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +20,14 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.feature.models.TestOpsFeatureKey;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.custom.factory.CustomKeywordPluginFactory;
 import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
@@ -147,14 +150,13 @@ public class PluginService {
                     KStorePlugin onlinePlugin = plugin.getOnlinePlugin();
                     if (onlinePlugin.isExpired()) { // offline plugin never
                                                     // expires
-                        LogService.getInstance()
-                                .logInfo(String.format("Expired plugin: %d.", onlinePlugin.getId()));
+                        LogService.getInstance().logInfo(String.format("Expired plugin: %d.", onlinePlugin.getId()));
                         continue;
                     }
 
                     if (onlinePlugin.getLatestCompatibleVersion() == null) {
-                        LogService.getInstance().logInfo(String.format("Plugin with latest compatible version: %d.",
-                                onlinePlugin.getId()));
+                        LogService.getInstance().logInfo(
+                                String.format("Plugin with latest compatible version: %d.", onlinePlugin.getId()));
                         continue;
                     }
                 }
@@ -228,10 +230,17 @@ public class PluginService {
     }
 
     private List<OfflinePlugin> getOfflinePlugins(IProgressMonitor progressMonitor) {
+        boolean shouldLoadOfflinePlugins = FeatureServiceConsumer.getServiceInstance()
+                .canUse(TestOpsFeatureKey.PRIVATE_PLUGIN);
+        if (!shouldLoadOfflinePlugins) {
+            return Collections.emptyList();
+        }
+
         SubMonitor monitor = SubMonitor.convert(progressMonitor);
         monitor.beginTask("", 100);
 
         List<OfflinePlugin> offlinePlugins = new ArrayList<>();
+
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         if (project != null) {
             File pluginsFolder = new File(project.getFolderLocation(), "Plugins");
@@ -307,13 +316,10 @@ public class PluginService {
         monitor.worked(subwork);
     }
 
-    private void trackInstallPlugins(List<Plugin> plugins, KStoreCredentials credentials,
-            RunningMode runningMode) {
-        //just track online plugins for now
-        List<Long> installedPluginIds = plugins.stream()
-                .filter(p -> p.isOnline())
-                .map(p -> p.getOnlinePlugin().getProduct().getId())
-                .collect(Collectors.toList());
+    private void trackInstallPlugins(List<Plugin> plugins, KStoreCredentials credentials, RunningMode runningMode) {
+        // just track online plugins for now
+        List<Long> installedPluginIds = plugins.stream().filter(p -> p.isOnline())
+                .map(p -> p.getOnlinePlugin().getProduct().getId()).collect(Collectors.toList());
         if (credentials instanceof KStoreApiKeyCredentials) {
             Trackings.trackInstallPlugins(installedPluginIds, ((KStoreApiKeyCredentials) credentials).getApiKey(),
                     runningMode);
