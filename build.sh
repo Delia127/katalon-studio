@@ -2,9 +2,9 @@
 
 set -xe
 
-branch=6.3.3
+branch=${BRANCH}
 mavenVersion=3.5.4
-tmpDir=
+tmpDir=${TMP_DIR}
 version=
 isQtest=
 isRelease=
@@ -13,15 +13,12 @@ withUpdate=
 tag=
 GITHUB_TOKEN=
 
-echo ${BRANCH}
-echo ${MAVEN_OPTS}
+pip3 install pyjavaproperties
+mkdir -p ${tmpDir}
 
-# pip3 install pyjavaproperties
-# mkdir -p ${tmpDir}
-
-# cd $BUILD_REPOSITORY_LOCALPATH
-# python3 get_version.py $branch
-# source ./variable.sh
+cd $BUILD_REPOSITORY_LOCALPATH
+python3 get_version.py $branch
+source ./variable.sh
 
 # cd $BUILD_REPOSITORY_LOCALPATH
 # python3 generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta

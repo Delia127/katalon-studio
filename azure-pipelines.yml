@@ -35,7 +35,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      source ./
+      source ./variable.sh
 
 - task: Bash@3
   inputs:
