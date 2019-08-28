@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.Dialog;
@@ -63,6 +64,9 @@ public class ApiQuickStartPart {
     private EPartService partService;
 
     private MPart part;
+    
+    @Inject
+    private EModelService modelService;
 
     private Composite mainComposite;
 
@@ -72,6 +76,7 @@ public class ApiQuickStartPart {
         projectType = ProjectController.getInstance().getCurrentProject().getType();
         createDialogArea(parent);
         registerEventListeners();
+
     }
 
     private void registerEventListeners() {
@@ -82,9 +87,6 @@ public class ApiQuickStartPart {
                     partService.hidePart(part, true);
                 }
                 part.setVisible(true);
-                partService.activate(part, true);
-                partService.bringToTop(part);
-
             }
         });
     }

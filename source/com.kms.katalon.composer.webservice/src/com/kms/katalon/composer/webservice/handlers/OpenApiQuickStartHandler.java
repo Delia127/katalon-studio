@@ -49,16 +49,11 @@ public class OpenApiQuickStartHandler {
             mPart.setElementId(partId);
             mPart.setLabel(StringConstants.PA_QUICKSTART);
 
-            mPart.setIconURI(getIconURI());
-
             mPart.setContributionURI(getContributionURI());
             mPart.setCloseable(true);
             stack.getChildren().add(mPart);
         }
         partService.showPart(mPart, PartState.ACTIVATE);
-        partService.activate(mPart, true);
-        partService.bringToTop(mPart);
-
         mPart.setVisible(true);
         stack.setSelectedElement(mPart);
     }
@@ -70,10 +65,6 @@ public class OpenApiQuickStartHandler {
     }
     private String getPartId() {
         return IdConstants.QUICKSTART_PART_ID;
-    }
-
-    private String getIconURI() {
-        return ImageConstants.URI_IMG_WELCOME;
     }
 
     private String getContributionURI() {
