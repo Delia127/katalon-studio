@@ -40,6 +40,7 @@ import com.google.gson.GsonBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
+import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -230,6 +231,20 @@ public class AnalyticsApiProvider {
             HttpPut httpPut = new HttpPut(url);
             httpPut.setEntity(entity);
             executeRequest(httpPut, Object.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public static List<AnalyticsFeature> getFeature(String serverUrl, String accessToken, long organizationId) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_FEATURES_URL);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("organizationId", String.valueOf(organizationId));
+            HttpGet httpGet = new HttpGet(uriBuilder.build());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            List<AnalyticsFeature> features = executeRequest(httpGet, new TypeToken<ArrayList<AnalyticsFeature>>() {});
+            return features;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }

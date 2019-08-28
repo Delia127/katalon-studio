@@ -49,4 +49,6 @@ public class AnalyticsStringConstants {
     public static final String ANALYTICS_HAR_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(har))$)";
     
     public static final String ANALYTICS_UUID_FILE_EXTENSION_PATTERN = "([^\\s]+(\\.(?i)(uuid))$)";
+    
+    public static final String ANALYTICS_FEATURES_URL = "/api/v1/features";
 }
