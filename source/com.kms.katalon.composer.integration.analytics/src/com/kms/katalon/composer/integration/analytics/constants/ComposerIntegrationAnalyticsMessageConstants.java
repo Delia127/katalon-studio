@@ -131,6 +131,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     
     public static String STORE_CODE_ERROR_NO_NAME;
     
+    public static String LNK_KA_HELP_AUTO_SUBMIT;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerIntegrationAnalyticsMessageConstants.class);
