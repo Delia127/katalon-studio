@@ -133,7 +133,7 @@ generate_links_file
 generate_lastest_release_file
 generate_release_json_file
 generate_latest_version_json_file
-# building
-# copy_build
-# generate_update_package
-# repackage
+building
+copy_build
+generate_update_package
+repackage
