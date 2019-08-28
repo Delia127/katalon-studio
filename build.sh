@@ -5,6 +5,7 @@ set -xe
 prepare() {
     pip3 install pyjavaproperties
     mkdir -p ${tmpDir}
+    chmod -R 777 ${katalonDir}
 }
 
 get_version() {

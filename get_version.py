@@ -12,7 +12,7 @@ print("Version", version)
 branch = sys.argv[1]
 print("Branch", branch)
 
-if branch.endswith(version) is False | ("{0}.rc".format(version) in branch):
+if (branch.endswith(version) is False) | ("{0}.rc".format(version) in branch):
     print('Branch or version is incorrect.')
     raise ValueError('Branch or version is incorrect.')
 
@@ -25,7 +25,7 @@ print("Is release", is_release)
 is_beta = is_release & (".rc" in branch)
 print("Is beta", is_beta)
 
-with_update = is_release is True & is_qtest is False & is_beta is False
+with_update = (is_release is True) & (is_qtest is False) & (is_beta is False)
 print("With update", with_update)
 
 if is_release is True:
