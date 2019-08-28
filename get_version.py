@@ -1,7 +1,7 @@
 import sys
 from pyjavaproperties import Properties
 from string import Template
-from build_utils import write_file, read_file
+from build_utils import write_file
 
 p = Properties()
 p.load(open("source/com.kms.katalon/about.mappings"))

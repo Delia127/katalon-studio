@@ -12,6 +12,7 @@ get_version() {
     cd $katalonDir
     python3 get_version.py $branch
     source ./variable.sh
+    python3 rewrite_mappings.py "${katalonDir}/source/com.kms.katalon/about.mappings" $commit_id $tag
 }
 
 generate_links_file() {
@@ -120,6 +121,7 @@ branch=release-6.3.3
 tmpDir=${2}
 katalonDir=${3}
 mavenOpts=${4}
+commit_id=${5}
 
 mavenVersion=3.5.4
 
