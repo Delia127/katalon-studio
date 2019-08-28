@@ -10,7 +10,8 @@ variables:
   TMP_DIR: /tmp/katabuild
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  VERSION: 0
+  VERSION: 
+  TAG:
 
 pool:
   vmImage: 'macOS-latest'
@@ -37,11 +38,9 @@ steps:
 #     publishLocation: 'Container'
 
 - bash: |
-    set -xe
-    echo '##vso[task.setvariable variable=version]1'
     echo '##vso[task.setvariable variable=VERSION]2'
+    echo '##vso[task.setvariable variable=TAG]2'
 
 - bash: |
-    set -xe
-    echo $version
-    echo $VERSION
+    echo ${VERSION}
+    echo ${TAG}
