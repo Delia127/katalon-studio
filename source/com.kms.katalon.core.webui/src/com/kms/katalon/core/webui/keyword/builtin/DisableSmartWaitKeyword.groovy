@@ -25,19 +25,13 @@ class DisableSmartWaitKeyword extends WebUIAbstractKeyword {
     @CompileStatic
     @Override
     public Object execute(Object ...params) {
-        smartWait();
+        disableSmartWait();
     }
 
     @CompileStatic
-    public void smartWait() throws StepFailedException {
+    public void disableSmartWait() throws StepFailedException {
         WebUIKeywordMain.runKeyword({
-            boolean smartWaitEnabled = (boolean) RunConfiguration.getExecutionProperties().get(RunConfiguration.SMART_WAIT_MODE);
-            if (smartWaitEnabled) {
-                RunConfiguration.getExecutionProperties().put(RunConfiguration.SMART_WAIT_MODE, false);
-                SmartWaitWebDriver smartWaitWebDriver = (SmartWaitWebDriver) DriverFactory.getWebDriver();
-                smartWaitWebDriver.unregister();
-                DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver.getWrappedDriver());
-            }
+            RunConfiguration.getExecutionProperties().put(RunConfiguration.LOCAL_SMART_WAIT_MODE, false);
         }, FailureHandling.CONTINUE_ON_FAILURE, true, "Unable to disable smart wait !");
     }
 }

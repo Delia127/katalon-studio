@@ -23,11 +23,18 @@ public class SmartWaitWebEventListener extends AbstractWebDriverEventListener {
     public void beforeFindBy(By arg0, WebElement arg1, WebDriver arg2) {
         doSmartWait();
     }
-    
+
     public void doSmartWait() {
-        boolean smartWaitEnabled = (boolean) Optional
-                .ofNullable(RunConfiguration.getExecutionProperties().get("smartWaitEnabled")).orElse(false);
-        if (smartWaitEnabled) {
+
+        boolean localSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.LOCAL_SMART_WAIT_MODE))
+                .orElse(false);
+
+        boolean globalSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
+                .orElse(false);
+
+        if (localSmartWaitEnabled || globalSmartWaitEnabled) {
             SmartWait.doSmartWait();
         }
     }
