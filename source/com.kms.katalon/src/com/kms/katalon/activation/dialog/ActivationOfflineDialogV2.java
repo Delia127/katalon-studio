@@ -91,6 +91,7 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
                 setProgressMessage(MessageConstants.ActivationDialogV2_MSG_ACTIVATING, false);
                 StringBuilder errorMessage = new StringBuilder();
 //                boolean result = ActivationInfoCollector.activate(txtActivationCode.getText().trim(), errorMessage);
+                String licenseFilePath = txtLicenseFile.getText();
                 boolean result = true;
                 if (result == true) {
                     setReturnCode(OK);
