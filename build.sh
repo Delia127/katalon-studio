@@ -115,7 +115,7 @@ repackage() {
 }
 
 # branch=${1}
-branch=release-6.3.3
+branch=release-6.3.4
 tmpDir=${2}
 katalonDir=${3}
 mavenOpts=${4}
