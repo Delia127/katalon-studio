@@ -109,8 +109,8 @@ repackage() {
     mv ${tmpDir}/output/*.zip ${tmpDir}/
     mv ${tmpDir}/output/*.tar.gz ${tmpDir}/
     rm -rf ${tmpDir}/output
+    
     cd '${tmpDir}' && zip -r '${tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'
-
     rm -rf '${tmpDir}/Katalon Studio.app'
 
     cd '${tmpDir}' && zip -r '${tmpDir}/apidocs.zip' 'apidocs'
@@ -135,3 +135,9 @@ building
 copy_build
 generate_update_package
 repackage
+
+cd $tmpDir
+ls -al
+
+cd $katalonDir/source/com.kms.katalon.product/target/products
+ls -al
