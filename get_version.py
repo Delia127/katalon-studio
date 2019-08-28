@@ -56,7 +56,7 @@ s3Location=${s3_location}
 """)
     variable = variableTemplate.substitute(version = version, is_qtest = str(is_qtest).lower(), is_release = str(is_release).lower(), is_beta = str(is_beta).lower(), with_update = str(with_update).lower(), tag = tag, s3_location = s3_location)
     write_file(file_path = "variable.sh", text = variable)
-    print(read_file(file_path = "variable.sh", text = variable))
+    print(read_file(file_path = "variable.sh"))
 
 branch = sys.argv[1]
 get_version(branch)
