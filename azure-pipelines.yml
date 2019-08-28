@@ -13,6 +13,8 @@ variables:
   VERSION: 
   TAG:
   S3_LOCATION:
+  WITH_UPDATE:
+  IS_RELEASE:
 
 pool:
   vmImage: 'macOS-latest'
@@ -45,18 +47,21 @@ steps:
     echo "##vso[task.setvariable variable=VERSION]${version}"
     echo "##vso[task.setvariable variable=TAG]${tag}"
     echo "##vso[task.setvariable variable=S3_LOCATION]${s3Location}"
+    echo "##vso[task.setvariable variable=WITH_UPDATE]${withUpdate}"
+    echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
   displayName: Azure Populate Variable Value
 
-# - task: S3Upload@1
-#   inputs:
-#     awsCredentials: 'aws'
-#     regionName: 'us-east-1'
-#     bucketName: 'katalon'
-#     sourceFolder: "${TMP_DIR}/update/${TAG}"
-#     globExpressions: '**'
-#     targetFolder: 'azure-update/${TAG}'
-#     filesAcl: 'public-read'
-#   displayName: Upload Update Package
+- task: S3Upload@1
+  inputs:
+    awsCredentials: 'aws'
+    regionName: 'us-east-1'
+    bucketName: 'katalon'
+    sourceFolder: "${TMP_DIR}/update/${TAG}"
+    globExpressions: '**'
+    targetFolder: 'azure-update/${TAG}'
+    filesAcl: 'public-read'
+  displayName: Upload Update Package
+  condition: eq(variables.WITH_UPDATE, 'true')
 
 - task: S3Upload@1
   inputs:
@@ -68,3 +73,4 @@ steps:
     targetFolder: "azure-${S3_LOCATION}"
     filesAcl: 'public-read'
   displayName: Upload Build Package
+  condition: eq(variables.IS_RELEASE, 'true')
