@@ -13,6 +13,9 @@ withUpdate=
 tag=
 GITHUB_TOKEN=
 
+echo ${tmpDir}
+echo ${MAVEN_OPTS}
+
 pip3 install pyjavaproperties
 mkdir -p ${tmpDir}
 
