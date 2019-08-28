@@ -115,10 +115,10 @@ repackage() {
 }
 
 
-branch=${0}
-tmpDir=${1}
-katalonDir=${2}
-mavenOpts=${3}
+branch=${1}
+tmpDir=${2}
+katalonDir=${3}
+mavenOpts=${4}
 
 echo $branch
 echo $tmpDir

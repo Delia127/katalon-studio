@@ -7,7 +7,7 @@ trigger:
 - qui-azure
 
 variables:
-  BRANCH: $BUILD_SOURCEBRANCHNAME
+  BRANCH: $(BUILD_SOURCEBRANCHNAME)
   TMP_DIR: /tmp/katabuild
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
@@ -35,3 +35,8 @@ steps:
     PathtoPublish: '$(TMP_DIR)'
     ArtifactName: 'katalon-build'
     publishLocation: 'Container'
+
+- bash: |
+    cd ${BUILD_REPOSITORY_LOCALPATH}
+    source ./variable.sh
+    Write-Host "##vso[task.setvariable variable=FirstName]Stefan"
