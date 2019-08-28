@@ -125,6 +125,8 @@ commit_id=${5}
 
 mavenVersion=3.5.4
 
+printenv
+
 prepare
 get_version
 generate_links_file
