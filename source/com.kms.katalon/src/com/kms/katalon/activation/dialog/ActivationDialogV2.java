@@ -215,9 +215,11 @@ public class ActivationDialogV2 extends AbstractDialog {
                 } catch (AnalyticsApiExeception e) {
                     LogUtil.logError(e);
                     setProgressMessage("", false);
-                    MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(), MessageConstants.ActivationDialogV2_LBL_ERROR, null,
-                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, MessageDialog.ERROR, new String[] { "OK" }, 0);
-                    if(dialog.open() == Dialog.OK){
+                    MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(),
+                            MessageConstants.ActivationDialogV2_LBL_ERROR, null,
+                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, MessageDialog.ERROR,
+                            new String[] { "OK" }, 0);
+                    if (dialog.open() == Dialog.OK) {
                         txtEmail.setEnabled(true);
                         txtPassword.setEnabled(true);
                         btnActivate.setEnabled(true);
