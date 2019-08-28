@@ -30,3 +30,9 @@ steps:
 - task: Bash@3
   inputs:
     filePath: 'build.sh'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/a.exe'
+    ArtifactName: 'katalon-build'
+    publishLocation: 'Container'
