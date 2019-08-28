@@ -5,7 +5,6 @@ set -xe
 prepare() {
     pip3 install pyjavaproperties
     mkdir -p ${tmpDir}
-    mvn ${mavenOpts} -N io.takari:maven:wrapper -Dmaven=$mavenVersion
     chmod -R 777 ${katalonDir}
 }
 
@@ -38,18 +37,20 @@ generate_latest_version_json_file() {
 }
 
 building() {
+    cd $katalonDir/source && mvn ${mavenOpts} -N io.takari:maven:wrapper -Dmaven=$mavenVersion
+
     ulimit -c unlimited
 
-    cd $katalonDir/source/com.kms.katalon.repo && $katalonDir/mvnw ${mavenOpts} p2:site 
+    cd $katalonDir/source/com.kms.katalon.repo && $katalonDir/source/mvnw ${mavenOpts} p2:site 
     
-    cd $katalonDir/source/com.kms.katalon.repo && nohup $katalonDir/mvnw ${mavenOpts} -Djetty.port=9999 jetty:run > /tmp/9999.log &
+    cd $katalonDir/source/com.kms.katalon.repo && nohup $katalonDir/source/mvnw ${mavenOpts} -Djetty.port=9999 jetty:run > /tmp/9999.log &
     until $(curl --output /dev/null --silent --head --fail http://localhost:9999/site); do
         printf '.'
         cat /tmp/9999.log
         sleep 5
     done
 
-    cd $katalonDir/source/com.kms.katalon.p2site && nohup $katalonDir/mvnw ${mavenOpts} -Djetty.port=33333 jetty:run > /tmp/33333.log &           
+    cd $katalonDir/source/com.kms.katalon.p2site && nohup $katalonDir/source/mvnw ${mavenOpts} -Djetty.port=33333 jetty:run > /tmp/33333.log &           
     until $(curl --output /dev/null --silent --head --fail http://localhost:33333/site); do
         printf '.'
         cat /tmp/33333.log
@@ -59,13 +60,13 @@ building() {
     if [ "$isQtest" = "true" ]
     then
         echo "Building: qTest Prod"
-        cd $katalonDir/source && $katalonDir/mvnw ${mavenOpts} -pl '!com.kms.katalon.product' clean verify -P prod
+        cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} -pl '!com.kms.katalon.product' clean verify -P prod
     else
         echo "Building: Standard Prod"
-        cd $katalonDir/source && $katalonDir/mvnw ${mavenOpts} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
+        cd $katalonDir/source && $katalonDir/source/mvnw ${mavenOpts} -pl '!com.kms.katalon.product.qtest_edition' clean verify -P prod
     fi
 
-    cd $katalonDir/source/com.kms.katalon.apidocs && $katalonDir/mvnw ${mavenOpts} clean verify && cp -R 'target/resources/apidocs' ${tmpDir}
+    cd $katalonDir/source/com.kms.katalon.apidocs && $katalonDir/source/mvnw ${mavenOpts} clean verify && cp -R 'target/resources/apidocs' ${tmpDir}
 }
 
 copy_build() {
@@ -109,7 +110,7 @@ repackage() {
     mv ${tmpDir}/output/*.zip ${tmpDir}/
     mv ${tmpDir}/output/*.tar.gz ${tmpDir}/
     rm -rf ${tmpDir}/output
-    
+
     cd '${tmpDir}' && zip -r '${tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'
     rm -rf '${tmpDir}/Katalon Studio.app'
 
