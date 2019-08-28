@@ -12,6 +12,7 @@ variables:
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   VERSION: 
   TAG:
+  S3_LOCATION:
 
 pool:
   vmImage: 'macOS-latest'
@@ -43,15 +44,8 @@ steps:
     source ./variable.sh
     echo "##vso[task.setvariable variable=VERSION]${version}"
     echo "##vso[task.setvariable variable=TAG]${tag}"
+    echo "##vso[task.setvariable variable=S3_LOCATION]${s3Location}"
   displayName: Azure Populate Variable Value
-
-- bash: |
-    cd $TMP_DIR
-    ls -al
-    cd update
-    ls -al
-    cd ${TAG}
-    ls -al
 
 # - task: S3Upload@1
 #   inputs:
@@ -60,5 +54,17 @@ steps:
 #     bucketName: 'katalon'
 #     sourceFolder: "${TMP_DIR}/update/${TAG}"
 #     globExpressions: '**'
-#     targetFolder: 'update/${TAG}'
+#     targetFolder: 'azure-update/${TAG}'
 #     filesAcl: 'public-read'
+#   displayName: Upload Update Package
+
+- task: S3Upload@1
+  inputs:
+    awsCredentials: 'aws'
+    regionName: 'us-east-1'
+    bucketName: 'katalon'
+    sourceFolder: "${TMP_DIR}"
+    globExpressions: '**'
+    targetFolder: "azure-${S3_LOCATION}"
+    filesAcl: 'public-read'
+  displayName: Upload Build Package

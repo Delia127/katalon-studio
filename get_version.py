@@ -34,6 +34,14 @@ else:
     tag = "{0}.DEV".format(version)
 print("Tag", tag)
 
+s3_location
+if is_qtest is True:
+    s3_location = "{0}/qTest".format(tag)
+elif is_beta is True
+    s3_location = "release-beta/{0}".format(tag)
+else:
+    s3_location = tag
+
 variableTemplate = Template(
 """
 #!/usr/bin/env bash
@@ -44,6 +52,7 @@ isRelease=${is_release}
 isBeta=${is_beta}
 withUpdate=${with_update}
 tag=${tag}
+s3Location=${s3_location}
 """)
-variable = variableTemplate.substitute(version = version, is_qtest = str(is_qtest).lower(), is_release = str(is_release).lower(), is_beta = str(is_beta).lower(), with_update = str(with_update).lower(), tag = tag)
+variable = variableTemplate.substitute(version = version, is_qtest = str(is_qtest).lower(), is_release = str(is_release).lower(), is_beta = str(is_beta).lower(), with_update = str(with_update).lower(), tag = tag, s3_location = s3_location)
 write_file(file_path = "variable.sh", text = variable)
