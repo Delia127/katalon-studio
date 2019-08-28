@@ -37,7 +37,7 @@ steps:
 #     publishLocation: 'Container'
 
 - bash: |
-    a=3 b
+    a=3
     export b=4
 - bash: |
     echo $a
