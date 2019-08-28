@@ -33,6 +33,6 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/a.exe'
+    PathtoPublish: '$(TMP_DIR)'
     ArtifactName: 'katalon-build'
     publishLocation: 'Container'
