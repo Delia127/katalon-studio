@@ -7,7 +7,7 @@ trigger:
 - qui-azure
 
 variables:
-  BRANCH: 6.3.3
+  BRANCH: $BUILD_SOURCEBRANCHNAME
   TMP_DIR: /tmp/katabuild
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
@@ -27,12 +27,11 @@ steps:
     path: $(MAVEN_CACHE_FOLDER)
   displayName: Cache Maven local repo
 
-- task: Bash@3
-  inputs:
-    filePath: 'build.sh'
+- bash: |
+    ./build.sh ${BRANCH} ${TMP_DIR} ${BUILD_REPOSITORY_LOCALPATH} ${MAVEN_OPTS}
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(TMP_DIR)/*'
+    PathtoPublish: '$(TMP_DIR)'
     ArtifactName: 'katalon-build'
     publishLocation: 'Container'
