@@ -21,11 +21,11 @@ steps:
   fetchDepth: 1
   clean: true
 
-# - task: CacheBeta@0
-#   inputs:
-#     key: maven | **/pom.xml
-#     path: $(MAVEN_CACHE_FOLDER)
-#   displayName: Cache Maven local repo
+- task: CacheBeta@0
+  inputs:
+    key: maven | **/pom.xml
+    path: $(MAVEN_CACHE_FOLDER)
+  displayName: Cache Maven local repo
 
 - task: Bash@3
   inputs:
