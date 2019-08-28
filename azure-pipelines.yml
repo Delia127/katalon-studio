@@ -32,7 +32,7 @@ steps:
     targetType: 'inline'
     script: |
       pip3 install pyjavaproperties
-      mkdir -p $tmpDir
+      mkdir -pv $tmpDir
   displayName: Prepare
 
 - task: Bash@3
