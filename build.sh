@@ -17,6 +17,7 @@ mkdir -p $tmpDir
 
 cd $BUILD_REPOSITORY_LOCALPATH
 python3 get_version.py $branch
+ls -al
 source ./variable.sh
 
 cd $BUILD_REPOSITORY_LOCALPATH
