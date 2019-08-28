@@ -28,7 +28,7 @@ steps:
   displayName: Cache Maven local repo
 
 - bash: |
-    ./build.sh ${BRANCH} ${TMP_DIR} ${BUILD_REPOSITORY_LOCALPATH} ${MAVEN_OPTS}
+    ./build.sh "${BRANCH}" "${TMP_DIR}" "${BUILD_REPOSITORY_LOCALPATH}" "${MAVEN_OPTS}"
 
 - task: PublishBuildArtifacts@1
   inputs:

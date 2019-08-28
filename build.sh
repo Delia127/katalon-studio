@@ -120,6 +120,11 @@ tmpDir=${1}
 katalonDir=${2}
 mavenOpts=${3}
 
+echo $branch
+echo $tmpDir
+echo $katalonDir
+echo $mavenOpts
+
 mavenVersion=3.5.4
 
 prepare
