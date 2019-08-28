@@ -46,4 +46,4 @@ withUpdate=${with_update}
 tag=${tag}
 """)
 variable = variableTemplate.substitute(version = version, is_qtest = str(is_qtest).lower(), is_release = str(is_release).lower(), is_beta = str(is_beta).lower(), with_update = str(with_update).lower(), tag = tag)
-write_file(file_path = "varable.sh", text = variable)
+write_file(file_path = "variable.sh", text = variable)
