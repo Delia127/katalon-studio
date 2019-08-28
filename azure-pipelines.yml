@@ -21,24 +21,17 @@ steps:
   fetchDepth: 1
   clean: true
 
-# - task: CacheBeta@0
-#   inputs:
-#     key: maven | **/pom.xml
-#     path: $(MAVEN_CACHE_FOLDER)
-#   displayName: Cache Maven local repo
-
-# - bash: |
-#     ./build.sh ${BRANCH} ${TMP_DIR} ${BUILD_REPOSITORY_LOCALPATH} ${MAVEN_OPTS}
-
-# - task: PublishBuildArtifacts@1
-#   inputs:
-#     PathtoPublish: '$(TMP_DIR)'
-#     ArtifactName: 'katalon-build'
-#     publishLocation: 'Container'
+- task: CacheBeta@0
+  inputs:
+    key: maven | **/pom.xml
+    path: $(MAVEN_CACHE_FOLDER)
+  displayName: Cache Maven local repo
 
 - bash: |
-    a=3
-    export b=4
-- bash: |
-    echo $a
-    echo $b
+    ./build.sh ${BRANCH} ${TMP_DIR} ${BUILD_REPOSITORY_LOCALPATH} ${MAVEN_OPTS}
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(TMP_DIR)'
+    ArtifactName: 'katalon-build'
+    publishLocation: 'Container'
