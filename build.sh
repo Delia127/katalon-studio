@@ -13,15 +13,15 @@ withUpdate=
 tag=
 GITHUB_TOKEN=
 
-echo ${tmpDir}
+echo ${BRANCH}
 echo ${MAVEN_OPTS}
 
-pip3 install pyjavaproperties
-mkdir -p ${tmpDir}
+# pip3 install pyjavaproperties
+# mkdir -p ${tmpDir}
 
-cd $BUILD_REPOSITORY_LOCALPATH
-python3 get_version.py $branch
-source ./variable.sh
+# cd $BUILD_REPOSITORY_LOCALPATH
+# python3 get_version.py $branch
+# source ./variable.sh
 
 # cd $BUILD_REPOSITORY_LOCALPATH
 # python3 generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta

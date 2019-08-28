@@ -7,10 +7,10 @@ trigger:
 - qui-azure
 
 variables:
+  BRANCH: 6.3.3
+  TMP_DIR: /tmp/katabuild
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  branch: 6.3.3
-  tmpDir: /tmp/katabuild
 
 pool:
   vmImage: 'macOS-latest'
