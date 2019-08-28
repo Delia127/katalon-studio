@@ -115,7 +115,7 @@ repackage() {
 }
 
 
-branch=${0BRANCH}
+branch=${BRANCH}
 tmpDir=${TMP_DIR}
 mavenVersion=3.5.4
 version=
