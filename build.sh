@@ -66,7 +66,6 @@ fi
 cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.apidocs && $BUILD_REPOSITORY_LOCALPATH/source/mvnw ${MAVEN_OPTS} clean verify && cp -R 'target/resources/apidocs' ${tmpDir}      
 
 # Copy builds
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product/target/products
 if [ "$isQtest" = "false" ]
 then
     # cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
@@ -75,7 +74,6 @@ then
     cp *.tar.gz ${tmpDir}
 fi
 
-cd $BUILD_REPOSITORY_LOCALPATH/source/com.kms.katalon.product.qtest_edition/target/products
 if [ "$isQtest" = "true" ]
 then
     # cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
