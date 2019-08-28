@@ -1,5 +1,6 @@
 import sys
 from string import Template
+import json
 from build_utils import write_file, read_file
 
 def generate_scan_info_file(file_path, version, build_dir, dest_dir):

@@ -93,34 +93,34 @@ fi
 #     ./dropdmg.sh $tmpDir
 # fi
 
-# # Generate update packages
-# cd $BUILD_REPOSITORY_LOCALPATH
-# if [ "$withUpdate" = "true" ]
-# then
-#     cd tools/updater
-#     python3 generate_scan_info_file.py "scan_info.json" $version "${BUILD_REPOSITORY_LOCALPATH}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product" "${tmpDir}/update"
-#     java -jar json-map-builder-1.0.0.jar
-# }  
+# Generate update packages
+cd $BUILD_REPOSITORY_LOCALPATH
+if [ "$withUpdate" = "true" ]
+then
+    cd tools/updater
+    python3 $BUILD_REPOSITORY_LOCALPATH/generate_scan_info_file.py "scan_info.json" $version "${BUILD_REPOSITORY_LOCALPATH}/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product" "${tmpDir}/update"
+    java -jar json-map-builder-1.0.0.jar
+fi
 
-# # Repackage
-# cd $BUILD_REPOSITORY_LOCALPATH
-# cd tools/repackage
-# npm prune && npm install
-# node repackage.js ${tmpDir}/Katalon_Studio_Windows_32.zip ${version}
-# node repackage.js ${tmpDir}/Katalon_Studio_Windows_64.zip ${version}
-# node repackage.js ${tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}
+# Repackage
+cd $BUILD_REPOSITORY_LOCALPATH
+cd tools/repackage
+npm prune && npm install
+node repackage.js ${tmpDir}/Katalon_Studio_Windows_32.zip ${version}
+node repackage.js ${tmpDir}/Katalon_Studio_Windows_64.zip ${version}
+node repackage.js ${tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}
 
-# rm -rf ${tmpDir}/*.zip
-# rm -rf ${tmpDir}/*.tar.gz
-# mv ${tmpDir}/output/*.zip ${tmpDir}/
-# mv ${tmpDir}/output/*.tar.gz ${tmpDir}/
-# rm -rf ${env.tmpDir}/output
-# cd '${tmpDir}' && zip -r '${tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'
+rm -rf ${tmpDir}/*.zip
+rm -rf ${tmpDir}/*.tar.gz
+mv ${tmpDir}/output/*.zip ${tmpDir}/
+mv ${tmpDir}/output/*.tar.gz ${tmpDir}/
+rm -rf ${env.tmpDir}/output
+cd '${tmpDir}' && zip -r '${tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'
 
-# rm -rf '${tmpDir}/Katalon Studio.app'
+rm -rf '${tmpDir}/Katalon Studio.app'
 
-# cd '${tmpDir}' && zip -r '${tmpDir}/apidocs.zip' 'apidocs'
-# rm -rf '${tmpDir}/apidocs'
+cd '${tmpDir}' && zip -r '${tmpDir}/apidocs.zip' 'apidocs'
+rm -rf '${tmpDir}/apidocs'
 
 # # Upload update packages to S3
 # if [ "$withUpdate" = "true" ]
