@@ -37,7 +37,7 @@ print("Tag", tag)
 s3_location
 if is_qtest is True:
     s3_location = "{0}/qTest".format(tag)
-elif is_beta is True
+elif is_beta is True:
     s3_location = "release-beta/{0}".format(tag)
 else:
     s3_location = tag
