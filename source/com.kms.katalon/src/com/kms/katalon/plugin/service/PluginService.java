@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.util.Arrays;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -230,11 +231,8 @@ public class PluginService {
     }
 
     private List<OfflinePlugin> getOfflinePlugins(IProgressMonitor progressMonitor) {
-        boolean shouldLoadOfflinePlugins = FeatureServiceConsumer.getServiceInstance()
+        boolean canUsePrivatePlugins = FeatureServiceConsumer.getServiceInstance()
                 .canUse(TestOpsFeatureKey.PRIVATE_PLUGIN);
-        if (!shouldLoadOfflinePlugins) {
-            return Collections.emptyList();
-        }
 
         SubMonitor monitor = SubMonitor.convert(progressMonitor);
         monitor.beginTask("", 100);
@@ -277,8 +275,20 @@ public class PluginService {
             }
             monitor.worked(50);
         }
-
-        return offlinePlugins;
+        
+        if (canUsePrivatePlugins) {
+            return offlinePlugins;
+        } else {
+            //restric to use 1 custom keyword plugin only
+            if (offlinePlugins.size() > 0 && offlinePlugins.get(0).isCustomKeywordPlugin()) {
+                OfflinePlugin plugin = offlinePlugins.get(0);
+                offlinePlugins = new ArrayList<>();
+                offlinePlugins.add(plugin);
+            } else {
+                offlinePlugins = Collections.emptyList();
+            }
+            return offlinePlugins;
+        }
     }
 
     private void logPluginInfo(KStorePlugin plugin) {
