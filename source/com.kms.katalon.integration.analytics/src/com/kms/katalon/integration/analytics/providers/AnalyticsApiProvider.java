@@ -94,7 +94,7 @@ public class AnalyticsApiProvider {
         }
     }
 
-    public static List<AnalyticsOrganization> getOrganization(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+    public static List<AnalyticsOrganization> getOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
             URIBuilder uriBuilder = new URIBuilder(uri);

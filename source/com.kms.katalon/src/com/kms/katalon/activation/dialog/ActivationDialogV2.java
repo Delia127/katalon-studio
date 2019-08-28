@@ -32,6 +32,7 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -201,7 +202,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     String email = txtEmail.getText();
                     String password = txtPassword.getText();
                     token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                    organizations = AnalyticsApiProvider.getOrganization(serverUrl, token.getAccess_token());
+                    organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token.getAccess_token());
                     if (organizations.size() == 1) {
                         save(0);
 	                } else {
