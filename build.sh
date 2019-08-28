@@ -115,7 +115,7 @@ repackage() {
 }
 
 # branch=${1}
-branch=6.3.3
+branch=release-6.3.3
 tmpDir=${2}
 katalonDir=${3}
 mavenOpts=${4}
@@ -128,7 +128,7 @@ generate_links_file
 generate_lastest_release_file
 generate_release_json_file
 generate_latest_version_json_file
-# building
-# copy_build
-# generate_update_package
-# repackage
+building
+copy_build
+generate_update_package
+repackage
