@@ -11,6 +11,7 @@ isRelease=
 isBeta=
 withUpdate=
 tag=
+GITHUB_TOKEN=
 
 pip3 install pyjavaproperties
 mkdir -p $tmpDir
@@ -128,7 +129,7 @@ rm -rf '${tmpDir}/apidocs'
 #     withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
 #         s3Upload(file: "${env.tmpDir}/update/${tag}", bucket:'katalon', path: "update/${tag}", acl:'PublicRead')
 #     }
-#     rm -rf '${env.tmpDir}/update'
+#     rm -rf '${tmpDir}/update'
 # fi
         
 # # Upload build packages to S3
@@ -144,6 +145,26 @@ rm -rf '${tmpDir}/apidocs'
 #         s3Location = "${tag}"
 #     fi
 #     withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
-#         s3Upload(file: "${env.tmpDir}", bucket:'katalon', path: "${s3Location}", acl:'PublicRead')
+#         s3Upload(file: "${mpDir}", bucket:'katalon', path: "${s3Location}", acl:'PublicRead')
+# fi
+
+# Create Github release  
+# if [ isRelease && !isQtest ]
+# then
+#     cd tools/release
+#     npm prune && npm install
+#     withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+#        node app.js ${GITHUB_TOKEN} v${tag} \
+#             '${tmpDir}/lastest_release.json' \
+#             '${tmpDir}/latest_version.json' \
+#             '${tmpDir}/releases.json' \
+#             '${tmpDir}/apidocs.zip' \
+#             '${tmpDir}/commit.txt' \
+#             '${tmpDir}/Katalon Studio.app.zip' \
+#             '${tmpDir}/Katalon Studio.dmg' \
+#             '${tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz' \
+#             '${tmpDir}/Katalon_Studio_Windows_32-${version}.zip' \
+#             '${tmpDir}/Katalon_Studio_Windows_64-${version}.zip'
+#     }
 # fi
       
