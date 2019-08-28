@@ -236,11 +236,12 @@ public class AnalyticsApiProvider {
         }
     }
     
-    public static List<AnalyticsFeature> getFeature(String serverUrl, String accessToken, long organizationId) throws AnalyticsApiExeception {
+    public static List<AnalyticsFeature> getFeatures(String serverUrl, String accessToken, long organizationId, String ksVersion) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_FEATURES_URL);
             URIBuilder uriBuilder = new URIBuilder(uri);
             uriBuilder.setParameter("organizationId", String.valueOf(organizationId));
+            uriBuilder.setParameter("ksVersion", ksVersion);
             HttpGet httpGet = new HttpGet(uriBuilder.build());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             List<AnalyticsFeature> features = executeRequest(httpGet, new TypeToken<ArrayList<AnalyticsFeature>>() {});
