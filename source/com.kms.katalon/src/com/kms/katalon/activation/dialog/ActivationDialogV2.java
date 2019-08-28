@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -25,6 +26,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -213,9 +215,14 @@ public class ActivationDialogV2 extends AbstractDialog {
 	                }
                 } catch (AnalyticsApiExeception e) {
                     LogUtil.logError(e);
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(), 
-                            MessageConstants.ActivationDialogV2_LBL_ERROR, 
-                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION);
+                    setProgressMessage("", false);
+                    MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(), MessageConstants.ActivationDialogV2_LBL_ERROR, null,
+                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, MessageDialog.ERROR, new String[] { "OK" }, 0);
+                    if(dialog.open() == Dialog.OK){
+                        txtEmail.setEnabled(true);
+                        txtPassword.setEnabled(true);
+                        btnActivate.setEnabled(true);
+                    }
                 }
             });
         });
