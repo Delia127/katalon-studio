@@ -10,32 +10,38 @@ variables:
   TMP_DIR: /tmp/katabuild
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  VERSION: 0
 
 pool:
   vmImage: 'macOS-latest'
 
 steps:
 
-- checkout: self
-  fetchDepth: 1
-  clean: true
+# - checkout: self
+#   fetchDepth: 1
+#   clean: true
 
-- task: CacheBeta@0
-  inputs:
-    key: maven | **/pom.xml
-    path: $(MAVEN_CACHE_FOLDER)
-  displayName: Cache Maven local repo
+# - task: CacheBeta@0
+#   inputs:
+#     key: maven | **/pom.xml
+#     path: $(MAVEN_CACHE_FOLDER)
+#   displayName: Cache Maven local repo
+
+# - bash: |
+#     ./build.sh "${BUILD_SOURCEBRANCHNAME}" "${TMP_DIR}" "${BUILD_REPOSITORY_LOCALPATH}" "${MAVEN_OPTS}"
+
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     PathtoPublish: '$(TMP_DIR)'
+#     ArtifactName: 'katalon-build'
+#     publishLocation: 'Container'
 
 - bash: |
-    ./build.sh "${BUILD_SOURCEBRANCHNAME}" "${TMP_DIR}" "${BUILD_REPOSITORY_LOCALPATH}" "${MAVEN_OPTS}"
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(TMP_DIR)'
-    ArtifactName: 'katalon-build'
-    publishLocation: 'Container'
+    set -xe
+    echo '##vso[task.setvariable variable=version]1'
+    echo '##vso[task.setvariable variable=VERSION]2'
 
 - bash: |
-    cd ${BUILD_REPOSITORY_LOCALPATH}
-    source ./variable.sh
-    Write-Host "##vso[task.setvariable variable=FirstName]Stefan"
+    set -xe
+    echo $version
+    echo $VERSION
