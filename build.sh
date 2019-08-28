@@ -115,8 +115,8 @@ repackage() {
 }
 
 
-branch=${0}
-tmpDir=${1}
+branch=${0BRANCH}
+tmpDir=${TMP_DIR}
 mavenVersion=3.5.4
 version=
 isQtest=
