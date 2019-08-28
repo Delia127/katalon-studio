@@ -34,7 +34,7 @@ else:
     tag = "{0}.DEV".format(version)
 print("Tag", tag)
 
-s3_location
+s3_location = ""
 if is_qtest is True:
     s3_location = "{0}/qTest".format(tag)
 elif is_beta is True:
