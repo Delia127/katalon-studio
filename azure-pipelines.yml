@@ -40,8 +40,45 @@ steps:
     targetType: 'inline'
     script: |
       cd $BUILD_REPOSITORY_LOCALPATH
-      python3 get_version.py $branch
+      python3 get_version.py ${BRANCH}
     displayName: Get Version
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |     
+      cd $BUILD_REPOSITORY_LOCALPATH
+      source ./variable.sh
+      python3 generate_links_file.py "${TMP_DIR}/links.txt" $version $tag $isBeta
+    displayName: Generate links.txt
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |     
+      cd $BUILD_REPOSITORY_LOCALPATH
+      source ./variable.sh
+      python3 generate_lastest_release_file.py "${TMP_DIR}/lastest_release.json" $version
+    displayName: Generate lastest_release.json
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |     
+      cd $BUILD_REPOSITORY_LOCALPATH
+      source ./variable.sh
+      python3 generate_release_json_file.py "${TMP_DIR}/releases.json" $version
+    displayName: Generate releases.json
+
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |     
+      cd $BUILD_REPOSITORY_LOCALPATH
+      source ./variable.sh
+      python3 generate_latest_version_json_file.py "${TMP_DIR}/latest_version.json" $version
+    displayName: Generate latest_version.json
 
 # - task: Bash@3
 #   inputs:
