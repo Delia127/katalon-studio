@@ -53,7 +53,6 @@ steps:
     cd ${TAG}
     ls -al
 
-displayName: Azure Populate Variable Value
 # - task: S3Upload@1
 #   inputs:
 #     awsCredentials: 'aws'
