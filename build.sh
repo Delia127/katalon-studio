@@ -14,7 +14,7 @@ tag=
 GITHUB_TOKEN=
 
 pip3 install pyjavaproperties
-mkdir -p $tmpDir
+mkdir -p ${tmpDir}
 
 cd $BUILD_REPOSITORY_LOCALPATH
 python3 get_version.py $branch
