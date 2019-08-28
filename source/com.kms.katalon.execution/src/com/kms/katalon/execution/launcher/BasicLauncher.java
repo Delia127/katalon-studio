@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
@@ -58,7 +59,7 @@ import com.kms.katalon.logging.LogUtil;
     }
     
     public String getMachineId() {
-        return "machineId";
+        return MachineUtil.getMachineId();
     }
 
     public void addListener(LauncherListener l) {
