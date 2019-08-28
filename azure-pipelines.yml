@@ -68,9 +68,9 @@ steps:
     awsCredentials: 'aws'
     regionName: 'us-east-1'
     bucketName: 'katalon'
-    sourceFolder: code:$(Build.ArtifactStagingDirectory)
+    sourceFolder: '$(Build.ArtifactStagingDirectory)'
     globExpressions: '**'
-    targetFolder: "azure-qui"
+    targetFolder: 'azure-qui'
     filesAcl: 'public-read'
   displayName: Upload Build Package
   condition: eq(variables.IS_RELEASE, 'true')
