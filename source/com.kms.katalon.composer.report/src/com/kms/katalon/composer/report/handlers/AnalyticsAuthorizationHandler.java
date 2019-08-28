@@ -88,7 +88,7 @@ public class AnalyticsAuthorizationHandler {
         return projects;
     }
     
-    public static List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password,
+    public static List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password, Long orgId,
             AnalyticsTokenInfo tokenInfo, ProgressMonitorDialog monitorDialog) {
         final List<AnalyticsTeam> teams = new ArrayList<>();
         try {
@@ -99,7 +99,7 @@ public class AnalyticsAuthorizationHandler {
                         monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_RETRIEVING_TEAMS, 2);
                         monitor.subTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_GETTING_TEAMS);
                         final List<AnalyticsTeam> loaded = AnalyticsApiProvider.getTeams(serverUrl,
-                                tokenInfo.getAccess_token());
+                                tokenInfo.getAccess_token(), orgId);
                         if (loaded != null && !loaded.isEmpty()) {
                             teams.addAll(loaded);
                         }

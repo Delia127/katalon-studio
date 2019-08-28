@@ -29,7 +29,8 @@ Require-Bundle: com.kms.katalon.core,
  com.google.guava,
  com.kms.katalon.util,
  com.kms.katalon.composer.components,
- com.kms.katalon.constant
+ com.kms.katalon.constant,
+ com.kms.katalon.application
 Export-Package: com.kms.katalon.integration.analytics,
  com.kms.katalon.integration.analytics.constants,
  com.kms.katalon.integration.analytics.entity,

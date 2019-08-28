@@ -16,6 +16,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String LBL_DLG_AUTHENTICATE_USERNAME;
 
     public static String LBL_ENABLE_ANALYTICS_INTEGRATION;
+    
+    public static String LBL_ORGANIZATION;
 
     public static String LBL_PASSWORD;
 
@@ -86,6 +88,12 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String REPORT_MSG_MUST_CONNECT_SUCCESSFULLY;
 
     public static String MSG_REQUEST_TOKEN_ERROR;
+    
+    public static String REPORT_WARNING_MSG_NO_TEAM;
+    
+    public static String REPORT_WARNING_MSG_NO_PROJECT;
+    
+    public static String REPORT_MSG_MUST_SET_PROJECT;
     
     static {
         // initialize resource bundle
