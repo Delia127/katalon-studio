@@ -42,15 +42,16 @@ public class MachineUtil {
 
         if (SystemUtils.IS_OS_MAC) {
             machineId = parseMachineIdForMac();
+            return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
         } else if (SystemUtils.IS_OS_LINUX) {
             machineId = parseMachineIdForLinux();
+            // machine id on a linux is not a UUID
+            return machineId.length() != 32 ? UNAVAILABLE : machineId;
         } else if (SystemUtils.IS_OS_WINDOWS) {
             machineId = parseMachineIdForWindows();
-        } else {
-            machineId = UNAVAILABLE;
+            return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
         }
-
-        return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
+        return UNAVAILABLE;
     }
 
     private static String parseMachineIdForWindows() {
@@ -85,7 +86,7 @@ public class MachineUtil {
         try {
             String commandLineResult = ConsoleCommandExecutor
                     .runConsoleCommandAndCollectFirstResult(LINUX_GET_MACHINE_ID_COMMAND_1);
-            if (!commandLineResult.matches(UUID_REGEX)) {
+            if (commandLineResult.length() != 32) {
                 commandLineResult = ConsoleCommandExecutor
                         .runConsoleCommandAndCollectFirstResult(LINUX_GET_MACHINE_ID_COMMAND_2);
             }
