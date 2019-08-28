@@ -115,15 +115,11 @@ repackage() {
 }
 
 
-branch=${1}
+# branch=${1}
+branch=6.3.3
 tmpDir=${2}
 katalonDir=${3}
 mavenOpts=${4}
-
-echo $branch
-echo $tmpDir
-echo $katalonDir
-echo $mavenOpts
 
 mavenVersion=3.5.4
 
