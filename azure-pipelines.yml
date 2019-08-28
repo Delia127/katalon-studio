@@ -68,7 +68,7 @@ steps:
     awsCredentials: 'aws'
     regionName: 'us-east-1'
     bucketName: 'katalon'
-    sourceFolder: '$(Build.ArtifactStagingDirectory)'
+    sourceFolder: 'variables.TMP_DIR'
     globExpressions: '**'
     targetFolder: 'azure-qui'
     filesAcl: 'public-read'
