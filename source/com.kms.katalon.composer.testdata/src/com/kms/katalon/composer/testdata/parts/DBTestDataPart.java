@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testdata.parts;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,10 +60,14 @@ import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.composer.testdata.dialog.EditTestDataQueryDialog;
 import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.testdata.DBData;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 
 public class DBTestDataPart extends TestDataMainPart {
 
@@ -282,26 +287,45 @@ public class DBTestDataPart extends TestDataMainPart {
         Display.getCurrent().timerExec(1000, new Runnable() {
 
             @Override
-            public void run() {
-                try {
-                    // fetch data and load into table
-                    DatabaseConnection dbConnection = TestDataController.getInstance().getDatabaseConnection(dataFile);
-                    if (dbConnection == null) {
-                        throw new Exception(StringConstants.DIA_MSG_CONNECTION_EMPTY);
-                    }
-                    DBData dbData = new DBData(dbConnection, dataFile.getQuery());
-                    loadDataIntoTable(dbData);
-                    setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_STATUS_LOADED_ON,
-                            dbData.getRetrievedDate().toString()), ColorUtil.getTextSuccessfulColor());
-                } catch (Exception e) {
-                    setStatusLabel(StringConstants.DIA_MSG_CANNOT_FETCH_DATA, ColorUtil.getTextErrorColor());
-                    MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_CANNOT_FETCH_DATA,
-                            e.getMessage());
-                } finally {
-                    btnFetchData.setEnabled(true);
-                }
-            }
-        });
+			public void run() {
+
+				ClassLoader oldClassLoader = null;
+				DatabaseConnection dbConnection = null;
+				try {
+					oldClassLoader = Thread.currentThread().getContextClassLoader();
+
+					// fetch data and load into table
+					URLClassLoader projectClassLoader = ProjectController.getInstance()
+							.getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
+					Thread.currentThread().setContextClassLoader(projectClassLoader);
+
+					dbConnection = TestDataController.getInstance().getDatabaseConnection(dataFile);
+
+					if (dbConnection == null) {
+						throw new Exception(StringConstants.DIA_MSG_CONNECTION_EMPTY);
+					}
+
+					dbConnection.getConnection();
+					DBData dbData = new DBData(dbConnection, dataFile.getQuery());
+
+					loadDataIntoTable(dbData);
+					setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_STATUS_LOADED_ON,
+							dbData.getRetrievedDate().toString()), ColorUtil.getTextSuccessfulColor());
+				} catch (Exception e) {
+					setStatusLabel(StringConstants.DIA_MSG_CANNOT_FETCH_DATA, ColorUtil.getTextErrorColor());
+					MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_CANNOT_FETCH_DATA,
+							e.getMessage());
+				} finally {
+					btnFetchData.setEnabled(true);
+					if (dbConnection != null) {
+						dbConnection.close();
+					}
+					if (oldClassLoader != null) {
+						Thread.currentThread().setContextClassLoader(oldClassLoader);
+					}
+				}
+			}
+		});
     }
 
     /**
