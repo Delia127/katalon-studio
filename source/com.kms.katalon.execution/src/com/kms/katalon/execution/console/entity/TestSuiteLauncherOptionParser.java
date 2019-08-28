@@ -103,7 +103,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
 
         @Override
         public String getOption() {
-            return ConsoleMain.KATALON_STORE_LICENCE_FILE_OPTION;
+            return ConsoleMain.KATALON_STORE_LICENSE_FILE_OPTION;
         };
 
         public boolean isRequired() {

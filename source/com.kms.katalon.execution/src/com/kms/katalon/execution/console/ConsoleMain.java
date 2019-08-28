@@ -76,7 +76,7 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
-    public static final String KATALON_STORE_LICENCE_FILE_OPTION = "licenceFile";
+    public static final String KATALON_STORE_LICENSE_FILE_OPTION = "licenseFile";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
@@ -121,17 +121,19 @@ public class ConsoleMain {
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
             
-            String licenceFile = null;
-            String environmentVariable = System.getenv(KATALON_STORE_LICENCE_FILE_OPTION);
-            if(options.has(KATALON_STORE_LICENCE_FILE_OPTION)){
-                licenceFile = String.valueOf(options.valueOf(KATALON_STORE_LICENCE_FILE_OPTION));
+            String licenseFile = null;
+            String environmentVariable = System.getenv(KATALON_STORE_LICENSE_FILE_OPTION);
+            if (options.has(KATALON_STORE_LICENSE_FILE_OPTION)) {
+                licenseFile = String.valueOf(options.valueOf(KATALON_STORE_LICENSE_FILE_OPTION));
+            } else if (environmentVariable != null) {
+                licenseFile = environmentVariable;
             }
-            else if(environmentVariable != null) {
-                licenceFile = environmentVariable;
-            }
-            if(licenceFile != null){
-                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
-                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+            if (licenseFile != null) {
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance()
+                        .getBuilders()
+                        .stream()
+                        .map(a -> a.getPluginLauncherOptionParser())
+                        .collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
