@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.cert.PKIXRevocationChecker.Option;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +76,8 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
+    public static final String KATALON_STORE_LICENCE_FILE_OPTION = "licenceFile";
+    
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
     public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
@@ -117,7 +120,20 @@ public class ConsoleMain {
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
-
+            
+            String licenceFile = null;
+            String environmentVariable = System.getenv(KATALON_STORE_LICENCE_FILE_OPTION);
+            if(options.has(KATALON_STORE_LICENCE_FILE_OPTION)){
+                licenceFile = String.valueOf(options.valueOf(KATALON_STORE_LICENCE_FILE_OPTION));
+            }
+            else if(environmentVariable != null) {
+                licenceFile = environmentVariable;
+            }
+            if(licenceFile != null){
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if (options.has(INSTALL_PLUGIN_OPTION)){
                 installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
