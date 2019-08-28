@@ -115,7 +115,7 @@ rm -rf ${tmpDir}/*.zip
 rm -rf ${tmpDir}/*.tar.gz
 mv ${tmpDir}/output/*.zip ${tmpDir}/
 mv ${tmpDir}/output/*.tar.gz ${tmpDir}/
-rm -rf ${env.tmpDir}/output
+rm -rf ${tmpDir}/output
 cd '${tmpDir}' && zip -r '${tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'
 
 rm -rf '${tmpDir}/Katalon Studio.app'
@@ -127,7 +127,7 @@ rm -rf '${tmpDir}/apidocs'
 # if [ "$withUpdate" = "true" ]
 # then
 #     withAWS(region: 'us-east-1', credentials: 'katalon-deploy') {
-#         s3Upload(file: "${env.tmpDir}/update/${tag}", bucket:'katalon', path: "update/${tag}", acl:'PublicRead')
+#         s3Upload(file: "${tmpDir}/update/${tag}", bucket:'katalon', path: "update/${tag}", acl:'PublicRead')
 #     }
 #     rm -rf '${tmpDir}/update'
 # fi
