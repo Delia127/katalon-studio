@@ -26,8 +26,8 @@ public class KStoreClientExceptionWithInfo extends Exception {
         if (credential == null) {
             return StringUtils.EMPTY;
         }
-        if (credential instanceof KStoreUsernamePasswordCredentials) {
-            return ((KStoreUsernamePasswordCredentials) credential).getUsername();
+        if (credential instanceof KStoreBasicCredentials) {
+            return ((KStoreBasicCredentials) credential).getUsername();
         }
         return StringUtils.EMPTY;
     }
