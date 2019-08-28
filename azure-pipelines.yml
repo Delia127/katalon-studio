@@ -41,8 +41,8 @@ steps:
     source ./variable.sh
     echo ${version}
     echo ${tag}
-    echo '##vso[task.setvariable variable=VERSION]${version}'
-    echo '##vso[task.setvariable variable=TAG]${tag}'
+    echo "##vso[task.setvariable variable=VERSION]${version}"
+    echo "##vso[task.setvariable variable=TAG]${tag}"
 
 - bash: |
     echo ${VERSION}
