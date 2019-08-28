@@ -76,7 +76,7 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
-    public static final String KATALON_STORE_LICENSE_FILE_OPTION = "licenseFile";
+    public static final String KATALON_STORE_LICENSE_FILE_OPTION = "testOps.licenseFile";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
