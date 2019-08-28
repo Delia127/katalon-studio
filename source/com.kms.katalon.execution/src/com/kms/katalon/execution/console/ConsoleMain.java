@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.cert.PKIXRevocationChecker.Option;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
