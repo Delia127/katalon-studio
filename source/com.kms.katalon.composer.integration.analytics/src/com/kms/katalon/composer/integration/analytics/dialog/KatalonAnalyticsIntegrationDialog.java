@@ -125,7 +125,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         cbxAutoSubmit = new Button(grpTestResult, SWT.CHECK);
         cbxAutoSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAutoSubmit.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_AUTO_SUBMIT);
-        new HelpComposite(grpTestResult, "https://analytics.katalon.com"); // TODO Anh Tuan - issue2435
+        new HelpComposite(grpTestResult, ComposerIntegrationAnalyticsMessageConstants.LNK_KA_HELP_AUTO_SUBMIT);
 
         Composite attachComposite = new Composite(grpTestResult, SWT.NONE);
         GridLayout glGrpAttach = new GridLayout(1, false);
@@ -133,14 +133,18 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         attachComposite.setLayout(glGrpAttach);
         attachComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        cbxAttachScreenshot = new Button(attachComposite, SWT.CHECK);
-        cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
+//        cbxAttachScreenshot = new Button(attachComposite, SWT.CHECK);
+//        cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+//        cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
 
-        Label lblSuggest = new Label(container, SWT.NONE);
+        Composite suggestComposite = new Composite(container, SWT.NONE);
+        suggestComposite.setLayout(new GridLayout(2, false));
+        suggestComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
+        
+        Label lblSuggest = new Label(suggestComposite, SWT.NONE);
         lblSuggest.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_UPLOAD);
 
-        Label lblDir = new Label(container, SWT.NONE);
+        Label lblDir = new Label(suggestComposite, SWT.NONE);
         lblDir.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_TO_CONFIG);
         ControlUtils.setFontStyle(lblDir, SWT.BOLD | SWT.ITALIC, -1);
 
@@ -164,7 +168,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
             email = analyticsSettingStore.getEmail(true);
 
             cbxAutoSubmit.setSelection(true);
-            cbxAttachScreenshot.setSelection(true);
+//            cbxAttachScreenshot.setSelection(true);
 
             teams.clear();
             projects.clear();
@@ -222,7 +226,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         cbxAutoSubmit.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
+//                cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
             }
         });
 
@@ -253,8 +257,12 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
             analyticsSettingStore.setProject(
                     cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
             analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());
-            analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
-            analyticsSettingStore.setAttachLog(encryptionEnabled);
+            
+            //Default value with cbxAutoSubmit
+            analyticsSettingStore.setAttachScreenshot(cbxAutoSubmit.getSelection());
+            analyticsSettingStore.setAttachCapturedVideos(cbxAutoSubmit.getSelection());
+            analyticsSettingStore.setAttachLog(cbxAutoSubmit.getSelection());
+            
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
