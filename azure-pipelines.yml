@@ -7,7 +7,7 @@ trigger:
 - qui-azure
 
 variables:
-  TMP_DIR: /tmp/katabuild
+  TMP_DIR: $(Build.ArtifactStagingDirectory)
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   VERSION: 
@@ -25,11 +25,11 @@ steps:
   fetchDepth: 1
   clean: true
 
-- task: CacheBeta@0
-  inputs:
-    key: maven | **/pom.xml
-    path: $(MAVEN_CACHE_FOLDER)
-  displayName: Cache Maven Local Repo
+# - task: CacheBeta@0
+#   inputs:
+#     key: maven | **/pom.xml
+#     path: $(MAVEN_CACHE_FOLDER)
+#   displayName: Cache Maven Local Repo
 
 - bash: |
     ./build.sh "${BUILD_SOURCEBRANCHNAME}" "${TMP_DIR}" "${BUILD_REPOSITORY_LOCALPATH}" "${MAVEN_OPTS}"
@@ -68,9 +68,9 @@ steps:
     awsCredentials: 'aws'
     regionName: 'us-east-1'
     bucketName: 'katalon'
-    sourceFolder: "${TMP_DIR}"
+    sourceFolder: code:$(Build.ArtifactStagingDirectory)
     globExpressions: '**'
-    targetFolder: "azure-${S3_LOCATION}"
+    targetFolder: "azure-qui"
     filesAcl: 'public-read'
   displayName: Upload Build Package
   condition: eq(variables.IS_RELEASE, 'true')
