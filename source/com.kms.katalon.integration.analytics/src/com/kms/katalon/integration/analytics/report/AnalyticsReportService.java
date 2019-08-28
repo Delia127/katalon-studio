@@ -152,18 +152,14 @@ public class AnalyticsReportService implements AnalyticsComponent {
     private List<Path> scanFiles(ReportFolder reportFolder) {
         List<Path> files = new ArrayList<>();
         for (String path : reportFolder.getReportFolders()) {
-            try {
-                addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_REPORT_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachScreenshot(), AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachLog(), AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachCapturedVideos(), AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_RP_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_BASIC_REPORT_FILE_EXTENSION_PATTERN));
-                addToList(files, scanHarFiles(path));
-            } catch (IOException e) {
-                LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
-            }
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_REPORT_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_RP_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_BASIC_REPORT_FILE_EXTENSION_PATTERN));
+            addToList(files, scanHarFiles(path));
         }
         return files;
     }
