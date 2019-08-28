@@ -38,6 +38,9 @@
 //     AccessorResults will contain the results of running getter (e.g. getTitle returns
 //     the title as a string).
 
+// Selenium IDE
+// generate wait, verify, store etc. commands from base commands
+
 var CommandHandlerFactory = classCreate();
 objectExtend(CommandHandlerFactory.prototype, {
 
