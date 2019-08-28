@@ -978,6 +978,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         String analyticsPassword = credentialInfo.get("analyticsPassword");
         String serverUrl = credentialInfo.get("serverUrl");
         Boolean authenticationDialogOpened = Boolean.valueOf(credentialInfo.get("authenticationDialogOpened"));
+        Long orgId = analyticsSettingStore.getOrganization().getId();
 
         if (!StringUtils.isEmpty(analyticsPassword) && authenticationDialogOpened == false) {
             tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, analyticsEmail, analyticsPassword, analyticsSettingStore);
@@ -995,7 +996,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             authenticationDialogOpened = true;
         }
 
-        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo,
+        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, analyticsEmail, analyticsPassword, orgId, tokenInfo,
                 new ProgressMonitorDialog(shell));
         teamCount = teams.size();
         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
