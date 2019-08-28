@@ -1,37 +1,36 @@
 #!/usr/bin/env bash
 
-set -xe
+# set -xe
 
-branch=6.3.3
-mavenVersion=3.5.4
-tmpDir="/tmp/katabuild"
-version=
-isQtest=
-isRelease=
-isBeta=
-withUpdate=
-tag=
-GITHUB_TOKEN=
+# branch=6.3.3
+# mavenVersion=3.5.4
+# tmpDir=
+# version=
+# isQtest=
+# isRelease=
+# isBeta=
+# withUpdate=
+# tag=
+# GITHUB_TOKEN=
 
-pip3 install pyjavaproperties
-mkdir -p $tmpDir
+# pip3 install pyjavaproperties
+# mkdir -p $tmpDir
 
-cd $BUILD_REPOSITORY_LOCALPATH
-python3 get_version.py $branch
-ls -al
-source ./variable.sh
+# cd $BUILD_REPOSITORY_LOCALPATH
+# python3 get_version.py $branch
+# source ./variable.sh
 
-cd $BUILD_REPOSITORY_LOCALPATH
-python3 generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta
+# cd $BUILD_REPOSITORY_LOCALPATH
+# python3 generate_links_file.py "${tmpDir}/links.txt" $version $tag $isBeta
 
-cd $BUILD_REPOSITORY_LOCALPATH
-python3 generate_lastest_release_file.py "${tmpDir}/lastest_release.json" $version
+# cd $BUILD_REPOSITORY_LOCALPATH
+# python3 generate_lastest_release_file.py "${tmpDir}/lastest_release.json" $version
 
-cd $BUILD_REPOSITORY_LOCALPATH
-python3 generate_release_json_file.py "${tmpDir}/releases.json" $version
+# cd $BUILD_REPOSITORY_LOCALPATH
+# python3 generate_release_json_file.py "${tmpDir}/releases.json" $version
 
-cd $BUILD_REPOSITORY_LOCALPATH
-python3 generate_latest_version_json_file.py "${tmpDir}/latest_version.json" $version
+# cd $BUILD_REPOSITORY_LOCALPATH
+# python3 generate_latest_version_json_file.py "${tmpDir}/latest_version.json" $version
 
 # # Building
 # ulimit -c unlimited
