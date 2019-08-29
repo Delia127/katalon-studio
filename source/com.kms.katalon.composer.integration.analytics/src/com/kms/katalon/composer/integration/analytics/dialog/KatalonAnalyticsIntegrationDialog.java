@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -76,7 +77,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
         try {
             password = analyticsSettingStore.getPassword(true);
-            serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
+            serverUrl = ApplicationInfo.getTestOpsServer();
             email = analyticsSettingStore.getEmail(true);
  
             tokenInfo = AnalyticsAuthorizationHandler.getTokenNew(serverUrl, email, password, analyticsSettingStore);
@@ -198,8 +199,9 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
 
         teams.clear();
         projects.clear();
-
-        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo,
+        
+        Long orgId = analyticsSettingStore.getOrganization().getId();
+        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, orgId, tokenInfo,
                 new ProgressMonitorDialog(getShell()));
         projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
                 teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,

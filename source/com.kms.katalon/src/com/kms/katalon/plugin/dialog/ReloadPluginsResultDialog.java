@@ -3,7 +3,6 @@ package com.kms.katalon.plugin.dialog;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
@@ -43,14 +42,15 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
+import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
-public class KStorePluginsDialog extends Dialog {
+public class ReloadPluginsResultDialog extends Dialog {
     
     private static final int CLMN_PLUGIN_NAME_IDX = 0;
     
@@ -64,11 +64,11 @@ public class KStorePluginsDialog extends Dialog {
     
     private Label lblWarning;
 
-    protected KStorePluginsDialog(Shell parentShell) {
+    protected ReloadPluginsResultDialog(Shell parentShell) {
         super(parentShell);
     }
 
-    public KStorePluginsDialog(Shell shell, List<ReloadItem> results) {
+    public ReloadPluginsResultDialog(Shell shell, List<ReloadItem> results) {
         this(shell);
         this.results = results;
     }
@@ -113,33 +113,37 @@ public class KStorePluginsDialog extends Dialog {
             @Override
             public String getText(Object element) {
                 ReloadItem item = (ReloadItem) element;
-                KStorePlugin plugin = item.getPlugin();
-                if (plugin.isFree()) {
-                    return StringConstants.KStorePluginsDialog_LICENSE_FREE;
-                }
-                
-                if (plugin.isPaid()) {
-                    return StringConstants.KStorePluginsDialog_LICENSE_PAID;
-                }
-                
-                if (plugin.isExpired()) {
-                    return StringConstants.KStorePluginsDialog_LICENSE_EXPIRED;
-                }
-                
-                if (plugin.isTrial()) {
-                    return StringConstants.KStorePluginsDialog_LICENSE_TRIAL;
-                }
-
+                Plugin plugin = item.getPlugin();
+                if (plugin.isOnline()) {
+                    KStorePlugin onlinePlugin = plugin.getOnlinePlugin();
+                    if (onlinePlugin.isFree()) {
+                        return StringConstants.KStorePluginsDialog_LICENSE_FREE;
+                    }
+                    
+                    if (onlinePlugin.isPaid()) {
+                        return StringConstants.KStorePluginsDialog_LICENSE_PAID;
+                    }
+                    
+                    if (onlinePlugin.isExpired()) {
+                        return StringConstants.KStorePluginsDialog_LICENSE_EXPIRED;
+                    }
+                    
+                    if (onlinePlugin.isTrial()) {
+                        return StringConstants.KStorePluginsDialog_LICENSE_TRIAL;
+                    }
+                } 
                 return StringUtils.EMPTY;
             }
             
             @Override
             public Color getForeground(Object element) {
                 ReloadItem item = (ReloadItem) element;
-                KStorePlugin plugin = item.getPlugin();
-                Color colorWarning = new Color(Display.getCurrent(), 255, 165, 0); //orange
-                if (checkExpire(plugin)) {
-                    return colorWarning;
+                Plugin plugin = item.getPlugin();
+                if (plugin.isOnline()) {
+                    Color colorWarning = new Color(Display.getCurrent(), 255, 165, 0); //orange
+                    if (checkExpire(plugin.getOnlinePlugin())) {
+                        return colorWarning;
+                    }
                 }
                 return super.getForeground(element);
             }
@@ -152,7 +156,12 @@ public class KStorePluginsDialog extends Dialog {
             @Override
             public String getText(Object element) {
                 ReloadItem item = (ReloadItem) element;
-                return item.getPlugin().getLatestCompatibleVersion().getNumber();
+                Plugin plugin = item.getPlugin();
+                if (plugin.isOnline()) {
+                    KStorePlugin onlinePlugin = plugin.getOnlinePlugin();
+                    return onlinePlugin.getLatestCompatibleVersion().getNumber();
+                }
+                return StringUtils.EMPTY;
             }
         });
         
@@ -193,8 +202,8 @@ public class KStorePluginsDialog extends Dialog {
         btnClose.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                KStorePluginsDialog.this.setReturnCode(Dialog.CANCEL);
-                KStorePluginsDialog.this.close();
+                ReloadPluginsResultDialog.this.setReturnCode(Dialog.CANCEL);
+                ReloadPluginsResultDialog.this.close();
             }
         });
         
@@ -203,7 +212,7 @@ public class KStorePluginsDialog extends Dialog {
     
     private boolean shouldShowExpiryWarningMessage() {
         return results.stream()
-            .filter(r -> checkExpire(r.getPlugin()))
+            .filter(r -> r.getPlugin().isOnline() && checkExpire(r.getPlugin().getOnlinePlugin()))
             .findAny()
             .isPresent();         
     }
@@ -245,11 +254,14 @@ public class KStorePluginsDialog extends Dialog {
         protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
             try {
                 ReloadItem resultItem = (ReloadItem) cell.getElement();
-                PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
-                KStoreUsernamePasswordCredentials credentials = pluginPrefStore.getKStoreUsernamePasswordCredentials();
-                
-                KStoreRestClient restClient = new KStoreRestClient(credentials);
-                restClient.goToProductPage(resultItem.getPlugin().getProduct());
+                Plugin plugin = resultItem.getPlugin();
+                if (plugin.isOnline()) {
+                    PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
+                    KStoreBasicCredentials credentials = pluginPrefStore.getKStoreBasicCredentials();
+                    
+                    KStoreRestClient restClient = new KStoreRestClient(credentials);
+                    restClient.goToProductPage(plugin.getOnlinePlugin().getProduct());
+                }
             } catch (GeneralSecurityException | IOException | KStoreClientException ex) {
                 LoggerSingleton.logError(ex);
             }
@@ -269,7 +281,7 @@ public class KStorePluginsDialog extends Dialog {
 
         @Override
         protected String getText(ReloadItem element) {
-            return element.getPlugin().getProduct().getName();
+            return element.getPlugin().getName();
         }
     }
     
@@ -283,11 +295,14 @@ public class KStorePluginsDialog extends Dialog {
         protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
             try {
                 ReloadItem resultItem = (ReloadItem) cell.getElement();
-                PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
-                KStoreUsernamePasswordCredentials credentials = pluginPrefStore.getKStoreUsernamePasswordCredentials();
-                
-                KStoreRestClient restClient = new KStoreRestClient(credentials);
-                restClient.goToProductReviewPage(resultItem.getPlugin().getProduct());
+                Plugin plugin = resultItem.getPlugin();
+                if (plugin.isOnline()) {
+                    PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
+                    KStoreBasicCredentials credentials = pluginPrefStore.getKStoreBasicCredentials();
+                    
+                    KStoreRestClient restClient = new KStoreRestClient(credentials);
+                    restClient.goToProductReviewPage(plugin.getOnlinePlugin().getProduct());
+                }
             } catch (GeneralSecurityException | IOException | KStoreClientException ex) {
                 LoggerSingleton.logError(ex);
             }
@@ -305,7 +320,11 @@ public class KStorePluginsDialog extends Dialog {
 
         @Override
         protected String getText(ReloadItem element) {
-            return StringConstants.KStorePluginsDialog_LNK_REVIEW;
+            Plugin plugin = element.getPlugin();
+            if (plugin.isOnline()) {
+                return StringConstants.KStorePluginsDialog_LNK_REVIEW;
+            } 
+            return StringUtils.EMPTY;
         }
     }
     
@@ -319,11 +338,14 @@ public class KStorePluginsDialog extends Dialog {
         protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
             try {
                 ReloadItem resultItem = (ReloadItem) cell.getElement();
-                PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
-                KStoreUsernamePasswordCredentials credentials = pluginPrefStore.getKStoreUsernamePasswordCredentials();
-                
-                KStoreRestClient restClient = new KStoreRestClient(credentials);
-                restClient.goToProductPricingPage(resultItem.getPlugin().getProduct());
+                Plugin plugin = resultItem.getPlugin();
+                if (plugin.isOnline()) {
+                    PluginPreferenceStore pluginPrefStore = new PluginPreferenceStore();
+                    KStoreBasicCredentials credentials = pluginPrefStore.getKStoreBasicCredentials();
+                    
+                    KStoreRestClient restClient = new KStoreRestClient(credentials);
+                    restClient.goToProductPricingPage(plugin.getOnlinePlugin().getProduct());
+                }
             } catch (GeneralSecurityException | IOException | KStoreClientException ex) {
                 LoggerSingleton.logError(ex);
             }
@@ -341,9 +363,12 @@ public class KStorePluginsDialog extends Dialog {
 
         @Override
         protected String getText(ReloadItem element) {
-            KStorePlugin plugin = element.getPlugin();
-            if (plugin.isTrial() || plugin.isExpired()) {
-                return StringConstants.KStorePluginsDialog_LNK_PURCHASE;
+            Plugin plugin = element.getPlugin();
+            if (plugin.isOnline()) {
+                KStorePlugin onlinePlugin = plugin.getOnlinePlugin();
+                if (onlinePlugin.isTrial() || onlinePlugin.isExpired()) {
+                    return StringConstants.KStorePluginsDialog_LNK_PURCHASE;
+                }
             }
             return StringUtils.EMPTY;
         }

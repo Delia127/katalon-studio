@@ -18,6 +18,7 @@
 var master = {};
 var clickEnabled = true;
 
+// open main window
 function openPanel(tab) {
 
     let contentWindowId = tab.windowId;
@@ -38,50 +39,52 @@ function openPanel(tab) {
         clickEnabled = true;
     }, 1000);
 
+    // open GUI with specified size
     var f = function(height, width) {
-    browser.windows.create({
-        url: browser.runtime.getURL("panel/index.html"),
-        type: "popup",
-        height: height,
-        width: width
-    }).then(function waitForPanelLoaded(panelWindowInfo) {
-        return new Promise(function(resolve, reject) {
-            let count = 0;
-            let interval = setInterval(function() {
-                if (count > 100) {
-                    reject("SideeX editor has no response");
-                    clearInterval(interval);
-                }
-
-                browser.tabs.query({
-                    active: true,
-                    windowId: panelWindowInfo.id,
-                    status: "complete"
-                }).then(function(tabs) {
-                    if (tabs.length != 1) {
-                        count++;
-                        return;
-                    } else {
-                        master[contentWindowId] = panelWindowInfo.id;
-                        if (Object.keys(master).length === 1) {
-                            createMenus();
-                        }
-                        resolve(panelWindowInfo);
+        browser.windows.create({
+            url: browser.runtime.getURL("panel/index.html"),
+            type: "popup",
+            height: height,
+            width: width
+        }).then(function waitForPanelLoaded(panelWindowInfo) {
+            return new Promise(function(resolve, reject) {
+                let count = 0;
+                let interval = setInterval(function() {
+                    if (count > 100) {
+                        reject("SideeX editor has no response");
                         clearInterval(interval);
                     }
-                })
-            }, 200);
+
+                    browser.tabs.query({
+                        active: true,
+                        windowId: panelWindowInfo.id,
+                        status: "complete"
+                    }).then(function(tabs) {
+                        if (tabs.length != 1) {
+                            count++;
+                            return;
+                        } else {
+                            master[contentWindowId] = panelWindowInfo.id;
+                            if (Object.keys(master).length === 1) {
+                                createMenus();
+                            }
+                            resolve(panelWindowInfo);
+                            clearInterval(interval);
+                        }
+                    })
+                }, 200);
+            });
+        }).then(function bridge(panelWindowInfo){
+            return browser.tabs.sendMessage(panelWindowInfo.tabs[0].id, {
+                selfWindowId: panelWindowInfo.id,
+                commWindowId: contentWindowId
+            });
+        }).catch(function(e) {
+            console.log(e);
         });
-    }).then(function bridge(panelWindowInfo){
-        return browser.tabs.sendMessage(panelWindowInfo.tabs[0].id, {
-            selfWindowId: panelWindowInfo.id,
-            commWindowId: contentWindowId
-        });
-    }).catch(function(e) {
-        console.log(e);
-    });
     };
 
+    // get previous window size, and open the window
     getWindowSize(f);
 }
 
@@ -99,6 +102,7 @@ browser.windows.onRemoved.addListener(function(windowId) {
     }
 });
 
+// context menu
 function createMenus() {
     browser.contextMenus.create({
         id: "verifyText",
@@ -164,11 +168,3 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
 browser.runtime.onConnect.addListener(function(m) {
     port = m;
 });
-
-/* KAT-BEGIN remove showing sideex docs
-browser.runtime.onInstalled.addListener(function(details) {
-    if (details.reason == "install" || details.reason == "update") {
-        browser.tabs.create({url: "http://sideex.org"});
-    }
-})
-KAT-END */

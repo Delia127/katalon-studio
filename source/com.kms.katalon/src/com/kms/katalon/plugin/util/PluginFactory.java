@@ -5,12 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 import com.kms.katalon.plugin.models.KStorePlugin;
+import com.kms.katalon.plugin.models.Plugin;
 
 public class PluginFactory {
 
     private static PluginFactory instance;
     
-    private List<KStorePlugin> plugins;
+    private List<Plugin> plugins;
     
     private PluginFactory() {
         plugins = new ArrayList<>();
@@ -23,11 +24,11 @@ public class PluginFactory {
         return instance;
     }
     
-    public List<KStorePlugin> getPlugins() {
+    public List<Plugin> getPlugins() {
         return Collections.unmodifiableList(plugins);
     }
     
-    public void addPlugin(KStorePlugin plugin) {
+    public void addPlugin(Plugin plugin) {
         plugins.add(plugin);
     }
     

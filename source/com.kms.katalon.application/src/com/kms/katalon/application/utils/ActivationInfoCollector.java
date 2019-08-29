@@ -126,7 +126,6 @@ public class ActivationInfoCollector {
             String userInfo = collectActivationInfo(userName, pass);
             String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
             if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
-                markActivated(userName, pass);
                 activatedResult = true;
             } else if (errorMessage != null) {
                 errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
@@ -166,7 +165,7 @@ public class ActivationInfoCollector {
         return false;
     }
 
-    private static void markActivated(String userName, String password) throws Exception {
+    public static void markActivated(String userName, String password) throws Exception {
         setActivatedVal();
         ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, userName, true);

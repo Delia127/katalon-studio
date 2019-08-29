@@ -19,6 +19,7 @@ import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestDataExecutedEntity;
 import com.kms.katalon.execution.exception.SyntaxErrorException;
 import com.kms.katalon.execution.util.SyntaxUtil;
+import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.logging.LogUtil;
 
 public class TestCaseBindingStringBuilder {
@@ -154,7 +155,7 @@ public class TestCaseBindingStringBuilder {
             return object;
         }
         if (object instanceof String) {
-            return "'" + object + "'";
+            return GroovyStringUtil.toGroovyStringFormat(object.toString());
         }
         return object.toString();
     }
@@ -179,7 +180,7 @@ public class TestCaseBindingStringBuilder {
             return object;
         }
         if (object instanceof String) {
-            return "'" + object + "'";
+            return GroovyStringUtil.toGroovyStringFormat(object.toString());
         }
         return object.toString();
     }
