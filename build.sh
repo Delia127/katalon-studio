@@ -73,6 +73,7 @@ copy_build() {
     if [ "$isQtest" = "false" ]
     then
         cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+        python3 generate_coomit_file $tmpDir/commit.txt ${commitId}
         cd $katalonDir/source/com.kms.katalon.product/target/products
         find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
         find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
@@ -82,6 +83,7 @@ copy_build() {
     if [ "$isQtest" = "true" ]
     then
         cd $katalonDir/source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+        python3 generate_coomit_file $tmpDir/commit.txt ${commitId}
         cd $katalonDir/source/com.kms.katalon.product.qtest_edition/target/products
         find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
         find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
@@ -144,8 +146,11 @@ branch=release-6.3.3
 tmpDir=${2}
 katalonDir=${3}
 mavenOpts=${4}
+commitId=${5}
 
 mavenVersion=3.5.4
+
+printenv
 
 prepare
 get_version
