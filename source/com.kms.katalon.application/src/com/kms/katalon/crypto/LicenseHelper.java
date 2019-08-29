@@ -58,15 +58,13 @@ public class LicenseHelper {
         PublicKey publicKey = null;
 
         KeyFactory kf = KeyFactory.getInstance("RSA");
-        byte[] bytes = readPemString(LicenseConstants.LICENSE_PUBLIC_KEY);
-        EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
+        EncodedKeySpec keySpec = new X509EncodedKeySpec(readPemString(LicenseConstants.LICENSE_PUBLIC_KEY));
         publicKey = kf.generatePublic(keySpec);
 
         return publicKey;
     }
 
     private byte[] readPemString(String string) throws IOException {
-    	Section section = PemReader.readFirstSectionAndClose(new StringReader(string)); 
-        return section.getBase64DecodedBytes();
+        return PemReader.readFirstSectionAndClose(new StringReader(string)).getBase64DecodedBytes();
     }
 }
