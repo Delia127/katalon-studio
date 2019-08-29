@@ -10,7 +10,13 @@ create_github_release() {
         node app.js ${github_token} v${tag} \
             '${tmpDir}/lastest_release.json' \
             '${tmpDir}/latest_version.json' \
-            '${tmpDir}/releases.json'
+            '${tmpDir}/releases.json' \
+            '${tmpDir}/apidocs.zip' \
+            '${tmpDir}/commit.txt' \
+            '${tmpDir}/Katalon Studio.app.zip' \
+            '${tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz' \
+            '${tmpDir}/Katalon_Studio_Windows_32-${version}.zip' \
+            '${tmpDir}/Katalon_Studio_Windows_64-${version}.zip'
     fi         
 }
 
