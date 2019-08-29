@@ -86,5 +86,7 @@ steps:
 
 - bash: |
     printenv
+    echo "Start"
     echo $GITHUB_TOKEN
+    echo $A
   displayName: Create Release
