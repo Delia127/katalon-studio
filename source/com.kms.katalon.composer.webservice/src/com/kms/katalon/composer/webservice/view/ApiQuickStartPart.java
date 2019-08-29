@@ -109,7 +109,7 @@ public class ApiQuickStartPart {
         mainGridLayout.marginWidth = 0;
         mainGridLayout.marginHeight = 0;
         mainComposite.setLayout(mainGridLayout);
-
+        mainComposite.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false,1,1));
         mainComposite.addListener(SWT.Paint, new Listener() {
 
             @Override
@@ -135,13 +135,11 @@ public class ApiQuickStartPart {
             case GENERIC:
             case WEBUI: {
                 mainComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
-                mainGridLayout.marginLeft = 170;
                 createLeftPart(mainComposite);
                 break;
             }
             case MOBILE: {
                 mainComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
-                mainGridLayout.marginLeft = 170;
                 createLeftPart(mainComposite);
                 break;
             }
@@ -180,8 +178,8 @@ public class ApiQuickStartPart {
             }
             case GENERIC:
             case WEBUI: {
-                Composite imageComposite = new Composite(parent, SWT.CENTER);
-                GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false);
+                Composite imageComposite = new Composite(parent, SWT.NONE);
+                GridData gridData = new GridData(SWT.CENTER, SWT.FILL, true, false);
                 Image backgroundWImg = ImageConstants.API_QUICKSTART_BACKGROUND_WEB_LEFT;
                 gridData.widthHint = backgroundWImg.getBounds().width;
                 gridData.heightHint = backgroundWImg.getBounds().height;
@@ -190,8 +188,8 @@ public class ApiQuickStartPart {
                 break;
             }
             case MOBILE: {
-                Composite imageComposite = new Composite(parent, SWT.CENTER);
-                GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false);
+                Composite imageComposite = new Composite(parent, SWT.NONE);
+                GridData gridData = new GridData(SWT.CENTER, SWT.FILL, true, false);
                 Image backgroundMImg = ImageConstants.API_QUICKSTART_BACKGROUND_MOBILE_LEFT;
                 gridData.widthHint = backgroundMImg.getBounds().width;
                 gridData.heightHint = backgroundMImg.getBounds().height;
