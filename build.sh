@@ -115,11 +115,11 @@ repackage() {
     mv ${tmpDir}/output/*.tar.gz ${tmpDir}/
     rm -rf ${tmpDir}/output
 
-    cd '${tmpDir}' && zip -r '${tmpDir}/Katalon Studio.app.zip' 'Katalon Studio.app'
-    rm -rf '${tmpDir}/Katalon Studio.app'
+    cd ${tmpDir} && zip -r "${tmpDir}/Katalon Studio.app.zip" "Katalon Studio.app"
+    rm -rf "${tmpDir}/Katalon Studio.app"
 
-    cd '${tmpDir}' && zip -r '${tmpDir}/apidocs.zip' 'apidocs'
-    rm -rf '${tmpDir}/apidocs'
+    cd ${tmpDir} && zip -r "${tmpDir}/apidocs.zip" "apidocs"
+    rm -rf "${tmpDir}/apidocs"
 }
 
 # branch=${1}
