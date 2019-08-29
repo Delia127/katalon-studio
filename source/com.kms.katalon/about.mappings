@@ -1,4 +1,8 @@
 0=${buildNumber}
+<<<<<<< HEAD
 1=7.0.0
+=======
+1=6.3.4
+>>>>>>> origin/staging-6.3.4
 2=${build.profile}
 3=internal

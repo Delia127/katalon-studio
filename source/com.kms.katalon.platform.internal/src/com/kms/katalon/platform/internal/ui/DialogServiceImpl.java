@@ -69,7 +69,6 @@ public class DialogServiceImpl implements DialogActionService {
         }
     }
     
-    @Override
     public FolderEntity showTestObjectFolderSelectionDialog(Shell parentShell, String dialogTitle) throws PlatformException {
         EntityLabelProvider labelProvider = new EntityLabelProvider();
         EntityProvider contentProvider = new EntityProvider();
@@ -98,7 +97,6 @@ public class DialogServiceImpl implements DialogActionService {
         }
     }
     
-    @Override
     public TestCaseEntity[] showTestCaseSelectionDialog(Shell parentShell, String dialogTitle)
             throws PlatformException {
         EntityLabelProvider labelProvider = new EntityLabelProvider();
@@ -132,7 +130,6 @@ public class DialogServiceImpl implements DialogActionService {
         }
     }
 
-    @Override
     public TestObjectEntity[] showTestObjectSelectionDialog(Shell parentShell, String dialogTitle)
             throws PlatformException {
         EntityLabelProvider labelProvider = new EntityLabelProvider();

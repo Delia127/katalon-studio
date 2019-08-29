@@ -154,8 +154,10 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
             if (tokenInfo == null) {
                 return;
             }
+            
+            Long orgId = analyticsSettingStore.getOrganization().getId();
             teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                    analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo,
+                    analyticsSettingStore.getEmail(encryptionEnabled), password, orgId, tokenInfo,
                     new ProgressMonitorDialog(getShell()));
             projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
                     teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
