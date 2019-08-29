@@ -16,6 +16,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -101,7 +102,7 @@ public class AnalyticsAuthorizationHandler {
         return projects;
     }
     
-    public static List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password,
+    public static List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password, Long orgId,
             AnalyticsTokenInfo tokenInfo, ProgressMonitorDialog monitorDialog) {
         final List<AnalyticsTeam> teams = new ArrayList<>();
         try {
@@ -112,7 +113,7 @@ public class AnalyticsAuthorizationHandler {
                         monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_RETRIEVING_TEAMS, 2);
                         monitor.subTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_GETTING_TEAMS);
                         final List<AnalyticsTeam> loaded = AnalyticsApiProvider.getTeams(serverUrl,
-                                tokenInfo.getAccess_token());
+                                tokenInfo.getAccess_token(), orgId);
                         if (loaded != null && !loaded.isEmpty()) {
                             teams.addAll(loaded);
                         }

@@ -46,6 +46,10 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
 
     private Link lnkOnlineRequest;
     
+    private Button btnCopyToClipboard;
+    
+    private Label lblMachineKeyDetail;
+    
     private Text txtLicenseFile;
     
     private Button btnChooseFile;
@@ -67,6 +71,15 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
             @Override
             public void modifyText(ModifyEvent e) {
                 btnActivate.setEnabled(validateInput());
+            }
+        });
+        
+        btnCopyToClipboard.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Clipboard cb = new Clipboard(getShell().getDisplay());
+                cb.setContents(new Object[] { lblMachineKeyDetail.getText() },
+                        new Transfer[] { TextTransfer.getInstance() });
             }
         });
         
@@ -139,6 +152,22 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         GridLayout glContainer = new GridLayout();
         glContainer.verticalSpacing = 15;
         container.setLayout(glContainer);
+        
+        Composite machineKeyComposite = new Composite(container, SWT.NONE);
+        machineKeyComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        machineKeyComposite.setLayout(new GridLayout(3, false));
+        
+        Label lblMachineKey = new Label(machineKeyComposite, SWT.NONE);
+        lblMachineKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        lblMachineKey.setText(MessageConstants.ActivationOfflineDialogV2_LBL_MACHINE_KEY);
+        
+        lblMachineKeyDetail = new Label(machineKeyComposite, SWT.NONE);
+        lblMachineKeyDetail.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        lblMachineKeyDetail.setForeground(ColorUtil.getTextLinkColor());
+        increateFontSize(lblMachineKeyDetail, 2);
+        
+        btnCopyToClipboard = new Button(machineKeyComposite, SWT.PUSH);
+        btnCopyToClipboard.setText(MessageConstants.BTN_COPY_TITLE);
         
         Composite licenseComposite = new Composite(container, SWT.NONE);
         licenseComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

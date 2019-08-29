@@ -111,6 +111,18 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         }
     };
 
+    private StringConsoleOption katalonStoreOrgIdOption = new StringConsoleOption() {
+
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_ORGANIZATION_ID_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        }
+    };
+
     protected StringConsoleOption installPluginOption = new StringConsoleOption() {
 
         @Override
@@ -155,6 +167,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(katalonApiKeyOption);
         allOptions.add(katalonStoreApiKeySecondOption);
         allOptions.add(katalonAnalyticsLicenseFile);
+        allOptions.add(katalonStoreOrgIdOption);
         allOptions.add(installPluginOption);
         allOptions.add(katalonAnalyticsProjectId);
         allOptions.add(testSuiteQuery);

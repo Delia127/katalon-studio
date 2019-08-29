@@ -35,6 +35,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStorePlugin;
+import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.service.LocalRepository;
 import com.kms.katalon.plugin.util.PluginFactory;
 
@@ -63,7 +64,13 @@ public class InstallBasicReportPluginHandler {
                         customKeywordPlugin.setId(Long.toString(plugin.getId()));
                         customKeywordPlugin.setPluginFile(plugin.getFile());
                         CustomKeywordPluginFactory.getInstance().addPluginFile(plugin.getFile(), customKeywordPlugin);
-                        PluginFactory.getInstance().addPlugin(plugin);
+                        
+                        Plugin resolvedPlugin = new Plugin();
+                        resolvedPlugin.setName(plugin.getProduct().getName());
+                        resolvedPlugin.setOnline(false);
+                        resolvedPlugin.setFile(plugin.getFile());
+                        
+                        PluginFactory.getInstance().addPlugin(resolvedPlugin);
 
                         refreshProjectClasspath(monitor);
 
@@ -116,7 +123,7 @@ public class InstallBasicReportPluginHandler {
     }
 
     private boolean isBasicReportPluginInstalled() {
-        List<KStorePlugin> plugins = PluginFactory.getInstance().getPlugins();
-        return plugins.stream().filter(p -> p.getProduct().getName().equals("Basic Report")).findFirst().isPresent();
+        List<Plugin> plugins = PluginFactory.getInstance().getPlugins();
+        return plugins.stream().filter(p -> p.getName().equals("Basic Report")).findFirst().isPresent();
     }
 }

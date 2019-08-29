@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
@@ -89,6 +90,7 @@ import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
@@ -567,7 +569,7 @@ public class TestSuitePartTestCaseView {
                                 analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(),
                                 testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
                     } else {
-                        Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
+                        Program.launch(ApplicationInfo.getTestOpsServer());
                     }
                     Trackings.trackOpenKAIntegration("testSuite");
                 } catch (IOException | GeneralSecurityException e1) {
@@ -631,7 +633,7 @@ public class TestSuitePartTestCaseView {
 
     private String createPath(String server, AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
         String result = "";
-        result = server + ComposerTestcaseMessageConstants.KA_API_FROM_KS + "teamId=" + team.getId() + "&projectId="
+        result = ApplicationInfo.getTestOpsServer() + AnalyticsStringConstants.ANALYTICS_API_FROM_KS + "teamId=" + team.getId() + "&projectId="
                 + project.getId() + "&type=TEST_SUITE" + "&path=" + UrlEncoder.encode(path) + "&token=" + tokenInfo;
         return result;
 

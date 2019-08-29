@@ -41,6 +41,7 @@ import com.kms.katalon.execution.exception.ActivationException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.exception.InvalidLicenseException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
@@ -79,6 +80,8 @@ public class ConsoleMain {
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
     public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
+    
+    public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
@@ -148,7 +151,23 @@ public class ConsoleMain {
                 LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
                 throw new ActivationException("Failed to activate");
             }
+
+
+            String orgIdValue = null;
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
+            }
             
+            if (orgIdValue != null) {
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance()
+                        .getBuilders()
+                        .stream()
+                        .map(a -> a.getPluginLauncherOptionParser())
+                        .collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
+
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if (options.has(INSTALL_PLUGIN_OPTION)){
                 installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
