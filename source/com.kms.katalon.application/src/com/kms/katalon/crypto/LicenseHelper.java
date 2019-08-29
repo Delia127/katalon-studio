@@ -20,7 +20,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.kms.katalon.license.constants.LicenseConstants;
 import com.google.api.client.util.PemReader;
-import com.google.api.client.util.PemReader.Section;
 
 public class LicenseHelper {
     private static LicenseHelper serviceInstance;
