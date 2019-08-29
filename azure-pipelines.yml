@@ -25,11 +25,11 @@ steps:
   fetchDepth: 1
   clean: true
 
-# - task: CacheBeta@0
-#   inputs:
-#     key: maven | **/pom.xml
-#     path: $(MAVEN_CACHE_FOLDER)
-#   displayName: Cache Maven Local Repo
+- task: CacheBeta@0
+  inputs:
+    key: maven | **/pom.xml
+    path: $(MAVEN_CACHE_FOLDER)
+  displayName: Cache Maven Local Repo
 
 - bash: |
     ./build.sh "${BUILD_SOURCEBRANCHNAME}" "${TMP_DIR}" "${BUILD_REPOSITORY_LOCALPATH}" "${MAVEN_OPTS}" "${BUILD_SOURCEVERSION}"
