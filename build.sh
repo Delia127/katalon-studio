@@ -96,6 +96,14 @@ sign_file() {
     ./codesign.sh ${tmpDir}
 }
 
+create_dmg() {
+    if [ "$isRelease" = "true" ]
+    then
+        cd $katalonDir
+        ./dropdmg.sh ${tmpDir}
+    fi
+}
+
 generate_update_package() {
     cd $katalonDir
     if [ "$withUpdate" = "true" ]
@@ -146,6 +154,7 @@ generate_latest_version_json_file
 building
 copy_build
 sign_file
+create_dmg
 generate_update_package
 repackage
 
