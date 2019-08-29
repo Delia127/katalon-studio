@@ -3,7 +3,9 @@ package com.kms.katalon.application.utils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.GeneralSecurityException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,9 +13,12 @@ import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -45,10 +50,32 @@ public class ActivationInfoCollector {
             }
 
             int activatedHashVal = Integer.parseInt(activateParts[1]);
-            return activatedHashVal == getHostNameHashValue();
+            boolean isActivated = activatedHashVal == getHostNameHashValue();
+            
+            if (isActivated) {
+                if (KatalonApplicationActivator.getFeatureActivator() != null) {
+                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    String orgId = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
+                    String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                    activateFeatures(serverUrl, email, password, Long.valueOf(orgId), ksVersion);
+                }
+            }
+            return isActivated;
         } catch (Exception ex) {
             LogUtil.logError(ex);
             return false;
+        }
+    }
+    
+    public static void activateFeatures(String serverUrl, String email, String password, long orgId, String ksVersion) {
+        Set<String> featureKeys = KatalonApplicationActivator.getFeatureActivator().getFeatures(serverUrl, email, password, 
+                Long.valueOf(orgId), ksVersion);
+        IFeatureService instance = FeatureServiceConsumer.getServiceInstance();
+        for (String featureKey : featureKeys) {
+            instance.enable(featureKey);
         }
     }
 
