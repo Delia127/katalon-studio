@@ -7,7 +7,6 @@ trigger:
 - qui-azure
 
 variables:
-  GITHUB_TOKEN: $(github-token)
   BRANCH: $(Build.SourceBranchName)
   COMMIT_ID: $(Build.SourceVersion)
   KATALON_DIR: $(Build.Repository.LocalPath)
@@ -167,7 +166,5 @@ steps:
 #   displayName: Collect Artifacts
 
 - bash: |
-    printenv
-    echo ${github-token}
     echo ${GITHUB_TOKEN}
   displayName: Create Release
