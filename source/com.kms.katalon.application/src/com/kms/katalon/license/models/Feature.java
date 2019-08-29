@@ -1,8 +1,8 @@
 package com.kms.katalon.license.models;
 
 public class Feature {
-	private Long id;
-	
+    private Long id;
+    
     private String name;
 
     private String key;
@@ -23,12 +23,12 @@ public class Feature {
         this.key = key;
     }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
     
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -14,7 +15,10 @@ import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.license.LicenseService;
+import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
@@ -32,11 +36,23 @@ public class ActivationInfoCollector {
             return false;
         }
         try {
-            String updatedVersion = ApplicationInfo
-                    .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
-            if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
-                setActivatedVal();
-                return true;
+//            String updatedVersion = ApplicationInfo
+//                    .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
+//            if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
+//                setActivatedVal();
+//                return true;
+//            }
+            
+            String offlineActivationFlag = ApplicationInfo.getAppProperty(
+                    ApplicationStringConstants.ARG_OFFLINE_ACTIVATION);
+            if (offlineActivationFlag != null) {
+                String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+                if (activationCode == null) {
+                    return false;
+                } else {
+                    License license = LicenseService.getInstance().parseJws(activationCode);
+                    return isValidLicense(license);
+                }
             }
 
             String[] activateParts = activatedVal.split("_");
@@ -174,6 +190,7 @@ public class ActivationInfoCollector {
             License license = LicenseService.getInstance().parseJws(activationCode);
             if (isValidLicense(license)) {
                 markActivatedForOfflineMode(activationCode);
+                enableFeatures(license);
                 return true;
             } else if (errorMessage != null) {
                 errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
@@ -199,6 +216,14 @@ public class ActivationInfoCollector {
     private static boolean isExpired(License license) {
         Date currentDate = new Date();
         return currentDate.after(license.getExpirationDate());
+    }
+    
+    private static void enableFeatures(License license) {
+        List<Feature> features = license.getFeatures();
+        IFeatureService featureService = FeatureServiceConsumer.getServiceInstance();
+        for (Feature feature : features) {
+            featureService.enable(feature.getKey());
+        }
     }
 
 

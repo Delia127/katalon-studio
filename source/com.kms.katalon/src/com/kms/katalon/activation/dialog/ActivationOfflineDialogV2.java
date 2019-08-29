@@ -1,5 +1,9 @@
 package com.kms.katalon.activation.dialog;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -26,6 +30,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
@@ -90,15 +95,21 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
                 btnActivate.setEnabled(false);
                 setProgressMessage(MessageConstants.ActivationDialogV2_MSG_ACTIVATING, false);
                 StringBuilder errorMessage = new StringBuilder();
-//                boolean result = ActivationInfoCollector.activate(txtActivationCode.getText().trim(), errorMessage);
                 String licenseFilePath = txtLicenseFile.getText();
-                boolean result = true;
-                if (result == true) {
-                    setReturnCode(OK);
-                    close();
-                } else {
-                    setProgressMessage(errorMessage.toString(), true);
-                    btnActivate.setEnabled(true);
+                
+                try {
+                    String activationCode = FileUtils.readFileToString(new File(licenseFilePath));
+                    boolean result = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                    if (result == true) {
+                        setReturnCode(OK);
+                        close();
+                    } else {
+                        setProgressMessage(errorMessage.toString(), true);
+                        btnActivate.setEnabled(true);
+                    }
+                } catch (IOException ex) {
+                    LoggerSingleton.logError(ex);
+                    setProgressMessage("Error: " + ex.getMessage(), true);
                 }
             }
         });
