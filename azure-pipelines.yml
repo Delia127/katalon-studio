@@ -49,29 +49,29 @@ steps:
     echo "##vso[task.setvariable variable=IS_RELEASE]${isRelease}"
   displayName: Azure Populate Variable Value
 
-- task: S3Upload@1
-  inputs:
-    awsCredentials: 'aws'
-    regionName: 'us-east-1'
-    bucketName: 'katalon'
-    sourceFolder: '$(TMP_DIR)/update/$(TAG)'
-    globExpressions: '**'
-    targetFolder: 'azure-update/$(TAG)'
-    filesAcl: 'public-read'
-  displayName: Upload Update Package
-  condition: eq(variables.WITH_UPDATE, 'true')
+# - task: S3Upload@1
+#   inputs:
+#     awsCredentials: 'aws'
+#     regionName: 'us-east-1'
+#     bucketName: 'katalon'
+#     sourceFolder: '$(TMP_DIR)/update/$(TAG)'
+#     globExpressions: '**'
+#     targetFolder: 'azure-update/$(TAG)'
+#     filesAcl: 'public-read'
+#   displayName: Upload Update Package
+#   condition: eq(variables.WITH_UPDATE, 'true')
 
-- task: S3Upload@1
-  inputs:
-    awsCredentials: 'aws'
-    regionName: 'us-east-1'
-    bucketName: 'katalon'
-    sourceFolder: '$(TMP_DIR)'
-    globExpressions: '**'
-    targetFolder: 'azure-$(S3_LOCATION)'
-    filesAcl: 'public-read'
-  displayName: Upload Build Package
-  condition: eq(variables.IS_RELEASE, 'true')
+# - task: S3Upload@1
+#   inputs:
+#     awsCredentials: 'aws'
+#     regionName: 'us-east-1'
+#     bucketName: 'katalon'
+#     sourceFolder: '$(TMP_DIR)'
+#     globExpressions: '**'
+#     targetFolder: 'azure-$(S3_LOCATION)'
+#     filesAcl: 'public-read'
+#   displayName: Upload Build Package
+#   condition: eq(variables.IS_RELEASE, 'true')
 
 - bash: |
     ./create_release.sh "${KATALON_DIR}" "${GITHUB_TOKEN}"
@@ -79,9 +79,9 @@ steps:
   env:
     GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(TMP_DIR)'
-    ArtifactName: 'katalon-build'
-    publishLocation: 'Container'
-  displayName: Collect Artifacts
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     PathtoPublish: '$(TMP_DIR)'
+#     ArtifactName: 'katalon-build'
+#     publishLocation: 'Container'
+#   displayName: Collect Artifacts
