@@ -55,7 +55,7 @@ steps:
     bucketName: 'katalon'
     sourceFolder: '$(TMP_DIR)/update/$(TAG)'
     globExpressions: '**'
-    targetFolder: 'azure-update/$(TAG)'
+    targetFolder: 'update/$(TAG)'
     filesAcl: 'public-read'
   displayName: Upload Update Package
   condition: eq(variables.WITH_UPDATE, 'true')
@@ -67,7 +67,7 @@ steps:
     bucketName: 'katalon'
     sourceFolder: '$(TMP_DIR)'
     globExpressions: '**'
-    targetFolder: 'azure-$(S3_LOCATION)'
+    targetFolder: '$(S3_LOCATION)'
     filesAcl: 'public-read'
   displayName: Upload Build Package
   condition: eq(variables.IS_RELEASE, 'true')
