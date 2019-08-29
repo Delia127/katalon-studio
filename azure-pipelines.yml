@@ -9,7 +9,7 @@ trigger: none
 
 variables:
   BRANCH: $(System.PullRequest.TargetBranch)
-  COMMIT_ID: $(Build.SourceVersion)
+  COMMIT_ID: $(System.PullRequest.SourceCommitId)
   KATALON_DIR: $(Build.Repository.LocalPath)
   TMP_DIR: $(Build.ArtifactStagingDirectory)
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
