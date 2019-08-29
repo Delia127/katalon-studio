@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -32,6 +33,7 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -201,7 +203,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     String email = txtEmail.getText();
                     String password = txtPassword.getText();
                     token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                    organizations = AnalyticsApiProvider.getOrganization(serverUrl, token.getAccess_token());
+                    organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token.getAccess_token());
                     if (organizations.size() == 1) {
                         save(0);
 	                } else {
@@ -213,9 +215,16 @@ public class ActivationDialogV2 extends AbstractDialog {
 	                }
                 } catch (AnalyticsApiExeception e) {
                     LogUtil.logError(e);
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(), 
-                            MessageConstants.ActivationDialogV2_LBL_ERROR, 
-                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION);
+                    setProgressMessage("", false);
+                    MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(),
+                            MessageConstants.ActivationDialogV2_LBL_ERROR, null,
+                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, MessageDialog.ERROR,
+                            new String[] { "OK" }, 0);
+                    if (dialog.open() == Dialog.OK) {
+                        txtEmail.setEnabled(true);
+                        txtPassword.setEnabled(true);
+                        btnActivate.setEnabled(true);
+                    }
                 }
             });
         });
@@ -335,7 +344,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         linkBar.setLayout(new GridLayout(5, false));
         
         lblHelpOrganization = new Link(ogranizationBar, SWT.NONE);
-        lblHelpOrganization.setText(MessageConstants.ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION);
+        lblHelpOrganization.setText(String.format(MessageConstants.ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION, ApplicationInfo.getTestOpsServer()));
         lblHelpOrganization.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2, 1));
 
         lnkForgotPassword = new Link(linkBar, SWT.NONE);

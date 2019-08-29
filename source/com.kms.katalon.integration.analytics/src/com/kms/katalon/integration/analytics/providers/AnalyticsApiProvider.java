@@ -40,6 +40,7 @@ import com.google.gson.GsonBuilder;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
+import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
@@ -93,7 +94,7 @@ public class AnalyticsApiProvider {
         }
     }
 
-    public static List<AnalyticsOrganization> getOrganization(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+    public static List<AnalyticsOrganization> getOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
             URIBuilder uriBuilder = new URIBuilder(uri);
@@ -106,14 +107,21 @@ public class AnalyticsApiProvider {
         }
     }
 
-    public static List<AnalyticsTeam> getTeams(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+    public static List<AnalyticsTeam> getTeams(String serverUrl, String accessToken, Long orgId) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
             URIBuilder uriBuilder = new URIBuilder(uri);
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsTeamPage teamPage = executeRequest(httpGet, AnalyticsTeamPage.class);
-            return teamPage.getTeams();
+            
+            List<AnalyticsTeam> teams = new ArrayList<>();
+            for (AnalyticsTeam team : teamPage.getTeams()) {
+                if (team.getOrganization().getId().equals(orgId)) {
+                    teams.add(team);
+                }
+            }
+            return teams;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
@@ -230,6 +238,21 @@ public class AnalyticsApiProvider {
             HttpPut httpPut = new HttpPut(url);
             httpPut.setEntity(entity);
             executeRequest(httpPut, Object.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public static List<AnalyticsFeature> getFeatures(String serverUrl, String accessToken, long organizationId, String ksVersion) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_FEATURES_URL);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("organizationId", String.valueOf(organizationId));
+            uriBuilder.setParameter("ksVersion", ksVersion);
+            HttpGet httpGet = new HttpGet(uriBuilder.build());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            List<AnalyticsFeature> features = executeRequest(httpGet, new TypeToken<ArrayList<AnalyticsFeature>>() {});
+            return features;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }

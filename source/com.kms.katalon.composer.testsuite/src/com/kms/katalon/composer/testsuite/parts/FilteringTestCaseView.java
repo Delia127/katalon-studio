@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.katalon.platform.api.Extension;
 import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.extension.DynamicQueryingTestSuiteDescription;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -57,6 +58,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.FilteringTestSuiteEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
@@ -347,7 +349,7 @@ public class FilteringTestCaseView {
         btnViewHistory.addSelectionListener(new SelectionAdapter() {
             private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo) {
                 String result = "";
-                result = ComposerTestcaseMessageConstants.KA_HOMEPAGE + "teamId=" + team.getId() + "&projectId="
+                result = ApplicationInfo.getTestOpsServer() + AnalyticsStringConstants.ANALYTICS_API_FROM_KS + "teamId=" + team.getId() + "&projectId="
                         + project.getId() + "&type=TEST_SUITE" + "&path=" + UrlEncoder.encode(path) + "&token="
                         + tokenInfo;
                 return result;
@@ -362,7 +364,7 @@ public class FilteringTestCaseView {
                                 parentPart.getOriginalTestSuite().getIdForDisplay(),
                                 analyticsSettingStore.getToken(true)));
                     } else {
-                        Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
+                        Program.launch(ApplicationInfo.getTestOpsServer());
                     }
                     Trackings.trackOpenKAIntegration("dynamicQueryingTestSuite");
                 } catch (IOException | GeneralSecurityException e1) {

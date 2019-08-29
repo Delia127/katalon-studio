@@ -5,13 +5,16 @@ import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsSettingStoreConstants;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.logging.LogUtil;
 
 public class AnalyticsSettingStore extends BundleSettingStore {
 
@@ -139,5 +142,18 @@ public class AnalyticsSettingStore extends BundleSettingStore {
 
     public void setAttachCapturedVideos(boolean capturedVideos) throws IOException {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_CAPTURED_VIDEOS, capturedVideos);
+    }
+    
+    public AnalyticsOrganization getOrganization() {
+    	AnalyticsOrganization organization = new AnalyticsOrganization();
+        String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+        if (StringUtils.isNotBlank(jsonObject)) {
+            try {
+                organization = JsonUtil.fromJson(jsonObject, AnalyticsOrganization.class);
+            } catch (IllegalArgumentException e) {
+                LogUtil.logError(e);
+            }
+        }
+        return organization;
     }
 }
