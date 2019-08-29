@@ -343,7 +343,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         linkBar.setLayout(new GridLayout(5, false));
         
         lblHelpOrganization = new Link(ogranizationBar, SWT.NONE);
-        lblHelpOrganization.setText(MessageConstants.ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION);
+        lblHelpOrganization.setText(String.format(MessageConstants.ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION, ApplicationInfo.getTestOpsServer()));
         lblHelpOrganization.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 2, 1));
 
         lnkForgotPassword = new Link(linkBar, SWT.NONE);
