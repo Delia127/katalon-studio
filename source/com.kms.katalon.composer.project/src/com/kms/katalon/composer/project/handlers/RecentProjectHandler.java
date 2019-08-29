@@ -76,7 +76,7 @@ public class RecentProjectHandler {
 
                 IPreferenceStore store = PreferenceStoreManager.getPreferenceStore(getClass());
                 String latestOpenedProject = store.getString(ProjectPreferenceConstants.LATEST_OPENED_PROJECT);
-                if (StringUtils.isNotEmpty(latestOpenedProject)) {
+                if (StringUtils.isNotEmpty(latestOpenedProject) && ProjectController.getInstance().getProject(latestOpenedProject) != null) {
                     // Open project
                     eventBroker.send(EventConstants.PROJECT_OPEN_LATEST, latestOpenedProject);
                 }
