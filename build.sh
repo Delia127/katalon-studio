@@ -100,6 +100,9 @@ generate_update_package() {
 }
 
 repackage() {
+    cd $tmpDir
+    ls -al
+
     cd $katalonDir
     cd tools/repackage
     npm prune && npm install
