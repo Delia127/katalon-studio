@@ -91,6 +91,11 @@ copy_build() {
     fi
 }
 
+sign_file() {
+    cd $katalonDir
+    ./codesign.sh ${tmpDir}
+}
+
 generate_update_package() {
     cd $katalonDir
     if [ "$withUpdate" = "true" ]
@@ -140,6 +145,7 @@ generate_release_json_file
 generate_latest_version_json_file
 building
 copy_build
+sign_file
 generate_update_package
 repackage
 

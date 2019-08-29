@@ -3,10 +3,10 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger: 
-- qui-*
+# trigger: 
+# - qui-*
 
-pr: none
+# pr: none
 
 variables:
   BRANCH: 6.3.4
