@@ -90,6 +90,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
@@ -862,9 +863,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                     try {
                         tokenInfo = analyticsSettingStore.getToken(true);
                         if (preferenceEmail.equals(analyticsEmail) && preferenceEmail != null && tokenInfo != null) {
-                            Program.launch(ComposerTestcaseMessageConstants.KA_HOMEPAGE + "token=" + tokenInfo);
+                            Program.launch(ApplicationInfo.getTestOpsServer() + AnalyticsStringConstants.ANALYTICS_API_FROM_KS + "token=" + tokenInfo);
                         } else {
-                            Program.launch(ComposerTestcaseMessageConstants.KA_HOMEPAGE_NOTOKEN);
+                            Program.launch(ApplicationInfo.getTestOpsServer());
                         }
                     } catch (IOException | GeneralSecurityException e1) {
                         LoggerSingleton.logError(e1);
@@ -915,7 +916,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
             // if serverUrl is empty, get default
             if (StringUtils.isEmpty(serverUrl)) {
-                serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
+                serverUrl = ApplicationInfo.getTestOpsServer();
             }
 
             // set credentials from preference store to analytics setting store
@@ -1032,7 +1033,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 }
             }
             if (analyticsSettingStore.getProject() != null && analyticsSettingStore.getTeam() != null) {
-                Program.launch(ComposerTestcaseMessageConstants.KA_HOMEPAGE + "teamId="
+                Program.launch(ApplicationInfo.getTestOpsServer() + AnalyticsStringConstants.ANALYTICS_API_FROM_KS + "teamId="
                         + analyticsSettingStore.getTeam().getId() + "&projectId="
                         + analyticsSettingStore.getProject().getId() + "&type=EXECUTION&token="
                         + tokenInfo.getAccess_token());
