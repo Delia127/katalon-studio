@@ -10,6 +10,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
+
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
@@ -51,19 +52,26 @@ public class ActivationInfoCollector {
                     return false;
                 } else {
                     License license = LicenseService.getInstance().parseJws(activationCode);
-                    return isValidLicense(license);
+                    boolean isValidLicense = isValidLicense(license);
+                    if (isValidLicense) {
+                        enableFeatures(license);
+                    }
+                    return isValidLicense;
                 }
-            }
-
-            String[] activateParts = activatedVal.split("_");
-            String oldVersion = new StringBuilder(activateParts[0]).reverse().toString();
-            String curVersion = ApplicationInfo.versionNo().replaceAll("\\.", "");
-            if (oldVersion.equals(curVersion) == false) {
+            } else {
+                //activate for online 
                 return false;
             }
 
-            int activatedHashVal = Integer.parseInt(activateParts[1]);
-            return (activatedHashVal == getHostNameHashValue()) && isActivatedByAccount();
+//            String[] activateParts = activatedVal.split("_");
+//            String oldVersion = new StringBuilder(activateParts[0]).reverse().toString();
+//            String curVersion = ApplicationInfo.versionNo().replaceAll("\\.", "");
+//            if (oldVersion.equals(curVersion) == false) {
+//                return false;
+//            }
+//
+//            int activatedHashVal = Integer.parseInt(activateParts[1]);
+//            return (activatedHashVal == getHostNameHashValue()) && isActivatedByAccount();
         } catch (Exception ex) {
             LogUtil.logError(ex);
             return false;
@@ -162,27 +170,6 @@ public class ActivationInfoCollector {
 
         return activatedResult;
     }
-
-//    public static boolean activate(String activationCode, StringBuilder errorMessage) {
-//        try {
-//            String checkCode = activationCode.substring(0, 2);
-//            activationCode = new StringBuilder(activationCode.substring(2)).reverse().toString();
-//            int idx = Integer.parseInt(checkCode.charAt(0) + "");
-//            if (activationCode.charAt(idx) == checkCode.charAt(1)) {
-//                markActivated(activationCode);
-//                return true;
-//            } else if (errorMessage != null) {
-//                errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
-//            }
-//        } catch (Exception ex) {
-//            LogUtil.logError(ex);
-//            if (errorMessage != null) {
-//                errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
-//            }
-//        }
-//
-//        return false;
-//    }
     
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
         try {
@@ -209,7 +196,14 @@ public class ActivationInfoCollector {
     }
     
     private static boolean hasValidMachineId(License license) {
-        return true;
+        try {
+            String machineId = MachineUtil.getMachineId();
+            return license.getMachineId().equals(machineId);
+        } catch (IOException | InterruptedException e) {
+            LogUtil.logError(e);
+            return false;
+        }
+        
     }
     
     private static boolean isExpired(License license) {

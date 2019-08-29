@@ -86,7 +86,7 @@
 <unit id="org.eclipse.jetty.websocket.common" version="9.3.9.v20160517"/>
 <unit id="javax.naming.jndi" version="1.2.1"/>
 <unit id="jackson-mapper-asl" version="1.9.13"/>
-<unit id="com.fasterxml.jackson.core.jackson-core" version="2.9.9"/>
+<unit id="com.fasterxml.jackson.core.jackson-core" version="2.9.6"/>
 <unit id="javax.mail" version="1.4.0"/>
 <unit id="org.apache.commons.dbutils" version="1.6.0"/>
 <unit id="io.cucumber.core" version="3.0.2"/>
@@ -143,7 +143,7 @@
 <unit id="org.apache.commons.email" version="1.4.0"/>
 <unit id="stax.api" version="1.0.1"/>
 <unit id="stax2-api" version="3.1.4"/>
-<unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.9.1"/>
+<unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.1"/>
 <unit id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
 <unit id="javax.ws.rs" version="1.1.1.v20130318-1750"/>
 <unit id="org.zeroturnaround.zt-exec" version="1.7.0"/>
@@ -169,7 +169,7 @@
 <repository location="http://localhost:9999/site"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.9.1"/>
+<unit id="com.fasterxml.jackson.core.jackson-databind" version="2.9.1"/>
 </location>
 </locations>
 <includeBundles>
@@ -184,7 +184,7 @@
 <plugin id="com.auth0.java-jwt"/>
 <plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
 <plugin id="com.fasterxml.jackson.core.jackson-core"/>
-<plugin id="com.fasterxml.jackson.core.jackson-databind" version="2.9.9.1"/>
+<plugin id="com.fasterxml.jackson.core.jackson-databind" version="2.9.1"/>
 <plugin id="com.fasterxml.jackson.dataformat.jackson-dataformat-xml"/>
 <plugin id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml"/>
 <plugin id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"/>

@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -153,34 +154,35 @@ public class ActivationOfflineDialogV2 extends AbstractDialog {
         glContainer.verticalSpacing = 15;
         container.setLayout(glContainer);
         
-        Composite machineKeyComposite = new Composite(container, SWT.NONE);
-        machineKeyComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        machineKeyComposite.setLayout(new GridLayout(3, false));
+        Composite composite = new Composite(container, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        composite.setLayout(new GridLayout(3, false));
         
-        Label lblMachineKey = new Label(machineKeyComposite, SWT.NONE);
+        Label lblMachineKey = new Label(composite, SWT.NONE);
         lblMachineKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblMachineKey.setText(MessageConstants.ActivationOfflineDialogV2_LBL_MACHINE_KEY);
         
-        lblMachineKeyDetail = new Label(machineKeyComposite, SWT.NONE);
+        lblMachineKeyDetail = new Label(composite, SWT.NONE);
         lblMachineKeyDetail.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblMachineKeyDetail.setForeground(ColorUtil.getTextLinkColor());
         increateFontSize(lblMachineKeyDetail, 2);
+        try {
+            lblMachineKeyDetail.setText(MachineUtil.getMachineId());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
         
-        btnCopyToClipboard = new Button(machineKeyComposite, SWT.PUSH);
+        btnCopyToClipboard = new Button(composite, SWT.PUSH);
         btnCopyToClipboard.setText(MessageConstants.BTN_COPY_TITLE);
         
-        Composite licenseComposite = new Composite(container, SWT.NONE);
-        licenseComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        licenseComposite.setLayout(new GridLayout(3, false));
-        
-        Label lblLicenseFile = new Label(licenseComposite, SWT.NONE);
+        Label lblLicenseFile = new Label(composite, SWT.NONE);
         lblLicenseFile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        lblLicenseFile.setText(MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATION);
+        lblLicenseFile.setText(MessageConstants.ActivationOfflineDialogV2_LBL_LICENSE_FILE);
         
-        txtLicenseFile = new Text(licenseComposite, SWT.BORDER);
+        txtLicenseFile = new Text(composite, SWT.BORDER);
         txtLicenseFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         
-        btnChooseFile = new Button(licenseComposite, SWT.PUSH);
+        btnChooseFile = new Button(composite, SWT.PUSH);
         btnChooseFile.setText(MessageConstants.ActivationOfflineDialogV2_BTN_CHOOSE_FILE);
 
         Composite messageComposite = new Composite(container, SWT.NONE);

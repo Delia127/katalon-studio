@@ -109,6 +109,36 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
+            LogUtil.logInfo("Activating...");
+            
+            if (!ActivationInfoCollector.isActivated()) {
+                boolean isActivated = false;
+                String licenseFile = null;
+                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
+                if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
+                    licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
+                } else if (environmentVariable != null) {
+                    licenseFile = environmentVariable;
+                }
+    
+                if (!StringUtils.isBlank(licenseFile)) {
+                    String activationCode = FileUtils.readFileToString(new File(licenseFile));
+                    StringBuilder errorMessage = new StringBuilder();
+                    isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                    if (!isActivated) {
+                        LogUtil.printErrorLine("Invalid license");
+                        throw new InvalidLicenseException("Invalid license");
+                    }
+                } else {
+                    //activate for online mode
+                }
+                
+                if (!isActivated) {
+                    LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
+                    throw new ActivationException("Failed to activate");
+                }
+            }
+
             String apiKeyValue = null;
             if (options.has(KATALON_API_KEY_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
@@ -125,33 +155,6 @@ public class ConsoleMain {
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
-            
-            boolean isActivated = false;
-            String licenseFile = null;
-            String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
-            if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
-                licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
-            } else if (environmentVariable != null) {
-                licenseFile = environmentVariable;
-            }
-
-            if (!StringUtils.isBlank(licenseFile)) {
-                String activationCode = FileUtils.readFileToString(new File(licenseFile));
-                StringBuilder errorMessage = new StringBuilder();
-                isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
-                if (!isActivated) {
-                    LogUtil.printErrorLine("Invalid license");
-                    throw new InvalidLicenseException("Invalid license");
-                }
-            } else {
-                //activate for online mode
-            }
-            
-            if (!isActivated) {
-                LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
-                throw new ActivationException("Failed to activate");
-            }
-
 
             String orgIdValue = null;
             if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
