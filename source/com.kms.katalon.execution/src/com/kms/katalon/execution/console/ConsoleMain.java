@@ -75,6 +75,8 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
+    
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
     public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
@@ -117,7 +119,22 @@ public class ConsoleMain {
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
-
+            
+            String licenseFile = null;
+            String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
+            if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
+                licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
+            } else if (environmentVariable != null) {
+                licenseFile = environmentVariable;
+            }
+            if (licenseFile != null) {
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance()
+                        .getBuilders()
+                        .stream()
+                        .map(a -> a.getPluginLauncherOptionParser())
+                        .collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if (options.has(INSTALL_PLUGIN_OPTION)){
                 installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
