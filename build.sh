@@ -74,18 +74,18 @@ copy_build() {
     then
         cd com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
         cd $katalonDir/source/com.kms.katalon.product/target/products
-        find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \
-        find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \
-        find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \
+        find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
+        find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
+        find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
     fi
 
     if [ "$isQtest" = "true" ]
     then
         cd com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
         cd $katalonDir/source/com.kms.katalon.product.qtest_edition/target/products
-        find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \
-        find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \
-        find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \
+        find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
+        find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
+        find . -iname '*.app' -print -exec cp \{\} ${tmpDir} \;
     fi
 }
 
