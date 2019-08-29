@@ -122,25 +122,6 @@ repackage() {
     rm -rf '${tmpDir}/apidocs'
 }
 
-# create_github_release() {
-#     if [ isRelease && !isQtest ]
-#     then
-#         cd $katalonDir/tools/release
-#         npm prune && npm install
-#         node app.js ${env.GITHUB_TOKEN} v${tag} \
-#             '${tmpDir}/lastest_release.json' \
-#             '${tmpDir}/latest_version.json' \
-#             '${tmpDir}/releases.json' \
-#             '${tmpDir}/apidocs.zip' \
-#             '${tmpDir}/commit.txt' \
-#             '${tmpDir}/Katalon Studio.app.zip' \
-#             '${tmpDir}/Katalon Studio.dmg' \
-#             '${tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz' \
-#             '${tmpDir}/Katalon_Studio_Windows_32-${version}.zip' \
-#             '${tmpDir}/Katalon_Studio_Windows_64-${version}.zip'
-#     fi         
-# }
-
 # branch=${1}
 branch=release-6.3.3
 tmpDir=${2}
@@ -158,10 +139,10 @@ generate_links_file
 generate_lastest_release_file
 generate_release_json_file
 generate_latest_version_json_file
-# building
-# copy_build
-# generate_update_package
-# repackage
+building
+copy_build
+generate_update_package
+repackage
 
 cd ${tmpDir}
 ls -al
