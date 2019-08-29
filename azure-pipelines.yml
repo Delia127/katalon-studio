@@ -8,8 +8,7 @@ trigger: none
 # pr: none
 
 variables:
-  BRANCH: 6.3.4
-  # BRANCH: $(Build.SourceBranchName)
+  BRANCH: $(Build.SourceBranchName)
   COMMIT_ID: $(Build.SourceVersion)
   KATALON_DIR: $(Build.Repository.LocalPath)
   TMP_DIR: $(Build.ArtifactStagingDirectory)
