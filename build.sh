@@ -97,7 +97,7 @@ sign_file() {
 }
 
 create_dmg() {
-    if [ "$isRelease" = "false" ]
+    if [ "$isRelease" = "true" ]
     then
         cd $katalonDir
         ./dropdmg.sh ${tmpDir}
