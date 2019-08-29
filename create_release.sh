@@ -24,3 +24,5 @@ source ./variable.sh
 
 katalonDir=${1}
 github_token=${2}
+
+create_github_release
