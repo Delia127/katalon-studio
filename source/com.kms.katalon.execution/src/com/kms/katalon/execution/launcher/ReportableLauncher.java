@@ -19,6 +19,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestCaseExecutionContext;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -48,6 +49,7 @@ import com.kms.katalon.execution.entity.TestCaseExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutionEvent;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -56,7 +58,6 @@ import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.tracking.service.Trackings;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
     private ReportEntity reportEntity;
@@ -71,22 +72,40 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
+    
+    private void sendTrackingActivity() {
+        ReportIntegrationContribution analyticsProvider = ReportIntegrationFactory.getInstance().getAnalyticsProvider();
+        String machineId = getMachineId();
+        String sessionId = getExecutionUUID();
+        Date startTime = getStartTime(); 
+        Date endTime = getEndTime(); 
+        String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+        Long organizationId = OrganizationHandler.getOrganizationId();
+        analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
+     }
 
     @Override
     protected void onStartExecution() {
         super.onStartExecution();
 
         startTime = new Date();
+        if (parentLauncher == null) {
+            sendTrackingActivity();
+        }
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
 
     @Override
     protected void preExecutionComplete() {
+        this.endTime = new Date();
+        if (parentLauncher == null) {
+            sendTrackingActivity();
+        }
+        
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
-
-        this.endTime = new Date();
+        
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }

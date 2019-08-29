@@ -12,4 +12,8 @@ public interface IFeatureService {
      * @return true if the feature is available, false otherwise
      */
     boolean canUse(String featureKey);
+
+    void enable(String featureKey);
+
+    void disable(String featureKey);
 }

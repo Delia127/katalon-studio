@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
@@ -17,6 +19,9 @@ import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutionContextImpl;
+import com.kms.katalon.execution.handler.OrganizationHandler;
+import com.kms.katalon.execution.integration.ReportIntegrationContribution;
+import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.listener.LauncherListener;
 import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
@@ -52,7 +57,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     private Date startTime;
 
     private Date endTime;
-
+    
     public TestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity, LauncherManager parentManager,
             List<ReportableLauncher> subLaunchers, ExecutionMode executionMode,
             ReportCollectionEntity reportCollection,
@@ -89,7 +94,20 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         startWatchDog();
 
         startTime = new Date();
+        
+        sendTrackingActivity();
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_COLLECTION_STARTED_EVENT);
+    }
+    
+    private void sendTrackingActivity() {
+       ReportIntegrationContribution analyticsProvider = ReportIntegrationFactory.getInstance().getAnalyticsProvider();
+       String machineId = getMachineId();
+       String sessionId = getExecutionUUID();
+       Date startTime = getStartTime(); 
+       Date endTime = getEndTime(); 
+       String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+       Long organizationId = OrganizationHandler.getOrganizationId();
+       analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
     }
 
     private void scheduleSubLaunchers() {
@@ -125,6 +143,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         schedule();
 
         endTime = new Date();
+        
+        sendTrackingActivity();
         
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_COLLECTION_FINISHED_EVENT);
     }
