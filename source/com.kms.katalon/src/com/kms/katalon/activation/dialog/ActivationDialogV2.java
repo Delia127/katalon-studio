@@ -121,13 +121,13 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
 
-        lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                setReturnCode(REQUEST_OFFLINE_CODE);
-                close();
-            }
-        });
+//        lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                setReturnCode(REQUEST_OFFLINE_CODE);
+//                close();
+//            }
+//        });
 
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -356,8 +356,8 @@ public class ActivationDialogV2 extends AbstractDialog {
         label.setLayoutData(gdSeparator);
 
         lnkOfflineActivation = new Link(linkBar, SWT.NONE);
-        lnkOfflineActivation
-                .setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATION));
+//        lnkOfflineActivation
+//                .setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATION));
         lnkOfflineActivation.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 
         Label label2 = new Label(linkBar, SWT.SEPARATOR);
