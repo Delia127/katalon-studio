@@ -109,7 +109,6 @@ public class ApiQuickStartPart {
         mainGridLayout.marginWidth = 0;
         mainGridLayout.marginHeight = 0;
         mainComposite.setLayout(mainGridLayout);
-        mainComposite.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false,1,1));
         mainComposite.addListener(SWT.Paint, new Listener() {
 
             @Override
