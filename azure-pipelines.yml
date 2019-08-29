@@ -37,6 +37,11 @@ steps:
   displayName: Cache Maven Local Repo
 
 - bash: |
+    cd ${MAVEN_CACHE_FOLDER}
+    la -al
+  displayName: Build
+
+- bash: |
     ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
   displayName: Build
 
