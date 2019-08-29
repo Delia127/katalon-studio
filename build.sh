@@ -122,8 +122,7 @@ repackage() {
     rm -rf "${tmpDir}/apidocs"
 }
 
-# branch=${1}
-branch=release-6.3.3
+branch=${1}
 tmpDir=${2}
 katalonDir=${3}
 mavenOpts=${4}

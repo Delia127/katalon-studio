@@ -3,8 +3,7 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger:
-- qui-*
+trigger: none
 
 pr: none
 
@@ -35,11 +34,6 @@ steps:
     key: maven | **/pom.xml
     path: $(MAVEN_CACHE_FOLDER)
   displayName: Cache Maven Local Repo
-
-- bash: |
-    cd ${MAVEN_CACHE_FOLDER}
-    la -al
-  displayName: Build
 
 - bash: |
     ./build.sh "${BRANCH}" "${TMP_DIR}" "${KATALON_DIR}" "${MAVEN_OPTS}" "${COMMIT_ID}"
