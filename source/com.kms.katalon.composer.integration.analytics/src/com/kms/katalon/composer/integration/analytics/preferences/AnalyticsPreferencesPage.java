@@ -637,8 +637,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         } else {
             cbbProjects.clearSelection();
             cbbProjects.removeAll();
-            MessageDialog.openWarning(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.WARN, 
-                    ComposerIntegrationAnalyticsMessageConstants.REPORT_WARNING_MSG_NO_PROJECT);
         }
         String role = team.getRole();
         if (role.equals("USER")) {
