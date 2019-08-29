@@ -107,14 +107,21 @@ public class AnalyticsApiProvider {
         }
     }
 
-    public static List<AnalyticsTeam> getTeams(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+    public static List<AnalyticsTeam> getTeams(String serverUrl, String accessToken, Long orgId) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
             URIBuilder uriBuilder = new URIBuilder(uri);
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsTeamPage teamPage = executeRequest(httpGet, AnalyticsTeamPage.class);
-            return teamPage.getTeams();
+            
+            List<AnalyticsTeam> teams = new ArrayList<>();
+            for (AnalyticsTeam team : teamPage.getTeams()) {
+                if (team.getOrganization().getId().equals(orgId)) {
+                    teams.add(team);
+                }
+            }
+            return teams;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }

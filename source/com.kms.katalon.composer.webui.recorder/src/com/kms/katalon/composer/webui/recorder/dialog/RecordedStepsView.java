@@ -251,10 +251,16 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     private void addNode(HTMLActionMapping newAction) throws ClassNotFoundException {
         AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
         WebElement targetElement = newAction.getTargetElement();
+        String objectId = latestNode.getTestObjectText();
+        String latestKeywordName = latestNode.getKeywordName();
         if (targetElement != null) {
             WebElementPropertyEntity property = targetElement.getProperty("type");
             if (property != null && "password".equals(property.getValue())) {
                 secureSetTextAction(newAction);
+            }
+            if (HTMLAction.LeftClick.getMappedKeywordMethod().equals(latestKeywordName)
+                    && newAction.getAction().equals(HTMLAction.SetText) && objectId.equals(targetElement.getName())) {
+                removeTestStep();
             }
         }
         ExpressionStatementWrapper wrapper = (ExpressionStatementWrapper) HTMLActionUtil
