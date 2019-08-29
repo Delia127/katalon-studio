@@ -150,13 +150,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         txtEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtEmail.setEnabled(false);
 
-        Composite passwordComposite = new Composite(grpAuthentication, SWT.NONE);
-        passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glPassword = new GridLayout(2, false);
-        glPassword.marginWidth = 0;
-        glPassword.marginHeight = 0;
-        passwordComposite.setLayout(glPassword);
-
         chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
         chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, true, 2, 1));
         chckEncrypt.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_ANTHENTICATION_ENCRYPTION);
@@ -209,7 +202,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         Group grpTestResult = new Group(mainComposite, SWT.NONE);
         grpTestResult.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         GridLayout glGrpTestResult = new GridLayout(1, false);
-        glGrpTestResult.horizontalSpacing = 15;
+//        glGrpTestResult.horizontalSpacing = 15;
         grpTestResult.setLayout(glGrpTestResult);
         grpTestResult.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_GROUP);
 
@@ -217,20 +210,20 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbxAutoSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAutoSubmit.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_AUTO_SUBMIT);
 
-        Composite attachComposite = new Composite(grpTestResult, SWT.NONE);
-        GridLayout glGrpAttach = new GridLayout(1, false);
-        glGrpAttach.marginLeft = 15;
-        attachComposite.setLayout(glGrpAttach);
-        attachComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+//        Composite attachComposite = new Composite(grpTestResult, SWT.NONE);
+//        GridLayout glGrpAttach = new GridLayout(1, false);
+//        glGrpAttach.marginLeft = 15;
+//        attachComposite.setLayout(glGrpAttach);
+//        attachComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        cbxAttachScreenshot = new Button(attachComposite, SWT.CHECK);
-        cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
-
-        cbxAttachCaptureVideo = new Button(attachComposite, SWT.CHECK);
-        cbxAttachCaptureVideo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbxAttachCaptureVideo
-                .setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_CAPTURED_VIDEO);
+//        cbxAttachScreenshot = new Button(attachComposite, SWT.CHECK);
+//        cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+//        cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
+//
+//        cbxAttachCaptureVideo = new Button(attachComposite, SWT.CHECK);
+//        cbxAttachCaptureVideo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+//        cbxAttachCaptureVideo
+//                .setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_CAPTURED_VIDEO);
     }
 
     @Override
@@ -334,8 +327,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             chckEncrypt.setSelection(analyticsSettingStore.isEncryptionEnabled());
             txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
             cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
-            cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
-            cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
+//            cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
+//            cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
             
             selectProjectFromConfig = analyticsSettingStore.getProject();
             selectTeamFromConfig = analyticsSettingStore.getTeam();
@@ -441,8 +434,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         	btnCreate.setEnabled(false);
         }
         cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
-        cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
-        cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
+//        cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
+//        cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
     }
 
     private boolean isIntegratedSuccessfully() {
@@ -467,9 +460,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 }
             }
             analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());
-            analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
+//            analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
             analyticsSettingStore.setAttachLog(enableAnalyticsIntegration.getSelection());
-            analyticsSettingStore.setAttachCapturedVideos(cbxAttachCaptureVideo.getSelection());
+//            analyticsSettingStore.setAttachCapturedVideos(cbxAttachCaptureVideo.getSelection());
 
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
             eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
@@ -586,28 +579,28 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbxAutoSubmit.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
-                cbxAttachCaptureVideo.setSelection(cbxAutoSubmit.getSelection());
+//                cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
+//                cbxAttachCaptureVideo.setSelection(cbxAutoSubmit.getSelection());
             }
         });
 
-        cbxAttachScreenshot.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (cbxAttachScreenshot.getSelection()) {
-                    cbxAutoSubmit.setSelection(true);
-                }
-            }
-        });
-
-        cbxAttachCaptureVideo.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (cbxAttachCaptureVideo.getSelection()) {
-                    cbxAutoSubmit.setSelection(true);
-                }
-            }
-        });
+//        cbxAttachScreenshot.addSelectionListener(new SelectionAdapter() {
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                if (cbxAttachScreenshot.getSelection()) {
+//                    cbxAutoSubmit.setSelection(true);
+//                }
+//            }
+//        });
+//
+//        cbxAttachCaptureVideo.addSelectionListener(new SelectionAdapter() {
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                if (cbxAttachCaptureVideo.getSelection()) {
+//                    cbxAutoSubmit.setSelection(true);
+//                }
+//            }
+//        });
 
     }
 
