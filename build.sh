@@ -100,15 +100,13 @@ generate_update_package() {
 }
 
 repackage() {
-    cd $tmpDir
-    ls -al
-
     cd $katalonDir
     cd tools/repackage
     npm prune && npm install
     node repackage.js ${tmpDir}/Katalon_Studio_Windows_32.zip ${version}
     node repackage.js ${tmpDir}/Katalon_Studio_Windows_64.zip ${version}
     node repackage.js ${tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}
+    node repackage.js ${tmpDir}/Katalon_Studio_MacOS.tar.gz ${version}
 
     rm -rf ${tmpDir}/*.zip
     rm -rf ${tmpDir}/*.tar.gz
@@ -142,8 +140,5 @@ copy_build
 generate_update_package
 repackage
 
-cd $tmpDir
-ls -al
-
-cd $katalonDir/source/com.kms.katalon.product/target/products
+cd ${tmpDir}
 ls -al
