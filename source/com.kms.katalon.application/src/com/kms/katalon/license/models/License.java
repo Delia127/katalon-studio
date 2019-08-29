@@ -1,10 +1,8 @@
 package com.kms.katalon.license.models;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Date;
 import java.util.List;
 
-@JsonDeserialize(using = LicenseDeserializer.class)
 public class License {
     private Date expirationDate;
 
