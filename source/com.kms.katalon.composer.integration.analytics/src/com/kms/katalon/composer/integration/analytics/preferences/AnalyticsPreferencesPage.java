@@ -337,16 +337,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
                         analyticsSettingStore.getEmail(encryptionEnabled), password, orgId, tokenInfo,
                         new ProgressMonitorDialog(getShell()));
-                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-                        teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
-                        new ProgressMonitorDialog(getShell()));
-
                 if (teams != null && !teams.isEmpty()) {
+                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                            teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
+                            new ProgressMonitorDialog(getShell()));
                     cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
                     cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
-                }
-
-                if (teams != null && teams.size() > 0) {
                     setProjectsBasedOnTeam(teams, projects, analyticsSettingStore.getServerEndpoint(encryptionEnabled),
                             analyticsSettingStore.getEmail(encryptionEnabled), password);
                 }
