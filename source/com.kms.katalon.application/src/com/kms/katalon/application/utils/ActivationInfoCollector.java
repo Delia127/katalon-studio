@@ -17,6 +17,7 @@ import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.logging.LogUtil;
@@ -57,10 +58,21 @@ public class ActivationInfoCollector {
                     String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
                     String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
                     String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                    String orgId = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+                    Organization org = new Organization();
+                    String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+                    if (StringUtils.isNotBlank(jsonObject)) {
+                        try {
+                             org = JsonUtil.fromJson(jsonObject, Organization.class);
+                        } catch (IllegalArgumentException e) {
+                             LogUtil.logError(e);
+                        }
+                    }
+                    Long orgId = org.getId();
+                    
+                    
                     String serverUrl = ApplicationInfo.getTestOpsServer();
                     String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-                    activateFeatures(serverUrl, email, password, Long.valueOf(orgId), ksVersion);
+                    activateFeatures(serverUrl, email, password, orgId, ksVersion);
                 }
             }
             return isActivated;
