@@ -143,7 +143,7 @@ public class ProjectController extends EntityController {
 
 //            LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
 //            KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
-//            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
+            GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
 
             LogUtil.printOutputLine("Generating global variables...");
             GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
