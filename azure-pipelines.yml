@@ -32,7 +32,7 @@ steps:
 #   displayName: Cache Maven Local Repo
 
 - bash: |
-    ./build.sh "${BUILD_SOURCEBRANCHNAME}" "${TMP_DIR}" "${BUILD_REPOSITORY_LOCALPATH}" "${MAVEN_OPTS}"
+    ./build.sh "${BUILD_SOURCEBRANCHNAME}" "${TMP_DIR}" "${BUILD_REPOSITORY_LOCALPATH}" "${MAVEN_OPTS}" "${BUILD_SOURCEVERSION}"
   displayName: Build
 
 - task: PublishBuildArtifacts@1
