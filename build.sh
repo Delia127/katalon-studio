@@ -87,6 +87,9 @@ copy_build() {
         find . -iname '*.tar.gz' -exec cp \{\} ${tmpDir} \
         find . -iname '*.app' -exec cp \{\} ${tmpDir} \
     fi
+
+    cd $tmpDir
+    ls -al
 }
 
 generate_update_package() {
