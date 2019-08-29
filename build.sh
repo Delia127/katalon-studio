@@ -72,7 +72,7 @@ building() {
 copy_build() {
     if [ "$isQtest" = "false" ]
     then
-        cd $katalonDir/source/com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+        cd $katalonDir/source/com.kms.katalon.product/target/products/com.kms.katalon.product.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
         cd $katalonDir/source/com.kms.katalon.product/target/products
         find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
         find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
@@ -81,7 +81,7 @@ copy_build() {
 
     if [ "$isQtest" = "true" ]
     then
-        cd $katalonDir/source/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
+        cd $katalonDir/source/com.kms.katalon.product.qtest_edition/target/products/com.kms.katalon.product.qtest_edition.product/macosx/cocoa/x86_64 && cp -R 'Katalon Studio.app' ${tmpDir}
         cd $katalonDir/source/com.kms.katalon.product.qtest_edition/target/products
         find . -iname '*.zip' -print -exec cp \{\} ${tmpDir} \;
         find . -iname '*.tar.gz' -print -exec cp \{\} ${tmpDir} \;
@@ -106,7 +106,6 @@ repackage() {
     node repackage.js ${tmpDir}/Katalon_Studio_Windows_32.zip ${version}
     node repackage.js ${tmpDir}/Katalon_Studio_Windows_64.zip ${version}
     node repackage.js ${tmpDir}/Katalon_Studio_Linux_64.tar.gz ${version}
-    node repackage.js ${tmpDir}/Katalon_Studio_MacOS.tar.gz ${version}
 
     rm -rf ${tmpDir}/*.zip
     rm -rf ${tmpDir}/*.tar.gz
@@ -120,6 +119,25 @@ repackage() {
     cd '${tmpDir}' && zip -r '${tmpDir}/apidocs.zip' 'apidocs'
     rm -rf '${tmpDir}/apidocs'
 }
+
+# create_github_release() {
+#     if [ isRelease && !isQtest ]
+#     then
+#         cd $katalonDir/tools/release
+#         npm prune && npm install
+#         node app.js ${env.GITHUB_TOKEN} v${tag} \
+#             '${tmpDir}/lastest_release.json' \
+#             '${tmpDir}/latest_version.json' \
+#             '${tmpDir}/releases.json' \
+#             '${tmpDir}/apidocs.zip' \
+#             '${tmpDir}/commit.txt' \
+#             '${tmpDir}/Katalon Studio.app.zip' \
+#             '${tmpDir}/Katalon Studio.dmg' \
+#             '${tmpDir}/Katalon_Studio_Linux_64-${version}.tar.gz' \
+#             '${tmpDir}/Katalon_Studio_Windows_32-${version}.zip' \
+#             '${tmpDir}/Katalon_Studio_Windows_64-${version}.zip'
+#     fi         
+# }
 
 # branch=${1}
 branch=release-6.3.3
