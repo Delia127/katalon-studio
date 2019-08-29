@@ -33,6 +33,7 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.webservice
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.google.common.base,
+ com.kms.katalon.composer.project.preference,
  javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"
 Bundle-ActivationPolicy: lazy

@@ -111,6 +111,14 @@ public class ComposerProjectMessageConstants extends NLS {
     
     public static String BLANK_PROJECT;
     
+    public static String PLUGIN_REPOSITORY;
+    
+    public static String PLUGIN_ONLINE_AND_OFFLINE;
+    
+    public static String PLUGIN_ONLINE;
+    
+    public static String PLUGIN_OFFLINE;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerProjectMessageConstants.class);

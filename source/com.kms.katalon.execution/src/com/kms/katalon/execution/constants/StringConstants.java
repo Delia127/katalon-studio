@@ -63,4 +63,7 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String LAU_MESSAGE_UPLOADING_RPT = ExecutionMessageConstants.LAU_MESSAGE_UPLOADING_RPT;
     public static final String LAU_MESSAGE_SENDING_EMAIL = ExecutionMessageConstants.LAU_MESSAGE_SENDING_EMAIL;
+    
+    // Plugin Setting Store
+    public static final String PLUGIN_RELOAD_OPTION = "plugins.reload";
 }

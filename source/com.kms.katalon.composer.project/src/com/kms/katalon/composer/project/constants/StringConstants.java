@@ -182,4 +182,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BLANK_PROJECT = ComposerProjectMessageConstants.BLANK_PROJECT;
 
 	public static final String CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER = ComposerProjectMessageConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER;
+	
+	public static final String PLUGINS_REPOSITORY = ComposerProjectMessageConstants.PLUGIN_REPOSITORY;
+	
+	public static final String PLUGIN_ONLINE_AND_OFFLINE = ComposerProjectMessageConstants.PLUGIN_ONLINE_AND_OFFLINE;
+	
+	public static final String PLUGIN_ONLINE = ComposerProjectMessageConstants.PLUGIN_ONLINE;
+	
+	public static final String PLUGIN_OFFLINE = ComposerProjectMessageConstants.PLUGIN_OFFLINE;
 }

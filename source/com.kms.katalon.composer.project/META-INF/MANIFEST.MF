@@ -45,7 +45,8 @@ Require-Bundle: org.eclipse.e4.core.di,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.kms.katalon.composer.project.addon.ProjectComposerBundleActivator
-Import-Package: com.kms.katalon.execution.webui.keyword,
+Import-Package: com.kms.katalon.core.webservice.setting,
+ com.kms.katalon.execution.webui.keyword,
  com.kms.katalon.execution.webui.setting,
  javax.annotation;version="1.2.0"
 Export-Package: com.kms.katalon.composer.project.constants,
