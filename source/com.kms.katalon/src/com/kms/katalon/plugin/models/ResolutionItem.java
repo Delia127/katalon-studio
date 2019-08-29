@@ -1,18 +1,16 @@
 package com.kms.katalon.plugin.models;
 
-import java.io.File;
-
 public class ResolutionItem {
 
-    private KStorePlugin plugin;
+    private Plugin plugin;
     
     private Exception exception;
 
-    public KStorePlugin getPlugin() {
+    public Plugin getPlugin() {
         return plugin;
     }
 
-    public void setPlugin(KStorePlugin plugin) {
+    public void setPlugin(Plugin plugin) {
         this.plugin = plugin;
     }
 

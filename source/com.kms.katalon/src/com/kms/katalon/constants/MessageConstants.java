@@ -317,14 +317,26 @@ public class MessageConstants extends NLS {
 
     // ActivationDialogV2
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
+    
+    public static String ActivationDialogV2_LBL_SELECT_ORGANIZATION;
+    
+    public static String ActuvationDialogV2_BTN_SAVE_ORGANIZATION_TITLE;
 
     public static String ActivationDialogV2_MSG_ACTIVATING;
+    
+    public static String ActivationDialogV2_MSG_GETTING_ORGANIZATION;
+    
+    public static String ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION;
 
     public static String ActivationDialogV2_LNK_REGISTER;
 
     public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATION;
 
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
+
+    public static String ActivationDialogV2_LBL_ERROR;
+
+    public static String ActivationDialogV2_LBL_ERROR_ORGANIZATION;
 
     // ActivationOfflineDialogV2
     public static String ActivationOfflineDialogV2_LNK_BACK;

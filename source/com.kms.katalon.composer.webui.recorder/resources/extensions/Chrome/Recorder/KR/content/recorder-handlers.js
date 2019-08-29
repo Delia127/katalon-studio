@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// capture interactions
+
 var typeTarget;
 var typeLock = 0;
 Recorder.inputTypes = ["text", "password", "file", "datetime", "datetime-local", "date", "month", "time", "week", "number", "range", "email", "url", "search", "tel", "color"];
@@ -309,7 +311,7 @@ Recorder.addEventHandler('dragAndDrop', 'mouseup', function(event) {
             delete this.mouseup;
             var x = event.clientX - this.mousedown.clientX;
             var y = event.clientY - this.mousedown.clientY;
-    
+
             if (this.mousedown && this.mousedown.target !== event.target && !(x + y)) {
                 // this.record("mouseDown", this.locatorBuilders.buildAll(this.mousedown.target), '');
                 // this.record("mouseUp", this.locatorBuilders.buildAll(event.target), '');
