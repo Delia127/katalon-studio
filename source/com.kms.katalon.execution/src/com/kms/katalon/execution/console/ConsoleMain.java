@@ -26,6 +26,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -37,6 +38,7 @@ import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptio
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
+import com.kms.katalon.execution.exception.InvalidLicenseException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -75,6 +77,8 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
+    public static final String LICENSE_FILE_OPTION = "licenseFile";
+    
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
     public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
@@ -108,6 +112,17 @@ public class ConsoleMain {
             
             if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
+            }
+            
+            if (options.has(LICENSE_FILE_OPTION)) {
+                String licenseFile = String.valueOf(options.valueOf(LICENSE_FILE_OPTION));
+                String activationCode = FileUtils.readFileToString(new File(licenseFile));
+                StringBuilder errorMessage = new StringBuilder();
+                boolean activated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                if (!activated) {
+                    LogUtil.printErrorLine("Invalid license");
+                    throw new InvalidLicenseException("Invalid License");
+                }
             }
             
             if (apiKeyValue != null) {
