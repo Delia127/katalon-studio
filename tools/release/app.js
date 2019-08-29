@@ -11,8 +11,8 @@ for (let i = 4; i < argsLength; i++) {
 }
 
 const options = {
-  owner: 'katalon-studio',
-  repo: 'katalon-studio',
+  owner: 'quidl',
+  repo: 'aaaa',
   tag: name,
   name: name,
   notes: '',
