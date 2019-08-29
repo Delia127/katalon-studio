@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.project.preference;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -14,9 +16,10 @@ import org.eclipse.swt.widgets.Group;
 
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
+import com.kms.katalon.execution.constants.PluginOptions;
 import com.kms.katalon.execution.setting.PluginSettingStore;
-import com.kms.katalon.composer.project.preference.PluginOptions;
 
 public class PluginPreferencePage extends PreferencePage {
 
@@ -55,13 +58,20 @@ public class PluginPreferencePage extends PreferencePage {
         rbtnOfflineOpt.setText(StringConstants.PLUGIN_OFFLINE);
         reloadOptionButtons.put(PluginOptions.OFFLINE, rbtnOfflineOpt);
 
-        setInput();
+		setInput();
         return container;
     }
     
     private void setInput() {
-    	PluginOptions reloadOption = pluginSettingStore.getSelectedReloadPluginOption();
-    	reloadOptionButtons.get(reloadOption).setSelection(true);
+		PluginOptions reloadOption = null;
+		try {
+			reloadOption = pluginSettingStore.getdReloadPluginOption();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (reloadOption != null) {
+	    	reloadOptionButtons.get(reloadOption).setSelection(true);
+		}
     	
     }
 
@@ -81,8 +91,23 @@ public class PluginPreferencePage extends PreferencePage {
         }
         boolean valid = true;
         if (valid) {
-//            updateProject();
+            savePluginSettings();
         }
         return valid;
+    }
+    
+    private void savePluginSettings() {
+    	PluginOptions selectedReloadOption = reloadOptionButtons
+    			.entrySet()
+    			.stream()
+    			.filter(entry -> entry.getValue().getSelection())
+    			.findFirst()
+    			.get()
+    			.getKey();
+		try {
+			pluginSettingStore.setReloadPluginOption(selectedReloadOption);
+		} catch (IOException e) {
+			return;
+		}
     }
 }

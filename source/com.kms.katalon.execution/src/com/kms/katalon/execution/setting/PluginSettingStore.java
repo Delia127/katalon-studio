@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.composer.project.preference.PluginOptions;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.constants.PluginOptions;
 import com.kms.katalon.execution.constants.StringConstants;
 
 public class PluginSettingStore extends BundleSettingStore {
@@ -21,6 +21,6 @@ public class PluginSettingStore extends BundleSettingStore {
 	}
 	
 	public void setReloadPluginOption(PluginOptions reloadOption) throws IOException {
-		setProperty(StringConstants.PLUGIN_RELOAD_OPTION, reloadOption.name());
+    	setProperty(StringConstants.PLUGIN_RELOAD_OPTION, reloadOption.name());
 	}
 }
