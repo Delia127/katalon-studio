@@ -74,7 +74,7 @@ steps:
 #   condition: eq(variables.IS_RELEASE, 'true')
 
 - bash: |
-    ./create_release.sh "${KATALON_DIR}" "${GITHUB_TOKEN}"
+    ./create_release.sh "${KATALON_DIR}" "${TMP_DIR}" "${GITHUB_TOKEN}"
   displayName: Create Release
   env:
     GITHUB_TOKEN: $(GITHUB_TOKEN)

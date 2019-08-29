@@ -23,6 +23,7 @@ create_github_release() {
 source ./variable.sh 
 
 katalonDir=${1}
-github_token=${2}
+tmpDir=${2}
+github_token=${3}
 
 create_github_release
