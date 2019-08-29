@@ -75,7 +75,7 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
-    public static final String KATALON_STORE_LICENSE_FILE_OPTION = "testOps.licenseFile";
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
@@ -121,9 +121,9 @@ public class ConsoleMain {
             }
             
             String licenseFile = null;
-            String environmentVariable = System.getenv(KATALON_STORE_LICENSE_FILE_OPTION);
-            if (options.has(KATALON_STORE_LICENSE_FILE_OPTION)) {
-                licenseFile = String.valueOf(options.valueOf(KATALON_STORE_LICENSE_FILE_OPTION));
+            String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
+            if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
+                licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
             } else if (environmentVariable != null) {
                 licenseFile = environmentVariable;
             }
