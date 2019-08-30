@@ -14,6 +14,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -21,17 +22,21 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -40,27 +45,37 @@ import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class KatalonAnalyticsIntegrationDialog extends Dialog {
     
+	public static final int REFRESH_ID = 1;
+	
     public static final int OK_ID = 2;
 
     private Composite container;
 
     private Button btnOk;
+    
+    private Button btnRefresh;
 
     private Button cbxAutoSubmit;
 
     private Button cbxAttachScreenshot;
 
     private Button btnNewProject;
+    
+    private Text txtOrganization;
 
     private Combo cbbProjects;
 
     private Combo cbbTeams;
+    
+    private Link lnkStatus;
 
     private List<AnalyticsProject> projects = new ArrayList<>();
 
     private List<AnalyticsTeam> teams = new ArrayList<>();
 
     private AnalyticsSettingStore analyticsSettingStore;
+    
+    private AnalyticsOrganization organization;
 
     private String password;
 
@@ -79,6 +94,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
             password = analyticsSettingStore.getPassword(true);
             serverUrl = ApplicationInfo.getTestOpsServer();
             email = analyticsSettingStore.getEmail(true);
+            organization = analyticsSettingStore.getOrganization();
  
             tokenInfo = AnalyticsAuthorizationHandler.getTokenNew(serverUrl, email, password, analyticsSettingStore);
         } catch (Exception e) {
@@ -124,7 +140,13 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         GridLayout glGrpSelect = new GridLayout(4, false);
         grpSelect.setLayout(glGrpSelect);
         grpSelect.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SELECT_GROUP);
-
+        
+        Label lblOrganization = new Label(grpSelect, SWT.NONE);
+        lblOrganization.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ORGANIZATION);
+        
+        txtOrganization = new Text(grpSelect, SWT.READ_ONLY);
+        txtOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        
         Label lblTeam = new Label(grpSelect, SWT.NONE);
         lblTeam.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEAM);
 
@@ -140,6 +162,10 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         btnNewProject = new Button(grpSelect, SWT.NONE);
         btnNewProject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         btnNewProject.setText(ComposerIntegrationAnalyticsMessageConstants.BTN_NEW_PROJECT);
+        
+        lnkStatus = new Link(grpSelect, SWT.NONE);
+        lnkStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+        lnkStatus.setForeground(ColorUtil.getTextErrorColor());
 
 //        Group grpTestResult = new Group(container, SWT.NONE);
 //        grpTestResult.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -187,7 +213,9 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
     }
 
     private void initialize() {
-        fillData();
+    	if (tokenInfo != null) {
+    		fillData();    		
+    	}
     }
 
     private void fillData() {
@@ -200,34 +228,47 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         teams.clear();
         projects.clear();
         
-        Long orgId = analyticsSettingStore.getOrganization().getId();
+        txtOrganization.setText(organization.getName());
+        txtOrganization.setEnabled(false);
+        
+        Long orgId = organization.getId();
         teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, orgId, tokenInfo,
                 new ProgressMonitorDialog(getShell()));
-        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-                teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
-                new ProgressMonitorDialog(getShell()));
-
         if (teams != null && teams.size() > 0) {
+        	projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+        			teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
+        			new ProgressMonitorDialog(getShell()));
             cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
             int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
             cbbTeams.select(indexSelectTeam);
+            cbbTeams.setEnabled(true);
             setProjectsBasedOnTeam(teams.get(indexSelectTeam), projects);
+        } else {
+        	cbbTeams.setEnabled(false);
+        	cbbProjects.setEnabled(false);
+        	btnNewProject.setEnabled(false);
+        	lnkStatus.setText(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_TEAM);
         }
     }
 
     private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
         if (projects != null && !projects.isEmpty()) {
+        	cbbProjects.setEnabled(true);
             cbbProjects.setItems(
                     AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+            lnkStatus.setText("");
         } else {
             cbbProjects.clearSelection();
             cbbProjects.removeAll();
+            lnkStatus.setText(ComposerIntegrationAnalyticsMessageConstants.LNK_REPORT_WARNING_MSG_NO_PROJECT);
         }
+        btnNewProject.setEnabled(true);
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
+    	btnRefresh = createButton(parent, REFRESH_ID, "Refresh", true);
         btnOk = createButton(parent, OK_ID, "OK", true);
         addControlListeners();
     }
@@ -238,6 +279,13 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
             public void widgetSelected(SelectionEvent e) {
                 isClose = updateDataStore();
                 okPressed();
+            }
+        });
+        
+        btnRefresh.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                fillData();
             }
         });
 
@@ -289,6 +337,14 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
                 }
             }
         });
+        
+        lnkStatus.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
+
     }
 
     private boolean updateDataStore() {
