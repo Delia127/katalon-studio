@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ZipUtil;
@@ -29,6 +31,7 @@ import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.util.FileUtils;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.util.CryptoUtil;
 
 public class AnalyticsReportService implements AnalyticsComponent {
     
@@ -187,16 +190,18 @@ public class AnalyticsReportService implements AnalyticsComponent {
     
     public void sendTrackingActivity(AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
         try {
-            AnalyticsTokenInfo token = getKAToken();
+            String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+            String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+            String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+            String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+            AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
             if (token != null) {
-                String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
                 AnalyticsApiProvider.sendTrackingActivity(serverUrl, token.getAccess_token(), trackingInfo);
             } else {
                 LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
             }
         } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
             LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
-            throw new AnalyticsApiExeception(e);
         }
     }
 

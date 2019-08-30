@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
@@ -107,7 +109,10 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
        Date endTime = getEndTime(); 
        String ksVersion = VersionUtil.getCurrentVersion().getVersion();
        Long organizationId = OrganizationHandler.getOrganizationId();
-       analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
+       ExecutorService executors = Executors.newFixedThreadPool(2);
+       executors.submit(() -> {
+           analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
+       });
     }
 
     private void scheduleSubLaunchers() {
