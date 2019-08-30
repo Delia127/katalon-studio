@@ -6,17 +6,6 @@ prepare() {
     pip3 install pyjavaproperties
     mkdir -p ${tmpDir}
     chmod -R 777 ${katalonDir}
-
-    npm config delete prefix
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && chmod +x "$NVM_DIR/nvm.sh" && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && chmod +x "$NVM_DIR/bash_completion" && \. "$NVM_DIR/bash_completion"
-
-    nvm install 10.15.3
-    nvm use 10.15.3
-    npm install --global create-dmg
-
-    create-dmg build.sh build
 }
 
 get_version() {
