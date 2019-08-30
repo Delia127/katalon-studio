@@ -37,9 +37,9 @@ steps:
 #     certPwd: 'katalon@123'
 #     keychain: 'temp'
 
-# - checkout: self
-#   fetchDepth: 1
-#   clean: true
+- checkout: self
+  fetchDepth: 1
+  clean: true
 
 # - task: CacheBeta@0
 #   inputs:
@@ -109,17 +109,7 @@ steps:
 #     publishLocation: 'Container'
 #   displayName: Collect Artifacts
 
-- checkout: none
-
 - bash: |
-    cd
-    cd .nvm
-    ls -al
-
-    npm config delete prefix
-    chmod +x nvm.sh
-    ./nvm.sh
-    ls -al
-
-    chmod +x bash_completion
-    ./bash_completion
+    chmod +x test.sh
+    ./test.sh
+    
