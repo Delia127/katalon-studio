@@ -109,13 +109,12 @@ public class AnalyticsGridHandler {
                         Long projectId = project.getId();
                         AnalyticsRunConfiguration analyticsRunConfiguration = AnalyticsApiProvider.createTestPlan(
                                 serverUrl, projectId, teamId, testPlanName, testProject.getId(),
-                                AnalyticsStringConstants.ANALYTICS_CLOUD_TYPE_CIRCLE_CI,
+                                AnalyticsStringConstants.ANALYTICS_CLOUD_TYPE_DEFAULT,
                                 AnalyticsStringConstants.ANALYTICS_CONFIG_TYPE_TEST_SUITE_COLLECTION, tsc.getId(),
                                 token.getAccess_token());
                         monitor.worked(1);
                         monitor.setTaskName("");
                         URIBuilder builder = new URIBuilder(serverUrl);
-                        builder.setScheme(AnalyticsStringConstants.ANALYTICS_SCHEME_HTTPS);
                         builder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_URL_TEST_PLAN, teamId,
                                 projectId, analyticsRunConfiguration.getId()));
                         Program.launch(builder.toString());
