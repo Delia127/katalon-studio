@@ -168,7 +168,7 @@ public class DatabaseConnection {
 				return;
 			} else {
 				if (StringUtils.startsWith(connectionUrl, "jdbc:mysql")) {
-					Class.forName("com.mysql.jdbc.Driver");
+					Class.forName("com.mysql.cj.jdbc.Driver");
 					return;
 				}
 
