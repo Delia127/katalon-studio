@@ -4,15 +4,13 @@
 # https://aka.ms/yaml
 
 trigger: 
-- qui-*
 - staging-*
 - release-*
 
 pr: none
 
 variables:
-  BRANCH: 'staging-6.3.4'
-  # BRANCH: $(Build.SourceBranchName)
+  BRANCH: $(Build.SourceBranchName)
   COMMIT_ID: $(Build.SourceVersion)
   # BRANCH: $(System.PullRequest.TargetBranch)
   # COMMIT_ID: $(System.PullRequest.SourceCommitId)
