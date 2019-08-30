@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -81,7 +83,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         Date endTime = getEndTime(); 
         String ksVersion = VersionUtil.getCurrentVersion().getVersion();
         Long organizationId = OrganizationHandler.getOrganizationId();
-        analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
+        ExecutorService executors = Executors.newFixedThreadPool(2);
+        executors.submit(() -> {
+            analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
+        });
      }
 
     @Override
@@ -89,7 +94,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         super.onStartExecution();
 
         startTime = new Date();
-        if (parentLauncher == null) {
+        if (parentLauncher == null && (getExecutedEntity() instanceof Reportable)) {
             sendTrackingActivity();
         }
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
@@ -98,7 +103,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     @Override
     protected void preExecutionComplete() {
         this.endTime = new Date();
-        if (parentLauncher == null) {
+        if (parentLauncher == null && (getExecutedEntity() instanceof Reportable)) {
             sendTrackingActivity();
         }
         
