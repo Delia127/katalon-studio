@@ -130,7 +130,7 @@ public class ConsoleMain {
 //                String serverUrl = ApplicationInfo.getTestOpsServer();
 //                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
 //                ActivationInfoCollector.activateFeatures(serverUrl, null, null, Long.valueOf(orgIdValue), ksVersion);
-                FeatureServiceConsumer.getServiceInstance().enable("privatePlugin");
+                FeatureServiceConsumer.getServiceInstance().enable("private_plugin");
             }
             
             if (apiKeyValue != null) {
