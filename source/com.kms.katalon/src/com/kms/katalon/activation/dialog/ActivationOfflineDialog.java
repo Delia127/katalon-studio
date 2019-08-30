@@ -139,7 +139,7 @@ public class ActivationOfflineDialog extends Dialog {
                 @Override
                 public void run() {
                     StringBuilder errorMessage = new StringBuilder();
-                    boolean result = ActivationInfoCollector.activate(txtActivationCode.getText().trim(), errorMessage);
+                    boolean result = ActivationInfoCollector.activateOffline(txtActivationCode.getText().trim(), errorMessage);
                     lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
                     if (result == true) {
                         setReturnCode(Window.OK);

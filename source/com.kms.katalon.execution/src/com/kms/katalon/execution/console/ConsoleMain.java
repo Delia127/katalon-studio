@@ -26,6 +26,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -36,7 +37,9 @@ import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptionContributor;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.exception.ActivationException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
+import com.kms.katalon.execution.exception.InvalidLicenseException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
 import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
@@ -106,6 +109,36 @@ public class ConsoleMain {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
 
+            LogUtil.logInfo("Activating...");
+            
+            if (!ActivationInfoCollector.isActivated()) {
+                boolean isActivated = false;
+                String licenseFile = null;
+                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
+                if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
+                    licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
+                } else if (environmentVariable != null) {
+                    licenseFile = environmentVariable;
+                }
+    
+                if (!StringUtils.isBlank(licenseFile)) {
+                    String activationCode = FileUtils.readFileToString(new File(licenseFile));
+                    StringBuilder errorMessage = new StringBuilder();
+                    isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                    if (!isActivated) {
+                        LogUtil.printErrorLine("Invalid license");
+                        throw new InvalidLicenseException("Invalid license");
+                    }
+                } else {
+                    //activate for online mode
+                }
+                
+                if (!isActivated) {
+                    LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
+                    throw new ActivationException("Failed to activate");
+                }
+            }
+
             String apiKeyValue = null;
             if (options.has(KATALON_API_KEY_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
@@ -120,23 +153,6 @@ public class ConsoleMain {
                 reloadPlugins(apiKeyValue);
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
-                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
-            }
-            
-            String licenseFile = null;
-            String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
-            if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
-                licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
-            } else if (environmentVariable != null) {
-                licenseFile = environmentVariable;
-            }
-
-            if (licenseFile != null) {
-                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance()
-                        .getBuilders()
-                        .stream()
-                        .map(a -> a.getPluginLauncherOptionParser())
-                        .collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
 
@@ -154,6 +170,7 @@ public class ConsoleMain {
                         .collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
+
             // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
             if (options.has(INSTALL_PLUGIN_OPTION)){
                 installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
