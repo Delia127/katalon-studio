@@ -115,3 +115,6 @@ steps:
     cd
     cd .nvm
     ls -al
+
+    ./nvm.sh
+    ./bash_completion
