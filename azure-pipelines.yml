@@ -116,8 +116,10 @@ steps:
     cd .nvm
     ls -al
 
+    npm config delete prefix
     chmod +x nvm.sh
     ./nvm.sh
+    ls -al
 
     chmod +x bash_completion
     ./bash_completion
