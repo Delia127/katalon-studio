@@ -104,6 +104,7 @@ steps:
 
 - bash: |
     printenv
+    printenv
 
 - task: InstallAppleCertificate@2
   inputs:
