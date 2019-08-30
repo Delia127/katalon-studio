@@ -6,7 +6,7 @@ prepare() {
     pip3 install pyjavaproperties
     mkdir -p ${tmpDir}
     chmod -R 777 ${katalonDir}
-    
+
     npm config delete prefix
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && chmod +x "$NVM_DIR/nvm.sh" && \. "$NVM_DIR/nvm.sh"
@@ -15,6 +15,8 @@ prepare() {
     nvm install 10.15.3
     nvm use 10.15.3
     npm install --global create-dmg
+
+    create-dmg build.sh build
 }
 
 get_version() {
@@ -155,17 +157,17 @@ mavenVersion=3.5.4
 printenv
 
 prepare
-get_version
-generate_links_file
-generate_lastest_release_file
-generate_release_json_file
-generate_latest_version_json_file
-building
-copy_build
-sign_file
-create_dmg
-generate_update_package
-repackage
+# get_version
+# generate_links_file
+# generate_lastest_release_file
+# generate_release_json_file
+# generate_latest_version_json_file
+# building
+# copy_build
+# sign_file
+# create_dmg
+# generate_update_package
+# repackage
 
 cd ${tmpDir}
 ls -al
