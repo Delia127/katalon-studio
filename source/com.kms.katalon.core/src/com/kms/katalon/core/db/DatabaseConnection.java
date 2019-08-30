@@ -46,6 +46,11 @@ public class DatabaseConnection {
 	public DatabaseConnection(String connectionUrl) {
 		this.connectionUrl = connectionUrl;
 	}
+	
+	public DatabaseConnection(String connectionUrl, String driverClassName) {
+		this.connectionUrl = connectionUrl;
+		this.driverClassName = driverClassName;
+	}
 
 	/**
 	 * Database Connection

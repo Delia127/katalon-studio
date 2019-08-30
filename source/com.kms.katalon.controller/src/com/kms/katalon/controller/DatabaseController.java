@@ -55,8 +55,7 @@ public class DatabaseController {
         }
 
         if (isSecureUserAccount) {
-//            return new DatabaseConnection(connectionUrl, user, Base64.decode(password));
-        	return new DatabaseConnection(connectionUrl, user, Base64.decode(password), null);
+            return new DatabaseConnection(connectionUrl, user, Base64.decode(password));
         }
 
         return new DatabaseConnection(connectionUrl);
@@ -72,7 +71,7 @@ public class DatabaseController {
             return new DatabaseConnection(connectionUrl, user, Base64.decode(password), driverClassName);
         }
 
-        return new DatabaseConnection(connectionUrl);
+        return new DatabaseConnection(connectionUrl, driverClassName);
     }
 
     public ResultSet query(DatabaseConnection dbConnection, String sqlQuery) throws SQLException {
