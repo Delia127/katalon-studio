@@ -4,10 +4,11 @@
 # https://aka.ms/yaml
 
 trigger: 
+- qui-*
 - staging-*
 - release-*
 
-# pr: none
+pr: none
 
 variables:
   BRANCH: $(System.PullRequest.TargetBranch)
@@ -100,6 +101,9 @@ steps:
 #   displayName: Collect Artifacts
 
 - checkout: none
+
+- bash: |
+    printenv
 
 - task: InstallAppleCertificate@2
   inputs:
