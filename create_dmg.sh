@@ -5,6 +5,7 @@ set -xe
 ulimit -c unlimited
 KATABUILD="${1}"
 
+#Setup nvm and create-dmg
 npm config delete prefix
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && chmod +x "$NVM_DIR/nvm.sh" && \. "$NVM_DIR/nvm.sh"
