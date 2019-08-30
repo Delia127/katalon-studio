@@ -112,5 +112,6 @@ steps:
 - checkout: none
 
 - bash: |
+    cd
     cd .nvm
     ls -al
