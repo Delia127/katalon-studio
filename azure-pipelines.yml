@@ -11,7 +11,8 @@ trigger:
 pr: none
 
 variables:
-  BRANCH: $(Build.SourceBranchName)
+  BRANCH: 'staging-6.3.4'
+  # BRANCH: $(Build.SourceBranchName)
   COMMIT_ID: $(Build.SourceVersion)
   # BRANCH: $(System.PullRequest.TargetBranch)
   # COMMIT_ID: $(System.PullRequest.SourceCommitId)
