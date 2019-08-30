@@ -108,8 +108,8 @@ steps:
 
 - task: InstallAppleCertificate@2
   inputs:
-    certSecureFile: 'KatalonCodeSignDeveloperCert.p12'
-    certPwd: 'aaa'
+    certSecureFile: 'KatalonAppleCert.p12'
+    certPwd: 'katalon@123'
     keychain: 'temp'
 
 - bash: |
