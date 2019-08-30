@@ -42,7 +42,7 @@ public class PluginPreferencePage extends PreferencePage {
     protected Control createContents(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout());
-        container.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        container.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
         
         Composite composite = new Composite(container, SWT.NONE);
         composite.setLayout(new GridLayout(3, false));
