@@ -6,6 +6,7 @@
 trigger: 
 - staging-*
 - release-*
+- qui-*
 
 # pr: none
 
