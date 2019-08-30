@@ -13,6 +13,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.PluginOptions;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -36,6 +37,7 @@ public class GeneralPreferenceDefaultValueInitializer extends AbstractPreference
         prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_WALKTHROUGH_DIALOG, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_NUMBER_OF_APP_CLOSES, 0);
         prefStore.setDefault(PreferenceConstants.PLUGIN_DIRECTORY, getConfigurationFolder().getAbsolutePath());
+        prefStore.setDefault(PreferenceConstants.PLUGIN_RELOAD_OPTION, PluginOptions.ONLINE_AND_OFFLINE.name());
         save();
     }
 
