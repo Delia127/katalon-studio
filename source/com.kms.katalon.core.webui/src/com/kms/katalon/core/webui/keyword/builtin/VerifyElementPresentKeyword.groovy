@@ -83,10 +83,12 @@ public class VerifyElementPresentKeyword extends WebUIAbstractKeyword {
                 return true
             } catch (WebElementNotFoundException ex) {
                 WebUIKeywordMain.stepFailed(ExceptionsUtil.getMessageForThrowable(ex), flowControl, null, true)
-            } finally {
+            } 
+            finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()
                 }
+                return false
             }
             return false
         }, flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_IS_PRESENT, to.getObjectId())

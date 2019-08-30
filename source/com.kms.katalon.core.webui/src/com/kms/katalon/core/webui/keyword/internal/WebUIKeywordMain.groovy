@@ -23,7 +23,7 @@ public class WebUIKeywordMain {
                 stepFailed(errorMessage, FailureHandling.OPTIONAL, e, takeScreenShot);
                 return;
             }
-           // stepFailed(errorMessage, flowControl, e, takeScreenShot);
+            stepFailed(errorMessage, flowControl, e, takeScreenShot);
         }
     }
 
@@ -39,7 +39,7 @@ public class WebUIKeywordMain {
                 }
                 return
             }
-         //   stepFailed(errorMessage, flowControl, e, takeScreenShot);
+            stepFailed(errorMessage, flowControl, e, takeScreenShot);
         }
     }
 
@@ -53,7 +53,7 @@ public class WebUIKeywordMain {
                 stepFailed(errorMessage, FailureHandling.OPTIONAL, e, takeScreenShot);
                 return -1;
             }
-            //stepFailed(errorMessage, flowControl, e, takeScreenShot);
+            stepFailed(errorMessage, flowControl, e, takeScreenShot);
         }
         return -1;
     }
