@@ -11,7 +11,6 @@ import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
@@ -19,7 +18,6 @@ import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessa
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.util.VersionUtil;
 
 public class AnalyticsReportIntegration implements ReportIntegrationContribution, AnalyticsComponent {
     
