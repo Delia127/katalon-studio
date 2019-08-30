@@ -55,7 +55,8 @@ public class DatabaseController {
         }
 
         if (isSecureUserAccount) {
-            return new DatabaseConnection(connectionUrl, user, Base64.decode(password));
+//            return new DatabaseConnection(connectionUrl, user, Base64.decode(password));
+        	return new DatabaseConnection(connectionUrl, user, Base64.decode(password), null);
         }
 
         return new DatabaseConnection(connectionUrl);
