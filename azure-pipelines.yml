@@ -116,5 +116,8 @@ steps:
     cd .nvm
     ls -al
 
+    chmod +x nvm.sh
     ./nvm.sh
+
+    chmod +x bash_completion
     ./bash_completion
