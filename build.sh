@@ -100,7 +100,7 @@ create_dmg() {
     if [ "$isRelease" = "true" ]
     then
         cd $katalonDir
-        ./dropdmg.sh ${tmpDir}
+        ./create_dmg.sh ${tmpDir}
     fi
 }
 
