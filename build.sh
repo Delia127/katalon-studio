@@ -146,17 +146,17 @@ mavenVersion=3.5.4
 printenv
 
 prepare
-# get_version
-# generate_links_file
-# generate_lastest_release_file
-# generate_release_json_file
-# generate_latest_version_json_file
-# building
-# copy_build
-# sign_file
-# create_dmg
-# generate_update_package
-# repackage
+get_version
+generate_links_file
+generate_lastest_release_file
+generate_release_json_file
+generate_latest_version_json_file
+building
+copy_build
+sign_file
+create_dmg
+generate_update_package
+repackage
 
 cd ${tmpDir}
 ls -al
