@@ -188,6 +188,14 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String PAGE_BTN_BROWSE_FOLDER = MessageConstants.PAGE_BTN_BROWSE_FOLDER;
 
+    public static final String PAGE_GRP_PLUGIN_REPOSITORY = MessageConstants.PAGE_GRP_PLUGIN_REPOSITORY;
+    
+    public static final String PAGE_OPTION_RELOAD_ONLINE = MessageConstants.PAGE_OPTION_RELOAD_ONLINE;
+    
+    public static final String PAGE_OPTION_RELOAD_OFFLINE = MessageConstants.PAGE_OPTION_RELOAD_OFFLINE;
+    
+    public static final String PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE = MessageConstants.PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE;
+    
     public static final String MSG_UPDATING_WEB_DRIVER = MessageConstants.MSG_UPDATING_WEB_DRIVER;
     
     public static final String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;

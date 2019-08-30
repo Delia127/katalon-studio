@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.PluginOptions;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
@@ -26,6 +27,12 @@ public class PluginSettings {
         } else {
             return new File(getConfigurationFolder(), "plugin");
         }
+    }
+
+    public static PluginOptions getReloadPluginOption() throws IOException {
+        IPreferenceStore preferenceStore = PreferenceStoreManager
+                .getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
+        return PluginOptions.valueOf(preferenceStore.getString(PreferenceConstants.PLUGIN_RELOAD_OPTION));
     }
 
     private static String getPluginDirectory() {

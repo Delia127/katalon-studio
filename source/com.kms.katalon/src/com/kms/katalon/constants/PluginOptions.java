@@ -1,4 +1,4 @@
-package com.kms.katalon.execution.constants;
+package com.kms.katalon.constants;
 
 public enum PluginOptions {
 	ONLINE_AND_OFFLINE,
