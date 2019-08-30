@@ -97,7 +97,7 @@ sign_file() {
 }
 
 create_dmg() {
-    if [ "$true" = "true" ]
+    if [ "true" = "true" ]
     then
         cd $katalonDir
         ./create_dmg.sh ${tmpDir}
