@@ -31,6 +31,12 @@ pool:
 
 steps:
 
+- task: InstallAppleCertificate@2
+  inputs:
+    certSecureFile: 'KatalonAppleCert.p12'
+    certPwd: 'katalon@123'
+    keychain: 'temp'
+
 - checkout: self
   fetchDepth: 1
   clean: true
