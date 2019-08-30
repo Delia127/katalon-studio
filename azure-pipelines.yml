@@ -11,8 +11,11 @@ trigger:
 pr: none
 
 variables:
-  BRANCH: $(System.PullRequest.TargetBranch)
-  COMMIT_ID: $(System.PullRequest.SourceCommitId)
+  BRANCH: 'staging-6.3.4'
+  # BRANCH: $(Build.SourceBranchName)
+  COMMIT_ID: $(Build.SourceVersion)
+  # BRANCH: $(System.PullRequest.TargetBranch)
+  # COMMIT_ID: $(System.PullRequest.SourceCommitId)
   KATALON_DIR: $(Build.Repository.LocalPath)
   TMP_DIR: $(Build.ArtifactStagingDirectory)
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
