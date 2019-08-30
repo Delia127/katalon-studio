@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -xe
+
 ulimit -c unlimited
 KATABUILD="${1}"
 
