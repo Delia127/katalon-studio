@@ -32,7 +32,7 @@ steps:
 - task: InstallAppleCertificate@2
   inputs:
     certSecureFile: 'KatalonAppleCert.p12'
-    certPwd: 'katalon@123'
+    certPwd: '$(CER_PASSWORD)'
     keychain: 'temp'
 
 - checkout: self
