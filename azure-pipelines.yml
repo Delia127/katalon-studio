@@ -6,9 +6,8 @@
 trigger: 
 - staging-*
 - release-*
-- qui-*
 
-# pr: none
+pr: none
 
 variables:
   BRANCH: $(System.PullRequest.TargetBranch)
