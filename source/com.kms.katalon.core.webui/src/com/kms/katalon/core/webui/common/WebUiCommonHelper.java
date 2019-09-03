@@ -750,6 +750,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 
             float timeCount = 0;
             long miliseconds = System.currentTimeMillis();
+            // Resolve issue3166, don't use WHILE here because if timeout is 0 then WebDriver#findElements will not be called
             do {
                 try {
                     List<WebElement> webElements = null;
