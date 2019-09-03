@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
@@ -181,6 +182,12 @@ public class ActivationDialogV2 extends AbstractDialog {
             String password = txtPassword.getText();
             ActivationInfoCollector.markActivated(email, password);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION, JsonUtil.toJson(organization), true);
+            if (KatalonApplicationActivator.getFeatureActivator() != null) {
+                String serverUrl = ApplicationInfo.getTestOpsServer();
+                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                Long orgId = organization.getId();
+                ActivationInfoCollector.activateFeatures(serverUrl, email, password, orgId, ksVersion);
+            }
             close();
         } catch (Exception e) {
             LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
