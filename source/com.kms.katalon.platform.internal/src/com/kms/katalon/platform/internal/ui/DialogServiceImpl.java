@@ -63,22 +63,4 @@ public class DialogServiceImpl implements DialogActionService {
     public void openPluginPreferencePage(String preferenceId) {
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_SETTINGS_PAGE, preferenceId);
     }
-
-	@Override
-	public TestCaseEntity[] showTestCaseSelectionDialog(Shell arg0, String arg1) throws PlatformException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public FolderEntity showTestObjectFolderSelectionDialog(Shell arg0, String arg1) throws PlatformException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TestObjectEntity[] showTestObjectSelectionDialog(Shell arg0, String arg1) throws PlatformException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
