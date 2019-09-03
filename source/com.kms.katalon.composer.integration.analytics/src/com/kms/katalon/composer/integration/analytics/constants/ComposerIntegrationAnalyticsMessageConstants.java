@@ -139,6 +139,10 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     
     public static String REPORT_WARNING_MSG_NO_PROJECT;
     
+    public static String LNK_REPORT_WARNING_MSG_NO_TEAM;
+    
+    public static String LNK_REPORT_WARNING_MSG_NO_PROJECT;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerIntegrationAnalyticsMessageConstants.class);
