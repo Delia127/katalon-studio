@@ -230,11 +230,10 @@ public class ActivationInfoCollector {
         try {
             String machineId = MachineUtil.getMachineId();
             return license.getMachineId().equals(machineId);
-        } catch (IOException | InterruptedException e) {
+        } catch (Exception e) {
             LogUtil.logError(e);
             return false;
         }
-        
     }
     
     private static boolean isExpired(License license) {

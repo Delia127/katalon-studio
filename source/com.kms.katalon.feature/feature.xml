@@ -2615,7 +2615,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="com.fasterxml.jackson.dataformat.jackson-dataformat-xml"
          download-size="0"
@@ -2636,7 +2636,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.ui.themes"
          download-size="0"
@@ -2659,13 +2659,20 @@
 
    <plugin
          id="com.kms.katalon.execution.windows"
-          download-size="0"
+         download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.log4j"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.auth0.java-jwt"
          download-size="0"
          install-size="0"
          version="0.0.0"
