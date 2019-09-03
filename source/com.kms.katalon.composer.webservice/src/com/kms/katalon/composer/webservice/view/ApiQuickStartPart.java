@@ -155,7 +155,7 @@ public class ApiQuickStartPart {
                 return new Point(1000, 2150);
             }
             case WEBSERVICE: {
-                return new Point(1000, 1850);
+                return new Point(900, 1700);
             }
             default:
                 return new Point(1000, 1700);
