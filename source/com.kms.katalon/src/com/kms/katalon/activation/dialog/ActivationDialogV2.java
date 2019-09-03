@@ -268,6 +268,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         Composite contentComposite = new Composite(container, SWT.NONE);
         GridLayout glContent = new GridLayout(2, false);
         glContent.verticalSpacing = 10;
+        glContent.horizontalSpacing = 25;
         contentComposite.setLayout(glContent);
 
         GridData gdText = new GridData(SWT.FILL, SWT.CENTER, true, false);
