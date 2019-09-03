@@ -9,8 +9,10 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PluginOptions;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.execution.constants.PluginOptions;
+import com.kms.katalon.execution.setting.PluginSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class PluginSettings {
@@ -30,9 +32,8 @@ public class PluginSettings {
     }
 
     public static PluginOptions getReloadPluginOption() throws IOException {
-        IPreferenceStore preferenceStore = PreferenceStoreManager
-                .getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
-        return PluginOptions.valueOf(preferenceStore.getString(PreferenceConstants.PLUGIN_RELOAD_OPTION));
+        PluginSettingStore pluginSettingStore = new PluginSettingStore(ProjectController.getInstance().getCurrentProject());
+        return pluginSettingStore.getReloadOption();
     }
 
     private static String getPluginDirectory() {

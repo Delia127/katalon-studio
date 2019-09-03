@@ -182,4 +182,15 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BLANK_PROJECT = ComposerProjectMessageConstants.BLANK_PROJECT;
 
 	public static final String CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER = ComposerProjectMessageConstants.CANNOT_CREATE_PROJECT_IN_KATALON_FOLDER;
+	
+	
+    // PluginPreferencePage
+	
+    public static final String PAGE_GRP_PLUGIN_REPOSITORY = ComposerProjectMessageConstants.PAGE_GRP_PLUGIN_REPOSITORY;
+    
+    public static final String PAGE_OPTION_RELOAD_ONLINE = ComposerProjectMessageConstants.PAGE_OPTION_RELOAD_ONLINE;
+    
+    public static final String PAGE_OPTION_RELOAD_OFFLINE = ComposerProjectMessageConstants.PAGE_OPTION_RELOAD_OFFLINE;
+    
+    public static final String PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE = ComposerProjectMessageConstants.PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE;
 }
