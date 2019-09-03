@@ -216,7 +216,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 //        glGrpAttach.marginLeft = 15;
 //        attachComposite.setLayout(glGrpAttach);
 //        attachComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-//
 //        cbxAttachScreenshot = new Button(attachComposite, SWT.CHECK);
 //        cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 //        cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);

@@ -46,7 +46,7 @@ import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class KatalonAnalyticsIntegrationDialog extends Dialog {
     
-	public static final int REFRESH_ID = 3;
+    public static final int REFRESH_ID = 3;
 	
     public static final int OK_ID = 2;
 
@@ -257,7 +257,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
 
     private void setProjectsBasedOnTeam(AnalyticsTeam team, List<AnalyticsProject> projects) {
         if (projects != null && !projects.isEmpty()) {
-        	cbbProjects.setEnabled(true);
+            cbbProjects.setEnabled(true);
             cbbProjects.setItems(
                     AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
