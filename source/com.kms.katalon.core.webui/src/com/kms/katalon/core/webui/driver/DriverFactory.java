@@ -249,7 +249,7 @@ public class DriverFactory {
             IOException, InterruptedException, AppiumStartException, Exception {
 
         if (null != localWebServerStorage.get()
-                && null != ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
+                && null != getRemoteSessionId(localWebServerStorage.get())) {
             logger.logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
             closeWebDriver();
         }
@@ -281,7 +281,7 @@ public class DriverFactory {
         }
 
         if (null != localWebServerStorage.get()
-                && null != ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
+                && null != getRemoteSessionId(localWebServerStorage.get())) {
             logger.logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
             closeWebDriver();
         }
@@ -759,7 +759,7 @@ public class DriverFactory {
         startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
         try {
-            if (null == getRemoteSessionId((WebDriver) localWebServerStorage.get())) {
+            if (null == getRemoteSessionId(localWebServerStorage.get())) {
                 switchToAvailableWindow();
             }
         } catch (WebDriverException e) {
