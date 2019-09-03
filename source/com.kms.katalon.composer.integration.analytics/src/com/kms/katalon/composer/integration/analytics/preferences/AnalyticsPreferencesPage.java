@@ -624,6 +624,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             cbbProjects.setItems(
                     AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+            lnkStatus.setText("");
         } else {
             cbbProjects.clearSelection();
             cbbProjects.removeAll();

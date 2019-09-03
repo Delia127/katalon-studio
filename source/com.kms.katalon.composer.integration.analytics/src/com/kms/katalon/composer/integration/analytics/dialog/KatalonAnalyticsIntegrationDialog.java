@@ -8,9 +8,11 @@ import java.util.List;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -29,7 +31,6 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
@@ -45,7 +46,7 @@ import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class KatalonAnalyticsIntegrationDialog extends Dialog {
     
-	public static final int REFRESH_ID = 1;
+	public static final int REFRESH_ID = 3;
 	
     public static final int OK_ID = 2;
 
@@ -117,6 +118,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
 
     @Override
 	public boolean close() {
+    	isClose = updateDataStore();
     	if (!isClose) {
     		return false;
     	} 
@@ -205,7 +207,9 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
 
         Label lblDir = new Label(suggestComposite, SWT.NONE);
         lblDir.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_QUICK_ANALYTICS_INTEGRATION_TO_CONFIG);
-        ControlUtils.setFontStyle(lblDir, SWT.BOLD | SWT.ITALIC, -1);
+        FontDescriptor boldDescriptor = FontDescriptor.createFrom(lblDir.getFont()).setStyle(SWT.BOLD | SWT.ITALIC);
+        Font boldFont = boldDescriptor.createFont(lblDir.getDisplay());
+        lblDir.setFont(boldFont);
 
         initialize();
 
@@ -351,7 +355,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         try {
         	if (cbbTeams.getSelectionIndex() == -1) {
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                        ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_SET_TEAM);
+                        ComposerIntegrationAnalyticsMessageConstants.REPORT_WARNING_MSG_NO_TEAM);
                 return false;
             }
             
