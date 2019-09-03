@@ -17,7 +17,6 @@ public class CSafariDriver extends SafariDriver implements IDelayableDriver {
 
     @Override
     protected Response execute(String driverCommand, Map<String, ?> parameters) {
-        delay();
         return super.execute(driverCommand, parameters);
     }
 
