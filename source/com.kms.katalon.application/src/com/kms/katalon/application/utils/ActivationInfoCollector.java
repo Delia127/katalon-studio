@@ -27,10 +27,28 @@ public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
+    private static boolean activated = false;
+
     protected ActivationInfoCollector() {
     }
 
+    public static void setActivated(boolean activated) {
+        ActivationInfoCollector.activated = activated;
+    }
+
     public static boolean isActivated() {
+        return activated;
+    }
+
+    public static boolean checkAndMarkActivated() {
+        activated = checkActivated();
+        if (activated) {
+            activateTestOpsFeatures();
+        }
+        return activated;
+    }
+
+    public static boolean checkActivated() {
         String activatedVal = ApplicationInfo.getAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME);
         if (activatedVal == null) {
             return false;
@@ -40,7 +58,6 @@ public class ActivationInfoCollector {
                     .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
             if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
                 setActivatedVal();
-                return true;
             }
 
             String[] activateParts = activatedVal.split("_");
@@ -52,39 +69,42 @@ public class ActivationInfoCollector {
 
             int activatedHashVal = Integer.parseInt(activateParts[1]);
             boolean isActivated = activatedHashVal == getHostNameHashValue();
-            
-            if (isActivated) {
-                if (KatalonApplicationActivator.getFeatureActivator() != null) {
-                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                    Organization org = new Organization();
-                    String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
-                    if (StringUtils.isNotBlank(jsonObject)) {
-                        try {
-                             org = JsonUtil.fromJson(jsonObject, Organization.class);
-                        } catch (IllegalArgumentException e) {
-                             LogUtil.logError(e);
-                        }
-                    }
-                    Long orgId = org.getId();
-                    
-                    
-                    String serverUrl = ApplicationInfo.getTestOpsServer();
-                    String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-                    activateFeatures(serverUrl, email, password, orgId, ksVersion);
-                }
-            }
             return isActivated;
         } catch (Exception ex) {
             LogUtil.logError(ex);
             return false;
         }
     }
-    
+
+    private static void activateTestOpsFeatures() {
+        if (KatalonApplicationActivator.getFeatureActivator() != null) {
+            try {
+                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                Organization org = new Organization();
+                String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+                if (StringUtils.isNotBlank(jsonObject)) {
+                    try {
+                        org = JsonUtil.fromJson(jsonObject, Organization.class);
+                    } catch (IllegalArgumentException e) {
+                        LogUtil.logError(e);
+                    }
+                }
+                Long orgId = org.getId();
+
+                String serverUrl = ApplicationInfo.getTestOpsServer();
+                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                activateFeatures(serverUrl, email, password, orgId, ksVersion);
+            } catch (GeneralSecurityException | IOException e) {
+                LogUtil.logError(e);
+            }
+        }
+    }
+
     public static void activateFeatures(String serverUrl, String email, String password, long orgId, String ksVersion) {
-        Set<String> featureKeys = KatalonApplicationActivator.getFeatureActivator().getFeatures(serverUrl, email, password, 
-                Long.valueOf(orgId), ksVersion);
+        Set<String> featureKeys = KatalonApplicationActivator.getFeatureActivator().getFeatures(serverUrl, email,
+                password, Long.valueOf(orgId), ksVersion);
         IFeatureService instance = FeatureServiceConsumer.getServiceInstance();
         for (String featureKey : featureKeys) {
             instance.enable(featureKey);
@@ -157,7 +177,7 @@ public class ActivationInfoCollector {
 
         return activatedResult;
     }
-    
+
     public static boolean activate(String activationCode, StringBuilder errorMessage) {
         try {
             String checkCode = activationCode.substring(0, 2);
@@ -186,7 +206,7 @@ public class ActivationInfoCollector {
         String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
     }
-    
+
     private static void markActivated(String activationCode) throws Exception {
         setActivatedVal();
         ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
@@ -201,10 +221,10 @@ public class ActivationInfoCollector {
     }
 
     public static void markActivatedViaUpgradation(String versionNumber) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME, 
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME,
                 getVersionNo(versionNumber), true);
     }
-    
+
     private static String getVersionNo(String versionNumber) {
         if (versionNumber == null) {
             return versionNumber;
