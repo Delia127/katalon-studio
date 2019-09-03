@@ -58,7 +58,7 @@ public class AnalyticsStringConstants {
     
     public static final String ANALYTICS_URL_TEST_PROJECT = "/team/%d/project/%d/test-project";
     
-    public static final String ANALYTICS_CLOUD_TYPE_CIRCLE_CI = "CIRCLE_CI";
+    public static final String ANALYTICS_CLOUD_TYPE_DEFAULT = "DEFAULT_CLOUD";
     
     public static final String ANALYTICS_CONFIG_TYPE_TEST_SUITE_COLLECTION = "TSC";
 
