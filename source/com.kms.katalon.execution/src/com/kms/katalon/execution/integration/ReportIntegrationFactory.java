@@ -8,6 +8,9 @@ import java.util.Map;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 
 public class ReportIntegrationFactory {
+    
+    private static final String ANALYTICS_NAME = "Katalon Analytics";
+    
     private static ReportIntegrationFactory _instance;
 
     private Map<String, ReportIntegrationContribution> reportIntegrationMap;
@@ -33,5 +36,9 @@ public class ReportIntegrationFactory {
     
     public List<ConsoleOptionContributor> getConsoleOptionContributorList() {
         return new ArrayList<ConsoleOptionContributor>(reportIntegrationMap.values());
+    }
+    
+    public ReportIntegrationContribution getAnalyticsProvider () {
+        return reportIntegrationMap.get(ANALYTICS_NAME);
     }
 }

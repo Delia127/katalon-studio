@@ -5,7 +5,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
+import java.security.GeneralSecurityException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +15,7 @@ import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.KatalonApplicationActivator;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
@@ -21,6 +24,9 @@ import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.license.LicenseService;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
+import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.CryptoUtil;
 
@@ -28,22 +34,29 @@ public class ActivationInfoCollector {
 
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
+    private static boolean activated = false;
+
     protected ActivationInfoCollector() {
     }
 
+    public static void setActivated(boolean activated) {
+        ActivationInfoCollector.activated = activated;
+    }
+
     public static boolean isActivated() {
-        String activatedVal = ApplicationInfo.getAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME);
-        if (activatedVal == null) {
-            return false;
+        return activated;
+    }
+
+    public static boolean checkAndMarkActivated() {
+        activated = checkActivated();
+        if (activated) {
+            activateTestOpsFeatures();
         }
+        return activated;
+    }
+
+    public static boolean checkActivated() {
         try {
-//            String updatedVersion = ApplicationInfo
-//                    .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
-//            if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
-//                setActivatedVal();
-//                return true;
-//            }
-            
             String offlineActivationFlag = ApplicationInfo.getAppProperty(
                     ApplicationStringConstants.ARG_OFFLINE_ACTIVATION);
             if (offlineActivationFlag != null) {
@@ -59,19 +72,8 @@ public class ActivationInfoCollector {
                     return isValidLicense;
                 }
             } else {
-                //activate for online 
-                return false;
+                return isActivatedByAccount();
             }
-
-//            String[] activateParts = activatedVal.split("_");
-//            String oldVersion = new StringBuilder(activateParts[0]).reverse().toString();
-//            String curVersion = ApplicationInfo.versionNo().replaceAll("\\.", "");
-//            if (oldVersion.equals(curVersion) == false) {
-//                return false;
-//            }
-//
-//            int activatedHashVal = Integer.parseInt(activateParts[1]);
-//            return (activatedHashVal == getHostNameHashValue()) && isActivatedByAccount();
         } catch (Exception ex) {
             LogUtil.logError(ex);
             return false;
@@ -90,18 +92,47 @@ public class ActivationInfoCollector {
             }
 
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-            boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
-            if (result) {
-                return true;
-            }
-            if (!StringUtils.isBlank(activationCode)) {
-                return true;
-            }
+            return ActivationInfoCollector.activate(username, password, errorMessage);
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }
         
         return false;
+    }
+
+    private static void activateTestOpsFeatures() {
+        if (KatalonApplicationActivator.getFeatureActivator() != null) {
+            try {
+                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                Organization org = new Organization();
+                String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+                if (StringUtils.isNotBlank(jsonObject)) {
+                    try {
+                        org = JsonUtil.fromJson(jsonObject, Organization.class);
+                    } catch (IllegalArgumentException e) {
+                        LogUtil.logError(e);
+                    }
+                }
+                Long orgId = org.getId();
+
+                String serverUrl = ApplicationInfo.getTestOpsServer();
+                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                activateFeatures(serverUrl, email, password, orgId, ksVersion);
+            } catch (GeneralSecurityException | IOException e) {
+                LogUtil.logError(e);
+            }
+        }
+    }
+
+    public static void activateFeatures(String serverUrl, String email, String password, long orgId, String ksVersion) {
+        Set<String> featureKeys = KatalonApplicationActivator.getFeatureActivator().getFeatures(serverUrl, email,
+                password, Long.valueOf(orgId), ksVersion);
+        IFeatureService instance = FeatureServiceConsumer.getServiceInstance();
+        for (String featureKey : featureKeys) {
+            instance.enable(featureKey);
+        }
     }
 
     private static int getHostNameHashValue() throws Exception {

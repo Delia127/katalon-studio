@@ -33,6 +33,7 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -123,6 +124,7 @@ public class ActivationDialogV2 extends AbstractDialog {
             }
         });
 
+
         lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -137,6 +139,15 @@ public class ActivationDialogV2 extends AbstractDialog {
                 Program.launch(StringConstants.AGREE_TERM_URL);
             }
         });
+
+//        lnkOfflineActivation.addSelectionListener(new SelectionAdapter() {
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                setReturnCode(REQUEST_OFFLINE_CODE);
+//                close();
+//            }
+//        });
+
 
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -211,7 +222,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     String email = txtEmail.getText();
                     String password = txtPassword.getText();
                     token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                    organizations = AnalyticsApiProvider.getOrganization(serverUrl, token.getAccess_token());
+                    organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token.getAccess_token());
                     if (organizations.size() == 1) {
                         save(0);
 	                } else {
@@ -375,8 +386,8 @@ public class ActivationDialogV2 extends AbstractDialog {
         label.setLayoutData(gdSeparator);
 
         lnkOfflineActivation = new Link(linkBar, SWT.NONE);
-        lnkOfflineActivation
-                .setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATION));
+//        lnkOfflineActivation
+//                .setText(String.format("<a>%s</a>", MessageConstants.ActivationDialogV2_LNK_OFFLINE_ACTIVATION));
         lnkOfflineActivation.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 
         Label label2 = new Label(linkBar, SWT.SEPARATOR);

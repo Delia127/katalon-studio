@@ -1,6 +1,7 @@
 package com.kms.katalon.plugin.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,7 +11,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Arrays;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -19,6 +19,7 @@ import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.PluginOptions;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.feature.models.TestOpsFeatureKey;
@@ -74,17 +75,33 @@ public class PluginService {
             subMonitor.beginTask("", 100);
 
             SubMonitor getOnlinePluginsMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
-            getOnlinePluginsMonitor.beginTask("Fetching latest plugins info from Katalon Store...", 100);
-
-            List<KStorePlugin> onlinePlugins = getOnlinePlugins(credentials);
-
+            
+            List<KStorePlugin> onlinePlugins;
+            if (shouldReloadPluginsOnline()) {
+                getOnlinePluginsMonitor.beginTask("Fetching latest plugins info from Katalon Store...", 100);
+    
+                onlinePlugins = getOnlinePlugins(credentials);
+                
+                getOnlinePluginsMonitor.done();
+            } else {
+                onlinePlugins = Collections.emptyList();
+            }
+            
             getOnlinePluginsMonitor.done();
-
+            
             SubMonitor getOfflinePluginsMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
-            getOfflinePluginsMonitor.beginTask("Getting offline plugins info...", 100);
-
-            List<OfflinePlugin> offlinePlugins = getOfflinePlugins(getOfflinePluginsMonitor);
-
+            
+            List<OfflinePlugin> offlinePlugins;
+            if (shouldReloadPluginsOffline()) {
+                getOfflinePluginsMonitor.beginTask("Getting offline plugins info...", 100);
+    
+                offlinePlugins = getOfflinePlugins(getOfflinePluginsMonitor);
+    
+                getOfflinePluginsMonitor.done();
+            } else {
+                offlinePlugins = Collections.emptyList();
+            }
+            
             getOfflinePluginsMonitor.done();
 
             SubMonitor uninstallMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
@@ -221,6 +238,16 @@ public class PluginService {
             }
             throw new ReloadPluginsException("Unexpected error occurs during executing reload plugins", e);
         }
+    }
+    
+    private boolean shouldReloadPluginsOnline() throws IOException {
+        PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
+        return reloadOption == PluginOptions.ONLINE || reloadOption == PluginOptions.ONLINE_AND_OFFLINE;
+    }
+    
+    private boolean shouldReloadPluginsOffline() throws IOException {
+        PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
+        return reloadOption == PluginOptions.OFFLINE || reloadOption == PluginOptions.ONLINE_AND_OFFLINE;
     }
 
     private List<KStorePlugin> getOnlinePlugins(KStoreCredentials credentials) throws KStoreClientExceptionWithInfo {

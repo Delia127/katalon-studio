@@ -483,6 +483,14 @@ public class MessageConstants extends NLS {
     
     public static String PAGE_BTN_BROWSE_FOLDER;
     
+    public static String PAGE_GRP_PLUGIN_REPOSITORY;
+    
+    public static String PAGE_OPTION_RELOAD_ONLINE;
+    
+    public static String PAGE_OPTION_RELOAD_OFFLINE;
+    
+    public static String PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE;
+    
     public static String MSG_UPDATING_WEB_DRIVER;
     
     public static String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;

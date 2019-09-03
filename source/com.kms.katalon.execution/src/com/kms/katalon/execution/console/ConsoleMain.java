@@ -27,9 +27,15 @@ import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.Organization;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleMainOptionContributor;
@@ -46,7 +52,10 @@ import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.LocalInformationUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.util.CryptoUtil;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -148,18 +157,26 @@ public class ConsoleMain {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
             }
             
+            String orgIdValue = null;
+
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
+            }
+            
+            if (orgIdValue != null) {
+//                String serverUrl = ApplicationInfo.getTestOpsServer();
+//                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+//                ActivationInfoCollector.activateFeatures(serverUrl, null, null, Long.valueOf(orgIdValue), ksVersion);
+                FeatureServiceConsumer.getServiceInstance().enable("private_plugin");
+            }
+            
             if (apiKeyValue != null) {
                 ApiKeyHandler.setApiKeyToProject(apiKeyValue);
                 reloadPlugins(apiKeyValue);
                 consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
                         .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
-            }
-
-            String orgIdValue = null;
-            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
-                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
-                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
             }
             
             if (orgIdValue != null) {

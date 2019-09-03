@@ -34,7 +34,7 @@ public class MachineUtil {
 
     private static String machineId = StringUtils.EMPTY;
 
-    public static String getMachineId() throws IOException, InterruptedException {
+    public static String getMachineId() {
         // Only load machine id once if not loaded
         if (!machineId.equals(StringUtils.EMPTY)) {
             return machineId;
