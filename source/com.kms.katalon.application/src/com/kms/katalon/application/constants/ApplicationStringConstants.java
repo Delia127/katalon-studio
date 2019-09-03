@@ -18,6 +18,8 @@ public class ApplicationStringConstants extends GlobalStringConstants {
     public static final String UPDATED_VERSION_PROP_NAME = "updatedVersion";
     
     public static final String ARG_ACTIVATION_CODE = "activationCode";
+    
+    public static final String ARG_OFFLINE_ACTIVATION = "offlineActivation";
 
     // Proxy Configuration
     public static final String PROXY_OPTION = "proxy.option";
