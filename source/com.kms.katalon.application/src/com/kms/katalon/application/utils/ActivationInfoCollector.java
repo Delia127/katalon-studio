@@ -58,6 +58,7 @@ public class ActivationInfoCollector {
                     .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
             if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
                 setActivatedVal();
+                return true;
             }
 
             String[] activateParts = activatedVal.split("_");
