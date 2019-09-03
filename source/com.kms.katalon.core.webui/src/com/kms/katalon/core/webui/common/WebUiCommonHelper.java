@@ -750,7 +750,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 
             float timeCount = 0;
             long miliseconds = System.currentTimeMillis();
-            while (timeCount < timeOut) {
+            do {
                 try {
                     List<WebElement> webElements = null;
                     if (objectInsideShadowDom) {
@@ -773,7 +773,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 Thread.sleep(500);
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
-            }
+            } while (timeCount < timeOut);
 
             // If this code is reached, then no elements were found, try to use other methods
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CANNOT_FIND_WEB_ELEMENT_BY_LOCATOR, locatorString));
