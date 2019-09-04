@@ -25,7 +25,7 @@ public interface PreferenceConstants {
     
     public static final String PLUGIN_DIRECTORY = "pluginDirectory";
     
-    public static final String PLUGIN_RELOAD_OPTION = "pluginReloadOption";
+    public static final String PLUGIN_RELOAD_OPTION = "plugin.reloadOption";
 
     // Composer WebUi
     public static final String WEBUI_QUALIFIER = "com.kms.katalon.composer.webui";
