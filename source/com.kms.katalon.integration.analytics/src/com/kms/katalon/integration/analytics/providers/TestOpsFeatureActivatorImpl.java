@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.kms.katalon.feature.TestOpsFeatureActivator;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.logging.LogUtil;
 
 public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
@@ -22,6 +23,17 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
         } catch (Exception ex) {
             LogUtil.logError(ex);
             return new HashSet<String>();
+        }
+    }
+    
+    @Override
+    public String connect(String serverUrl, String email, String password) throws Exception {
+        try {
+            AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+            return token.getAccess_token();
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
+            throw ex;
         }
     }
 

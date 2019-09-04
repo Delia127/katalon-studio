@@ -48,7 +48,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             if (!isActivated) {
                 if (checkActivationDialog()) {
                     showFunctionsIntroductionForTheFirstTime();
-                    openSignupSurveyDialog(Display.getCurrent().getActiveShell());
+                    // openSignupSurveyDialog(Display.getCurrent().getActiveShell());
                     return true;
                 } else {
                     return false;

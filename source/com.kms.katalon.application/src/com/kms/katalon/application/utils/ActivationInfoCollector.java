@@ -48,14 +48,35 @@ public class ActivationInfoCollector {
     }
 
     public static boolean checkAndMarkActivated() {
-        activated = checkActivated();
+        activated = checkActivated(null);
         if (activated) {
-            activateTestOpsFeatures();
+            String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+            if (StringUtils.isNotBlank(jsonObject)) {
+                try {
+                    String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                    String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+                    String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+                    Organization org = new Organization();
+                    org = JsonUtil.fromJson(jsonObject, Organization.class);
+                    Long orgId = org.getId();
+                    activateTestOpsFeatures(email, password, orgId);
+                } catch (Exception e) {
+                    LogUtil.logError(e);
+                }
+            }
         }
         return activated;
     }
-
-    public static boolean checkActivated() {
+    
+    public static boolean checkAndMarkActivated(String apiKey, Long orgId) {
+        activated = checkActivated(apiKey);
+        if (activated) {
+            activateTestOpsFeatures(null, apiKey, orgId);
+        }
+        return activated;
+    }
+    
+    private static boolean checkActivated(String apiKey) {
         try {
             String offlineActivationFlag = ApplicationInfo.getAppProperty(
                     ApplicationStringConstants.ARG_OFFLINE_ACTIVATION);
@@ -71,19 +92,32 @@ public class ActivationInfoCollector {
                     }
                     return isValidLicense;
                 }
-            } else {
+            } else if (apiKey == null) {
                 return isActivatedByAccount();
+            } else {
+                return isActivatedByApiKey(apiKey);
             }
         } catch (Exception ex) {
             LogUtil.logError(ex);
             return false;
         }
     }
+    
+    private static boolean isActivatedByApiKey(String apiKey) {
+        try {
+            String serverUrl = ApplicationInfo.getTestOpsServer();
+            KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, null, apiKey);
+            return true;
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
+        }
+        
+        return false;
+    }
 
     private static boolean isActivatedByAccount() {
         String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
         String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-        String activationCode = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
 
         StringBuilder errorMessage = new StringBuilder();
         try {
@@ -92,7 +126,10 @@ public class ActivationInfoCollector {
             }
 
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-            return ActivationInfoCollector.activate(username, password, errorMessage);
+            ActivationInfoCollector.activate(username, password, errorMessage);
+            String serverUrl = ApplicationInfo.getTestOpsServer();
+            KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, username, password);
+            return true;
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }
@@ -100,35 +137,18 @@ public class ActivationInfoCollector {
         return false;
     }
 
-    private static void activateTestOpsFeatures() {
+    //get TesstOps features by application username password 
+    private static void activateTestOpsFeatures(String username, String password, Long orgId) {
         if (KatalonApplicationActivator.getFeatureActivator() != null) {
-            try {
-                String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
-                String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
-                String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-                Organization org = new Organization();
-                String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
-                if (StringUtils.isNotBlank(jsonObject)) {
-                    try {
-                        org = JsonUtil.fromJson(jsonObject, Organization.class);
-                    } catch (IllegalArgumentException e) {
-                        LogUtil.logError(e);
-                    }
-                }
-                Long orgId = org.getId();
-
-                String serverUrl = ApplicationInfo.getTestOpsServer();
-                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-                activateFeatures(serverUrl, email, password, orgId, ksVersion);
-            } catch (GeneralSecurityException | IOException e) {
-                LogUtil.logError(e);
-            }
+            String serverUrl = ApplicationInfo.getTestOpsServer();
+            String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+            activateFeatures(serverUrl, username, password, orgId, ksVersion);
         }
     }
-
-    public static void activateFeatures(String serverUrl, String email, String password, long orgId, String ksVersion) {
+    
+    public static void activateFeatures(String serverUrl, String email, String password, Long orgId, String ksVersion) {
         Set<String> featureKeys = KatalonApplicationActivator.getFeatureActivator().getFeatures(serverUrl, email,
-                password, Long.valueOf(orgId), ksVersion);
+                password, orgId, ksVersion);
         IFeatureService instance = FeatureServiceConsumer.getServiceInstance();
         for (String featureKey : featureKeys) {
             instance.enable(featureKey);

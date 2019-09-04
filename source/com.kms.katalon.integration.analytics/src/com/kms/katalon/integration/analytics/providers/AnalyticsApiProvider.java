@@ -19,7 +19,9 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -32,6 +34,7 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.google.common.reflect.TypeToken;
@@ -82,11 +85,17 @@ public class AnalyticsApiProvider {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_TOKEN);
             URIBuilder uriBuilder = new URIBuilder(uri);
-            uriBuilder.setParameter(LOGIN_PARAM_USERNAME, email);
-            uriBuilder.setParameter(LOGIN_PARAM_PASSWORD, password);
-            uriBuilder.setParameter(LOGIN_PARAM_GRANT_TYPE_NAME, LOGIN_PARAM_GRANT_TYPE_VALUE);
+            
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair(LOGIN_PARAM_USERNAME, email));
+            nameValuePairs.add(new BasicNameValuePair(LOGIN_PARAM_PASSWORD, password));
+            nameValuePairs.add(new BasicNameValuePair(LOGIN_PARAM_GRANT_TYPE_NAME, LOGIN_PARAM_GRANT_TYPE_VALUE));
+
+            
+            HttpEntity entity = new UrlEncodedFormEntity(nameValuePairs);
 
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
+            httpPost.setEntity(entity);
             String clientCredentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
             httpPost.setHeader(HEADER_AUTHORIZATION,
                     HEADER_AUTHORIZATION_PREFIX + Base64.getEncoder().encodeToString(clientCredentials.getBytes()));
