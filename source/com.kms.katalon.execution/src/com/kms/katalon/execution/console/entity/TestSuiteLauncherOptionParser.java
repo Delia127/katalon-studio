@@ -110,6 +110,18 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             return false;
         }
     };
+    
+    private StringConsoleOption katalonStoreOrgIdSecondOption = new StringConsoleOption() {
+
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_ORGANIZATION_ID_SECOND_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        }
+    };
 
     protected StringConsoleOption installPluginOption = new StringConsoleOption() {
 
@@ -144,6 +156,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(katalonStoreApiKeyOption);
         allOptions.add(katalonStoreApiKeySecondOption);
         allOptions.add(katalonStoreOrgIdOption);
+        allOptions.add(katalonStoreOrgIdSecondOption);
         allOptions.add(installPluginOption);
         allOptions.add(testSuiteQuery);
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
