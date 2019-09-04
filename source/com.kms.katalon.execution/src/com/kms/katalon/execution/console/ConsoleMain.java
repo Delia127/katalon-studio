@@ -132,6 +132,11 @@ public class ConsoleMain {
 //                ActivationInfoCollector.activateFeatures(serverUrl, null, null, Long.valueOf(orgIdValue), ksVersion);
                 FeatureServiceConsumer.getServiceInstance().enable("private_plugin");
             }
+
+            ProjectEntity project = findProject(options);
+//            Trackings.trackOpenApplication(project,
+//                    !ActivationInfoCollector.isActivated(), "console");
+            setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
             
             if (apiKeyValue != null) {
                 reloadPlugins(apiKeyValue);
@@ -170,11 +175,6 @@ public class ConsoleMain {
                     applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
                 }
             }
-
-            ProjectEntity project = findProject(options);
-//            Trackings.trackOpenApplication(project,
-//                    !ActivationInfoCollector.isActivated(), "console");
-            setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,
