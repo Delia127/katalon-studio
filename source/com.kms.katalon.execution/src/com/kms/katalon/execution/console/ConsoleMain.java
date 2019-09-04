@@ -126,17 +126,19 @@ public class ConsoleMain {
                 OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
             }
             
-            if (orgIdValue != null) {
-//                String serverUrl = ApplicationInfo.getTestOpsServer();
-//                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-//                ActivationInfoCollector.activateFeatures(serverUrl, null, null, Long.valueOf(orgIdValue), ksVersion);
-                FeatureServiceConsumer.getServiceInstance().enable("private_plugin");
+            LogUtil.printErrorLine("Activating...");
+            
+            boolean isActivated = ActivationInfoCollector.checkAndMarkActivated(apiKeyValue, Long.valueOf(orgIdValue));
+            if (!isActivated) {
+                LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
+                throw new Exception("Failed to activate");
             }
 
             ProjectEntity project = findProject(options);
 //            Trackings.trackOpenApplication(project,
 //                    !ActivationInfoCollector.isActivated(), "console");
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
+            
             
             if (apiKeyValue != null) {
                 reloadPlugins(apiKeyValue);
