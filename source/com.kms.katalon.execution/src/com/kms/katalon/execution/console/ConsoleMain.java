@@ -147,15 +147,6 @@ public class ConsoleMain {
                     throw new ActivationException("Failed to activate");
                 }
             }
-
-            String apiKeyValue = null;
-            if (options.has(KATALON_API_KEY_OPTION)) {
-                apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
-            }
-            
-            if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
-                apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
-            }
             
             String orgIdValue = null;
 
@@ -171,33 +162,6 @@ public class ConsoleMain {
                 FeatureServiceConsumer.getServiceInstance().enable("private_plugin");
             }
             
-            if (apiKeyValue != null) {
-                ApiKeyHandler.setApiKeyToProject(apiKeyValue);
-                reloadPlugins(apiKeyValue);
-                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
-                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
-                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
-            }
-            
-            if (orgIdValue != null) {
-                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance()
-                        .getBuilders()
-                        .stream()
-                        .map(a -> a.getPluginLauncherOptionParser())
-                        .collect(Collectors.toList()));
-                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
-            }
-
-            // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
-            if (options.has(INSTALL_PLUGIN_OPTION)){
-                installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
-                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
-                    .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
-                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
-            }
-            
-            installBasicReportPluginIfNotAvailable();
-
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
@@ -211,11 +175,38 @@ public class ConsoleMain {
                     applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
                 }
             }
-
+            
             ProjectEntity project = findProject(options);
-//            Trackings.trackOpenApplication(project,
-//                    !ActivationInfoCollector.isActivated(), "console");
+//          Trackings.trackOpenApplication(project,
+//                  !ActivationInfoCollector.isActivated(), "console");
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
+
+            String apiKeyValue = null;
+            if (options.has(KATALON_API_KEY_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
+            }
+            
+            if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
+            }
+            
+            if (apiKeyValue != null) {
+                ApiKeyHandler.setApiKeyToProject(apiKeyValue);
+                reloadPlugins(apiKeyValue);
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
+
+            // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
+            if (options.has(INSTALL_PLUGIN_OPTION)){
+                installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+                    .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
+            
+            installBasicReportPluginIfNotAvailable();
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,
