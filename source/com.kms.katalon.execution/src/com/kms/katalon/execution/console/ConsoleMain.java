@@ -117,10 +117,27 @@ public class ConsoleMain {
             List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
+            
+            String apiKeyValue = null;
+            if (options.has(KATALON_API_KEY_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
+            }
+            
+            if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
+            }
+            
+            String orgIdValue = null;
+
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
+            }
 
             LogUtil.logInfo("Activating...");
             
             if (!ActivationInfoCollector.isActivated()) {
+                //read license file and activate
                 boolean isActivated = false;
                 String licenseFile = null;
                 String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
@@ -138,32 +155,16 @@ public class ConsoleMain {
                         LogUtil.printErrorLine("Invalid license");
                         throw new InvalidLicenseException("Invalid license");
                     }
-                } else {
-                    //activate for online mode
-                }
-                
-                if (!isActivated) {
-                    LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
-                    throw new ActivationException("Failed to activate");
                 }
             }
+            
+            
+            boolean isActivated = ActivationInfoCollector.checkAndMarkActivated(apiKeyValue, Long.valueOf(orgIdValue));
+            if (!isActivated) {
+                LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
+                throw new ActivationException("Failed to activate");
+            }
 
-            String apiKeyValue = null;
-            if (options.has(KATALON_API_KEY_OPTION)) {
-                apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
-            }
-            
-            if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
-                apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
-            }
-            
-            String orgIdValue = null;
-
-            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
-                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
-                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
-            }
-            
             if (orgIdValue != null) {
 //                String serverUrl = ApplicationInfo.getTestOpsServer();
 //                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
