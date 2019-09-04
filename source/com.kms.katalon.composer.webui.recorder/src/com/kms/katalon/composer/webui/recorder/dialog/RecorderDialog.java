@@ -106,7 +106,6 @@ import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
-import com.kms.katalon.composer.webui.recorder.action.IHTMLAction;
 import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrapper;
 import com.kms.katalon.composer.webui.recorder.constants.ComposerWebuiRecorderMessageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.ImageConstants;
