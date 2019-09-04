@@ -21,7 +21,7 @@ import com.kms.katalon.execution.classpath.ClassPathResolver;
 public class InstallWinAppDriversHandler {
     private static final String RESOURCES_FOLDER_NAME = "resources";
 
-    private static final String RELATIVE_PATH_TO_WINAPPDRIVER = File.separator + "extension" + File.separator
+    private static final String RELATIVE_PATH_TO_WINAPPDRIVER = File.separator + "extensions" + File.separator
             + "WinAppDriver" + File.separator + "WindowsApplicationDriver.msi";
 
     @CanExecute
