@@ -14,6 +14,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 
@@ -30,11 +31,19 @@ public class InstallWinAppDriversHandler {
 
     @Execute
     public void execute(Shell shell) throws IOException, InterruptedException {
-        runWinAppDriverInstaller();
+        try {
+            runWinAppDriverInstaller();
+        } catch (IOException | InterruptedException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     public static void killProcessRunning() throws InterruptedException, IOException {
-        killProcessOnWindows("WinAppDriver.exe");
+        try {
+            killProcessOnWindows("WinAppDriver.exe");
+        } catch (IOException | InterruptedException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private File getWinAppDriversResourcesDirectory() throws IOException {
