@@ -121,7 +121,7 @@ public class ActivationInfoCollector {
 
         StringBuilder errorMessage = new StringBuilder();
         try {
-            if (username == null || username.isEmpty()) {
+            if (StringUtils.isBlank(username)) {
                 return false;
             }
 
