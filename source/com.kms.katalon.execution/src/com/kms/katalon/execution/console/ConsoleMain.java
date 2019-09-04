@@ -25,19 +25,14 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.Organization;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleMainOptionContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
+import com.kms.katalon.execution.console.entity.InfoOptionContributor;
 import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptionContributor;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
@@ -48,9 +43,7 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.LocalInformationUtil;
 import com.kms.katalon.feature.FeatureServiceConsumer;
-import com.kms.katalon.feature.IFeatureService;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.util.CryptoUtil;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -86,6 +79,10 @@ public class ConsoleMain {
     public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
+    
+    public static final String BUILD_LABEL_OPTION = "buildLabel";
+    
+    public static final String BUILD_URL_OPTION = "buildURL";
 
     private ConsoleMain() {
         // hide constructor
@@ -248,6 +245,15 @@ public class ConsoleMain {
         OptionSpecBuilder configSpec = parser.accepts(applicationConfigOptions.getConfigOption());
         applicationConfigOptions.getConsoleOptionList().stream().forEach(consoleOption -> {
             OptionSpecBuilder optionSpecBuilder = parser.accepts(consoleOption.getOption()).availableIf(configSpec);
+            if (consoleOption.hasArgument()) {
+                optionSpecBuilder.withRequiredArg().ofType(consoleOption.getArgumentType());
+            }
+        });
+        
+        InfoOptionContributor infoOptionContributor = new InfoOptionContributor();
+        OptionSpecBuilder infoConfigSpec = parser.accepts(infoOptionContributor.getConfigOption());
+        infoOptionContributor.getConsoleOptionList().stream().forEach(consoleOption -> {
+            OptionSpecBuilder optionSpecBuilder = parser.accepts(consoleOption.getOption()).availableIf(infoConfigSpec);
             if (consoleOption.hasArgument()) {
                 optionSpecBuilder.withRequiredArg().ofType(consoleOption.getArgumentType());
             }

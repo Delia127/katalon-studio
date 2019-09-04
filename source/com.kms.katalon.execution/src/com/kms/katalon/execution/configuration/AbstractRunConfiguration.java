@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
 import java.text.DateFormat;
 
 import org.apache.commons.io.FileUtils;
@@ -57,6 +56,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     private List<String> vmArgs = new ArrayList<>();
     
     private Map<String, String> additionalData = new HashMap<>();
+    
+    private Map<String, String> additionalInfo = new HashMap<>();
 
     private String executionUUID;
     
@@ -188,6 +189,10 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         ExecutionSessionSocketServer sessionServer = ExecutionSessionSocketServer.getInstance();
         propertyMap.put(RunConfiguration.SESSION_SERVER_HOST, sessionServer.getServerHost());
         propertyMap.put(RunConfiguration.SESSION_SERVER_PORT, sessionServer.getServerPort());
+        
+        additionalInfo.forEach((key, value) -> {
+        	propertyMap.put(key, value);
+        });
         
         String logbackConfigFileLocation = getLogbackConfigFileLocation();
         if (logbackConfigFileLocation != null) {
@@ -327,5 +332,15 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
 	public void setExecutionSessionId(String executionSessionId) {
 		this.executionSessionId = executionSessionId;
+	}
+	
+	public void setAdditionalInfo(Map<String, String> data) {
+		if (data != null) {
+			this.additionalInfo.putAll(data);
+		}
+	}
+    
+	public Map<String, String> getAdditionalInfo() {
+		return additionalInfo;
 	}
 }
