@@ -24,5 +24,16 @@ public class TestOpsFeatureActivatorImpl implements TestOpsFeatureActivator {
             return new HashSet<String>();
         }
     }
+    
+    @Override
+    public String connect(String serverUrl, String email, String password) throws Exception {
+        try {
+            AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+            return token.getAccess_token();
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
+            throw ex;
+        }
+    }
 
 }

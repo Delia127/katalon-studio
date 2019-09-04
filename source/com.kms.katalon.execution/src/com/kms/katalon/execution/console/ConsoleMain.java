@@ -126,12 +126,8 @@ public class ConsoleMain {
                 OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
             }
             
-            if (orgIdValue != null) {
-//                String serverUrl = ApplicationInfo.getTestOpsServer();
-//                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-//                ActivationInfoCollector.activateFeatures(serverUrl, null, null, Long.valueOf(orgIdValue), ksVersion);
-                FeatureServiceConsumer.getServiceInstance().enable("private_plugin");
-            }
+            boolean isActivate = ActivationInfoCollector.checkAndMarkActivated(apiKeyValue, Long.valueOf(orgIdValue));
+            
             
             if (apiKeyValue != null) {
                 reloadPlugins(apiKeyValue);
