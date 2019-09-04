@@ -61,9 +61,6 @@ public class WelcomePart {
             @Override
             public void handleEvent(org.osgi.service.event.Event event) {
                 showThisPart();
-                if (startPageContent != null || !startPageContent.isDisposed()) {
-                    startPageContent.reloadRecentProjects();
-                }
             }
         });
     }

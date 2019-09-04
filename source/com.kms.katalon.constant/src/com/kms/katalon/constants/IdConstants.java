@@ -173,6 +173,10 @@ public interface IdConstants {
     public static final String SEARCH_COMMAND_ID = "org.eclipse.search.ui.openSearchDialog";
 
     public static final String RESET_PERSPECTIVE_HANDLER_ID = "com.kms.katalon.composer.menu.handler.resetPerspective";
+    
+    public static final String NEW_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.add";
+
+    public static final String OPEN_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.open";
 
     // Parameter ID
     public static final String RUN_MODE_PARAMETER_ID = "com.kms.katalon.composer.execution.runMode";

@@ -17,7 +17,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 
-public class ProjectParameterizedCommandBuilder extends WorkbenchUtilizer {
+public class SampleProjectParameterizedCommandBuilder extends WorkbenchUtilizer {
 
     public ParameterizedCommand createRecentProjectParameterizedCommand(ProjectEntity project) throws CommandException {
         return createProjectParameterizedCommand(IdConstants.OPEN_RECENT_PROJECT_COMMAND_ID,
