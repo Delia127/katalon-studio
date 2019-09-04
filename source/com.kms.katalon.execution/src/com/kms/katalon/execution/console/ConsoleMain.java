@@ -126,7 +126,13 @@ public class ConsoleMain {
                 OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
             }
             
-            boolean isActivate = ActivationInfoCollector.checkAndMarkActivated(apiKeyValue, Long.valueOf(orgIdValue));
+            LogUtil.printErrorLine("Activating...");
+            
+            boolean isActivated = ActivationInfoCollector.checkAndMarkActivated(apiKeyValue, Long.valueOf(orgIdValue));
+            if (!isActivated) {
+                LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
+                throw new Exception("Failed to activate");
+            }
             
             
             if (apiKeyValue != null) {
