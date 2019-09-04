@@ -22,6 +22,8 @@ public class MessageConstants extends NLS {
     public static String PAGE_RADIO_AUTO_CLEAN_PREV_SESSION;
 
     public static String PA_WELCOME;
+    
+    public static String PA_QUICKSTART;
 
     public static String PA_WELCOME_TO_KATALON;
 
@@ -319,8 +321,16 @@ public class MessageConstants extends NLS {
     public static String AGREE_TERM_URL;
     
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
+    
+    public static String ActivationDialogV2_LBL_SELECT_ORGANIZATION;
+    
+    public static String ActuvationDialogV2_BTN_SAVE_ORGANIZATION_TITLE;
 
     public static String ActivationDialogV2_MSG_ACTIVATING;
+    
+    public static String ActivationDialogV2_MSG_GETTING_ORGANIZATION;
+    
+    public static String ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION;
 
     public static String ActivationDialogV2_LNK_REGISTER;
 
@@ -330,6 +340,10 @@ public class MessageConstants extends NLS {
     
     public static String ActivationDialogV2_LBL_AGREE_TERM;
    
+    public static String ActivationDialogV2_LBL_ERROR;
+
+    public static String ActivationDialogV2_LBL_ERROR_ORGANIZATION;
+
     // ActivationOfflineDialogV2
     public static String ActivationOfflineDialogV2_LNK_BACK;
 
@@ -338,6 +352,12 @@ public class MessageConstants extends NLS {
     public static String ActivationOfflineDialogV2_LBL_ACTIVATION_URL;
 
     public static String ActivationOfflineDialogV2_LBL_ACTIVATION_CODE;
+    
+    public static String ActivationOfflineDialogV2_LBL_LICENSE_FILE;
+    
+    public static String ActivationOfflineDialogV2_BTN_CHOOSE_FILE;
+    
+    public static String ActivationOfflineDialogV2_LBL_MACHINE_KEY;
 
     // SignupDialog
     public static String SignupDialog_LBL_FULL_NAME;
@@ -462,6 +482,14 @@ public class MessageConstants extends NLS {
     public static String PAGE_LBL_PLUGIN_DIRECTORY;
     
     public static String PAGE_BTN_BROWSE_FOLDER;
+    
+    public static String PAGE_GRP_PLUGIN_REPOSITORY;
+    
+    public static String PAGE_OPTION_RELOAD_ONLINE;
+    
+    public static String PAGE_OPTION_RELOAD_OFFLINE;
+    
+    public static String PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE;
     
     public static String MSG_UPDATING_WEB_DRIVER;
     

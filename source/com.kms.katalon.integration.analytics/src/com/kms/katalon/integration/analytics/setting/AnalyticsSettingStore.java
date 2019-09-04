@@ -11,9 +11,11 @@ import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsSettingStoreConstants;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.util.CryptoUtil;
+import com.kms.katalon.logging.LogUtil;
 
 public class AnalyticsSettingStore extends BundleSettingStore {
 
@@ -30,13 +32,14 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getServerEndpoint(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT,
-                AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT, encryptionEnabled);
+//        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT,
+//                AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT, encryptionEnabled);
+    	return ApplicationInfo.getTestOpsServer();
     }
 
     public void setServerEndPoint(String serverEndpoint, boolean encryptionEnabled)
             throws IOException, GeneralSecurityException {
-        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT, serverEndpoint, encryptionEnabled);
+//        setStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_SERVER_ENDPOINT, serverEndpoint, encryptionEnabled);
     }
 
     public String getEmail(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
@@ -145,5 +148,18 @@ public class AnalyticsSettingStore extends BundleSettingStore {
 
     public void setAttachCapturedVideos(boolean capturedVideos) throws IOException {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_TEST_RESULT_ATTACH_CAPTURED_VIDEOS, capturedVideos);
+    }
+    
+    public AnalyticsOrganization getOrganization() {
+    	AnalyticsOrganization organization = new AnalyticsOrganization();
+        String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+        if (StringUtils.isNotBlank(jsonObject)) {
+            try {
+                organization = JsonUtil.fromJson(jsonObject, AnalyticsOrganization.class);
+            } catch (IllegalArgumentException e) {
+                LogUtil.logError(e);
+            }
+        }
+        return organization;
     }
 }

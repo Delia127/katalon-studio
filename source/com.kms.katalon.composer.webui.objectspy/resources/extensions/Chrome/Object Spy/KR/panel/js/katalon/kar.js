@@ -1,3 +1,5 @@
+var newFormatters = {};
+
 var dataFiles;
 var extensions;
 
@@ -432,6 +434,7 @@ function loadScripts() {
     var language = $("#select-script-language-id").val();
     var scriptNames = [];
     var isExternalCapability = false;
+    var newFormatter = null;
     switch (language) {
         case 'cs-wd-nunit':
             scriptNames = [
@@ -536,11 +539,18 @@ function loadScripts() {
             ];
             break;
         default:
-            isExternalCapability = true;
+            if (language.indexOf('new-formatter') >= 0) {
+                var newFormatterId = language.replace('new-formatter-', '');
+                newFormatter = newFormatters[newFormatterId];
+            } else {
+                isExternalCapability = true;
+            }
     }
 
     if (isExternalCapability) {
         generateScripts(isExternalCapability, language);
+    } else if (newFormatter) {
+        generateScripts(isExternalCapability, language, newFormatter);
     } else {
         $("[id^=formatter-script-language-id-]").remove();
         var j = 0;
@@ -572,7 +582,7 @@ function displayOnCodeMirror(language, outputScript) {
     var textarea = $textarea.get(0);
 
     var language = $("#select-script-language-id").val();
-    var mode = window.options.mimetype;
+    var mode = window.options && window.options.mimetype;
     if (!mode) {
         switch (language) {
             case 'cs-wd-nunit':
@@ -614,13 +624,8 @@ function displayOnCodeMirror(language, outputScript) {
     }
     var cm = CodeMirror.fromTextArea(textarea, codeMirrorOptions);
 
-    if (language == 'katalon') {
-        $('.kat').show();
-        $('.CodeMirror').removeClass('kat-90').addClass('kat-75');
-    } else {
-        $('.kat').hide();
-        $('.CodeMirror').removeClass('kat-75').addClass('kat-90');
-    }
+    $('.kat').show();
+    $('.CodeMirror').removeClass('kat-90').addClass('kat-75');
 
     $textarea.data('cm', cm);
 }
@@ -630,7 +635,7 @@ function getTestCaseName() {
     return sideex_testCase[selectedTestCase.id].title;
 }
 
-function generateScripts(isExternalCapability, language) {
+function generateScripts(isExternalCapability, language, newFormatter) {
 
     let commands = getCommandsToGenerateScripts();
     var name = getTestCaseName();
@@ -679,7 +684,13 @@ function generateScripts(isExternalCapability, language) {
             }
             displayOnCodeMirror(language, content);
         });
-
+    } else if (newFormatter) {
+        var payload = newFormatter(name, commands);
+        options = {
+            defaultExtension: payload.extension,
+            mimetype: payload.mimetype
+        };
+        displayOnCodeMirror(language, payload.content);
     } else {
 
         var testCase = new TestCase(name);
@@ -954,7 +965,8 @@ $(function() {
         '#export': 'export-icon-16.svg',
         '#speed': 'speed-icon-16.svg',
         '#settings': 'setting-icon-16.svg',
-        ".sub_btn#help": 'help-icon-16.svg'
+        '.sub_btn#help': 'help-icon-16.svg',
+        '#github-repo': 'github-icon.png'
     }
 
     for (var buttonId in imagesLookup) {

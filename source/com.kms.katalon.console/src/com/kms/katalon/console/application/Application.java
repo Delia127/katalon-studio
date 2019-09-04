@@ -91,7 +91,7 @@ public class Application implements IApplication {
     }
     
     public static boolean checkConsoleActivation(String[] arguments) {
-        if (ActivationInfoCollector.isActivated()) {
+        if (ActivationInfoCollector.checkAndMarkActivated()) {
             return true;
         }
 

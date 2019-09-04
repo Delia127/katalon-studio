@@ -8,6 +8,8 @@ public class AnalyticsTeam {
 
     private String name;
     
+    private AnalyticsOrganization organization;
+    
     public Long getId() {
         return id;
     }
@@ -31,4 +33,12 @@ public class AnalyticsTeam {
     public void setRole(String role) {
         this.role = role;
     }
+    
+    public AnalyticsOrganization getOrganization() {
+		return organization;
+	}
+    
+    public void setOrganization(AnalyticsOrganization organization) {
+		this.organization = organization;
+	}
 }

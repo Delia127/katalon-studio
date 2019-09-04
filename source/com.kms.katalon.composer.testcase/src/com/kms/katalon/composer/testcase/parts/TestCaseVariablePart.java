@@ -380,7 +380,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
         newVariable.setDefaultValue("''");
         
     	executeOperation(new NewVariableOperation(this, newVariable));
-       
+
         Trackings.trackCreatingObject("testCaseVariable");
     }
 

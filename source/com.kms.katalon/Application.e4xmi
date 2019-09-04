@@ -166,6 +166,7 @@
         <tags>NoAutoCollapse</tags>
         <tags>NoMove</tags>
         <children xsi:type="basic:Part" xmi:id="_O4SpgGUUEeaFXcvzM5e4Jg" elementId="com.kms.katalon.part.welcome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.parts.WelcomePart" label="Katalon Help" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/highlight_16.png" closeable="true"/>
+        <children xsi:type="basic:Part" xmi:id="_rZ81cMhyEemrVbHr0m6zyA" elementId="com.kms.katalon.part.quickstart" visible="false" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.view.ApiQuickStartPart" label="Quick Start" closeable="true"/>
       </children>
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_PY0KMCUhEeWUFICrCSQG_A" elementId="org.eclipse.debug.ui.DebugView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Debug" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/debug_perspective_16.png"/>

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -39,6 +41,9 @@ import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProjectPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsRunConfiguration;
@@ -47,6 +52,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTeamPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.logging.LogUtil;
@@ -91,14 +97,34 @@ public class AnalyticsApiProvider {
         }
     }
 
-    public static List<AnalyticsTeam> getTeams(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+    public static List<AnalyticsOrganization> getOrganizations(String serverUrl, String accessToken) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            AnalyticsOrganizationPage organizationPage = executeRequest(httpGet, AnalyticsOrganizationPage.class);
+            return organizationPage.getOrganizations();
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
+    public static List<AnalyticsTeam> getTeams(String serverUrl, String accessToken, Long orgId) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
             URIBuilder uriBuilder = new URIBuilder(uri);
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             AnalyticsTeamPage teamPage = executeRequest(httpGet, AnalyticsTeamPage.class);
-            return teamPage.getTeams();
+            
+            List<AnalyticsTeam> teams = new ArrayList<>();
+            for (AnalyticsTeam team : teamPage.getTeams()) {
+                if (team.getOrganization().getId().equals(orgId)) {
+                    teams.add(team);
+                }
+            }
+            return teams;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
@@ -142,6 +168,24 @@ public class AnalyticsApiProvider {
             httpPost.setEntity(entity);
 
             return executeRequest(httpPost, AnalyticsProject.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public static void sendTrackingActivity(String serverUrl, String accessToken, AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_TRACKING_ACTIVITY);
+            HttpPost httpPost = new HttpPost(uri);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+
+            Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
+            StringEntity entity = new StringEntity(gson.toJson(trackingInfo));
+            httpPost.setEntity(entity);
+
+            executeRequest(httpPost, Object.class);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
@@ -213,6 +257,21 @@ public class AnalyticsApiProvider {
             HttpPut httpPut = new HttpPut(url);
             httpPut.setEntity(entity);
             executeRequest(httpPut, Object.class);
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public static List<AnalyticsFeature> getFeatures(String serverUrl, String accessToken, long organizationId, String ksVersion) throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_FEATURES_URL);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+            uriBuilder.setParameter("organizationId", String.valueOf(organizationId));
+            uriBuilder.setParameter("ksVersion", ksVersion);
+            HttpGet httpGet = new HttpGet(uriBuilder.build());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            List<AnalyticsFeature> features = executeRequest(httpGet, new TypeToken<ArrayList<AnalyticsFeature>>() {});
+            return features;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }

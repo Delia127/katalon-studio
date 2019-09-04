@@ -11,17 +11,14 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
+import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
-import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
-import com.kms.katalon.plugin.store.PluginPreferenceStore;
 import com.kms.katalon.plugin.util.KStoreTokenService;
 import com.kms.katalon.util.CryptoUtil;
 
 public abstract class RequireAuthorizationHandler {
 
-    private static PluginPreferenceStore store = new PluginPreferenceStore();
-
-    public static KStoreUsernamePasswordCredentials getUsernamePasswordCredentials() throws KStoreClientAuthException {
+    public static KStoreBasicCredentials getBasicCredentials() throws KStoreClientAuthException {
         try {
             String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
             String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
@@ -41,7 +38,7 @@ public abstract class RequireAuthorizationHandler {
                 }
             }
             String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-            KStoreUsernamePasswordCredentials credentials = new KStoreUsernamePasswordCredentials();
+            KStoreBasicCredentials credentials = new KStoreBasicCredentials();
             credentials.setUsername(username);
             credentials.setPassword(password);
             return credentials;

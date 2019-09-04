@@ -632,7 +632,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         txtMessage.setText(message);
     }
 
-    private Listener focusOutListener = new Listener() {
+    private Listener focusInListener = new Listener() {
         @Override
         public void handleEvent(org.eclipse.swt.widgets.Event event) {
             try {
@@ -642,24 +642,12 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             }
         }
     };
-    private Listener resizeListener = new Listener() {
 
-        @Override
-        public void handleEvent(org.eclipse.swt.widgets.Event event) {
-            try {
-                showTreeLogProperties();
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
-        }
-        
-    };
     // Handle mouse down event on txtMessage
     private Listener mouseDownListener = new Listener() {
         @Override
         public void handleEvent(org.eclipse.swt.widgets.Event event) {
             try {
-                showTreeLogProperties();
                 int offset = txtMessage.getOffsetAtLocation(new Point(event.x, event.y));
                 StyleRange style = null;
                 for (StyleRange range : txtMessage.getStyleRanges()) {
@@ -723,13 +711,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void createTreeNodePropertiesComposite(SashForm sashForm) {
-
         txtMessage = new StyledText(sashForm, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
         txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
         txtMessage.addListener(SWT.MouseDown, mouseDownListener);
-        txtMessage.addListener(SWT.FocusOut, focusOutListener);
-        txtMessage.addListener(SWT.Resize, resizeListener);
+        txtMessage.addListener(SWT.FocusIn, focusInListener);
         txtMessage.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
         setWrapTxtMessage();
     }
