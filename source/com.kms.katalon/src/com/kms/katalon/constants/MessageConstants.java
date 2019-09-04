@@ -347,6 +347,10 @@ public class MessageConstants extends NLS {
 
     public static String ActivationOfflineDialogV2_LBL_ACTIVATION_CODE;
 
+    public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATE;
+
+    public static String ActivationDialogV2_LNK_SIGNUP;
+
     // SignupDialog
     public static String SignupDialog_LBL_FULL_NAME;
 
