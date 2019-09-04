@@ -38,7 +38,7 @@ public class InstallWinAppDriversHandler {
         }
     }
 
-    public static void killProcessRunning() throws InterruptedException, IOException {
+    public static void killRunningProcess() throws InterruptedException, IOException {
         try {
             killProcessOnWindows("WinAppDriver.exe");
         } catch (IOException | InterruptedException e) {
@@ -47,10 +47,8 @@ public class InstallWinAppDriversHandler {
     }
 
     private File getWinAppDriversResourcesDirectory() throws IOException {
-        // check package
         Bundle bundleExec = Platform.getBundle(IdConstants.KATALON_WINDOWS_BUNDLE_ID);
         File bundleFile = FileLocator.getBundleFile(bundleExec);
-        // check directory
         if (bundleFile.isDirectory()) {
             return new File(bundleFile + File.separator + RESOURCES_FOLDER_NAME);
         }
@@ -58,7 +56,7 @@ public class InstallWinAppDriversHandler {
     }
 
     private void runWinAppDriverInstaller() throws IOException, InterruptedException {
-        killProcessRunning();
+        killRunningProcess();
         String winAppDriversAddonSetupPath = getWinAppDriversResourcesDirectory().getAbsolutePath()
                 + RELATIVE_PATH_TO_WINAPPDRIVER;
         Desktop desktop = Desktop.getDesktop();
