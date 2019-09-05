@@ -158,7 +158,7 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_SKQgAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.edge" toBeRendered="false" visible="false" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/edge_16.png" command="_rzz-AL5NEemxF-U6MZYPPA"/>
         </children>
         <children xsi:type="menu:Menu" xmi:id="_RQKm0M7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.menu.webTools" label="Web">
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_ce_2wM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.handledmenuitem.killProcessWebDriver" label="Terminate running processes" command="_631dcM7NEemY2ti3wcTZeQ"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_ce_2wM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.handledmenuitem.killProcessWebDriver" label="Terminate running webdriver" command="_631dcM7NEemY2ti3wcTZeQ"/>
         </children>
       </children>
     </mainMenu>
