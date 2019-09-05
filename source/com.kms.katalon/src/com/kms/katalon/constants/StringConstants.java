@@ -96,6 +96,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BTN_CLEAR_TILE = MessageConstants.BTN_CLEAR_TILE;
 
     public static final String BTN_ACTIVATE_TITLE = MessageConstants.BTN_ACTIVATE_TITLE;
+    
+    public static final String BTN_LOG_IN_TITLE = MessageConstants.BTN_LOG_IN_TITLE;
 
     public static final String WAITTING_MESSAGE = MessageConstants.WAITTING_MESSAGE;
 
