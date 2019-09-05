@@ -133,13 +133,6 @@ public class ConsoleMain {
             	OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
             }
             
-            if (orgIdValue != null) {
-//                String serverUrl = ApplicationInfo.getTestOpsServer();
-//                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-//                ActivationInfoCollector.activateFeatures(serverUrl, null, null, Long.valueOf(orgIdValue), ksVersion);
-                FeatureServiceConsumer.getServiceInstance().enable("private_plugin");
-            }
-            
             LogUtil.printErrorLine("Activating...");
             
             boolean isActivated = ActivationInfoCollector.checkAndMarkActivated(apiKeyValue, Long.valueOf(orgIdValue));
