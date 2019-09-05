@@ -139,6 +139,7 @@ public class ActivationInfoCollector {
 
   //get TesstOps features by application username password 
     private static void activateTestOpsFeatures(String username, String password, Long orgId) {
+        LogUtil.logInfo("Getting features...");
         if (KatalonApplicationActivator.getFeatureActivator() != null) {
             String serverUrl = ApplicationInfo.getTestOpsServer();
             String ksVersion = VersionUtil.getCurrentVersion().getVersion();
