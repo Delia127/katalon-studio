@@ -25,6 +25,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
