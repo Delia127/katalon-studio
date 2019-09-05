@@ -85,6 +85,8 @@ public class ConsoleMain {
     
     public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
     
+    public static final String KATALON_ORGANIZATION_ID_SECOND_OPTION = "orgID";
+    
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
 
     private ConsoleMain() {
@@ -124,6 +126,11 @@ public class ConsoleMain {
             if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
                 orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
                 OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
+            }
+
+            if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
+            	orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
+            	OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
             }
             
             LogUtil.printErrorLine("Activating...");
