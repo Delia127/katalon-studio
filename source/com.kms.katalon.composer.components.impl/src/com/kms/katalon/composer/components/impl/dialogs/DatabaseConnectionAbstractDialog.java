@@ -37,7 +37,6 @@ import com.kms.katalon.controller.DatabaseController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
 
-import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
 public abstract class DatabaseConnectionAbstractDialog extends AbstractDialog {
