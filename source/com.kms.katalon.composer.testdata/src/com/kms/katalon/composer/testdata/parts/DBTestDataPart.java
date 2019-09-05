@@ -66,9 +66,6 @@ import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.testdata.DBData;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-
 public class DBTestDataPart extends TestDataMainPart {
 
     private static final int MAX_ROW_LIMIT = 500;
