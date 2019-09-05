@@ -254,6 +254,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private boolean isOkPressed = false;
 
     private boolean isUsingIE = false;
+    
+    private boolean isNavigationAdded = false;
 
     /**
      * Create the dialog.
@@ -1645,10 +1647,21 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         super.handleShellCloseEvent();
         dispose();
     }
+    
+    private boolean verifyActionMapping(final HTMLActionMapping newAction) {
+        if (newAction.getAction().equals(HTMLAction.Navigate)) {
+            if (!isNavigationAdded && newAction.getData().length > 0
+                    && !String.valueOf(newAction.getData()[0].getValue()).equals("\"about:blank\"")) {
+                isNavigationAdded = true;
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
 
     public void addNewActionMapping(final HTMLActionMapping newAction) {
-        if (isPauseRecording || (newAction.getAction().equals(HTMLAction.Navigate) && (newAction.getData().length == 0
-                || String.valueOf(newAction.getData()[0].getValue()).equals("\"about:blank\"")))) {
+        if (isPauseRecording || !verifyActionMapping(newAction)) {
             return;
         }
         
