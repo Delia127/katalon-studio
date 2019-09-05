@@ -158,7 +158,7 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_SKQgAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.edge" toBeRendered="false" visible="false" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/edge_16.png" command="_rzz-AL5NEemxF-U6MZYPPA"/>
         </children>
         <children xsi:type="menu:Menu" xmi:id="_RQKm0M7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.menu.webTools" label="Web">
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_ce_2wM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.handledmenuitem.killProcessWebDriver" label="Terminate running webdriver" command="_631dcM7NEemY2ti3wcTZeQ"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_ce_2wM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.handledmenuitem.killProcessWebDriver" label="Terminate running WebDrivers" command="_631dcM7NEemY2ti3wcTZeQ"/>
         </children>
       </children>
     </mainMenu>
@@ -328,7 +328,7 @@
   <commands xmi:id="_rzz-AL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateEdge" commandName="UpdateEdge"/>
   <commands xmi:id="_vs_PAL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateIE" commandName="UpdateIE"/>
   <commands xmi:id="_2X2LcKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.command.quickstart" commandName="QuickStart"/>
-  <commands xmi:id="_631dcM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.command.killProcessWebDriver" commandName="MuteRunningWebdriverProcess"/>
+  <commands xmi:id="_631dcM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.command.killProcessWebDriver" commandName="TerminateRunningWebDrivers"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
