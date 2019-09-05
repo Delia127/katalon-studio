@@ -32,7 +32,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     public static boolean checkActivation() {
-        boolean isActivated = ActivationInfoCollector.checkAndMarkActivated();
+        boolean isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
         if (!isActivated) {
             // Send anonymous info for the first time using
             Trackings.trackOpenFirstTime();
