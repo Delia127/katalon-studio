@@ -479,6 +479,8 @@ public class MessageConstants extends NLS {
     
     public static String MSG_FAIL_TO_UPDATE_WEB_DRIVER;
 
+    public static String MSG_ACTIVATING;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);
