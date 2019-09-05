@@ -51,5 +51,9 @@ public interface IRunConfiguration {
     
     Map<String, String> getTestSuiteAdditionalData();
     
+    void setAdditionalInfo(Map<String, String> data);
+    
+    Map<String, String> getAdditionalInfo();
+    
     void setAdditionalEnvironmentVariables(Map<String, String> environmentVariables);
 }

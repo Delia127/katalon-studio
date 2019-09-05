@@ -236,6 +236,10 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         runConfig.setExecutionProfile(executionProfile);
         runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
         runConfig.setExecutionUUID(executionUUIDOption.getValue());
+        
+        Map<String, String> additionalInfo = infoOptionContributor.getOptionValues();
+        runConfig.setAdditionalInfo(additionalInfo);
+        
         runConfig.build(testSuite, executedEntity);
         GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
         return runConfig;
