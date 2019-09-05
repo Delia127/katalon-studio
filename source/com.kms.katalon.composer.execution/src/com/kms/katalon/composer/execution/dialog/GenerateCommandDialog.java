@@ -62,6 +62,7 @@ import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.handlers.OrganizationHandler;
 import com.kms.katalon.composer.resources.util.ImageUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.FolderController;
@@ -155,6 +156,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
     
     private static final String ARG_API_KEY = OsgiConsoleOptionContributor.API_KEY_OPTION;
+
+    private static final String KATALON_ORGANIZATION_ID_OPTION = ConsoleMain.KATALON_ORGANIZATION_ID_OPTION;
 
     private Group grpPlatform;
 
@@ -896,6 +899,9 @@ public class GenerateCommandDialog extends AbstractDialog {
                 args.put(ARG_OSGI_NO_EXIT, StringConstants.EMPTY);
             }
         }
+
+        Long orgId = OrganizationHandler.getAnalyticsOrganizationId();
+        args.put(KATALON_ORGANIZATION_ID_OPTION, orgId.toString());
 
         args.put(ARG_PROJECT_PATH, getArgumentValueToSave(project.getLocation(), generateCommandMode));
 

@@ -15,6 +15,8 @@
  *
  */
 
+// inject scripts for runScript command
+
 var elementForInjectingScript = document.createElement("script");
 elementForInjectingScript.src = browser.runtime.getURL("page/runScript.js");
 (document.head || document.documentElement).appendChild(elementForInjectingScript);

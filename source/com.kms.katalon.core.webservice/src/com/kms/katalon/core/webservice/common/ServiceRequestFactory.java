@@ -9,8 +9,7 @@ import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 public class ServiceRequestFactory {
 
     public static Requestor getInstance(RequestObject request) {
-        return getInstance(request, RunConfiguration.getProjectDir(), RunConfiguration.getProxyInformation(),
-                true);
+        return getInstance(request, RunConfiguration.getProjectDir(), RunConfiguration.getProxyInformation(), true);
     }
 
     public static Requestor getInstance(RequestObject request, String projectDir, 

@@ -2,6 +2,7 @@ package com.kms.katalon.integration.analytics.report;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
@@ -16,6 +17,7 @@ import com.kms.katalon.execution.launcher.result.ExecutionEntityResult;
 import com.kms.katalon.integration.analytics.AnalyticsComponent;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.logging.LogUtil;
 
 public class AnalyticsReportIntegration implements ReportIntegrationContribution, AnalyticsComponent {
@@ -83,6 +85,22 @@ public class AnalyticsReportIntegration implements ReportIntegrationContribution
 		} catch (Exception  e) {
 			LogUtil.logError(e);
 		}
+    }
+    
+    @Override
+    public void sendTrackingActivity(Long organizationId, String machineId, String sessionId, Date startTime, Date endTime, String ksVersion) {
+        try {
+            AnalyticsTracking trackingInfo = new AnalyticsTracking();
+            trackingInfo.setMachineId(machineId);
+            trackingInfo.setSessionId(sessionId);
+            trackingInfo.setStartTime(startTime);
+            trackingInfo.setEndTime(endTime);
+            trackingInfo.setKsVersion(ksVersion);
+            trackingInfo.setOrganizationId(organizationId);
+            reportService.sendTrackingActivity(trackingInfo);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
     }
 
 	@Override

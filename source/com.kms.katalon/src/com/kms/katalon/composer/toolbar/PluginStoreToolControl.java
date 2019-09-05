@@ -154,6 +154,19 @@ public class PluginStoreToolControl {
 
             @Override
             public void handleEvent(Event event) {
+//                PluginPreferenceStore store = new PluginPreferenceStore();
+//                if (store.hasReloadedPluginsBefore()) {
+//                    new ReloadPluginsHandler().reloadPlugins(true);
+//                } else {
+//                    eventBroker.post(EventConstants.WORKSPACE_PLUGIN_LOADED, null);
+//                }
+            }
+        });
+        
+        eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
+            
+            @Override
+            public void handleEvent(Event event) {
                 PluginPreferenceStore store = new PluginPreferenceStore();
                 if (store.hasReloadedPluginsBefore()) {
                     new ReloadPluginsHandler().reloadPlugins(true);
@@ -162,6 +175,5 @@ public class PluginStoreToolControl {
                 }
             }
         });
-
     }
 }

@@ -24,6 +24,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // WelcomePart
     public static final String PA_WELCOME = MessageConstants.PA_WELCOME;
+    
+    public static final String PA_QUICKSTART = MessageConstants.PA_QUICKSTART;
 
     public static final String PA_LBL_NEW_PROJECT = MessageConstants.PA_LBL_NEW_PROJECT;
 
@@ -189,7 +191,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PAGE_LBL_PLUGIN_DIRECTORY = MessageConstants.PAGE_LBL_PLUGIN_DIRECTORY;
     
     public static final String PAGE_BTN_BROWSE_FOLDER = MessageConstants.PAGE_BTN_BROWSE_FOLDER;
-
+    
     public static final String MSG_UPDATING_WEB_DRIVER = MessageConstants.MSG_UPDATING_WEB_DRIVER;
     
     public static final String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;

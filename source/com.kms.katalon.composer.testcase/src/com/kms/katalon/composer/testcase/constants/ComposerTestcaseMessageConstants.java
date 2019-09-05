@@ -364,9 +364,7 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String OBJECT_VARIABLE_TABLE_COL_VALUE;
 
     public static String OBJECT_VARIABLE_TABLE_COL_VALUE_TYPE;
-    
-    public static String KA_WELCOME_PAGE;
-    
+
     //TestCaseVariablePart
     public static String PA_COL_MASKED;
     
@@ -410,12 +408,6 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String LBL_SELECTION_INFORMATION;
     
     //Test Step Manual 
-    public static String KA_HOMEPAGE;
-    
-    public static String KA_HOMEPAGE_NOTOKEN;
-    
-    public static String KA_API_FROM_KS;
-    
     public static String ManageTestCaseTagDialog_SEARCH_MSG;
     
     public static String ManageTestCaseTagDialog_TAG_TABLE_COL_TAG;

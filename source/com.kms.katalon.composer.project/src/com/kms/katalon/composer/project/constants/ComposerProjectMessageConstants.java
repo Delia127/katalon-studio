@@ -110,10 +110,18 @@ public class ComposerProjectMessageConstants extends NLS {
     public static String SAMPLE_WEB_SERVICE_PROJECT;
     
     public static String BLANK_PROJECT;
-    
+
     public static String CB_GENERATE_GITIGNORE_FILE;
     
     public static String CB_GENERATE_GRADLE_FILE;
+
+    public static String PAGE_GRP_PLUGIN_REPOSITORY;
+    
+    public static String PAGE_OPTION_RELOAD_ONLINE;
+    
+    public static String PAGE_OPTION_RELOAD_OFFLINE;
+    
+    public static String PAGE_OPTION_RELOAD_ONLINE_AND_OFFLINE;
     
     static {
         // initialize resource bundle

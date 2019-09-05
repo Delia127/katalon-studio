@@ -91,9 +91,9 @@ public class Application implements IApplication {
     }
     
     public static boolean checkConsoleActivation(String[] arguments) {
-        if (ActivationInfoCollector.isActivated()) {
-            return true;
-        }
+//        if (ActivationInfoCollector.checkAndMarkActivated()) {
+//            return true;
+//        }
 
 //        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
 //                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_APPLICATION, RunningMode.CONSOLE)));

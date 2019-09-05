@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -36,8 +36,11 @@ import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptionContributor;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.exception.ActivationException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
+import com.kms.katalon.execution.exception.InvalidLicenseException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
@@ -75,6 +78,10 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
+    
+    public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
+    
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
     public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
@@ -100,7 +107,7 @@ public class ConsoleMain {
             List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
-
+            
             String apiKeyValue = null;
             if (options.has(KATALON_API_KEY_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
@@ -109,6 +116,67 @@ public class ConsoleMain {
             if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
                 apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
             }
+            
+            String orgIdValue = null;
+
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
+            }
+
+            LogUtil.logInfo("Activating...");
+            
+            if (!ActivationInfoCollector.isActivated()) {
+                //read license file and activate
+                boolean isActivated = false;
+                String licenseFile = null;
+                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
+                if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
+                    licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
+                } else if (environmentVariable != null) {
+                    licenseFile = environmentVariable;
+                }
+    
+                if (!StringUtils.isBlank(licenseFile)) {
+                    String activationCode = FileUtils.readFileToString(new File(licenseFile));
+                    StringBuilder errorMessage = new StringBuilder();
+                    isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                    if (!isActivated) {
+                        LogUtil.printErrorLine("Invalid license");
+                        throw new InvalidLicenseException("Invalid license");
+                    }
+                } else {
+                    if (!StringUtils.isBlank(orgIdValue)) {
+                        isActivated = ActivationInfoCollector.checkAndMarkActivated(apiKeyValue, Long.valueOf(orgIdValue));
+                    }
+                }
+                
+                
+                if (!isActivated) {
+                    LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
+                    throw new ActivationException("Failed to activate");
+                }
+            }
+
+            
+            if (options.has(PROPERTIES_FILE_OPTION)) {
+                readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
+                        consoleOptionValueMap);
+                addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
+            }
+            
+            // Set option value to application configuration
+            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
+                String optionName = opt.getOption();
+                if (options.hasArgument(optionName)) {
+                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
+                }
+            }
+            
+            ProjectEntity project = findProject(options);
+//          Trackings.trackOpenApplication(project,
+//                  !ActivationInfoCollector.isActivated(), "console");
+            setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
             
             if (apiKeyValue != null) {
                 ApiKeyHandler.setApiKeyToProject(apiKeyValue);
@@ -127,25 +195,6 @@ public class ConsoleMain {
             }
             
             installBasicReportPluginIfNotAvailable();
-
-            if (options.has(PROPERTIES_FILE_OPTION)) {
-                readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
-                        consoleOptionValueMap);
-                addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
-            }
-            
-            // Set option value to application configuration
-            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
-                String optionName = opt.getOption();
-                if (options.hasArgument(optionName)) {
-                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
-                }
-            }
-
-            ProjectEntity project = findProject(options);
-//            Trackings.trackOpenApplication(project,
-//                    !ActivationInfoCollector.isActivated(), "console");
-            setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,

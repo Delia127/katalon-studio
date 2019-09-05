@@ -15,6 +15,8 @@
  *
  */
 
+// handle dialogs (alert, prompt etc.) commands
+
 var originalPrompt = originalPrompt ? originalPrompt : window.prompt;
 //var topPrompt = topPrompt ? topPrompt : window.top.prompt;
 var nextPromptResult = false;

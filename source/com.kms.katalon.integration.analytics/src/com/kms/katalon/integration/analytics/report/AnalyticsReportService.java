@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.RunningMode;
@@ -28,11 +30,13 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTestRun;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTracking;
 import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.util.FileUtils;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.util.CryptoUtil;
 
 public class AnalyticsReportService implements AnalyticsComponent {
     
@@ -152,18 +156,14 @@ public class AnalyticsReportService implements AnalyticsComponent {
     private List<Path> scanFiles(ReportFolder reportFolder) {
         List<Path> files = new ArrayList<>();
         for (String path : reportFolder.getReportFolders()) {
-            try {
-                addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_REPORT_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachScreenshot(), AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachLog(), AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, getSettingStore().isAttachCapturedVideos(), AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_RP_FILE_EXTENSION_PATTERN));
-                addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_BASIC_REPORT_FILE_EXTENSION_PATTERN));
-                addToList(files, scanHarFiles(path));
-            } catch (IOException e) {
-                LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
-            }
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_UUID_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_REPORT_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_SCREENSHOT_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_LOG_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_VIDEO_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_RP_FILE_EXTENSION_PATTERN));
+            addToList(files, scanFilesWithFilter(path, true, AnalyticsStringConstants.ANALYTICS_BASIC_REPORT_FILE_EXTENSION_PATTERN));
+            addToList(files, scanHarFiles(path));
         }
         return files;
     }
@@ -221,6 +221,23 @@ public class AnalyticsReportService implements AnalyticsComponent {
         } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
             LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
             throw new AnalyticsApiExeception(e);
+        }
+    }
+    
+    public void sendTrackingActivity(AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
+        try {
+            String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+            String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+            String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+            String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
+            AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+            if (token != null) {
+                AnalyticsApiProvider.sendTrackingActivity(serverUrl, token.getAccess_token(), trackingInfo);
+            } else {
+                LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+            }
+        } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
+            LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
         }
     }
 

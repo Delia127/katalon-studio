@@ -10,6 +10,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.execution.constants.PluginOptions;
+import com.kms.katalon.execution.setting.PluginSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class PluginSettings {
@@ -26,6 +29,11 @@ public class PluginSettings {
         } else {
             return new File(getConfigurationFolder(), "plugin");
         }
+    }
+
+    public static PluginOptions getReloadPluginOption() throws IOException {
+        PluginSettingStore pluginSettingStore = new PluginSettingStore(ProjectController.getInstance().getCurrentProject());
+        return pluginSettingStore.getReloadOption();
     }
 
     private static String getPluginDirectory() {

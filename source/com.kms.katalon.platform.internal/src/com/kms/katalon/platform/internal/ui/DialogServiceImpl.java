@@ -188,5 +188,4 @@ public class DialogServiceImpl implements DialogActionService {
     public void openPluginPreferencePage(String preferenceId) {
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.PROJECT_SETTINGS_PAGE, preferenceId);
     }
-
 }
