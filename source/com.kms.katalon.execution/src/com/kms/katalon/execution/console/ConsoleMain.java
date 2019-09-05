@@ -43,7 +43,6 @@ import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.LocalInformationUtil;
-import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -131,12 +130,16 @@ public class ConsoleMain {
             	OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
             }
             
-            LogUtil.printErrorLine("Activating...");
+            LogUtil.printOutputLine("Activating...");
+            if (StringUtils.isEmpty(apiKeyValue)) {
+                LogUtil.printErrorLine("Failed to activate. Please provide apiKey parameter to continue using.");
+                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+            }
             
-            boolean isActivated = ActivationInfoCollector.checkAndMarkActivated(apiKeyValue, Long.valueOf(orgIdValue));
+            boolean isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, Long.valueOf(orgIdValue));
             if (!isActivated) {
-                LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
-                throw new Exception("Failed to activate");
+                LogUtil.printErrorLine("Failed to activate. Please check your apiKey or connection to https://analytics.katalon.com.");
+                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
             }
 
             ProjectEntity project = findProject(options);

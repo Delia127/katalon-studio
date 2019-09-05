@@ -3,7 +3,6 @@ package com.kms.katalon.application.utils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.security.GeneralSecurityException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -39,9 +38,9 @@ public class ActivationInfoCollector {
     public static boolean isActivated() {
         return activated;
     }
-
-    public static boolean checkAndMarkActivated() {
-        activated = checkActivated(null);
+    
+    public static boolean checkAndMarkActivatedForGUIMode() {
+        activated = isActivatedByAccount();
         if (activated) {
             String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
             if (StringUtils.isNotBlank(jsonObject)) {
@@ -61,51 +60,20 @@ public class ActivationInfoCollector {
         return activated;
     }
     
-    public static boolean checkAndMarkActivated(String apiKey, Long orgId) {
-        activated = checkActivated(apiKey);
+    public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, Long orgId) {
+        activated = isActivatedByApiKey(apiKey);
         if (activated) {
             activateTestOpsFeatures(null, apiKey, orgId);
         }
         return activated;
     }
-
-    private static boolean checkActivated(String apiKey) {
-        try {
-            String activatedVal = ApplicationInfo.getAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME);
-            if (activatedVal != null) {
-                String updatedVersion = ApplicationInfo
-                        .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
-                if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
-                    setActivatedVal();
-                    return true;
-                }
-                
-                String[] activateParts = activatedVal.split("_");
-                String oldVersion = new StringBuilder(activateParts[0]).reverse().toString();
-                String curVersion = ApplicationInfo.versionNo().replaceAll("\\.", "");
-                if (oldVersion.equals(curVersion) == false) {
-                    return false;
-                }
-                
-                int activatedHashVal = Integer.parseInt(activateParts[1]);
-                boolean isActivated = activatedHashVal == getHostNameHashValue();
-                return isActivated;
-            } else if (apiKey == null) {
-                return isActivatedByAccount();
-            } else {
-                return isActivatedByApiKey(apiKey);
-            }
-            
-            
-        } catch (Exception ex) {
-            LogUtil.logError(ex);
-            return false;
-        }
-    }
     
     private static boolean isActivatedByApiKey(String apiKey) {
         try {
             String serverUrl = ApplicationInfo.getTestOpsServer();
+            if (StringUtils.isEmpty(apiKey)) {
+                return false;
+            }
             KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, null, apiKey);
             return true;
         } catch (Exception ex) {
