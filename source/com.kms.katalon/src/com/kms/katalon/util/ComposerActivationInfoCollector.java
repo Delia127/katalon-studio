@@ -44,11 +44,11 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 monitor.beginTask(StringConstants.MSG_ACTIVATING, IProgressMonitor.UNKNOWN);
-                isActivated = ActivationInfoCollector.checkAndMarkActivated();
+                isActivated = ActivationInfoCollector.checkAndMarkActivatedForGUIMode();
                 monitor.done();
             }
         });
-        
+
         if (!isActivated) {
             // Send anonymous info for the first time using
             Trackings.trackOpenFirstTime();

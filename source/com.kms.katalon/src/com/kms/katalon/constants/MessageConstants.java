@@ -118,6 +118,8 @@ public class MessageConstants extends NLS {
     public static String BTN_CLEAR_TILE;
 
     public static String BTN_ACTIVATE_TITLE;
+    
+    public static String BTN_LOG_IN_TITLE;
 
     public static String WAITTING_MESSAGE;
 
@@ -319,8 +321,6 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
     
     public static String ActivationDialogV2_LBL_SELECT_ORGANIZATION;
-    
-    public static String ActuvationDialogV2_BTN_SAVE_ORGANIZATION_TITLE;
 
     public static String ActivationDialogV2_MSG_ACTIVATING;
     
