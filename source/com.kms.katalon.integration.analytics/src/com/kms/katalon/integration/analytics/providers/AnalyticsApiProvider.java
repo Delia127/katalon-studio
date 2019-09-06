@@ -44,6 +44,8 @@ import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
+import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
+import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKeyPage;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
@@ -181,6 +183,23 @@ public class AnalyticsApiProvider {
             throw new AnalyticsApiExeception(e);
         }
     }
+    
+    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, long orgId, String machineKey, String accessToken)
+            throws AnalyticsApiExeception {
+        try {
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_LICENSE_KEY);
+            URIBuilder uriBuilder = new URIBuilder(uri);
+			uriBuilder.setParameter("organizationId", orgId + "");
+			uriBuilder.setParameter("machineKey", machineKey + "");
+            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
+            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            AnalyticsLicenseKey licenseKey = executeRequest(httpGet, AnalyticsLicenseKey.class);
+            return licenseKey;
+        } catch (Exception e) {
+            throw new AnalyticsApiExeception(e);
+        }
+    }
+
     
     public static void sendTrackingActivity(String serverUrl, String accessToken, AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
         try {
