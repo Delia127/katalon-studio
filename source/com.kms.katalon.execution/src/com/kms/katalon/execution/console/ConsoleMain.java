@@ -43,6 +43,8 @@ import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.LocalInformationUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -141,6 +143,12 @@ public class ConsoleMain {
                 LogUtil.printErrorLine("Failed to activate. Please check your apiKey or connection to https://analytics.katalon.com.");
                 return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
             }
+            
+            boolean isCliEnabled = FeatureServiceConsumer.getServiceInstance().canUse(TestOpsFeatureKey.CLI);
+            if (!isCliEnabled) {
+                LogUtil.printErrorLine("You don't have permission to use Katalon Studio in console mode.");
+                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+            } 
 
             ProjectEntity project = findProject(options);
 //            Trackings.trackOpenApplication(project,
