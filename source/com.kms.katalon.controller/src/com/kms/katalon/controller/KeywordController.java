@@ -134,7 +134,7 @@ public class KeywordController extends EntityController {
             IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
             CustomKeywordParser.getInstance().parseProjectCustomKeywords(srcFolder, libFolder);
 
-            parseCustomKeywordInPluginDirectory(project, libFolder);
+//            parseCustomKeywordInPluginDirectory(project, libFolder);
 
             parseCustomKeywordInStore(project, libFolder);
 
