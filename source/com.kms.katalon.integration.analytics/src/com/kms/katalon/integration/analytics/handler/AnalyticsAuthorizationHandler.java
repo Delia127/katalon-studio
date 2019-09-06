@@ -67,17 +67,15 @@ public class AnalyticsAuthorizationHandler {
     public static List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
             final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
         final List<AnalyticsProject> projects = new ArrayList<>();
-        	List<AnalyticsProject> loaded;
-			try {
-				loaded = AnalyticsApiProvider.getProjects(serverUrl, team,
-				        tokenInfo.getAccess_token());
-				if (loaded != null && !loaded.isEmpty()) {
+            List<AnalyticsProject> loaded;
+            try {
+                loaded = AnalyticsApiProvider.getProjects(serverUrl, team, tokenInfo.getAccess_token());
+	            if (loaded != null && !loaded.isEmpty()) {
 	                projects.addAll(loaded);
 	            }
-			} catch (AnalyticsApiExeception e) {
-				LoggerSingleton.logError(e);
-			}
-            
+	        } catch (AnalyticsApiExeception e) {
+	            LoggerSingleton.logError(e);
+	        }
             return projects;
     }
     
@@ -123,15 +121,14 @@ public class AnalyticsAuthorizationHandler {
             AnalyticsTokenInfo tokenInfo) {
         final List<AnalyticsTeam> teams = new ArrayList<>();
         List<AnalyticsTeam> loaded;
-		try {
-			loaded = AnalyticsApiProvider.getTeams(serverUrl,
-			            tokenInfo.getAccess_token(), orgId);
-			if (loaded != null && !loaded.isEmpty()) {
+        try {
+            loaded = AnalyticsApiProvider.getTeams(serverUrl, tokenInfo.getAccess_token(), orgId);
+            if (loaded != null && !loaded.isEmpty()) {
                 teams.addAll(loaded);
-			}
-		} catch (AnalyticsApiExeception e) {
-			LoggerSingleton.logError(e);
-		}
+            }
+        } catch (AnalyticsApiExeception e) {
+            LoggerSingleton.logError(e);
+        }
         
         return teams;
     }

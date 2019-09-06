@@ -188,7 +188,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         GridLayout glConnect = new GridLayout(4, false);
         compConnect.setLayout(glConnect);
 		
-		GridData gdBtn = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        GridData gdBtn = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
         gdBtn.widthHint = 100;
         
         btnConnect = new Button(compConnect, SWT.NONE);
