@@ -194,7 +194,7 @@ public class ConsoleMain {
                 acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
             }
             
-            installBasicReportPluginIfNotAvailable();
+//            installBasicReportPluginIfNotAvailable();
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,
