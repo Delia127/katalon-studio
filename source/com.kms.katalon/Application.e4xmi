@@ -157,6 +157,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_RvyKgL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.IE" label="IE" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/ie_16.png" command="_vs_PAL5NEemxF-U6MZYPPA"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_SKQgAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.edge" toBeRendered="false" visible="false" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/edge_16.png" command="_rzz-AL5NEemxF-U6MZYPPA"/>
         </children>
+        <children xsi:type="menu:Menu" xmi:id="_RQKm0M7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.menu.webTools" label="Web">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_ce_2wM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.handledmenuitem.killProcessWebDriver" label="Terminate running WebDrivers" command="_631dcM7NEemY2ti3wcTZeQ"/>
+        </children>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
@@ -284,6 +287,7 @@
   <handlers xmi:id="_Usxe8MJIEemeR-pO8kw5dQ" elementId="com.kms.katalon.handler.updateEdge" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateEdgeWebdriverHandler" command="_rzz-AL5NEemxF-U6MZYPPA"/>
   <handlers xmi:id="_ZwkwAMJIEemeR-pO8kw5dQ" elementId="com.kms.katalon.handler.updateIE" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateIEWebdriverHandler" command="_vs_PAL5NEemxF-U6MZYPPA"/>
   <handlers xmi:id="_0mYYYKLZEemSv8QN3vNGMQ" elementId="com.kms.katalon.handler.quickstart" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.KatalonQuickStart.QuickStartDialogHandle" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
+  <handlers xmi:id="_Uz26kM7OEemY2ti3wcTZeQ" elementId="com.kms.katalon.handler.killRunningWebdriverProcess" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.KillRunningWebdriverProcessHandler" command="_631dcM7NEemY2ti3wcTZeQ"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -324,6 +328,7 @@
   <commands xmi:id="_rzz-AL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateEdge" commandName="UpdateEdge"/>
   <commands xmi:id="_vs_PAL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateIE" commandName="UpdateIE"/>
   <commands xmi:id="_2X2LcKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.command.quickstart" commandName="QuickStart"/>
+  <commands xmi:id="_631dcM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.command.killProcessWebDriver" commandName="TerminateRunningWebDrivers"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
