@@ -81,10 +81,16 @@ public class ConsoleMain {
     public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
     
     public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
+
+    public static final String KATALON_ORGANIZATION_ID_SECOND_OPTION = "orgID";
     
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
     public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
+
+    public static final String BUILD_LABEL_OPTION = "buildLabel";
+    
+    public static final String BUILD_URL_OPTION = "buildURL";
 
     private ConsoleMain() {
         // hide constructor
@@ -121,6 +127,11 @@ public class ConsoleMain {
 
             if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
                 orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
+            }
+
+            if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
                 OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
             }
 
