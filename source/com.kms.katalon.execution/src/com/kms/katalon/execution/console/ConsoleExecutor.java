@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -19,9 +18,7 @@ import com.kms.katalon.execution.console.entity.TestSuiteLauncherOptionParser;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.ILauncher;
-import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.tracking.service.Trackings;
 
 import joptsimple.OptionSet;
 

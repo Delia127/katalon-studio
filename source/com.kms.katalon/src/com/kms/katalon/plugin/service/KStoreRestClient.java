@@ -32,6 +32,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.network.HttpClientProxyBuilder;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreClientExceptionWithInfo;
 import com.kms.katalon.plugin.models.KStoreCredentials;
@@ -58,7 +59,7 @@ public class KStoreRestClient {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
                         String responseContent = EntityUtils.toString(response.getEntity());
-                        LogService.getInstance().logInfo("Latest plugins responses: " + responseContent);
+                        LogUtil.writeOutputLine("Latest plugins responses: " + responseContent);
                         responseContent = responseContent.replace("{}", "null");
                         LogService.getInstance().logInfo("Katalon version: " + appVersion);
                         LogService.getInstance().logInfo("Plugin info URL: " + url);

@@ -52,8 +52,9 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity,
                 testSuiteCollectionOption.getValue());
         Map<String, Object> globalVariables = super.getOverridingGlobalVariables();
+        Map<String, String> additionalInfo = infoOptionContributor.getOptionValues();
         return TestSuiteCollectionConsoleLauncher.newInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting, globalVariables, executionUUIDOption.getValue());
+                rerunSetting, globalVariables, executionUUIDOption.getValue(), additionalInfo);
     }
 
     @Override
@@ -62,8 +63,9 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
         TestSuiteCollectionEntity testSuiteCollection = getTestSuiteCollection(projectEntity,
                 testSuiteCollectionOption.getValue());
         Map<String, Object> globalVariables = super.getOverridingGlobalVariables();
+        Map<String, String> additionalInfo = infoOptionContributor.getOptionValues();
         return TestSuiteCollectionConsoleLauncher.newIDEInstance(testSuiteCollection, manager, reportableSetting,
-                rerunSetting, globalVariables, executionUUIDOption.getValue());
+                rerunSetting, globalVariables, executionUUIDOption.getValue(), additionalInfo);
     }
 
     private TestSuiteCollectionEntity getTestSuiteCollection(ProjectEntity projectEntity, String testSuiteCollectionID)

@@ -46,9 +46,9 @@ public class ActivationInfoCollector {
     public static boolean isActivated() {
         return activated;
     }
-
-    public static boolean checkAndMarkActivated() {
-        activated = checkActivated(null);
+    
+    public static boolean checkAndMarkActivatedForGUIMode() {
+        activated = isActivatedByAccount();
         if (activated) {
             String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
             if (StringUtils.isNotBlank(jsonObject)) {
@@ -67,15 +67,15 @@ public class ActivationInfoCollector {
         }
         return activated;
     }
-    
-    public static boolean checkAndMarkActivated(String apiKey, Long orgId) {
-        activated = checkActivated(apiKey);
+
+    public static boolean checkAndMarkActivatedForConsoleMode(String apiKey, Long orgId) {
+        activated = isActivatedByApiKey(apiKey);
         if (activated) {
             activateTestOpsFeatures(null, apiKey, orgId);
         }
         return activated;
     }
-    
+
     private static boolean checkActivated(String apiKey) {
         try {
             String offlineActivationFlag = ApplicationInfo.getAppProperty(
@@ -102,10 +102,13 @@ public class ActivationInfoCollector {
             return false;
         }
     }
-    
+
     private static boolean isActivatedByApiKey(String apiKey) {
         try {
             String serverUrl = ApplicationInfo.getTestOpsServer();
+            if (StringUtils.isEmpty(apiKey)) {
+                return false;
+            }
             KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, null, apiKey);
             return true;
         } catch (Exception ex) {
@@ -137,8 +140,9 @@ public class ActivationInfoCollector {
         return false;
     }
 
-    //get TesstOps features by application username password 
+  //get TesstOps features by application username password 
     private static void activateTestOpsFeatures(String username, String password, Long orgId) {
+        LogUtil.logInfo("Getting features...");
         if (KatalonApplicationActivator.getFeatureActivator() != null) {
             String serverUrl = ApplicationInfo.getTestOpsServer();
             String ksVersion = VersionUtil.getCurrentVersion().getVersion();

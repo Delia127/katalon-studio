@@ -120,6 +120,8 @@ public class MessageConstants extends NLS {
     public static String BTN_CLEAR_TILE;
 
     public static String BTN_ACTIVATE_TITLE;
+    
+    public static String BTN_LOG_IN_TITLE;
 
     public static String WAITTING_MESSAGE;
 
@@ -323,8 +325,6 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
     
     public static String ActivationDialogV2_LBL_SELECT_ORGANIZATION;
-    
-    public static String ActuvationDialogV2_BTN_SAVE_ORGANIZATION_TITLE;
 
     public static String ActivationDialogV2_MSG_ACTIVATING;
     
@@ -358,6 +358,10 @@ public class MessageConstants extends NLS {
     public static String ActivationOfflineDialogV2_BTN_CHOOSE_FILE;
     
     public static String ActivationOfflineDialogV2_LBL_MACHINE_KEY;
+
+    public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATE;
+
+    public static String ActivationDialogV2_LNK_SIGNUP;
 
     // SignupDialog
     public static String SignupDialog_LBL_FULL_NAME;
@@ -493,6 +497,8 @@ public class MessageConstants extends NLS {
     
     public static String MSG_FAIL_TO_KILL_WEB_DRIVER;
 
+    public static String MSG_ACTIVATING;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);

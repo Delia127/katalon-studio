@@ -17,6 +17,8 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
 
     protected DefaultRerunSetting rerunSetting;
     
+    protected InfoOptionContributor infoOptionContributor;
+    
     protected StringConsoleOption executionUUIDOption = new StringConsoleOption() {
         @Override
         public String getOption() {
@@ -36,10 +38,11 @@ public abstract class ReportableLauncherOptionParser implements LauncherOptionPa
     public ReportableLauncherOptionParser() {
         reportableSetting = new DefaultReportSetting();
         rerunSetting = new DefaultRerunSetting();
+        infoOptionContributor = new InfoOptionContributor();
     }
 
     protected List<ConsoleOptionContributor> getContributors() {
-        return Arrays.asList(reportableSetting, rerunSetting);
+        return Arrays.asList(reportableSetting, rerunSetting, infoOptionContributor);
     }
 
     @Override

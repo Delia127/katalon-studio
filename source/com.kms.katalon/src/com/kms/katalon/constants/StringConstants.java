@@ -100,6 +100,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BTN_CLEAR_TILE = MessageConstants.BTN_CLEAR_TILE;
 
     public static final String BTN_ACTIVATE_TITLE = MessageConstants.BTN_ACTIVATE_TITLE;
+    
+    public static final String BTN_LOG_IN_TITLE = MessageConstants.BTN_LOG_IN_TITLE;
 
     public static final String WAITTING_MESSAGE = MessageConstants.WAITTING_MESSAGE;
 
@@ -201,4 +203,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY;
     
     public static final String MSG_FAIL_TO_KILL_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_KILL_WEB_DRIVER;
+
+    public static final String MSG_ACTIVATING = MessageConstants.MSG_ACTIVATING;
 }

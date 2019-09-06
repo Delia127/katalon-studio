@@ -147,7 +147,7 @@ public class ConsoleMain {
                     }
                 } else {
                     if (!StringUtils.isBlank(orgIdValue)) {
-                        isActivated = ActivationInfoCollector.checkAndMarkActivated(apiKeyValue, Long.valueOf(orgIdValue));
+                        isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, Long.valueOf(orgIdValue));
                     }
                 }
                 
