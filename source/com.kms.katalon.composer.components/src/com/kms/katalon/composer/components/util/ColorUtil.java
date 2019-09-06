@@ -219,6 +219,11 @@ public class ColorUtil {
     public static Color getTextSuccessfulColor() {
         return display.getSystemColor(SWT.COLOR_DARK_GREEN);
     }
+    
+    public static Color getTextRunningColor() {
+        return display.getSystemColor(SWT.COLOR_DARK_GREEN);
+    }
+
 
     public static Color getTooltipPlaceHolderForegroundColor() {
         return getColor(TOOLTIP_TEXT_COLOR);
