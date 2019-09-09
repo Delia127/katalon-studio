@@ -73,25 +73,24 @@ public class VerifyElementPresentKeyword extends WebUIAbstractKeyword {
         return WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
             try {
-                WebUiCommonHelper.checkTestObjectParameter(to)
-                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut)
-                WebElement foundElement = null
-                foundElement = WebUIAbstractKeyword.findWebElement(to, timeOut)
-                if (foundElement != null) {
-                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_PRESENT, to.getObjectId()))
+                if(to != null) {
+                    WebUiCommonHelper.checkTestObjectParameter(to)
+                    isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to, timeOut)
+                    WebElement foundElement = null
+                    foundElement = WebUIAbstractKeyword.findWebElement(to, timeOut)
+                    if (foundElement != null) {
+                        logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_IS_PRESENT, to.getObjectId()))
+                    }
+                    return true
+                } else {
+                    return false
                 }
-                return true
+               
             } catch (WebElementNotFoundException ex) {
                 WebUIKeywordMain.stepFailed(ExceptionsUtil.getMessageForThrowable(ex), flowControl, null, true)
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()
-                } else {
-                    if(to != null) {
-                        return true;
-                    } else {
-                        return false;
-                    }
                 }
 
             }
