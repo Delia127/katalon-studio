@@ -88,7 +88,11 @@ public class VerifyElementPresentKeyword extends WebUIAbstractKeyword {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()
                 }
-                return false
+                if(to != null){
+                    return true;
+                }else{
+                    return false;
+                }
             }
             return false
         }, flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_IS_PRESENT, to.getObjectId())
