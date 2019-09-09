@@ -222,6 +222,8 @@ public interface IdConstants {
     public static final String KATALON_WEB_UI_OBJECT_SPY_BUNDLE_ID = "com.kms.katalon.composer.webui.objectspy";
 
     public static final String KATALON_WEB_UI_RECORDER_BUNDLE_ID = "com.kms.katalon.composer.webui.recorder";
+    
+    public static final String KATALON_WINDOWS_BUNDLE_ID = "com.kms.katalon.composer.windows";
 
     public static final String KATALON_WEBSERVICE_BUNDLE_ID = "com.kms.katalon.core.webservice";
     
