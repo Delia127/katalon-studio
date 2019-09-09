@@ -151,8 +151,8 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
             Executors.newFixedThreadPool(1).submit(() -> {
                 UISynchronizeService.syncExec(() -> {
-                            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
-                        });
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
+                });
                 UISynchronizeService.syncExec(() -> {
                     AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
                             analyticsSettingStore);
