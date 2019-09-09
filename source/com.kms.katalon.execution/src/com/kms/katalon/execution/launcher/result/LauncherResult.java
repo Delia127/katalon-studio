@@ -2,6 +2,7 @@ package com.kms.katalon.execution.launcher.result;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,14 @@ public class LauncherResult implements ILauncherResult {
 
     public int getExecutedTestCases() {
         return getNumPasses() + getNumFailures() + getNumErrors() + getNumSkips() + getNumIncomplete();
+    }
+    
+    public void addStartTime(){
+        statuses.get(getExecutedTestCases()).setStartTime(new Date());
+    }
+    
+    public void addEndTime(){
+        statuses.get(getExecutedTestCases()).setEndTime(new Date());
     }
 
     public void increasePasses() {
