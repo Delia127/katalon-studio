@@ -1,19 +1,16 @@
 package com.kms.katalon.composer.integration.analytics.uploadProject;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -31,6 +28,8 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -39,12 +38,9 @@ import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringCo
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
-import com.kms.katalon.integration.analytics.entity.AnalyticsUploadInfo;
 import com.kms.katalon.integration.analytics.handler.AnalyticsAuthorizationHandler;
 import com.kms.katalon.integration.analytics.handler.AnalyticsGridHandler;
-import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
-import com.kms.katalon.integration.analytics.util.ZipHelper;
 
 public class StoreProjectCodeToCloudDialog extends Dialog {
 
@@ -53,6 +49,8 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
     private Combo cbbTeams;
 
     private Text txtCodeRepoName;
+
+    private Label lblStatus;
 
     private AnalyticsSettingStore analyticsSettingStore;
 
@@ -115,6 +113,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         cbbTeams = new Combo(grpUploadProject, SWT.READ_ONLY);
         GridData cbbTeamsGritData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         cbbTeams.setLayoutData(cbbTeamsGritData);
+        cbbTeams.setEnabled(false);
 
         Label lblProject = new Label(grpUploadProject, SWT.NONE);
         lblProject.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_PROJECT);
@@ -122,6 +121,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         cbbProjects = new Combo(grpUploadProject, SWT.READ_ONLY);
         GridData cbbProjectsGridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         cbbProjects.setLayoutData(cbbProjectsGridData);
+        cbbProjects.setEnabled(false);
 
         Label lblCodeRepoName = new Label(grpUploadProject, SWT.NONE);
         lblCodeRepoName.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_CODE_REPO_NAME);
@@ -132,6 +132,9 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         String nameSuggest = currentProject.getName();
         txtCodeRepoName.setText(nameSuggest);
 
+        lblStatus = new Label(grpUploadProject, SWT.NONE);
+        lblStatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 2));
+
         addListener();
         fillData();
         return composite;
@@ -139,53 +142,56 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
 
     private void fillData() {
         try {
-            cbbTeams.setItems();
-            cbbProjects.setItems();
             analyticsSettingStore = new AnalyticsSettingStore(
                     ProjectController.getInstance().getCurrentProject().getFolderLocation());
             boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
-            serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
-            email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            password = analyticsSettingStore.getPassword(encryptionEnabled);
+            serverUrl = analyticsSettingStore.getServerEndpoint(encryptionEnabled);
+            email = analyticsSettingStore.getEmail(encryptionEnabled);
 
-            AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(
-                    analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                    analyticsSettingStore.getEmail(encryptionEnabled), password, analyticsSettingStore);
-            if (tokenInfo == null) {
-                return;
-            }
-            
-            Long orgId = analyticsSettingStore.getOrganization().getId();
-            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                    analyticsSettingStore.getEmail(encryptionEnabled), password, orgId, tokenInfo,
-                    new ProgressMonitorDialog(getShell()));
-            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-                    teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
-                    tokenInfo, new ProgressMonitorDialog(getShell()));
-            if (teams != null && !teams.isEmpty()) {
-                cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
-                cbbTeams.select(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
-            }
-            if (teams != null && teams.size() > 0) {
-                setProjectsBasedOnTeam(teams, projects, analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                        analyticsSettingStore.getEmail(encryptionEnabled), password);
-            }
+            Executors.newFixedThreadPool(1).submit(() -> {
+                UISynchronizeService.syncExec(() -> {
+                            setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER, false);
+                        });
+                UISynchronizeService.syncExec(() -> {
+                    AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
+                            analyticsSettingStore);
+                    if (tokenInfo == null) {
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
+                        return;
+                    }
+                    setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_TEAMS, false);
+                    Long orgId = analyticsSettingStore.getOrganization().getId();
+                    teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, orgId, tokenInfo);
+                    if (teams != null && !teams.isEmpty()) {
+                        int defaultTeamIndex = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
+                        cbbTeams.setItems(
+                                AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
+                        cbbTeams.select(defaultTeamIndex);
+
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false);
+                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, teams.get(defaultTeamIndex), tokenInfo);
+                        setProjectsBasedOnTeam(projects);
+                    }
+                    cbbTeams.setEnabled(true);
+                    cbbProjects.setEnabled(true);
+                    setProgressMessage("", false);
+                });
+            });
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
     }
 
-    private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects, String serverUrl,
-            String email, String password) {
+    private void setProjectsBasedOnTeam(List<AnalyticsProject> projects) {
         if (projects != null && !projects.isEmpty()) {
             cbbProjects.setItems(
                     AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
         } else {
-            cbbProjects.setItems(
-                    AnalyticsAuthorizationHandler.getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(AnalyticsAuthorizationHandler.getDefaultProjectIndex(analyticsSettingStore, projects));
+            cbbProjects.clearSelection();
+            cbbProjects.removeAll();
         }
     }
 
@@ -193,18 +199,23 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
         cbbTeams.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
-                            analyticsSettingStore);
-                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-                            teams.get(cbbTeams.getSelectionIndex()), tokenInfo, new ProgressMonitorDialog(getShell()));
-                    analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
-                    setProjectsBasedOnTeam(teams, projects, serverUrl, email, password);
-
-                } catch (IOException ex) {
-                    LoggerSingleton.logError(ex);
-                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
-                }
+                cbbTeams.setEnabled(false);
+                cbbProjects.setEnabled(false);
+                Executors.newFixedThreadPool(1).submit(() -> {
+                    UISynchronizeService.syncExec(() -> {
+                        setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false);
+                    });
+                    UISynchronizeService.syncExec(() -> {
+                        AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
+                                password, analyticsSettingStore);
+                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                                teams.get(cbbTeams.getSelectionIndex()), tokenInfo);
+                        setProjectsBasedOnTeam(projects);
+                        setProgressMessage("", false);
+                        cbbTeams.setEnabled(true);
+                        cbbProjects.setEnabled(true);
+                    });
+                 });
             }
         });
     }
@@ -239,6 +250,16 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
         super.okPressed();
+    }
+
+    private void setProgressMessage(String message, boolean isError) {
+        lblStatus.setText(message);
+        if (isError) {
+            lblStatus.setForeground(ColorUtil.getTextErrorColor());
+        } else {
+            lblStatus.setForeground(ColorUtil.getTextRunningColor());
+        }
+        lblStatus.getParent().layout();
     }
 
     @Override
