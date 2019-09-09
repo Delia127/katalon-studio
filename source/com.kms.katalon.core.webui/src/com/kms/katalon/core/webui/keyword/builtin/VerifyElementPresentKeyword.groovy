@@ -85,7 +85,7 @@ public class VerifyElementPresentKeyword extends WebUIAbstractKeyword {
                 } else {
                     return false
                 }
-               
+
             } catch (WebElementNotFoundException ex) {
                 WebUIKeywordMain.stepFailed(ExceptionsUtil.getMessageForThrowable(ex), flowControl, null, true)
             } finally {
