@@ -56,7 +56,7 @@ public class SDLCIntergrationWizardPage extends AbstractWizardPage implements Wi
 
     @Override
     public String getStepIndexAsString() {
-        return "6";
+        return "7";
     }
 
     @Override
