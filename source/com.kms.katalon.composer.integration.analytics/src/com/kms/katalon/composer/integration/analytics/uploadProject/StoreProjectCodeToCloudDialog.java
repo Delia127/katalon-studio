@@ -162,7 +162,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                     }
                     setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_TEAMS, false);
                     Long orgId = analyticsSettingStore.getOrganization().getId();
-                    teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, orgId, tokenInfo);
+                    teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo);
                     if (teams != null && !teams.isEmpty()) {
                         int defaultTeamIndex = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
                         cbbTeams.setItems(
@@ -170,7 +170,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                         cbbTeams.select(defaultTeamIndex);
 
                         setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS, false);
-                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, teams.get(defaultTeamIndex), tokenInfo);
+                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, teams.get(defaultTeamIndex), tokenInfo);
                         setProjectsBasedOnTeam(projects);
                     }
                     cbbTeams.setEnabled(true);
@@ -208,7 +208,7 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
                     UISynchronizeService.syncExec(() -> {
                         AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email,
                                 password, analyticsSettingStore);
-                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
+                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, 
                                 teams.get(cbbTeams.getSelectionIndex()), tokenInfo);
                         setProjectsBasedOnTeam(projects);
                         setProgressMessage("", false);

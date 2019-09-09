@@ -236,12 +236,12 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         txtOrganization.setEnabled(false);
         
         Long orgId = organization.getId();
-        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, orgId, tokenInfo,
+        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo,
                 new ProgressMonitorDialog(getShell()));
         if (teams != null && teams.size() > 0) {
-        	projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
-        			teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)), tokenInfo,
-        			new ProgressMonitorDialog(getShell()));
+			projects = AnalyticsAuthorizationHandler.getProjects(serverUrl,
+					teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
+					tokenInfo, new ProgressMonitorDialog(getShell()));
             cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
             int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
             cbbTeams.select(indexSelectTeam);
@@ -307,7 +307,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
 
                 AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
                         analyticsSettingStore);
-                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, getSelectTeam,
+                projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, getSelectTeam,
                         tokenInfo, new ProgressMonitorDialog(getShell()));
 
                 setProjectsBasedOnTeam(getSelectTeam, projects);
@@ -328,7 +328,7 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
                     AnalyticsProject createdProject = dialog.getAnalyticsProject();
                     if (createdProject != null) {
                         AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
-                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, team, tokenInfo,
+                        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo,
                                 new ProgressMonitorDialog(getShell()));
                         if (projects == null) {
                             return;
