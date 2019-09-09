@@ -113,7 +113,7 @@ public class VerifyElementNotPresentKeyword extends WebUIAbstractKeyword {
                 }
                 
             } catch (WebElementNotFoundException e) {
-                WebUIKeywordMain.stepFailed(ExceptionsUtil.getMessageForThrowable(e), flowControl, null, true)
+                return false
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()
