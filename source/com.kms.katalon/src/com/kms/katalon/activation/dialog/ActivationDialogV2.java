@@ -14,8 +14,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -47,6 +45,7 @@ import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
@@ -74,10 +73,8 @@ public class ActivationDialogV2 extends AbstractDialog {
     private Button btnActivate;
 
     private Combo cbbOrganization;
-    
+
     private Label lblMachineKeyDetail;
-    
-    private Label lblLicenseKey;
 
     private Link lnkConfigProxy;
 
@@ -167,7 +164,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                 btnLogIn.setEnabled(false);
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(
-                            () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_ACTIVATING, false));
+                            () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_LOGIN, false));
                     StringBuilder errorMessage = new StringBuilder();
                     boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
 
@@ -186,31 +183,29 @@ public class ActivationDialogV2 extends AbstractDialog {
                 });
             }
         });
-        
+
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int index = cbbOrganization.getSelectionIndex();
                 save(index);
-//                Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
             }
         });
-        
+
         lblHelpOrganization.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch(e.text);
             }
         });
-        
+
         cbbOrganization.addSelectionListener(new SelectionAdapter() {
-        	@Override
-        	public void widgetSelected(SelectionEvent e) {
-        		AnalyticsOrganization selectOrganizationFromUser = organizations.get(cbbOrganization.getSelectionIndex());
-        		getLicenseKey(selectOrganizationFromUser.getId());
-        	}
-		});
-        
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                AnalyticsOrganization selectOrganizationFromUser = organizations.get(cbbOrganization.getSelectionIndex());
+                getLicenseKey(selectOrganizationFromUser.getId());
+            }
+        });
     }
 
     private void save(int index) {
@@ -220,29 +215,29 @@ public class ActivationDialogV2 extends AbstractDialog {
             String password = txtPassword.getText();
             ActivationInfoCollector.markActivated(email, password);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION, JsonUtil.toJson(organization), true);
-            
+
             Executors.newFixedThreadPool(1).submit(() -> {
-            	UISynchronizeService.syncExec(
+                UISynchronizeService.syncExec(
                         () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_FEATURE, false));
-            	UISynchronizeService.syncExec(() -> {
-            		StringBuilder errorMessage = new StringBuilder();
-            		boolean result = ActivationInfoCollector.activateOffline(licenseKey.getValue(), errorMessage);
-            		if (result == true) {
-            			setReturnCode(OK);
-            		} else {
-            			setProgressMessage(errorMessage.toString(), true);
-            		}
-            		
-            		if (KatalonApplicationActivator.getFeatureActivator() != null) {
-            			String serverUrl = ApplicationInfo.getTestOpsServer();
-            			String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-            			Long orgId = organization.getId();
-            			ActivationInfoCollector.activateFeatures(serverUrl, email, password, orgId, ksVersion);
-            		}
-            		close();
-            	});
+                UISynchronizeService.syncExec(() -> {
+                    if (licenseKey != null) {
+                        StringBuilder errorMessage = new StringBuilder();
+                        boolean result = ActivationInfoCollector.activateOffline(licenseKey.getValue(), errorMessage);
+                        if (!result) {
+                            setProgressMessage(errorMessage.toString(), true);
+                        }
+                    }
+
+                    if (KatalonApplicationActivator.getFeatureActivator() != null) {
+                        String serverUrl = ApplicationInfo.getTestOpsServer();
+                        String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                        Long orgId = organization.getId();
+                        ActivationInfoCollector.activateFeatures(serverUrl, email, password, orgId, ksVersion);
+                    }
+                    close();
+                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
+                });
             });
-            
         } catch (Exception e) {
             LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
         }
@@ -266,7 +261,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                     organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token.getAccess_token());
                     cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
-                    cbbOrganization.select(0);
+                    cbbOrganization.select(getDefaultOrganizationIndex());
                     
                     getLicenseKey(organizations.get(0).getId());
                     setProgressMessage("", false);
@@ -277,7 +272,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     setProgressMessage("", false);
                     MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(),
                             MessageConstants.ActivationDialogV2_LBL_ERROR, null,
-                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, MessageDialog.ERROR,
+                            e.getMessage(), MessageDialog.ERROR,
                             new String[] { "OK" }, 0);
                     if (dialog.open() == Dialog.OK) {
                         txtEmail.setEnabled(true);
@@ -285,8 +280,23 @@ public class ActivationDialogV2 extends AbstractDialog {
                         btnLogIn.setEnabled(true);
                     }
                 }
+                if (organizations.size() == 1) {
+                    save(0);
+                }
             });
         });
+    }
+    
+    private int getDefaultOrganizationIndex() {
+    	int selectionIndex = 0;
+    	for (int i = 0; i < organizations.size(); i++) {
+            AnalyticsOrganization organization = organizations.get(i);
+            if (organization.getRole().equals(AnalyticsOrganizationRole.USER)) {
+                selectionIndex = i;
+                return selectionIndex;
+            }
+        }
+    	return selectionIndex;
     }
 
     private void getLicenseKey(long orgId) {
@@ -295,24 +305,20 @@ public class ActivationDialogV2 extends AbstractDialog {
                     () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_LICENSE_KEY, false));
             UISynchronizeService.syncExec(() -> {
                 try {
-                	String serverUrl = ApplicationInfo.getTestOpsServer();
+                    String serverUrl = ApplicationInfo.getTestOpsServer();
                     String email = txtEmail.getText();
                     String password = txtPassword.getText();
                     AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                	
+
                     licenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, orgId, machineKey, token.getAccess_token());
                     setProgressMessage("", false);
                 } catch (AnalyticsApiExeception e) {
                     LogUtil.logError(e);
-                    
                     setProgressMessage("", false);
                     MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(),
                             MessageConstants.ActivationDialogV2_LBL_ERROR, null,
                             e.getMessage(), MessageDialog.ERROR,
                             new String[] { "OK" }, 0);
-                    if (dialog.open() == Dialog.OK) {
-
-                    }
                 }
             });
         });
@@ -323,7 +329,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
         } else {
-            lblProgressMessage.setForeground(ColorUtil.getDefaultTextColor());
+            lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
         }
         lblProgressMessage.getParent().layout();
     }
@@ -382,61 +388,61 @@ public class ActivationDialogV2 extends AbstractDialog {
         logInRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
         GridLayout gdActivateRight = new GridLayout(1, false);
         logInRightComposite.setLayout(gdActivateRight);
-        
+
         GridData gdBtn = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
         gdBtn.widthHint = 100;
-        
+
         btnLogIn = new Button(logInRightComposite, SWT.NONE);
         btnLogIn.setLayoutData(gdBtn);
         btnLogIn.setText(StringConstants.BTN_LOG_IN_TITLE);
         getShell().setDefaultButton(btnLogIn);
-        
-        Label lblOrganization = new Label(contentComposite, SWT.NONE);
-        GridData gdOrganization = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-        lblOrganization.setLayoutData(gdOrganization);
-        lblOrganization.setText(MessageConstants.ActivationDialogV2_LBL_SELECT_ORGANIZATION);
-        
-        cbbOrganization = new Combo(contentComposite, SWT.READ_ONLY);
-        cbbOrganization.setLayoutData(gdText);
-        cbbOrganization.setEnabled(false);
-        
+
         Label lblMachineKey = new Label(contentComposite, SWT.NONE);
         lblMachineKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblMachineKey.setText(MessageConstants.ActivationOfflineDialogV2_LBL_MACHINE_KEY);
-        
+
         lblMachineKeyDetail = new Label(contentComposite, SWT.NONE);
         lblMachineKeyDetail.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblMachineKeyDetail.setForeground(ColorUtil.getTextLinkColor());
         try {
-        	machineKey = MachineUtil.getMachineId();
+            machineKey = MachineUtil.getMachineId();
             lblMachineKeyDetail.setText(machineKey);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-        
+
+        Label lblOrganization = new Label(contentComposite, SWT.NONE);
+        GridData gdOrganization = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        lblOrganization.setLayoutData(gdOrganization);
+        lblOrganization.setText(MessageConstants.ActivationDialogV2_LBL_SELECT_ORGANIZATION);
+
+        cbbOrganization = new Combo(contentComposite, SWT.READ_ONLY);
+        cbbOrganization.setLayoutData(gdText);
+        cbbOrganization.setEnabled(false);
+
         Composite activateComposite = new Composite(contentComposite, SWT.NONE);
         activateComposite.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 2, 1));
         GridLayout gdTemp = new GridLayout(2, false);
         activateComposite.setLayout(gdTemp);
-        
+
         Composite activateLeftComposite = new Composite(activateComposite, SWT.NONE);
         activateLeftComposite.setLayoutData(new GridData(SWT.LEFT, SWT.NONE, true, false));
         activateLeftComposite.setLayout(new GridLayout(1, false));
-        
+
         lblHelpOrganization = new Link(activateLeftComposite, SWT.NONE);
         lblHelpOrganization.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
         lblHelpOrganization.setText(String.format(MessageConstants.ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION, ApplicationInfo.getTestOpsServer()));
-        
+
         Composite activateRightComposite = new Composite(activateComposite, SWT.NONE);
         activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
         GridLayout gdActivateComposite = new GridLayout(1, false);
         activateRightComposite.setLayout(gdActivateComposite);
-        
+
         btnActivate = new Button(activateRightComposite, SWT.NONE);
         btnActivate.setLayoutData(gdBtn);
         btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
         btnActivate.setEnabled(false);
-        
+
         return container;
     }
 
@@ -448,7 +454,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         glButtonBar.verticalSpacing = 10;
         buttonBar.setLayout(glButtonBar);
         buttonBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-                     
+
         Composite bottomTerm = new Composite(buttonBar, SWT.NONE);
         bottomTerm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         GridLayout gdBottomBarTerm = new GridLayout(2, false);
