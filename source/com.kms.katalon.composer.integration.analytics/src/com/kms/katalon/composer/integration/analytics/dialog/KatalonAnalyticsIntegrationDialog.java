@@ -239,9 +239,9 @@ public class KatalonAnalyticsIntegrationDialog extends Dialog {
         teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo,
                 new ProgressMonitorDialog(getShell()));
         if (teams != null && teams.size() > 0) {
-			projects = AnalyticsAuthorizationHandler.getProjects(serverUrl,
-					teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
-					tokenInfo, new ProgressMonitorDialog(getShell()));
+            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl,
+                    teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
+                    tokenInfo, new ProgressMonitorDialog(getShell()));
             cbbTeams.setItems(AnalyticsAuthorizationHandler.getTeamNames(teams).toArray(new String[teams.size()]));
             int indexSelectTeam = AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams);
             cbbTeams.select(indexSelectTeam);
