@@ -1779,6 +1779,13 @@
          unpack="false"/>
 
    <plugin
+         id="com.mysql.jdbc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="com.microsoft.sqlserver.sqljdbc4"
          download-size="0"
          install-size="0"
@@ -2652,13 +2659,6 @@
 
    <plugin
          id="com.kms.katalon.execution.windows"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.mysql.cj"
          download-size="0"
          install-size="0"
          version="0.0.0"
