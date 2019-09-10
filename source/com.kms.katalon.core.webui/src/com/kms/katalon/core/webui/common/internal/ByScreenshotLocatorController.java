@@ -22,7 +22,6 @@ import org.sikuli.api.ScreenRegion;
 
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.common.ScreenUtil;
-import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 
 public class ByScreenshotLocatorController {
 
@@ -120,13 +119,13 @@ public class ByScreenshotLocatorController {
 
 		double X = matchedRegion.getBounds().getX();
 		double Y = matchedRegion.getBounds().getY();
-		logger.logInfo("matchedRegion: " + X + " , " + Y);
-		logger.logInfo("driverSize: " + driverWidth + " , " + driverHeight);
-		logger.logInfo("driverPos: " + driverX + " , " + driverY);
-		logger.logInfo("viewSize: " + viewWidth + " , " + viewHeight);
+//		logger.logInfo("matchedRegion: " + X + " , " + Y);
+//		logger.logInfo("driverSize: " + driverWidth + " , " + driverHeight);
+//		logger.logInfo("driverPos: " + driverX + " , " + driverY);
+//		logger.logInfo("viewSize: " + viewWidth + " , " + viewHeight);
 		double xRelativeToDriver = X - driverX;
 		double yRelativeToDriver = Y - (driverHeight - viewHeight) - driverY;
-		logger.logInfo("relativeToDriver: " + xRelativeToDriver + " ," + yRelativeToDriver);
+//		logger.logInfo("relativeToDriver: " + xRelativeToDriver + " ," + yRelativeToDriver);
 		return new Point((int) xRelativeToDriver, (int) yRelativeToDriver);
 	}
 
