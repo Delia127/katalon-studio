@@ -65,6 +65,21 @@ public class AnalyticsAuthorizationHandler {
     } 
     
     public static List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
+            final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
+        final List<AnalyticsProject> projects = new ArrayList<>();
+            List<AnalyticsProject> loaded;
+            try {
+                loaded = AnalyticsApiProvider.getProjects(serverUrl, team, tokenInfo.getAccess_token());
+	            if (loaded != null && !loaded.isEmpty()) {
+	                projects.addAll(loaded);
+	            }
+	        } catch (AnalyticsApiExeception e) {
+	            LoggerSingleton.logError(e);
+	        }
+            return projects;
+    }
+    
+    public static List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
             final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo, ProgressMonitorDialog monitorDialog) {
         final List<AnalyticsProject> projects = new ArrayList<>();
         try {
@@ -100,6 +115,22 @@ public class AnalyticsAuthorizationHandler {
             // Ignore this
         }
         return projects;
+    }
+    
+    public static List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password, Long orgId,
+            AnalyticsTokenInfo tokenInfo) {
+        final List<AnalyticsTeam> teams = new ArrayList<>();
+        List<AnalyticsTeam> loaded;
+        try {
+            loaded = AnalyticsApiProvider.getTeams(serverUrl, tokenInfo.getAccess_token(), orgId);
+            if (loaded != null && !loaded.isEmpty()) {
+                teams.addAll(loaded);
+            }
+        } catch (AnalyticsApiExeception e) {
+            LoggerSingleton.logError(e);
+        }
+        
+        return teams;
     }
     
     public static List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password, Long orgId,

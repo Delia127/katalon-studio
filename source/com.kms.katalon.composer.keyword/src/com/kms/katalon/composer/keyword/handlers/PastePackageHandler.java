@@ -1,11 +1,16 @@
 package com.kms.katalon.composer.keyword.handlers;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -16,6 +21,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaModelStatusConstants;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
@@ -37,10 +43,14 @@ import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.composer.keyword.dialogs.RenameKeywordDialog;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -152,6 +162,8 @@ public class PastePackageHandler {
             
             KeywordTreeEntity keywordTreeEntity = TreeEntityUtil.getKeywordTreeEntity(
                     cutKeywordFilePath, ProjectController.getInstance().getCurrentProject());
+            refactorReferencingTestSuites(ProjectController.getInstance().getCurrentProject(), keywordFile,
+                    keywordFile.getLocation().toString(), cutKeywordFilePath);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity);
             
             eventBroker.post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM, new Object[] {
@@ -220,6 +232,32 @@ public class PastePackageHandler {
                 moveKeyword(keywordFile, parentPackage, dialog.getName());
             } else {
                 copyKeyword(keywordFile, parentPackage, dialog.getName());
+            }
+        }
+    }
+
+    private static void refactorReferencingTestSuites(ProjectEntity project, IFile keyword, String oldKeywordLocation,
+            String newKeywordLocation) throws Exception {
+        // if test case changed its name, update reference Location in test
+        // suites that refer to it
+        List<TestCaseEntity> lstTestCases = FolderFileServiceManager
+                .getDescendantTestCasesOfFolder(FolderFileServiceManager.getTestCaseRoot(project));
+        String constant = "keywords";
+        String packageName = project.getLocation() + File.separator + constant + File.separator;
+        File projectFile = new File(packageName);
+        String oldRelativeKwLocation = oldKeywordLocation.substring(projectFile.getParent().length() + 2);
+        String oldRelativeTcId = FilenameUtils.removeExtension(oldRelativeKwLocation).replace("/", ".");
+        String newRelativeKwLocation = newKeywordLocation.substring(constant.length() + 1);
+        String newRelativeTcId = FilenameUtils.removeExtension(newRelativeKwLocation).replace("/", ".");
+
+        for (TestCaseEntity testCase : lstTestCases) {
+            ICompilationUnit script = GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(testCase);
+            String str = "";
+            File file = new File(script.getResource().getLocation().toString());
+            str = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            if (str.contains("CustomKeywords")) {
+                String newString = str.replace(oldRelativeTcId, newRelativeTcId);
+                GroovyGuiUtil.addContentToTestCase(testCase, newString);
             }
         }
     }

@@ -4,6 +4,7 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.program.Program;
 
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
@@ -26,7 +27,7 @@ public class ViewDashboardHandler {
             String url = serverUrl + "/team/" + teamId + "/project/" + projectId;
             Program.launch(url);
         } catch (Exception e) {
-            Program.launch("https://analytics.katalon.com");
+            Program.launch(ApplicationInfo.getTestOpsServer());
         } 
     }
 }

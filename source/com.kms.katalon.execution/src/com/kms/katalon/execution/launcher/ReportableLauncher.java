@@ -497,9 +497,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     .get(index);
             for (int loopTime = 0; loopTime < testCaseExecutedEntity.getLoopTimes(); loopTime++) {
                 TestStatus testStatus = getResult().getStatuses()[iterationIndex];
+                Date tcStartTime = testStatus.getStartTime();
+                Date tcEndTime = testStatus.getEndTime();
                 testCaseContexts.add(TestCaseExecutionContextImpl.Builder
                         .create(testCaseExecutedEntity.getSourceId(), testCaseExecutedEntity.getSourceId())
                         .withTestCaseStatus(testStatus.getStatusValue().name())
+                        .withStartTime(tcStartTime != null ? tcStartTime.getTime() : 0L)
+                        .withEndTime(tcEndTime != null ? tcEndTime.getTime() : 0L)
                         .withMessage(testStatus.getStackTrace())
                         .build());
                 iterationIndex++;

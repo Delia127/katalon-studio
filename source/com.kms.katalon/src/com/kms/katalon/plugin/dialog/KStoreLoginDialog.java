@@ -46,11 +46,7 @@ public class KStoreLoginDialog extends Dialog {
     
     private Button btnConnect;
     
-    private Button btnClose;
-    
-    private Button cbLicenseAgreement;
-    
-    private Link lnkLicenseAgreement;
+    private Button btnSkip;
 
     public KStoreLoginDialog(Shell parentShell) {
         super(parentShell);
@@ -96,15 +92,6 @@ public class KStoreLoginDialog extends Dialog {
         Composite licenseComposite = new Composite(body, SWT.NONE);
         licenseComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         licenseComposite.setLayout(new GridLayout(2, false));
-        
-        cbLicenseAgreement = new Button(licenseComposite, SWT.CHECK);
-        cbLicenseAgreement.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
-        
-        lnkLicenseAgreement = new Link(licenseComposite, SWT.WRAP);
-        lnkLicenseAgreement.setText(StringConstants.KStoreLoginDialog_LICENSE_AGREEMENT_MSG);
-        GridData gdLicenseAgreement = new GridData(SWT.FILL, SWT.FILL, true, false);
-        gdLicenseAgreement.widthHint = 350;
-        lnkLicenseAgreement.setLayoutData(gdLicenseAgreement);
 
         lblError = new Label(body, SWT.NONE);
         lblError.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
@@ -116,8 +103,8 @@ public class KStoreLoginDialog extends Dialog {
         buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
         buttonComposite.setLayout(new GridLayout(2, false));
         
-        btnClose = new Button(buttonComposite, SWT.FLAT);
-        btnClose.setText(IDialogConstants.CLOSE_LABEL);
+        btnSkip = new Button(buttonComposite, SWT.FLAT);
+        btnSkip.setText(StringConstants.KStoreLoginDialog_BTN_SKIP);
         
         btnConnect = new Button(buttonComposite, SWT.FLAT);
         btnConnect.setText(StringConstants.KStoreLoginDialog_BTN_CONNECT);
@@ -154,25 +141,11 @@ public class KStoreLoginDialog extends Dialog {
             }
         });
         
-        btnClose.addSelectionListener(new SelectionAdapter() {
+        btnSkip.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 setReturnCode(Dialog.CANCEL);
                 close();
-            }
-        });
-        
-        cbLicenseAgreement.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                validate();
-            }
-        });
-        
-        lnkLicenseAgreement.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Program.launch(e.text);
             }
         });
     }
@@ -183,7 +156,7 @@ public class KStoreLoginDialog extends Dialog {
     }
 
     private void validate() {
-        if (StringUtils.isBlank(username) || StringUtils.isBlank(password) || !cbLicenseAgreement.getSelection()) {
+        if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             btnConnect.setEnabled(false);
         } else {
             btnConnect.setEnabled(true);
