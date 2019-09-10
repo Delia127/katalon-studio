@@ -266,7 +266,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     setProgressMessage("", false);
                     MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(),
                             MessageConstants.ActivationDialogV2_LBL_ERROR, null,
-                            e.getMessage(), MessageDialog.ERROR,
+                            MessageConstants.ActivationDialogV2_LBL_ERROR_ORGANIZATION, MessageDialog.ERROR,
                             new String[] { "OK" }, 0);
                     if (dialog.open() == Dialog.OK) {
                         txtEmail.setEnabled(true);
