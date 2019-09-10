@@ -17,7 +17,7 @@ public class MachineUtil {
 
     private static final String MAC_GET_MACHINE_ID_DELIMITER = "=";
 
-    private static final String[] MAC_GET_MACHINE_ID_COMMAND = new String[] { "/usr/sbin/ioreg", "-rd1", "-c",
+    private static final String[] MAC_GET_MACHINE_ID_COMMAND = new String[] { "ioreg", "-rd1", "-c",
             "IOPlatformExpertDevice", "|", "grep", MAC_GET_MACHINE_ID_FIELD };
 
     private static final String[] LINUX_GET_MACHINE_ID_COMMAND_2 = new String[] { "cat", "/etc/machine-id" };
