@@ -189,7 +189,7 @@ public class UploadSelectionDialog extends Dialog {
                     String email = info.get("email");
                     String password = info.get("password");
                     AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password, analyticsSettingStore);
-                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, team, tokenInfo,
+                    projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo,
                             new ProgressMonitorDialog(getShell()));
                     setProjectsBasedOnTeam(teams, projects);
                 } catch (IOException ex) {

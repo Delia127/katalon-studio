@@ -238,9 +238,9 @@
 <plugin id="io.swagger.parser-v3"/>
 <plugin id="jackson-core-asl"/>
 <plugin id="jackson-mapper-asl"/>
-<plugin id="javaewah" version="0.7.9.v201605172130"/>
+<plugin id="javaewah" version="1.1.6.v20160919-1400"/>
 <plugin id="javassist"/>
-<plugin id="javax.activation"/>
+<plugin id="javax.activation" version="1.1.0.v201211130549"/>
 <plugin id="javax.annotation"/>
 <plugin id="javax.annotation-api"/>
 <plugin id="javax.annotation.source"/>
@@ -339,8 +339,8 @@
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2.xx-201611170128-e46"/>
@@ -355,7 +355,8 @@
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.m2eclipse"/>
+<plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.m2eclipse" version="2.9.2.xx-201801051705-e46-RELEASE"/>
 <plugin id="org.dom4j"/>
 <plugin id="org.eclipse.aether.api"/>
 <plugin id="org.eclipse.aether.connector.basic"/>
@@ -481,18 +482,18 @@
 <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient4.ssl"/>
 <plugin id="org.eclipse.ecf.provider.filetransfer.ssl"/>
 <plugin id="org.eclipse.ecf.ssl"/>
-<plugin id="org.eclipse.egit" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.egit.core" version="4.4.1.201607150455-r"/>
+<plugin id="org.eclipse.egit" version="4.6.1.201703071140-r"/>
+<plugin id="org.eclipse.egit.core" version="4.6.1.201703071140-r"/>
 <plugin id="org.eclipse.egit.core.source"/>
-<plugin id="org.eclipse.egit.doc" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.egit.gitflow"/>
+<plugin id="org.eclipse.egit.doc" version="4.6.1.201703071140-r"/>
+<plugin id="org.eclipse.egit.gitflow" version="4.6.1.201703071140-r"/>
 <plugin id="org.eclipse.egit.gitflow.source"/>
-<plugin id="org.eclipse.egit.gitflow.ui"/>
+<plugin id="org.eclipse.egit.gitflow.ui" version="4.6.1.201703071140-r"/>
 <plugin id="org.eclipse.egit.gitflow.ui.source"/>
 <plugin id="org.eclipse.egit.mylyn.ui"/>
 <plugin id="org.eclipse.egit.mylyn.ui.source"/>
-<plugin id="org.eclipse.egit.ui" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.egit.ui.smartimport"/>
+<plugin id="org.eclipse.egit.ui" version="4.6.1.201703071140-r"/>
+<plugin id="org.eclipse.egit.ui.smartimport" version="4.6.1.201703071140-r"/>
 <plugin id="org.eclipse.egit.ui.source"/>
 <plugin id="org.eclipse.emf.common"/>
 <plugin id="org.eclipse.emf.common.ui"/>
@@ -602,6 +603,8 @@
 <plugin id="org.eclipse.equinox.registry"/>
 <plugin id="org.eclipse.equinox.registry.source"/>
 <plugin id="org.eclipse.equinox.security"/>
+<plugin id="org.eclipse.equinox.security.macosx"/>
+<plugin id="org.eclipse.equinox.security.macosx.source"/>
 <plugin id="org.eclipse.equinox.security.source"/>
 <plugin id="org.eclipse.equinox.security.ui"/>
 <plugin id="org.eclipse.equinox.security.ui.source"/>
@@ -677,15 +680,15 @@
 <plugin id="org.eclipse.jface.source"/>
 <plugin id="org.eclipse.jface.text"/>
 <plugin id="org.eclipse.jface.text.source"/>
-<plugin id="org.eclipse.jgit" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.jgit.archive" version="4.4.1.201607150455-r"/>
-<plugin id="org.eclipse.jgit.http.apache"/>
-<plugin id="org.eclipse.jgit.lfs"/>
-<plugin id="org.eclipse.jgit.lfs.server"/>
-<plugin id="org.eclipse.jgit.pgm"/>
+<plugin id="org.eclipse.jgit" version="4.6.1.201703071140-r"/>
+<plugin id="org.eclipse.jgit.archive" version="4.6.1.201703071140-r"/>
+<plugin id="org.eclipse.jgit.http.apache" version="4.6.1.201703071140-r"/>
+<plugin id="org.eclipse.jgit.lfs" version="4.6.1.201703071140-r"/>
+<plugin id="org.eclipse.jgit.lfs.server" version="4.6.1.201703071140-r"/>
+<plugin id="org.eclipse.jgit.pgm" version="4.6.1.201703071140-r"/>
 <plugin id="org.eclipse.jgit.pgm.source"/>
 <plugin id="org.eclipse.jgit.source"/>
-<plugin id="org.eclipse.jgit.ui"/>
+<plugin id="org.eclipse.jgit.ui" version="4.6.1.201703071140-r"/>
 <plugin id="org.eclipse.jsch.core"/>
 <plugin id="org.eclipse.jsch.core.source"/>
 <plugin id="org.eclipse.jsch.ui"/>
@@ -722,25 +725,25 @@
 <plugin id="org.eclipse.mylyn.bugzilla.ui"/>
 <plugin id="org.eclipse.mylyn.builds.core"/>
 <plugin id="org.eclipse.mylyn.builds.ui"/>
-<plugin id="org.eclipse.mylyn.commons.core"/>
-<plugin id="org.eclipse.mylyn.commons.identity.core"/>
-<plugin id="org.eclipse.mylyn.commons.net"/>
-<plugin id="org.eclipse.mylyn.commons.notifications.core"/>
-<plugin id="org.eclipse.mylyn.commons.notifications.feed"/>
-<plugin id="org.eclipse.mylyn.commons.notifications.ui"/>
-<plugin id="org.eclipse.mylyn.commons.repositories.core"/>
+<plugin id="org.eclipse.mylyn.commons.core" version="3.25.0.v20190131-2250"/>
+<plugin id="org.eclipse.mylyn.commons.identity.core" version="1.17.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.commons.net" version="3.25.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.commons.notifications.core" version="1.17.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.commons.notifications.feed" version="1.17.0.v20190115-0848"/>
+<plugin id="org.eclipse.mylyn.commons.notifications.ui" version="1.17.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.commons.repositories.core" version="1.17.0.v20180628-1730"/>
 <plugin id="org.eclipse.mylyn.commons.repositories.http.core"/>
-<plugin id="org.eclipse.mylyn.commons.repositories.ui"/>
-<plugin id="org.eclipse.mylyn.commons.screenshots"/>
-<plugin id="org.eclipse.mylyn.commons.ui"/>
-<plugin id="org.eclipse.mylyn.commons.workbench"/>
+<plugin id="org.eclipse.mylyn.commons.repositories.ui" version="1.17.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.commons.screenshots" version="3.25.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.commons.ui" version="3.25.0.v20180706-1510"/>
+<plugin id="org.eclipse.mylyn.commons.workbench" version="3.25.0.v20180628-1730"/>
 <plugin id="org.eclipse.mylyn.commons.xmlrpc"/>
 <plugin id="org.eclipse.mylyn.context.core"/>
 <plugin id="org.eclipse.mylyn.context.tasks.ui"/>
 <plugin id="org.eclipse.mylyn.context.ui"/>
 <plugin id="org.eclipse.mylyn.debug.ui"/>
-<plugin id="org.eclipse.mylyn.discovery.core"/>
-<plugin id="org.eclipse.mylyn.discovery.ui"/>
+<plugin id="org.eclipse.mylyn.discovery.core" version="3.25.0.v20190131-2250"/>
+<plugin id="org.eclipse.mylyn.discovery.ui" version="3.25.0.v20180628-1730"/>
 <plugin id="org.eclipse.mylyn.gerrit.core"/>
 <plugin id="org.eclipse.mylyn.gerrit.ui"/>
 <plugin id="org.eclipse.mylyn.git.core"/>
@@ -752,8 +755,8 @@
 <plugin id="org.eclipse.mylyn.ide.ui"/>
 <plugin id="org.eclipse.mylyn.java.tasks"/>
 <plugin id="org.eclipse.mylyn.java.ui"/>
-<plugin id="org.eclipse.mylyn.monitor.core"/>
-<plugin id="org.eclipse.mylyn.monitor.ui"/>
+<plugin id="org.eclipse.mylyn.monitor.core" version="3.25.0.v20180628-1730"/>
+<plugin id="org.eclipse.mylyn.monitor.ui" version="3.25.0.v20180628-1730"/>
 <plugin id="org.eclipse.mylyn.pde.ui"/>
 <plugin id="org.eclipse.mylyn.resources.ui"/>
 <plugin id="org.eclipse.mylyn.reviews.core"/>

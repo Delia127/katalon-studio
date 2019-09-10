@@ -427,8 +427,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             AnalyticsTokenInfo tokenInfo) {
         try {
             boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
-            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                    analyticsSettingStore.getEmail(encryptionEnabled), password, orgId, tokenInfo);
+            teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled), orgId, tokenInfo);
             setProgressMessage("", false);
         } catch (Exception e) {
             setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
@@ -438,7 +437,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     private void getProject(final String serverUrl, final String email, final String password,
             final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
         try {
-            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, team, tokenInfo);
+            projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo);
             setProgressMessage("", false);
         } catch (Exception e) {
             setProgressMessage(ComposerIntegrationAnalyticsMessageConstants.MSG_REQUEST_TOKEN_ERROR, true);
