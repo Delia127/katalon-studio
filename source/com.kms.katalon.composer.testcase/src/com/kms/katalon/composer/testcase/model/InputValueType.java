@@ -53,6 +53,7 @@ public enum InputValueType implements InputValueEditorProvider {
     TestDataValue,
     TestCase,
     TestObject,
+    WindowsObject,
     TestData,
     Checkpoint,
     Class,
@@ -123,6 +124,8 @@ public enum InputValueType implements InputValueEditorProvider {
                 return AstValueUtil.getCellEditorForTestDataValue(parent, (MethodCallExpressionWrapper) astObject);
             case TestObject:
                 return AstValueUtil.getCellEditorForTestObject(parent, (MethodCallExpressionWrapper) astObject);
+            case WindowsObject:
+                return AstValueUtil.getCellEditorForWindowsTestObject(parent, (MethodCallExpressionWrapper) astObject);
             case Checkpoint:
                 return AstValueUtil.getCellEditorForFindCheckpoint(parent, (MethodCallExpressionWrapper) astObject);
             case Throwable:
@@ -188,6 +191,8 @@ public enum InputValueType implements InputValueEditorProvider {
                 return new PropertyExpressionWrapper(InputValueType.GlobalVariable.name(), parent);
             case TestObject:
                 return AstEntityInputUtil.createNewFindTestObjectMethodCall(parent);
+            case WindowsObject:
+                return AstEntityInputUtil.createNewFindWindowsObjectMethodCall(parent);
             case Class:
                 return new ClassExpressionWrapper(String.class, parent);
             case TestDataValue:
@@ -247,6 +252,9 @@ public enum InputValueType implements InputValueEditorProvider {
         }
         if (methodCall.isFindTestObjectMethodCall()) {
             return AstEntityInputUtil.getTextValueForTestObjectArgument(methodCall);
+        }       
+        if (methodCall.isFindWindowsObjectMethodCall()) {
+            return AstEntityInputUtil.getTextValueForWindowsObjectArgument(methodCall);
         }
         if (methodCall.isFindTestDataMethodCall()) {
             return AstEntityInputUtil.getTextValueForTestDataArgument(methodCall);
@@ -301,6 +309,8 @@ public enum InputValueType implements InputValueEditorProvider {
                 return isClassAssignable(com.kms.katalon.core.testdata.TestData.class, paramType);
             case TestObject:
                 return isClassAssignable(com.kms.katalon.core.testobject.TestObject.class, paramType);
+            case WindowsObject:
+                return isClassAssignable(com.kms.katalon.core.testobject.WindowsTestObject.class, paramType);
             case Checkpoint:
                 return isClassAssignable(com.kms.katalon.core.checkpoint.Checkpoint.class, paramType);
             case Binary:

@@ -43,10 +43,10 @@ class KURecorder {
         if (this.attached) {
             return;
         }
+        var self = this;
         this.elementKeyword = (!version) ? 'element' : 'elementAction';
         this.attached = true;
         this.eventListeners = {};
-        var self = this;
         for (let eventKey in KURecorder.eventHandlers) {
             var eventInfo = this.parseEventKey(eventKey);
             var eventName = eventInfo.eventName;
@@ -79,7 +79,7 @@ class KURecorder {
                 var listener = function (event) {
                     self.rec_receiveMessage.call(self, event);
                 }
-                this.window.attachEvent("onmessage", listener);
+                this.window.attachEvent("onmessage", self.rec_receiveMessage);
             }
             register.call(this);
         }
@@ -89,9 +89,11 @@ class KURecorder {
         this.rec_elementInfoDivText; // xpath text to show in rec_elementInfoDiv    
         this.rec_hoverElement; // whatever element the mouse is over       
 
+        this.queuedKeyCombinations = "";
+        this.window.document.addEventListener("keydown", KURecorder.keyDownEventHandler.bind(this));
+        this.window.document.addEventListener("keyup", KURecorder.keyUpEventHandler.bind(this));
+
         this.rec_createInfoDiv();
-        var currentURL = this.window.document.url;
-        this.checkForNavigateAction(currentURL);
     }
 
     // This part of code is copyright by Software Freedom Conservancy(SFC)
@@ -120,10 +122,12 @@ class KURecorder {
                 var listener = function (event) {
                     self.rec_receiveMessage.call(self, event);
                 }
-                this.window.detachEvent("onmessage", listener);
+                this.window.detachEvent("message", listener);
             }
             unregister.call(this);
         }
+        this.window.document.removeEventListener("keydown", KURecorder.keyDownEventHandler.bind(this));
+        this.window.document.removeEventListener("keyup", KURecorder.keyUpEventHandler.bind(this));
         this.rec_removeInfoDiv();
         this.rec_clearHoverElement();
     }
@@ -182,20 +186,15 @@ class KURecorder {
             return;
         }
         
-        try{
-            var object = JSON.parse(event.data);
-            var action = {};
-            action["actionName"] = "goIntoFrame";
-            action["actionData"] = "";
-            var json = mapDOMForRecord(action, childFrame, window);
-            if (json) 
-                this.rec_setParentJson(object, json);
-            
-            this.rec_processObject(object);
-        } catch ( e ){
-            console.log(e);
-        }
+        var object = JSON.parse(event.data);
+        var action = {};
+        action["actionName"] = "goIntoFrame";
+        action["actionData"] = "";
+        var json = mapDOMForRecord(action, childFrame, window);
+        if (json) 
+            this.rec_setParentJson(object, json);
         
+        this.rec_processObject(object);        
     }
 
     rec_processObject (object) {
@@ -329,6 +328,7 @@ class KURecorder {
         if (!isRecorded) {
             return;
         }
+        this.checkForNavigateAction();
         var action = {};
         action["actionName"] = 'inputChange';
         action["actionData"] = selectedElement.value;
@@ -347,6 +347,7 @@ class KURecorder {
         if (!isRecorded) {
             return;
         }
+        this.checkForNavigateAction();
         var action = {};
         action["actionName"] = 'inputChange';
         if (selectedElement.tagName.toLowerCase() == 'select') {
@@ -379,7 +380,7 @@ class KURecorder {
         if (elementTag == 'input') {
             var elementInputType = selectedElement.type.toLowerCase();
             if (elementInputType == 'button' || elementInputType == 'submit' || elementInputType == 'radio'
-                || elementInputType == 'image' || elementInputType == 'checkbox') {
+                || elementInputType == 'image' || elementInputType == 'checkbox' || elementInputType == 'text') {
                 return true;
             }
             return false;
@@ -416,6 +417,7 @@ class KURecorder {
     }
 
     processOnClickTarget (selectedElement, clickType, currentURL) {
+        this.checkForNavigateAction(currentURL);
         var action = {};
         action["actionName"] = 'click';
         action["actionData"] = clickType;
@@ -423,6 +425,7 @@ class KURecorder {
     }
 
     processOnDbClickTarget (selectedElement) {
+        this.checkForNavigateAction();
         var action = {};
         action["actionName"] = 'doubleClick';
         action["actionData"] = '';
@@ -436,6 +439,7 @@ class KURecorder {
         var jsonObject = mapDOMForRecord(action, element, window);
         this.rec_processObject(jsonObject);
     }
+
     rec_windowFocus(selectedElement) {
         if (selectedElement.tagName.toLowerCase() == 'select') {
             selectedElement.oldValue = this.rec_getSelectValues(selectedElement);
@@ -463,6 +467,46 @@ KURecorder.addEventHandler = function (handlerName, eventName, handler, options)
         this.eventHandlers[key] = [];
     }
     this.eventHandlers[key].push(handler);
+}
+
+KURecorder.keyHandlers = {};
+KURecorder.addOnKeyUpHandler = function(handlerName, keyCombinations, handler) {
+    handler.handlerName = handlerName;
+    if(!this.keyHandlers[keyCombinations]) {
+        this.keyHandlers[keyCombinations] = [];
+    }
+    this.keyHandlers[keyCombinations].push(handler);
+}
+
+/**
+ * This key down handler continually queues the pressed key
+ */
+KURecorder.keyDownEventHandler = function(event) {
+    let stringValue = keycode.getValueByEvent(event);
+    this.queuedKeyCombinations += (" " + stringValue);
+}
+
+/**
+ * This key up handler releases the queue and trigger handler on appropriate pressed key combinations.
+ * It also stops event propagation when a handler is recognized
+ */
+KURecorder.keyUpEventHandler = function(event) {
+    try{
+        let key = this.queuedKeyCombinations.trim();
+        let handlers = KURecorder.keyHandlers[key];
+
+        if(handlers && handlers.length > 0) {
+            event.stopPropagation();
+        }
+
+        for(var i = 0; i < handlers.length; i++) {
+            handlers[i].call(this, this.rec_hoverElement);
+        }
+    } catch(e) {
+        // Do nothing for now
+    } finally {
+        this.queuedKeyCombinations = "";
+    }
 }
 
 

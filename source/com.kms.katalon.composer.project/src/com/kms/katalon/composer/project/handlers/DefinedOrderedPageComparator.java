@@ -31,7 +31,6 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
             
         predefinedOrder.add(StringConstants.INTEGRATION_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.KATALON_ANALYTICS_SETTING_PAGE_ID);
-        predefinedOrder.add(StringConstants.JIRA_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.QTEST_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.TEST_CASE_REPOSITORIES_SETTING_PAGE_ID);
         predefinedOrder.add(StringConstants.TEST_SUITE_REPOSITORIES_SETTING_PAGE_ID);

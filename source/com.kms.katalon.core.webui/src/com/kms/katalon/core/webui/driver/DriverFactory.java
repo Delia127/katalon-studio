@@ -191,9 +191,6 @@ public class DriverFactory {
 
     /**
      * Open a new web driver based on the execution configuration.
-     * If smart wait functionality is enabled (either globally or via
-     * invocation of {@link WebUiBuiltInKeywords#enableSmartWait()} keyword)
-     * then the returned web driver will be a {@link SmartWaitWebDriver}
      * 
      * @return An instance of {@link WebDriver}
      * @throws Exception
@@ -213,12 +210,7 @@ public class DriverFactory {
             }
             if (webDriver != null) {
                 changeWebDriver(webDriver);
-                
-                boolean smartWaitEnabled = (boolean) RunConfiguration.getExecutionProperties()
-                        .get(RunConfiguration.SMART_WAIT_MODE);
-                if (smartWaitEnabled) {
-                    switchToSmartWaitWebDriver(webDriver);
-                }
+                switchToSmartWaitWebDriver(webDriver);
             }
             return webDriver;
         } catch (Error e) {
@@ -228,18 +220,22 @@ public class DriverFactory {
     }
 
     private static void switchToSmartWaitWebDriver(WebDriver webDriver) {
-        WebDriver currentWebDriver = webDriver;
-        SmartWaitWebDriver smartWaitWebDriver = new SmartWaitWebDriver(currentWebDriver);
-        smartWaitWebDriver.register(new SmartWaitWebEventListener());
-        DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver);
+        try {
+            SmartWaitWebDriver smartWaitWebDriver = new SmartWaitWebDriver(webDriver);
+            smartWaitWebDriver.register(new SmartWaitWebEventListener());
+            DriverFactory.changeWebDriverWithoutLog(smartWaitWebDriver);
+        } catch (Exception e) {
+            logger.logInfo(e.getMessage());
+        }
     }
 
     private static void changeWebDriver(WebDriver webDriver) {
         changeWebDriverWithoutLog(webDriver);
         logBrowserRunData(webDriver);
+        switchToSmartWaitWebDriver(webDriver);
     }
     
-    public static void changeWebDriverWithoutLog(WebDriver webDriver) {
+    private static void changeWebDriverWithoutLog(WebDriver webDriver) {
         localWebServerStorage.set(webDriver);
         RunConfiguration.storeDriver(webDriver);
         setTimeout();
@@ -253,7 +249,7 @@ public class DriverFactory {
             IOException, InterruptedException, AppiumStartException, Exception {
 
         if (null != localWebServerStorage.get()
-                && null != ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
+                && null != getRemoteSessionId(localWebServerStorage.get())) {
             logger.logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
             closeWebDriver();
         }
@@ -273,7 +269,7 @@ public class DriverFactory {
 
         WebDriver webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities);
         saveWebDriverSessionData(webDriver);
-
+        switchToSmartWaitWebDriver(webDriver);
         return webDriver;
     }
 
@@ -285,7 +281,7 @@ public class DriverFactory {
         }
 
         if (null != localWebServerStorage.get()
-                && null != ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
+                && null != getRemoteSessionId(localWebServerStorage.get())) {
             logger.logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
             closeWebDriver();
         }
@@ -341,6 +337,7 @@ public class DriverFactory {
                         MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
         }
         saveWebDriverSessionData(webDriver);
+        switchToSmartWaitWebDriver(webDriver);
         return webDriver;
     }
 
@@ -641,7 +638,9 @@ public class DriverFactory {
             return WebMobileDriverFactory.startExisitingMobileDriver(WebUIDriverType.fromStringValue(remoteDriverType),
                     sessionId, remoteServerUrl);
         }
-        return new ExistingRemoteWebDriver(new URL(remoteServerUrl), sessionId);
+        WebDriver driver = new ExistingRemoteWebDriver(new URL(remoteServerUrl), sessionId);
+        switchToSmartWaitWebDriver(driver);
+        return driver;
     }
 
     private static void logBrowserRunData(WebDriver webDriver) {
@@ -760,7 +759,7 @@ public class DriverFactory {
         startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
         try {
-            if (null == getRemoteSessionId((WebDriver) localWebServerStorage.get())) {
+            if (null == getRemoteSessionId(localWebServerStorage.get())) {
                 switchToAvailableWindow();
             }
         } catch (WebDriverException e) {

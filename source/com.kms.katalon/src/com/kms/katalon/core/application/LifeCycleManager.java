@@ -200,9 +200,9 @@ public class LifeCycleManager {
                 try {
                     startUpGUIMode();
 
-                    scheduleCollectingStatistics();
+                    ApplicationStaupHandler.scheduleCollectingStatistics();
 
-                    if (checkActivation(eventBroker)) {
+                    if (ApplicationStaupHandler.checkActivation()) {
                         eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
                     }
 

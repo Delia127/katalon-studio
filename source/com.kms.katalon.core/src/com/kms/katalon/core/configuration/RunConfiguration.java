@@ -108,7 +108,9 @@ public class RunConfiguration {
     
     public static final String PLUGIN_TEST_LISTENERS = "pluginTestListeners";
     
-    public static final String SMART_WAIT_MODE = "smartWaitEnabled";
+    public static final String LOCAL_SMART_WAIT_MODE = "localSmartWaitEnabled";
+    
+    public static final String GLOBAL_SMART_WAIT_MODE = "globalSmartWaitEnabled";
     
     private static String settingFilePath;
 

@@ -1,4 +1,4 @@
 0=${buildNumber}
-1=6.3.4
+1=7.0.0
 2=${build.profile}
 3=internal

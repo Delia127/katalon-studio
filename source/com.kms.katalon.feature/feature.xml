@@ -324,7 +324,6 @@
       <import plugin="com.google.guava" version="23.0.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.lang3" version="3.1.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.logging" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.composer.integration.slack"/>
    </requires>
 
    <plugin
@@ -1577,13 +1576,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.kms.katalon.composer.integration.slack"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.qualifier"
-         unpack="false"/>
-
-   <plugin
          id="com.kms.katalon.composer.codeassist"
          download-size="0"
          install-size="0"
@@ -1707,13 +1699,6 @@
          download-size="0"
          install-size="0"
          version="1.0.0.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.jasper"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -2052,20 +2037,6 @@
 
    <plugin
          id="org.zeroturnaround.zt-process"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.composer.integration.jira"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.integration.jira"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -2597,13 +2568,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.kms.katalon.composer.integration.qtest.activation"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.katalon.platform"
          download-size="0"
          install-size="0"
@@ -2632,9 +2596,86 @@
          unpack="false"/>
 
    <plugin
+         id="com.fasterxml.jackson.core.jackson-annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.core.jackson-core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.core.jackson-databind"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.dataformat.jackson-dataformat-xml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.module.jackson-module-jaxb-annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.ui.themes"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="com.kms.katalon.core.windows"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.composer.windows"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.execution.windows"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.log4j"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.auth0.java-jwt"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>

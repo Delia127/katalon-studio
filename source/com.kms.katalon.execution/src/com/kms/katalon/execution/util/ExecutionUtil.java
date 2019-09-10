@@ -134,7 +134,7 @@ public class ExecutionUtil {
         executionProperties.put(RunConfiguration.EXECUTION_DRIVER_PROPERTY,
                 getDriverExecutionProperties(driverConnectors));
         
-        executionProperties.put(RunConfiguration.SMART_WAIT_MODE,
+        executionProperties.put(RunConfiguration.GLOBAL_SMART_WAIT_MODE,
                 ExecutionUtil.getDefaultSmartWaitMode().booleanValue());
 
         propertyMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);

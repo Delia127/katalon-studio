@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
-import com.kms.katalon.composer.mobile.objectspy.dialog.MobileObjectSpyDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementDialog;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -17,9 +17,9 @@ public class CapturedObjectTableViewer extends CTableViewer {
 
     private List<CapturedMobileElement> capturedElements;
 
-    private MobileObjectSpyDialog dialog;
+    private MobileElementDialog dialog;
 
-    public CapturedObjectTableViewer(Composite parent, int style, MobileObjectSpyDialog dialog) {
+    public CapturedObjectTableViewer(Composite parent, int style, MobileElementDialog dialog) {
         super(parent, style);
         this.dialog = dialog;
     }

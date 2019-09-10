@@ -9,6 +9,7 @@ import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.webui.common.internal.SmartWait;
+import com.kms.katalon.selenium.driver.IDelayableDriver;
 
 /**
  * Event listener that triggers smart wait functionality on
@@ -20,14 +21,67 @@ import com.kms.katalon.core.webui.common.internal.SmartWait;
 public class SmartWaitWebEventListener extends AbstractWebDriverEventListener {
 
     @Override
+    public void beforeClickOn(WebElement element, WebDriver driver) {
+        doDelay(driver);
+    }
+
+    @Override
+    public void beforeChangeValueOf(WebElement element, WebDriver driver, CharSequence[] keysToSend) {
+        doDelay(driver);
+    }
+
+    @Override
+    public void beforeNavigateBack(WebDriver driver) {
+        doDelay(driver);
+    }
+
+    @Override
+    public void beforeNavigateForward(WebDriver driver) {
+        doDelay(driver);
+    }
+
+    @Override
+    public void beforeNavigateRefresh(WebDriver driver) {
+        doDelay(driver);
+    }
+
+    @Override
+    public void beforeNavigateTo(String url, WebDriver driver) {
+        doDelay(driver);
+    }
+
+    @Override
+    public void beforeAlertAccept(WebDriver driver) {
+        doDelay(driver);
+    }
+
+    @Override
+    public void beforeAlertDismiss(WebDriver driver) {
+        doDelay(driver);
+    }
+
+    private void doDelay(WebDriver driver) {
+        if (IDelayableDriver.class.isInstance(driver)) {
+            ((IDelayableDriver) driver).delay();
+        }
+    }
+
+    @Override
     public void beforeFindBy(By arg0, WebElement arg1, WebDriver arg2) {
         doSmartWait();
     }
-    
-    public void doSmartWait() {
-        boolean smartWaitEnabled = (boolean) Optional
-                .ofNullable(RunConfiguration.getExecutionProperties().get("smartWaitEnabled")).orElse(false);
-        if (smartWaitEnabled) {
+
+    private void doSmartWait() {
+
+        boolean localSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.LOCAL_SMART_WAIT_MODE))
+                .orElse(false);
+
+        boolean globalSmartWaitEnabled = (boolean) Optional
+                .ofNullable(RunConfiguration.getExecutionProperties().get(RunConfiguration.GLOBAL_SMART_WAIT_MODE))
+                .orElse(false);
+
+        if (localSmartWaitEnabled || globalSmartWaitEnabled) {
             SmartWait.doSmartWait();
         }
     }

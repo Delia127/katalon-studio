@@ -139,7 +139,7 @@ public class MobileElementCommonHelper {
     }
 
     private static int gitIntValueForDuration(Number duration) {
-        return Math.round(duration.floatValue() * 1000);
+        return Math.round(duration.floatValue());
     }
 
     public static String getStringForDuration(Number duration) {

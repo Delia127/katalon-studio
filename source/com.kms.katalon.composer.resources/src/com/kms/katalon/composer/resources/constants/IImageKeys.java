@@ -18,13 +18,35 @@ public interface IImageKeys {
     public static final String INTRO_SCREEN_WELCOME = "intro/welcome_screen_BG.png"; //$NON-NLS-1$
 
     public static final String INTRO_SCREEN_WELCOME_SMALL = "intro/welcome_screen_BG_small.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_TITLE = "temp/title.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_WEB_TESTING = "temp/WebTesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_API_TESTING = "temp/APITesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_MOBILE_TESTING = "temp/MobileTesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_DATA_DRIVEN_TESTING = "temp/Data-drivenTesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_BDD_TESTING = "temp/BDDTesting.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_SDLC_INTEGRATION = "temp/CIIntegration.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_PLUGIN_STORE = "temp/plugin.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_ADVANCED_REPORT = "temp/report.png"; //$NON-NLS-1$
+    
+    public static final String IMG_INTRO_SCREEN_DESKTOP_APPS_TESTING = "temp/DesktopAppsTesting.png";//$NON-NLS-1$
+    
+    
     // End Intro
 
     // Welcome
     public static final String FAQ_34 = "welcome/faqs_34.png"; //$NON-NLS-1$
 
     public static final String USER_GUIDE_34 = "welcome/user_guide_34.png"; //$NON-NLS-1$
-    
+        
     public static final String KATALON_STORE_34 = "welcome/katalon_store_34.png"; //$NON-NLS-1$
 
     public static final String TUTORIAL_34 = "welcome/tutorial_34.png"; //$NON-NLS-1$
@@ -295,6 +317,8 @@ public interface IImageKeys {
     public static final String PROFILE_16 = "toolbar/profile_16.png";
     
     public static final String KATALON_STORE_24 = "toolbar/katalon_store_32x24.png"; //$NON-NLS-1$
+    
+    public static final String KATALON_ACCOUNT_24 = "toolbar/account_32x24.png"; //$NON-NLS-1$
     // End Toolbar
 
     // Test Case steps
@@ -439,6 +463,8 @@ public interface IImageKeys {
     public static final String JAVA_16 = "entity/java_16.png"; //$NON-NLS-1$
     
     public static final String GIT_FILE_16 = "entity/git_file_16.png"; //$NON-NLS-1$
+    
+    public static final String WINDOWS_ENTITY_16 = "windows_application_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar
@@ -475,6 +501,10 @@ public interface IImageKeys {
     public static final String PAUSE_16 = "pause_16.png"; //$NON-NLS-1$
 
     public static final String REFRESH_16 = "refresh_16.png"; //$NON-NLS-1$
+    
+    public static final String REFRESH_24 = "refresh_24.png"; //$NON-NLS-1$
+
+    public static final String REFRESH_DISABLED_24 = "refresh_disabled_24.png"; //$NON-NLS-1$
 
     public static final String RESTORE_16 = "restore_16.png"; //$NON-NLS-1$
 
@@ -574,6 +604,8 @@ public interface IImageKeys {
     public static final String DEBUG_PERSPECTIVE_16 = "debug_perspective_16.png"; //$NON-NLS-1$
 
     public static final String DESKTOP_16 = "desktop_16.png"; //$NON-NLS-1$
+    
+    public static final String WEB_16 = "web_16.png"; //$NON-NLS-1$
 
     public static final String OK_16 = "ok_16.png"; //$NON-NLS-1$
     

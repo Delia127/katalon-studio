@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-public class TestObject implements SelectorCollector {
+public class TestObject implements SelectorCollector, ITestObject {
 
     private TestObject parentObject; // Typically is parent Frame
 
@@ -24,7 +24,7 @@ public class TestObject implements SelectorCollector {
     private boolean useRelativeImagePath;
 
     private SelectorMethod selectorMethod = SelectorMethod.BASIC;
-    
+
     private Map<SelectorMethod, String> selectorCollection;
 
     public TestObject(String objectId) {
@@ -285,6 +285,7 @@ public class TestObject implements SelectorCollector {
      * 
      * @return the id of this test object
      */
+    @Override
     public String getObjectId() {
         return objectId;
     }

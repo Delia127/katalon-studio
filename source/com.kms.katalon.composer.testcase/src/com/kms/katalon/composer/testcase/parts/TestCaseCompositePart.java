@@ -173,6 +173,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     private boolean isScriptChanged;
 
+    private boolean variableEditorLastDirty = false;
+
     private TestCaseEntity testCase;
 
     private TestCaseEntity originalTestCase;
@@ -354,16 +356,20 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
-                            if (dirty.isDirty())
+                            if (dirty.isDirty() && variableEditorLastDirty) {
                                 updateVariableManualView();
+                            }
+                            variableEditorLastDirty = false;
                             Trackings.trackOpenObject("testCaseVariable");
                             variableTab = true;
                             return;
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX) {
-                            if (dirty.isDirty())
+                            if (dirty.isDirty() && !variableEditorLastDirty) {
                                 updateVariableScriptView();
+                            }
+                            variableEditorLastDirty = true;
                             variableTab = false;
                             return;
                         }
@@ -391,6 +397,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                 if (scriptNode == null) {
                     scriptNode = new ScriptNodeWrapper();
                 }
+            	childTestCasePart.loadASTNodesToTreeTable(scriptNode);
             }
             propertiesPart.loadInput();
             isInitialized = true;

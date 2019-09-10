@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.egit.core.op.CreateLocalBranchOperation.UpstreamConfig;
 import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.UIUtils;
 import org.eclipse.egit.ui.internal.UIIcons;
@@ -24,6 +23,7 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.jgit.lib.BranchConfig;
+import org.eclipse.jgit.lib.BranchConfig.BranchRebaseMode;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
@@ -60,7 +60,7 @@ public class CustomPushBranchPage extends WizardPage {
 
     private RefContentAssistProvider assist;
 
-    private UpstreamConfig upstreamConfig = UpstreamConfig.NONE;
+    private BranchRebaseMode upstreamConfig = BranchRebaseMode.NONE;
 
     private boolean forceUpdateSelected = false;
 
@@ -101,11 +101,11 @@ public class CustomPushBranchPage extends WizardPage {
     }
 
     boolean isConfigureUpstreamSelected() {
-        return upstreamConfig != UpstreamConfig.NONE;
+        return upstreamConfig != BranchRebaseMode.NONE;
     }
 
     boolean isRebaseSelected() {
-        return upstreamConfig == UpstreamConfig.REBASE;
+        return upstreamConfig == BranchRebaseMode.REBASE;
     }
 
     boolean isForceUpdateSelected() {

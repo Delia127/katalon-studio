@@ -249,39 +249,93 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     }
 
     private void addNode(HTMLActionMapping newAction) throws ClassNotFoundException {
-        AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
+        ExpressionStatementWrapper wrapper = shouldAddNewNode(newAction);
+        if (wrapper != null) {
+            beforeNodeAdded(newAction);
+            treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
+            treeViewer.refresh();
+            treeViewer.setSelection(new StructuredSelection(getLatestNode()));
+        }
+    }
+
+    /**
+     * Determine if the new action should be added (see
+     * {@link RecordedStepsView#preventDuplicatedActions}) Returns the value to
+     * be added to the AST, otherwise returns null
+     * 
+     * @param newAction
+     * The new action
+     * @return An {@link ExpressionStatementWrapper}
+     * @throws ClassNotFoundException
+     * If the method in the new action does not belong to built-in
+     * or custom keywords
+     */
+    private ExpressionStatementWrapper shouldAddNewNode(HTMLActionMapping newAction) throws ClassNotFoundException {
         WebElement targetElement = newAction.getTargetElement();
+        AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
+        ExpressionStatementWrapper wrapper = (ExpressionStatementWrapper) HTMLActionUtil
+                .generateWebUiTestStep(newAction, targetElement, treeTableInput.getMainClassNode());
+        if (targetElement != null && latestNode instanceof AstBuiltInKeywordTreeTableNode
+                && preventDuplicatedActions(newAction, latestNode, targetElement, wrapper)) {
+            return null;
+        }
+        return wrapper;
+    }
+
+    /**
+     * Operations that occur before the new list is re-rendered to the users:
+     * <ul>
+     * <li>Encrypt text for password</li>
+     * <li>Group Click and SetText on the same object</li>
+     * </ul>
+     * 
+     * @param newAction
+     */
+    private void beforeNodeAdded(HTMLActionMapping newAction) {
+        WebElement targetElement = newAction.getTargetElement();
+        AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
+
+        String objectId = latestNode.getTestObjectText();
+        String latestKeywordName = latestNode.getKeywordName();
         if (targetElement != null) {
             WebElementPropertyEntity property = targetElement.getProperty("type");
             if (property != null && "password".equals(property.getValue())) {
                 secureSetTextAction(newAction);
             }
+            if (HTMLAction.LeftClick.getMappedKeywordMethod().equals(latestKeywordName)
+                    && newAction.getAction().equals(HTMLAction.SetText) && objectId.equals(targetElement.getName())) {
+                removeTestStep();
+            }
         }
-        ExpressionStatementWrapper wrapper = (ExpressionStatementWrapper) HTMLActionUtil
-                .generateWebUiTestStep(newAction, targetElement, treeTableInput.getMainClassNode());
-        if (targetElement != null && latestNode instanceof AstBuiltInKeywordTreeTableNode
-                && preventDuplicatedActions(newAction, latestNode, targetElement, wrapper)) {
-            return;
-        }
-        treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
-        treeViewer.refresh();
-        treeViewer.setSelection(new StructuredSelection(getLatestNode()));
     }
 
     private void secureSetTextAction(HTMLActionMapping newAction) {
-    	if(newAction.getAction() != HTMLAction.SendKeys){
-    		 newAction.setAction(HTMLAction.SetEncryptedText);
-    	        HTMLActionParamValueType passwordParam = newAction.getData()[0];
-    	        ConstantExpressionWrapper stringWrapper = (ConstantExpressionWrapper) passwordParam.getValue();
-    	        String password = stringWrapper.getValueAsString();
-    	        try {
-    	            stringWrapper.setValue(CryptoUtil.encode(CryptoUtil.getDefault(password)));
-    	        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-    	            LoggerSingleton.logError(e);
-    	        }
-    	}       
+        if (newAction.getAction() != HTMLAction.SendKeys) {
+            newAction.setAction(HTMLAction.SetEncryptedText);
+            HTMLActionParamValueType passwordParam = newAction.getData()[0];
+            ConstantExpressionWrapper stringWrapper = (ConstantExpressionWrapper) passwordParam.getValue();
+            String password = stringWrapper.getValueAsString();
+            try {
+                stringWrapper.setValue(CryptoUtil.encode(CryptoUtil.getDefault(password)));
+            } catch (UnsupportedEncodingException | GeneralSecurityException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
     }
 
+    /**
+     * Prevent:
+     * <ul>
+     * <li>Multiple SetText on the same object</li>
+     * <li>Multiple Click on the same object</li>
+     * </ul>
+     * 
+     * @param newAction
+     * @param latestNode
+     * @param targetElement
+     * @param wrapper
+     * @return
+     */
     private boolean preventDuplicatedActions(HTMLActionMapping newAction, AstBuiltInKeywordTreeTableNode latestNode,
             WebElement targetElement, ExpressionStatementWrapper wrapper) {
         String objectId = latestNode.getTestObjectText();
@@ -289,6 +343,12 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         String newActionName = newAction.getAction().getName();
         if (objectId.equals(targetElement.getName())) {
             if (preventAddMultiSetTextAction(latestKeywordName, newActionName)) {
+
+                WebElementPropertyEntity property = targetElement.getProperty("type");
+                if (property != null && "password".equals(property.getValue())) {
+                    secureSetTextAction(newAction);
+                }
+
                 modifyStep(wrapper, latestNode);
                 return true;
             }

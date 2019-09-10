@@ -244,11 +244,18 @@ public class NewKeywordHandler {
             String keywords = buildKeywordScript();
             
             StringBuilder scriptBuilder = new StringBuilder();
-            scriptBuilder.append(String.format("package %s\n", dialog.getParentPackage().getElementName()))
-                         .append(imports)
-                         .append("\n\n")
-                         .append(String.format("class %s {\n %s \n}", dialog.getName(), keywords));
-            
+            if (dialog.getParentPackage().getElementName().equals("")) {
+                scriptBuilder.append(imports)
+                        .append("\n\n")
+                        .append(String.format("class %s {\n %s \n}", dialog.getName(), keywords));
+            } else {
+                scriptBuilder.append(String.format("package %s\n", dialog.getParentPackage().getElementName()))
+                        .append(imports)
+                        .append("\n\n")
+                        .append(String.format("class %s {\n %s \n}", dialog.getName(), keywords));
+
+            }
+
             return scriptBuilder.toString();
         }
         

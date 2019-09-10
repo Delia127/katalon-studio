@@ -3,6 +3,7 @@ package com.kms.katalon.composer.explorer.parts;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,7 +69,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchCommandConstants;
@@ -79,7 +79,6 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
-import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -109,6 +108,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class ExplorerPart {
+    
+    private static ExplorerPart instance;
 
     private static final String SEARCH_TEXT_DEFAULT_VALUE = StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE;
 
@@ -178,8 +179,13 @@ public class ExplorerPart {
 
     private MPart part;
 
+    public static ExplorerPart getInstance() {
+        return instance;
+    }
+
     @PostConstruct
     public void createPartControl(final Composite parent, MPart mpart) {
+        instance = this;
         this.parent = parent;
         this.part = mpart;
         updateToolItemStatus();
@@ -620,13 +626,13 @@ public class ExplorerPart {
 
     @Inject
     @Optional
-    private void refreshTree(@UIEventTopic(EventConstants.EXPLORER_REFRESH) Object object) {
+    public void refreshTree(@UIEventTopic(EventConstants.EXPLORER_REFRESH) Object object) {
         refresh(null);
     }
 
     @Inject
     @Optional
-    private void refreshTreeEntity(@UIEventTopic(EventConstants.EXPLORER_REFRESH_TREE_ENTITY) Object object) {
+    public void refreshTreeEntity(@UIEventTopic(EventConstants.EXPLORER_REFRESH_TREE_ENTITY) Object object) {
         refresh(object);
     }
 
@@ -724,7 +730,7 @@ public class ExplorerPart {
     
     @Inject
     @Optional
-    private void setSelectedItems(@UIEventTopic(EventConstants.EXPLORER_SET_SELECTED_ITEMS) Object[] objects) {
+    public void setSelectedItems(@UIEventTopic(EventConstants.EXPLORER_SET_SELECTED_ITEMS) Object[] objects) {
         if (objects == null) {
             return;
         }
@@ -827,8 +833,7 @@ public class ExplorerPart {
                 // do not allow drag in Reports and Keywords area
                 try {
                     for (TreeItem item : selection) {
-                        if (item.getData() instanceof ReportTreeEntity || item.getData() instanceof KeywordTreeEntity
-                                || item.getData() instanceof PackageTreeEntity) {
+                        if (item.getData() instanceof ReportTreeEntity || item.getData() instanceof PackageTreeEntity) {
                             event.doit = false;
                         } else if (item.getData() instanceof FolderTreeEntity
                                 && ((FolderTreeEntity) item.getData()).getCopyTag()
@@ -901,6 +906,14 @@ public class ExplorerPart {
             return;
         }
         treeEntities.addAll(input.parallelStream().map(item -> (ITreeEntity) item).collect(Collectors.toList()));
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Object> getSelectedTreeEntities() {
+        if (treeViewer == null) {
+            return Collections.emptyList();
+        }
+        return treeViewer.getStructuredSelection().toList();
     }
 
     @PreDestroy

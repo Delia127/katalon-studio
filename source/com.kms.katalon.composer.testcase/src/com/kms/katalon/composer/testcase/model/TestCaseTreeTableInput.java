@@ -597,6 +597,9 @@ public class TestCaseTreeTableInput {
 	}
 
 	private AstTreeTableNode getTopItem() {
+	    if (treeTableViewer == null) {
+	        return null;
+	    }
 		TreeItem topItem = treeTableViewer.getTree().getTopItem();
 		if (topItem != null && topItem.getData() instanceof AstTreeTableNode) {
 			return (AstTreeTableNode) topItem.getData();

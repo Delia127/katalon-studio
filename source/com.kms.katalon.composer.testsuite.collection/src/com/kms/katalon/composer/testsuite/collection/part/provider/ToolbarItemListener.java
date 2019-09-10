@@ -1,12 +1,16 @@
 package com.kms.katalon.composer.testsuite.collection.part.provider;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -29,8 +33,14 @@ import com.kms.katalon.composer.testsuite.collection.dialog.TestSuiteSelectionDi
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTestProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTestSuiteCollection;
+import com.kms.katalon.integration.analytics.handler.AnalyticsGridHandler;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiveListener {
 
@@ -73,7 +83,12 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
                 executeTestRun();
                 return;
             }
+            case CREATE_TEST_PLAN: {
+                createTestPlan();
+                return;
+            }
         }
+
     }
 
     private TableViewer getTableViewer() {
@@ -82,6 +97,54 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
 
     private List<TestSuiteRunConfiguration> getTableItems() {
         return provider.getTableItems();
+    }
+
+    private void createTestPlan() {
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(currentProject.getFolderLocation());
+        try {
+            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+            String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+            String email = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            AnalyticsProject analyticsProject = analyticsSettingStore.getProject();
+
+            String nameFileZip = currentProject.getName();
+            AnalyticsTestProject analyticsTestProject = AnalyticsGridHandler.uploadProject(serverUrl, email, password,
+                    nameFileZip, analyticsProject, currentProject.getFolderLocation(),
+                    new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
+
+            TestSuiteCollectionEntity testSuiteCollection = provider.getTestSuiteCollection();
+            String name = testSuiteCollection.getName();
+            List<AnalyticsTestSuiteCollection> listAnalyticsTestSuiteCollection = analyticsTestProject
+                    .getTestSuiteCollections();
+            if (listAnalyticsTestSuiteCollection == null) {
+                MultiStatusErrorDialog.showErrorDialog(StringConstants.LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN,
+                        StringConstants.LS_MSG_ANALYTICS_TEST_PROJECT_HAVE_NO_TSC, "");
+                return;
+            }
+
+            AnalyticsTestSuiteCollection analyticsTestSuiteCollection = listAnalyticsTestSuiteCollection.stream()
+                    .filter(tsc -> tsc.getName().equals(testSuiteCollection.getIdForDisplay()))
+                    .findFirst()
+                    .orElse(null);
+            if (analyticsTestSuiteCollection == null) {
+                MultiStatusErrorDialog.showErrorDialog(StringConstants.LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN,
+                        StringConstants.LS_MSG_ANALYTICS_TSC_NOT_FOUND, "");
+                return;
+            }
+
+            AnalyticsGridHandler.createTestPlan(serverUrl, email, password, name, analyticsProject,
+                    analyticsTestProject, analyticsTestSuiteCollection,
+                    new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
+
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.LS_MSG_ANALYTICS_UNABLE_TO_CREATE_TEST_PLAN,
+                    e.getMessage());
+        }
+
+        return;
     }
 
     private void executeTestRun() {
@@ -101,9 +164,9 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
                     continue;
                 }
 
-                TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration.newInstance(
-                        selectedTestSuite, TestExecutionGroupCollector.getInstance().getDefaultConfiguration(
-                                ProjectController.getInstance().getCurrentProject()));
+                TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration
+                        .newInstance(selectedTestSuite, TestExecutionGroupCollector.getInstance()
+                                .getDefaultConfiguration(ProjectController.getInstance().getCurrentProject()));
                 getTableItems().add(newTestSuiteRunConfig);
                 newItems.add(newTestSuiteRunConfig);
             }
@@ -126,8 +189,8 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
         TestSuiteSelectionDialog dialog = new TestSuiteSelectionDialog(Display.getCurrent().getActiveShell(),
                 new EntityLabelProvider(), new EntityProvider(), new TestSuiteViewerFilter(entityProvider));
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-        dialog.setInput(TreeEntityUtil.getChildren(null, FolderController.getInstance()
-                .getTestSuiteRoot(currentProject)));
+        dialog.setInput(
+                TreeEntityUtil.getChildren(null, FolderController.getInstance().getTestSuiteRoot(currentProject)));
         if (dialog.open() != Dialog.OK) {
             return Collections.emptyList();
         }
@@ -280,6 +343,7 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
         REMOVE(StringConstants.REMOVE),
         UP(StringConstants.UP),
         DOWN(StringConstants.DOWN),
+        CREATE_TEST_PLAN(StringConstants.PA_ACTION_ANALYTICS_CREATE_TEST_PLAN),
         EXECUTE(StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION);
 
         private final String id;

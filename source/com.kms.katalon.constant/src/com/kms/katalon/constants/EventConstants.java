@@ -343,6 +343,8 @@ public class EventConstants {
 
     // Analytics Preference Event
     public static final String IS_INTEGRATED = "SETTINGS/INTERGRATION/KATALON_ANALYTICS";
+    
+    public static final String STORE_PROJECT_CODE_TO_CLOUD = "INTERGRATION/KATALON_ANALYTICS/STORE_PROJECT_CODE_TO_CLOUD";
 
     // WS Verification Events
     public static final String WS_VERIFICATION_LOG_UPDATED = "WS_VERIFICATION/LOG_UPDATED";
@@ -372,6 +374,10 @@ public class EventConstants {
 	public static final String API_QUICK_START_WEB_DIALOG_OPEN = "API/OPEN_QUICK_START_WEB_DIALOG";
 	   
 	public static final String API_QUICK_START_MOBILE_DIALOG_OPEN = "API/OPEN_QUICK_START_MOBILE_DIALOG";
+	
+	// Analytics Quick Configurations Dialog
+	
+	public static final String ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN = "ANALYTIC/OPEN_QUICK_ANALYTICS_INTEGRATION";
 
     // Git Events
     public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";
@@ -397,4 +403,6 @@ public class EventConstants {
     public static final String JIRA_PLUGIN_INSTALLED = "PLUGIN/JIRA_INSTALLED";
 
     public static final String JIRA_PLUGIN_UNINSTALLED = "PLUGIN/JIRA_UNINSTALLED";
+    
+    public static final String BASIC_REPORT_PLUGIN_INSTALLED = "PLUGIN/BASIC_REPORT_INSTALLED";
 };

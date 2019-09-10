@@ -32,7 +32,13 @@ public class ToolbarProcessor {
 
     public static final String KATALON_EXECUTION_TOOLBAR_ID = "com.kms.katalon.composer.toolbar.execution";
     
-    public static final String KATALON_PLUGIN_TOOLBAR_ID = "com.kms.katalon.composer.toolbar.plugin";
+    public static final String KATALON_ACCOUNT_TOOLBAR_ID = "com.kms.katalon.composer.toolbar.account";
+    
+    public static final String KATALON_ACCOUNT_ID = "com.kms.katalon.composer.toolbar.account";
+    
+    public static final String KATALON_TOOLITEM_ACCOUNT_ID = "com.kms.katalon.composer.toolbar.account.toolitem";
+
+    public static final String KATALON_MENUITEM_ACCOUNT_ID = "com.kms.katalon.composer.toolbar.account.toolitem.menu.username";
     
     public static final String[] TOOLBAR_IDS = new String[] {
             KATALON_MAIN_TOOLBAR_ID,
