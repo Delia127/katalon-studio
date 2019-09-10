@@ -257,14 +257,18 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
             treeViewer.setSelection(new StructuredSelection(getLatestNode()));
         }
     }
-    
+
     /**
-     * Determine if the new action should be added (see {@link RecordedStepsView#preventDuplicatedActions})
-     * Returns the value to be added to the AST, otherwise returns null
+     * Determine if the new action should be added (see
+     * {@link RecordedStepsView#preventDuplicatedActions}) Returns the value to
+     * be added to the AST, otherwise returns null
      * 
-     * @param newAction The new action
+     * @param newAction
+     * The new action
      * @return An {@link ExpressionStatementWrapper}
-     * @throws ClassNotFoundException If the method in the new action does not belong to built-in or custom keywords
+     * @throws ClassNotFoundException
+     * If the method in the new action does not belong to built-in
+     * or custom keywords
      */
     private ExpressionStatementWrapper shouldAddNewNode(HTMLActionMapping newAction) throws ClassNotFoundException {
         WebElement targetElement = newAction.getTargetElement();
@@ -290,6 +294,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     private void beforeNodeAdded(HTMLActionMapping newAction) {
         WebElement targetElement = newAction.getTargetElement();
         AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
+
         String objectId = latestNode.getTestObjectText();
         String latestKeywordName = latestNode.getKeywordName();
         if (targetElement != null) {
@@ -297,7 +302,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
             if (property != null && "password".equals(property.getValue())) {
                 secureSetTextAction(newAction);
             }
-
             if (HTMLAction.LeftClick.getMappedKeywordMethod().equals(latestKeywordName)
                     && newAction.getAction().equals(HTMLAction.SetText) && objectId.equals(targetElement.getName())) {
                 removeTestStep();
@@ -306,17 +310,17 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     }
 
     private void secureSetTextAction(HTMLActionMapping newAction) {
-    	if(newAction.getAction() != HTMLAction.SendKeys){
-    		 newAction.setAction(HTMLAction.SetEncryptedText);
-    	        HTMLActionParamValueType passwordParam = newAction.getData()[0];
-    	        ConstantExpressionWrapper stringWrapper = (ConstantExpressionWrapper) passwordParam.getValue();
-    	        String password = stringWrapper.getValueAsString();
-    	        try {
-    	            stringWrapper.setValue(CryptoUtil.encode(CryptoUtil.getDefault(password)));
-    	        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-    	            LoggerSingleton.logError(e);
-    	        }
-    	}       
+        if (newAction.getAction() != HTMLAction.SendKeys) {
+            newAction.setAction(HTMLAction.SetEncryptedText);
+            HTMLActionParamValueType passwordParam = newAction.getData()[0];
+            ConstantExpressionWrapper stringWrapper = (ConstantExpressionWrapper) passwordParam.getValue();
+            String password = stringWrapper.getValueAsString();
+            try {
+                stringWrapper.setValue(CryptoUtil.encode(CryptoUtil.getDefault(password)));
+            } catch (UnsupportedEncodingException | GeneralSecurityException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
     }
 
     /**
@@ -339,6 +343,12 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         String newActionName = newAction.getAction().getName();
         if (objectId.equals(targetElement.getName())) {
             if (preventAddMultiSetTextAction(latestKeywordName, newActionName)) {
+
+                WebElementPropertyEntity property = targetElement.getProperty("type");
+                if (property != null && "password".equals(property.getValue())) {
+                    secureSetTextAction(newAction);
+                }
+
                 modifyStep(wrapper, latestNode);
                 return true;
             }

@@ -266,7 +266,7 @@ public class TestSuitePartDataBindingView {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 final ISelection selection = testCaseVariableTableViewer.getSelection();
-                setTypeToolItem.setEnabled(!selection.isEmpty());
+                //setTypeToolItem.setEnabled(!selection.isEmpty());
                 if (!(selection instanceof StructuredSelection)) {
                     return;
                 }
@@ -282,7 +282,7 @@ public class TestSuitePartDataBindingView {
                         break;
                     }
                 }
-                setTestDataToolItem.setEnabled(isAnyDataVariableSelected);
+                //setTestDataToolItem.setEnabled(isAnyDataVariableSelected);
             }
         });
 
@@ -302,6 +302,7 @@ public class TestSuitePartDataBindingView {
 
         ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
         ToolBar toolBar = toolBarManager.createControl(variableToolBarComposite);
+        toolBar.setForeground(ColorUtil.getToolBarForegroundColor());
 
         final Image editImage = ImageConstants.IMG_16_EDIT;
         final Image editDisabledImage = ImageConstants.IMG_16_EDIT_DISABLED;
@@ -310,7 +311,7 @@ public class TestSuitePartDataBindingView {
         setTypeToolItem.setText(ComposerTestsuiteMessageConstants.LBL_SET_TYPE);
         setTypeToolItem.setImage(editImage);
         setTypeToolItem.setDisabledImage(editDisabledImage);
-        setTypeToolItem.setEnabled(false);
+//      setTypeToolItem.setEnabled(false);
 
         Menu setTypeMenu = new Menu(setTypeToolItem.getParent().getShell());
         fillSetTypeToolItemMenu(setTypeMenu);
@@ -321,7 +322,7 @@ public class TestSuitePartDataBindingView {
         setTestDataToolItem.setText(ComposerTestsuiteMessageConstants.LBL_SET_TEST_DATA);
         setTestDataToolItem.setImage(editImage);
         setTestDataToolItem.setDisabledImage(editDisabledImage);
-        setTestDataToolItem.setEnabled(false);
+//        setTestDataToolItem.setEnabled(false);
 
         setTestDataToolItem.addSelectionListener(new ToolItemDropdownSelectionListener() {
             @Override

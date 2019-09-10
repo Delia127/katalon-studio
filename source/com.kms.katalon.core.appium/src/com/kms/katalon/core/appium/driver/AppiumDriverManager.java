@@ -3,7 +3,9 @@ package com.kms.katalon.core.appium.driver;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.ServerSocket;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -23,6 +25,8 @@ import org.openqa.selenium.os.CommandLine;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
+import org.openqa.selenium.remote.http.HttpClient;
+import org.openqa.selenium.remote.http.HttpClient.Factory;
 
 import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.core.appium.constants.CoreAppiumMessageConstants;
@@ -34,11 +38,16 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.ProcessUtil;
+import com.kms.katalon.core.util.internal.ProxyUtil;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileCommand;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.AppiumCommandExecutor;
 import io.appium.java_client.service.local.InvalidNodeJSInstance;
 import io.appium.java_client.service.local.flags.AndroidServerFlag;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
@@ -480,11 +489,22 @@ public class AppiumDriverManager {
             while (time < timeOut) {
                 try {
                     AppiumDriver<?> driver = null;
-                    if (isIOSDriverType(driverType)) {
-                        driver = new IOSDriver(appiumServerUrl, capabilities);
-                    } else if (isAndroidDriverType(driverType)) {
-                        driver = new SwipeableAndroidDriver(appiumServerUrl, capabilities);
+                    try {
+                        AppiumCommandExecutor appiumExecutor = getAppiumExecutorForRemoteDriver(appiumServerUrl);
+                        if (isIOSDriverType(driverType)) {
+                            driver = new IOSDriver(appiumExecutor, capabilities);
+                        } else if (isAndroidDriverType(driverType)) {
+                            driver = new SwipeableAndroidDriver(appiumExecutor, capabilities);
+                        }
+                    } catch (URISyntaxException | IOException e) {
+                        logger.logWarning("Unable to create AppiumCommandExecutor under current proxy settings.");
+                        if (isIOSDriverType(driverType)) {
+                            driver = new IOSDriver(appiumServerUrl, capabilities);
+                        } else if (isAndroidDriverType(driverType)) {
+                            driver = new SwipeableAndroidDriver(appiumServerUrl, capabilities);
+                        }
                     }
+
                     if (driver == null) {
                         throw new MobileDriverInitializeException(MessageFormat
                                 .format(AppiumStringConstants.CANNOT_START_MOBILE_DRIVER_INVALID_TYPE, driver));
@@ -507,20 +527,66 @@ public class AppiumDriverManager {
             throw new MobileDriverInitializeException(
                     MessageFormat.format(AppiumStringConstants.CANNOT_CONNECT_TO_APPIUM_AFTER_X, timeOut));
         } finally {
-            logMobileRunData();
+            logMobileRunData(capabilities);
         }
     }
+    
+    private static Factory getClientFactoryForRemoteDriverExecutor(Proxy proxy) {
+        return new Factory() {
 
-    private static void logMobileRunData() {
+            private org.openqa.selenium.remote.internal.OkHttpClient.Factory factory;
+            {
+                factory = new org.openqa.selenium.remote.internal.OkHttpClient.Factory();
+            }
+
+            @Override
+            public HttpClient createClient(URL url) {
+                return Factory.super.createClient(url);
+            }
+
+            @Override
+            public void cleanupIdleClients() {
+                factory.cleanupIdleClients();
+            }
+
+            @Override
+            public org.openqa.selenium.remote.internal.OkHttpClient.Builder builder() {
+                return factory.builder().proxy(proxy);
+            }
+        };
+    }
+
+    
+    private static AppiumCommandExecutor getAppiumExecutorForRemoteDriver(URL remoteWebServerUrl) throws URISyntaxException, IOException {
+        ProxyInformation proxyInfo = RunConfiguration.getProxyInformation();
+        Factory clientFactory = getClientFactoryForRemoteDriverExecutor(ProxyUtil.getProxy(proxyInfo));
+        AppiumCommandExecutor executor = new AppiumCommandExecutor(MobileCommand.commandRepository, remoteWebServerUrl, clientFactory);
+        return executor;
+    }
+
+    /**
+     * @return the remote web driver url if running Mobile keyword on cloud services
+     */
+    public static String getRemoteWebDriverServerUrl() {
+        return RunConfiguration.getDriverSystemProperty(RunConfiguration.REMOTE_DRIVER_PROPERTY, "remoteWebDriverUrl");
+    }
+
+    private static void logMobileRunData(DesiredCapabilities desiredCapabilities) {
         if (logger != null) {
-            logger.logRunData(EXECUTED_DEVICE_ID, getDeviceId(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
-            logger.logRunData(EXECUTED_DEVICE_NAME, getDeviceName(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
-            logger.logRunData(EXECUTED_DEVICE_MODEL, getDeviceModel(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
-            logger.logRunData(EXECUTED_DEVICE_MANUFACTURER,
-                    getDeviceManufacturer(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
-            logger.logRunData(EXECUTED_DEVICE_OS, getDeviceOS(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
-            logger.logRunData(EXECUTED_DEVICE_OS_VERSON,
-                    getDeviceOSVersion(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            String remoteUrl = getRemoteWebDriverServerUrl(); 
+            if (StringUtils.isNotEmpty(remoteUrl)) {
+                logger.logRunData("desiredCapabilities", JsonUtil.toJson(desiredCapabilities.toJson()));
+                logger.logRunData("remoteDriverUrl", remoteUrl);
+            } else {
+                logger.logRunData(EXECUTED_DEVICE_ID, getDeviceId(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+                logger.logRunData(EXECUTED_DEVICE_NAME, getDeviceName(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+                logger.logRunData(EXECUTED_DEVICE_MODEL, getDeviceModel(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+                logger.logRunData(EXECUTED_DEVICE_MANUFACTURER,
+                        getDeviceManufacturer(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+                logger.logRunData(EXECUTED_DEVICE_OS, getDeviceOS(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+                logger.logRunData(EXECUTED_DEVICE_OS_VERSON,
+                        getDeviceOSVersion(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            }
         }
     }
 

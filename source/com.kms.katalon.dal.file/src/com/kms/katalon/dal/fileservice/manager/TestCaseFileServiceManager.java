@@ -106,6 +106,9 @@ public class TestCaseFileServiceManager {
             // If test case changed the name, clean up the old one in cache
             // before saving the new one
             String oldTestCaseLocation = EntityService.getInstance().getEntityCache().getKey(testCase);
+            if (oldTestCaseLocation == null) {
+                oldTestCaseLocation = testCase.getLocation();
+            }
 
             refactorReferencingTestSuites(project, testCase, oldTestCaseLocation);
 

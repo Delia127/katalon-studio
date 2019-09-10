@@ -80,7 +80,7 @@ public class ProjectController extends EntityController {
                 SubMonitor progress = SubMonitor.convert(monitor, 100);
                 DataProviderState.getInstance().setCurrentProject(project);
 
-                KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+//                KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
 
                 try {
                     GroovyUtil.initGroovyProject(project,
@@ -141,8 +141,8 @@ public class ProjectController extends EntityController {
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
 
-            LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
-            KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
+//            LogUtil.printOutputLine("Parsing custom keywords in Plugins folder...");
+//            KeywordController.getInstance().loadCustomKeywordInPluginDirectory(project);
             GroovyUtil.initGroovyProject(project, ProjectController.getInstance().getCustomKeywordPlugins(project), null);
 
             LogUtil.printOutputLine("Generating global variables...");
@@ -309,5 +309,11 @@ public class ProjectController extends EntityController {
         URLClassLoader classLoader = GroovyUtil.getProjectClasLoader(project);
         classLoaderLookup.put(projectLocation, classLoader);
         return classLoader;
+    }
+
+    public void updateProjectClassLoader(ProjectEntity projectEntity) throws MalformedURLException, CoreException {
+        String projectLocation = projectEntity.getLocation();
+        URLClassLoader classLoader = GroovyUtil.getProjectClasLoader(projectEntity);
+        classLoaderLookup.put(projectLocation, classLoader);
     }
 }

@@ -62,6 +62,15 @@ public class ReportInjectionManagerAddon {
                 }
             }
         });
+        
+        eventBroker.subscribe(EventConstants.BASIC_REPORT_PLUGIN_INSTALLED, new EventHandler() {
+            @Override
+            public void handleEvent(Event event) {
+                if (ProjectController.getInstance().getCurrentProject() != null) {
+                    collectReportExportProviders();
+                }
+            }
+        });
     }
 
     private void collectReportExportProviders() {

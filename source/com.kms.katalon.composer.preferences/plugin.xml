@@ -8,12 +8,4 @@
             uri="fragment.e4xmi">
       </fragment>
    </extension>
-   <extension
-         point="com.kms.katalon.preferences.ProjectSettingPages">
-      <page
-            class="com.kms.katalon.composer.preferences.intergration.IntegrationPage"
-            id="com.kms.katalon.composer.preferences.integration"
-            name="Integration">
-      </page>
-   </extension>
 </plugin>

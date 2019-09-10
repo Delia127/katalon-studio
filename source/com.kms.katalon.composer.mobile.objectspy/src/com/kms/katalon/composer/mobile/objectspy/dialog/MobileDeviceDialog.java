@@ -1,53 +1,45 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Map;
-import java.util.UUID;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.impl.control.ScrollableComposite;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 
 public class MobileDeviceDialog extends Dialog {
 
-    private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_DEVICE_VIEW;
+    private static final String DIALOG_TITLE = "Device View";
 
     private Image currentScreenShot;
 
-    private Composite swtAwtContainter;
+    private Canvas canvas;
 
     public static final int DIALOG_WIDTH = 400;
 
@@ -56,12 +48,6 @@ public class MobileDeviceDialog extends Dialog {
     private double currentX = 0, currentY = 0, currentWidth = 0, currentHeight = 0;
 
     private double hRatio;
-
-    private JLabel scrImage;
-
-    private ImageIcon icon;
-
-    private java.awt.Frame frame;
 
     private boolean isDisposed;
 
@@ -86,57 +72,53 @@ public class MobileDeviceDialog extends Dialog {
         dialogAreaGridLayout.marginWidth = 0;
         dialogAreaGridLayout.marginHeight = 0;
 
-        scrolledComposite = new ScrolledComposite(dialogArea, SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite = new ScrollableComposite(dialogArea, SWT.H_SCROLL | SWT.V_SCROLL);
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
 
         scrolledComposite.setLayout(new GridLayout());
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        Composite container = new Composite(scrolledComposite, SWT.NULL);
-        final GridLayout compositeGridLayout = new GridLayout();
-        compositeGridLayout.marginHeight = 0;
-        compositeGridLayout.marginWidth = 0;
-        container.setLayout(compositeGridLayout);
-        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        Composite container = new Composite(scrolledComposite, SWT.BORDER);
+        container.setLayout(new FillLayout());
         scrolledComposite.setContent(container);
 
-        swtAwtContainter = new Composite(container, SWT.EMBEDDED | SWT.INHERIT_NONE);
-        swtAwtContainter.setBackground(ColorUtil.getBlackBackgroundColor());
+        canvas = new Canvas(container, SWT.NONE);
+        canvas.pack();
 
-        GridLayout layout = new GridLayout();
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
-        layout.verticalSpacing = 0;
-        layout.horizontalSpacing = 0;
-        swtAwtContainter.setLayout(new GridLayout());
-        swtAwtContainter.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        canvas.addPaintListener(new PaintListener() {
 
-        frame = SWT_AWT.new_Frame(swtAwtContainter);
-        
+            public void paintControl(PaintEvent e) {
+                if (currentScreenShot != null && !currentScreenShot.isDisposed()) {
+                    e.gc.drawImage(currentScreenShot, 0, 0);
 
-        scrImage = new JLabel();
-        scrImage.setHorizontalAlignment(JLabel.LEFT);
-        scrImage.setVerticalAlignment(JLabel.TOP);
-        scrImage.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (e.getButton() != MouseEvent.BUTTON1) {
-                    return;
+                    if (currentWidth != 0 && currentHeight != 0) {
+                        Color oldForegroundColor = e.gc.getForeground();
+                        e.gc.setForeground(ColorUtil.getColor("#76BF42"));
+                        int x = safeRoundDouble(currentX);
+                        int y = safeRoundDouble(currentY);
+                        int width = safeRoundDouble(currentWidth);
+                        int height = safeRoundDouble(currentHeight);
+
+                        e.gc.drawRectangle(x, y, width, height);
+                        e.gc.drawRectangle(x + 1, Math.max(y + 1, 0), Math.max(width - 2, 0), Math.max(height - 2, 0));
+
+                        e.gc.setForeground(oldForegroundColor);
+                    }
                 }
-                inspectElementAt(e.getX(), e.getY());
             }
         });
-        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-            JPanel panel = new JPanel();
-            panel.setLayout(new BorderLayout());
-            frame.add(panel, BorderLayout.CENTER);
-            panel.add(scrImage, BorderLayout.CENTER);
-        } else {
-            frame.add(scrImage);
-        }
-        frame.pack();
-        swtAwtContainter.pack();
+
+        canvas.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseDown(MouseEvent e) {
+                if (e.button == 1) {
+                    inspectElementAt(e.x, e.y);
+                }
+            }
+        });
+
         return dialogArea;
     }
 
@@ -157,8 +139,7 @@ public class MobileDeviceDialog extends Dialog {
     }
 
     private void scrollToElement(final Double x, final Double y) {
-        Rectangle elementRect = new Rectangle(x.intValue(), y.intValue());
-        scrolledComposite.setOrigin(elementRect.x, elementRect.y);
+        scrolledComposite.setOrigin(x.intValue(), y.intValue());
     }
 
     private Rectangle getCurrentViewportRect() {
@@ -173,45 +154,43 @@ public class MobileDeviceDialog extends Dialog {
 
     public void highlight(final double x, final double y, final double width, final double height) {
         // Scale the coordinator depend on the ratio between scaled image / source image
-        this.currentX = x * hRatio;
-        this.currentY = y * hRatio;
-        this.currentWidth = width * hRatio;
-        this.currentHeight = height * hRatio;
-        Display.getDefault().syncExec(new Runnable() {
+        Display.getCurrent().syncExec(new Runnable() {
             @Override
             public void run() {
+                double currentX = x * hRatio;
+                double currentY = y * hRatio;
+                double currentWidth = width * hRatio;
+                double currentHeight = height * hRatio;
                 if (!isElementOnScreen(currentX, currentY, currentWidth, currentHeight)) {
                     scrollToElement(currentX, currentY);
                 }
             }
         });
-        Thread thread = new Thread(new Runnable() {
+
+        Thread highlightThread = new Thread(new Runnable() {
+
             @Override
             public void run() {
-                JLabel c = scrImage;
-                JLabel label = new JLabel();
-                label.setOpaque(false);
-                label.setBorder(BorderFactory.createLineBorder(Color.green, 2));
-                label.setBounds(safeRoundDouble(currentX), safeRoundDouble(currentY), safeRoundDouble(currentWidth),
-                        safeRoundDouble(currentHeight));
-                // flash
-                for (int i = 0; i < 5; i++) {
-                    c.add(label);
-                    c.revalidate();
-                    c.repaint();
+                for (int i = 0; i < 9; i++) {
+                    if (i % 2 == 1) {
+                        MobileDeviceDialog.this.currentX = x * hRatio;
+                        MobileDeviceDialog.this.currentY = y * hRatio;
+                        MobileDeviceDialog.this.currentWidth = width * hRatio;
+                        MobileDeviceDialog.this.currentHeight = height * hRatio;
+                    } else {
+                        MobileDeviceDialog.this.currentX = 0;
+                        MobileDeviceDialog.this.currentY = 0;
+                        MobileDeviceDialog.this.currentWidth = 0;
+                        MobileDeviceDialog.this.currentHeight = 0;
+                    }
                     try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ex) {}
-                    c.remove(label);
-                    c.revalidate();
-                    c.repaint();
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ex) {}
+                        Thread.sleep(200L);
+                    } catch (InterruptedException e) {}
+                    UISynchronizeService.syncExec(() -> canvas.redraw());
                 }
             }
         });
-        thread.start();
+        highlightThread.start();
     }
 
     private Image scaleImage(Image image, double newWidth, double newHeight) {
@@ -235,14 +214,6 @@ public class MobileDeviceDialog extends Dialog {
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         shell.setText(DIALOG_TITLE);
-        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-            shell.addListener(SWT.Resize, new Listener() {
-                @Override
-                public void handleEvent(Event event) {
-                    refreshViewForMac();
-                }
-            });
-        }
     }
 
     @Override
@@ -276,31 +247,29 @@ public class MobileDeviceDialog extends Dialog {
 
     public void refreshDialog(File imageFile, MobileElement root) {
         try {
-            String userTempDir = System.getProperty("java.io.tmpdir");
 
             ImageDescriptor imgDesc = ImageDescriptor.createFromURL(imageFile.toURI().toURL());
             Image img = imgDesc.createImage();
 
-            // Calculate scaled ratio
-            hRatio = DIALOG_HEIGHT / (double) img.getBounds().height;
-
-            currentScreenShot = scaleImage(img, ((double) img.getBounds().width) * hRatio, DIALOG_HEIGHT);
-
             // Save scaled version
-            String scaledImageFile = userTempDir + File.separator + UUID.randomUUID() + "_scaled2.png";
-            ImageLoader loader = new ImageLoader();
-            loader.data = new ImageData[] { this.currentScreenShot.getImageData() };
-            loader.save(scaledImageFile, SWT.IMAGE_PNG);
+            getShell().getDisplay().syncExec(() -> {
+                Map<String, String> attributes = root.getAttributes();
+                double rootHeight = (double) img.getBounds().height;
+                if (attributes.containsKey(GUIObject.HEIGHT)) {
+                    rootHeight = Double.parseDouble(attributes.get(GUIObject.HEIGHT));
+                }
 
-            icon = new ImageIcon(scaledImageFile);
-            scrImage.setIcon(icon);
-            scrImage.revalidate();
-            scrImage.repaint();
-            
-            if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-                refreshViewForMac();
-                return;
-            }
+                // Calculate scaled ratio
+                double imageRatio = rootHeight / (double) img.getBounds().height;
+
+                hRatio = (double) (canvas.getSize().y / rootHeight);
+
+                currentScreenShot = scaleImage(img, ((double) img.getBounds().width) * imageRatio * hRatio,
+                        ((double) img.getBounds().height) * hRatio * imageRatio);
+
+                canvas.redraw();
+            });
+
             refreshView();
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
@@ -308,28 +277,16 @@ public class MobileDeviceDialog extends Dialog {
     }
 
     private void refreshView() {
-        if (scrolledComposite == null || icon == null) {
+        if (scrolledComposite == null || currentScreenShot == null) {
             return;
         }
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                scrolledComposite.setMinSize(icon.getIconWidth(), icon.getIconHeight());
+                scrolledComposite.setMinSize(currentScreenShot.getImageData().width,
+                        currentScreenShot.getImageData().height);
             }
         });
-    }
-
-    private void refreshViewForMac() {
-        if (scrolledComposite == null || icon == null || frame == null) {
-            return;
-        }
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                scrolledComposite.setMinSize(icon.getIconWidth(), icon.getIconHeight());
-            }
-        });
-        frame.pack();
     }
 
     @Override

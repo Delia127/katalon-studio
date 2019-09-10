@@ -1,8 +1,5 @@
 package com.kms.katalon.core.webui.driver;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.remote.MobileCapabilityType;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
@@ -23,6 +20,9 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.constants.StringConstants;
+
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.remote.MobileCapabilityType;
 
 public class WebMobileDriverFactory {
     

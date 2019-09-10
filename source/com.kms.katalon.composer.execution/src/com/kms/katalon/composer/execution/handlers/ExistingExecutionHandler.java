@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 
+import com.kms.katalon.composer.execution.ExecutionProfileManager;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -85,6 +86,7 @@ public class ExistingExecutionHandler extends AbstractExecutionHandler {
         existingRunConfiguration.setSessionId(existingRunConfig.getSessionId());
         existingRunConfiguration.setRemoteUrl(existingRunConfig.getRemoteUrl());
         existingRunConfiguration.setDriverName(existingRunConfig.getDriverName());
+        existingRunConfiguration.setExecutionProfile(ExecutionProfileManager.getInstance().getSelectedProfile());
         if (existingRunConfig != null) {
             ((DefaultExecutionSetting) existingRunConfiguration.getExecutionSetting())
             .setRawScript(existingRunConfig.getExecutionSetting().getRawScript());

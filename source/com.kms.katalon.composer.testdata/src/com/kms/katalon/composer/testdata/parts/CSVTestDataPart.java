@@ -223,6 +223,11 @@ public class CSVTestDataPart extends TestDataMainPart {
 
         return compositeFileInfo;
     }
+    
+    @Override
+    protected void initValues() {
+        // Do nothing
+    }
 
     @Override
     protected Composite createDataTablePart(Composite parent) {

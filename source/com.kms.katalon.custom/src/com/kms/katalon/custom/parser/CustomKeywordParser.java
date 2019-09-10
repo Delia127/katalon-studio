@@ -96,7 +96,7 @@ public class CustomKeywordParser {
                                     MessageFormat.format("Custom keyword plugin found: {0}. Manifest content:\n{1}",
                                             pluginFile.getName(), JsonUtil.toJson(manifest)));
                         } else {
-                            plugin = CustomKeywordPluginFactory.getInstance().getByPath(pluginFile.getCanonicalPath());
+                            plugin = CustomKeywordPluginFactory.getInstance().getByPath(pluginFile.getAbsolutePath());
                         }
                         if (plugin == null) {
                             LogUtil.logErrorMessage(

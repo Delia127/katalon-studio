@@ -68,7 +68,6 @@ public class VerifyElementNotPresentKeyword extends WebUIAbstractKeyword {
         return verifyElementNotPresent(to,timeOut,flowControl)
     }
 
-    @CompileStatic
     public boolean verifyElementNotPresent(TestObject to, int timeOut, FailureHandling flowControl) throws StepFailedException {
         return WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false

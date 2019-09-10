@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -35,7 +36,7 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
 
     private LauncherManager manager;
     
-    private BasicLauncher parentLauncher;
+    protected BasicLauncher parentLauncher;
 
     private ProcessLauncher() {
         super();
@@ -188,8 +189,11 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
 
         LogUtil.logInfo("Launcher status after execution process completed: " + getStatus());
         if (getStatus() != LauncherStatus.TERMINATED) {
-            preExecutionComplete();
-
+            if (parentLauncher != null) {
+                preExecutionComplete(false); 
+            } else {
+                preExecutionComplete(true); 
+            }
             setStatus(LauncherStatus.DONE);
         } else {
             setStatus(LauncherStatus.TERMINATED);
@@ -228,7 +232,7 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
     /**
      * Children may override this
      */
-    protected void preExecutionComplete() {
+    protected void preExecutionComplete(boolean runTestSuite) {
         // For children
     }
 

@@ -1,9 +1,16 @@
 package com.kms.katalon.execution.generator;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
@@ -65,8 +72,10 @@ public class TestSuiteScriptGenerator {
                 new Object[] { null, testSuite, createTestCaseBindings(), config });
     }
 
-    public List<String> createTestCaseBindings() {
-        List<String> testCaseBindings = new ArrayList<String>();
+    public File createTestCaseBindings() throws IOException {
+        File testCaseBindingFile = new File(config.getExecutionSetting().getFolderPath(), "testCaseBinding");
+        testCaseBindingFile.createNewFile();
+        
         syntaxErrorCollector = new StringBuilder();
 
         List<TestSuiteTestCaseLink> lstTestCaseRun = TestSuiteController.getInstance().getTestSuiteTestCaseRun(
@@ -91,11 +100,11 @@ public class TestSuiteScriptGenerator {
 
             List<String> testCaseBinding = getTestCaseBindingString(testCaseLink,
                     (TestCaseExecutedEntity) testCaseExecuted);
-            testCaseBindings.addAll(testCaseBinding);
+            FileUtils.writeLines(testCaseBindingFile, "UTF-8", testCaseBinding, true);
         }
 
         if (syntaxErrorCollector.toString().isEmpty()) {
-            return testCaseBindings;
+            return testCaseBindingFile;
         } else {
             throw new IllegalArgumentException(syntaxErrorCollector.toString());
         }

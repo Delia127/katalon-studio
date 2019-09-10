@@ -1,0 +1,219 @@
+{
+  "id": 12233,
+  "status": 1,
+  "expiration_date": null,
+  "created_at": "2019-06-19T04:14:45.526Z",
+  "updated_at": "2019-06-19T08:52:27.727Z",
+  "active": true,
+  "send_expiration_mail": false,
+  "send_expiration_reminder_mail": false,
+  "user_id": 16,
+  "bundled_plugin_id": null,
+  "product": {
+      "id": 59,
+      "plugin_id": null,
+      "name": "Basic Report",
+      "description": "Basic Report Plugin is a Custom Keyword that replaces for the current Report feature of Katalon Studio. Since version 6.1.5, the Report feature has been migrated to Basic Report plugin.",
+      "logo": "m3j3hddvlvinco5i-BasicReport_140px.png",
+      "repository": "https://github.com/katalon-studio/katalon-studio-basic-report-plugin",
+      "documentation": "https://github.com/katalon-studio/katalon-studio-report-plugin/blob/master/docs/tutorials/usage.md",
+      "reference": null,
+      "license": "",
+      "release_date": null,
+      "qa_url": null,
+      "status": 1,
+      "created_at": "2019-04-26T09:41:28.208Z",
+      "updated_at": "2019-06-20T08:47:11.762Z",
+      "overview": "Basic Report Plugin is a Custom Keyword that replaces for the current Report feature of Katalon Studio. Since [version 6.1.5](https://docs.katalon.com/katalon-studio/new/version-615.html), the Report feature has been migrated to Basic Report plugin.  Users need to install this plugin to continue using the feature.\r\n\r\n### Basic Report Plugin provides:\r\n- Generates automatically report from Test Suite report after every test execution with various formats: HTML, CSV, JUnit, and PDF.\r\n- Allows users to export manually Test Suite and Test Suite collection report to HTML, CSV, JUnit, and PDF. Right click on the report and choose Export as.\r\n\r\nFor more details, refer to [Basic Report document](https://docs.katalon.com/katalon-studio/docs/basic-report.html).\r\n",
+      "price": null,
+      "stripe_product_id": null,
+      "reject_reason": null,
+      "latest_version_number": null,
+      "product_type_id": 2,
+      "marketplace_id": null,
+      "product_versions": [
+          {
+              "id": 118,
+              "number": "1.0.2",
+              "status": 1,
+              "created_at": "2019-05-15T04:35:14.552Z",
+              "updated_at": "2019-06-20T08:47:20.952Z",
+              "min_app_version": "6.1.5",
+              "max_app_version": null,
+              "change_log": ""
+          },
+          {
+              "id": 127,
+              "number": "1.0.3",
+              "status": 1,
+              "created_at": "2019-05-24T02:43:18.285Z",
+              "updated_at": "2019-06-20T08:47:20.949Z",
+              "min_app_version": "6.1.5",
+              "max_app_version": null,
+              "change_log": ""
+          },
+          {
+              "id": 129,
+              "number": "1.0.4",
+              "status": 1,
+              "created_at": "2019-05-24T09:48:58.985Z",
+              "updated_at": "2019-06-20T08:47:20.947Z",
+              "min_app_version": "6.2.0",
+              "max_app_version": null,
+              "change_log": ""
+          },
+          {
+              "id": 145,
+              "number": "1.0.5",
+              "status": 1,
+              "created_at": "2019-06-20T08:44:52.820Z",
+              "updated_at": "2019-06-20T08:47:20.944Z",
+              "min_app_version": "6.2.0",
+              "max_app_version": null,
+              "change_log": ""
+          },
+          {
+              "id": 99,
+              "number": "1.0.1",
+              "status": 1,
+              "created_at": "2019-04-26T09:41:28.242Z",
+              "updated_at": "2019-06-20T08:47:20.953Z",
+              "min_app_version": "6.1.5",
+              "max_app_version": null,
+              "change_log": ""
+          }
+      ],
+      "product_type": {
+          "id": 2,
+          "name": "Custom Keywords Plugin",
+          "description": "Custom Keywords Plugin",
+          "sequence": 1,
+          "created_at": "2019-03-14T08:13:50.036Z",
+          "updated_at": "2019-03-14T08:13:50.036Z",
+          "view_type": 0
+      },
+      "product_categories": [
+          {
+              "id": 2,
+              "name": "Utilities",
+              "short_name": "",
+              "description": "Utilities",
+              "order": 2,
+              "hide": false,
+              "use_carousel": true,
+              "created_at": "2019-06-13T08:48:28.556Z",
+              "updated_at": "2019-06-13T08:48:28.556Z",
+              "product_join_category": {
+                  "id": 22,
+                  "created_at": "2019-06-13T08:47:46.501Z",
+                  "updated_at": "2019-06-13T08:47:46.501Z",
+                  "product_id": 59,
+                  "category_id": 2
+              }
+          }
+      ],
+      "logoUrl": "https://katalon-store.s3.amazonaws.com/m3j3hddvlvinco5i-BasicReport_140px.png",
+      "categories": "Utilities",
+      "url": "/product/59"
+  },
+  "license_type": {
+      "id": 1,
+      "name": "Free",
+      "active": true,
+      "day": null,
+      "month": null,
+      "year": null,
+      "created_at": "2019-01-30T01:47:14.080Z",
+      "updated_at": "2019-01-30T01:47:14.080Z"
+  },
+  "free": true,
+  "trial": false,
+  "paid": false,
+  "expired": false,
+  "canceled": false,
+  "uninstalled": false,
+  "finalized": false,
+  "compatible_versions": [
+      {
+          "id": 118,
+          "number": "1.0.2",
+          "status": 1,
+          "created_at": "2019-05-15T04:35:14.552Z",
+          "updated_at": "2019-06-20T08:47:20.952Z",
+          "min_app_version": "6.1.5",
+          "max_app_version": null,
+          "change_log": ""
+      },
+      {
+          "id": 127,
+          "number": "1.0.3",
+          "status": 1,
+          "created_at": "2019-05-24T02:43:18.285Z",
+          "updated_at": "2019-06-20T08:47:20.949Z",
+          "min_app_version": "6.1.5",
+          "max_app_version": null,
+          "change_log": ""
+      },
+      {
+          "id": 129,
+          "number": "1.0.4",
+          "status": 1,
+          "created_at": "2019-05-24T09:48:58.985Z",
+          "updated_at": "2019-06-20T08:47:20.947Z",
+          "min_app_version": "6.2.0",
+          "max_app_version": null,
+          "change_log": ""
+      },
+      {
+          "id": 145,
+          "number": "1.0.5",
+          "status": 1,
+          "created_at": "2019-06-20T08:44:52.820Z",
+          "updated_at": "2019-06-20T08:47:20.944Z",
+          "min_app_version": "6.2.0",
+          "max_app_version": null,
+          "change_log": ""
+      },
+      {
+          "id": 99,
+          "number": "1.0.1",
+          "status": 1,
+          "created_at": "2019-04-26T09:41:28.242Z",
+          "updated_at": "2019-06-20T08:47:20.953Z",
+          "min_app_version": "6.1.5",
+          "max_app_version": null,
+          "change_log": ""
+      }
+  ],
+  "latest_compatible_version": {
+      "id": 145,
+      "number": "1.0.5",
+      "status": 1,
+      "created_at": "2019-06-20T08:44:52.820Z",
+      "updated_at": "2019-06-20T08:47:20.944Z",
+      "min_app_version": "6.2.0",
+      "max_app_version": null,
+      "change_log": ""
+  },
+  "current_version": {
+      "id": 145,
+      "number": "1.0.5",
+      "status": 1,
+      "created_at": "2019-06-20T08:44:52.820Z",
+      "updated_at": "2019-06-20T08:47:20.944Z",
+      "min_app_version": "6.2.0",
+      "max_app_version": null,
+      "change_log": ""
+  },
+  "latest_version": {
+      "id": 145,
+      "number": "1.0.5",
+      "status": 1,
+      "created_at": "2019-06-20T08:44:52.820Z",
+      "updated_at": "2019-06-20T08:47:20.944Z",
+      "min_app_version": "6.2.0",
+      "max_app_version": null,
+      "change_log": ""
+  },
+  "created_date": "June 19th 2019, 4:14 am"
+}

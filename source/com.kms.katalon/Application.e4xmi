@@ -150,6 +150,17 @@
         <children xsi:type="menu:DirectMenuItem" xmi:id="_nemYcOJrEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.installPlugin" label="Install Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.InstallPluginHandler"/>
         <children xsi:type="menu:DirectMenuItem" xmi:id="_X471sOJsEeisqP9Hkv5X6g" elementId="com.kms.katalon.directmenuitem.uninstallPlugin" label="Uninstall Plugin" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UninstallPluginHandler"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_CJOFUL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.menu.tools" label="Tools">
+        <children xsi:type="menu:Menu" xmi:id="_Lw3VAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.menu.updateWebDrivers" label="Update WebDrivers">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_QyJdkL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.chrome" label="Chrome" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_16.png" command="_yVAB0L5HEemxF-U6MZYPPA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_RX0WcL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.Firefox" label="Firefox" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_16.png" command="_n2vrgL5NEemxF-U6MZYPPA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_RvyKgL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.IE" label="IE" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/ie_16.png" command="_vs_PAL5NEemxF-U6MZYPPA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_SKQgAL5EEemxF-U6MZYPPA" elementId="com.kms.katalon.handledmenuitem.edge" toBeRendered="false" visible="false" label="Edge" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/edge_16.png" command="_rzz-AL5NEemxF-U6MZYPPA"/>
+        </children>
+        <children xsi:type="menu:Menu" xmi:id="_RQKm0M7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.menu.webTools" label="Web">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_ce_2wM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.handledmenuitem.killProcessWebDriver" label="Terminate running WebDrivers" command="_631dcM7NEemY2ti3wcTZeQ"/>
+        </children>
+      </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
     <sharedElements xsi:type="advanced:Area" xmi:id="_2Ev6oD8CEeSqW-o8jtXO1g" elementId="org.eclipse.ui.editorss" containerData="50">
@@ -158,6 +169,7 @@
         <tags>NoAutoCollapse</tags>
         <tags>NoMove</tags>
         <children xsi:type="basic:Part" xmi:id="_O4SpgGUUEeaFXcvzM5e4Jg" elementId="com.kms.katalon.part.welcome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.parts.WelcomePart" label="Katalon Help" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/highlight_16.png" closeable="true"/>
+        <children xsi:type="basic:Part" xmi:id="_rZ81cMhyEemrVbHr0m6zyA" elementId="com.kms.katalon.part.quickstart" visible="false" contributionURI="bundleclass://com.kms.katalon.composer.webservice/com.kms.katalon.composer.webservice.view.ApiQuickStartPart" label="Quick Start" closeable="true"/>
       </children>
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_PY0KMCUhEeWUFICrCSQG_A" elementId="org.eclipse.debug.ui.DebugView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Debug" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/debug_perspective_16.png"/>
@@ -268,9 +280,14 @@
   <handlers xmi:id="_JTi4oMecEeiT4f3fp0QbHA" elementId="com.kms.katalon.handler.openErrorLog" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenErrorLogHandler" command="_xthpkMebEeiT4f3fp0QbHA"/>
   <handlers xmi:id="_AmpHQAj1EemqvpskrRucLw" elementId="com.kms.katalon.handler.searchPlugins" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SearchPluginsHandler" command="_1KbioAj0EemqvpskrRucLw"/>
   <handlers xmi:id="_727iAEVcEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.searchForum" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl" command="_S1u1gEVcEem5YYH0D7Rhiw"/>
-  <handlers xmi:id="_Tsnm8EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.tweetaboutus" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.intro.Tweetaboutus" command="_QJZX0EVsEem5YYH0D7Rhiw"/>
+  <handlers xmi:id="_Tsnm8EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.tweetaboutus" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateIEWebdriverHandler" command="_QJZX0EVsEem5YYH0D7Rhiw"/>
   <handlers xmi:id="_3aIMQEVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.handler.feedback" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.intro.FeedbackUser" command="_0jpHUEVsEem5YYH0D7Rhiw"/>
+  <handlers xmi:id="_Jfw_oL5FEemxF-U6MZYPPA" elementId="com.kms.katalon.handler.updateChrome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateChromeWebdriverHandler" command="_yVAB0L5HEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_MRFsEMJIEemeR-pO8kw5dQ" elementId="com.kms.katalon.handler.updateFirefox" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateFirefoxWebdriverHandler" command="_n2vrgL5NEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_Usxe8MJIEemeR-pO8kw5dQ" elementId="com.kms.katalon.handler.updateEdge" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateEdgeWebdriverHandler" command="_rzz-AL5NEemxF-U6MZYPPA"/>
+  <handlers xmi:id="_ZwkwAMJIEemeR-pO8kw5dQ" elementId="com.kms.katalon.handler.updateIE" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.UpdateIEWebdriverHandler" command="_vs_PAL5NEemxF-U6MZYPPA"/>
   <handlers xmi:id="_0mYYYKLZEemSv8QN3vNGMQ" elementId="com.kms.katalon.handler.quickstart" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.KatalonQuickStart.QuickStartDialogHandle" command="_2X2LcKLYEemSv8QN3vNGMQ"/>
+  <handlers xmi:id="_Uz26kM7OEemY2ti3wcTZeQ" elementId="com.kms.katalon.handler.killRunningWebdriverProcess" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.KillRunningWebdriverProcessHandler" command="_631dcM7NEemY2ti3wcTZeQ"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -306,7 +323,12 @@
   <commands xmi:id="_S1u1gEVcEem5YYH0D7Rhiw" elementId="com.kms.katalon.command.searchForum" commandName="SearchForum"/>
   <commands xmi:id="_QJZX0EVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.command.tweetaboutus" commandName="Tweet about us"/>
   <commands xmi:id="_0jpHUEVsEem5YYH0D7Rhiw" elementId="com.kms.katalon.command.feedback" commandName="Feedback"/>
+  <commands xmi:id="_yVAB0L5HEemxF-U6MZYPPA" elementId="com.kms.katalon.command.updateChrome" commandName="UpdateChrome"/>
+  <commands xmi:id="_n2vrgL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateFirefox" commandName="UpdateFirefox"/>
+  <commands xmi:id="_rzz-AL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateEdge" commandName="UpdateEdge"/>
+  <commands xmi:id="_vs_PAL5NEemxF-U6MZYPPA" elementId="com.kms.katalon.command.UpdateIE" commandName="UpdateIE"/>
   <commands xmi:id="_2X2LcKLYEemSv8QN3vNGMQ" elementId="com.kms.katalon.command.quickstart" commandName="QuickStart"/>
+  <commands xmi:id="_631dcM7NEemY2ti3wcTZeQ" elementId="com.kms.katalon.command.killProcessWebDriver" commandName="TerminateRunningWebDrivers"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

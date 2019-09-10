@@ -46,7 +46,6 @@ public class WaitForAngularLoadKeyword extends WebUIAbstractKeyword {
      * @return true if Angular/AJAX is ready. Otherwise, false.
      * @throws StepFailedException If browser has not started yet or jQuery is not ready
      */
-    @CompileStatic
     public boolean waitForAgularLoad(int timeout, FailureHandling flowControl) throws StepFailedException {
         return WebUIKeywordMain.runKeyword({
             WebDriver webDriver = DriverFactory.getWebDriver()

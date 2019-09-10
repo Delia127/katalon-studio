@@ -20,6 +20,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String LBL_DLG_AUTHENTICATE_USERNAME;
 
     public static String LBL_ENABLE_ANALYTICS_INTEGRATION;
+    
+    public static String LBL_ORGANIZATION;
 
     public static String LBL_PASSWORD;
 
@@ -93,6 +95,8 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String MSG_DLG_PRG_GETTING_TEAMS;
     
+    public static String MSG_DLG_PRG_PREMISSTION_CREATE_PROJECT;
+    
     public static String REPORT_MSG_UPLOADING_TO_ANALYTICS;
     
     public static String REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING;
@@ -104,6 +108,10 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION;
     
     public static String REPORT_MSG_MUST_CONNECT_SUCCESSFULLY;
+    
+    public static String REPORT_MSG_MUST_SET_TEAM;
+    
+    public static String REPORT_MSG_MUST_SET_PROJECT;
 
     public static String MSG_REQUEST_TOKEN_ERROR;
     
@@ -124,6 +132,16 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String STORE_CODE_ERROR_NO_FILE_NAME;
     
     public static String STORE_CODE_ERROR_NO_NAME;
+    
+    public static String LNK_KA_HELP_AUTO_SUBMIT;
+    
+    public static String REPORT_WARNING_MSG_NO_TEAM;
+    
+    public static String REPORT_WARNING_MSG_NO_PROJECT;
+    
+    public static String LNK_REPORT_WARNING_MSG_NO_TEAM;
+    
+    public static String LNK_REPORT_WARNING_MSG_NO_PROJECT;
     
     static {
         // initialize resource bundle

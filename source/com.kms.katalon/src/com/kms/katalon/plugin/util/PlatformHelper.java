@@ -6,12 +6,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
 import com.katalon.platform.internal.api.PluginInstaller;
-import com.kms.katalon.plugin.models.KStorePlugin;
+import com.kms.katalon.plugin.models.Plugin;
 
 @SuppressWarnings("restriction")
 public class PlatformHelper {
     
-    public static Bundle installPlugin(KStorePlugin plugin) throws BundleException {
+    public static Bundle installPlugin(Plugin plugin) throws BundleException {
         BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
         String bundlePath = plugin.getFile().toURI().toString();
         PluginInstaller pluginInstaller = getPluginInstaller();
@@ -19,7 +19,7 @@ public class PlatformHelper {
         return bundle;       
     }
     
-    public static Bundle uninstallPlugin(KStorePlugin plugin) throws BundleException {
+    public static Bundle uninstallPlugin(Plugin plugin) throws BundleException {
         BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
         String bundlePath = plugin.getFile().toURI().toString();
         PluginInstaller pluginInstaller = getPluginInstaller();

@@ -11,6 +11,10 @@ public class LogUtil {
     private LogUtil() {
         // Disable default constructor
     }
+    
+    public static void writeOutputLine(String message) {
+        println(LogManager.getOutputLogger(), message, LogMode.LOG);
+    }
 
     public static void printOutputLine(String message) {
         println(LogManager.getOutputLogger(), message, LogMode.CONSOLE);

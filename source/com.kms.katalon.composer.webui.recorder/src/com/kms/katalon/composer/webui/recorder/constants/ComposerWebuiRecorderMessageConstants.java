@@ -116,10 +116,16 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
     public static String JOB_RUNNING_RECORDED_STEPS;
 
     public static String DIA_CONFIRM_CONTINUE_RECORDING;
+    
+    public static String DIA_APPEND_TEST_CASE_SCRIPT;
 
     public static String DIA_CONFIRM_ACCEPT_CONTINUE_RECORDING;
 
     public static String DIA_CONFIRM_DECLINE_CONTINUE_RECORDING;
+    
+    public static String DIA_CONFIRM_APPEND_TEST_CASE_SCRIPT;
+
+    public static String DIA_CONFIRM_REPLACE_TEST_CASE_SCRIPT;
     
     public static String RECOMMENDED_BROWSER_POSTFIX;
 

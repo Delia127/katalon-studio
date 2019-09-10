@@ -17,6 +17,8 @@ public class KeywordExecutor {
     public static final String PLATFORM_MOBILE = "mobile"
 
     public static final String PLATFORM_WEB_SERVICE = "webservice"
+    
+    public static final String PLATFORM_WINDOWS = "windows"
 
     public static final String PLATFORM_BUILT_IN = "builtin"
 
@@ -25,6 +27,8 @@ public class KeywordExecutor {
     public static final String MOBILE_BUILT_IN_KEYWORD_PACKAGE = "com.kms.katalon.core.mobile.keyword.builtin"
 
     public static final String WEB_SERVICE_BUILT_IN_KEYWORD_PACKAGE = "com.kms.katalon.core.webservice.keyword.builtin"
+
+    public static final String WINDOWS_BUILT_IN_KEYWORD_PACKAGE = "com.kms.katalon.core.windows.keyword.builtin"
 
     public static final String CORE_BUILT_IN_KEYWORD_PACKAGE = "com.kms.katalon.core.keyword.builtin"
     
@@ -65,6 +69,8 @@ public class KeywordExecutor {
                 return [MOBILE_BUILT_IN_KEYWORD_PACKAGE] as String[]
             case PLATFORM_WEB_SERVICE:
                 return [WEB_SERVICE_BUILT_IN_KEYWORD_PACKAGE] as String[]
+            case PLATFORM_WINDOWS:
+                return [WINDOWS_BUILT_IN_KEYWORD_PACKAGE] as String[]
             case PLATFORM_BUILT_IN:
                 return [CORE_BUILT_IN_KEYWORD_PACKAGE] as String[]
             default:
