@@ -1,6 +1,5 @@
 package com.kms.katalon.application.utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -96,34 +95,30 @@ public class MachineUtil {
     }
 
     private static String parseMachineIdForMac() {
-        for (int i = 0; i < 2; i++) {
+        try {
+            // Returns a list of information about the device
+            List<String> commandLineResult = ConsoleCommandExecutor
+                    .runConsoleCommandAndCollectResults(MAC_GET_MACHINE_ID_COMMAND);
 
-            try {
-                // Returns a list of information about the device
-                List<String> commandLineResult = ConsoleCommandExecutor
-                        .runConsoleCommandAndCollectResults(MAC_GET_MACHINE_ID_COMMAND);
+            // Extract the field of interest
+            String parsedResult = commandLineResult.stream()
+                    .filter(result -> result.contains(MAC_GET_MACHINE_ID_FIELD))
+                    .findAny()
+                    .orElse(UNAVAILABLE);
 
-                // Extract the field of interest
-                String parsedResult = commandLineResult.stream()
-                        .filter(result -> result.contains(MAC_GET_MACHINE_ID_FIELD))
-                        .findAny()
-                        .orElse(UNAVAILABLE);
+            // Example: "IOPlatformUUID" = "D84B28E0-B054-5C67-8A5D-8F6FF1639F0B"
+            parsedResult = Arrays.asList(parsedResult.split(MAC_GET_MACHINE_ID_DELIMITER))
+                    .stream()
+                    .map(result -> result.trim())
+                    .map(result -> result.replace("\"", ""))
+                    .map(result -> result.toLowerCase())
+                    .filter(result -> result.matches(UUID_REGEX))
+                    .findAny()
+                    .orElse(UNAVAILABLE);
 
-                // Example: "IOPlatformUUID" = "D84B28E0-B054-5C67-8A5D-8F6FF1639F0B"
-                parsedResult = Arrays.asList(parsedResult.split(MAC_GET_MACHINE_ID_DELIMITER))
-                        .stream()
-                        .map(result -> result.trim())
-                        .map(result -> result.replace("\"", ""))
-                        .map(result -> result.toLowerCase())
-                        .filter(result -> result.matches(UUID_REGEX))
-                        .findAny()
-                        .orElse(UNAVAILABLE);
-                if (!parsedResult.equals(UNAVAILABLE)) {
-                    return parsedResult;
-                }
-            } catch (IOException | InterruptedException e) {
-                LogUtil.logError(e);
-            }
+            return parsedResult;
+        } catch (IOException | InterruptedException e) {
+            LogUtil.logError(e);
         }
         return UNAVAILABLE;
     }
