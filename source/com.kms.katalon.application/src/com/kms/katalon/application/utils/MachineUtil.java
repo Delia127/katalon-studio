@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.logging.LogUtil;
 
@@ -42,16 +43,20 @@ public class MachineUtil {
 
         if (SystemUtils.IS_OS_MAC) {
             machineId = parseMachineIdForMac();
-            return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
+            return machineId.matches(UUID_REGEX) ? appendMacAddress(machineId) : UNAVAILABLE;
         } else if (SystemUtils.IS_OS_LINUX) {
             machineId = parseMachineIdForLinux();
             // machine id on a linux is not a UUID
-            return machineId.length() != 32 ? UNAVAILABLE : machineId;
+            return machineId.length() != 32 ? UNAVAILABLE : appendMacAddress(machineId);
         } else if (SystemUtils.IS_OS_WINDOWS) {
             machineId = parseMachineIdForWindows();
-            return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
+            return machineId.matches(UUID_REGEX) ? appendMacAddress(machineId) : UNAVAILABLE;
         }
         return UNAVAILABLE;
+    }
+
+    private static String appendMacAddress(String str) {
+        return str + "_" + KatalonApplication.getMacAddress();
     }
 
     private static String parseMachineIdForWindows() {
