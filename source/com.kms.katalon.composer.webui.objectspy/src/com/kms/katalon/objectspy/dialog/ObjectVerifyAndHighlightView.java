@@ -64,9 +64,9 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
 
     private Button btnVerifyAndHighlight;
 
-    private Button btnAddScreenShotForElement;
-
     private Composite connectingComposite;
+    
+    private Button btnAddScreenShotForElement;
 
     private GifCLabel connectingLabel;
 
@@ -93,9 +93,8 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         try {
             URL url = FileLocator.find(FrameworkUtil.getBundle(ObjectVerifyAndHighlightView.class),
                     new Path(HIGHLIGHT_JS_PATH), null);
-            return StringUtils.join(
-                    IOUtils.readLines(new BufferedInputStream(url.openStream()), GlobalStringConstants.DF_CHARSET),
-                    "\n");
+            return StringUtils.join(IOUtils.readLines(new BufferedInputStream(url.openStream()),
+                            GlobalStringConstants.DF_CHARSET), "\n");
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -131,18 +130,18 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         btnVerifyAndHighlight = new Button(composite, SWT.FLAT);
         btnVerifyAndHighlight.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         btnVerifyAndHighlight.setText(ObjectspyMessageConstants.DIA_LBL_VERIFY_AND_HIGHLIGHT);
-
+        
         btnAddScreenShotForElement = new Button(composite, SWT.FLAT);
         btnAddScreenShotForElement.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        btnAddScreenShotForElement.setText(ObjectspyMessageConstants.DIA_LBL_ADD_SCREENSHOT);
+        btnAddScreenShotForElement.setText(ObjectspyMessageConstants.DIA_LBL_ADD_SCREENSHOT);        
 
         new HelpCompositeForDialog(composite, DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI) {
-
+     
             @Override
             protected GridData createGridData() {
                 return new GridData(SWT.LEFT, SWT.CENTER, false, false);
             }
-
+            
             @Override
             protected GridLayout createLayout() {
                 GridLayout layout = new GridLayout();
@@ -238,26 +237,30 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
             private void highlightElements(WebDriver webDriver, List<org.openqa.selenium.WebElement> webElements) {
                 if (webDriver instanceof JavascriptExecutor) {
                     JavascriptExecutor jsExecutor = (JavascriptExecutor) webDriver;
-
-                    // scroll to first element
+                    
+                    //scroll to first element
                     org.openqa.selenium.WebElement firstElement = webElements.get(0);
-                    boolean isInViewPort = (Boolean) ((JavascriptExecutor) webDriver).executeScript(
-                            "var elem = arguments[0],                 " + "  box = elem.getBoundingClientRect(),    "
-                                    + "  cx = box.left + box.width / 2,         "
-                                    + "  cy = box.top + box.height / 2,         "
-                                    + "  e = document.elementFromPoint(cx, cy); "
-                                    + "for (; e; e = e.parentElement) {         "
-                                    + "  if (e === elem)                        "
-                                    + "    return true;                         "
-                                    + "}                                        "
-                                    + "return false;                            ",
-                            firstElement);
+                    boolean isInViewPort = (Boolean)((JavascriptExecutor)webDriver).executeScript(
+                            "var elem = arguments[0],                 " +
+                            "  box = elem.getBoundingClientRect(),    " +
+                            "  cx = box.left + box.width / 2,         " +
+                            "  cy = box.top + box.height / 2,         " +
+                            "  e = document.elementFromPoint(cx, cy); " +
+                            "for (; e; e = e.parentElement) {         " +
+                            "  if (e === elem)                        " +
+                            "    return true;                         " +
+                            "}                                        " +
+                            "return false;                            "
+                            , firstElement);
                     if (!isInViewPort) {
-                        jsExecutor.executeScript("arguments[0].scrollIntoView({" + " behavior: 'auto',         "
-                                + " block: 'center',          " + " inline: 'center'          "
-                                + " });                       ", firstElement);
+                            jsExecutor.executeScript("arguments[0].scrollIntoView({" +
+                                                       " behavior: 'auto',         " + 
+                                                       " block: 'center',          " +
+                                                       " inline: 'center'          " +
+                                                       " });                       "
+                            , firstElement);
                     }
-
+                    
                     // highlight all elements
                     String highlightJS = getHighlightJS();
                     webElements.parallelStream().forEach(element -> {
@@ -276,7 +279,7 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
                 }
             }
         });
-
+        
         btnAddScreenShotForElement.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -317,6 +320,21 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         changeBtnAddScreenShotState();
         changeBtnVerifyAndHighlightState();
     }
+    
+    private void changeBtnAddScreenShotState() {
+        if (btnAddScreenShotForElement.isDisposed()) {
+            return;
+        }
+
+        boolean allowEnable = false;
+        if (webElement != null) {
+            allowEnable = true;
+        }
+        if (seleniumSession == null) {
+            allowEnable = false;
+        }
+        btnAddScreenShotForElement.setEnabled(allowEnable);
+    }
 
     private void changeBtnVerifyAndHighlightState() {
         if (btnVerifyAndHighlight.isDisposed()) {
@@ -331,27 +349,7 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
                 allowEnable = true;
             }
         }
-
-        if (seleniumSession == null && activeBrowserSession == null) {
-            allowEnable = false;
-        }
-
         btnVerifyAndHighlight.setEnabled(allowEnable);
-    }
-
-    private void changeBtnAddScreenShotState() {
-        if (btnAddScreenShotForElement.isDisposed()) {
-            return;
-        }
-
-        boolean allowEnable = false;
-        if (webElement != null) {
-            allowEnable = true;
-        }
-        if (seleniumSession == null) {
-            allowEnable = false;
-        }
-        btnAddScreenShotForElement.setEnabled(allowEnable);
     }
 
     private By getSeleniumSelector(WebElement webElement) {
@@ -472,7 +470,7 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
                 return;
         }
     }
-
+    
     private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
 
     @Override

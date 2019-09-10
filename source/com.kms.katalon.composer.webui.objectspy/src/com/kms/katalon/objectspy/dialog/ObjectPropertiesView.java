@@ -838,25 +838,26 @@ public class ObjectPropertiesView extends Composite
         });
     }
 
-	private void enableControls() {
-		boolean isEnabled = webElement != null;
-		boolean isEnabledForNoneWebPage = isEnabled
-				&& !webElement.getClass().getSimpleName().equals(WebPage.class.getSimpleName());
-		if (radioBtnComposite != null && !radioBtnComposite.isDisposed()) {
+    private void enableControls() {
+        boolean isEnabled = webElement != null;
+        boolean isEnabledForNoneWebPage = isEnabled
+                && !webElement.getClass().getSimpleName().equals(WebPage.class.getSimpleName());
+        
+        if (radioBtnComposite != null && !radioBtnComposite.isDisposed()) {
 
-			Arrays.stream(radioBtnComposite.getChildren())
-					.forEach(radioBtn -> radioBtn.setEnabled(isEnabledForNoneWebPage));
-		}
+            Arrays.stream(radioBtnComposite.getChildren())
+                    .forEach(radioBtn -> radioBtn.setEnabled(isEnabledForNoneWebPage));
+        }
 
-		if (isReady(toolbar)) {
-			btnAdd.setEnabled(isEnabledForNoneWebPage);
-			btnDelete.setEnabled(isEnabled);
-			btnClear.setEnabled(isEnabled);
-		}
-		if (isReady(txtName)) {
-			txtName.setEditable(isEnabled);
-		}
-	}
+        if (isReady(toolbar)) {
+            btnAdd.setEnabled(isEnabledForNoneWebPage);
+            btnDelete.setEnabled(isEnabled);
+            btnClear.setEnabled(isEnabled);
+        }
+        if (isReady(txtName)) {
+            txtName.setEditable(isEnabled);
+        }
+    }
     
     private void disableControls(){
     	
