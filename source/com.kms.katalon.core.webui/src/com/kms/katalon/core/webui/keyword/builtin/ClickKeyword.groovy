@@ -75,9 +75,18 @@ public class ClickKeyword extends WebUIAbstractKeyword {
                 WebUiCommonHelper.checkTestObjectParameter(to)
                 isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to)
                 WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
-                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()))
-                webElement.click()
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_CLICKED, to.getObjectId()))
+				try {
+					WebDriver webDriver = DriverFactory.getWebDriver();
+					WebDriverWait wait = new WebDriverWait(webDriver, 10); 
+					webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
+	                logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()))
+	                webElement.click()
+	                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_CLICKED, to.getObjectId()))
+				} catch (Exception e) {
+					// try to click using JavaScript
+					JavascriptExecutor executor = (JavascriptExecutor) webDriver;
+					executor.executeScript("arguments[0].click();", webElement);
+				}
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()
