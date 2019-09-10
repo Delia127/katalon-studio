@@ -128,35 +128,35 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     private static void showFunctionsIntroductionForTheFirstTime() {
         QuickStartDialog quickStartDialog = new QuickStartDialog(Display.getCurrent().getActiveShell());
         quickStartDialog.open();
-        RecommendPluginsDialog recommendPlugins = new RecommendPluginsDialog(Display.getCurrent().getActiveShell());
-
-        // QuickStartDialog dialog = new QuickStartDialog(null);
-
-        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
-        switch (recommendPlugins.open()) {
-
-            case RecommendPluginsDialog.OPEN_PROJECT_ID: {
-                recommendPlugins.installPressed();
-                try {
-                    new CommandCaller().call(CommandId.PROJECT_OPEN);
-                } catch (CommandException e) {
-                    LogUtil.logError(e);
-                }
-                break;
-            }
-            case RecommendPluginsDialog.NEW_PROJECT_ID: {
-                recommendPlugins.installPressed();
-                try {
-                    new CommandCaller().call(CommandId.PROJECT_ADD);
-                } catch (CommandException e) {
-                    LogUtil.logError(e);
-                }
-                break;
-            }
-            default:
-                recommendPlugins.installPressed();
-                break;
-        }
+//        RecommendPluginsDialog recommendPlugins = new RecommendPluginsDialog(Display.getCurrent().getActiveShell());
+//
+//        // QuickStartDialog dialog = new QuickStartDialog(null);
+//
+//        // Dialog.CANCEL means open project in this case, checkout QuickStartDialog for more details
+//        switch (recommendPlugins.open()) {
+//
+//            case RecommendPluginsDialog.OPEN_PROJECT_ID: {
+//                recommendPlugins.installPressed();
+//                try {
+//                    new CommandCaller().call(CommandId.PROJECT_OPEN);
+//                } catch (CommandException e) {
+//                    LogUtil.logError(e);
+//                }
+//                break;
+//            }
+//            case RecommendPluginsDialog.NEW_PROJECT_ID: {
+//                recommendPlugins.installPressed();
+//                try {
+//                    new CommandCaller().call(CommandId.PROJECT_ADD);
+//                } catch (CommandException e) {
+//                    LogUtil.logError(e);
+//                }
+//                break;
+//            }
+//            default:
+//                recommendPlugins.installPressed();
+//                break;
+//        }
     }
 
     public static String genRequestActivationInfo() {
