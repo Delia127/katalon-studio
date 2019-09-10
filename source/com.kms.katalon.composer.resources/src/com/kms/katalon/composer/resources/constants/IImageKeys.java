@@ -37,6 +37,8 @@ public interface IImageKeys {
     
     public static final String IMG_INTRO_SCREEN_ADVANCED_REPORT = "temp/report.png"; //$NON-NLS-1$
     
+    public static final String IMG_INTRO_SCREEN_DESKTOP_APPS_TESTING = "temp/DesktopAppsTesting.png";//$NON-NLS-1$
+    
     
     // End Intro
 
