@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.Proxy;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -72,7 +73,10 @@ public class RestfulClient extends BasicRequestor {
         processRequestParams(request);
 
         URL url = new URL(request.getRestUrl());
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
+        
+        Proxy proxy = request.getProxy() != null ? request.getProxy() : getProxy();
+        
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(proxy);
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
             ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }

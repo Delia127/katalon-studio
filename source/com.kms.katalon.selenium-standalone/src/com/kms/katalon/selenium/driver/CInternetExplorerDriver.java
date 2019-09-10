@@ -18,7 +18,6 @@ public class CInternetExplorerDriver extends InternetExplorerDriver implements I
 
     @Override
     protected Response execute(String driverCommand, Map<String, ?> parameters) {
-        delay();
         return super.execute(driverCommand, parameters);
     }
 

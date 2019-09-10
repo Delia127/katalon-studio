@@ -15,27 +15,29 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 
 public class KatalonAnalyticsIntegrationHandler {
-	@Inject
-	private IEventBroker eventBroker;
+    @Inject
+    private IEventBroker eventBroker;
 
-	@PostConstruct
-	public void registerEventHandler() {
-		eventBroker.subscribe(EventConstants.ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN, new EventServiceAdapter() {
-			@Override
-			public void handleEvent(Event event) {
-				execute();
-			}
-		});
-	}
+    @PostConstruct
+    public void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.ANALYTIC_QUICK_INTEGRATION_DIALOG_OPEN, new EventServiceAdapter() {
+            @Override
+            public void handleEvent(Event event) {
+                execute();
+            }
+        });
+    }
 
-	@CanExecute
-	public boolean canExecute() {
-		return ProjectController.getInstance().getCurrentProject() != null;
-	}
+    @CanExecute
+    public boolean canExecute() {
+        return ProjectController.getInstance().getCurrentProject() != null;
+    }
 
-	@Execute
-	public void execute() {
-		KatalonAnalyticsIntegrationDialog quickStartDialog = new KatalonAnalyticsIntegrationDialog(Display.getCurrent().getActiveShell());
-		quickStartDialog.open();
-	}
+    @Execute
+    public void execute() {
+        KatalonAnalyticsIntegrationDialog quickStartDialog = new KatalonAnalyticsIntegrationDialog(Display.getCurrent().getActiveShell());
+        if (quickStartDialog.checkConnection()) {
+             quickStartDialog.open();
+        }
+    }
 }

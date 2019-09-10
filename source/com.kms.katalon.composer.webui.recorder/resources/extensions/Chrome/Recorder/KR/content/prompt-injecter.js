@@ -15,6 +15,8 @@
  *
  */
 
+// inject script to capture JavaScript dialogs
+
 var elementForInjectingScript = document.createElement("script");
 elementForInjectingScript.src = browser.runtime.getURL("page/prompt.js");
 (document.head || document.documentElement).appendChild(elementForInjectingScript);

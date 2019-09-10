@@ -24,6 +24,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // WelcomePart
     public static final String PA_WELCOME = MessageConstants.PA_WELCOME;
+    
+    public static final String PA_QUICKSTART = MessageConstants.PA_QUICKSTART;
 
     public static final String PA_LBL_NEW_PROJECT = MessageConstants.PA_LBL_NEW_PROJECT;
 
@@ -98,6 +100,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BTN_CLEAR_TILE = MessageConstants.BTN_CLEAR_TILE;
 
     public static final String BTN_ACTIVATE_TITLE = MessageConstants.BTN_ACTIVATE_TITLE;
+    
+    public static final String BTN_LOG_IN_TITLE = MessageConstants.BTN_LOG_IN_TITLE;
 
     public static final String WAITTING_MESSAGE = MessageConstants.WAITTING_MESSAGE;
 
@@ -135,6 +139,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStoreLoginDialog_LBL_INSTRUCTION = MessageConstants.KStoreLoginDialog_LBL_INSTRUCTION;
     
     public static final String KStoreLoginDialog_BTN_CONNECT = MessageConstants.KStoreLoginDialog_BTN_CONNECT;
+    
+    public static final String KStoreLoginDialog_BTN_SKIP = MessageConstants.KStoreLoginDialog_BTN_SKIP;
 
     public static final String KStoreLoginDialog_INVALID_ACCOUNT_ERROR = MessageConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
     
@@ -189,10 +195,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PAGE_LBL_PLUGIN_DIRECTORY = MessageConstants.PAGE_LBL_PLUGIN_DIRECTORY;
     
     public static final String PAGE_BTN_BROWSE_FOLDER = MessageConstants.PAGE_BTN_BROWSE_FOLDER;
-
+    
     public static final String MSG_UPDATING_WEB_DRIVER = MessageConstants.MSG_UPDATING_WEB_DRIVER;
     
     public static final String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
     
     public static final String MSG_FAIL_TO_UPDATE_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_UPDATE_WEB_DRIVER;
+    
+    public static final String MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY = MessageConstants.MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY;
+    
+    public static final String MSG_FAIL_TO_KILL_WEB_DRIVER = MessageConstants.MSG_FAIL_TO_KILL_WEB_DRIVER;
+
+    public static final String MSG_ACTIVATING = MessageConstants.MSG_ACTIVATING;
 }

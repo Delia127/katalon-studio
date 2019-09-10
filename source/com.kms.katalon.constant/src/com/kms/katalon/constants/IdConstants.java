@@ -82,6 +82,8 @@ public interface IdConstants {
     public static final String EXPLORER_TOOL_ITEM_LINK_PART = "com.kms.katalon.composer.explorer.handledtoolitem.linkPart";
 
     public static final String WELCOME_PART_ID = "com.kms.katalon.part.welcome";
+    
+    public static final String QUICKSTART_PART_ID = "com.kms.katalon.part.quickstart";
 
     // Test Case Part content
     public static final String TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testcase";
@@ -220,6 +222,8 @@ public interface IdConstants {
     public static final String KATALON_WEB_UI_OBJECT_SPY_BUNDLE_ID = "com.kms.katalon.composer.webui.objectspy";
 
     public static final String KATALON_WEB_UI_RECORDER_BUNDLE_ID = "com.kms.katalon.composer.webui.recorder";
+    
+    public static final String KATALON_WINDOWS_BUNDLE_ID = "com.kms.katalon.composer.windows";
 
     public static final String KATALON_WEBSERVICE_BUNDLE_ID = "com.kms.katalon.core.webservice";
     

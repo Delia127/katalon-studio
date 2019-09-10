@@ -36,7 +36,7 @@ public abstract class ProcessLauncher extends BasicLauncher implements IWatchdog
 
     private LauncherManager manager;
     
-    private BasicLauncher parentLauncher;
+    protected BasicLauncher parentLauncher;
 
     private ProcessLauncher() {
         super();

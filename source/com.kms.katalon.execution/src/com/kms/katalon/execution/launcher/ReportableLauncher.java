@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -19,6 +21,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.katalon.platform.api.event.ExecutionEvent;
 import com.katalon.platform.api.execution.TestCaseExecutionContext;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -50,6 +53,7 @@ import com.kms.katalon.execution.entity.TestCaseExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutionContextImpl;
 import com.kms.katalon.execution.entity.TestSuiteExecutionEvent;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -58,7 +62,6 @@ import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.tracking.service.Trackings;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
     private ReportEntity reportEntity;
@@ -73,21 +76,43 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     public abstract ReportableLauncher clone(IRunConfiguration runConfig);
+    
+    private void sendTrackingActivity() {
+        ReportIntegrationContribution analyticsProvider = ReportIntegrationFactory.getInstance().getAnalyticsProvider();
+        String machineId = getMachineId();
+        String sessionId = getExecutionUUID();
+        Date startTime = getStartTime(); 
+        Date endTime = getEndTime(); 
+        String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+        Long organizationId = OrganizationHandler.getOrganizationId();
+        ExecutorService executors = Executors.newFixedThreadPool(2);
+        executors.submit(() -> {
+            analyticsProvider.sendTrackingActivity(organizationId, machineId, sessionId, startTime, endTime, ksVersion);
+        });
+     }
 
     @Override
     protected void onStartExecution() {
         super.onStartExecution();
 
         startTime = new Date();
+        if (parentLauncher == null && (getExecutedEntity() instanceof Reportable)) {
+            sendTrackingActivity();
+        }
         fireTestSuiteExecutionEvent(ExecutionEvent.TEST_SUITE_STARTED_EVENT);
     }
+
     @Override
     protected void preExecutionComplete(boolean runTestSuite) {
+        this.endTime = new Date();
+        if (parentLauncher == null && (getExecutedEntity() instanceof Reportable)) {
+            sendTrackingActivity();
+        }
+
         if (getStatus() == LauncherStatus.TERMINATED) {
             return;
         }
-
-        this.endTime = new Date();
+        
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
@@ -472,9 +497,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     .get(index);
             for (int loopTime = 0; loopTime < testCaseExecutedEntity.getLoopTimes(); loopTime++) {
                 TestStatus testStatus = getResult().getStatuses()[iterationIndex];
+                Date tcStartTime = testStatus.getStartTime();
+                Date tcEndTime = testStatus.getEndTime();
                 testCaseContexts.add(TestCaseExecutionContextImpl.Builder
                         .create(testCaseExecutedEntity.getSourceId(), testCaseExecutedEntity.getSourceId())
                         .withTestCaseStatus(testStatus.getStatusValue().name())
+                        .withStartTime(tcStartTime != null ? tcStartTime.getTime() : 0L)
+                        .withEndTime(tcEndTime != null ? tcEndTime.getTime() : 0L)
                         .withMessage(testStatus.getStackTrace())
                         .build());
                 iterationIndex++;

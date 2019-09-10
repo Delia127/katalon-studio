@@ -15,6 +15,7 @@
  *
  */
 
+// KAT runScript command
 function katalonSendMessage(result) {
 	window.postMessage({
 		direction: "from-page-runscript",

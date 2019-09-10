@@ -36,7 +36,7 @@ import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreProduct;
-import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
+import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 import com.kms.katalon.plugin.service.PluginService;
 
@@ -95,10 +95,10 @@ public class RecommendPluginsDialog extends Dialog {
         Job reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                KStoreUsernamePasswordCredentials[] credentials = new KStoreUsernamePasswordCredentials[1];
+                KStoreBasicCredentials[] credentials = new KStoreBasicCredentials[1];
                 UISynchronizeService.syncExec(() -> {
                     try {
-                        credentials[0] = RequireAuthorizationHandler.getUsernamePasswordCredentials();
+                        credentials[0] = RequireAuthorizationHandler.getBasicCredentials();
                         KStoreRestClient res = new KStoreRestClient(credentials[0]);
                         res.postRecommended(idProduct);
                         res.getRecommendPlugins()
@@ -162,8 +162,8 @@ public class RecommendPluginsDialog extends Dialog {
 
     public Control createStepArea(Composite parent) {
         try {
-            KStoreUsernamePasswordCredentials credentials = new KStoreUsernamePasswordCredentials();
-            credentials = RequireAuthorizationHandler.getUsernamePasswordCredentials();
+            KStoreBasicCredentials credentials = new KStoreBasicCredentials();
+            credentials = RequireAuthorizationHandler.getBasicCredentials();
             KStoreRestClient res = new KStoreRestClient(credentials);
             List<KStoreProduct> recommendList = res.getRecommendPlugins();
             List<Button> buttons = new ArrayList<Button>();

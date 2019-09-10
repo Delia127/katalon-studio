@@ -3,6 +3,7 @@
 
 <product name="Katalon Studio" uid="com.kms.katalon.product.product" id="com.kms.katalon.product" application="com.kms.katalon.application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -11,7 +12,7 @@
       </programArgs>
       <programArgsMac>-vm ../../Contents/Eclipse/jre/Contents/Home/jre/lib/jli/libjli.dylib
       </programArgsMac>
-      <vmArgs>-Xms256m
+      <vmArgs>-XX:+UseG1GC -XX:+UseStringDeduplication -Xms256m
          <argsX86>-Xmx1280m</argsX86>
          <argsX86_64>-Xmx2048m</argsX86_64>
          <argsPPC>-Xmx2048m</argsPPC>
@@ -40,12 +41,14 @@
       </win>
    </launcher>
 
+
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
       <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</macos>
       <solaris include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</solaris>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
+
 
    <plugins>
       <plugin id="com.ibm.icu"/>
@@ -124,6 +127,7 @@
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.update.configurator" autoStart="true" startLevel="4" />
       <property name="osgi.splashPath" value="platform:/base/configuration/resources" />
    </configurations>
 

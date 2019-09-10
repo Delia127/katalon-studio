@@ -52,7 +52,9 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  com.kms.katalon.application,
  com.kms.katalon.tracking,
  com.kms.katalon.execution.webui,
- com.kms.katalon.ansiconsole
+ com.kms.katalon.ansiconsole,
+ com.google.guava,
+ org.apache.commons.lang3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.e4.core.services.log
 Bundle-ActivationPolicy: lazy

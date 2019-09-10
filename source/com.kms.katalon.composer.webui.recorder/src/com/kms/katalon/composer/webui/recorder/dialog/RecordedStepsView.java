@@ -294,6 +294,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     private void beforeNodeAdded(HTMLActionMapping newAction) {
         WebElement targetElement = newAction.getTargetElement();
         AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
+
         String objectId = latestNode.getTestObjectText();
         String latestKeywordName = latestNode.getKeywordName();
         if (targetElement != null) {
@@ -301,7 +302,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
             if (property != null && "password".equals(property.getValue())) {
                 secureSetTextAction(newAction);
             }
-
             if (HTMLAction.LeftClick.getMappedKeywordMethod().equals(latestKeywordName)
                     && newAction.getAction().equals(HTMLAction.SetText) && objectId.equals(targetElement.getName())) {
                 removeTestStep();

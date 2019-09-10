@@ -19,10 +19,11 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.plugin.dialog.KStorePluginsDialog;
+import com.kms.katalon.plugin.dialog.ReloadPluginsResultDialog;
+import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStorePlugin;
-import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
+import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.service.PluginService;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
@@ -48,10 +49,10 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    KStoreUsernamePasswordCredentials[] credentials = new KStoreUsernamePasswordCredentials[1];
+                    KStoreBasicCredentials[] credentials = new KStoreBasicCredentials[1];
                     UISynchronizeService.syncExec(() -> {
                         try {
-                            credentials[0] = getUsernamePasswordCredentials();
+                            credentials[0] = getBasicCredentials();
                         } catch (KStoreClientAuthException e) {
                             LoggerSingleton.logError(e);
                         }
@@ -113,13 +114,17 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     private boolean checkExpire(List<ReloadItem> reloadItems) {
         return reloadItems.stream().filter(i -> {
-            KStorePlugin plugin = i.getPlugin();
-            return plugin.isExpired() || (plugin.isTrial() && plugin.getRemainingDay() <= 14);
+            Plugin plugin = i.getPlugin();
+            if (plugin.isOnline()) {
+                KStorePlugin onlinePlugin = plugin.getOnlinePlugin();
+                return onlinePlugin.isExpired() || (onlinePlugin.isTrial() && onlinePlugin.getRemainingDay() <= 14);
+            }
+            return false;
         }).findAny().isPresent();
     }
 
     private void openResultDialog(List<ReloadItem> result) {
-        KStorePluginsDialog dialog = new KStorePluginsDialog(Display.getCurrent().getActiveShell(), result);
+        ReloadPluginsResultDialog dialog = new ReloadPluginsResultDialog(Display.getCurrent().getActiveShell(), result);
         dialog.open();
     }
 }
