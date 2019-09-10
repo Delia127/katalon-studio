@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Windows Execution
+Bundle-SymbolicName: com.kms.katalon.execution.windows;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.kms.katalon.execution,
+ com.kms.katalon.entity,
+ com.kms.katalon.core,
+ com.kms.katalon.core.windows,
+ com.kms.katalon.logging,
+ org.eclipse.osgi,
+ org.eclipse.core.runtime
+Export-Package: com.kms.katalon.execution.windows

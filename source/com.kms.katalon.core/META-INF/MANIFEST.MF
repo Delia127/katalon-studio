@@ -31,7 +31,6 @@ Export-Package: com.kms.katalon.core.annotation,
  com.kms.katalon.core.setting,
  com.kms.katalon.core.testcase,
  com.kms.katalon.core.testdata,
- com.kms.katalon.core.testdata.decorator,
  com.kms.katalon.core.testdata.reader,
  com.kms.katalon.core.testobject,
  com.kms.katalon.core.testobject.impl,
@@ -72,11 +71,12 @@ Require-Bundle: net.sf.supercsv.super-csv,
  com.fasterxml.jackson.core.jackson-databind,
  com.fasterxml.jackson.core.jackson-core,
  com.fasterxml.jackson.core.jackson-annotations,
- org.slf4j.api,
  ch.qos.logback.classic,
  ch.qos.logback.core,
  slf4j.api,
  org.fusesource.jansi,
- com.kms.katalon.netlightbody
+ com.kms.katalon.netlightbody,
+ xml-apis,
+ org.apache.commons.commons-text
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

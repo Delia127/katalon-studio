@@ -17,7 +17,7 @@ public class ZipHelper {
     private static final List<String> ignoreFileArray = Arrays.asList(".class", ".log", ".ctxt", ".jar", ".war", ".ear",
             ".zip", ".tar.gz", ".rar", ".project", ".classpath");
 
-    private static final List<String> ignoreFolderArray = Arrays.asList(".mtj.tmp", "hs_err_pid", "Libs", "bin", ".git");
+    private static final List<String> ignoreFolderArray = Arrays.asList(".mtj.tmp", "hs_err_pid", "Libs", "bin", ".git", "Reports");
 
     public static void Compress(String srcFolder, String destZipFile) {
         try {

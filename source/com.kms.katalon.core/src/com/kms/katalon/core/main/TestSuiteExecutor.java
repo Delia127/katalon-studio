@@ -2,7 +2,9 @@ package com.kms.katalon.core.main;
 
 import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -10,13 +12,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.groovy.ast.MethodNode;
 
-import com.beust.jcommander.internal.Maps;
 import com.google.common.base.Optional;
 import com.kms.katalon.core.annotation.SetUp;
 import com.kms.katalon.core.annotation.SetupTestCase;
@@ -35,8 +37,12 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseBinding;
+import com.kms.katalon.core.util.internal.JsonUtil;
 
 import groovy.lang.Binding;
+import groovy.util.GroovyScriptEngine;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 public class TestSuiteExecutor {
 
@@ -75,14 +81,14 @@ public class TestSuiteExecutor {
         eventManger.addListenerEventHandle(videoRecorderService);
     }
 
-    public void execute(Map<String, String> suiteProperties, List<TestCaseBinding> testCaseBindings) {
+    public void execute(Map<String, String> suiteProperties, File testCaseBindingFile) {
         eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_EXECUTION, new Object[0]);
 
         logger.startSuite(testSuiteId, suiteProperties);
 
         eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_SUITE, new Object[] { testSuiteContext });
 
-        accessTestSuiteMainPhase(testCaseBindings);
+        accessTestSuiteMainPhase(testCaseBindingFile);
 
         String status = "COMPLETE";
         if (ErrorCollector.getCollector().containsErrors()) {
@@ -101,7 +107,7 @@ public class TestSuiteExecutor {
         eventManger.publicEvent(ExecutionListenerEvent.AFTER_TEST_EXECUTION, new Object[0]);
     }
 
-    private void accessTestSuiteMainPhase(List<TestCaseBinding> testCaseBindings) {
+    private void accessTestSuiteMainPhase(File testCaseBindingFile) {
         ErrorCollector errorCollector = ErrorCollector.getCollector();
         try {
             this.scriptCache = new ScriptCache(testSuiteId);
@@ -114,8 +120,29 @@ public class TestSuiteExecutor {
             return;
         }
 
-        for (int i = 0; i < testCaseBindings.size(); i++) {
-            accessTestCaseMainPhase(i, testCaseBindings.get(i));
+        try {
+            List<String> bindings = FileUtils.readLines(testCaseBindingFile, "UTF-8");
+            for (int i = 0; i < bindings.size(); i++) {
+                TestCaseBinding testCaseBinding = JsonUtil.fromJson(bindings.get(i), TestCaseBinding.class);
+                Map<String, Object> values = testCaseBinding.getBindedValues() != null ? testCaseBinding.getBindedValues() : new HashMap<>();
+                Map<String, Object> bindedValues = new HashMap<>();
+
+                scriptEngine.changeConfigForCollectingVariable();
+                for (Entry<String, Object> entry : values.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    try {
+                        Object runScript = scriptEngine.runScriptWithoutLogging(value != null ? value.toString() : null, new Binding());
+                        bindedValues.put(key, runScript);
+                    } catch (Exception e) {
+                        bindedValues.put(key, value);
+                    }
+                }
+                testCaseBinding.setBindedValues(bindedValues);
+                accessTestCaseMainPhase(i, testCaseBinding);
+            }
+        } catch (IOException e) {
+            errorCollector.addError(e);
         }
 
         invokeTestSuiteMethod(TearDown.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true);

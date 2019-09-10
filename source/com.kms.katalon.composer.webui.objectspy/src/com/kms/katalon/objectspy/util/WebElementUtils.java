@@ -153,21 +153,14 @@ public class WebElementUtils {
         String elementType = elementJsonObject.getAsJsonPrimitive(ELEMENT_TYPE_KEY).getAsString();
 
         List<WebElementPropertyEntity> properties = new ArrayList<>();
-        properties.add(new WebElementPropertyEntity(ELEMENT_TAG_KEY, elementType));
+        properties.add(new WebElementPropertyEntity(ELEMENT_TAG_KEY, elementType, false));
         collectElementContents(elementJsonObject, properties);
         collectElementAttributes(elementJsonObject, properties);
-        
+
         List<WebElementXpathEntity> xpaths = new ArrayList<>();
         collectElementXpaths(elementJsonObject, xpaths);
         
         String xpathString = getElementXpath(elementJsonObject);
-        if (xpathString != null) {
-            boolean hasPriorityProperty = properties.stream()
-                    .filter(p -> PRIORITY_PROPERTIES.contains(p.getName()))
-                    .findAny()
-                    .isPresent();
-            properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, !hasPriorityProperty));
-        }
         
         // Change default selected properties by user settings
         Map<String, Boolean> customSettings = getCapturedTestObjectAttributeLocatorSettings().stream()
@@ -175,6 +168,17 @@ public class WebElementUtils {
         properties.stream().filter(i -> customSettings.get(i.getName()) != null).forEach(i -> {
             i.setIsSelected(customSettings.get(i.getName()));
         });
+
+        if (!customSettings.containsKey(XPATH_KEY)) {
+            boolean shouldHaveXpath = true;
+            for (WebElementPropertyEntity property:  properties) {
+                if (property.getIsSelected()) {
+                    shouldHaveXpath = false;
+                    break;
+                }
+            }
+            properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, shouldHaveXpath));
+        }
 
         // Change default selected properties by user settings
         SelectorMethod selectorMethod = getCapturedTestObjectSelectorMethod();
@@ -312,8 +316,7 @@ public class WebElementUtils {
                 continue;
             }
             String propertyName = entry.getKey();
-            properties.add(new WebElementPropertyEntity(propertyName, entry.getValue().getAsString(),
-                    PRIORITY_PROPERTIES.contains(propertyName)));
+            properties.add(new WebElementPropertyEntity(propertyName, entry.getValue().getAsString(), false));
         }
     }
     
@@ -369,7 +372,7 @@ public class WebElementUtils {
         if (!isValidElementContent(contentArray)) {
             return;
         }
-        properties.add(new WebElementPropertyEntity(ELEMENT_TEXT_KEY, contentArray.get(0).getAsString()));
+        properties.add(new WebElementPropertyEntity(ELEMENT_TEXT_KEY, contentArray.get(0).getAsString(), false));
     }
 
     private static boolean isElementContent(JsonObject elementJsonObject) {

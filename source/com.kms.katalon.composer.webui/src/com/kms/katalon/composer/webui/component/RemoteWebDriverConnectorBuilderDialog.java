@@ -8,14 +8,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.execution.components.DriverPreferenceComposite;
+import com.kms.katalon.composer.execution.dialog.DriverConnectorBuilderDialog;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
+import com.kms.katalon.execution.webui.driver.WebUiDriverConnector;
 
-public class RemoteWebDriverConnectorBuilderDialog extends WebUiDriverConnectorBuilderDialog {
-    private RemoteWebDriverPreferenceComposite driverPreferenceComposite;
+public class RemoteWebDriverConnectorBuilderDialog extends DriverConnectorBuilderDialog {
+    
+    protected WebUiDriverConnector remoteWebDriverConnector;
+    private DriverPreferenceComposite driverPreferenceComposite;
 
     public RemoteWebDriverConnectorBuilderDialog(Shell parentShell, RemoteWebDriverConnector remoteWebDriverConnector) {
-        super(parentShell, remoteWebDriverConnector);
+        super(parentShell);
+        this.remoteWebDriverConnector = remoteWebDriverConnector;
     }
 
     @Override
@@ -30,7 +36,7 @@ public class RemoteWebDriverConnectorBuilderDialog extends WebUiDriverConnectorB
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
         applyDialogFont(container);
         driverPreferenceComposite = new RemoteWebDriverPreferenceComposite(container,
-                SWT.NONE, (RemoteWebDriverConnector) webUiDriverConnector);
+                SWT.NONE, (RemoteWebDriverConnector) remoteWebDriverConnector);
         return container;
     }
 

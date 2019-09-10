@@ -3,6 +3,7 @@ package com.kms.katalon.composer.mobile.objectspy.dialog;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.lang3.text.StrMatcher;
 import org.json.JSONObject;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,7 +46,6 @@ import com.kms.katalon.core.appium.exception.IOSWebkitStartException;
 import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
 import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
@@ -62,6 +63,8 @@ import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
+import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.integration.kobiton.driver.KobitonDriverConnector;
 import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
 import com.kms.katalon.integration.kobiton.entity.KobitonDevice;
@@ -86,7 +89,7 @@ public class MobileInspectorController {
 
     public MobileInspectorController() {
     }
-    
+
     public void startExistingApp(MobileDeviceInfo mobileDeviceInfo, String appId)
             throws ExecutionException, InterruptedException, IOException, AppiumStartException,
             MobileDriverInitializeException, IOSWebkitStartException {
@@ -140,7 +143,6 @@ public class MobileInspectorController {
         iosWebKitProcess = AppiumDriverManager.getIosWebKitProcess();
     }
 
-
     public void startMobileApp(MobileDeviceInfo mobileDeviceInfo, String appFile, boolean uninstallAfterCloseApp)
             throws ExecutionException, InterruptedException, IOException, AppiumStartException,
             MobileDriverInitializeException, IOSWebkitStartException {
@@ -186,7 +188,7 @@ public class MobileInspectorController {
 
         AppiumDriverManager.startAppiumServerJS(SERVER_START_TIMEOUT,
                 getAdditionalEnvironmentVariables(mobileDriverType));
-        driver = MobileDriverFactory.startMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(),
+        driver = MobileDriverFactory.startLocalMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(),
                 mobileDeviceInfo.getDeviceName(), mobileDeviceInfo.getDeviceOSVersion(), appFile,
                 uninstallAfterCloseApp);
 
@@ -214,6 +216,25 @@ public class MobileInspectorController {
         appiumTailerThread = null;
     }
 
+    public void startMobileAppOnCloudDevices(RemoteWebRunConfiguration runConfiguration, String applicationId)
+            throws InterruptedException, MalformedURLException, MobileDriverInitializeException {
+        if (driver != null) {
+            closeApp();
+            Thread.sleep(2000);
+        }
+        DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
+        generalExecutionSetting.setTimeout(60);
+
+        RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting,
+                runConfiguration.getDriverConnectors(), null));
+
+        RemoteWebDriverConnector remoteDriverConnector = runConfiguration.getRemoteDriverConnector();
+        Map<String, Object> userConfigProperties = remoteDriverConnector.getUserConfigProperties();
+        DesiredCapabilities desiredCapabilities = new DesiredCapabilities(userConfigProperties);
+        driver = MobileDriverFactory.startRemoteMobileDriver(runConfiguration.getRemoteServerUrl(), desiredCapabilities,
+                remoteDriverConnector.getMobileDriverType(), applicationId);
+    }
+
     public void startMobileApp(KobitonDevice kobitonDevice, KobitonApplication kobitonApplication)
             throws InterruptedException, IOException, AppiumStartException, MobileDriverInitializeException {
         if (kobitonDevice == null || kobitonApplication == null) {
@@ -226,6 +247,7 @@ public class MobileInspectorController {
         KobitonDriverConnector connector = new KobitonDriverConnector(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         connector.setKobitonDevice(kobitonDevice);
+        connector.setMobileDriverType(getMobileDriverType(kobitonDevice));
         connector.setApiKey(KobitonPreferencesProvider.getKobitonApiKey());
         connector.setUserName(KobitonPreferencesProvider.getKobitonUserName());
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(2);
@@ -237,10 +259,9 @@ public class MobileInspectorController {
 
         RunConfiguration.setExecutionSetting(
                 ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
-        driver = MobileDriverFactory.startMobileDriver(getMobileDriverType(kobitonDevice), null,
-                kobitonDevice.getCapabilities().getDeviceName(),
-                kobitonDevice.getCapabilities().getPlatformVersion(), 
-                kobitonApplication.buildAutomationKey(), false);
+        DesiredCapabilities desiredCapabilities = new DesiredCapabilities(kobitonDevice.toDesireCapabilitiesMap());
+        driver = MobileDriverFactory.startRemoteMobileDriver(connector.getRemoteServerUrl(), desiredCapabilities,
+                connector.getMobileDriverType(), kobitonApplication.buildAutomationKey());
     }
 
     public static MobileDriverType getMobileDriverType(KobitonDevice kobitonDevice) {

@@ -154,8 +154,10 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
             if (tokenInfo == null) {
                 return;
             }
+            
+            Long orgId = analyticsSettingStore.getOrganization().getId();
             teams = AnalyticsAuthorizationHandler.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                    analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo,
+                    analyticsSettingStore.getEmail(encryptionEnabled), password, orgId, tokenInfo,
                     new ProgressMonitorDialog(getShell()));
             projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password,
                     teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams)),
@@ -231,7 +233,6 @@ public class StoreProjectCodeToCloudDialog extends Dialog {
             Long teamId = sellectProject.getTeamId();
             Long projectId = sellectProject.getId();
             URIBuilder builder = new URIBuilder(serverUrl);
-            builder.setScheme(AnalyticsStringConstants.ANALYTICS_SCHEME_HTTPS);
             builder.setPath(String.format(AnalyticsStringConstants.ANALYTICS_URL_TEST_PROJECT, teamId, projectId));
             Program.launch(builder.toString());
         } catch (URISyntaxException e) {

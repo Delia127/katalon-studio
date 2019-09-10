@@ -68,11 +68,6 @@ public class Application implements IApplication {
         System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
         try {
             init();
-            if (!(VersionUtil.isStagingBuild() || VersionUtil.isDevelopmentBuild()) && !checkConsoleActivation(arguments)) {
-                return LauncherResult.RETURN_CODE_PASSED;
-            }
-            Trackings.trackOpenApplication(!ActivationInfoCollector.isActivated(), "console");
-            
             return ConsoleMain.launch(arguments);
         } catch (Exception e) {
             LogUtil.printAndLogError(e, ConsoleMessageConstants.ERR_CONSOLE_MODE);
@@ -90,26 +85,6 @@ public class Application implements IApplication {
         }, trackingTime, trackingTime, TimeUnit.SECONDS);
     }
     
-    public static boolean checkConsoleActivation(String[] arguments) {
-        if (ActivationInfoCollector.isActivated()) {
-            return true;
-        }
-
-//        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
-//                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_APPLICATION, RunningMode.CONSOLE)));
-        
-        //KAT-3257: Remove activation process when using console mode.
-//        String[] emailPass = getEmailAndPassword(arguments);
-//        String email = emailPass[0], password = emailPass[1];
-//        StringBuilder errorMessage = new StringBuilder();
-//        if (email == null || password == null || !ActivationInfoCollector.activate(email, password, errorMessage)) {
-//            LogUtil.printErrorLine(email == null || password == null ? ConsoleMessageConstants.KATALON_NOT_ACTIVATED
-//                    : errorMessage.toString());
-//            return false;
-//        }
-        return true;
-    }
-
     private static String[] getEmailAndPassword(String[] arguments) {
         OptionParser parser = new OptionParser(false);
         parser.allowsUnrecognizedOptions();

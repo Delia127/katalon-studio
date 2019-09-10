@@ -173,7 +173,8 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
             return -1;
         }
         for (int i = 0; i < keywordMethod.getParameters().length; i++) {
-            if (AstEntityInputUtil.isTestObjectClass(keywordMethod.getParameters()[i].getType())) {
+            Class<?> type = keywordMethod.getParameters()[i].getType();
+            if (AstEntityInputUtil.isTestObjectClass(type)) {
                 return i;
             }
         }

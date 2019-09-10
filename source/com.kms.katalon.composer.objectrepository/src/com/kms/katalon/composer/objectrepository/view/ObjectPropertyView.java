@@ -294,7 +294,7 @@ public class ObjectPropertyView implements EventHandler {
 		});
 
 		Composite radioSelectionComposite = new Composite(selectionMethodComposite, SWT.NONE);
-		radioSelectionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		radioSelectionComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 		GridLayout glRadioSelection = new GridLayout(3, false);
 		glRadioSelection.marginHeight = 0;
 		glRadioSelection.marginWidth = 0;
@@ -523,7 +523,6 @@ public class ObjectPropertyView implements EventHandler {
 	}
 
 	private void createObjectPropertiesComposite(Composite parent) {
-
 		propertyTableComposite = new Composite(parent, SWT.NONE);
 		propertyTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		GridLayout glCompositeTable = new GridLayout();
@@ -540,8 +539,6 @@ public class ObjectPropertyView implements EventHandler {
 		createPropertyTableDetails(propertyTableComposite);
 
 		createPropertyTableMenu();
-		
-
 	}
 
 	private void createObjectXpathsComposite(Composite parent) {
@@ -994,7 +991,7 @@ public class ObjectPropertyView implements EventHandler {
 		Composite testObjectDetailsComposite = createTestObjectDetailsComposite(mainComposite);
 
 		mainComposite.setContent(testObjectDetailsComposite);
-		mainComposite.setMinSize(new Point(900, 750));
+		mainComposite.setMinSize(testObjectDetailsComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		mainComposite.setExpandVertical(true);
 		mainComposite.setExpandHorizontal(true);
 

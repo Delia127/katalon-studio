@@ -173,6 +173,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     private boolean isScriptChanged;
 
+    private boolean variableEditorLastDirty = false;
+
     private TestCaseEntity testCase;
 
     private TestCaseEntity originalTestCase;
@@ -244,7 +246,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
             if (tabFolder.getSelectionIndex() != CHILD_TEST_CASE_EDITOR_PART_INDEX) {
                 setSelectedPart(getChildCompatibilityPart());
             } else if (childTestCasePart.isManualScriptChanged()) {
-                setChildEditorContents(scriptNode);
+              setChildEditorContents(scriptNode);
             }
         }
 
@@ -340,7 +342,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                             return;
                         }
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX
-                                && (isScriptChanged || scriptNode == null)) {
+                                && (isScriptChanged || scriptNode == null || !childTestCasePart.isScriptLoaded())) {
                             setScriptContentToManual();
                             return;
                         }
@@ -354,16 +356,20 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
-                            if (dirty.isDirty())
+                            if (dirty.isDirty() && variableEditorLastDirty) {
                                 updateVariableManualView();
+                            }
+                            variableEditorLastDirty = false;
                             Trackings.trackOpenObject("testCaseVariable");
                             variableTab = true;
                             return;
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_EDITOR_PART_INDEX) {
-                            if (dirty.isDirty())
+                            if (dirty.isDirty() && !variableEditorLastDirty) {
                                 updateVariableScriptView();
+                            }
+                            variableEditorLastDirty = true;
                             variableTab = false;
                             return;
                         }
@@ -1082,5 +1088,9 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     @Override
     public boolean isDirty() {
         return compositePart.isDirty();
+    }
+    
+    public void changeScriptNode(ScriptNodeWrapper scriptNode) {
+        this.scriptNode = scriptNode;
     }
 }

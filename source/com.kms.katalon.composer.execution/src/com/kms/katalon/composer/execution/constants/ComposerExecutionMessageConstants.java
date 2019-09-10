@@ -117,10 +117,14 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_LBL_PORT;
 
+    public static String PREF_CHECK_USE_USERNAME_AS_SENDER;
+    
     public static String PREF_LBL_USERNAME;
 
     public static String PREF_LBL_PASSWORD;
 
+    public static String PREF_LBL_REPORT_SENDER;
+    
     public static String PREF_LBL_REPORT_RECIPIENTS;
 
     public static String PREF_LBL_SIGNATURE;

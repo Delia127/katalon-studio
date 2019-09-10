@@ -14,6 +14,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.execution.constants.PluginOptions;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class GeneralPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {

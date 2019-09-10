@@ -15,6 +15,8 @@
  *
  */
 
+// recorder entry
+
 class Recorder {
 
     constructor(window) {

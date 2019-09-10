@@ -25,6 +25,8 @@ import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class ReportController extends EntityController {
+    private static final String TEST_SUITES_FOLDER = "Test Suites";
+
     private static EntityController _instance;
 
     public static String LOG_FILE_NAME = "execution0.log";
@@ -226,15 +228,22 @@ public class ReportController extends EntityController {
             return null;
         }
         String[] groupName = reportFolderId.split(StringConstants.ENTITY_ID_SEPARATOR);
-        return "Test Suites" + StringConstants.ENTITY_ID_SEPARATOR + groupName[groupName.length - 1];
+        return TEST_SUITES_FOLDER + StringConstants.ENTITY_ID_SEPARATOR + groupName[groupName.length - 1];
     }
 
     public TestSuiteEntity getTestSuiteByReportParentFolder(FolderEntity parentReportFolder) throws Exception {
-        String testSuiteDisplayId = "Test Suites" + StringConstants.ENTITY_ID_SEPARATOR + parentReportFolder.getName();
-        return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteDisplayId,
-                parentReportFolder.getProject());
+        FolderEntity tempfolder = parentReportFolder;
+        StringBuilder strBuilder = new StringBuilder();
+        // Stop 1 level before 'Report' folder because 'Report' folder contains a 'sessionID' folder
+        while (tempfolder.getParentFolder() != null && tempfolder.getParentFolder().getParentFolder() != null
+                && !tempfolder.getParentFolder().getParentFolder().equals("Reports")) {
+            strBuilder.insert(0, StringConstants.ENTITY_ID_SEPARATOR + tempfolder.getName());
+            tempfolder = tempfolder.getParentFolder();
+        }
+        String testSuiteDisplayId = TEST_SUITES_FOLDER + strBuilder.toString();
+        return TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteDisplayId, tempfolder.getProject());
     }
-
+    
     public ReportEntity reloadReport(ReportEntity report, Entity entity) throws Exception {
         return getReportEntity(entity.getId());
     }

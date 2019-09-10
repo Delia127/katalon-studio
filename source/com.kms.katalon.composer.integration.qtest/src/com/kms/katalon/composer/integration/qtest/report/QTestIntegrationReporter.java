@@ -28,6 +28,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.LongConsoleOption;
 import com.kms.katalon.execution.console.entity.StringConsoleOption;
+import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
@@ -346,4 +347,16 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
             destType = argumentValue.trim();
         }
     }
+
+	@Override
+	public void uploadTestSuiteResult(TestSuiteEntity testSuite, ReportFolder reportFolder) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uploadTestSuiteCollectionResult(ReportFolder reportFolder) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

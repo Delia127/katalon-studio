@@ -27,7 +27,6 @@ public class CRemoteWebDriver extends RemoteWebDriver implements IDelayableDrive
 
     @Override
     protected Response execute(String driverCommand, Map<String, ?> parameters) {
-        delay();
         return super.execute(driverCommand, parameters);
     }
 

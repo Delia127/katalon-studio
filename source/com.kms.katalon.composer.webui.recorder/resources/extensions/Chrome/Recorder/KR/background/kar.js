@@ -1,14 +1,3 @@
-
-// var _gaq = _gaq || [];
-// _gaq.push(['_setAccount', 'UA-81802338-9']);
-// _gaq.push(['_trackPageview']);
-
-// (function() {
-//   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-//   ga.src = 'https://ssl.google-analytics.com/ga.js';
-//   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-// })();
-
 // KAT-BEGIN save last window size
 function getWindowSize(callback) {
     chrome.storage.local.get('window', function(result) {
@@ -31,6 +20,8 @@ function getWindowSize(callback) {
 }
 // KAT-END
 
+// attach/detach Chrome DevTools Protocol (CDP)
+
 var attachedTabs = {};
 
 function onDetach(debuggeeId) {
@@ -38,6 +29,7 @@ function onDetach(debuggeeId) {
     delete attachedTabs[tabId];
 }
 
+// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-disable
 function doDetach(sendResponse, debuggeeId, err) {
     chrome.debugger.sendCommand(
         debuggeeId,
@@ -64,6 +56,7 @@ function doDetach(sendResponse, debuggeeId, err) {
     );
 };
 
+// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-setFileInputFiles
 function doUploadFile(request, sendResponse, debuggeeId, frameId) {
     var tabId = debuggeeId.tabId;
     attachedTabs[tabId] = true;
@@ -86,6 +79,8 @@ function doUploadFile(request, sendResponse, debuggeeId, frameId) {
     });
 };
 
+// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-focus
+// https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchKeyEvent
 function doSendSpecialKeys(request, sendResponse, debuggeeId, frameId) {
     var tabId = debuggeeId.tabId;
     attachedTabs[tabId] = true;
@@ -195,6 +190,7 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse, ty
     }
 });
 
+// find the node with Chrome DevTools Protocol
 function doActionOnNode(frameId, debuggeeId, sendResponse, request, f) {
     if (frameId) {
         chrome.debugger.sendCommand(debuggeeId, "DOM.getFlattenedDocument", {

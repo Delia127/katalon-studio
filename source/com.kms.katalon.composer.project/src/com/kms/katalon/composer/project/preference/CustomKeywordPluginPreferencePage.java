@@ -22,8 +22,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.keyword.ActionProviderFactory;
@@ -55,7 +53,7 @@ public class CustomKeywordPluginPreferencePage extends PreferencePage {
         this.keywordsManifest = keywordsManifest;
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
         try {
-            classLoader = GroovyUtil.getClassLoaderFromParent(projectEntity, BuiltinKeywords.class.getClassLoader());
+        	classLoader = GroovyUtil.getClassLoaderFromParent(projectEntity, BuiltinKeywords.class.getClassLoader());
         } catch (MalformedURLException | CoreException exception) {
             LoggerSingleton.logError(exception);
         }

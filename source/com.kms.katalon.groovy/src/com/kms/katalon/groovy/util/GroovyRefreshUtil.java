@@ -67,7 +67,7 @@ public class GroovyRefreshUtil {
 
             if (testCaseContent.contains(oldScript)) {
                 String newTestCaseContent = testCaseContent.replace(oldScript, newScript);
-                newScriptFileInputStream = IOUtils.toInputStream(newTestCaseContent);
+                newScriptFileInputStream = IOUtils.toInputStream(newTestCaseContent, GroovyConstants.DF_CHARSET);
                 scriptFile.setContents(newScriptFileInputStream, true, false, new NullProgressMonitor());
 
                 scriptFile.getParent().refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());

@@ -22,6 +22,8 @@ public class MessageConstants extends NLS {
     public static String PAGE_RADIO_AUTO_CLEAN_PREV_SESSION;
 
     public static String PA_WELCOME;
+    
+    public static String PA_QUICKSTART;
 
     public static String PA_WELCOME_TO_KATALON;
 
@@ -118,6 +120,8 @@ public class MessageConstants extends NLS {
     public static String BTN_CLEAR_TILE;
 
     public static String BTN_ACTIVATE_TITLE;
+    
+    public static String BTN_LOG_IN_TITLE;
 
     public static String WAITTING_MESSAGE;
 
@@ -319,8 +323,14 @@ public class MessageConstants extends NLS {
     public static String AGREE_TERM_URL;
     
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
+    
+    public static String ActivationDialogV2_LBL_SELECT_ORGANIZATION;
 
     public static String ActivationDialogV2_MSG_ACTIVATING;
+    
+    public static String ActivationDialogV2_MSG_GETTING_ORGANIZATION;
+    
+    public static String ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION;
 
     public static String ActivationDialogV2_LNK_REGISTER;
 
@@ -330,6 +340,10 @@ public class MessageConstants extends NLS {
     
     public static String ActivationDialogV2_LBL_AGREE_TERM;
    
+    public static String ActivationDialogV2_LBL_ERROR;
+
+    public static String ActivationDialogV2_LBL_ERROR_ORGANIZATION;
+
     // ActivationOfflineDialogV2
     public static String ActivationOfflineDialogV2_LNK_BACK;
 
@@ -338,6 +352,16 @@ public class MessageConstants extends NLS {
     public static String ActivationOfflineDialogV2_LBL_ACTIVATION_URL;
 
     public static String ActivationOfflineDialogV2_LBL_ACTIVATION_CODE;
+    
+    public static String ActivationOfflineDialogV2_LBL_LICENSE_FILE;
+    
+    public static String ActivationOfflineDialogV2_BTN_CHOOSE_FILE;
+    
+    public static String ActivationOfflineDialogV2_LBL_MACHINE_KEY;
+
+    public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATE;
+
+    public static String ActivationDialogV2_LNK_SIGNUP;
 
     // SignupDialog
     public static String SignupDialog_LBL_FULL_NAME;
@@ -392,6 +416,8 @@ public class MessageConstants extends NLS {
     public static String KStoreLoginDialog_LBL_PASSWORD;
 
     public static String KStoreLoginDialog_BTN_CONNECT;
+    
+    public static String KStoreLoginDialog_BTN_SKIP;
 
     public static String KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
 
@@ -462,7 +488,19 @@ public class MessageConstants extends NLS {
     public static String PAGE_LBL_PLUGIN_DIRECTORY;
     
     public static String PAGE_BTN_BROWSE_FOLDER;
+    
+    public static String MSG_UPDATING_WEB_DRIVER;
+    
+    public static String MSG_WEB_DRIVER_UPDATED_SUCCESSFULLY;
+    
+    public static String MSG_FAIL_TO_UPDATE_WEB_DRIVER;
+    
+    public static String MSG_WEB_DRIVER_TERMINATE_SUCCESSFULLY;
+    
+    public static String MSG_FAIL_TO_KILL_WEB_DRIVER;
 
+    public static String MSG_ACTIVATING;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);

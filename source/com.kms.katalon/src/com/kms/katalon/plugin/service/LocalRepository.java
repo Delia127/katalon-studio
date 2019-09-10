@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 
 import com.kms.katalon.core.util.ApplicationRunningMode;
@@ -19,6 +20,7 @@ import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreCredentials;
 import com.kms.katalon.plugin.models.KStorePlugin;
+import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ResolutionException;
 import com.kms.katalon.plugin.models.ResolutionItem;
 import com.kms.katalon.plugin.util.PluginHelper;
@@ -41,7 +43,9 @@ public class LocalRepository {
 
     public List<ResolutionItem> resolvePlugins(List<KStorePlugin> plugins,
                                                KStoreCredentials credentials,
-                                               SubMonitor monitor) throws ResolutionException {
+                                               IProgressMonitor progressMonitor) throws ResolutionException {
+        SubMonitor monitor = SubMonitor.convert(progressMonitor);
+        monitor.beginTask("", 100);
         
         List<ResolutionItem> resolutionItems = new ArrayList<>();
         
@@ -94,9 +98,16 @@ public class LocalRepository {
         
         for (KStorePlugin plugin : plugins) {
             ResolutionItem resolutionItem = new ResolutionItem();
-            resolutionItem.setPlugin(plugin);
+            Plugin resolvedPlugin = new Plugin();
+            resolvedPlugin.setName(plugin.getProduct().getName());
+            resolvedPlugin.setVersion(plugin.getLatestCompatibleVersion().getNumber());
+            resolvedPlugin.setOnline(true);
+            resolvedPlugin.setOnlinePlugin(plugin);
+            resolvedPlugin.setCustomKeywordPlugin(PluginHelper.isCustomKeywordPlugin(plugin));
+
+            resolutionItem.setPlugin(resolvedPlugin);
             if (!errors.containsKey(plugin.getId())) {
-                plugin.setFile(findBinaryJar(plugin));
+                resolvedPlugin.setFile(findBinaryJar(plugin));
             } else {
                 resolutionItem.setException(errors.get(plugin.getId()));
             }
@@ -135,9 +146,7 @@ public class LocalRepository {
         downloadFile.createNewFile();
         
         KStoreRestClient restClient = new KStoreRestClient(credentials);
-        restClient.downloadPlugin(plugin.getProduct().getId(), 
-            downloadFile,
-            plugin.getLatestCompatibleVersion().getNumber());
+        restClient.downloadPlugin(plugin, downloadFile);
         
         trackDownloadPlugin(plugin, credentials);
     }

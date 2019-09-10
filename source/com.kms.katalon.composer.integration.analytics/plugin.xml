@@ -7,7 +7,6 @@
    <extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
       <page
-            category="com.kms.katalon.composer.preferences.integration"
             class="com.kms.katalon.composer.integration.analytics.preferences.AnalyticsPreferencesPage"
             id="com.kms.katalon.composer.integration.analytics.page"
             name="Katalon Analytics">

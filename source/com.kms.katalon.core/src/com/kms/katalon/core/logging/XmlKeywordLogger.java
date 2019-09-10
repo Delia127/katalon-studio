@@ -65,30 +65,36 @@ class XmlKeywordLogger {
             logger.setUseParentHandlers(false);
         }
 
-        String logFolder = getLogFolderPath();
-        if (logger.getHandlers().length == 0 && StringUtils.isNotEmpty(logFolder)) {
-            try {
-                // Split log into 100 files, every file is maximum 10MB
-                FileHandler fileHandler = new FileHandler(logFolder + File.separator + "execution%g.log",
-                        MAXIMUM_LOG_FILE_SIZE, MAXIMUM_LOG_FILES, true);
-
-                fileHandler.setEncoding(DF_CHARSET);
-                fileHandler.setFormatter(new CustomXmlFormatter());
-                logger.addHandler(fileHandler);
-
-                SocketHandler socketHandler = new SystemSocketHandler(StringConstants.DF_LOCAL_HOST_ADDRESS, getPort());
-                socketHandler.setEncoding(DF_CHARSET);
-                socketHandler.setFormatter(new CustomSocketLogFomatter());
-                logger.addHandler(socketHandler);
-            } catch (SecurityException e) {
-                System.err.println(
-                        MessageFormat.format(CoreMessageConstants.MSG_ERR_UNABLE_TO_CREATE_LOGGER, e.getMessage()));
-            } catch (IOException e) {
-                System.err.println(
-                        MessageFormat.format(CoreMessageConstants.MSG_ERR_UNABLE_TO_CREATE_LOGGER, e.getMessage()));
+        if (isInRunningMode()) {
+            String logFolder = getLogFolderPath();
+            if (logger.getHandlers().length == 0 && StringUtils.isNotEmpty(logFolder)) {
+                try {
+                    // Split log into 100 files, every file is maximum 10MB
+                    FileHandler fileHandler = new FileHandler(logFolder + File.separator + "execution%g.log",
+                            MAXIMUM_LOG_FILE_SIZE, MAXIMUM_LOG_FILES, true);
+    
+                    fileHandler.setEncoding(DF_CHARSET);
+                    fileHandler.setFormatter(new CustomXmlFormatter());
+                    logger.addHandler(fileHandler);
+    
+                    SocketHandler socketHandler = new SystemSocketHandler(StringConstants.DF_LOCAL_HOST_ADDRESS, getPort());
+                    socketHandler.setEncoding(DF_CHARSET);
+                    socketHandler.setFormatter(new CustomSocketLogFomatter());
+                    logger.addHandler(socketHandler);
+                } catch (SecurityException e) {
+                    System.err.println(
+                            MessageFormat.format(CoreMessageConstants.MSG_ERR_UNABLE_TO_CREATE_LOGGER, e.getMessage()));
+                } catch (IOException e) {
+                    System.err.println(
+                            MessageFormat.format(CoreMessageConstants.MSG_ERR_UNABLE_TO_CREATE_LOGGER, e.getMessage()));
+                }
             }
         }
         return logger;
+    }
+
+    private boolean isInRunningMode() {
+        return getPort() != 0;
     }
 
     /* (non-Javadoc)

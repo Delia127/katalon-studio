@@ -12,6 +12,7 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -19,7 +20,7 @@ import com.kms.katalon.execution.webui.configuration.RemoteWebRunConfiguration;
 import com.kms.katalon.execution.webui.constants.StringConstants;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector.RemoteWebDriverConnectorType;
 
-public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationContributor {
+public class RemoteWebRunConfigurationContributor implements IRunConfigurationContributor {
     public static final String REMOTE_CONFIGURATION_KEY = DriverFactory.REMOTE_WEB_DRIVER_URL;
 
     public static final String REMOTE_CONFIGURATION_TYPE_KEY = DriverFactory.REMOTE_WEB_DRIVER_TYPE;
@@ -28,7 +29,7 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
 
     private String remoteWebDriverUrl = "";
 
-    private RemoteWebDriverConnectorType remoteWebDriverType = DEFAULT_REMOTE_WEB_DRIVER_CONNECTOR_TYPE;
+    private RemoteWebDriverConnectorType remoteWebDriverType;
 
     public static final StringConsoleOption REMOTE_WEB_DRIVER_URL_CONSOLE_OPTION = new StringConsoleOption() {
         @Override
@@ -90,11 +91,25 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
             RunConfigurationDescription runConfigurationDescription)
             throws IOException, ExecutionException, InterruptedException {
         if (runConfigurationDescription != null && runConfigurationDescription.getRunConfigurationData() != null) {
+            RemoteWebRunConfiguration remoteWebRunConfiguration = new RemoteWebRunConfiguration(projectDir);
             Map<String, String> runConfigurationData = runConfigurationDescription.getRunConfigurationData();
-            remoteWebDriverUrl = getRemoteWebDriverUrl(runConfigurationData);
-            remoteWebDriverType = getRemoteWebDriverType(runConfigurationData);
+            String remoteWebDriverUrlConfig = getRemoteWebDriverUrl(runConfigurationData);
+            remoteWebDriverUrl = StringUtils.isNotEmpty(remoteWebDriverUrlConfig) ? remoteWebDriverUrlConfig
+                    : remoteWebRunConfiguration.getRemoteServerUrl();
+            RemoteWebDriverConnectorType remoteWebDriverTypeConfig = getRemoteWebDriverType(runConfigurationData);
+            remoteWebDriverType = remoteWebDriverTypeConfig != null ? remoteWebDriverTypeConfig
+                    : remoteWebRunConfiguration.getRemoteWebDriverConnectorType();
+
+            RemoteWebRunConfiguration clone = (RemoteWebRunConfiguration) remoteWebRunConfiguration.cloneConfig();
+            clone.setRemoteServerUrl(remoteWebDriverUrl);
+            clone.setRemoteWebDriverConnectorType(remoteWebDriverType);
+            return clone;
+        } else {
+            RemoteWebRunConfiguration remoteWebRunConfiguration = new RemoteWebRunConfiguration(projectDir);
+            remoteWebDriverUrl = remoteWebRunConfiguration.getRemoteServerUrl();
+            remoteWebDriverType = remoteWebRunConfiguration.getRemoteWebDriverConnectorType();
+            return remoteWebRunConfiguration;
         }
-        return super.getRunConfiguration(projectDir, runConfigurationDescription);
     }
 
     @Override
@@ -143,8 +158,18 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
             };
 
             @Override
+            public boolean hasArgument() {
+                if (runConfigurationDescription == null) {
+                    return false;
+                }
+                Map<String, String> runConfigurationData = runConfigurationDescription.getRunConfigurationData();
+                return runConfigurationData != null && runConfigurationData.containsKey(DriverFactory.REMOTE_WEB_DRIVER_TYPE);
+            }
+
+            @Override
             public String getValue() {
-                return getRemoteWebDriverType(runConfigurationDescription.getRunConfigurationData()).name();
+                Map<String, String> runConfigurationData = runConfigurationDescription.getRunConfigurationData();
+                return getRemoteWebDriverType(runConfigurationData).name();
             }
         }, new StringConsoleOption() {
             @Override
@@ -156,6 +181,15 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
             public boolean isRequired() {
                 return false;
             };
+            
+            @Override
+            public boolean hasArgument() {
+                if (runConfigurationDescription == null) {
+                    return false;
+                }
+                Map<String, String> runConfigurationData = runConfigurationDescription.getRunConfigurationData();
+                return runConfigurationDescription != null && runConfigurationData.containsKey(DriverFactory.REMOTE_WEB_DRIVER_URL);
+            }
 
             @Override
             public String getValue() {
@@ -165,7 +199,11 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
     }
 
     private RemoteWebDriverConnectorType getRemoteWebDriverType(Map<String, String> runConfigurationData) {
-        return RemoteWebDriverConnectorType.valueOf(runConfigurationData.get(REMOTE_CONFIGURATION_TYPE_KEY));
+        String webDriverType = runConfigurationData.get(REMOTE_CONFIGURATION_TYPE_KEY);
+        if (StringUtils.isEmpty(webDriverType)) {
+            return null;
+        }
+        return RemoteWebDriverConnectorType.valueOf(webDriverType);
     }
 
     private String getRemoteWebDriverUrl(Map<String, String> runConfigurationData) {

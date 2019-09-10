@@ -1,18 +1,12 @@
 package com.kms.katalon.composer.handlers;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.program.Program;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
-import com.kms.katalon.logging.LogUtil;
 
 public class ViewDashboardHandler {
     
@@ -32,9 +26,8 @@ public class ViewDashboardHandler {
 
             String url = serverUrl + "/team/" + teamId + "/project/" + projectId;
             Program.launch(url);
-        } catch (IOException | GeneralSecurityException e) {
-            MessageDialog.openError(null, GlobalStringConstants.ERROR, "Cannot open Dashboard");
-            LoggerSingleton.logError(e);
-        }
+        } catch (Exception e) {
+            Program.launch(ApplicationInfo.getTestOpsServer());
+        } 
     }
 }

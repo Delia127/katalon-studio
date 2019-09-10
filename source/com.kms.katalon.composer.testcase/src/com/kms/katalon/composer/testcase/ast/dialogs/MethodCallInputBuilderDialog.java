@@ -39,7 +39,6 @@ import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSuppo
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
-import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.controller.ProjectController;
 
 public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDialog {
@@ -58,7 +57,7 @@ public class MethodCallInputBuilderDialog extends AbstractAstBuilderWithTableDia
 
     private ClassLoader getClassLoader() {
         try {
-            return GroovyGuiUtil.getProjectClasLoader(ProjectController.getInstance().getCurrentProject());
+            return ProjectController.getInstance().getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
         } catch (MalformedURLException | CoreException e) {
             LoggerSingleton.logError(e);
             return null;
