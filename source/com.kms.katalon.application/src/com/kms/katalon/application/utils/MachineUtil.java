@@ -1,5 +1,6 @@
 package com.kms.katalon.application.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,7 @@ public class MachineUtil {
 
     private static final String MAC_GET_MACHINE_ID_DELIMITER = "=";
 
-    private static final String[] MAC_GET_MACHINE_ID_COMMAND = new String[] { "ioreg", "-rd1", "-c",
+    private static final String[] MAC_GET_MACHINE_ID_COMMAND = new String[] { "/usr/sbin/ioreg", "-rd1", "-c",
             "IOPlatformExpertDevice", "|", "grep", MAC_GET_MACHINE_ID_FIELD };
 
     private static final String[] LINUX_GET_MACHINE_ID_COMMAND_2 = new String[] { "cat", "/etc/machine-id" };
@@ -35,8 +36,8 @@ public class MachineUtil {
     private static String machineId = StringUtils.EMPTY;
 
     public static String getMachineId() {
-        // Only load machine id once if not loaded
-        if (!machineId.equals(StringUtils.EMPTY)) {
+        // Only load machine id if not loaded or previous attempt failed
+        if (!machineId.equals(StringUtils.EMPTY) && !machineId.equals(UNAVAILABLE)) {
             return machineId;
         }
 
@@ -60,12 +61,9 @@ public class MachineUtil {
                     .runConsoleCommandAndCollectResults(WINDOWS_GET_MACHINE_ID_COMMAND);
 
             // Example: MachineGuid REG_SZ efc790ec-91b4-4e8d-aaa1-5c3e815669bc
-            String commandLineResult = commandLineResults.stream()
-            .filter(item -> {
+            String commandLineResult = commandLineResults.stream().filter(item -> {
                 return item.indexOf(WINDOWS_GET_MACHINE_ID_DELIMITER) > 0;
-            })
-            .findFirst()
-            .orElse(UNAVAILABLE);
+            }).findFirst().orElse(UNAVAILABLE);
             String parsedResult = Arrays.asList(commandLineResult.split(WINDOWS_GET_MACHINE_ID_DELIMITER))
                     .stream()
                     .map(result -> result.trim())
@@ -98,30 +96,34 @@ public class MachineUtil {
     }
 
     private static String parseMachineIdForMac() {
-        try {
-            // Returns a list of information about the device
-            List<String> commandLineResult = ConsoleCommandExecutor
-                    .runConsoleCommandAndCollectResults(MAC_GET_MACHINE_ID_COMMAND);
+        for (int i = 0; i < 2; i++) {
 
-            // Extract the field of interest
-            String parsedResult = commandLineResult.stream()
-                    .filter(result -> result.contains(MAC_GET_MACHINE_ID_FIELD))
-                    .findAny()
-                    .orElse(UNAVAILABLE);
+            try {
+                // Returns a list of information about the device
+                List<String> commandLineResult = ConsoleCommandExecutor
+                        .runConsoleCommandAndCollectResults(MAC_GET_MACHINE_ID_COMMAND);
 
-            // Example: "IOPlatformUUID" = "D84B28E0-B054-5C67-8A5D-8F6FF1639F0B"
-            parsedResult = Arrays.asList(parsedResult.split(MAC_GET_MACHINE_ID_DELIMITER))
-                    .stream()
-                    .map(result -> result.trim())
-                    .map(result -> result.replace("\"", ""))
-                    .map(result -> result.toLowerCase())
-                    .filter(result -> result.matches(UUID_REGEX))
-                    .findAny()
-                    .orElse(UNAVAILABLE);
+                // Extract the field of interest
+                String parsedResult = commandLineResult.stream()
+                        .filter(result -> result.contains(MAC_GET_MACHINE_ID_FIELD))
+                        .findAny()
+                        .orElse(UNAVAILABLE);
 
-            return parsedResult;
-        } catch (IOException | InterruptedException e) {
-            LogUtil.logError(e);
+                // Example: "IOPlatformUUID" = "D84B28E0-B054-5C67-8A5D-8F6FF1639F0B"
+                parsedResult = Arrays.asList(parsedResult.split(MAC_GET_MACHINE_ID_DELIMITER))
+                        .stream()
+                        .map(result -> result.trim())
+                        .map(result -> result.replace("\"", ""))
+                        .map(result -> result.toLowerCase())
+                        .filter(result -> result.matches(UUID_REGEX))
+                        .findAny()
+                        .orElse(UNAVAILABLE);
+                if (!parsedResult.equals(UNAVAILABLE)) {
+                    return parsedResult;
+                }
+            } catch (IOException | InterruptedException e) {
+                LogUtil.logError(e);
+            }
         }
         return UNAVAILABLE;
     }

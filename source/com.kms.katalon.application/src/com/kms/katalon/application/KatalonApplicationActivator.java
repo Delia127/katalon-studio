@@ -41,8 +41,6 @@ public class KatalonApplicationActivator implements BundleActivator {
             }
         });
         
-        LogUtil.logInfo("machine-id=" + MachineUtil.getMachineId());
-        
         context.addServiceListener(new ServiceListener() {
 
             @Override
