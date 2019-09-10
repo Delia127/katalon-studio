@@ -189,7 +189,6 @@ public class AnalyticsApiProvider {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);
             URIBuilder uriBuilder = new URIBuilder(uri);
-//            uriBuilder.setParameter("organizationId", orgId + "");
             uriBuilder.setParameter("machineKey", machineKey + "");
             uriBuilder.setParameter("ksVersion", VersionUtil.getCurrentVersion().getVersion());
             HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
@@ -201,7 +200,6 @@ public class AnalyticsApiProvider {
         }
     }
 
-    
     public static void sendTrackingActivity(String serverUrl, String accessToken, AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_TRACKING_ACTIVITY);
