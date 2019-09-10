@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -73,6 +74,8 @@ public class ProjectController extends EntityController {
 
             if (project != null) {
                 monitor.beginTask("Initialzing project's working space...", 10);
+                cleanWorkspace();
+
                 if (project.getUUID() == null) {
                     project.setUUID(Util.generateGuid());
                     updateProject(project);
@@ -129,6 +132,8 @@ public class ProjectController extends EntityController {
     }
 
     public ProjectEntity openProject(String projectPk) throws Exception {
+        LogUtil.printOutputLine("Cleaning up workspace");
+        cleanWorkspace();
         LogUtil.printOutputLine("Opening project file: " + projectPk);
         File projectFile = new File(projectPk);
         String projectFolderLocation = projectFile.getParent();
@@ -153,6 +158,15 @@ public class ProjectController extends EntityController {
             LogUtil.printOutputLine(MessageFormat.format("Project ''{0}'' opened", project.getName()));
         }
         return project;
+    }
+
+    public static void cleanWorkspace() {
+        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+            try {
+                // Remote all existing projects out of workspace
+                project.delete(false, true, null);
+            } catch (CoreException ignored) {}
+        }
     }
 
     public void closeProject(String projectPk, IProgressMonitor monitor) throws Exception {

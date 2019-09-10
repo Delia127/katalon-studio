@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.core.filesystem.IFileInfo;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -23,7 +21,6 @@ import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
-import org.eclipse.ui.internal.ide.dialogs.IDEResourceInfoUtils;
 import org.osgi.framework.BundleException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -57,7 +54,7 @@ import com.kms.katalon.util.ComposerActivationInfoCollector;
 public class LifeCycleManager {
 
     private void startUpGUIMode() throws Exception {
-        refreshAllProjects();
+        ProjectController.cleanWorkspace();
         setupHandlers();
         setupPreferences();
         EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.WORKSPACE_CREATED, "");
@@ -176,22 +173,6 @@ public class LifeCycleManager {
         }
     }
 
-    private void refreshAllProjects() throws Exception {
-        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
-            checkProjectLocationDeleted(project);
-        }
-    }
-
-    void checkProjectLocationDeleted(IProject project) throws Exception {
-        if (!project.exists()) {
-            return;
-        }
-        IFileInfo location = IDEResourceInfoUtils.getFileInfo(project.getLocationURI());
-        if (!location.exists()) {
-            project.delete(true, true, null);
-        }
-    }
-
     @PostContextCreate
     void postContextCreate(final IEventBroker eventBroker) {
         // register for startup completed event and activate handler for
@@ -213,11 +194,10 @@ public class LifeCycleManager {
                 }
             }
 
-
             private boolean checkActivation(final IEventBroker eventBroker) throws Exception {
-//                if (VersionUtil.isInternalBuild()) {
-//                    return true;
-//                }
+                // if (VersionUtil.isInternalBuild()) {
+                // return true;
+                // }
                 if (!(ComposerActivationInfoCollector.checkActivation())) {
                     eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                     PlatformUI.getWorkbench().close();
@@ -231,7 +211,7 @@ public class LifeCycleManager {
                 try {
                     Trackings.trackOpenApplication(false, "gui");
                 } catch (Exception ignored) {
-                    
+
                 }
 
                 return true;
