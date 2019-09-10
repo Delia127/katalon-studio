@@ -28,7 +28,7 @@ public class ScreenUtil {
         mainScreen = new DesktopScreenRegion();
     }
 
-    public ScreenUtil(int similarity) {
+    public ScreenUtil(double similarity) {
         this();
         this.similarity = similarity;
     }
