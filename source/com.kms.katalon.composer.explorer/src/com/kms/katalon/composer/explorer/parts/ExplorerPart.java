@@ -833,8 +833,7 @@ public class ExplorerPart {
                 // do not allow drag in Reports and Keywords area
                 try {
                     for (TreeItem item : selection) {
-                        if (item.getData() instanceof ReportTreeEntity || item.getData() instanceof KeywordTreeEntity
-                                || item.getData() instanceof PackageTreeEntity) {
+                        if (item.getData() instanceof ReportTreeEntity || item.getData() instanceof PackageTreeEntity) {
                             event.doit = false;
                         } else if (item.getData() instanceof FolderTreeEntity
                                 && ((FolderTreeEntity) item.getData()).getCopyTag()
