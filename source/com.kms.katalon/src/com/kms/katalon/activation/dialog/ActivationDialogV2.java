@@ -201,20 +201,22 @@ public class ActivationDialogV2 extends AbstractDialog {
     }
 
     private void save(int index) {
-        try {
-            AnalyticsOrganization organization = organizations.get(index);
-            String email = txtEmail.getText();
-            String password = txtPassword.getText();
-            ActivationInfoCollector.markActivated(email, password);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION, JsonUtil.toJson(organization), true);
+        AnalyticsOrganization organization = organizations.get(index);
+        String email = txtEmail.getText();
+        String password = txtPassword.getText();
 
-            Executors.newFixedThreadPool(1).submit(() -> {
-                UISynchronizeService.syncExec(
-                        () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_FEATURE, false));
-                UISynchronizeService.syncExec(() -> {
+        Executors.newFixedThreadPool(1).submit(() -> {
+            UISynchronizeService
+                    .syncExec(() -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_FEATURE, false));
+            UISynchronizeService.syncExec(() -> {
+                try {
                     getLicenseKey(organizations.get(0).getId());
                     if (licenseKey != null) {
-                        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, licenseKey.getValue(), true);
+                        ActivationInfoCollector.markActivated(email, password);
+                        ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION,
+                                JsonUtil.toJson(organization), true);
+                        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE,
+                                licenseKey.getValue(), true);
                         if (KatalonApplicationActivator.getFeatureActivator() != null) {
                             String serverUrl = ApplicationInfo.getTestOpsServer();
                             String ksVersion = VersionUtil.getCurrentVersion().getVersion();
@@ -229,13 +231,13 @@ public class ActivationDialogV2 extends AbstractDialog {
                         btnLogIn.setEnabled(true);
                         btnActivate.setEnabled(false);
                     }
-                });
+                } catch (Exception e) {
+                    LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                }
             });
-        } catch (Exception e) {
-            LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
-        }
+        });
     }
-    
+
     private static List<String> getOrganizationNames(List<AnalyticsOrganization> organizations) {
         List<String> names = organizations.stream().map(organization -> organization.getName()).collect(Collectors.toList());
         return names;
@@ -270,6 +272,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                         txtEmail.setEnabled(true);
                         txtPassword.setEnabled(true);
                         btnLogIn.setEnabled(true);
+                        btnActivate.setEnabled(false);
                     }
                 }
                 if (organizations.size() == 1) {
