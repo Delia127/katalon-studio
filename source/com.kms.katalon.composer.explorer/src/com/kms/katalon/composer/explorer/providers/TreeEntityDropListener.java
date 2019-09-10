@@ -1,10 +1,13 @@
 package com.kms.katalon.composer.explorer.providers;
 
 import java.awt.dnd.DragSourceEvent;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
@@ -38,15 +41,19 @@ import com.kms.katalon.composer.components.impl.util.EntityProcessingUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.controller.WindowsElementController;
 import com.kms.katalon.controller.exception.ControllerException;
+import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -57,7 +64,7 @@ import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TreeEntityDropListener extends TreeDropTargetEffect {
-    private IEventBroker eventBroker;
+    private static IEventBroker eventBroker;
 
     private ITreeEntity lastMovedTreeEntity;
     
@@ -96,7 +103,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                     file = (IFile) unit.getResource();
                 }
                 moveKeyword(file, packageFragment, null);
-                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity.getParent());
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity);
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, lastMovedTreeEntity);
             }
         } catch (Exception e) {
@@ -106,7 +113,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
     }
 
     public static IFile moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
-            throws JavaModelException {
+            throws Exception {
         if (keywordFile == null || targetPackageFragment == null) {
             return null;
         }
@@ -114,7 +121,8 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         String cutKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
 
         GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, newName);
-
+        refactorReferencingTestSuites(ProjectController.getInstance().getCurrentProject(), keywordFile,
+                keywordFile.getLocation().toString(), cutKeywordFilePath);
         if (!oldRelativeKwLocation.equals(cutKeywordFilePath)) {
             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM,
                     new Object[] { keywordFile.getProjectRelativePath().toString(), cutKeywordFilePath });
@@ -122,6 +130,34 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                     targetPackageFragment);
         }
         return keywordFile;
+    }
+    
+    private static void refactorReferencingTestSuites(ProjectEntity project, IFile keyword, String oldKeywordLocation,
+            String newKeywordLocation) throws Exception {
+        // if test case changed its name, update reference Location in test
+        // suites that refer to it
+        List<TestCaseEntity> lstTestCases = FolderFileServiceManager
+                .getDescendantTestCasesOfFolder(FolderFileServiceManager.getTestCaseRoot(project));
+        String constant = "keywords";
+        String packageName = project.getFolderLocation() + File.separator + constant + File.separator;
+        File projectFile = new File(packageName);
+        String oldRelativeKwLocation = oldKeywordLocation.substring(projectFile.getAbsolutePath().length() + 1 );
+        String oldRelativeTcId = FilenameUtils.removeExtension(oldRelativeKwLocation).replace("/", ".");
+        String newRelativeKwLocation = newKeywordLocation.substring(constant.length() + 1);
+        String newRelativeTcId = FilenameUtils.removeExtension(newRelativeKwLocation).replace("/", ".");
+
+        for (TestCaseEntity testCase : lstTestCases) {
+            ICompilationUnit script = GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(testCase);
+            String str = "";
+            File file = new File(script.getResource().getLocation().toString());
+            str = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            if (str.contains("CustomKeywords")) {
+                String newString = str.replace(oldRelativeTcId, newRelativeTcId);
+                GroovyGuiUtil.addContentToTestCase(testCase, newString);
+                TestCaseTreeEntity testcaseTreeEntity = TreeEntityUtil.getTestCaseTreeEntity(testCase, project);
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testcaseTreeEntity);
+            }
+        }
     }
 
     private static String getPastedFilePath(IFile keywordFile, IPackageFragment targetPackageFragment, String newName) {
