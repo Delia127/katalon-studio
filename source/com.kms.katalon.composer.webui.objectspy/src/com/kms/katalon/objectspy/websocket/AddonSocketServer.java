@@ -66,13 +66,13 @@ public class AddonSocketServer {
         }
     }
 
-	public void stop() {
-		try {
-			server.stop();
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+    public void stop() {
+        try {
+            server.stop();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
     public boolean isRunning() {
         return server != null && server.isRunning();
@@ -105,9 +105,10 @@ public class AddonSocketServer {
             }
         }
         return null;
+
     }
     
-	public List<AddonSocket> getAllAddonSockets() {
-		return activeSockets;
-	}
+    public List<AddonSocket> getAllAddonSockets() {
+        return activeSockets;
+    }
 }
