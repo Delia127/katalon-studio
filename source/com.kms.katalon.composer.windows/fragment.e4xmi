@@ -23,10 +23,12 @@
     <elements xsi:type="commands:Command" xmi:id="_M-pvoJ78EemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.execution.command" commandName="Execute Windows Application">
       <parameters xmi:id="_QI9vgJ78EemdYrYS1JLsZA" elementId="com.kms.katalon.composer.execution.runMode" name="Run Mode"/>
     </elements>
+    <elements xsi:type="commands:Command" xmi:id="_5UAakM7KEem9er9qUE62ZQ" elementId="com.kms.katalon.composer.windows.command.installWinAppDrivers" commandName="Install WinAppDrivers"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_NCLEEJyTEemdYrYS1JLsZA" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_PJ1UIJyTEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.handler.0" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.handler.SpyWindowsObjectHandler" command="_KyEpsJyTEemdYrYS1JLsZA"/>
     <elements xsi:type="commands:Handler" xmi:id="_p0EiIJyTEemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.handler.record" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.handler.RecordWindowsObjectHandler" command="_nf-YkJyTEemdYrYS1JLsZA"/>
+    <elements xsi:type="commands:Handler" xmi:id="__B2HIM7KEem9er9qUE62ZQ" elementId="com.kms.katalon.composer.windows.handler.installWinAppDrivers" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.handler.InstallWinAppDriversHandler" command="_5UAakM7KEem9er9qUE62ZQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BR0IUJ7sEemdYrYS1JLsZA" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_XRLoAJ7_EemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.menuseparator.run.0"/>
@@ -38,5 +40,10 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_tMg24J7_EemdYrYS1JLsZA" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_tMg24Z7_EemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.menuseparator.debug.0"/>
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_tMg24p7_EemdYrYS1JLsZA" elementId="com.kms.katalon.composer.windows.dynamicmenucontribution.debug" label="Windows" contributionURI="bundleclass://com.kms.katalon.composer.windows/com.kms.katalon.composer.windows.menu.WindowsExecutionMenuContribution"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_aSA0EM7IEem9er9qUE62ZQ" featurename="children" parentElementId="com.kms.katalon.menu.tools">
+    <elements xsi:type="menu:Menu" xmi:id="_jGIVEM7IEem9er9qUE62ZQ" elementId="com.kms.katalon.composer.windows.menu.windows" label="Windows">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_xCxkMM7KEem9er9qUE62ZQ" elementId="com.kms.katalon.composer.windows.handledmenuitem.installWinAppDrivers" label="Install WinAppDrivers" command="_5UAakM7KEem9er9qUE62ZQ"/>
+    </elements>
   </fragments>
 </fragment:ModelFragments>
