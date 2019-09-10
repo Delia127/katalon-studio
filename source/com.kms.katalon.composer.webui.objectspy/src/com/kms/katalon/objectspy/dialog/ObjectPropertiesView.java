@@ -89,11 +89,11 @@ public class ObjectPropertiesView extends Composite
 
     private TableViewerColumn cvProperty, cvCondition, cvValue, cvSelected;
     
-    private TableViewerColumn cvXpathName, cvXpathValue;
+    private TableViewerColumn cvXpathName, cvXpathValue, cvXpathSelected;
 
     private TableColumn cName, cCondition, cValue, cSelected;
     
-    private TableColumn cXpathName, cXpathValue;
+    private TableColumn cXpathName, cXpathValue, cXpathSelected;
 
     private Text txtName;
 
@@ -158,6 +158,9 @@ public class ObjectPropertiesView extends Composite
         addControlListeners();
 
         enableControls();
+
+        subscribeEvents();
+
     }
     
     
@@ -607,6 +610,18 @@ public class ObjectPropertiesView extends Composite
                 && WebElementXpathEntity.class.getSimpleName().equals(element.getClass().getSimpleName());
     }
     
+
+    // Set all xpaths to de-selected state
+    private void deselectAllXpaths(){
+    	List<WebElementXpathEntity> xpaths = getXpaths();
+    	
+    	for(WebElementXpathEntity xpath : xpaths){
+    		xpath.setIsSelected(false);
+    	}
+    	
+    }
+    
+
     private void addControlListeners() {
         txtName.addModifyListener(new ModifyListener() {
             @Override
@@ -801,6 +816,18 @@ public class ObjectPropertiesView extends Composite
         return properties.stream().filter(property -> property.getIsSelected()).count() == properties.size();
     }
     
+    private boolean isAllXpathEnabled() {
+        if (webElement == null) {
+            return false;
+        }
+
+        List<WebElementXpathEntity> xpaths = getXpaths();
+        if (xpaths == null || xpaths.isEmpty()) {
+            return false;
+        }
+
+        return xpaths.stream().filter(xpath -> xpath.getIsSelected()).count() == xpaths.size();
+    }
 
     private void setAllProperty(boolean isSelected) {
         if (webElement == null) {
@@ -816,6 +843,20 @@ public class ObjectPropertiesView extends Composite
         updateWebObjectProperties();
     }
     
+    private void setAllXpath(boolean isSelected) {
+        if (webElement == null) {
+            return;
+        }
+
+        List<WebElementXpathEntity> xpaths = getXpaths();
+        if (xpaths == null || xpaths.isEmpty()) {
+            return;
+        }
+
+        xpaths.forEach(xpath -> xpath.setIsSelected(isSelected));
+        updateWebObjectXpaths();
+    }
+
     private WebElementPropertyEntity openAddPropertyDialog() {
         AddTestObjectPropertyDialog dialog = new AddTestObjectPropertyDialog(shell);
 
@@ -842,13 +883,10 @@ public class ObjectPropertiesView extends Composite
         boolean isEnabled = webElement != null;
         boolean isEnabledForNoneWebPage = isEnabled
                 && !webElement.getClass().getSimpleName().equals(WebPage.class.getSimpleName());
-        
         if (radioBtnComposite != null && !radioBtnComposite.isDisposed()) {
-
             Arrays.stream(radioBtnComposite.getChildren())
                     .forEach(radioBtn -> radioBtn.setEnabled(isEnabledForNoneWebPage));
         }
-
         if (isReady(toolbar)) {
             btnAdd.setEnabled(isEnabledForNoneWebPage);
             btnDelete.setEnabled(isEnabled);
@@ -929,8 +967,19 @@ public class ObjectPropertiesView extends Composite
         return webElement.getXpaths();
     }
     
+    private void subscribeEvents() {
+        // TODO Subscribe events
+
+    }
+
+    private void unsubscribeEvents() {
+        // TODO Unsubscribe events
+
+    }
+
     @Override
     public void dispose() {
+        unsubscribeEvents();
         super.dispose();
     }
 
@@ -956,10 +1005,10 @@ public class ObjectPropertiesView extends Composite
                 setWebElement((WebElement) object);
                 return;
             case ELEMENT_PROPERTIES_CHANGED:
-            	Display.getDefault().syncExec(() -> {
-                	setWebElement((WebElement) object);
-            	});
-            	return;
+                Display.getDefault().syncExec(() -> {
+                    setWebElement((WebElement) object);
+                });
+                return;
             default:
                 return;
         }
