@@ -40,6 +40,7 @@ import org.apache.http.util.EntityUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
@@ -186,13 +187,14 @@ public class AnalyticsApiProvider {
     public static AnalyticsLicenseKey getLicenseKey(String serverUrl, long orgId, String machineKey, String accessToken)
             throws AnalyticsApiExeception {
         try {
-            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_LICENSE_KEY);
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);
             URIBuilder uriBuilder = new URIBuilder(uri);
-            uriBuilder.setParameter("organizationId", orgId + "");
+//            uriBuilder.setParameter("organizationId", orgId + "");
             uriBuilder.setParameter("machineKey", machineKey + "");
-            HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
-            httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
-            AnalyticsLicenseKey licenseKey = executeRequest(httpGet, AnalyticsLicenseKey.class);
+            uriBuilder.setParameter("ksVersion", VersionUtil.getCurrentVersion().getVersion());
+            HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
+            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
+            AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
             return licenseKey;
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);

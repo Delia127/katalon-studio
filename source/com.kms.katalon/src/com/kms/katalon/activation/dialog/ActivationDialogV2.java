@@ -198,14 +198,6 @@ public class ActivationDialogV2 extends AbstractDialog {
                 Program.launch(e.text);
             }
         });
-
-        cbbOrganization.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                AnalyticsOrganization selectOrganizationFromUser = organizations.get(cbbOrganization.getSelectionIndex());
-                getLicenseKey(selectOrganizationFromUser.getId());
-            }
-        });
     }
 
     private void save(int index) {
@@ -220,22 +212,23 @@ public class ActivationDialogV2 extends AbstractDialog {
                 UISynchronizeService.syncExec(
                         () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_FEATURE, false));
                 UISynchronizeService.syncExec(() -> {
+                    getLicenseKey(organizations.get(0).getId());
                     if (licenseKey != null) {
-                        StringBuilder errorMessage = new StringBuilder();
-                        boolean result = ActivationInfoCollector.activateOffline(licenseKey.getValue(), errorMessage);
-                        if (!result) {
-                            setProgressMessage(errorMessage.toString(), true);
+                        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, licenseKey.getValue(), true);
+                        if (KatalonApplicationActivator.getFeatureActivator() != null) {
+                            String serverUrl = ApplicationInfo.getTestOpsServer();
+                            String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                            Long orgId = organization.getId();
+                            ActivationInfoCollector.activateFeatures(serverUrl, email, password, orgId, ksVersion);
                         }
+                        close();
+                        Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
+                    } else {
+                        txtEmail.setEnabled(true);
+                        txtPassword.setEnabled(true);
+                        btnLogIn.setEnabled(true);
+                        btnActivate.setEnabled(false);
                     }
-
-                    if (KatalonApplicationActivator.getFeatureActivator() != null) {
-                        String serverUrl = ApplicationInfo.getTestOpsServer();
-                        String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-                        Long orgId = organization.getId();
-                        ActivationInfoCollector.activateFeatures(serverUrl, email, password, orgId, ksVersion);
-                    }
-                    close();
-                    Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 });
             });
         } catch (Exception e) {
@@ -262,8 +255,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token.getAccess_token());
                     cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
                     cbbOrganization.select(getDefaultOrganizationIndex());
-                    
-                    getLicenseKey(organizations.get(0).getId());
+
                     setProgressMessage("", false);
                     cbbOrganization.setEnabled(true);
                     btnActivate.setEnabled(true);
@@ -288,8 +280,8 @@ public class ActivationDialogV2 extends AbstractDialog {
     }
     
     private int getDefaultOrganizationIndex() {
-    	int selectionIndex = 0;
-    	for (int i = 0; i < organizations.size(); i++) {
+        int selectionIndex = 0;
+        for (int i = 0; i < organizations.size(); i++) {
             AnalyticsOrganization organization = organizations.get(i);
             if (organization.getRole().equals(AnalyticsOrganizationRole.USER)) {
                 selectionIndex = i;
@@ -300,28 +292,16 @@ public class ActivationDialogV2 extends AbstractDialog {
     }
 
     private void getLicenseKey(long orgId) {
-    	Executors.newFixedThreadPool(1).submit(() -> {
-            UISynchronizeService.syncExec(
-                    () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_LICENSE_KEY, false));
-            UISynchronizeService.syncExec(() -> {
-                try {
-                    String serverUrl = ApplicationInfo.getTestOpsServer();
-                    String email = txtEmail.getText();
-                    String password = txtPassword.getText();
-                    AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-
-                    licenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, orgId, machineKey, token.getAccess_token());
-                    setProgressMessage("", false);
-                } catch (AnalyticsApiExeception e) {
-                    LogUtil.logError(e);
-                    setProgressMessage("", false);
-                    MessageDialog dialog = new MessageDialog(Display.getCurrent().getActiveShell(),
-                            MessageConstants.ActivationDialogV2_LBL_ERROR, null,
-                            e.getMessage(), MessageDialog.ERROR,
-                            new String[] { "OK" }, 0);
-                }
-            });
-        });
+        AnalyticsTokenInfo token;
+        try {
+            String serverUrl = ApplicationInfo.getTestOpsServer();
+            String email = txtEmail.getText();
+            String password = txtPassword.getText();
+            token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+            licenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, orgId, machineKey, token.getAccess_token());
+        } catch (AnalyticsApiExeception e) {
+            LogUtil.logError(e);
+        }
     }
 
     private void setProgressMessage(String message, boolean isError) {
