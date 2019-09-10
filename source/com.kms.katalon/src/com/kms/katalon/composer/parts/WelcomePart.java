@@ -51,6 +51,7 @@ public class WelcomePart {
                     createControls(parent);
                     registerEventListeners();
                     mainComposite.forceFocus();
+                    parent.layout(true);
                 }
             });
         } else {
