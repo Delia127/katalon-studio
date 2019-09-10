@@ -113,7 +113,7 @@ public class VerifyElementNotPresentKeyword extends WebUIAbstractKeyword {
                 }
                 
             } catch (WebElementNotFoundException e) {
-                return false
+                return true
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()
