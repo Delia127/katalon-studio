@@ -56,7 +56,7 @@ public class BDDTestingWizardPage extends AbstractWizardPage implements WizardPa
 
     @Override
     public String getStepIndexAsString() {
-        return "5";
+        return "6";
     }
 
     @Override

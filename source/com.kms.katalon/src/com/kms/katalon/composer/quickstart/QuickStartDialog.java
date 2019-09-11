@@ -245,8 +245,9 @@ public class QuickStartDialog extends WizardDialog {
     @Override
     protected Collection<IWizardPage> getWizardPages() {
         return Arrays.asList(new IWizardPage[] { new WebTestingWizardPage(), new APITestingWizardPage(),
-                new MobileTestingWizardPage(), new DatadrivenTestingWizardPage(), new BDDTestingWizardPage(),
-                new SDLCIntergrationWizardPage(), new PluginStoreWizardPage(), new AdvancedReportWizardPage() });
+                new MobileTestingWizardPage(), new DesktopAppsTestingPage(), new DatadrivenTestingWizardPage(),
+                new BDDTestingWizardPage(), new SDLCIntergrationWizardPage(), new PluginStoreWizardPage(),
+                new AdvancedReportWizardPage() });
     }
 
     @Override

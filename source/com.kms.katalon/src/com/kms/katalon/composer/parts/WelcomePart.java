@@ -25,6 +25,7 @@ import com.kms.katalon.composer.components.impl.control.ScrollableComposite;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.core.application.LifeCycleManager;
 
 public class WelcomePart {
     @Inject
@@ -42,8 +43,21 @@ public class WelcomePart {
     @PostConstruct
     public void initialize(final Composite parent, MPart part) {
         this.part = part;
-        createControls(parent);
-        registerEventListeners();
+        if (!LifeCycleManager.isWorkspaceCreated()) {
+            eventBroker.subscribe(EventConstants.WORKSPACE_CREATED, new EventHandler() {
+                
+                @Override
+                public void handleEvent(org.osgi.service.event.Event event) {
+                    createControls(parent);
+                    registerEventListeners();
+                    mainComposite.forceFocus();
+                    parent.layout(true);
+                }
+            });
+        } else {
+            createControls(parent);
+            registerEventListeners();
+        }
     }
 
     private void showThisPart() {
@@ -133,7 +147,9 @@ public class WelcomePart {
 
     @Focus
     public void setFocus() {
-        mainComposite.forceFocus();
+        if (mainComposite != null) {
+            mainComposite.forceFocus();
+        }
     }
     
     @PreDestroy

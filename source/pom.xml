@@ -105,7 +105,7 @@
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
 		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>
 		<eclipse_repo_url>${eclipse_update_site}/eclipse/updates/4.6/</eclipse_repo_url>
-		<egit_repo_url>${eclipse_update_site}/egit/updates-4.4.1/</egit_repo_url>
+		<egit_repo_url>${eclipse_update_site}/egit/updates-4.6.1/</egit_repo_url>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

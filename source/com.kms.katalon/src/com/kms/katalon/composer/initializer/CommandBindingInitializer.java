@@ -3,7 +3,6 @@ package com.kms.katalon.composer.initializer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -115,6 +114,9 @@ public class CommandBindingInitializer extends WorkbenchUtilizer implements Appl
             throws ParseException {
         String explorerCommandId = command.getExplorerCommandId();
         TriggerSequence triggerSequence = bindingService.getBestActiveBindingFor(explorerCommandId);
+        if (triggerSequence == null) {
+            triggerSequence = bindingService.getBestActiveBindingFor(command.getEditorCommandId());
+        }
 
         for (Binding activeBinding : bindingService.getActiveBindings()) {
             if (!(activeBinding instanceof KeyBinding) || !triggerSequence.equals(activeBinding.getTriggerSequence())) {
@@ -145,7 +147,9 @@ public class CommandBindingInitializer extends WorkbenchUtilizer implements Appl
         GO_TO_MATCHING_BRACKET(
                 "org.eclipse.ui.window.preferences",
                 "org.eclipse.jdt.ui.edit.text.java.goto.matching.bracket",
-                "M1+M2+P");
+                "M1+M2+P"),
+        QUICK_MENU("com.kms.katalon.composer.project.command.setting", "org.eclipse.jdt.ui.edit.text.java.source.quickMenu", "M1+M3+S"),
+        DISPLAY("com.kms.katalon.composer.execution.command.debug", "org.eclipse.jdt.debug.ui.commands.Display", "M1+M2+D");
 
         private String editorCommandId;
 

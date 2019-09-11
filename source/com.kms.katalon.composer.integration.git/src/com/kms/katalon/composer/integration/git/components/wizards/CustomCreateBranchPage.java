@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.egit.core.Activator;
 import org.eclipse.egit.core.op.CreateLocalBranchOperation;
-import org.eclipse.egit.core.op.CreateLocalBranchOperation.UpstreamConfig;
 import org.eclipse.egit.ui.IBranchNameProvider;
 import org.eclipse.egit.ui.UIUtils;
 import org.eclipse.egit.ui.internal.UIIcons;
@@ -28,6 +27,7 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.jgit.lib.BranchConfig.BranchRebaseMode;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -99,7 +99,7 @@ public class CustomCreateBranchPage extends WizardPage {
 
     private Button checkout;
 
-    private UpstreamConfig upstreamConfig;
+    private BranchRebaseMode upstreamConfig;
 
     private Label sourceIcon;
 
@@ -124,10 +124,10 @@ public class CustomCreateBranchPage extends WizardPage {
         this.myRepository = repo;
         if (baseRef != null) {
             this.myBaseRef = baseRef.getName();
-            this.upstreamConfig = UpstreamConfig.getDefault(repo, baseRef.getName());
+            this.upstreamConfig = CreateLocalBranchOperation.getDefaultUpstreamConfig(repo, baseRef.getName());
         } else {
             this.myBaseRef = null;
-            this.upstreamConfig = UpstreamConfig.NONE;
+            this.upstreamConfig = BranchRebaseMode.NONE;
         }
         this.myBaseCommit = null;
         this.myValidator = ValidationUtils.getRefNameInputValidator(myRepository, Constants.R_HEADS, false);
@@ -151,7 +151,7 @@ public class CustomCreateBranchPage extends WizardPage {
         this.myBaseRef = null;
         this.myBaseCommit = baseCommit;
         this.myValidator = ValidationUtils.getRefNameInputValidator(myRepository, Constants.R_HEADS, false);
-        this.upstreamConfig = UpstreamConfig.NONE;
+        this.upstreamConfig = BranchRebaseMode.NONE;
         setTitle(UIText.CreateBranchPage_Title);
         setMessage(UIText.CreateBranchPage_ChooseNameMessage);
     }
@@ -264,7 +264,7 @@ public class CustomCreateBranchPage extends WizardPage {
         }
         sourceRefName = refName;
         suggestBranchName(refName);
-        upstreamConfig = UpstreamConfig.getDefault(myRepository, refName);
+        upstreamConfig = CreateLocalBranchOperation.getDefaultUpstreamConfig(myRepository, refName);
         checkPage();
     }
 
@@ -274,7 +274,7 @@ public class CustomCreateBranchPage extends WizardPage {
 
         sourceRefName = commit.name();
 
-        upstreamConfig = UpstreamConfig.NONE;
+        upstreamConfig = BranchRebaseMode.NONE;
         checkPage();
     }
 
@@ -291,7 +291,7 @@ public class CustomCreateBranchPage extends WizardPage {
     private void checkPage() {
         try {
             boolean basedOnLocalBranch = sourceRefName.startsWith(Constants.R_HEADS);
-            if (basedOnLocalBranch && upstreamConfig != UpstreamConfig.NONE)
+            if (basedOnLocalBranch && upstreamConfig != BranchRebaseMode.NONE)
                 setMessage(UIText.CreateBranchPage_LocalBranchWarningMessage, IMessageProvider.INFORMATION);
 
             if (sourceRefName.length() == 0) {

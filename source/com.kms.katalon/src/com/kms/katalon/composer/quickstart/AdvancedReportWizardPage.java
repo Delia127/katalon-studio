@@ -56,7 +56,7 @@ public class AdvancedReportWizardPage extends AbstractWizardPage implements Wiza
 
     @Override
     public String getStepIndexAsString() {
-        return "8";
+        return "9";
     }
 
     @Override
