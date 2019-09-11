@@ -18,7 +18,10 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.plugin.dialog.ReloadPluginsHelpDialog;
 import com.kms.katalon.plugin.dialog.ReloadPluginsResultDialog;
 import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
@@ -43,6 +46,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
     }
 
     public void reloadPlugins(boolean silenceMode) {
+    	ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+    	if (currentProject == null) {
+    		openHelpDialog();
+    		return;
+    	}
+    	
         PluginPreferenceStore store = new PluginPreferenceStore();
         List<ReloadItem>[] resultHolder = new List[1];
         Job reloadPluginsJob = new Job("Reloading plugins...") {
@@ -125,6 +134,11 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     private void openResultDialog(List<ReloadItem> result) {
         ReloadPluginsResultDialog dialog = new ReloadPluginsResultDialog(Display.getCurrent().getActiveShell(), result);
+        dialog.open();
+    }
+
+    private void openHelpDialog() {
+        ReloadPluginsHelpDialog dialog = new ReloadPluginsHelpDialog(Display.getCurrent().getActiveShell());
         dialog.open();
     }
 }
