@@ -99,8 +99,8 @@ public class ResetPerspectiveHandler extends AbstractHandler {
         // Move all opened entities back to composer area
         for (MPart p : parts) {
             String elementId = p.getElementId();
-            if ((elementId.startsWith("com.kms.katalon.composer.content.") && elementId.endsWith(")") || COMPATIBILITY_EDITOR_ID.equals(elementId))
-                    && modelService.find(elementId, area) == null) {
+            if ((elementId.startsWith("com.kms.katalon.composer.content.") && elementId.endsWith(")")
+                    || COMPATIBILITY_EDITOR_ID.equals(elementId)) && modelService.find(elementId, area) == null) {
                 // not in MArea
                 composerPartStackChildren.add(p);
                 if (p.isVisible() && firstVisibleTab == null) {
@@ -113,6 +113,8 @@ public class ResetPerspectiveHandler extends AbstractHandler {
             composerPartStack.setSelectedElement(firstVisibleTab);
         }
 
+        MPart eventLogPart = partService.findPart(IdConstants.EVENT_LOG_PART_ID);
+
         if (IdConstants.KEYWORD_PERSPECTIVE_ID.equals(perspective.getElementId())) {
             MPart requestHistoryPart = partService.findPart(IdConstants.COMPOSER_REQUEST_HISTORY_PART_ID);
             cleanPerspective.setToBeRendered(true);
@@ -120,19 +122,22 @@ public class ResetPerspectiveHandler extends AbstractHandler {
             int pIndex = perspectives.indexOf(perspective);
             perspectives.remove(pIndex);
             perspectives.add(pIndex, cleanPerspective);
+
+            MPlaceholder expressionsPlaceholder = switcher.find(IdConstants.EVENT_LOG_PLACEHOLDER_ID, cleanPerspective);
+            if (eventLogPart != null) {
+                expressionsPlaceholder.setRef(eventLogPart);
+            }
             perspectiveStack.setSelectedElement(cleanPerspective);
+
             updatePerspectiveToolbar(pIndex, cleanPerspective);
             partService.switchPerspective(cleanPerspective);
-            reselectParts(cleanPerspective, partService);          
-            
-            // Re-attach history request part after refreshing Explorer Part
-            MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID,
-                    application);
-            if(requestHistoryPart != null){
-            	stack.getChildren().add(requestHistoryPart);
+            reselectParts(cleanPerspective, partService);
+
+            MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID, application);
+            if (requestHistoryPart != null) {
+                stack.getChildren().add(requestHistoryPart);
             }
-            
-            // reload explorer tree entities
+
             eventBroker.post(EventConstants.EXPLORER_RELOAD_DATA, false);
             return;
         }
