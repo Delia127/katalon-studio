@@ -103,7 +103,7 @@ public class NewNamePage extends WizardPage {
     public boolean validateVariantName() {
         try {
             for (String containedName : ((RenameWizard) getWizard()).getExistingNames()) {
-                if (containedName.equalsIgnoreCase(txtName.getText())) {
+                if (containedName.equals(txtName.getText())) {
                     setErrorMessage(StringConstants.WIZ_NAME_ALREADY_EXISTS_IN_DIFFERENT_CASE);
                     return false;
                 }
