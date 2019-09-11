@@ -40,12 +40,10 @@ import org.apache.http.util.EntityUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsExecution;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFileInfo;
-import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsFeature;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationPage;
@@ -184,22 +182,6 @@ public class AnalyticsApiProvider {
         }
     }
     
-    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, long orgId, String machineKey, String accessToken)
-            throws AnalyticsApiExeception {
-        try {
-            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);
-            URIBuilder uriBuilder = new URIBuilder(uri);
-            uriBuilder.setParameter("machineKey", machineKey + "");
-            uriBuilder.setParameter("ksVersion", VersionUtil.getCurrentVersion().getVersion());
-            HttpPost httpPost = new HttpPost(uriBuilder.build().toASCIIString());
-            httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
-            AnalyticsLicenseKey licenseKey = executeRequest(httpPost, AnalyticsLicenseKey.class);
-            return licenseKey;
-        } catch (Exception e) {
-            throw new AnalyticsApiExeception(e);
-        }
-    }
-
     public static void sendTrackingActivity(String serverUrl, String accessToken, AnalyticsTracking trackingInfo) throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_TRACKING_ACTIVITY);
