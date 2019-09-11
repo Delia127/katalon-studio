@@ -34,18 +34,14 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
-import com.kms.katalon.application.utils.MachineUtil;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.integration.analytics.entity.AnalyticsLicenseKey;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
-import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
@@ -74,8 +70,6 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private Combo cbbOrganization;
 
-    private Label lblMachineKeyDetail;
-
     private Link lnkConfigProxy;
 
     private Link lnkOfflineActivation;
@@ -85,10 +79,6 @@ public class ActivationDialogV2 extends AbstractDialog {
     private Link lblHelpOrganization;
 
     private List<AnalyticsOrganization> organizations = new ArrayList<>();
-    
-    private AnalyticsLicenseKey licenseKey;
-    
-    private String machineKey;
 
     private Link lnkAgreeTerm;
     
@@ -164,7 +154,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                 btnLogIn.setEnabled(false);
                 Executors.newFixedThreadPool(1).submit(() -> {
                     UISynchronizeService.syncExec(
-                            () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_LOGIN, false));
+                            () -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_ACTIVATING, false));
                     StringBuilder errorMessage = new StringBuilder();
                     boolean result = ActivationInfoCollector.activate(username, password, errorMessage);
 
@@ -183,7 +173,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                 });
             }
         });
-
+        
         btnActivate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -191,7 +181,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                 save(index);
             }
         });
-
+        
         lblHelpOrganization.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -201,43 +191,24 @@ public class ActivationDialogV2 extends AbstractDialog {
     }
 
     private void save(int index) {
-        AnalyticsOrganization organization = organizations.get(index);
-        String email = txtEmail.getText();
-        String password = txtPassword.getText();
-
-        Executors.newFixedThreadPool(1).submit(() -> {
-            UISynchronizeService
-                    .syncExec(() -> setProgressMessage(MessageConstants.ActivationDialogV2_MSG_GETTING_FEATURE, false));
-            UISynchronizeService.syncExec(() -> {
-                try {
-                    getLicenseKey(organizations.get(0).getId());
-                    if (licenseKey != null) {
-                        ActivationInfoCollector.markActivated(email, password);
-                        ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION,
-                                JsonUtil.toJson(organization), true);
-                        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE,
-                                licenseKey.getValue(), true);
-                        if (KatalonApplicationActivator.getFeatureActivator() != null) {
-                            String serverUrl = ApplicationInfo.getTestOpsServer();
-                            String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-                            Long orgId = organization.getId();
-                            ActivationInfoCollector.activateFeatures(serverUrl, email, password, orgId, ksVersion);
-                        }
-                        close();
-                        Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
-                    } else {
-                        txtEmail.setEnabled(true);
-                        txtPassword.setEnabled(true);
-                        btnLogIn.setEnabled(true);
-                        btnActivate.setEnabled(false);
-                    }
-                } catch (Exception e) {
-                    LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
-                }
-            });
-        });
+        try {
+            AnalyticsOrganization organization = organizations.get(index);
+            String email = txtEmail.getText();
+            String password = txtPassword.getText();
+            ActivationInfoCollector.markActivated(email, password);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION, JsonUtil.toJson(organization), true);
+            if (KatalonApplicationActivator.getFeatureActivator() != null) {
+                String serverUrl = ApplicationInfo.getTestOpsServer();
+                String ksVersion = VersionUtil.getCurrentVersion().getVersion();
+                Long orgId = organization.getId();
+                ActivationInfoCollector.activateFeatures(serverUrl, email, password, orgId, ksVersion);
+            }
+            close();
+        } catch (Exception e) {
+            LogUtil.logError(e, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+        }
     }
-
+    
     private static List<String> getOrganizationNames(List<AnalyticsOrganization> organizations) {
         List<String> names = organizations.stream().map(organization -> organization.getName()).collect(Collectors.toList());
         return names;
@@ -255,12 +226,15 @@ public class ActivationDialogV2 extends AbstractDialog {
                     String password = txtPassword.getText();
                     token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                     organizations = AnalyticsApiProvider.getOrganizations(serverUrl, token.getAccess_token());
-                    cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
-                    cbbOrganization.select(getDefaultOrganizationIndex());
-
-                    setProgressMessage("", false);
-                    cbbOrganization.setEnabled(true);
-                    btnActivate.setEnabled(true);
+                    if (organizations.size() == 1) {
+                        save(0);
+	                } else {
+	                    cbbOrganization.setItems(getOrganizationNames(organizations).toArray(new String[organizations.size()]));
+	                    cbbOrganization.select(0);
+	                    setProgressMessage("", false);
+	                    cbbOrganization.setEnabled(true);
+	                    btnActivate.setEnabled(true);
+	                }
                 } catch (AnalyticsApiExeception e) {
                     LogUtil.logError(e);
                     setProgressMessage("", false);
@@ -272,39 +246,10 @@ public class ActivationDialogV2 extends AbstractDialog {
                         txtEmail.setEnabled(true);
                         txtPassword.setEnabled(true);
                         btnLogIn.setEnabled(true);
-                        btnActivate.setEnabled(false);
                     }
-                }
-                if (organizations.size() == 1) {
-                    save(0);
                 }
             });
         });
-    }
-    
-    private int getDefaultOrganizationIndex() {
-        int selectionIndex = 0;
-        for (int i = 0; i < organizations.size(); i++) {
-            AnalyticsOrganization organization = organizations.get(i);
-            if (organization.getRole().equals(AnalyticsOrganizationRole.USER)) {
-                selectionIndex = i;
-                return selectionIndex;
-            }
-        }
-    	return selectionIndex;
-    }
-
-    private void getLicenseKey(long orgId) {
-        AnalyticsTokenInfo token;
-        try {
-            String serverUrl = ApplicationInfo.getTestOpsServer();
-            String email = txtEmail.getText();
-            String password = txtPassword.getText();
-            token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-            licenseKey = AnalyticsApiProvider.getLicenseKey(serverUrl, orgId, machineKey, token.getAccess_token());
-        } catch (AnalyticsApiExeception e) {
-            LogUtil.logError(e);
-        }
     }
 
     private void setProgressMessage(String message, boolean isError) {
@@ -312,7 +257,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         if (isError) {
             lblProgressMessage.setForeground(ColorUtil.getTextErrorColor());
         } else {
-            lblProgressMessage.setForeground(ColorUtil.getTextRunningColor());
+            lblProgressMessage.setForeground(ColorUtil.getDefaultTextColor());
         }
         lblProgressMessage.getParent().layout();
     }
@@ -371,61 +316,47 @@ public class ActivationDialogV2 extends AbstractDialog {
         logInRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
         GridLayout gdActivateRight = new GridLayout(1, false);
         logInRightComposite.setLayout(gdActivateRight);
-
+        
         GridData gdBtn = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
         gdBtn.widthHint = 100;
-
+        
         btnLogIn = new Button(logInRightComposite, SWT.NONE);
         btnLogIn.setLayoutData(gdBtn);
         btnLogIn.setText(StringConstants.BTN_LOG_IN_TITLE);
         getShell().setDefaultButton(btnLogIn);
-
-        Label lblMachineKey = new Label(contentComposite, SWT.NONE);
-        lblMachineKey.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        lblMachineKey.setText(MessageConstants.ActivationOfflineDialogV2_LBL_MACHINE_KEY);
-
-        lblMachineKeyDetail = new Label(contentComposite, SWT.NONE);
-        lblMachineKeyDetail.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        lblMachineKeyDetail.setForeground(ColorUtil.getTextLinkColor());
-        try {
-            machineKey = MachineUtil.getMachineId();
-            lblMachineKeyDetail.setText(machineKey);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-
+        
         Label lblOrganization = new Label(contentComposite, SWT.NONE);
         GridData gdOrganization = new GridData(SWT.LEFT, SWT.CENTER, false, false);
         lblOrganization.setLayoutData(gdOrganization);
         lblOrganization.setText(MessageConstants.ActivationDialogV2_LBL_SELECT_ORGANIZATION);
-
+        
         cbbOrganization = new Combo(contentComposite, SWT.READ_ONLY);
         cbbOrganization.setLayoutData(gdText);
         cbbOrganization.setEnabled(false);
-
+        
         Composite activateComposite = new Composite(contentComposite, SWT.NONE);
         activateComposite.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 2, 1));
         GridLayout gdTemp = new GridLayout(2, false);
         activateComposite.setLayout(gdTemp);
-
+        
         Composite activateLeftComposite = new Composite(activateComposite, SWT.NONE);
         activateLeftComposite.setLayoutData(new GridData(SWT.LEFT, SWT.NONE, true, false));
         activateLeftComposite.setLayout(new GridLayout(1, false));
-
+        
         lblHelpOrganization = new Link(activateLeftComposite, SWT.NONE);
         lblHelpOrganization.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
         lblHelpOrganization.setText(String.format(MessageConstants.ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION, ApplicationInfo.getTestOpsServer()));
-
+        
         Composite activateRightComposite = new Composite(activateComposite, SWT.NONE);
         activateRightComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
         GridLayout gdActivateComposite = new GridLayout(1, false);
         activateRightComposite.setLayout(gdActivateComposite);
-
+        
         btnActivate = new Button(activateRightComposite, SWT.NONE);
         btnActivate.setLayoutData(gdBtn);
         btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
         btnActivate.setEnabled(false);
-
+        
         return container;
     }
 
@@ -437,7 +368,7 @@ public class ActivationDialogV2 extends AbstractDialog {
         glButtonBar.verticalSpacing = 10;
         buttonBar.setLayout(glButtonBar);
         buttonBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
+                     
         Composite bottomTerm = new Composite(buttonBar, SWT.NONE);
         bottomTerm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         GridLayout gdBottomBarTerm = new GridLayout(2, false);
