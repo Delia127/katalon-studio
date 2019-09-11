@@ -74,7 +74,7 @@ public class RenameFolderHandler {
                     String oldName = folder.getName();
                     try {
                         if (renameWizard.getNewNameValue() != null && !renameWizard.getNewNameValue().equals("")
-                                && !renameWizard.getNewNameValue().equalsIgnoreCase(oldName)) {
+                                && !renameWizard.getNewNameValue().equals(oldName)) {
 
                             // preSave
                             // get object and oldLocation of all children of folder
