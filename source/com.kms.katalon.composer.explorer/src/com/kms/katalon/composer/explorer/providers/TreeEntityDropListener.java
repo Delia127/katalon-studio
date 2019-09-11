@@ -133,7 +133,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         String constant = "keywords";
         String packageName = project.getFolderLocation() + File.separator + constant + File.separator;
         File projectFile = new File(packageName);
-        String oldRelativeKwLocation = oldKeywordLocation.substring(projectFile.getAbsolutePath().length() + 1 );
+        String oldRelativeKwLocation = oldKeywordLocation.substring(projectFile.getAbsolutePath().length() + 1);
         String oldRelativeTcId = FilenameUtils.removeExtension(oldRelativeKwLocation).replace("/", ".");
         String newRelativeKwLocation = newKeywordLocation.substring(constant.length() + 1);
         String newRelativeTcId = FilenameUtils.removeExtension(newRelativeKwLocation).replace("/", ".");
@@ -149,7 +149,8 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 TestCaseTreeEntity testcaseTreeEntity = TreeEntityUtil.getTestCaseTreeEntity(testCase, project);
                 EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
                         testcaseTreeEntity.getParent());
-                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, testcaseTreeEntity);
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM,
+                        testcaseTreeEntity);
             }
         }
     }
