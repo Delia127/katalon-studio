@@ -40,10 +40,11 @@ public class RecorderPreferencePage extends FieldEditorPreferencePageWithHelp {
     private Composite mainComposite;
 
     private Button chckPinRecorder;
-    
+
     private static final int MIN_PORT_NUMBER = 1;
 
     private static final int MAX_PORT_NUMBER = 65534;
+
     public RecorderPreferencePage() {
         setPreferenceStore(
                 PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER));
@@ -124,6 +125,7 @@ public class RecorderPreferencePage extends FieldEditorPreferencePageWithHelp {
         }
         return super.performOk();
     }
+
     private void addCheckboxField(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -131,7 +133,6 @@ public class RecorderPreferencePage extends FieldEditorPreferencePageWithHelp {
                 UtilitiesAddonPreferenceConstants.UTILITIES_ADDON_ACTIVE_BROWSER_DO_NOT_SHOW_AGAIN,
                 StringConstants.PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG, composite));
     }
-
 
     @Override
     public boolean hasDocumentation() {
@@ -145,6 +146,6 @@ public class RecorderPreferencePage extends FieldEditorPreferencePageWithHelp {
 
     @Override
     protected void createFieldEditors() {
-        
+
     }
 }
