@@ -243,9 +243,9 @@ public class PastePackageHandler {
         List<TestCaseEntity> lstTestCases = FolderFileServiceManager
                 .getDescendantTestCasesOfFolder(FolderFileServiceManager.getTestCaseRoot(project));
         String constant = "keywords";
-        String packageName = project.getLocation() + File.separator + constant + File.separator;
+        String packageName = project.getFolderLocation() + File.separator + constant + File.separator;
         File projectFile = new File(packageName);
-        String oldRelativeKwLocation = oldKeywordLocation.substring(projectFile.getParent().length() + 2);
+        String oldRelativeKwLocation = oldKeywordLocation.substring(projectFile.getAbsolutePath().length() +1 );
         String oldRelativeTcId = FilenameUtils.removeExtension(oldRelativeKwLocation).replace("/", ".");
         String newRelativeKwLocation = newKeywordLocation.substring(constant.length() + 1);
         String newRelativeTcId = FilenameUtils.removeExtension(newRelativeKwLocation).replace("/", ".");

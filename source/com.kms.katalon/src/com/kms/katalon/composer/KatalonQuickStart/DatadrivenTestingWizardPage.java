@@ -56,7 +56,7 @@ public class DatadrivenTestingWizardPage extends AbstractWizardPage implements W
 
     @Override
     public String getStepIndexAsString() {
-        return "2";
+        return "5";
     }
 
     @Override

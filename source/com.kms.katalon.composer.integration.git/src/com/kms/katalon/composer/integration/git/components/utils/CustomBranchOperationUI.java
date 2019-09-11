@@ -571,10 +571,10 @@ public class CustomBranchOperationUI {
 
     private boolean showContinueDialogInUI(final IPreferenceStore store, final ILaunchConfiguration launchConfiguration) {
         String[] buttons = new String[] { UIText.BranchOperationUI_Continue, IDialogConstants.CANCEL_LABEL };
-        String message = NLS.bind(UIText.BranchOperationUI_RunningLaunchMessage, launchConfiguration.getName());
+        String message = NLS.bind(UIText.LaunchFinder_RunningLaunchMessage, launchConfiguration.getName());
         MessageDialogWithToggle continueDialog = new MessageDialogWithToggle(getShell(),
-                UIText.BranchOperationUI_RunningLaunchTitle, null, message, MessageDialog.NONE, buttons, 0,
-                UIText.BranchOperationUI_RunningLaunchDontShowAgain, false);
+                UIText.LaunchFinder_RunningLaunchTitle, null, message, MessageDialog.NONE, buttons, 0,
+                UIText.LaunchFinder_RunningLaunchDontShowAgain, false);
         int result = continueDialog.open();
         // cancel
         if (result == IDialogConstants.CANCEL_ID || result == SWT.DEFAULT) {
@@ -598,7 +598,7 @@ public class CustomBranchOperationUI {
 
                     ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
                     ILaunch[] launches = launchManager.getLaunches();
-                    m.beginTask(UIText.BranchOperationUI_SearchLaunchConfiguration, launches.length);
+                    m.beginTask(UIText.LaunchFinder_SearchLaunchConfiguration, launches.length);
                     for (ILaunch launch : launches) {
                         m.worked(1);
                         if (launch.isTerminated()) {

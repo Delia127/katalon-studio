@@ -64,8 +64,7 @@ public class AnalyticsAuthorizationHandler {
         return null;    
     } 
     
-    public static List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
-            final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
+    public static List<AnalyticsProject> getProjects(final String serverUrl, final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
         final List<AnalyticsProject> projects = new ArrayList<>();
             List<AnalyticsProject> loaded;
             try {
@@ -79,8 +78,7 @@ public class AnalyticsAuthorizationHandler {
             return projects;
     }
     
-    public static List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
-            final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo, ProgressMonitorDialog monitorDialog) {
+    public static List<AnalyticsProject> getProjects(final String serverUrl, final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo, ProgressMonitorDialog monitorDialog) {
         final List<AnalyticsProject> projects = new ArrayList<>();
         try {
             monitorDialog.run(true, false, new IRunnableWithProgress() {
@@ -117,8 +115,7 @@ public class AnalyticsAuthorizationHandler {
         return projects;
     }
     
-    public static List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password, Long orgId,
-            AnalyticsTokenInfo tokenInfo) {
+    public static List<AnalyticsTeam> getTeams(final String serverUrl, Long orgId, AnalyticsTokenInfo tokenInfo) {
         final List<AnalyticsTeam> teams = new ArrayList<>();
         List<AnalyticsTeam> loaded;
         try {
@@ -133,8 +130,8 @@ public class AnalyticsAuthorizationHandler {
         return teams;
     }
     
-    public static List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password, Long orgId,
-            AnalyticsTokenInfo tokenInfo, ProgressMonitorDialog monitorDialog) {
+    public static List<AnalyticsTeam> getTeams(final String serverUrl, Long orgId, AnalyticsTokenInfo tokenInfo,
+            ProgressMonitorDialog monitorDialog) {
         final List<AnalyticsTeam> teams = new ArrayList<>();
         try {
             monitorDialog.run(true, false, new IRunnableWithProgress() {

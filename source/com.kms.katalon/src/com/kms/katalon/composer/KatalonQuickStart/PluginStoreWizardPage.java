@@ -56,7 +56,7 @@ public class PluginStoreWizardPage extends AbstractWizardPage implements WizardP
 
     @Override
     public String getStepIndexAsString() {
-        return "7";
+        return "8";
     }
 
     @Override

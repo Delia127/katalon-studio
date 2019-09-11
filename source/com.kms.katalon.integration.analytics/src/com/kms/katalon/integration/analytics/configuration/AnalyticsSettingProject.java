@@ -74,11 +74,11 @@ public class AnalyticsSettingProject {
         
         Long orgId = analyticsSettingStore.getOrganization().getId();
         
-        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, orgId, tokenInfo,
+        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo,
                 new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
         AnalyticsTeam team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
 
-        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, team, tokenInfo,
+        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo,
                 new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
 
         analyticsSettingStore.setTeam(team);
@@ -100,7 +100,7 @@ public class AnalyticsSettingProject {
                 return;
             }
             Long orgId = analyticsSettingStore.getOrganization().getId();
-            teams = AnalyticsAuthorizationHandler.getTeams(server, email, password, orgId, tokenInfo,
+            teams = AnalyticsAuthorizationHandler.getTeams(server, orgId, tokenInfo,
                     new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
             AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
             long currentTeamId = currentTeam.getId();
