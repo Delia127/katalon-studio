@@ -48,10 +48,8 @@ public class ClickKeyword extends WebUIAbstractKeyword {
             try {
                 WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
                 WebDriver webDriver = DriverFactory.getWebDriver();
-
                 WebDriverWait wait = new WebDriverWait(webDriver, 10);
                 webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
-
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()))
                 Try.ofFailable({
                     webElement.click()
