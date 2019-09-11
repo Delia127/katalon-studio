@@ -1,11 +1,12 @@
 package com.kms.katalon.composer.explorer.providers;
 
-import java.awt.dnd.DragSourceEvent;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -15,10 +16,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.PackageFragment;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -47,7 +46,6 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
 import com.kms.katalon.controller.WindowsElementController;
-import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
@@ -64,7 +62,8 @@ import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TreeEntityDropListener extends TreeDropTargetEffect {
-    private static IEventBroker eventBroker;
+    @Inject
+    private IEventBroker eventBroker;
 
     private ITreeEntity lastMovedTreeEntity;
     
@@ -103,8 +102,8 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                     file = (IFile) unit.getResource();
                 }
                 moveKeyword(file, packageFragment, null);
-                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity);
-                eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, lastMovedTreeEntity);
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity.getParent());
+                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetTreeEntity);
             }
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
@@ -117,18 +116,11 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
         if (keywordFile == null || targetPackageFragment == null) {
             return null;
         }
-        String oldRelativeKwLocation = keywordFile.getLocation().toString();
         String cutKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
 
         GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, newName);
         refactorReferencingTestSuites(ProjectController.getInstance().getCurrentProject(), keywordFile,
                 keywordFile.getLocation().toString(), cutKeywordFilePath);
-        if (!oldRelativeKwLocation.equals(cutKeywordFilePath)) {
-            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM,
-                    new Object[] { keywordFile.getProjectRelativePath().toString(), cutKeywordFilePath });
-            EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
-                    targetPackageFragment);
-        }
         return keywordFile;
     }
     
@@ -155,7 +147,9 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 String newString = str.replace(oldRelativeTcId, newRelativeTcId);
                 GroovyGuiUtil.addContentToTestCase(testCase, newString);
                 TestCaseTreeEntity testcaseTreeEntity = TreeEntityUtil.getTestCaseTreeEntity(testCase, project);
-                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testcaseTreeEntity);
+                EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                        testcaseTreeEntity.getParent());
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, testcaseTreeEntity);
             }
         }
     }
