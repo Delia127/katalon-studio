@@ -184,7 +184,7 @@ public class AnalyticsApiProvider {
         }
     }
     
-    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, long orgId, String machineKey, String accessToken)
+    public static AnalyticsLicenseKey getLicenseKey(String serverUrl, String machineKey, String accessToken)
             throws AnalyticsApiExeception {
         try {
             URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_ACTIVATE);

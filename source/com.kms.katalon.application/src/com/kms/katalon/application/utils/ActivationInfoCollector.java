@@ -21,6 +21,7 @@ import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.feature.FeatureServiceConsumer;
 import com.kms.katalon.feature.IFeatureService;
+import com.kms.katalon.feature.TestOpsFeatureActivator;
 import com.kms.katalon.license.LicenseService;
 import com.kms.katalon.license.models.Feature;
 import com.kms.katalon.license.models.License;
@@ -206,24 +207,35 @@ public class ActivationInfoCollector {
         boolean activatedResult = false;
         try {
             String userInfo = collectActivationInfo(userName, pass);
-            String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
-            if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
-                activatedResult = true;
-            } else if (errorMessage != null) {
-                errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
-            }
-
-        } catch (IOException ex) {
-            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+            ServerAPICommunicationUtil.post("/segment/identify", userInfo);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+        
+        try {
+        	boolean result = testOpsActivate();
+        	if (result) {
+        		activatedResult = true;
+        	} else if (errorMessage != null) {
+        		errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+        	}
+        } catch (Exception ex) {
+        	LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
             if (errorMessage != null) {
                 errorMessage.delete(0, errorMessage.length());
                 errorMessage.append(ApplicationMessageConstants.NETWORK_ERROR);
             }
-        } catch (Exception e) {
-            LogUtil.logError(e);
         }
-
         return activatedResult;
+    }
+    
+    private static boolean testOpsActivate(String userName, String password, String machineId) throws Exception {
+    	String serverUrl = ApplicationInfo.getTestOpsServer();
+    	
+    	String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
+    	String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, machineId);
+    	
+    	return true;
     }
     
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
