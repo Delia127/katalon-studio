@@ -152,7 +152,7 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     
     public AnalyticsOrganization getOrganization() {
     	AnalyticsOrganization organization = new AnalyticsOrganization();
-        String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+        String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ORGANIZATION);
         if (StringUtils.isNotBlank(jsonObject)) {
             try {
                 organization = JsonUtil.fromJson(jsonObject, AnalyticsOrganization.class);
