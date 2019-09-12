@@ -10,7 +10,7 @@ trigger:
 variables:
   BRANCH: $(Build.SourceBranchName)
   COMMIT_ID: $(Build.SourceVersion)
-  PR_SOURCE_BRANCH: $(System.PullRequest.TargetBranch)
+  PR_SOURCE_BRANCH: $(System.PullRequest.SourceBranch)
   # COMMIT_ID: $(System.PullRequest.SourceCommitId)
   KATALON_DIR: $(Build.Repository.LocalPath)
   TMP_DIR: $(Build.ArtifactStagingDirectory)
