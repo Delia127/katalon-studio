@@ -8,7 +8,7 @@ trigger:
 - release-*
 
 variables:
-  BRANCH: $(Build.SourceBranchName)
+  BRANCH: $(Build.SourceBranchName) | $(System.PullRequest.SourceBranch)
   COMMIT_ID: $(Build.SourceVersion)
   # BRANCH: $(System.PullRequest.TargetBranch)
   # COMMIT_ID: $(System.PullRequest.SourceCommitId)
