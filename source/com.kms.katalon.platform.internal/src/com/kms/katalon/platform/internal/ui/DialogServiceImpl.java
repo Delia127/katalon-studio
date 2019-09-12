@@ -2,14 +2,13 @@ package com.kms.katalon.platform.internal.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.swt.widgets.Shell;
 
 import com.katalon.platform.api.exception.PlatformException;
 import com.katalon.platform.api.exception.ResourceException;
+import com.katalon.platform.api.model.ExecutionProfileEntity;
 import com.katalon.platform.api.model.FolderEntity;
 import com.katalon.platform.api.model.TestCaseEntity;
 import com.katalon.platform.api.model.TestObjectEntity;
@@ -17,20 +16,23 @@ import com.katalon.platform.api.ui.DialogActionService;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ProfileTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.execution.dialog.ExecutionProfileSelectionDialog;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.explorer.providers.FolderEntityTreeViewerFilter;
+import com.kms.katalon.composer.objectrepository.dialog.TestObjectSelectionDialog;
 import com.kms.katalon.composer.testcase.dialogs.TestCaseSelectionDialog;
-import com.kms.katalon.composer.testcase.dialogs.TestObjectSelectionDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.exception.ControllerException;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.platform.internal.entity.ExecutionProfileEntityImpl;
 import com.kms.katalon.platform.internal.entity.FolderEntityImpl;
 import com.kms.katalon.platform.internal.entity.TestCaseEntityImpl;
 import com.kms.katalon.platform.internal.entity.testobject.RestRequestEntityImpl;
@@ -176,6 +178,39 @@ public class DialogServiceImpl implements DialogActionService {
             }
         } else {
             return new WebElementEntityImpl(testObject);
+        }
+    }
+    
+    @Override
+    public ExecutionProfileEntity[] showExecutionProfileSelectionDialog(Shell parentShell, String dialogTitle)
+            throws PlatformException {
+        EntityLabelProvider labelProvider = new EntityLabelProvider();
+        EntityProvider contentProvider = new EntityProvider();
+        ExecutionProfileSelectionDialog selectionDialog = new ExecutionProfileSelectionDialog(
+                parentShell, labelProvider, contentProvider, new EntityViewerFilter(contentProvider));
+        selectionDialog.setTitle(dialogTitle);
+        selectionDialog.setAllowMultiple(false);
+        FolderTreeEntity profileFolderRoot;
+        try {
+            profileFolderRoot = new FolderTreeEntity(FolderController.getInstance()
+                    .getProfileRoot(ProjectController.getInstance().getCurrentProject()), null);
+        } catch (Exception e) {
+            throw new ResourceException("Could not initialize profile folder", e);
+        }
+        selectionDialog.setInput(Arrays.asList(profileFolderRoot));
+        if (selectionDialog.open() != TreeEntitySelectionDialog.OK || selectionDialog.getResult() == null) {
+            return null;
+        }
+        try {
+            ProfileTreeEntity[] selectedTreeEntities = selectionDialog.getSelectedProfiles();
+            List<ExecutionProfileEntity> selectedProfiles = new ArrayList<>();
+            for (ProfileTreeEntity selectedTreeEntity : selectedTreeEntities) {
+                com.kms.katalon.entity.global.ExecutionProfileEntity profile = selectedTreeEntity.getObject();
+                selectedProfiles.add(new ExecutionProfileEntityImpl(profile));
+            }
+            return selectedProfiles.toArray(new ExecutionProfileEntity[selectedProfiles.size()]);
+        } catch (Exception e) {
+            throw new PlatformException(e);
         }
     }
     

@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testcase.dialogs;
+package com.kms.katalon.composer.objectrepository.dialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
