@@ -77,6 +77,6 @@ Require-Bundle: net.sf.supercsv.super-csv,
  com.kms.katalon.netlightbody,
  xml-apis,
  org.apache.commons.commons-text,
- com.mysql.cj;bundle-version="8.0.17"
+ com.mysql.cj
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
