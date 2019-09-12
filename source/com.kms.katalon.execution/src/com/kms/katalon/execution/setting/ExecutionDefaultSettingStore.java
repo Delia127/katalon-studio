@@ -27,6 +27,8 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     public static final Boolean DEFAULT_AUTO_APPLY_NEIGHBOR_XPATHS_ENABLED = false;
     
     public static final Boolean DEFAULT_SMART_WAIT_MODE = true;
+    
+    public static final Boolean DEFAULT_LOG_TEST_STEPS = true;
 
     public static ExecutionDefaultSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
@@ -177,5 +179,17 @@ public class ExecutionDefaultSettingStore extends BundleSettingStore {
     public void setDefaultSmartWaitMode(Boolean value) throws IOException {
         setProperty(ExecutionDefaultSettingConstants.WEB_UI_DEFAULT_SMART_WAIT_MODE,
                 value);
+    }
+    
+    public Boolean getLogTestSteps() {
+        try {
+            return getBoolean(ExecutionDefaultSettingConstants.WEB_UI_LOG_TEST_STEPS, DEFAULT_LOG_TEST_STEPS);
+        } catch (IOException e) {
+            return DEFAULT_LOG_TEST_STEPS;
+        }
+    }
+    
+    public void setLogTestSteps(Boolean value) throws IOException {
+        setProperty(ExecutionDefaultSettingConstants.WEB_UI_LOG_TEST_STEPS, value);
     }
 }

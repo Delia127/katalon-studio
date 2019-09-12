@@ -461,6 +461,8 @@ public class MessageConstants extends NLS {
     public static String KStorePluginsDialog_LNK_ERROR;
     
     public static String KStorePluginsDialog_LBL_WARNING;
+    
+    public static String KStorePluginsDialog_LBL_HELP;
 
     public static String LBL_DISABLE_MOB_BROWSER_PROXY;
 
