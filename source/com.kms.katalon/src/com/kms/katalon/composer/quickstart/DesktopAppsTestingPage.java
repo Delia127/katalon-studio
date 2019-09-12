@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.KatalonQuickStart;
+package com.kms.katalon.composer.quickstart;
 
 import java.util.Map;
 
