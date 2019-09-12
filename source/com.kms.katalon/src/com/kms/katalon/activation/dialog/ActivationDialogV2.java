@@ -373,7 +373,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         btnActivate = new Button(activateRightComposite, SWT.NONE);
         btnActivate.setLayoutData(gdBtn);
-        btnActivate.setText(StringConstants.BTN_LOG_IN_TITLE);
+        btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
         getShell().setDefaultButton(btnActivate);
 
         compositeOrganization = new Composite(contentComposite, SWT.NONE);
@@ -423,7 +423,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
         btnSave = new Button(saveRightComposite, SWT.NONE);
         btnSave.setLayoutData(gdBtn);
-        btnSave.setText(StringConstants.BTN_ACTIVATE_TITLE);
+        btnSave.setText(StringConstants.BTN_SAVE);
         btnSave.setEnabled(false);
 
         layoutOrganization();

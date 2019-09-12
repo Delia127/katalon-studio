@@ -123,6 +123,8 @@ public class MessageConstants extends NLS {
     
     public static String BTN_LOG_IN_TITLE;
 
+    public static String BTN_SAVE;
+
     public static String WAITTING_MESSAGE;
 
     public static String LINK_OPEN_ACTIVATE_FORM_OFFLINE;
