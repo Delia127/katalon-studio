@@ -20,7 +20,7 @@ public class OrganizationHandler {
             return Long.parseLong(Organization.getId());
         } else {
             AnalyticsOrganization org = new AnalyticsOrganization();
-            String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+            String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ORGANIZATION);
             if (StringUtils.isNotBlank(jsonObject)) {
                 try {
                      org = JsonUtil.fromJson(jsonObject, AnalyticsOrganization.class);

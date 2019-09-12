@@ -20,7 +20,7 @@ public class LogoutHandler {
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, "", true);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, "", true);
             ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, "", true);
-            ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION, "", true);
+            ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, "", true);
             
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE) != null) {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, "", true);
