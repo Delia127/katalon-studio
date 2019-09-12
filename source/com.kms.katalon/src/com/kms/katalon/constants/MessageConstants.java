@@ -338,7 +338,7 @@ public class MessageConstants extends NLS {
 
     public static String ActivationDialogV2_LNK_REGISTER;
 
-    public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATION;
+    public static String ActivationDialogV2_LNK_KSE_ACTIVATION;
 
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
     
