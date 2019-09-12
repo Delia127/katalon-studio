@@ -82,7 +82,7 @@ public class ConsoleMain {
     
     public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
     
-    public static final String VARIABLE_ENVIRONMENT = "TESTOPS_LICENSE_FILE";
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_VAR = "TESTOPS_LICENSE_FILE";
     
     public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
 
