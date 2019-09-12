@@ -35,6 +35,7 @@ Export-Package: com.kms.katalon.core.annotation,
  com.kms.katalon.core.testobject,
  com.kms.katalon.core.testobject.impl,
  com.kms.katalon.core.testobject.internal.impl,
+ com.kms.katalon.core.trymonad,
  com.kms.katalon.core.util;uses:="org.apache.poi.ss.util,org.apache.poi.xssf.usermodel,org.apache.poi.hssf.usermodel",
  com.kms.katalon.core.util.internal
 Require-Bundle: net.sf.supercsv.super-csv,
