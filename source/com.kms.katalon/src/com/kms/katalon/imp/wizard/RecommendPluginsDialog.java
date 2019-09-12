@@ -86,39 +86,25 @@ public class RecommendPluginsDialog extends Dialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, OPEN_PROJECT_ID, StringConstants.DIA_OPEN_PROJECT, false);
-        createButton(parent, NEW_PROJECT_ID, StringConstants.DIA_NEW_PROJECT, true);
+        createButton(parent, OK, "Install", true);
     }
 
     public final void installPressed() {
-
         Job reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 KStoreBasicCredentials[] credentials = new KStoreBasicCredentials[1];
-                UISynchronizeService.syncExec(() -> {
-                    try {
-                        credentials[0] = RequireAuthorizationHandler.getBasicCredentials();
-                        KStoreRestClient res = new KStoreRestClient(credentials[0]);
-                        res.postRecommended(idProduct);
-                        res.getRecommendPlugins()
-                                .stream()
-                                .forEach(p -> PluginService.getInstance().logPluginProductInfo(p));
-                        /*
-                         * try {
-                         * PluginService.getInstance().reloadPlugins(credentials[0], new NullProgressMonitor());
-                         * } catch (ReloadPluginsException | InterruptedException e) {
-                         * LoggerSingleton.logError(e);
-                         * }
-                         */
-                    } catch (KStoreClientAuthException e) {
-                        LoggerSingleton.logError(e);
-                    } catch (KStoreClientException e) {
-                        LoggerSingleton.logError(e);
-                    }
-                });
-                LoggerSingleton.logInfo("Reloaded plugins successfully.");
-                return Status.OK_STATUS;
+                try {
+                    credentials[0] = RequireAuthorizationHandler.getBasicCredentials();
+                    KStoreRestClient res = new KStoreRestClient(credentials[0]);
+                    res.postRecommended(idProduct);
+
+                    LoggerSingleton.logInfo("Reloaded plugins successfully.");
+                    return Status.OK_STATUS;
+                } catch (KStoreClientAuthException | KStoreClientException e) {
+                    LoggerSingleton.logError(e);
+                    return Status.CANCEL_STATUS;
+                }
             }
         };
         reloadPluginsJob.addJobChangeListener(new JobChangeAdapter() {
