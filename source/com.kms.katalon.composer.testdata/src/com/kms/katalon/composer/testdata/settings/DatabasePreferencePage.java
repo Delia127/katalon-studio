@@ -1,10 +1,13 @@
 package com.kms.katalon.composer.testdata.settings;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -27,9 +30,12 @@ import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.controller.DatabaseController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
@@ -47,6 +53,8 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
     private Text txtPassword;
 
     private Text txtConnectionURL;
+    
+    private Text txtDriverClassName;
 
     private Button btnTestConnection;
 
@@ -84,6 +92,13 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
 
         txtPassword = new Text(compDatabase, SWT.BORDER | SWT.PASSWORD);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        
+        Label lblOptionsDB = new Label(compDatabase, SWT.NONE);
+        lblOptionsDB.setText("JDBC driver");
+        lblOptionsDB.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
+        
+        txtDriverClassName = new Text(compDatabase, SWT.BORDER);
+        txtDriverClassName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblConnectionURL = new Label(compDatabase, SWT.NONE);
         lblConnectionURL.setLayoutData(new GridData(SWT.LEAD, SWT.TOP, false, false, 1, 1));
@@ -171,43 +186,54 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
         return link;
     }
 
-    protected void registerControlModifyListeners() {
-        chkSecureUserPassword.addSelectionListener(new SelectionAdapter() {
+	protected void registerControlModifyListeners() {
+		chkSecureUserPassword.addSelectionListener(new SelectionAdapter() {
 
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                enableUserPassword(((Button) e.getSource()).getSelection());
-            }
-        });
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				enableUserPassword(((Button) e.getSource()).getSelection());
+			}
+		});
 
-        btnTestConnection.addSelectionListener(new SelectionAdapter() {
+		btnTestConnection.addSelectionListener(new SelectionAdapter() {
 
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                DatabaseConnection dbConn = getDatabaseConnection();
-                try {
-                    if (dbConn == null) {
-                        setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL,
-                                StringConstants.DIA_MSG_CONNECTION_EMPTY), ColorUtil.getTextErrorColor());
-                        return;
-                    }
-                    dbConn.getConnection();
-                    if (!dbConn.isAlive()) {
-                        setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL,
-                                StringConstants.DIA_LBL_CONNECTION_CLOSED), ColorUtil.getTextErrorColor());
-                        return;
-                    }
-                    setStatusLabel(StringConstants.DIA_LBL_TEST_STATUS_SUCCESS, ColorUtil.getTextSuccessfulColor());
-                } catch (SQLException ex) {
-                    setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL, ex.getMessage()),
-                            ColorUtil.getTextErrorColor());
-                } finally {
-                    if (dbConn != null) {
-                        dbConn.close();
-                    }
-                }
-            }
-        });
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ClassLoader oldClassLoader = null;
+				DatabaseConnection dbConn = getDatabaseConnection();
+				
+				try {
+					oldClassLoader = Thread.currentThread().getContextClassLoader();
+					// fetch data and load into table
+					URLClassLoader projectClassLoader = ProjectController.getInstance()
+							.getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
+					Thread.currentThread().setContextClassLoader(projectClassLoader);
+
+					if (dbConn == null) {
+						setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL,
+								StringConstants.DIA_MSG_CONNECTION_EMPTY), ColorUtil.getTextErrorColor());
+						return;
+					}
+					dbConn.getConnection();
+					if (!dbConn.isAlive()) {
+						setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL,
+								StringConstants.DIA_LBL_CONNECTION_CLOSED), ColorUtil.getTextErrorColor());
+						return;
+					}
+					setStatusLabel(StringConstants.DIA_LBL_TEST_STATUS_SUCCESS, ColorUtil.getTextSuccessfulColor());
+				} catch (SQLException | MalformedURLException | CoreException ex) {
+					setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_TEST_STATUS_FAIL, ex.getMessage()),
+							ColorUtil.getTextErrorColor());
+				} finally {
+					if (dbConn != null) {
+						dbConn.close();
+					}
+					if (oldClassLoader != null) {
+						Thread.currentThread().setContextClassLoader(oldClassLoader);
+					}
+				}
+			}
+		});
 
         lblStatus.addMouseListener(new MouseAdapter() {
 
@@ -225,14 +251,16 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
     private DatabaseConnection getDatabaseConnection() {
         String user = null;
         String password = null;
+        String driverClassName = null;
         if (chkSecureUserPassword.getSelection()) {
             user = txtUser.getText();
             password = txtPassword.getText();
+            driverClassName = txtDriverClassName.getText();
         }
         if (!StringUtils.startsWithIgnoreCase(txtConnectionURL.getText(), "jdbc")) {
             return null;
         }
-        return new DatabaseConnection(txtConnectionURL.getText(), user, password);
+        return new DatabaseConnection(txtConnectionURL.getText(), user, password, driverClassName);
     }
 
     private void setStatusLabel(String msg, Color msgColor) {
@@ -249,6 +277,7 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
             txtUser.setText(StringUtils.defaultString(dbSettings.getUser()));
             txtPassword.setText(StringUtils.defaultString(dbSettings.getPassword()));
             txtConnectionURL.setText(StringUtils.defaultString(dbSettings.getUrl()));
+            txtDriverClassName.setText(StringUtils.defaultString(dbSettings.getDriverClassName()));
             enableUserPassword(chkSecureUserPassword.getSelection());
         } catch (IOException e) {
             setStatusLabel(e.getMessage(), ColorUtil.getTextErrorColor());
@@ -280,6 +309,7 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
         dbSettings.setUser(txtUser.getText());
         dbSettings.setPassword(txtPassword.getText());
         dbSettings.setUrl(txtConnectionURL.getText());
+        dbSettings.setDriverClassName(txtDriverClassName.getText());
         try {
             PropertySettingStoreUtil.saveExternalSettings(PROJECT_DIR, SETTING_NAME, dbSettings.getSettings(),
                     com.kms.katalon.composer.testdata.constants.StringConstants.DIA_DB_SETTING_COMMENT);

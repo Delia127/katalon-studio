@@ -176,7 +176,7 @@
 								</artifact>
 								<artifact>
 									<!-- http://dev.mysql.com/downloads/connector/j/ -->
-									<id>mysql:mysql-connector-java:5.1.38</id>
+									<id>mysql:mysql-connector-java:8.0.17</id>
 								</artifact>
 								<artifact>
 									<!-- http://go.microsoft.com/fwlink/?LinkId=245496 -->
