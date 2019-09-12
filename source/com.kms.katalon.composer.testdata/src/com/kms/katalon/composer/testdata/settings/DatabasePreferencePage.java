@@ -40,6 +40,9 @@ import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+
 public class DatabasePreferencePage extends PreferencePageWithHelp {
 
     private static final String PROJECT_DIR = ProjectController.getInstance().getCurrentProject().getFolderLocation();
