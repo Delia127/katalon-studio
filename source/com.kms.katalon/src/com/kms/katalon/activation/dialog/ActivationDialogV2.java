@@ -43,6 +43,7 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsOrganizationRole;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.license.models.License;
 import com.kms.katalon.logging.LogUtil;
 
 public class ActivationDialogV2 extends AbstractDialog {
@@ -82,7 +83,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private String machineId;
 
-    private String license;
+    private License license;
 
     private Link lnkAgreeTerm;
 
@@ -171,7 +172,7 @@ public class ActivationDialogV2 extends AbstractDialog {
                     UISynchronizeService.syncExec(() -> {
                         StringBuilder errorMessage = new StringBuilder();
                         license = ActivationInfoCollector.activate(username, password, machineId, errorMessage);
-                        if (!license.isEmpty()) {
+                        if (license != null) {
                             getOrganizations();
                             setProgressMessage("", false);
                         } else {
@@ -205,7 +206,6 @@ public class ActivationDialogV2 extends AbstractDialog {
         AnalyticsOrganization organization = organizations.get(index);
         String email = txtEmail.getText();
         String password = txtPassword.getText();
-        String serverUrl = ApplicationInfo.getTestOpsServer();
 
         Executors.newFixedThreadPool(1).submit(() -> {
             UISynchronizeService
@@ -213,11 +213,6 @@ public class ActivationDialogV2 extends AbstractDialog {
             UISynchronizeService.syncExec(() -> {
                 try {
                     ActivationInfoCollector.markActivated(email, password, JsonUtil.toJson(organization), license);
-                    if (KatalonApplicationActivator.getFeatureActivator() != null) {
-                        String ksVersion = VersionUtil.getCurrentVersion().getVersion();
-                        Long orgId = organization.getId();
-                        ActivationInfoCollector.activateFeatures(serverUrl, email, password, orgId, ksVersion);
-                    }
                     close();
                     Program.launch(MessageConstants.URL_KATALON_ENTERPRISE);
                 } catch (Exception e) {

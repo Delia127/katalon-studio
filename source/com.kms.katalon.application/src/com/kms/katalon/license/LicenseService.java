@@ -1,6 +1,8 @@
 package com.kms.katalon.license;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
@@ -28,21 +30,24 @@ public class LicenseService {
     public License parseJws(String jws) throws InvalidKeySpecException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         LicenseHelper licenseHelper = LicenseHelper.getInstance();
         Map<String, Claim> claims = licenseHelper.parseJws(jws);
-        return getLicenseFromClaims(claims);
+        return getLicenseFromClaims(claims, jws);
     }
     
     public License parseJwsFromFile(String filename) throws InvalidKeySpecException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
-        LicenseHelper licenseHelper = LicenseHelper.getInstance();
-        Map<String, Claim> claims = licenseHelper.parseJwsFromFile(filename);
-        return getLicenseFromClaims(claims);
+        String jws = new String(Files.readAllBytes(Paths.get(filename)));
+        return parseJws(jws);
     }
     
-    private License getLicenseFromClaims(Map<String, Claim> claims) throws IOException {
+    private License getLicenseFromClaims(Map<String, Claim> claims, String jws) throws IOException {
         License license = new License();
         license.setExpirationDate(claims.get(LicenseConstants.EXPIRATION_DATE).asDate());
         license.setMachineId(claims.get(LicenseConstants.MACHINE_ID).asString());
-        license.setOrganizationId(claims.get(LicenseConstants.ORGANIZATION_ID).asLong());
+        Claim orgId =  claims.get(LicenseConstants.ORGANIZATION_ID);
+        if (orgId != null) {
+            license.setOrganizationId(claims.get(LicenseConstants.ORGANIZATION_ID).asLong());
+        }
         license.setFeatures(claims.get(LicenseConstants.FEATURES).asList(Feature.class));
+        license.setJwtCode(jws);
         return license;
     }
 }
