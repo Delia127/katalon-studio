@@ -11,6 +11,7 @@ import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -56,6 +57,17 @@ public class ControlUtils {
         } else {
             ctrl.setEnabled(enabled);
         }
+    }
+
+    public static void recursivelySetColor(Control ctrl, Color foreground, Color background) {
+        if (ctrl instanceof Composite) {
+            Composite comp = (Composite) ctrl;
+            for (Control c : comp.getChildren()) {
+                recursivelySetColor(c, foreground, background);
+            }
+        }
+        ctrl.setForeground(foreground);
+        ctrl.setBackground(background);
     }
 
     public static void recursivelyAddMouseListener(Control ctrl, MouseAdapter mouseAdapter) {
