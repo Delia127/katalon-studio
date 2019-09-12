@@ -228,20 +228,40 @@ public class ActivationInfoCollector {
     }
     
     public static String activate(String userName, String password, String machineId, StringBuilder errorMessage) {
-        String result = "";
+        boolean activatedResult = false;
         try {
-            result = testOpsActivate(userName, password, machineId);
-            if (result.isEmpty() && errorMessage != null) {
+            String userInfo = collectActivationInfo(userName, password);
+            String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
+            if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
+                activatedResult = true;
+            } else if (errorMessage != null) {
                 errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
             }
-        } catch (Exception ex) {
-            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
-            if (errorMessage != null) {
-                errorMessage.delete(0, errorMessage.length());
-                errorMessage.append(ApplicationMessageConstants.NETWORK_ERROR);
-            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
         }
-        return result;
+        if (activatedResult) {
+            String result = "";
+            try {
+                result = testOpsActivate(userName, password, machineId);
+                if (!result.isEmpty()) {
+                    License license = LicenseService.getInstance().parseJws(result);
+                    if (!isValidLicense(license)) {
+                         errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+                    }
+                } else if (errorMessage != null) {
+                    errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+                }
+            } catch (Exception ex) {
+                LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+                if (errorMessage != null) {
+                    errorMessage.delete(0, errorMessage.length());
+                    errorMessage.append(ApplicationMessageConstants.NETWORK_ERROR);
+                }
+            }
+            return result;
+        }
+        return "";
     }
     
     private static String testOpsActivate(String userName, String password, String machineId) throws Exception {
