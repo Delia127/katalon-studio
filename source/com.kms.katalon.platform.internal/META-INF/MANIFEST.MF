@@ -35,7 +35,8 @@ Require-Bundle: com.katalon.platform,
  com.kms.katalon.composer.testsuite,
  net.sf.jopt-simple.jopt-simple,
  com.kms.katalon.composer.testsuite.collection,
- com.kms.katalon.composer.execution
+ com.kms.katalon.composer.execution,
+ com.kms.katalon.composer.objectrepository
 Bundle-Activator: com.kms.katalon.platform.internal.InternalPlatformPlugin
 Bundle-ActivationPolicy: lazy
 
