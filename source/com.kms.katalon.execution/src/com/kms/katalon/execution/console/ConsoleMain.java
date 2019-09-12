@@ -145,7 +145,7 @@ public class ConsoleMain {
                 //read license file and activate
                 boolean isActivated = false;
                 String licenseFile = null;
-                String environmentVariable = System.getenv(VARIABLE_ENVIRONMENT);
+                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_VAR);
                 if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
                     licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
                 } else if (environmentVariable != null) {
