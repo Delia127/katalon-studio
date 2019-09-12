@@ -7,8 +7,6 @@ trigger:
 - staging-*
 - release-*
 
-pr: none
-
 variables:
   BRANCH: $(Build.SourceBranchName)
   COMMIT_ID: $(Build.SourceVersion)
