@@ -82,7 +82,7 @@ public class ConsoleMain {
     
     public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
     
-    public static final String KATALON_ANALYTICS_LICENSE_FILE_SECOND_OPTION = "TESTOPS_LICENSE_FILE";
+    public static final String VARIABLE_ENVIRONMENT = "TESTOPS_LICENSE_FILE";
     
     public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
 
@@ -145,7 +145,7 @@ public class ConsoleMain {
                 //read license file and activate
                 boolean isActivated = false;
                 String licenseFile = null;
-                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_SECOND_OPTION);
+                String environmentVariable = System.getenv(VARIABLE_ENVIRONMENT);
                 if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
                     licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
                 } else if (environmentVariable != null) {
