@@ -3,6 +3,7 @@ package com.kms.katalon.composer.toolbar;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolControl;
 import org.eclipse.swt.SWT;
@@ -19,6 +20,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
+import com.kms.katalon.composer.handlers.KatalonStoreLoginHandler;
 import com.kms.katalon.composer.handlers.LogoutHandler;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.handlers.ManageKStoreCLIKeysHandler;
@@ -50,47 +52,45 @@ public class PluginStoreToolControl {
             protected Menu getMenu() {
                 Menu menu = new Menu(toolbar);
 
-                MenuItem userNameMenuItem = new MenuItem(menu, SWT.PUSH);
+                if (isLoggedIn()) {
+                    MenuItem userNameMenuItem = new MenuItem(menu, SWT.PUSH);
+                    String userName = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                    userNameMenuItem.setText("Logged in as " + userName);
 
-                String userName = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+                    MenuItem viewDashboardMenuItem = new MenuItem(menu, SWT.PUSH);
+                    viewDashboardMenuItem.setText("View Dashboard");
+                    viewDashboardMenuItem.addSelectionListener(new SelectionAdapter() {
 
-                if (userName == null || userName.isEmpty()) {
-                    userName = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE);
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            new ViewDashboardHandler().execute();
+                        }
+                    });
+
+                    MenuItem planGridExecutionMenuItem = new MenuItem(menu, SWT.PUSH);
+                    planGridExecutionMenuItem.setText("Plan Grid Execution");
+                    planGridExecutionMenuItem.addSelectionListener(new SelectionAdapter() {
+
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            new OpenPlanGridExecutionHandler().execute();
+                        }
+                    });
+
+                    new MenuItem(menu, SWT.SEPARATOR);
                 }
 
-                userNameMenuItem.setText("Logged in as " + userName);
+                if (isLoggedIn()) {
+                    MenuItem visitStoreMenuItem = new MenuItem(menu, SWT.PUSH);
+                    visitStoreMenuItem.setText("Visit Plugin Store");
+                    visitStoreMenuItem.addSelectionListener(new SelectionAdapter() {
 
-                MenuItem viewDashboardMenuItem = new MenuItem(menu, SWT.PUSH);
-                viewDashboardMenuItem.setText("View Dashboard");
-                viewDashboardMenuItem.addSelectionListener(new SelectionAdapter() {
-
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        new ViewDashboardHandler().execute();
-                    }
-                });
-                
-                MenuItem planGridExecutionMenuItem = new MenuItem(menu, SWT.PUSH);
-                planGridExecutionMenuItem.setText("Plan Grid Execution");
-                planGridExecutionMenuItem.addSelectionListener(new SelectionAdapter() {
-
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        new OpenPlanGridExecutionHandler().execute();
-                    }
-                });
-
-                new MenuItem(menu, SWT.SEPARATOR);
-
-                MenuItem visitStoreMenuItem = new MenuItem(menu, SWT.PUSH);
-                visitStoreMenuItem.setText("Visit Plugin Store");
-                visitStoreMenuItem.addSelectionListener(new SelectionAdapter() {
-
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        new SearchPluginsHandler().execute();
-                    }
-                });
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            new SearchPluginsHandler().execute();
+                        }
+                    });
+                }
 
                 MenuItem reloadPluginMenuItem = new MenuItem(menu, SWT.PUSH);
                 reloadPluginMenuItem.setText("Reload Plugins");
@@ -102,39 +102,57 @@ public class PluginStoreToolControl {
                     }
                 });
 
-                MenuItem managePluginMenuItem = new MenuItem(menu, SWT.PUSH);
-                managePluginMenuItem.setText("Manage Plugins");
-                managePluginMenuItem.addSelectionListener(new SelectionAdapter() {
+                if (isLoggedIn()) {
+                    MenuItem managePluginMenuItem = new MenuItem(menu, SWT.PUSH);
+                    managePluginMenuItem.setText("Manage Plugins");
+                    managePluginMenuItem.addSelectionListener(new SelectionAdapter() {
 
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        new ManagePluginsHandler().execute();
-                    }
-                });
-                
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            new ManagePluginsHandler().execute();
+                        }
+                    });
+                }
+
+                if (isLoggedIn()) {
+                    new MenuItem(menu, SWT.SEPARATOR);
+
+                    MenuItem manageApiKeyMenuItem = new MenuItem(menu, SWT.PUSH);
+                    manageApiKeyMenuItem.setText("Manage API Keys");
+                    manageApiKeyMenuItem.addSelectionListener(new SelectionAdapter() {
+
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            new ManageKStoreCLIKeysHandler().execute();
+                        }
+                    });
+                }
+
                 new MenuItem(menu, SWT.SEPARATOR);
 
-                MenuItem manageApiKeyMenuItem = new MenuItem(menu, SWT.PUSH);
-                manageApiKeyMenuItem.setText("Manage API Keys");
-                manageApiKeyMenuItem.addSelectionListener(new SelectionAdapter() {
+                if (isLoggedIn()) {
+                    MenuItem logoutMenuItem = new MenuItem(menu, SWT.PUSH);
+                    logoutMenuItem.setText("Reactivate");
+                    logoutMenuItem.addSelectionListener(new SelectionAdapter() {
 
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        new ManageKStoreCLIKeysHandler().execute();
-                    }
-                });
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            new LogoutHandler().execute();
+                        }
+                    });
+                }
 
-                new MenuItem(menu, SWT.SEPARATOR);
-                
-                MenuItem logoutMenuItem = new MenuItem(menu, SWT.PUSH);
-                logoutMenuItem.setText("Log out");
-                logoutMenuItem.addSelectionListener(new SelectionAdapter() {
+                if (!isLoggedIn()) {
+                    MenuItem loginMenuItem = new MenuItem(menu, SWT.PUSH);
+                    loginMenuItem.setText("Log in");
+                    loginMenuItem.addSelectionListener(new SelectionAdapter() {
 
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        new LogoutHandler().execute();
-                    }
-                });
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            new KatalonStoreLoginHandler().execute();
+                        }
+                    });
+                }
 
                 MenuItem helpMenuItem = new MenuItem(menu, SWT.PUSH);
                 helpMenuItem.setText("Help");
@@ -154,6 +172,20 @@ public class PluginStoreToolControl {
 
             @Override
             public void handleEvent(Event event) {
+                // PluginPreferenceStore store = new PluginPreferenceStore();
+                // if (store.hasReloadedPluginsBefore()) {
+                // new ReloadPluginsHandler().reloadPlugins(true);
+                // } else {
+                // eventBroker.post(EventConstants.WORKSPACE_PLUGIN_LOADED,
+                // null);
+                // }
+            }
+        });
+
+        eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
                 PluginPreferenceStore store = new PluginPreferenceStore();
                 if (store.hasReloadedPluginsBefore()) {
                     new ReloadPluginsHandler().reloadPlugins(true);
@@ -162,6 +194,11 @@ public class PluginStoreToolControl {
                 }
             }
         });
+    }
 
+    private boolean isLoggedIn() {
+        String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
+        String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
+        return StringUtils.isNotBlank(username) && StringUtils.isNotBlank(encryptedPassword);
     }
 }

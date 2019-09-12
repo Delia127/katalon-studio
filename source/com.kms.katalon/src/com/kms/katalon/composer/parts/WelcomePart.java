@@ -5,9 +5,11 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -15,6 +17,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -25,6 +28,7 @@ import com.kms.katalon.composer.components.impl.control.ScrollableComposite;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.core.application.LifeCycleManager;
 
 public class WelcomePart {
     @Inject
@@ -39,11 +43,20 @@ public class WelcomePart {
 
     private WelcomeRightPart startPageContent;
 
+    private WelcomeLeftPart leftComposite;
+
     @PostConstruct
     public void initialize(final Composite parent, MPart part) {
         this.part = part;
         createControls(parent);
         registerEventListeners();
+        eventBroker.subscribe(IThemeEngine.Events.THEME_CHANGED, new EventHandler() {
+
+            @Override
+            public void handleEvent(org.osgi.service.event.Event event) {
+                leftComposite.updateColor();
+            }
+        });
     }
 
     private void showThisPart() {
@@ -61,9 +74,6 @@ public class WelcomePart {
             @Override
             public void handleEvent(org.osgi.service.event.Event event) {
                 showThisPart();
-                if (startPageContent != null || !startPageContent.isDisposed()) {
-                    startPageContent.reloadRecentProjects();
-                }
             }
         });
     }
@@ -103,7 +113,7 @@ public class WelcomePart {
         container.setExpandHorizontal(true);
         container.setExpandVertical(true);
 
-        WelcomeLeftPart leftComposite = new WelcomeLeftPart(mainComposite, SWT.NONE);
+        leftComposite = new WelcomeLeftPart(mainComposite, SWT.NONE);
         leftComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 
         Composite rightComposite = new Composite(mainComposite, SWT.NONE);
@@ -133,7 +143,9 @@ public class WelcomePart {
 
     @Focus
     public void setFocus() {
-        mainComposite.forceFocus();
+        if (mainComposite != null) {
+            mainComposite.forceFocus();
+        }
     }
     
     @PreDestroy

@@ -23,7 +23,7 @@ public class TestCaseEntityImpl implements com.katalon.platform.api.model.TestCa
 
     @Override
     public String getFileLocation() {
-        return source.getId() + source.getFileExtension();
+        return source.getId();
     }
 
     @Override

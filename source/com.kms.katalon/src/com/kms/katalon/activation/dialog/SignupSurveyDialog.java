@@ -17,6 +17,8 @@ import org.apache.http.util.EntityUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -96,6 +98,12 @@ public class SignupSurveyDialog extends AbstractDialog {
         cbxFirstQuestion.setLayoutData(gdCombo);
         cbxFirstQuestion.setItems(USER_ROLE_OPTIONS);
         cbxFirstQuestion.setText(MessageConstants.SignupSurveyDialog_CBX_DEFAULT_OPTION);
+        cbxFirstQuestion.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                validateInput();
+            }
+        });
 
         Label lblSecondQuestion = new Label(questionComposite, SWT.NONE);
         lblSecondQuestion.setText(MessageConstants.SignupSurveyDialog_LBL_QUESTION_FOR_DOWNLOAD_PURPOSE);
@@ -105,6 +113,12 @@ public class SignupSurveyDialog extends AbstractDialog {
         cbxSecondQuestion.setLayoutData(gdCombo);
         cbxSecondQuestion.setItems(DOWNLOAD_PURPOSE_OPTIONS);
         cbxSecondQuestion.setText(MessageConstants.SignupSurveyDialog_CBX_DEFAULT_OPTION);
+        cbxSecondQuestion.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                validateInput();
+            }
+        });
 
         return container;
     }
@@ -122,6 +136,7 @@ public class SignupSurveyDialog extends AbstractDialog {
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, IDialogConstants.OK_ID, MessageConstants.SignupSurveyDialog_BTN_EXPLORE_KATALON, true);
+        getButton(IDialogConstants.OK_ID).setEnabled(false);
     }
 
     @Override
@@ -144,6 +159,15 @@ public class SignupSurveyDialog extends AbstractDialog {
         sendSignupAnswers();
 
         super.okPressed();
+    }
+    
+    private void validateInput() {
+        boolean isValid =  cbxFirstQuestion.getSelectionIndex() >= 0 && cbxSecondQuestion.getSelectionIndex() >= 0;
+        if (isValid) {
+            getButton(IDialogConstants.OK_ID).setEnabled(true);
+        } else {
+            getButton(IDialogConstants.OK_ID).setEnabled(false);
+        }
     }
     
     private void sendSignupAnswers() {

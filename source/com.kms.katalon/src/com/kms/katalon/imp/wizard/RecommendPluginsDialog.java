@@ -36,7 +36,7 @@ import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
 import com.kms.katalon.plugin.models.KStoreClientException;
 import com.kms.katalon.plugin.models.KStoreProduct;
-import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
+import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 import com.kms.katalon.plugin.service.PluginService;
 
@@ -86,39 +86,25 @@ public class RecommendPluginsDialog extends Dialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, OPEN_PROJECT_ID, StringConstants.DIA_OPEN_PROJECT, false);
-        createButton(parent, NEW_PROJECT_ID, StringConstants.DIA_NEW_PROJECT, true);
+        createButton(parent, OK, "Install", true);
     }
 
     public final void installPressed() {
-
         Job reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                KStoreUsernamePasswordCredentials[] credentials = new KStoreUsernamePasswordCredentials[1];
-                UISynchronizeService.syncExec(() -> {
-                    try {
-                        credentials[0] = RequireAuthorizationHandler.getUsernamePasswordCredentials();
-                        KStoreRestClient res = new KStoreRestClient(credentials[0]);
-                        res.postRecommended(idProduct);
-                        res.getRecommendPlugins()
-                                .stream()
-                                .forEach(p -> PluginService.getInstance().logPluginProductInfo(p));
-                        /*
-                         * try {
-                         * PluginService.getInstance().reloadPlugins(credentials[0], new NullProgressMonitor());
-                         * } catch (ReloadPluginsException | InterruptedException e) {
-                         * LoggerSingleton.logError(e);
-                         * }
-                         */
-                    } catch (KStoreClientAuthException e) {
-                        LoggerSingleton.logError(e);
-                    } catch (KStoreClientException e) {
-                        LoggerSingleton.logError(e);
-                    }
-                });
-                LoggerSingleton.logInfo("Reloaded plugins successfully.");
-                return Status.OK_STATUS;
+                KStoreBasicCredentials[] credentials = new KStoreBasicCredentials[1];
+                try {
+                    credentials[0] = RequireAuthorizationHandler.getBasicCredentials();
+                    KStoreRestClient res = new KStoreRestClient(credentials[0]);
+                    res.postRecommended(idProduct);
+
+                    LoggerSingleton.logInfo("Reloaded plugins successfully.");
+                    return Status.OK_STATUS;
+                } catch (KStoreClientAuthException | KStoreClientException e) {
+                    LoggerSingleton.logError(e);
+                    return Status.CANCEL_STATUS;
+                }
             }
         };
         reloadPluginsJob.addJobChangeListener(new JobChangeAdapter() {
@@ -162,8 +148,8 @@ public class RecommendPluginsDialog extends Dialog {
 
     public Control createStepArea(Composite parent) {
         try {
-            KStoreUsernamePasswordCredentials credentials = new KStoreUsernamePasswordCredentials();
-            credentials = RequireAuthorizationHandler.getUsernamePasswordCredentials();
+            KStoreBasicCredentials credentials = new KStoreBasicCredentials();
+            credentials = RequireAuthorizationHandler.getBasicCredentials();
             KStoreRestClient res = new KStoreRestClient(credentials);
             List<KStoreProduct> recommendList = res.getRecommendPlugins();
             List<Button> buttons = new ArrayList<Button>();
@@ -184,22 +170,24 @@ public class RecommendPluginsDialog extends Dialog {
 
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        for (int i = 0; i < idProduct.size(); i++) {
-                            if (buttons.get(i).getSelection() != true) {
-                                idProduct.remove(idProduct.get(i));
-                            } else if (buttons.get(i).getSelection() == true
+                        for (int i = 0; i < recommendList.size(); i++) {
+                            if (buttons.get(i).getSelection() == false) {
+                                idProduct.remove(recommendList.get(i).getId());
+                            }
+                            if (buttons.get(i).getSelection() == true
                                     && !idProduct.contains(recommendList.get(i).getId())) {
-                                idProduct.add(idProduct.get(i));
+                                idProduct.add(recommendList.get(i).getId());
                             }
                         }
                     }
-
+                   
                     @Override
                     public void widgetDefaultSelected(SelectionEvent e) {
 
                     }
                 });
             }
+           
         } catch (KStoreClientException e) {
             LoggerSingleton.logError(e);
         } catch (KStoreClientAuthException e) {

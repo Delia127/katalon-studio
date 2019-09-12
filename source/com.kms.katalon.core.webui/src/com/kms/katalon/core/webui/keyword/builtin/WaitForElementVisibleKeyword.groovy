@@ -68,7 +68,6 @@ public class WaitForElementVisibleKeyword extends WebUIAbstractKeyword {
         return waitForElementVisible(to,timeOut,flowControl)
     }
 
-    @CompileStatic
     public boolean waitForElementVisible(TestObject to, int timeOut, FailureHandling flowControl) throws StepFailedException {
         return WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false

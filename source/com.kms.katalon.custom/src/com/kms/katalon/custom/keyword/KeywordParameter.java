@@ -2,6 +2,7 @@ package com.kms.katalon.custom.keyword;
 
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.testobject.WindowsTestObject;
 
 public class KeywordParameter {
     private String name;
@@ -34,6 +35,10 @@ public class KeywordParameter {
 
     public boolean isTestObjectParam() {
         return TestObject.class.getName().equals(getType().getName());
+    }
+    
+    public boolean isWindowsTestObjectParam() {
+        return WindowsTestObject.class.getName().equals(getType().getName());
     }
 
     public boolean isFailureHandlingParam() {

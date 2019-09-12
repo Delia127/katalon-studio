@@ -15,6 +15,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.dialog.PermissionAccessAnalyticsDialog;
+import com.kms.katalon.integration.analytics.entity.AnalyticsOrganization;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -28,7 +29,7 @@ public class AnalyticsSettingProject {
 
     private AnalyticsSettingStore analyticsSettingStore;
 
-    private String serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
+    private String serverUrl = ApplicationInfo.getTestOpsServer();
 
     public AnalyticsSettingProject() {
         this.email = "";
@@ -70,12 +71,14 @@ public class AnalyticsSettingProject {
         List<AnalyticsProject> projects = new ArrayList<>();
         AnalyticsTokenInfo tokenInfo = AnalyticsAuthorizationHandler.getToken(serverUrl, email, password,
                 analyticsSettingStore);
-
-        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, email, password, tokenInfo,
+        
+        Long orgId = analyticsSettingStore.getOrganization().getId();
+        
+        teams = AnalyticsAuthorizationHandler.getTeams(serverUrl, orgId, tokenInfo,
                 new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
         AnalyticsTeam team = teams.get(AnalyticsAuthorizationHandler.getDefaultTeamIndex(analyticsSettingStore, teams));
 
-        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, email, password, team, tokenInfo,
+        projects = AnalyticsAuthorizationHandler.getProjects(serverUrl, team, tokenInfo,
                 new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
 
         analyticsSettingStore.setTeam(team);
@@ -96,7 +99,8 @@ public class AnalyticsSettingProject {
             if (tokenInfo == null) {
                 return;
             }
-            teams = AnalyticsAuthorizationHandler.getTeams(server, email, password, tokenInfo,
+            Long orgId = analyticsSettingStore.getOrganization().getId();
+            teams = AnalyticsAuthorizationHandler.getTeams(server, orgId, tokenInfo,
                     new ProgressMonitorDialog(Display.getCurrent().getActiveShell()));
             AnalyticsTeam currentTeam = analyticsSettingStore.getTeam();
             long currentTeamId = currentTeam.getId();
@@ -107,8 +111,8 @@ public class AnalyticsSettingProject {
                 }
             }
             PermissionAccessAnalyticsDialog.showErrorDialog(GlobalStringConstants.WARN,
-                    String.format(IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT, server + "/user/teams"));
-        } catch (IOException | GeneralSecurityException error) {
+            		IntegrationAnalyticsMessages.VIEW_ERROR_MSG_PROJ_USER_CAN_NOT_ACCESS_PROJECT);
+        } catch (Exception error) {
             LogUtil.logError(error);
         }
     }

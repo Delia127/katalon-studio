@@ -68,7 +68,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     private Button btnChkAttachment;
 
-    private Text txtRecipients, txtSubject, txtCc, txtBcc;
+    private Text txtSender, txtRecipients, txtSubject, txtCc, txtBcc;
 
     private Link lnkEditTemplate;
 
@@ -87,6 +87,8 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     private Button sendEmailFailedTestRadio;
     
     private Button sendEmailAllcasesRadio;
+    
+    private Button chckUseUsernameAsSender;
 
     public MailSettingsPage() {
         super();
@@ -134,6 +136,19 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             btnChkAttachment.setSelection(settingStore.isAddAttachment());
             updateReportFormatOptionsStatus();
 
+            chckUseUsernameAsSender.setSelection(settingStore.useUsernameAsSender());
+            
+            String sender = settingStore.getSender();
+            if (settingStore.useUsernameAsSender()) {
+                sender = txtUsername.getText();
+            }
+            txtSender.setText(sender);
+            
+            if (chckUseUsernameAsSender.getSelection()) {
+                txtSender.setEnabled(false);;
+            } else {
+                txtSender.setEnabled(true);
+            }
             txtRecipients.setText(settingStore.getRecipients(encrytionEnabled));
             txtCc.setText(settingStore.getEmailCc());
             txtBcc.setText(settingStore.getEmailBcc());
@@ -162,7 +177,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 EmailConfig emailConfig = new EmailConfig();
-                emailConfig.setFrom(txtUsername.getText());
+                emailConfig.setFrom(txtSender.getText());
                 emailConfig.setUsername(txtUsername.getText());
                 emailConfig.setHost(txtHost.getText());
                 emailConfig.setPassword(txtPassword.getText());
@@ -211,6 +226,28 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             @Override
             public void modifyText(ModifyEvent e) {
                 setValidationAndEnableSendEmail("username", validator.isValidEmail(txtUsername.getText()));
+                if (chckUseUsernameAsSender.getSelection()) {
+                    txtSender.setText(txtUsername.getText());
+                }
+            }
+        });
+        
+        chckUseUsernameAsSender.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (chckUseUsernameAsSender.getSelection()) {
+                    txtSender.setEnabled(false);
+                    txtSender.setText(txtUsername.getText());
+                } else {
+                    txtSender.setEnabled(true);
+                }
+            }
+        });
+        
+        txtSender.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent arg0) {
+                setValidationAndEnableSendEmail("sender", validator.isValidEmail(txtSender.getText()));
             }
         });
 
@@ -286,6 +323,8 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             settingStore.setEmailSubject(txtSubject.getText());
             settingStore.setEmailCc(txtCc.getText());
             settingStore.setEmailBcc(txtBcc.getText());
+            settingStore.setUseUsernameAsSender(chckUseUsernameAsSender.getSelection());
+            settingStore.setSender(txtSender.getText());
             settingStore.setRecipients(txtRecipients.getText(), encrytionEnabled);
             settingStore.setReportFormatOptions(getSelectedAttachmentOptions());
             settingStore.setSendEmailTestFailedOnly(sendEmailFailedTestRadio.getSelection());
@@ -299,6 +338,13 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     private void createPostExecuteGroup(Composite container) {
         Group postExecuteGroup = createGroup(container, ComposerExecutionMessageConstants.PREF_GROUP_LBL_EXECUTION_MAIL,
                 2, 1, GridData.FILL_HORIZONTAL);
+        
+        chckUseUsernameAsSender = new Button(postExecuteGroup, SWT.CHECK);
+        chckUseUsernameAsSender.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        chckUseUsernameAsSender.setText(ComposerExecutionMessageConstants.PREF_CHECK_USE_USERNAME_AS_SENDER);
+        
+        txtSender = createTextFieldWithLabel(postExecuteGroup, ComposerExecutionMessageConstants.PREF_LBL_REPORT_SENDER,
+                StringUtils.EMPTY, 1);
 
         txtRecipients = createTextFieldWithLabel(postExecuteGroup,
                 ComposerExecutionMessageConstants.PREF_LBL_REPORT_RECIPIENTS,
@@ -501,6 +547,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             validation.put("port", false);
             validation.put("username", false);
             validation.put("password", false);
+            validation.put("sender", false);
             validation.put("recipients", false);
             validation.put("cc", true);
             validation.put("bcc", true);

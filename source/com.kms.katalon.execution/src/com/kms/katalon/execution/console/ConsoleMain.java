@@ -25,6 +25,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 import com.katalon.platform.internal.api.PluginInstaller;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -35,12 +36,17 @@ import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.OverridingParametersConsoleOptionContributor;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
+import com.kms.katalon.execution.exception.ActivationException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
+import com.kms.katalon.execution.exception.InvalidLicenseException;
 import com.kms.katalon.execution.handler.ApiKeyHandler;
+import com.kms.katalon.execution.handler.OrganizationHandler;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.util.LocalInformationUtil;
+import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -72,9 +78,21 @@ public class ConsoleMain {
 
     public static final String KATALON_API_KEY_OPTION = "apiKey";
     
+    public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
+    
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
+    
+    public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
+
+    public static final String KATALON_ORGANIZATION_ID_SECOND_OPTION = "orgID";
+    
     public static final String EXECUTION_UUID_OPTION = "executionUUID";
     
     public static final String KATALON_ANALYTICS_PROJECT_ID = "analyticsProjectId";
+
+    public static final String BUILD_LABEL_OPTION = "buildLabel";
+    
+    public static final String BUILD_URL_OPTION = "buildURL";
 
     private ConsoleMain() {
         // hide constructor
@@ -97,27 +115,63 @@ public class ConsoleMain {
             List<String> addedArguments = Arrays.asList(arguments);
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
+            
+            String apiKeyValue = null;
+            if (options.has(KATALON_API_KEY_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
+            }
+            
+            if (options.has(KATALON_STORE_API_KEY_SECOND_OPTION)) {
+                apiKeyValue = String.valueOf(options.valueOf(KATALON_STORE_API_KEY_SECOND_OPTION));
+            }
+            
+            String orgIdValue = null;
+
+            if (options.has(KATALON_ORGANIZATION_ID_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_OPTION));
+                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
+            }
+
+            if (options.has(KATALON_ORGANIZATION_ID_SECOND_OPTION)) {
+                orgIdValue = String.valueOf(options.valueOf(KATALON_ORGANIZATION_ID_SECOND_OPTION));
+                OrganizationHandler.setOrgnizationIdToProject(orgIdValue);
+            }
+
+            LogUtil.logInfo("Activating...");
+            
+            if (!ActivationInfoCollector.isActivated()) {
+                //read license file and activate
+                boolean isActivated = false;
+                String licenseFile = null;
+                String environmentVariable = System.getenv(KATALON_ANALYTICS_LICENSE_FILE_OPTION);
+                if (options.has(KATALON_ANALYTICS_LICENSE_FILE_OPTION)) {
+                    licenseFile = String.valueOf(options.valueOf(KATALON_ANALYTICS_LICENSE_FILE_OPTION));
+                } else if (environmentVariable != null) {
+                    licenseFile = environmentVariable;
+                }
+    
+                if (!StringUtils.isBlank(licenseFile)) {
+                    String activationCode = FileUtils.readFileToString(new File(licenseFile));
+                    StringBuilder errorMessage = new StringBuilder();
+                    isActivated = ActivationInfoCollector.activateOffline(activationCode, errorMessage);
+                    if (!isActivated) {
+                        LogUtil.printErrorLine("Invalid license");
+                        throw new InvalidLicenseException("Invalid license");
+                    }
+                } else {
+                    if (!StringUtils.isBlank(orgIdValue)) {
+                        isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, Long.valueOf(orgIdValue));
+                    }
+                }
+                
+                
+                if (!isActivated) {
+                    LogUtil.printErrorLine("Failed to activate. Please activate Katalon to continue using.");
+                    throw new ActivationException("Failed to activate");
+                }
+            }
 
             
-            if (options.has(KATALON_API_KEY_OPTION)) {
-                String apiKeyValue = String.valueOf(options.valueOf(KATALON_API_KEY_OPTION));
-                ApiKeyHandler.setApiKeyToProject(apiKeyValue);
-                
-                //Store
-                reloadPlugins(apiKeyValue);
-                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
-                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
-                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
-            }
-
-            // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
-            if (options.has(INSTALL_PLUGIN_OPTION)){
-                installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
-                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
-                    .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
-                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
-            }
-
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
                         consoleOptionValueMap);
@@ -132,10 +186,34 @@ public class ConsoleMain {
                 }
             }
 
+            boolean isCliEnabled = FeatureServiceConsumer.getServiceInstance().canUse(TestOpsFeatureKey.CLI);
+            if (!isCliEnabled) {
+                LogUtil.printErrorLine("You don't have permission to use Katalon Studio in console mode.");
+                return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
+            } 
+
             ProjectEntity project = findProject(options);
-//            Trackings.trackOpenApplication(project,
-//                    !ActivationInfoCollector.isActivated(), "console");
+//          Trackings.trackOpenApplication(project,
+//                  !ActivationInfoCollector.isActivated(), "console");
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
+            
+            if (apiKeyValue != null) {
+                ApiKeyHandler.setApiKeyToProject(apiKeyValue);
+                reloadPlugins(apiKeyValue);
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+                        .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
+
+            // If a plug-in is installed, then add plug-in launcher option parser and re-accept the console options
+            if (options.has(INSTALL_PLUGIN_OPTION)){
+                installPlugin(String.valueOf(options.valueOf(INSTALL_PLUGIN_OPTION)));
+                consoleExecutor.addAndPrioritizeLauncherOptionParser(LauncherOptionParserFactory.getInstance().getBuilders().stream()
+                    .map(a -> a.getPluginLauncherOptionParser()).collect(Collectors.toList()));
+                acceptConsoleOptionList(parser, consoleExecutor.getAllConsoleOptions());
+            }
+            
+//            installBasicReportPluginIfNotAvailable();
 
             // Project information is necessary to accept overriding parameters for that project
             acceptConsoleOptionList(parser,
@@ -174,6 +252,17 @@ public class ConsoleMain {
                 .orElse(null);
         if (reloadMethod != null) {
             reloadMethod.invoke(handler, apiKey);
+        }
+    }
+    
+    private static void installBasicReportPluginIfNotAvailable() throws Exception {
+        Bundle katalonBundle = Platform.getBundle("com.kms.katalon");
+        Class<?> installBasicReportPluginHandlerClass = katalonBundle
+                .loadClass("com.kms.katalon.composer.handlers.InstallBasicReportPluginHandler");
+        Object handler = installBasicReportPluginHandlerClass.newInstance();
+        Method method = installBasicReportPluginHandlerClass.getMethod("installIfNotAvailable");
+        if (method != null) {
+            method.invoke(handler);
         }
     }
 

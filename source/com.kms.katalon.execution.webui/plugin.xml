@@ -54,4 +54,10 @@
             configuration="com.kms.katalon.execution.webui.configuration.contributor.FirefoxHeadlessRunConfigurationContributor">
       </client>
    </extension>
+   <extension
+         point="com.kms.katalon.execution.driverConnector">
+      <client
+            driver.connector="com.kms.katalon.execution.webui.driver.contributor.RemoteDriverConnectorContributor">
+      </client>
+   </extension>
 </plugin>

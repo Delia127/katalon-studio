@@ -48,4 +48,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-Vendor: KMS
 Import-Package: javax.inject,
  org.codehaus.groovy.control
+Export-Package: com.kms.katalon.composer.mobile.recorder.components
 

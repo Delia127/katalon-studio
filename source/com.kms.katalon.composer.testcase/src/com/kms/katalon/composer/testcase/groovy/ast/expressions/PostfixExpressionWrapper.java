@@ -31,7 +31,7 @@ public class PostfixExpressionWrapper extends ExpressionWrapper {
     public PostfixExpressionWrapper(PostfixExpressionWrapper postfixExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(postfixExpressionWrapper, parentNodeWrapper);
         this.operation = new TokenWrapper(postfixExpressionWrapper.getOperation(), this);
-        this.expression = postfixExpressionWrapper.copy(this);
+        this.expression = postfixExpressionWrapper.getExpression().copy(this);
     }
 
     public TokenWrapper getOperation() {

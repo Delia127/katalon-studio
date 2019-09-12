@@ -137,6 +137,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // ExecutionPreferencePage
     public static final String PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT = ComposerExecutionMessageConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT;
+    
+    public static final String PREF_LBL_LOG_TEST_STEPS = ComposerExecutionMessageConstants.PREF_LBL_LOG_TEST_STEPS;
 
     public static final String PREF_GRP_POST_EXECUTION_OPTIONS = ComposerExecutionMessageConstants.PREF_GRP_POST_EXECUTION_OPTIONS;
 

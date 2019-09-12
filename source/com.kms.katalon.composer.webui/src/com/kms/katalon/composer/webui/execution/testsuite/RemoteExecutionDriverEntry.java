@@ -66,6 +66,6 @@ public class RemoteExecutionDriverEntry extends TestExecutionDriverEntry {
 
     @Override
     public boolean requiresExtraConfiguration() {
-        return true;
+        return false;
     }
 }

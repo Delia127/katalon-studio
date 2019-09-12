@@ -22,7 +22,7 @@ public class ConsoleModeReloadPluginsHandler {
             List<ReloadItem> reloadPluginResults = PluginService.getInstance().reloadPlugins(credentials,
                     new NullProgressMonitor());
             reloadPluginResults.stream().forEach(result -> {
-                String pluginName = result.getPlugin().getProduct().getName();
+                String pluginName = result.getPlugin().getName();
                 if (result.isPluginInstalled()) {
                     LogUtil.printOutputLine(
                             MessageFormat.format(StringConstants.MSG_PLUGIN_HAS_BEEN_INSTALLED, pluginName));

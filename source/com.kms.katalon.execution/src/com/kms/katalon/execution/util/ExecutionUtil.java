@@ -89,6 +89,14 @@ public class ExecutionUtil {
     public static Boolean getAutoApplyNeighborXpaths(){
     	return getStore().isAutoApplyNeighborXpathsEnabled();
     }
+    
+    public static Boolean getDefaultSmartWaitMode(){
+        return getStore().getDefaultSmartWaitMode();
+    }
+    
+    public static Boolean getLogTestSteps() {
+    	return getStore().getLogTestSteps();
+    }
 
     public static int getDefaultImplicitTimeout() {
         return getStore().getElementTimeout();
@@ -129,6 +137,12 @@ public class ExecutionUtil {
 
         executionProperties.put(RunConfiguration.EXECUTION_DRIVER_PROPERTY,
                 getDriverExecutionProperties(driverConnectors));
+        
+        executionProperties.put(RunConfiguration.GLOBAL_SMART_WAIT_MODE,
+                ExecutionUtil.getDefaultSmartWaitMode().booleanValue());
+        
+        executionProperties.put(RunConfiguration.LOG_TEST_STEPS,
+        		ExecutionUtil.getLogTestSteps().booleanValue());
 
         propertyMap.put(RunConfiguration.EXECUTION_PROPERTY, executionProperties);
 

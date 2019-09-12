@@ -38,4 +38,5 @@ Require-Bundle: org.eclipse.swt,
  com.kms.katalon.logging,
  org.eclipse.osgi,
  com.kms.katalon.controller,
- com.kms.katalon.dal
+ com.kms.katalon.dal,
+ com.kms.katalon.core.mobile

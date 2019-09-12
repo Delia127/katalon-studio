@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.GlobalVariableController;
+import com.kms.katalon.core.util.internal.GroovyConstants;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -18,10 +19,16 @@ public class OverridingParametersConsoleOptionContributor implements ConsoleOpti
 					.getAllGlobalVariables(projectEntity);
 			
 			globalVariablesEntity.forEach(a -> {
+				String variableName = a.getName();
+				boolean isValidVariableName = GroovyConstants.isValidVariableName(variableName);
+				if (!isValidVariableName) {
+					return;
+				}
+				
 				overridingOptions.add(new StringConsoleOption() {
 					@Override
 					public String getOption() {
-						String name = OVERRIDING_GLOBAL_VARIABLE_PREFIX + a.getName();
+						String name = OVERRIDING_GLOBAL_VARIABLE_PREFIX + variableName;
 						return name;
 					}
 					public boolean isRequired() {

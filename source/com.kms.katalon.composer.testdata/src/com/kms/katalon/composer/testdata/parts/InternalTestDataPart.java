@@ -158,6 +158,11 @@ public class InternalTestDataPart extends TestDataMainPart {
         table.setToolTipText(StringUtils.EMPTY);
         ColumnViewerToolTipSupport.enableFor(tableViewer);
     }
+    
+    @Override
+    protected void initValues() {
+        // Do nothing for now
+    }
 
     private TableViewerColumn createColumnViewer(String name, int style, boolean resizable, int width,
             CellLabelProvider labelProvider, EditingSupport editingSupport) {

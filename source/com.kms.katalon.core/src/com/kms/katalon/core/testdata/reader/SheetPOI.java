@@ -4,8 +4,15 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.poi.ss.format.CellDateFormatter;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -13,7 +20,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.testdata.ExcelData;
-import com.kms.katalon.core.testdata.decorator.TestDataCellDecorator;
 
 public class SheetPOI extends ExcelData {
     private static final int COLUMN_HEADER_ROW_NUMBER = 0;
@@ -92,7 +98,7 @@ public class SheetPOI extends ExcelData {
         return getCellAt(col, row + getHeaderRowIdx());
     }
     
-    private Cell getCellAt(int col, int row) {
+    private Object getCellAt(int col, int row) {
         Row curRow = sheet.getRow(row);
 
         if (curRow == null) {
@@ -104,7 +110,11 @@ public class SheetPOI extends ExcelData {
         if (curCell == null) {
             return null;
         }
-        return curCell;
+        String readAsString = this.getProperty("readAsString");
+        if (readAsString == null || (Boolean.valueOf(readAsString).booleanValue())) {
+            return decorateExcelCellAsString(workbook, curCell);
+        }
+        return decorateExcelCellAsIs(workbook, curCell);
     }
 
     protected int getColumnIndex(String colName) throws IOException {
@@ -167,7 +177,7 @@ public class SheetPOI extends ExcelData {
             columnNames = new String[maxColumnCounts];
             if (hasHeaders) {
                 for (int i = 0; i < maxColumnCounts; i++) {
-                    columnNames[i] = TestDataCellDecorator.decorateExcelCellAsString(workbook, getCellAt(i, COLUMN_HEADER_ROW_NUMBER));
+                    columnNames[i] = (String) getCellAt(i, COLUMN_HEADER_ROW_NUMBER);
                 }
             }
         }
@@ -235,5 +245,133 @@ public class SheetPOI extends ExcelData {
     @Override
     public int getColumnNumbers() throws IOException {
         return getColumnCount();
+    }
+    
+    private String decorateExcelCellAsString(Workbook workbook, Cell curCell) {
+
+        if (curCell == null) {
+            return "";
+        }
+
+        switch (curCell.getCellType()) {
+            case Cell.CELL_TYPE_STRING: {
+                return curCell.getRichStringCellValue().getString();
+            }
+            case Cell.CELL_TYPE_NUMERIC: {
+                DataFormatter formatter = new DataFormatter(Locale.getDefault());
+
+                return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
+                        getFormatString(curCell.getCellStyle().getDataFormatString()));
+            }
+            case Cell.CELL_TYPE_BOOLEAN: {
+                return Boolean.toString(curCell.getBooleanCellValue());
+            }
+            case Cell.CELL_TYPE_FORMULA: {
+                // try with String
+                FormulaEvaluator formulaEval = null;
+                try {
+                    formulaEval = workbook.getCreationHelper().createFormulaEvaluator();
+                    CellValue cellVal = formulaEval.evaluate(curCell);
+
+                    switch (cellVal.getCellType()) {
+                        case Cell.CELL_TYPE_BLANK:
+                            return "";
+                        case Cell.CELL_TYPE_STRING:
+                            return cellVal.getStringValue();
+                        case Cell.CELL_TYPE_NUMERIC:
+                            DataFormatter formatter = new DataFormatter(Locale.getDefault());
+
+                            return formatter.formatRawCellContents(cellVal.getNumberValue(), -1,
+                                    getFormatString(curCell.getCellStyle().getDataFormatString()));
+                        default:
+                            return cellVal.formatAsString();
+                    }
+                } catch (Exception ex) {
+                    // Try another way
+                }
+
+                // Try with number
+                try {
+                    if (DateUtil.isCellDateFormatted(curCell)) {
+                        String cellFormatString = curCell.getCellStyle().getDataFormatString();
+                        return new CellDateFormatter(cellFormatString).simpleFormat(curCell.getDateCellValue());
+                    } else {
+                        DataFormatter formatter = new DataFormatter(Locale.getDefault());
+
+                        return formatter.formatRawCellContents(curCell.getNumericCellValue(), -1,
+                                getFormatString(curCell.getCellStyle().getDataFormatString()));
+                    }
+                } catch (Exception ex) {
+                    // Try another way
+                }
+
+                return curCell.getStringCellValue();
+            }
+            default:
+                return curCell.getStringCellValue();
+        }
+    }
+
+    private Object decorateExcelCellAsIs(Workbook workbook, Cell curCell) {
+
+        if (curCell == null) {
+            return null;
+        }
+
+        switch (curCell.getCellType()) {
+            case Cell.CELL_TYPE_STRING: {
+                return curCell.getRichStringCellValue().getString();
+            }
+            case Cell.CELL_TYPE_NUMERIC: {
+                return curCell.getNumericCellValue();
+            }
+            case Cell.CELL_TYPE_BOOLEAN: {
+                return curCell.getBooleanCellValue();
+            }
+            case Cell.CELL_TYPE_FORMULA: {
+                // try with String
+                FormulaEvaluator formulaEval = null;
+                try {
+                    formulaEval = workbook.getCreationHelper().createFormulaEvaluator();
+                    CellValue cellVal = formulaEval.evaluate(curCell);
+
+                    switch (cellVal.getCellType()) {
+                        case Cell.CELL_TYPE_BLANK:
+                            return "";
+                        case Cell.CELL_TYPE_STRING:
+                            return cellVal.getStringValue();
+                        case Cell.CELL_TYPE_NUMERIC:
+                            return cellVal.getNumberValue();
+                        default:
+                            return cellVal.formatAsString();
+                    }
+                } catch (Exception ex) {
+                    // Try another way
+                }
+
+                // Try with number
+                try {
+                    if (DateUtil.isCellDateFormatted(curCell)) {
+                        return curCell.getDateCellValue();
+                    } else {
+                        return curCell.getNumericCellValue();
+                    }
+                } catch (Exception ex) {
+                    // Try another way
+                }
+
+                return curCell.getStringCellValue();
+            }
+            default:
+                return curCell.getStringCellValue();
+        }
+    }
+
+    private static String getFormatString(String rawFormatString) {
+        if (rawFormatString == null || rawFormatString.isEmpty()) {
+            return rawFormatString;
+        }
+
+        return rawFormatString.replace("_(*", "_(\"\"*");
     }
 }

@@ -23,11 +23,13 @@ window.neighborXpathsGenerator = window.neighborXpathsGenerator || {};
 var locatorBuilders = new LocatorBuilders(window);
 var commandFactory;
 
+// load extension scripts
 var extensionsLoaded = false;
 
 if (!extensionsLoaded) {
 	extensionsLoaded = true;
 	chrome.storage.local.get('extensions', function(result) {
+
 		extensions = result.extensions;
 		if (extensions) {
 			var extensionScripts = Object.values(extensions);
@@ -38,7 +40,7 @@ if (!extensionsLoaded) {
 			}
         }
 
-        // KAT-BEGIN Selenium IDE
+        // KAT-BEGIN register Selenium IDE commands
         commandFactory = new CommandHandlerFactory();
         commandFactory.registerAll(selenium);
         // KAT-END
@@ -64,10 +66,10 @@ function doCommands(request, sender, sendResponse, type) {
             selenium["doDomWait"]("", selenium.preprocessParameter(""));
             sendResponse({ dom_time: window.sideex_new_page });
         } else if (request.commands === 'captureEntirePageScreenshot' || request.commands === 'captureEntirePageScreenshotAndWait') {
-            browser.runtime.sendMessage({ 
+            browser.runtime.sendMessage({
                 captureEntirePageScreenshot: true
             }).then(function(captureResponse) {
-                sendResponse({ 
+                sendResponse({
                     result: 'success',
                     capturedScreenshot: captureResponse.image,
                     capturedScreenshotTitle: request.target
@@ -78,7 +80,7 @@ function doCommands(request, sender, sendResponse, type) {
             if (selenium["do" + upperCase] != null) {
                 try {
                     document.body.setAttribute("SideeXPlayingFlag", true);
-                    let returnValue = selenium["do"+upperCase](request.target,selenium.preprocessParameter(request.value));                  
+                    let returnValue = selenium["do"+upperCase](request.target,selenium.preprocessParameter(request.value));
                     if (returnValue instanceof Promise) {
                         // The command is a asynchronous function
                         returnValue.then(function(value) {
@@ -105,7 +107,7 @@ function doCommands(request, sender, sendResponse, type) {
                     sendResponse({result: e.message});
                 }
             } else {
-                // KAT-BEGIN Selenium IDE
+                // KAT-BEGIN handle Selenium IDE commands
                 try {
                     var command = request;
                     if (!command.command) {
@@ -185,7 +187,7 @@ function doCommands(request, sender, sendResponse, type) {
     }
 }
 
-// KAT-BEGIN Selenium IDE
+// KAT-BEGIN handle Selenium IDE wait commands
 function continueTestWhenConditionIsTrue(waitForCondition, sendResponse, result) {
     try {
         if (waitForCondition == null) {

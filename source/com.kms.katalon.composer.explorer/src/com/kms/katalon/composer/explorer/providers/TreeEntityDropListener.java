@@ -1,49 +1,78 @@
 package com.kms.katalon.composer.explorer.providers;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.inject.Inject;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.internal.core.PackageFragment;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TreeDropTargetEffect;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TreeItem;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.SystemFileTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WindowsElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityProcessingUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
+import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.SystemFileController;
+import com.kms.katalon.controller.WindowsElementController;
+import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WindowsElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TreeEntityDropListener extends TreeDropTargetEffect {
+    @Inject
     private IEventBroker eventBroker;
 
     private ITreeEntity lastMovedTreeEntity;
+    
+    TreeViewer treeViewer = null;
 
     public TreeEntityDropListener(TreeViewer treeViewer, IEventBroker eventBroker) {
         super(treeViewer.getTree());
         this.eventBroker = eventBroker;
+        this.treeViewer = treeViewer;
     }
 
     @Override
@@ -57,12 +86,94 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity);
                 eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, lastMovedTreeEntity);
             }
+            else {
+                TreeItem[] selection = treeViewer.getTree().getSelection();
+                List<ITreeEntity> treeEntity = new ArrayList<ITreeEntity>();
+                for (TreeItem item : selection) {
+                    treeEntity.add((ITreeEntity) item.getData());
+                }
+                event.data = treeEntity.toArray(new ITreeEntity[treeEntity.size()]);
+                ITreeEntity[] treeEntities = (ITreeEntity[]) event.data;
+                PackageTreeEntity targetTreeEntity = getDragDestinationPackage(event);
+                PackageFragment packageFragment = (PackageFragment) targetTreeEntity.getObject();
+                IFile file = null;
+                for (int i = 0; i < treeEntities.length; i++) {
+                    ICompilationUnit unit = (ICompilationUnit) treeEntities[i].getObject();
+                    file = (IFile) unit.getResource();
+                }
+                moveKeyword(file, packageFragment, null);
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetTreeEntity.getParent());
+                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetTreeEntity);
+            }
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
                     MessageFormat.format(StringConstants.LIS_ERROR_MSG_CANNOT_MOVE_THE_SELECTION, e.getMessage()));
         }
     }
 
+    public static IFile moveKeyword(IFile keywordFile, IPackageFragment targetPackageFragment, String newName)
+            throws Exception {
+        if (keywordFile == null || targetPackageFragment == null) {
+            return null;
+        }
+        String cutKeywordFilePath = getPastedFilePath(keywordFile, targetPackageFragment, newName);
+
+        GroovyUtil.moveKeyword(keywordFile, targetPackageFragment, newName);
+        refactorReferencingTestSuites(ProjectController.getInstance().getCurrentProject(), keywordFile,
+                keywordFile.getLocation().toString(), cutKeywordFilePath);
+        return keywordFile;
+    }
+    
+    private static void refactorReferencingTestSuites(ProjectEntity project, IFile keyword, String oldKeywordLocation,
+            String newKeywordLocation) throws Exception {
+        // if test case changed its name, update reference Location in test
+        // suites that refer to it
+        List<TestCaseEntity> lstTestCases = FolderFileServiceManager
+                .getDescendantTestCasesOfFolder(FolderFileServiceManager.getTestCaseRoot(project));
+        String constant = "keywords";
+        String packageName = project.getFolderLocation() + File.separator + constant + File.separator;
+        File projectFile = new File(packageName);
+        String oldRelativeKwLocation = oldKeywordLocation.substring(projectFile.getAbsolutePath().length() + 1);
+        String oldRelativeTcId = FilenameUtils.removeExtension(oldRelativeKwLocation).replace("/", ".");
+        String newRelativeKwLocation = newKeywordLocation.substring(constant.length() + 1);
+        String newRelativeTcId = FilenameUtils.removeExtension(newRelativeKwLocation).replace("/", ".");
+
+        for (TestCaseEntity testCase : lstTestCases) {
+            ICompilationUnit script = GroovyGuiUtil.getOrCreateGroovyScriptForTestCase(testCase);
+            String str = "";
+            File file = new File(script.getResource().getLocation().toString());
+            str = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            if (str.contains("CustomKeywords")) {
+                String newString = str.replace(oldRelativeTcId, newRelativeTcId);
+                GroovyGuiUtil.addContentToTestCase(testCase, newString);
+                TestCaseTreeEntity testcaseTreeEntity = TreeEntityUtil.getTestCaseTreeEntity(testCase, project);
+                EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                        testcaseTreeEntity.getParent());
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM,
+                        testcaseTreeEntity);
+            }
+        }
+    }
+
+    private static String getPastedFilePath(IFile keywordFile, IPackageFragment targetPackageFragment, String newName) {
+        String keywordRootPath = targetPackageFragment.getParent().getElementName() + IPath.SEPARATOR;
+        String packageName = targetPackageFragment.getElementName();
+        String packagePath = keywordRootPath + (packageName.isEmpty() ? packageName
+                : packageName.replaceAll("[.]", String.valueOf(IPath.SEPARATOR)) + IPath.SEPARATOR);
+        String kwFileName = (newName != null) ? newName + GroovyConstants.GROOVY_FILE_EXTENSION : keywordFile.getName();
+        String copiedKeywordFilePath = packagePath + kwFileName;
+        return copiedKeywordFilePath;
+    }
+
+    private PackageTreeEntity getDragDestinationPackage(DropTargetEvent event) throws Exception {
+        Object dest = event.item.getData();
+        if (dest instanceof PackageTreeEntity) {
+            return (PackageTreeEntity) dest;
+        } else {
+            return (PackageTreeEntity) ((ITreeEntity) dest).getParent();
+        }
+    }
+    
     private FolderTreeEntity getDropDestinationFolder(DropTargetEvent event) throws Exception {
         Object dest = event.item.getData();
         if (dest instanceof FolderTreeEntity) {
@@ -139,9 +250,23 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                if (newSystemFile != null) {
                    lastMovedTreeEntity = new SystemFileTreeEntity(newSystemFile, targetTreeEntity);
                }
-
+            } else if (treeEntity instanceof WindowsElementTreeEntity) {
+                moveWindowsObject((WindowsElementEntity) treeEntity.getObject(), targetTreeEntity);
             }
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity.getParent());
+        }
+    }
+    
+    private void moveWindowsObject(WindowsElementEntity windowsElement, FolderTreeEntity targetFolder) throws Exception {
+        String oldId = windowsElement.getIdForDisplay();
+        WindowsElementEntity newsWindowsElement = WindowsElementController.getInstance()
+                .moveWindowsElementEntity(windowsElement, targetFolder.getObject());
+        if (newsWindowsElement != null) {
+            lastMovedTreeEntity = new WindowsElementTreeEntity(newsWindowsElement,
+                    targetFolder);
+
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_CUT_PASTED_SELECTED_ITEM,
+                    new Object[] { oldId, newsWindowsElement.getIdForDisplay() });
         }
     }
 

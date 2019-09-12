@@ -59,7 +59,7 @@ public class NewCheckpointWizardDialog extends WizardDialog {
 
     public NewCheckpointWizardDialog(Shell parentShell, IWizard newWizard) {
         super(parentShell, newWizard);
-        setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.APPLICATION_MODAL | getDefaultOrientation());
+        setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.APPLICATION_MODAL | getDefaultOrientation() | SWT.RESIZE);
         addListeners();
     }
 

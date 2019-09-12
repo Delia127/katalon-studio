@@ -242,7 +242,7 @@ section#main {
     font-weight: normal;
 }
 
-.sub_btn#help, #export {
+.sub_btn#github-repo, #export {
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
 }
@@ -253,6 +253,12 @@ section#main {
 
 .sub_btn#help i::before {
     background-image: url(/katalon/images/SVG/help-icon.svg);
+}
+
+.sub_btn#github-repo img {
+    width: 16px;
+    height: 16px;
+    margin-right: 0;
 }
 
 /* #playSuites{

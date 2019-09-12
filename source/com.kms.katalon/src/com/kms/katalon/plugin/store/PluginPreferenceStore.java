@@ -11,7 +11,7 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.KatalonStoreToken;
-import com.kms.katalon.plugin.models.KStoreUsernamePasswordCredentials;
+import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.util.CryptoUtil;
@@ -43,11 +43,11 @@ public class PluginPreferenceStore {
         CachedPluginInfo.setPluginLocation(plugin, location);
     }
     
-    public KStoreUsernamePasswordCredentials getKStoreUsernamePasswordCredentials() throws GeneralSecurityException, IOException {
+    public KStoreBasicCredentials getKStoreBasicCredentials() throws GeneralSecurityException, IOException {
         String username = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
         String encryptedPassword = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_PASSWORD);
         String password = CryptoUtil.decode(CryptoUtil.getDefault(encryptedPassword));
-        KStoreUsernamePasswordCredentials credentials = new KStoreUsernamePasswordCredentials();
+        KStoreBasicCredentials credentials = new KStoreBasicCredentials();
         credentials.setUsername(username);
         credentials.setPassword(password);
         return credentials;

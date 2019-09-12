@@ -107,6 +107,10 @@ public class LocalInformationUtil {
                 markedArgs.add("-apiKey=******");
                 continue;
             }
+            if (arg.startsWith("-apikey=")) {
+                markedArgs.add("-apikey=******");
+                continue;
+            }
             if (arg.startsWith("-username=")) {
                 markedArgs.add("-username=******");
                 continue;

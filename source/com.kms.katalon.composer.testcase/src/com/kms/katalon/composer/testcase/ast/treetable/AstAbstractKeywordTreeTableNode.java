@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.ast.editors.InputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.WindowsTestObjectCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
@@ -43,7 +44,7 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
     protected ExpressionStatementWrapper parentStatement;
 
     protected BinaryExpressionWrapper binaryExpression;
-    
+
     private ITestCasePart testCasePart;
 
     public AstAbstractKeywordTreeTableNode(ExpressionStatementWrapper methodCallStatement,
@@ -155,9 +156,22 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
 
     @Override
     public CellEditor getCellEditorForTestObject(Composite parent) {
-        TestObjectCellEditor cellEditor = new TestObjectCellEditor(parent, getTestObjectText(), true);
-        cellEditor.setTestCasePart(getTestCasePart());
-        return cellEditor;
+        InputValueType inputValueType = AstValueUtil.getTypeValue(getTestObjectExpression());
+        switch (inputValueType) {
+            case TestObject: {
+                TestObjectCellEditor cellEditor = new TestObjectCellEditor(parent, getTestObjectText(), true);
+                cellEditor.setTestCasePart(getTestCasePart());
+                return cellEditor;
+            }
+            case WindowsObject: {
+                WindowsTestObjectCellEditor cellEditor = new WindowsTestObjectCellEditor(parent, getTestObjectText(),
+                        true);
+                cellEditor.setTestCasePart(getTestCasePart());
+                return cellEditor;
+            }
+            default:
+                return null;
+        }
     }
 
     @Override
@@ -241,12 +255,12 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
         }
         return changeExistingOutput(outputString);
     }
-    
+
     @Override
     public void setTestCasePart(ITestCasePart testCasePart) {
         this.testCasePart = testCasePart;
     }
-    
+
     @Override
     public ITestCasePart getTestCasePart() {
         return testCasePart;
@@ -356,14 +370,14 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
                 && methodCall.getObjectExpression() != null && KeywordController.getInstance()
                         .getBuiltInKeywordClassByName(methodCall.getObjectExpressionAsString()) != null;
     }
-    
+
     public String getTestObjectTooltipText(ASTNodeWrapper astObject) {
         if (astObject instanceof MethodCallExpressionWrapper) {
             return getTooltipForTestObjectArgument((MethodCallExpressionWrapper) astObject);
         }
         return ((ASTNodeWrapper) astObject).getText();
     }
-    
+
     public String getTooltipForTestObjectArgument(MethodCallExpressionWrapper methodCall) {
         return AstEntityInputUtil.getEntityRelativeIdFromMethodCall(methodCall);
     }

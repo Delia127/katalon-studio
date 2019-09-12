@@ -30,6 +30,7 @@ import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.testobject.WindowsTestObject;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -235,15 +236,38 @@ public class AstEntityInputUtil {
         }
         return ObjectRepository.getTestObjectId(getEntityRelativeIdFromMethodCall(methodCallExpression));
     }
+    
+    public static String findWindowsTestObjectIdFromFindTestObjectMethodCall(
+            MethodCallExpressionWrapper methodCallExpression) {
+        if (!methodCallExpression.isFindWindowsObjectMethodCall()) {
+            return null;
+        }
+        return ObjectRepository.getTestObjectId(getEntityRelativeIdFromMethodCall(methodCallExpression));
+    }
 
     public static MethodCallExpressionWrapper createNewFindTestObjectMethodCall(ASTNodeWrapper parentNode) {
         return createNewFindTestObjectMethodCall(null, parentNode);
+    }
+    
+    public static MethodCallExpressionWrapper createNewFindWindowsObjectMethodCall(ASTNodeWrapper parentNode) {
+        return createNewFindWindowsObjectMethodCall(null, parentNode);
     }
 
     public static MethodCallExpressionWrapper createNewFindTestObjectMethodCall(String testObjectId,
             ASTNodeWrapper parentNode) {
         MethodCallExpressionWrapper objectMethodCall = MethodCallExpressionWrapper
                 .newLocalMethod(MethodCallExpressionWrapper.FIND_TEST_OBJECT_METHOD_NAME, parentNode);
+        ArgumentListExpressionWrapper argument = new ArgumentListExpressionWrapper(objectMethodCall);
+                argument.addExpression(
+                new ConstantExpressionWrapper(ObjectRepository.getTestObjectRelativeId(testObjectId), argument));
+        objectMethodCall.setArguments(argument);
+        return objectMethodCall;
+    }
+
+    public static MethodCallExpressionWrapper createNewFindWindowsObjectMethodCall(String testObjectId,
+            ASTNodeWrapper parentNode) {
+        MethodCallExpressionWrapper objectMethodCall = MethodCallExpressionWrapper
+                .newLocalMethod(MethodCallExpressionWrapper.FIND_WINDOWS_OBJECT_METHOD_NAME, parentNode);
         ArgumentListExpressionWrapper argument = new ArgumentListExpressionWrapper(objectMethodCall);
                 argument.addExpression(
                 new ConstantExpressionWrapper(ObjectRepository.getTestObjectRelativeId(testObjectId), argument));
@@ -272,23 +296,30 @@ public class AstEntityInputUtil {
         }
         return setEntityIdToMethodCall(methodCallExpression, checkpointValue);
     }
+    
+    private static boolean isAssignFromObjectClass(Class<?> objectClass, Class<?> clazz) {
+        if (objectClass == null || clazz == null) {
+            return false;
+        }
+
+        return objectClass.getName().equals(clazz.getName())
+        || objectClass.getSimpleName().equals(clazz.getSimpleName())
+        || objectClass.isAssignableFrom(clazz);
+    }
 
     public static boolean isTestObjectClass(ClassNodeWrapper classNode) {
-        return (TestObject.class.getName().equals(classNode.getTypeClass().getName())
-                || TestObject.class.getSimpleName().equals(classNode.getTypeClass().getSimpleName())
-                || TestObject.class.isAssignableFrom(classNode.getTypeClass()));
+        return isAssignFromObjectClass(TestObject.class, classNode.getTypeClass())
+                || isAssignFromObjectClass(WindowsTestObject.class, classNode.getTypeClass());
     }
 
     public static boolean isTestObjectClass(ClassNode classNode) {
-        return (TestObject.class.getName().equals(classNode.getTypeClass().getName())
-                || TestObject.class.getSimpleName().equals(classNode.getTypeClass().getSimpleName())
-                || TestObject.class.isAssignableFrom(classNode.getTypeClass()));
+        return isAssignFromObjectClass(TestObject.class, classNode.getTypeClass())
+                || isAssignFromObjectClass(WindowsTestObject.class, classNode.getTypeClass());
     }
 
     public static boolean isTestObjectClass(Class<?> clazz) {
-        return (TestObject.class.getName().equals(clazz.getName())
-                || TestObject.class.getSimpleName().equals(clazz.getSimpleName())
-                || TestObject.class.isAssignableFrom(clazz));
+        return isAssignFromObjectClass(TestObject.class, clazz)
+                || isAssignFromObjectClass(WindowsTestObject.class, clazz);
     }
 
     public static boolean isClassChildOf(String parentClassName, String childClassName) {
@@ -317,6 +348,10 @@ public class AstEntityInputUtil {
     }
 
     public static String getTextValueForTestObjectArgument(MethodCallExpressionWrapper methodCall) {
+        return getTextValueForTestArtifaceArgument(methodCall);
+    }
+    
+    public static String getTextValueForWindowsObjectArgument(MethodCallExpressionWrapper methodCall) {
         return getTextValueForTestArtifaceArgument(methodCall);
     }
 

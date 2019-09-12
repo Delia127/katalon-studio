@@ -33,6 +33,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.mobile.objectspy.actions.MobileActionMapping;
 import com.kms.katalon.composer.mobile.objectspy.components.KobitonAppComposite;
+import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionUtil;
 import com.kms.katalon.composer.mobile.recorder.components.MobileRecorderDialog;
@@ -54,6 +55,7 @@ import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenKobitonRecoderHandler {
@@ -80,12 +82,23 @@ public class OpenKobitonRecoderHandler {
             if (this.activeShell == null) {
                 this.activeShell = activeShell;
             }
+
+            boolean isIntegrationEnabled = KobitonPreferencesProvider.isKobitonIntegrationEnabled();
+            if (!isIntegrationEnabled) {
+                boolean confirmToConfigureKobiton = MessageDialog.openConfirm(activeShell, StringConstants.INFO,
+                        "Kobiton integration has not been enabled yet. Would you like to enable now?");
+                if (!confirmToConfigureKobiton) {
+                    return false;
+                }
+                eventBroker.post(EventConstants.KATALON_PREFERENCES,
+                        "com.kms.katalon.composer.preferences.GeneralPreferencePage/com.kms.katalon.composer.integration.kobiton.preferences");
+                return false;
+            }
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return false;
             }
-            recorderDialog = new MobileRecorderDialog(activeShell, 
-                    new KobitonAppComposite());
+            recorderDialog = new MobileRecorderDialog(activeShell, new KobitonAppComposite());
             Trackings.trackOpenMobileRecord();
             if (recorderDialog.open() != Window.OK) {
                 return false;

@@ -3,9 +3,6 @@ package com.kms.katalon.composer.components.wizard;
 import java.text.MessageFormat;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -36,8 +33,7 @@ public class NewNamePage extends WizardPage {
     private ITreeEntity treeEntity;
 
     public NewNamePage() {
-        super(NewNamePage.class.getSimpleName(), NEW_NAME_PAGE_TITLE,
-                JFaceResources.getImageRegistry().getDescriptor(TitleAreaDialog.DLG_IMG_TITLE_BANNER));
+        super(NewNamePage.class.getSimpleName(), NEW_NAME_PAGE_TITLE);
     }
 
     @Override
@@ -107,7 +103,7 @@ public class NewNamePage extends WizardPage {
     public boolean validateVariantName() {
         try {
             for (String containedName : ((RenameWizard) getWizard()).getExistingNames()) {
-                if (containedName.equalsIgnoreCase(txtName.getText())) {
+                if (containedName.equals(txtName.getText())) {
                     setErrorMessage(StringConstants.WIZ_NAME_ALREADY_EXISTS_IN_DIFFERENT_CASE);
                     return false;
                 }

@@ -7,6 +7,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -14,6 +15,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -32,11 +34,26 @@ public class WelcomeLeftPart extends Composite {
     private static final Cursor CURSOR_HAND = Display.getDefault().getSystemCursor(SWT.CURSOR_HAND);
 
     private static final int MIN_WIDTH = 300;
+    
+    private static final Color BACKGROUND_COLOR = ColorUtil.getColor("#70746F");
+    
+    private static final Color PLUGIN_STORE_ITEM_BACKGROUND_COLOR = ColorUtil.getColor("#FFD966");
 
+    private Composite headerComposite;
+
+    private Label lblVersion;
+
+    private Composite tutComposite;
+
+    private Composite faqComposite;
+
+    private Composite pluginComposite;
+
+    private Composite supportComposite;
+    
     public WelcomeLeftPart(Composite parent, int style) {
         super(parent, style);
-        setBackground(ColorUtil.getColor("#70746F"));
-        setBackgroundMode(SWT.INHERIT_FORCE);
+        setBackground(BACKGROUND_COLOR);
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginWidth = 0;
         gridLayout.marginHeight = 0;
@@ -55,20 +72,20 @@ public class WelcomeLeftPart extends Composite {
         gd_upperComposite.minimumWidth = MIN_WIDTH;
         upperComposite.setLayoutData(gd_upperComposite);
 
-        Composite headerComposite = new Composite(upperComposite, SWT.NONE);
+        headerComposite = new Composite(upperComposite, SWT.NONE);
         headerComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
         RowLayout rlHeaderComposite = new RowLayout(SWT.VERTICAL);
         rlHeaderComposite.spacing = 20;
         rlHeaderComposite.marginHeight = 40;
         rlHeaderComposite.center = true;
         headerComposite.setLayout(rlHeaderComposite);
-        headerComposite.setBackground(ColorUtil.getColor("#70746F"));
+        headerComposite.setBackground(BACKGROUND_COLOR);
 
         Label lblLogo = new Label(headerComposite, SWT.NONE);
         lblLogo.setAlignment(SWT.CENTER);
         lblLogo.setImage(ImageConstants.IMG_BRANDING);
 
-        Label lblVersion = new Label(headerComposite, SWT.NONE);
+        lblVersion = new Label(headerComposite, SWT.NONE);
         ControlUtils.setFontSize(lblVersion, 14);
         lblVersion.setText(MessageFormat.format(MessageConstants.PA_LBL_KATALON_VERSION, ApplicationInfo.versionNo()));
         lblVersion.setForeground(ColorUtil.getTextWhiteColor());
@@ -76,6 +93,7 @@ public class WelcomeLeftPart extends Composite {
         Link lblReleaseNote = new Link(headerComposite, SWT.NONE);
         ControlUtils.setFontStyle(lblReleaseNote, SWT.ITALIC, 12);
         lblReleaseNote.setText(RELEASE_NOTES_URL);
+        lblReleaseNote.setLinkForeground(ColorUtil.getColor("#4DE1FF"));
         lblReleaseNote.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -95,26 +113,30 @@ public class WelcomeLeftPart extends Composite {
         gdLowerComposite.minimumWidth = MIN_WIDTH;
         lowerComposite.setLayoutData(gdLowerComposite);
 
-        addMenuItem(lowerComposite, ImageConstants.IMG_TUTORIAL, MessageConstants.PA_LBL_TUTORIALS,
-                MessageConstants.PA_LBL_TUTORIALS_URL);
+        tutComposite = addMenuItem(lowerComposite, ImageConstants.IMG_TUTORIAL, MessageConstants.PA_LBL_TUTORIALS,
+                MessageConstants.PA_LBL_TUTORIALS_URL, null, ColorUtil.getTextWhiteColor());
         addMenuSeparator(lowerComposite);
 
-        addMenuItem(lowerComposite, ImageConstants.IMG_FAQ, StringConstants.PA_LBL_FAQ, StringConstants.PA_LBL_FAQ_URL);
+        faqComposite = addMenuItem(lowerComposite, ImageConstants.IMG_FAQ, StringConstants.PA_LBL_FAQ, StringConstants.PA_LBL_FAQ_URL, null, ColorUtil.getTextWhiteColor());
 
         addMenuSeparator(lowerComposite);
-        addMenuItem(lowerComposite, ImageConstants.IMG_KATALON_STORE, StringConstants.PA_LBL_PLUGIN_STORE, StringConstants.PA_LBL_PLUGIN_STORE_URL);
-        
+
+        pluginComposite = addMenuItem(lowerComposite, ImageConstants.IMG_KATALON_STORE, StringConstants.PA_LBL_PLUGIN_STORE, StringConstants.PA_LBL_PLUGIN_STORE_URL,
+                PLUGIN_STORE_ITEM_BACKGROUND_COLOR, ColorUtil.getTextColor());
+
         addMenuSeparator(lowerComposite);
-        addMenuItem(lowerComposite, ImageConstants.IMG_BUSSINESS_SUPPORT, StringConstants.PA_LBL_BUSINESS_SUPPORT,
-                StringConstants.URL_KATALON_SUPPORT_SERVICE);
+        supportComposite =addMenuItem(lowerComposite, ImageConstants.IMG_BUSSINESS_SUPPORT, StringConstants.PA_LBL_BUSINESS_SUPPORT,
+                StringConstants.URL_KATALON_SUPPORT_SERVICE, null, ColorUtil.getTextWhiteColor());
     }
-    
-    private void addMenuItem(Composite parent, Image icon, String label, String url) {
+
+    private Composite addMenuItem(Composite parent, Image icon, String label, String url, Color backgroundColor, Color foregroundColor) {
         Composite holder = new Composite(parent, SWT.NONE);
-        GridData gdHolder = new GridData(SWT.CENTER, SWT.FILL, true, false);
+        GridData gdHolder = new GridData(SWT.FILL, SWT.FILL, true, false);
         gdHolder.minimumWidth = 170;
         holder.setLayoutData(gdHolder);
-        
+        if (backgroundColor != null) {
+            holder.setBackground(backgroundColor);
+        }
         GridLayout gl = new GridLayout(2, false);
         gl.verticalSpacing = 20;
         gl.marginHeight = 10;
@@ -122,13 +144,19 @@ public class WelcomeLeftPart extends Composite {
         holder.setCursor(CURSOR_HAND);
 
         Label menuImage = new Label(holder, SWT.NONE);
+        GridData layoutData = new GridData(SWT.LEFT, SWT.CENTER, false, true);
+        layoutData.horizontalIndent = 50;
+        menuImage.setLayoutData(layoutData);
         menuImage.setImage(icon);
 
         Label menuItem = new Label(holder, SWT.NONE);
         menuItem.setAlignment(SWT.CENTER);
         menuItem.setText(label);
-        menuItem.setForeground(ColorUtil.getTextWhiteColor());
         menuItem.setCursor(CURSOR_HAND);
+        if (menuItem != null) {
+            menuItem.setForeground(foregroundColor);
+        }
+        
         ControlUtils.setFontSize(menuItem, 12);
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -141,6 +169,8 @@ public class WelcomeLeftPart extends Composite {
         menuItem.addMouseListener(mouseAdapter);
         menuImage.addMouseListener(mouseAdapter);
         holder.addMouseListener(mouseAdapter);
+        
+        return holder;
     }
 
     private void addMenuSeparator(Composite parent) {
@@ -159,4 +189,14 @@ public class WelcomeLeftPart extends Composite {
         // Disable the check that prevents subclassing of SWT components
     }
 
+    
+    public void updateColor() {
+        setBackground(BACKGROUND_COLOR);
+        headerComposite.setBackground(BACKGROUND_COLOR);
+        lblVersion.setForeground(ColorUtil.getTextWhiteColor());
+        ControlUtils.recursivelySetColor(faqComposite, ColorUtil.getTextWhiteColor(), null);
+        ControlUtils.recursivelySetColor(tutComposite, ColorUtil.getTextWhiteColor(), null);
+        ControlUtils.recursivelySetColor(supportComposite, ColorUtil.getTextWhiteColor(), null);
+        ControlUtils.recursivelySetColor(pluginComposite, ColorUtil.getTextBlackColor(), PLUGIN_STORE_ITEM_BACKGROUND_COLOR);
+    }
 }

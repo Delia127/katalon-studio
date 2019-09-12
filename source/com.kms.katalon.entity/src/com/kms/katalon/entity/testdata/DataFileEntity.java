@@ -1,6 +1,7 @@
 package com.kms.katalon.entity.testdata;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,8 @@ public class DataFileEntity extends FileEntity {
     private DataFileDriverType driver;
 
     private String dataSourceUrl;
+    
+    private String driverClassName;
 
     private String sheetName;
 
@@ -74,6 +77,10 @@ public class DataFileEntity extends FileEntity {
 
     public void setDriver(DataFileDriverType driver) {
         this.driver = driver;
+    }
+    
+    public String getDriverClassName() {
+        return this.driverClassName;
     }
 
     public String getDataSourceUrl() {
@@ -275,6 +282,10 @@ public class DataFileEntity extends FileEntity {
         this.query = query;
     }
     
+    public void setDriverClassName(String driverClassName) {
+        this.driverClassName = driverClassName;
+    }
+    
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
@@ -282,6 +293,20 @@ public class DataFileEntity extends FileEntity {
     @XmlElementWrapper(name="properties")
     private Map<String, String> getProperties() {
         return properties;
+    }
+    
+    public String getProperty(String key) {
+        if (properties == null || key == null || key.equals(StringUtils.EMPTY)) {
+            return StringUtils.EMPTY;
+        }
+        return properties.get(key);
+    }
+
+    public void setProperty(String key, String value) {
+        if (properties == null) {
+        	properties = new HashMap<String, String>();
+        }
+        properties.put(key, value);
     }
 
     @Override

@@ -299,7 +299,7 @@ public class CustomCloneDestinationPage extends WizardPage {
         }
         final String dstpath = directoryText.getText();
         if (dstpath.length() == 0) {
-            setErrorMessage(UIText.CloneDestinationPage_errorDirectoryRequired);
+            setErrorMessage("Directory is required");
             setPageComplete(false);
             return;
         }

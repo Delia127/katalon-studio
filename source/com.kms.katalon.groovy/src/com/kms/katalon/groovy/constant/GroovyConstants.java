@@ -41,6 +41,8 @@ public class GroovyConstants {
 
     public static final String FIND_TEST_OBJECT_METHOD_NAME = "findTestObject";
 
+    public static final String FIND_WINDOWS_OBJECT_METHOD_NAME = "findWindowsObject";
+
     public static final String FIND_CHECKPOINT_METHOD_NAME = "findCheckpoint";
 
     public static Map<String, String> DEFAULT_STATIC_METHOD_IMPORTS = new HashMap<>();
@@ -50,6 +52,7 @@ public class GroovyConstants {
     static {
         DEFAULT_STATIC_METHOD_IMPORTS.put(FIND_CHECKPOINT_METHOD_NAME, CheckpointFactory.class.getName());
         DEFAULT_STATIC_METHOD_IMPORTS.put(FIND_TEST_OBJECT_METHOD_NAME, ObjectRepository.class.getName());
+        DEFAULT_STATIC_METHOD_IMPORTS.put(FIND_WINDOWS_OBJECT_METHOD_NAME, ObjectRepository.class.getName());
         DEFAULT_STATIC_METHOD_IMPORTS.put(FIND_TEST_CASE_METHOD_NAME, TestCaseFactory.class.getName());
         DEFAULT_STATIC_METHOD_IMPORTS.put(FIND_TEST_DATA_METHOD_NAME, TestDataFactory.class.getName());
 

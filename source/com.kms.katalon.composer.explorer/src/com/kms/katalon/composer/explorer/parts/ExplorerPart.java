@@ -3,6 +3,7 @@ package com.kms.katalon.composer.explorer.parts;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -63,15 +65,16 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchCommandConstants;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
@@ -79,7 +82,6 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
-import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -109,6 +111,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class ExplorerPart {
+    
+    private static ExplorerPart instance;
 
     private static final String SEARCH_TEXT_DEFAULT_VALUE = StringConstants.PA_SEARCH_TEXT_DEFAULT_VALUE;
 
@@ -177,16 +181,44 @@ public class ExplorerPart {
     private EPartService partService;
 
     private MPart part;
+    
+    private ExplorerGettingStartView gettingStartView;
+
+    private Composite treeComposite;
+
+    private Composite gettingStartComposite;
+
+    private StackLayout stackLayout;
+
+    private Composite stackComposite;
+
+    public static ExplorerPart getInstance() {
+        return instance;
+    }
 
     @PostConstruct
     public void createPartControl(final Composite parent, MPart mpart) {
+        gettingStartView = new ExplorerGettingStartView();
+        instance = this;
         this.parent = parent;
         this.part = mpart;
         updateToolItemStatus();
         parent.setLayoutData(new GridData(GridData.FILL_BOTH));
         parent.setLayout(new GridLayout(1, false));
+        
+        stackComposite = new Composite(parent, SWT.NONE);
+        stackComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        searchComposite = new Composite(parent, SWT.BORDER);
+        stackLayout = new StackLayout();
+        stackComposite.setLayout(stackLayout);
+
+        gettingStartComposite = gettingStartView.createControl(stackComposite);
+        stackLayout.topControl = gettingStartComposite;
+
+        treeComposite = new Composite(stackComposite, SWT.NONE);
+        treeComposite.setLayout(new GridLayout(1, false));
+
+        searchComposite = new Composite(treeComposite, SWT.BORDER);
         searchComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
         GridLayout glSearchComposite = new GridLayout(6, false);
         glSearchComposite.verticalSpacing = 0;
@@ -227,7 +259,7 @@ public class ExplorerPart {
         
         application.getContext().set(ExplorerPart.class.getName(), this);
 
-        createExplorerTreeViewer();
+        createExplorerTreeViewer(treeComposite);
 
         // label Search
         Canvas canvasSearch = new Canvas(searchComposite, SWT.NONE);
@@ -274,10 +306,28 @@ public class ExplorerPart {
         activateHandler();
 
         // loadSavedState(part);
+        registerEventListeners();
     }
     
-    private Display getDisplay() {
-        return parent.getDisplay();
+    private void registerEventListeners() {
+        eventBroker.subscribe(EventConstants.PROJECT_CLOSED, new EventHandler() {
+            
+            @Override
+            public void handleEvent(org.osgi.service.event.Event event) {
+                stackLayout.topControl = gettingStartComposite;
+                gettingStartView.refreshRecentProjects();
+                stackComposite.layout(true);
+            }
+        });
+
+        eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
+            
+            @Override
+            public void handleEvent(org.osgi.service.event.Event event) {
+                stackLayout.topControl = treeComposite;
+                stackComposite.layout(true);
+            }
+        });
     }
 
     private void createExplorerTreeViewerIfDisposed() {
@@ -285,7 +335,7 @@ public class ExplorerPart {
             return;
         }
 
-        createExplorerTreeViewer();
+        createExplorerTreeViewer(treeComposite);
 
         if (treeEntities == null || treeEntities.isEmpty()) {
             reloadTreeEventHandler(true);
@@ -294,7 +344,7 @@ public class ExplorerPart {
         }
     }
 
-    private void createExplorerTreeViewer() {
+    private void createExplorerTreeViewer(Composite parent) {
         setViewer(new CTreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.VIRTUAL));
         Tree explorer = treeViewer.getTree();
         treeViewer.setUseHashlookup(true);
@@ -620,13 +670,13 @@ public class ExplorerPart {
 
     @Inject
     @Optional
-    private void refreshTree(@UIEventTopic(EventConstants.EXPLORER_REFRESH) Object object) {
+    public void refreshTree(@UIEventTopic(EventConstants.EXPLORER_REFRESH) Object object) {
         refresh(null);
     }
 
     @Inject
     @Optional
-    private void refreshTreeEntity(@UIEventTopic(EventConstants.EXPLORER_REFRESH_TREE_ENTITY) Object object) {
+    public void refreshTreeEntity(@UIEventTopic(EventConstants.EXPLORER_REFRESH_TREE_ENTITY) Object object) {
         refresh(object);
     }
 
@@ -724,7 +774,7 @@ public class ExplorerPart {
     
     @Inject
     @Optional
-    private void setSelectedItems(@UIEventTopic(EventConstants.EXPLORER_SET_SELECTED_ITEMS) Object[] objects) {
+    public void setSelectedItems(@UIEventTopic(EventConstants.EXPLORER_SET_SELECTED_ITEMS) Object[] objects) {
         if (objects == null) {
             return;
         }
@@ -827,8 +877,7 @@ public class ExplorerPart {
                 // do not allow drag in Reports and Keywords area
                 try {
                     for (TreeItem item : selection) {
-                        if (item.getData() instanceof ReportTreeEntity || item.getData() instanceof KeywordTreeEntity
-                                || item.getData() instanceof PackageTreeEntity) {
+                        if (item.getData() instanceof ReportTreeEntity || item.getData() instanceof PackageTreeEntity) {
                             event.doit = false;
                         } else if (item.getData() instanceof FolderTreeEntity
                                 && ((FolderTreeEntity) item.getData()).getCopyTag()
@@ -901,6 +950,14 @@ public class ExplorerPart {
             return;
         }
         treeEntities.addAll(input.parallelStream().map(item -> (ITreeEntity) item).collect(Collectors.toList()));
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Object> getSelectedTreeEntities() {
+        if (treeViewer == null) {
+            return Collections.emptyList();
+        }
+        return treeViewer.getStructuredSelection().toList();
     }
 
     @PreDestroy

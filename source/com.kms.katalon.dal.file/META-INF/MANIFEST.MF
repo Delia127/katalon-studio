@@ -35,5 +35,6 @@ Import-Package: com.kms.katalon.dal,
 Service-Component: OSGI-INF/ProjectFileServiceDataProvider.xml,OSGI-INF/FolderFileServiceDataProvider.xml,
  OSGI-INF/FileServiceDataProvider.xml
 Export-Package: com.kms.katalon.dal.fileservice,
- com.kms.katalon.dal.fileservice.dataprovider
+ com.kms.katalon.dal.fileservice.dataprovider,
+ com.kms.katalon.dal.fileservice.manager
 Bundle-ActivationPolicy: lazy

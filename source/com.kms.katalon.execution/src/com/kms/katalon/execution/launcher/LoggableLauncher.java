@@ -64,9 +64,13 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                 case START:
                     startRecords.push(record);
                     logDepth++;
+                    if (isLogUnderTestCaseMainLevel(runConfig, logDepth) && isStartTestCaseLog(startRecords.peek())) {
+                        launcherResult.addStartTime();
+                    }
                     break;
                 case END:
                     if (isLogUnderTestCaseMainLevel(runConfig, logDepth) && isStartTestCaseLog(startRecords.peek())) {
+                        launcherResult.addEndTime();
                         switch (currentTestCaseResult) {
                             case PASSED:
                                 launcherResult.increasePasses();

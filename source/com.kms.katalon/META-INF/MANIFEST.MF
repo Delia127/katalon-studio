@@ -84,6 +84,7 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.ui.workbench,
  org.codehaus.groovy.eclipse.ui,
  cucumber.eclipse.editor,
+ com.kms.katalon.execution.webui,
  com.kms.katalon.integration.analytics,
  org.eclipse.e4.ui.css.swt.theme
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

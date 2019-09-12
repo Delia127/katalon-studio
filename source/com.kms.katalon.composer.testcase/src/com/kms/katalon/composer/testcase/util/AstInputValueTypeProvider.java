@@ -84,6 +84,9 @@ public class AstInputValueTypeProvider {
             if (methodCallExpression.isFindTestObjectMethodCall()) {
                 return InputValueType.TestObject;
             }
+            if (methodCallExpression.isFindWindowsObjectMethodCall()) {
+                return InputValueType.WindowsObject;
+            }
             if (methodCallExpression.isFindTestDataMethodCall()) {
                 return InputValueType.TestData;
             }

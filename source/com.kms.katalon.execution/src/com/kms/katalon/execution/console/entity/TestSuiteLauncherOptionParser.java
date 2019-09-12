@@ -87,6 +87,53 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             return false;
         };
     };
+    
+    private StringConsoleOption katalonStoreApiKeySecondOption = new StringConsoleOption() {
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_STORE_API_KEY_SECOND_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        };
+    };
+    
+    private StringConsoleOption katalonAnalyticsLicenseFile = new StringConsoleOption() {
+
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_ANALYTICS_LICENSE_FILE_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        }
+    };
+
+    private StringConsoleOption katalonStoreOrgIdOption = new StringConsoleOption() {
+
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_ORGANIZATION_ID_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        }
+    };
+    
+    private StringConsoleOption katalonStoreOrgIdSecondOption = new StringConsoleOption() {
+
+        @Override
+        public String getOption() {
+            return ConsoleMain.KATALON_ORGANIZATION_ID_SECOND_OPTION;
+        };
+
+        public boolean isRequired() {
+            return false;
+        }
+    };
 
     protected StringConsoleOption installPluginOption = new StringConsoleOption() {
 
@@ -130,6 +177,10 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         allOptions.add(browserTypeOption);
         allOptions.add(executionProfileOption);
         allOptions.add(katalonApiKeyOption);
+        allOptions.add(katalonStoreApiKeySecondOption);
+        allOptions.add(katalonAnalyticsLicenseFile);
+        allOptions.add(katalonStoreOrgIdOption);
+        allOptions.add(katalonStoreOrgIdSecondOption);
         allOptions.add(installPluginOption);
         allOptions.add(katalonAnalyticsProjectId);
         allOptions.add(testSuiteQuery);
@@ -210,6 +261,10 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         runConfig.setExecutionProfile(executionProfile);
         runConfig.setOverridingGlobalVariables(getOverridingGlobalVariables());
         runConfig.setExecutionUUID(executionUUIDOption.getValue());
+        
+        Map<String, String> additionalInfo = infoOptionContributor.getOptionValues();
+        runConfig.setAdditionalInfo(additionalInfo);
+        
         runConfig.build(testSuite, executedEntity);
         GlobalVariableController.getInstance().generateGlobalVariableLibFile(project, null);
         return runConfig;

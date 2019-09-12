@@ -2,19 +2,15 @@ package com.kms.katalon.dal.fileservice.dataprovider;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.dal.IReportDataProvider;
-import com.kms.katalon.dal.ITestSuiteDataProvider;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
-import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.ReportFileServiceManager;
 import com.kms.katalon.entity.file.FileEntity;
@@ -193,6 +189,7 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
             FolderEntity parentFolder = FolderFileServiceManager.getFolder(folder.getAbsolutePath());
 
             ReportCollectionEntity reportCollection = new ReportCollectionEntity();
+            reportCollection.setTestSuiteCollectionId(tsEntity.getIdForDisplay());
             reportCollection.setName(newName);
             reportCollection.setParentFolder(parentFolder);
             reportCollection.setProject(parentFolder.getProject());

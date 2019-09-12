@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.kms.katalon.core.driver.DriverType;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.integration.kobiton.constants.IntegrationKobitonMessages;
@@ -48,6 +49,7 @@ public class KobitonDriverConnector extends RemoteWebDriverConnector {
 
     public void setKobitonDevice(KobitonDevice kobitonDevice) {
         this.kobitonDevice = kobitonDevice;
+        setMobileDriverType(getMobileDriverType(kobitonDevice));
     }
 
     public String getApiKey() {
@@ -78,5 +80,18 @@ public class KobitonDriverConnector extends RemoteWebDriverConnector {
         Map<String, Object> systemProperties = super.getSystemProperties();
         systemProperties.putAll(kobitonDevice.getSystemPropertiesMap());
         return systemProperties;
+    }
+
+    public static MobileDriverType getMobileDriverType(KobitonDevice kobitonDevice) {
+        if (kobitonDevice == null || kobitonDevice.getCapabilities() == null) {
+            return null;
+        }
+        if (KobitonDevice.PLATFORM_NAME_IOS.equals(kobitonDevice.getCapabilities().getPlatformName())) {
+            return MobileDriverType.IOS_DRIVER;
+        }
+        if (KobitonDevice.PLATFORM_NAME_ANDROID.equals(kobitonDevice.getCapabilities().getPlatformName())) {
+            return MobileDriverType.ANDROID_DRIVER;
+        }
+        return null;
     }
 }

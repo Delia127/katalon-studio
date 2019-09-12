@@ -71,6 +71,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.CUSTOM_EXECUTION_16);
         ImageManager.registerImage(IImageKeys.DEBUG_PERSPECTIVE_16);
         ImageManager.registerImage(IImageKeys.DESKTOP_16);
+        ImageManager.registerImage(IImageKeys.WEB_16);
         ImageManager.registerImage(IImageKeys.OK_16);
         ImageManager.registerImage(IImageKeys.DONE_16);
         ImageManager.registerImage(IImageKeys.GLOBAL_VARIABLE_16);
@@ -179,6 +180,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.PAUSE_24);
         ImageManager.registerImage(IImageKeys.START_DEVICE_24);
         ImageManager.registerImage(IImageKeys.STOP_DEVICE_24);
+        ImageManager.registerImage(IImageKeys.REFRESH_24);
 
         // Sub-toolbar icon 24 disabled icons
         ImageManager.registerImage(IImageKeys.ADD_TO_OBJECT_REPOSITORY_DISABLED_24);
@@ -191,6 +193,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.PAUSE_DISABLED_24);
         ImageManager.registerImage(IImageKeys.START_DEVICE_DISABLED_24);
         ImageManager.registerImage(IImageKeys.STOP_DEVICE_DISABLED_24);
+        ImageManager.registerImage(IImageKeys.REFRESH_DISABLED_24);
     }
 
     private void registerEntityImages() {
@@ -252,6 +255,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.GROOVY_16);
         ImageManager.registerImage(IImageKeys.JAVA_16);
         ImageManager.registerImage(IImageKeys.GIT_FILE_16);
+        ImageManager.registerImage(IImageKeys.WINDOWS_ENTITY_16);
     }
 
     private void registerTestCaseStepImages() {
@@ -441,6 +445,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_SDLC_INTEGRATION);
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_ADVANCED_REPORT);
         ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_PLUGIN_STORE);
+        ImageManager.registerImage(IImageKeys.IMG_INTRO_SCREEN_DESKTOP_APPS_TESTING);
         
     }
 }

@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -23,12 +24,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.components.impl.wizard.WizardDialog;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.ImageConstants;
+import com.sun.jna.platform.unix.X11.GC;
 
 public class QuickStartDialog extends WizardDialog {
 
@@ -149,7 +152,7 @@ public class QuickStartDialog extends WizardDialog {
     protected Sash createSash(final Composite composite, final Control rightControl) {
         final Sash sash = new Sash(composite, SWT.VERTICAL);
         sash.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-        // sash.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        sash.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
         sash.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -197,7 +200,6 @@ public class QuickStartDialog extends WizardDialog {
         preferred.height = height;
         getShell().setBounds(getConstrainedShellBounds(preferred));
     }
-
     @Override
     protected void registerControlModifyListeners() {
         super.registerControlModifyListeners();
@@ -207,25 +209,11 @@ public class QuickStartDialog extends WizardDialog {
             public void selectionChanged(final SelectionChangedEvent event) {
                 if (!event.getSelection().isEmpty()) {
                     int index = tableViewer.getTable().getSelectionIndex();
-                    showPage(wizardManager.choosenPage(index));
+                    doShowPage(wizardManager.choosenPage(index));
+                    tableViewer.refresh();
                 } else {
                     tableViewer.setSelection(StructuredSelection.EMPTY);
                 }
-            }
-        });
-
-        // Disable color change when selected item changed
-        tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
-            public void handleEvent(Event event) {
-                // Selection:
-                if ((event.detail & SWT.SELECTED) == 0) {
-                    event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
-                }
-                event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
-                // event.gc.setBackground(event.display.getSystemColor(SWT.COLOR_BLUE));
-                event.detail &= ~SWT.HOT;
-                // Expect: mouse over now has no visual effect.
-                // Actual: behavior remains unchanged.
             }
         });
 
@@ -242,8 +230,9 @@ public class QuickStartDialog extends WizardDialog {
     @Override
     protected Collection<IWizardPage> getWizardPages() {
         return Arrays.asList(new IWizardPage[] { new WebTestingWizardPage(), new APITestingWizardPage(),
-                new MobileTestingWizardPage(), new DatadrivenTestingWizardPage(), new BDDTestingWizardPage(),
-                new SDLCIntergrationWizardPage(), new PluginStoreWizardPage(), new AdvancedReportWizardPage() });
+                new MobileTestingWizardPage(), new DesktopAppsTestingPage(), new DatadrivenTestingWizardPage(),
+                new BDDTestingWizardPage(), new SDLCIntergrationWizardPage(), new PluginStoreWizardPage(),
+                new AdvancedReportWizardPage() });
     }
 
     @Override
@@ -255,8 +244,13 @@ public class QuickStartDialog extends WizardDialog {
 
     @Override
     protected void showPage(IWizardPage page) {
-        super.showPage(page);
+        doShowPage(page);
         tableViewer.refresh(true);
+        tableViewer.setSelection(new StructuredSelection(page));
+    }
+    
+    private void doShowPage(IWizardPage page) {
+        super.showPage(page);
     }
 
     @Override

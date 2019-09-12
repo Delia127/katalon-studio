@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testdata.parts;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,6 +60,7 @@ import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.composer.testdata.dialog.EditTestDataQueryDialog;
 import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.testdata.DBData;
@@ -94,6 +96,8 @@ public class DBTestDataPart extends TestDataMainPart {
 
     private Button btnEdit;
 
+    private Button ckcbReadAsString;
+    
     @Override
     protected EPartService getPartService() {
         return partService;
@@ -141,6 +145,9 @@ public class DBTestDataPart extends TestDataMainPart {
         glCompositeFileInfoDetails.marginHeight = 0;
         compFileInfoDetails.setLayout(glCompositeFileInfoDetails);
         compFileInfoDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        
+        ckcbReadAsString = new Button(compFileInfoDetails, SWT.CHECK);
+        ckcbReadAsString.setText(StringConstants.VIEW_LBL_READ_AS_STRING);
 
         Label lblQuery = new Label(compFileInfoDetails, SWT.BOLD);
         lblQuery.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 2, 1));
@@ -161,6 +168,13 @@ public class DBTestDataPart extends TestDataMainPart {
         btnFetchData.setImage(com.kms.katalon.composer.components.impl.constants.ImageConstants.IMG_16_REFRESH);
         btnFetchData.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
         return parent;
+    }
+    
+    @Override
+    protected void initValues() {
+        String strReadAsString = getDataFile().getProperty("readAsString");
+        ckcbReadAsString.setSelection((strReadAsString == null || strReadAsString.isEmpty()) ? true
+                : Boolean.valueOf(strReadAsString).booleanValue());
     }
 
     @Override
@@ -246,6 +260,15 @@ public class DBTestDataPart extends TestDataMainPart {
                 executeOperation(new ChangeQueryOperation());
             }
         });
+        
+        ckcbReadAsString.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                getDataFile().setProperty("readAsString", String.valueOf(ckcbReadAsString.getSelection()));
+                dirtyable.setDirty(true);
+            }
+        });
     }
 
     @Override
@@ -261,26 +284,45 @@ public class DBTestDataPart extends TestDataMainPart {
         Display.getCurrent().timerExec(1000, new Runnable() {
 
             @Override
-            public void run() {
-                try {
-                    // fetch data and load into table
-                    DatabaseConnection dbConnection = TestDataController.getInstance().getDatabaseConnection(dataFile);
-                    if (dbConnection == null) {
-                        throw new Exception(StringConstants.DIA_MSG_CONNECTION_EMPTY);
-                    }
-                    DBData dbData = new DBData(dbConnection, dataFile.getQuery());
-                    loadDataIntoTable(dbData);
-                    setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_STATUS_LOADED_ON,
-                            dbData.getRetrievedDate().toString()), ColorUtil.getTextSuccessfulColor());
-                } catch (Exception e) {
-                    setStatusLabel(StringConstants.DIA_MSG_CANNOT_FETCH_DATA, ColorUtil.getTextErrorColor());
-                    MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_CANNOT_FETCH_DATA,
-                            e.getMessage());
-                } finally {
-                    btnFetchData.setEnabled(true);
-                }
-            }
-        });
+			public void run() {
+
+				ClassLoader oldClassLoader = null;
+				DatabaseConnection dbConnection = null;
+				try {
+					oldClassLoader = Thread.currentThread().getContextClassLoader();
+
+					// fetch data and load into table
+					URLClassLoader projectClassLoader = ProjectController.getInstance()
+							.getProjectClassLoader(ProjectController.getInstance().getCurrentProject());
+					Thread.currentThread().setContextClassLoader(projectClassLoader);
+
+					dbConnection = TestDataController.getInstance().getDatabaseConnection(dataFile);
+
+					if (dbConnection == null) {
+						throw new Exception(StringConstants.DIA_MSG_CONNECTION_EMPTY);
+					}
+
+					dbConnection.getConnection();
+					DBData dbData = new DBData(dbConnection, dataFile.getQuery());
+
+					loadDataIntoTable(dbData);
+					setStatusLabel(MessageFormat.format(StringConstants.DIA_LBL_STATUS_LOADED_ON,
+							dbData.getRetrievedDate().toString()), ColorUtil.getTextSuccessfulColor());
+				} catch (Exception e) {
+					setStatusLabel(StringConstants.DIA_MSG_CANNOT_FETCH_DATA, ColorUtil.getTextErrorColor());
+					MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_CANNOT_FETCH_DATA,
+							e.getMessage());
+				} finally {
+					btnFetchData.setEnabled(true);
+					if (dbConnection != null) {
+						dbConnection.close();
+					}
+					if (oldClassLoader != null) {
+						Thread.currentThread().setContextClassLoader(oldClassLoader);
+					}
+				}
+			}
+		});
     }
 
     /**

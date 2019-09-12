@@ -18,12 +18,13 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.util.ColorUtil;
 
 public class PermissionAccessAnalyticsDialog extends AbstractDialog {
 
     private Label lblTitle;
 
-    private Link lblDescription;
+    private Label lblDescription;
 
     private String title;
 
@@ -57,19 +58,14 @@ public class PermissionAccessAnalyticsDialog extends AbstractDialog {
         lblTitle = new Label(container, SWT.WRAP);
         lblTitle.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        lblDescription = new Link(container, SWT.WRAP);
+        lblDescription = new Label(container, SWT.WRAP);
         lblDescription.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 2));
+        lblDescription.setForeground(ColorUtil.getTextErrorColor());
         return composite;
     }
 
     @Override
     protected void registerControlModifyListeners() {
-    	lblDescription.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Program.launch(e.text);
-            }
-        });
     }
 
     @Override

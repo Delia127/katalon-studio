@@ -289,7 +289,7 @@ public class NewCheckpointExcelPage extends AbstractCheckpointWizardPage {
 
     @Override
     public Point getPageSize() {
-        return getShell().computeSize(500, 250);
+        return getShell().computeSize(600, 300);
     }
 
 }
