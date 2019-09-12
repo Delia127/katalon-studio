@@ -87,6 +87,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT;
     
+    public static String PREF_LBL_LOG_TEST_STEPS;
+    
     public static String PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT;
     
     public static String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT;
