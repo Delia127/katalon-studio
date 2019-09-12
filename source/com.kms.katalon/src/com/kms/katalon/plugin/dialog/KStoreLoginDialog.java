@@ -24,6 +24,7 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.service.KStoreRestClient;
 import com.kms.katalon.plugin.service.KStoreRestClient.AuthenticationResult;
@@ -61,9 +62,19 @@ public class KStoreLoginDialog extends Dialog {
         gdBody.minimumWidth = 400;
         body.setLayoutData(gdBody);
         
-        Label lblInstruction = new Label(body, SWT.WRAP);
-        lblInstruction.setText(StringConstants.KStoreLoginDialog_LBL_INSTRUCTION);
+        Link lblInstruction = new Link(body, SWT.WRAP);
         lblInstruction.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        lblInstruction.setText(StringConstants.KStoreLoginDialog_LBL_INSTRUCTION);
+        lblInstruction.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    Program.launch(StringConstants.LINK_KS_PLUGINS_DOCS_LINK);
+                } catch (Exception ex) {
+                    LogUtil.logError(ex);
+                }
+            }
+        });
 
         Composite inputComposite = new Composite(body, SWT.NONE);
         inputComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

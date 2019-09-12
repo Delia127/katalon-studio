@@ -30,6 +30,7 @@ import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.service.PluginService;
 import com.kms.katalon.plugin.store.PluginPreferenceStore;
+import com.kms.katalon.plugin.util.KStoreCredentialsHelper;
 
 public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
@@ -59,22 +60,24 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     KStoreBasicCredentials[] credentials = new KStoreBasicCredentials[1];
-                    UISynchronizeService.syncExec(() -> {
-                        try {
-                            credentials[0] = getBasicCredentials();
-                        } catch (KStoreClientAuthException e) {
-                            LoggerSingleton.logError(e);
-                        }
-                    });
-                    if (credentials[0] != null) {
-                        LoggerSingleton.logInfo("Credentials found. Reloading plugins.");
-                        resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
-                        if (!store.hasReloadedPluginsBefore()) {
-                            store.markFirstTimeReloadPlugins();
-                        }
-                    } else {
-                        LoggerSingleton.logError("Credentials not found.");
+                    if (PluginService.getInstance().shouldReloadPluginsOnline()) {
+                        UISynchronizeService.syncExec(() -> {
+                            try {
+                                credentials[0] = getBasicCredentials();
+                            } catch (KStoreClientAuthException e) {
+                                LoggerSingleton.logError(e);
+                            }
+                        });
+                    }
+                    if (PluginService.getInstance().shouldReloadPluginsOnlineOnly()
+                            && !KStoreCredentialsHelper.isValidCredential(credentials[0])) {
+                        LoggerSingleton.logError("Invalid Credential.");
                         return Status.CANCEL_STATUS;
+                    }
+                    LoggerSingleton.logInfo("Reloading plugins.");
+                    resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
+                    if (!store.hasReloadedPluginsBefore()) {
+                        store.markFirstTimeReloadPlugins();
                     }
                 } catch (InterruptedException e) {
                     return Status.CANCEL_STATUS;

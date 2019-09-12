@@ -42,6 +42,7 @@ import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResolutionItem;
+import com.kms.katalon.plugin.util.KStoreCredentialsHelper;
 import com.kms.katalon.plugin.util.PlatformHelper;
 import com.kms.katalon.plugin.util.PluginFactory;
 import com.kms.katalon.plugin.util.PluginSettings;
@@ -77,7 +78,7 @@ public class PluginService {
             SubMonitor getOnlinePluginsMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
             
             List<KStorePlugin> onlinePlugins;
-            if (shouldReloadPluginsOnline()) {
+            if (shouldReloadPluginsOnline() && KStoreCredentialsHelper.isValidCredential(credentials)) {
                 getOnlinePluginsMonitor.beginTask("Fetching latest plugins info from Katalon Store...", 100);
     
                 onlinePlugins = getOnlinePlugins(credentials);
@@ -240,12 +241,17 @@ public class PluginService {
         }
     }
     
-    private boolean shouldReloadPluginsOnline() throws IOException {
+    public boolean shouldReloadPluginsOnline() throws IOException {
         PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
         return reloadOption == PluginOptions.ONLINE || reloadOption == PluginOptions.ONLINE_AND_OFFLINE;
     }
+
+    public boolean shouldReloadPluginsOnlineOnly() throws IOException {
+        PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
+        return reloadOption == PluginOptions.ONLINE;
+    }
     
-    private boolean shouldReloadPluginsOffline() throws IOException {
+    public boolean shouldReloadPluginsOffline() throws IOException {
         PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
         return reloadOption == PluginOptions.OFFLINE || reloadOption == PluginOptions.ONLINE_AND_OFFLINE;
     }
