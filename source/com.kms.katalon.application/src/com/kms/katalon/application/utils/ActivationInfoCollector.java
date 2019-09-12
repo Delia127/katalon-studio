@@ -51,7 +51,7 @@ public class ActivationInfoCollector {
     public static boolean checkAndMarkActivatedForGUIMode() {
         activated = isActivatedByAccount();
         if (activated) {
-            String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.KA_ORGANIZATION);
+            String jsonObject = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_ORGANIZATION);
             if (StringUtils.isNotBlank(jsonObject)) {
                 try {
                     String email = ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL);
@@ -211,31 +211,33 @@ public class ActivationInfoCollector {
         } catch (Exception e) {
             LogUtil.logError(e);
         }
-        
+
+
+        return activatedResult;
+    }
+    
+    public static String activate(String userName, String password, String machineId, StringBuilder errorMessage) {
+        String result = "";
         try {
-        	boolean result = testOpsActivate();
-        	if (result) {
-        		activatedResult = true;
-        	} else if (errorMessage != null) {
-        		errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
-        	}
+            result = testOpsActivate(userName, password, machineId);
+            if (result.isEmpty() && errorMessage != null) {
+                errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+            }
         } catch (Exception ex) {
-        	LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
             if (errorMessage != null) {
                 errorMessage.delete(0, errorMessage.length());
                 errorMessage.append(ApplicationMessageConstants.NETWORK_ERROR);
             }
         }
-        return activatedResult;
+        return result;
     }
     
-    private static boolean testOpsActivate(String userName, String password, String machineId) throws Exception {
-    	String serverUrl = ApplicationInfo.getTestOpsServer();
-    	
-    	String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
-    	String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, machineId);
-    	
-    	return true;
+    private static String testOpsActivate(String userName, String password, String machineId) throws Exception {
+        String serverUrl = ApplicationInfo.getTestOpsServer();
+        String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
+        String lincese = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, machineId);
+        return lincese;
     }
     
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
@@ -286,12 +288,14 @@ public class ActivationInfoCollector {
     }
 
 
-    public static void markActivated(String userName, String password) throws Exception {
+    public static void markActivated(String userName, String password, String organization, String licenseKey) throws Exception {
         setActivatedVal();
         ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, userName, true);
         String encryptedPassword = CryptoUtil.encode(CryptoUtil.getDefault(password));
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_PASSWORD, encryptedPassword, true);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, organization, true);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ACTIVATION_CODE, licenseKey, true);
     }
 
     private static void markActivatedForOfflineMode(String activationCode) throws Exception {
