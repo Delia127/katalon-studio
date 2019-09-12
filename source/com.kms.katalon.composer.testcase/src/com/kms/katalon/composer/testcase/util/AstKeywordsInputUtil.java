@@ -504,7 +504,6 @@ public class AstKeywordsInputUtil {
             type = Class.forName(typeName);
             return type;
         } catch (ClassNotFoundException e) {
-        	LoggerSingleton.logError(e);
             // find nothing, continue
         }
         URLClassLoader classLoader = null;
