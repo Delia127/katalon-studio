@@ -16,20 +16,20 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.constants.StringConstants;
 
 public class ReloadPluginsHelpDialog extends Dialog {
-	
-	private Label lblHelp;
+
+    private Label lblHelp;
 
     public ReloadPluginsHelpDialog(Shell parentShell) {
         super(parentShell);
     }
-    
+
     @Override
     public void create() {
         super.create();
     }
-    
+
     @Override
-    protected Control createDialogArea(Composite parent) { 
+    protected Control createDialogArea(Composite parent) {
         Composite body = new Composite(parent, SWT.BORDER);
         body.setLayout(new GridLayout(1, false));
         GridData gdBody = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -45,32 +45,32 @@ public class ReloadPluginsHelpDialog extends Dialog {
         Composite bottomComposite = new Composite(body, SWT.NONE);
         bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
         bottomComposite.setLayout(new GridLayout(2, false));
-        
+
         Button btnClose = new Button(bottomComposite, SWT.NONE);
         btnClose.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, true));
         btnClose.setText(IDialogConstants.CLOSE_LABEL);
         btnClose.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	ReloadPluginsHelpDialog.this.setReturnCode(Dialog.CANCEL);
-            	ReloadPluginsHelpDialog.this.close();
+                ReloadPluginsHelpDialog.this.setReturnCode(Dialog.CANCEL);
+                ReloadPluginsHelpDialog.this.close();
             }
         });
-        
-		return body;
+
+        return body;
     }
-    
+
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         shell.setText(StringConstants.KStorePluginsDialog_DIA_TITLE);
     }
-    
+
     @Override
     protected Control createButtonBar(Composite parent) {
         return parent;
     }
-    
+
     @Override
     protected boolean isResizable() {
         return true;
