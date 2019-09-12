@@ -207,11 +207,22 @@ public class ActivationInfoCollector {
         boolean activatedResult = false;
         try {
             String userInfo = collectActivationInfo(userName, pass);
-            ServerAPICommunicationUtil.post("/segment/identify", userInfo);
+            String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
+            if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
+                activatedResult = true;
+            } else if (errorMessage != null) {
+                errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+            }
+
+        } catch (IOException ex) {
+            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+            if (errorMessage != null) {
+                errorMessage.delete(0, errorMessage.length());
+                errorMessage.append(ApplicationMessageConstants.NETWORK_ERROR);
+            }
         } catch (Exception e) {
             LogUtil.logError(e);
         }
-
 
         return activatedResult;
     }
@@ -236,8 +247,8 @@ public class ActivationInfoCollector {
     private static String testOpsActivate(String userName, String password, String machineId) throws Exception {
         String serverUrl = ApplicationInfo.getTestOpsServer();
         String token = KatalonApplicationActivator.getFeatureActivator().connect(serverUrl, userName, password);
-        String lincese = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, machineId);
-        return lincese;
+        String license = KatalonApplicationActivator.getFeatureActivator().getLicense(serverUrl, token, machineId);
+        return license;
     }
     
     public static boolean activateOffline(String activationCode, StringBuilder errorMessage) {
