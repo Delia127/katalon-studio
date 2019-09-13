@@ -74,6 +74,7 @@ public class ProjectFileServiceManager {
         if (projectFile.isFile() && projectFile.exists()) {
             ProjectEntity project = (ProjectEntity) EntityService.getInstance().getEntityByPath(projectFileLocation);
             project.setFolderLocation(projectFile.getParent());
+            project.setProjectFileLocation(projectFile.getAbsolutePath());
             createSettingFolder(project);
             FolderFileServiceManager.initRootEntityFolders(project);
 

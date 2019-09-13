@@ -22,6 +22,7 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -124,6 +125,7 @@ public class CloseProjectHandler {
                 eventBroker.send(EventConstants.PROJECT_CLOSED, project.getId());
             }
         } catch (Exception e) {
+        	LoggerSingleton.logError(e);
             MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
                     StringConstants.HAND_WARN_MSG_UNABLE_TO_CLOSE_CURRENT_PROJ);
         }
