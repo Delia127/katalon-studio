@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
+import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.logging.LogUtil;
 
@@ -35,23 +36,27 @@ public class MachineUtil {
     private static String machineId = StringUtils.EMPTY;
 
     public static String getMachineId() {
-        // Only load machine id once if not loaded
-        if (!machineId.equals(StringUtils.EMPTY)) {
+        // Only load machine id if not loaded or previous attempt failed
+        if (!machineId.equals(StringUtils.EMPTY) && !machineId.equals(UNAVAILABLE)) {
             return machineId;
         }
 
         if (SystemUtils.IS_OS_MAC) {
             machineId = parseMachineIdForMac();
-            return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
+            return machineId.matches(UUID_REGEX) ? appendMacAddress(machineId) : UNAVAILABLE;
         } else if (SystemUtils.IS_OS_LINUX) {
             machineId = parseMachineIdForLinux();
             // machine id on a linux is not a UUID
-            return machineId.length() != 32 ? UNAVAILABLE : machineId;
+            return machineId.length() != 32 ? UNAVAILABLE : appendMacAddress(machineId);
         } else if (SystemUtils.IS_OS_WINDOWS) {
             machineId = parseMachineIdForWindows();
-            return machineId.matches(UUID_REGEX) ? machineId : UNAVAILABLE;
+            return machineId.matches(UUID_REGEX) ? appendMacAddress(machineId) : UNAVAILABLE;
         }
         return UNAVAILABLE;
+    }
+
+    private static String appendMacAddress(String str) {
+        return str + "_" + KatalonApplication.getMacAddress();
     }
 
     private static String parseMachineIdForWindows() {
@@ -60,12 +65,9 @@ public class MachineUtil {
                     .runConsoleCommandAndCollectResults(WINDOWS_GET_MACHINE_ID_COMMAND);
 
             // Example: MachineGuid REG_SZ efc790ec-91b4-4e8d-aaa1-5c3e815669bc
-            String commandLineResult = commandLineResults.stream()
-            .filter(item -> {
+            String commandLineResult = commandLineResults.stream().filter(item -> {
                 return item.indexOf(WINDOWS_GET_MACHINE_ID_DELIMITER) > 0;
-            })
-            .findFirst()
-            .orElse(UNAVAILABLE);
+            }).findFirst().orElse(UNAVAILABLE);
             String parsedResult = Arrays.asList(commandLineResult.split(WINDOWS_GET_MACHINE_ID_DELIMITER))
                     .stream()
                     .map(result -> result.trim())
