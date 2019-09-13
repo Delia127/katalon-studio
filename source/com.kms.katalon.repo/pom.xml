@@ -225,15 +225,6 @@
 									<id>org.apache.commons:org.apache.commons.cli:1.0.0</id>
 								</artifact>
 								<artifact>
-									<id>org.apache.poi:org.apache.poi.ooxml.schemas:3.9.0</id>
-								</artifact>
-								<artifact>
-									<id>org.apache.poi:org.apache.poi.ooxml:3.9.0</id>
-								</artifact>
-								<artifact>
-									<id>org.apache.poi:org.apache.poi:3.9.0</id>
-								</artifact>
-								<artifact>
 									<id>org.dom4j:org.dom4j:1.6.1</id>
 								</artifact>
 								<artifact>
