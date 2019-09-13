@@ -129,8 +129,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String NETWORK_ERROR = MessageConstants.NETWORK_ERROR;
     
-    public static final String MSG_FORUM_SEARCH = MessageConstants.MSG_FORUM_SEARCH;
-    
     //KStoreCredentialsDialog
     public static final String KStoreLoginDialog_DIA_TITLE = MessageConstants.KStoreLoginDialog_DIA_TITLE;
     
