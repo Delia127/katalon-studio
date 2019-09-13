@@ -38,7 +38,7 @@ public class MachineUtil {
 
     public static String getMachineId() {
         // Only load machine id if not loaded or previous attempt failed
-        if (!machineId.equals(StringUtils.EMPTY) && !machineId.equals(UNAVAILABLE)) {
+        if (!machineId.equals(StringUtils.EMPTY) && !machineId.equals(hash(UNAVAILABLE))) {
             return machineId;
         }
 
