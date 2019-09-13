@@ -4,6 +4,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.constants.EventConstants;
@@ -29,6 +30,8 @@ public class LogoutHandler {
             if (ApplicationInfo.getAppProperty(ApplicationStringConstants.STORE_TOKEN) != null) {
                 ApplicationInfo.setAppProperty(ApplicationStringConstants.STORE_TOKEN, "", true);
             }
+            
+            ActivationInfoCollector.setActivated(false);
             
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
             
