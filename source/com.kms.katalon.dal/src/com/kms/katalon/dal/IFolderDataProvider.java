@@ -46,6 +46,8 @@ public interface IFolderDataProvider {
     public FolderEntity getProfileRoot(ProjectEntity project) throws DALException;
 
     public FolderEntity getIncludeRoot(ProjectEntity project) throws DALException;
+    
+    public FolderEntity getPluginsRoot(ProjectEntity project) throws DALException;
 
     public FolderEntity getFeatureRoot(ProjectEntity project) throws DALException;
     

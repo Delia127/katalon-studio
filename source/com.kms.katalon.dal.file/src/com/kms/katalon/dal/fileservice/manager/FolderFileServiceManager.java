@@ -52,6 +52,7 @@ public class FolderFileServiceManager {
             StringConstants.ROOT_FOLDER_NAME_PROFILES,
             StringConstants.ROOT_FOLDER_NAME_TEST_LISTENER,
             StringConstants.ROOT_FOLDER_NAME_INCLUDE,
+            StringConstants.SYSTEM_FOLDER_NAME_PLUGIN,
             StringConstants.SYSTEM_FOLDER_NAME_BIN,
             StringConstants.SYSTEM_FOLDER_NAME_DRIVER,
             StringConstants.SYSTEM_FOLDER_NAME_LIB,
@@ -80,7 +81,8 @@ public class FolderFileServiceManager {
             initRootFolder(FileServiceConstant.getCheckpointRootFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getTestListenerRootFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getProfileFolderLocation(projectFolderLocation));
-
+            
+            initRootFolder(FileServiceConstant.getPluginFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getSourceFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getGroovyScriptFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getFeatureFolderLocation(projectFolderLocation));
@@ -224,6 +226,26 @@ public class FolderFileServiceManager {
             }
 
             folder.setFolderType(FolderType.INCLUDE);
+            folder.setProject(project);
+            return folder;
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+    
+    public static FolderEntity getPluginRoot(ProjectEntity project) throws DALException {
+        if (project == null) {
+            return null;
+        }
+        try {
+            FolderEntity folder = getFolder(
+                    FileServiceConstant.getPluginFolderLocation(project.getFolderLocation()));
+
+            if (folder == null) {
+                return null;
+            }
+
+            folder.setFolderType(FolderType.PLUGIN);
             folder.setProject(project);
             return folder;
         } catch (Exception e) {

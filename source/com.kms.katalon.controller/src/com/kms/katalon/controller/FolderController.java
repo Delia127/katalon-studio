@@ -137,6 +137,10 @@ public class FolderController extends EntityController implements Serializable {
         return getDataProviderSetting().getFolderDataProvider().getCheckpointRoot(project);
     }
     
+    public FolderEntity getPluginsRoot(ProjectEntity project) throws Exception {
+        return getDataProviderSetting().getFolderDataProvider().getPluginsRoot(project);
+    }
+    
     public List<FileEntity> getRootUserFilesOrFolders(ProjectEntity project) throws Exception {
         return getDataProviderSetting().getFolderDataProvider().getRootUserFilesOrFolders(project);
     }
