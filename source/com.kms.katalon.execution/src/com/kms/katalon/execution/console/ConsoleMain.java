@@ -159,9 +159,7 @@ public class ConsoleMain {
                         throw new InvalidLicenseException("Invalid license");
                     }
                 } else {
-                    if (!StringUtils.isBlank(orgIdValue)) {
-                        isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue, Long.valueOf(orgIdValue));
-                    }
+                    isActivated = ActivationInfoCollector.checkAndMarkActivatedForConsoleMode(apiKeyValue);
                 }
                 
                 
