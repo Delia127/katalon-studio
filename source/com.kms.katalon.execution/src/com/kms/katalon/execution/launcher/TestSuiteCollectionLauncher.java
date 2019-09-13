@@ -146,7 +146,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                 prepareReport();
                 
                 setStatus(LauncherStatus.UPLOAD_REPORT);
-                reportLauncher.uploadReportTestSuiteCollection(reportCollection.getReportItemDescriptions(),
+                reportLauncher.uploadReportTestSuiteCollection(
+                        reportCollection.getReportItemDescriptions(),
                         reportCollection.getParentFolder().getLocation());
                 setStatus(LauncherStatus.DONE);
                 postExecution();
@@ -156,26 +157,26 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     }
     
     private TestSuiteCollectionLogRecord prepareReport() {
-    	try {
-    		List<TestSuiteLogRecord> suiteLogRecords = new ArrayList<>();
+        try {
+            List<TestSuiteLogRecord> suiteLogRecords = new ArrayList<>();
             for (ReportableLauncher subLauncher : subLaunchers) {
-        		TestSuiteLogRecord suiteLogRecord = subLauncher.getTestSuiteLogRecord();
-        		if (suiteLogRecord != null) {
-        			suiteLogRecords.add(suiteLogRecord); 
-        		}
+                TestSuiteLogRecord suiteLogRecord = subLauncher.getTestSuiteLogRecord();
+                if (suiteLogRecord != null) {
+                   suiteLogRecords.add(suiteLogRecord); 
+                }
             }
-            
-        	TestSuiteCollectionLogRecord suiteCollectionLogRecord = new TestSuiteCollectionLogRecord();
-        	suiteCollectionLogRecord.setTestSuiteCollectionId(executedEntity.getEntity().getName());
+
+            TestSuiteCollectionLogRecord suiteCollectionLogRecord = new TestSuiteCollectionLogRecord();
+            suiteCollectionLogRecord.setTestSuiteCollectionId(executedEntity.getEntity().getName());
             suiteCollectionLogRecord.setTestSuiteRecords(suiteLogRecords);
             suiteCollectionLogRecord.setStartTime(startTime != null ? startTime.getTime() : 0L);
             suiteCollectionLogRecord.setEndTime(endTime != null ? endTime.getTime() : 0L);
             suiteCollectionLogRecord.setTotalPassedTestCases(String.valueOf(result.getNumPasses()));
             suiteCollectionLogRecord.setTotalFailedTestCases(String.valueOf(result.getNumFailures()));
             suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
-            
+
             ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
-            
+
             return suiteCollectionLogRecord;
         } catch(Exception e) {
             LogUtil.printAndLogError(e);

@@ -152,13 +152,13 @@ public class ReportUtil {
     }
     
     public static JUnitTestSuite generateJUnitTestSuite(TestSuiteLogRecord suiteLogEntity) {
-    	JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
+        JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
     	
-    	String testSuiteName = suiteLogEntity.getName();
-    	String totalPass = suiteLogEntity.getTotalPassedTestCases() + "";
-    	String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
-    	String totalFailure = suiteLogEntity.getTotalFailedTestCases() + "";
-    	String duration = ((suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
+        String testSuiteName = suiteLogEntity.getName();
+        String totalPass = suiteLogEntity.getTotalPassedTestCases() + "";
+        String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
+        String totalFailure = suiteLogEntity.getTotalFailedTestCases() + "";
+        String duration = ((suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
 
         JUnitProperties properties = factory.createProperties();
         List<JUnitProperty> propertyList = properties.getProperty();
@@ -221,10 +221,10 @@ public class ReportUtil {
     public static void writeJUnitReport(TestSuiteCollectionLogRecord suiteCollectionLogRecord, File logFolder)
             throws JAXBException, IOException {
         JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
-        
         List<JUnitTestSuite> tsList = new ArrayList<>();
+        
         for(TestSuiteLogRecord suiteLogEntity : suiteCollectionLogRecord.getTestSuiteRecords()) {
-        	JUnitTestSuite ts = generateJUnitTestSuite(suiteLogEntity);
+            JUnitTestSuite ts = generateJUnitTestSuite(suiteLogEntity);
             tsList.add(ts);
         }
         
