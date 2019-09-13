@@ -53,6 +53,8 @@ public class ColorUtil {
     private static final String COMPOSITE_HEADER_BACKGROUND_COLOR = "#43515a";
     
     private static final String DISABLED_TEXT_COLOR = "#bdbdbd";
+    
+    private static final String SELECTED_ITEM_BLUE_COLOR = "#007AFF";
 
     private static Display display = Display.getCurrent();
 
@@ -79,7 +81,7 @@ public class ColorUtil {
     }
 
     public static Color getSelectedTableItemBackgroundColor() {
-        return display.getSystemColor(SWT.COLOR_LIST_SELECTION);
+        return getColor(SELECTED_ITEM_BLUE_COLOR);
     }
 
     public static Color getEvenTableItemBackgroundColor() {

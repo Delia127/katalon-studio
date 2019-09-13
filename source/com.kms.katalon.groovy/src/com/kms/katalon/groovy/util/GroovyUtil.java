@@ -367,6 +367,7 @@ public class GroovyUtil {
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.util"));
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("org.eclipse.equinox.common"));
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.netlightbody"));
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.poi"));
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getClass());
             addClassPathOfCoreBundleToJavaProject(entries, coreBundle);
