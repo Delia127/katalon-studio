@@ -130,17 +130,15 @@ public class PluginStoreToolControl {
 
                 new MenuItem(menu, SWT.SEPARATOR);
 
-                if (isLoggedIn()) {
-                    MenuItem logoutMenuItem = new MenuItem(menu, SWT.PUSH);
-                    logoutMenuItem.setText("Reactivate");
-                    logoutMenuItem.addSelectionListener(new SelectionAdapter() {
+                MenuItem logoutMenuItem = new MenuItem(menu, SWT.PUSH);
+                logoutMenuItem.setText("Reactivate");
+                logoutMenuItem.addSelectionListener(new SelectionAdapter() {
 
-                        @Override
-                        public void widgetSelected(SelectionEvent e) {
-                            new LogoutHandler().execute();
-                        }
-                    });
-                }
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        new LogoutHandler().execute();
+                    }
+                });
 
                 if (!isLoggedIn()) {
                     MenuItem loginMenuItem = new MenuItem(menu, SWT.PUSH);
