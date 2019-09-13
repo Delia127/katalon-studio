@@ -153,7 +153,7 @@ public class ReportUtil {
     
     public static JUnitTestSuite generateJUnitTestSuite(TestSuiteLogRecord suiteLogEntity) {
         JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
-    	
+
         String testSuiteName = suiteLogEntity.getName();
         String totalPass = suiteLogEntity.getTotalPassedTestCases() + "";
         String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
@@ -214,7 +214,7 @@ public class ReportUtil {
             tc.getSystemErr().add(item.getSystemErrorMsg().trim());
             ts.getTestcase().add(tc);
         });
-        
+
         return ts;
     }
     
@@ -222,12 +222,12 @@ public class ReportUtil {
             throws JAXBException, IOException {
         JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
         List<JUnitTestSuite> tsList = new ArrayList<>();
-        
+
         for(TestSuiteLogRecord suiteLogEntity : suiteCollectionLogRecord.getTestSuiteRecords()) {
             JUnitTestSuite ts = generateJUnitTestSuite(suiteLogEntity);
             tsList.add(ts);
         }
-        
+
         String testSuiteCollectionName = suiteCollectionLogRecord.getTestSuiteCollectionId();
         String testSuiteCollectionTotalPass = suiteCollectionLogRecord.getTotalPassedTestCases();
         String testSuiteCollectiontotalError = suiteCollectionLogRecord.getTotalErrorTestCases();
@@ -259,8 +259,8 @@ public class ReportUtil {
     public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
             throws JAXBException, IOException {
     	
-    	JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
-    	JUnitTestSuite ts = generateJUnitTestSuite(suiteLogEntity);
+        JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
+        JUnitTestSuite ts = generateJUnitTestSuite(suiteLogEntity);
 
         // This is a single test suite. Thus, the info for the test suites is the same as test suite
         JUnitTestSuites tss = factory.createTestSuites();
