@@ -29,7 +29,6 @@ import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.service.PluginService;
-import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
 public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
@@ -52,7 +51,6 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
     		return;
     	}
     	
-        PluginPreferenceStore store = new PluginPreferenceStore();
         List<ReloadItem>[] resultHolder = new List[1];
         Job reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
@@ -69,9 +67,6 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     if (credentials[0] != null) {
                         LoggerSingleton.logInfo("Credentials found. Reloading plugins.");
                         resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
-                        if (!store.hasReloadedPluginsBefore()) {
-                            store.markFirstTimeReloadPlugins();
-                        }
                     } else {
                         LoggerSingleton.logError("Credentials not found.");
                         return Status.CANCEL_STATUS;
