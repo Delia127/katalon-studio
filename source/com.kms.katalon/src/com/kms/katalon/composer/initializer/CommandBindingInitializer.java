@@ -117,6 +117,9 @@ public class CommandBindingInitializer extends WorkbenchUtilizer implements Appl
         if (triggerSequence == null) {
             triggerSequence = bindingService.getBestActiveBindingFor(command.getEditorCommandId());
         }
+        if (triggerSequence == null) {
+            return;
+        }
 
         for (Binding activeBinding : bindingService.getActiveBindings()) {
             if (!(activeBinding instanceof KeyBinding) || !triggerSequence.equals(activeBinding.getTriggerSequence())) {
