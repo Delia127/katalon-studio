@@ -91,7 +91,7 @@
 		<module>com.kms.katalon.tracking.service</module>
 		<module>com.kms.katalon.ansiconsole</module>
 		<module>com.kms.katalon.netlightbody</module>
-
+        <module>com.kms.katalon.poi</module>
 		<module>com.kms.katalon.platform.internal</module>
 	</modules>
 
