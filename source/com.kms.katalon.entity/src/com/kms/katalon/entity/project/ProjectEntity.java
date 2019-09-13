@@ -54,11 +54,11 @@ public class ProjectEntity extends IntegratedFileEntity {
 
     @Override
     public String getLocation() {
-    	if (getProjectFileLocation() == null) {
-    		return getFolderLocation() + File.separator + name + getFileExtension();
-    	} else {
-    		return getProjectFileLocation();
-    	}
+        if (getProjectFileLocation() == null) {
+            return getFolderLocation() + File.separator + name + getFileExtension();
+        } else {
+            return getProjectFileLocation();
+        }
     }
 
     public String getFolderLocation() {
@@ -115,11 +115,11 @@ public class ProjectEntity extends IntegratedFileEntity {
         this.type = type;
     }
 
-	public String getProjectFileLocation() {
-		return projectFileLocation;
-	}
-	
-	public void setProjectFileLocation(String projectFileLocation) {
-		this.projectFileLocation = projectFileLocation;
-	}
+    public String getProjectFileLocation() {
+        return projectFileLocation;
+    }
+    
+    public void setProjectFileLocation(String projectFileLocation) {
+        this.projectFileLocation = projectFileLocation;
+    }
 }
