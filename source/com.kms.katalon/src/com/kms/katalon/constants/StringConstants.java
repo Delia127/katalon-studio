@@ -102,6 +102,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BTN_ACTIVATE_TITLE = MessageConstants.BTN_ACTIVATE_TITLE;
     
     public static final String BTN_LOG_IN_TITLE = MessageConstants.BTN_LOG_IN_TITLE;
+    
+    public static final String BTN_SAVE = MessageConstants.BTN_SAVE;
 
     public static final String WAITTING_MESSAGE = MessageConstants.WAITTING_MESSAGE;
 
@@ -126,8 +128,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String SEND_ACTIVATION_INFO_FAILED = MessageConstants.SEND_ACTIVATION_INFO_FAILED;
 
     public static final String NETWORK_ERROR = MessageConstants.NETWORK_ERROR;
-    
-    public static final String MSG_FORUM_SEARCH = MessageConstants.MSG_FORUM_SEARCH;
     
     //KStoreCredentialsDialog
     public static final String KStoreLoginDialog_DIA_TITLE = MessageConstants.KStoreLoginDialog_DIA_TITLE;

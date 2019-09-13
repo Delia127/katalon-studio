@@ -63,6 +63,7 @@ public class LifeCycleManager {
     }
 
     private void startUpGUIMode() throws Exception {
+        ProjectController.cleanWorkspace();
         setUpDefaultTheme();
         setupHandlers();
         setupPreferences();

@@ -309,7 +309,7 @@ public class KStoreLoginDialog extends Dialog {
     }
 
     private void save(int index) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.KA_ORGANIZATION, JsonUtil.toJson(organizations.get(index)) , true);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_ORGANIZATION, JsonUtil.toJson(organizations.get(index)) , true);
         super.okPressed();
     }
 
