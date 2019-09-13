@@ -165,7 +165,7 @@ public class ProjectController extends EntityController {
             try {
                 // Remote all existing projects out of workspace
                 project.delete(false, true, null);
-            } catch (CoreException ignored) {}
+            } catch (Exception ignored) {}
         }
     }
 
