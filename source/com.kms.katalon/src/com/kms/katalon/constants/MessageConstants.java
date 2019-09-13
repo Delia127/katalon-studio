@@ -418,6 +418,8 @@ public class MessageConstants extends NLS {
     public static String KStoreLoginDialog_BTN_CONNECT;
     
     public static String KStoreLoginDialog_BTN_SKIP;
+    
+    public static String KStoreLoginDialog_BTN_OK;
 
     public static String KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
 
