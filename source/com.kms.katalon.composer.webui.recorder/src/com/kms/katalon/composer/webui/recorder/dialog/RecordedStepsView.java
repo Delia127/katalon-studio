@@ -249,9 +249,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     }
 
     private void addNode(HTMLActionMapping newAction) throws ClassNotFoundException {
+        beforeNodeAdded(newAction);
         ExpressionStatementWrapper wrapper = shouldAddNewNode(newAction);
         if (wrapper != null) {
-            beforeNodeAdded(newAction);
             treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
             treeViewer.refresh();
             treeViewer.setSelection(new StructuredSelection(getLatestNode()));
