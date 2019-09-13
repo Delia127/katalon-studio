@@ -47,8 +47,7 @@ public class KStoreUrls {
     }
 
     public static String getPluginDownloadAPIUrl(KStorePlugin plugin) {
-        return getKatalonStoreAPIUrl() + "/download/source/" + plugin.getProduct().getId() + "?version="
-                + plugin.getLatestCompatibleVersion().getNumber();
+        return plugin.getDownloadUrl();
     }
 
     public static String getRecommendedPluginsAPIUrl() {
