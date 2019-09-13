@@ -69,6 +69,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     private Date startTime;
 
     private Date endTime;
+    
+    private TestSuiteLogRecord suiteLogRecord;
 
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
@@ -120,7 +122,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         try {
             setStatus(LauncherStatus.PREPARE_REPORT);
 
-            TestSuiteLogRecord suiteLogRecord = prepareReport();
+            suiteLogRecord = prepareReport();
             
             if (runTestSuite) {
             	ReportFolder reportFolder = new ReportFolder(suiteLogRecord.getLogFolder());
@@ -527,5 +529,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     public Date getEndTime() {
         return endTime;
+    }
+    
+    public TestSuiteLogRecord getTestSuiteLogRecord() {
+        return suiteLogRecord;
     }
 }

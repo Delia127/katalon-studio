@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
-import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;

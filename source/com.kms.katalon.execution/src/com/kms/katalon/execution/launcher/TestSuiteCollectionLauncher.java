@@ -1,11 +1,11 @@
 package com.kms.katalon.execution.launcher;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -15,6 +15,9 @@ import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.logging.model.TestSuiteCollectionLogRecord;
+import com.kms.katalon.core.reporting.ReportUtil;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
@@ -139,14 +142,49 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
                         return;
                     }
                 }
+                
+                prepareReport();
+                
                 setStatus(LauncherStatus.UPLOAD_REPORT);
                 reportLauncher.uploadReportTestSuiteCollection(reportCollection.getReportItemDescriptions(),
-                        reportCollection.getLocation());
+                        reportCollection.getParentFolder().getLocation());
                 setStatus(LauncherStatus.DONE);
                 postExecution();
             }
         });
         watchDog.start();
+    }
+    
+    private TestSuiteCollectionLogRecord prepareReport() {
+    	try {
+    		List<TestSuiteLogRecord> suiteLogRecords = new ArrayList<>();
+            for (ReportableLauncher subLauncher : subLaunchers) {
+        		TestSuiteLogRecord suiteLogRecord = subLauncher.getTestSuiteLogRecord();
+        		if (suiteLogRecord != null) {
+        			suiteLogRecords.add(suiteLogRecord); 
+        		}
+            }
+            
+        	TestSuiteCollectionLogRecord suiteCollectionLogRecord = new TestSuiteCollectionLogRecord();
+        	suiteCollectionLogRecord.setTestSuiteCollectionId(executedEntity.getEntity().getName());
+            suiteCollectionLogRecord.setTestSuiteRecords(suiteLogRecords);
+            suiteCollectionLogRecord.setStartTime(startTime != null ? startTime.getTime() : 0L);
+            suiteCollectionLogRecord.setEndTime(endTime != null ? endTime.getTime() : 0L);
+            suiteCollectionLogRecord.setTotalPassedTestCases(String.valueOf(result.getNumPasses()));
+            suiteCollectionLogRecord.setTotalFailedTestCases(String.valueOf(result.getNumFailures()));
+            suiteCollectionLogRecord.setTotalErrorTestCases(String.valueOf(result.getNumErrors()));
+            
+            ReportUtil.writeJUnitReport(suiteCollectionLogRecord, getReportFolder());
+            
+            return suiteCollectionLogRecord;
+        } catch(Exception e) {
+            LogUtil.printAndLogError(e);
+            return null;
+        }
+    }
+    
+    protected File getReportFolder() {
+        return new File(reportCollection.getParentFolder().getLocation());
     }
 
     protected void postExecution() {

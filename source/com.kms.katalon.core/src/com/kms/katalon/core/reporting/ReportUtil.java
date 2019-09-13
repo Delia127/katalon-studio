@@ -36,6 +36,7 @@ import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus;
+import com.kms.katalon.core.logging.model.TestSuiteCollectionLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.template.ResourceLoader;
@@ -149,16 +150,15 @@ public class ReportUtil {
             writeJUnitReport(testSuiteLogRecord, new File(logFolder));
         }
     }
-
-    public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
-            throws JAXBException, IOException {
-        JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
-
-        String testSuiteName = suiteLogEntity.getName();
-        String totalPass = suiteLogEntity.getTotalPassedTestCases() + "";
-        String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
-        String totalFailure = suiteLogEntity.getTotalFailedTestCases() + "";
-        String duration = ((suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
+    
+    public static JUnitTestSuite generateJUnitTestSuite(TestSuiteLogRecord suiteLogEntity) {
+    	JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
+    	
+    	String testSuiteName = suiteLogEntity.getName();
+    	String totalPass = suiteLogEntity.getTotalPassedTestCases() + "";
+    	String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
+    	String totalFailure = suiteLogEntity.getTotalFailedTestCases() + "";
+    	String duration = ((suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
 
         JUnitProperties properties = factory.createProperties();
         List<JUnitProperty> propertyList = properties.getProperty();
@@ -214,19 +214,66 @@ public class ReportUtil {
             tc.getSystemErr().add(item.getSystemErrorMsg().trim());
             ts.getTestcase().add(tc);
         });
+        
+        return ts;
+    }
+    
+    public static void writeJUnitReport(TestSuiteCollectionLogRecord suiteCollectionLogRecord, File logFolder)
+            throws JAXBException, IOException {
+        JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
+        
+        List<JUnitTestSuite> tsList = new ArrayList<>();
+        for(TestSuiteLogRecord suiteLogEntity : suiteCollectionLogRecord.getTestSuiteRecords()) {
+        	JUnitTestSuite ts = generateJUnitTestSuite(suiteLogEntity);
+            tsList.add(ts);
+        }
+        
+        String testSuiteCollectionName = suiteCollectionLogRecord.getTestSuiteCollectionId();
+        String testSuiteCollectionTotalPass = suiteCollectionLogRecord.getTotalPassedTestCases();
+        String testSuiteCollectiontotalError = suiteCollectionLogRecord.getTotalErrorTestCases();
+        String testSuiteCollectionTotalFailure = suiteCollectionLogRecord.getTotalFailedTestCases();
+        String testSuiteCollectionDuration = ((suiteCollectionLogRecord.getEndTime() - suiteCollectionLogRecord.getStartTime()) / 1000) + "";;
+
+        JUnitTestSuites tss = factory.createTestSuites();
+        // errors: total number of tests with error result from all test suite
+        tss.setErrors(testSuiteCollectiontotalError);
+        // failures: total number of failed tests from all test suite
+        tss.setFailures(testSuiteCollectionTotalFailure);
+        // tests: total number of successful tests from all test suite
+        tss.setTests(testSuiteCollectionTotalPass);
+        // time: in seconds to execute all test suites
+        tss.setTime(testSuiteCollectionDuration);
+        // name
+        tss.setName(testSuiteCollectionName);
+
+        tss.getTestsuite().addAll(tsList);
+
+        JAXBContext context = JAXBContext
+                .newInstance(new Class[] { JUnitError.class, JUnitFailure.class, JUnitProperties.class,
+                        JUnitProperty.class, JUnitTestCase.class, JUnitTestSuites.class, JUnitTestSuite.class });
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.marshal(tss, new File(logFolder, "JUnit_Report.xml"));
+    }
+
+    public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
+            throws JAXBException, IOException {
+    	
+    	JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
+    	JUnitTestSuite ts = generateJUnitTestSuite(suiteLogEntity);
 
         // This is a single test suite. Thus, the info for the test suites is the same as test suite
         JUnitTestSuites tss = factory.createTestSuites();
         // errors: total number of tests with error result from all test suite
-        tss.setErrors(totalError);
+        tss.setErrors(ts.getErrors());
         // failures: total number of failed tests from all test suite
-        tss.setFailures(totalFailure);
+        tss.setFailures(ts.getFailures());
         // tests: total number of successful tests from all test suite
-        tss.setTests(totalPass);
+        tss.setTests(ts.getTests());
         // time: in seconds to execute all test suites
-        tss.setTime(duration);
+        tss.setTime(ts.getTime());
         // name
-        tss.setName(testSuiteName);
+        tss.setName(ts.getName());
 
         tss.getTestsuite().add(ts);
 
