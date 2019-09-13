@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 public class License {
+    
+    private String jwtCode;
+    
     private Date expirationDate;
 
     private String machineId;
@@ -43,4 +46,13 @@ public class License {
     public void setOrganizationId(long organizationId) {
         this.organizationId = organizationId;
     }
+
+    public String getJwtCode() {
+        return jwtCode;
+    }
+
+    public void setJwtCode(String jwtCode) {
+        this.jwtCode = jwtCode;
+    }
+    
 }

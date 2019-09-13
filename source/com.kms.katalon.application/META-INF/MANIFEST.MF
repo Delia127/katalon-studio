@@ -36,8 +36,11 @@ Export-Package: com.kms.katalon.application,
  com.kms.katalon.application.preference,
  com.kms.katalon.application.usagetracking,
  com.kms.katalon.application.utils,
+ com.kms.katalon.crypto,
  com.kms.katalon.feature,
- com.kms.katalon.license
+ com.kms.katalon.license,
+ com.kms.katalon.license.constants,
+ com.kms.katalon.license.models
 Bundle-ClassPath: resources/lib/proxy-vole-1.0.4-SNAPSHOT-jar-with-dependencies.jar,
  .
 Bundle-ActivationPolicy: lazy

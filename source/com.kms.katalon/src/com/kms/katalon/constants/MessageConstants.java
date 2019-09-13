@@ -123,6 +123,8 @@ public class MessageConstants extends NLS {
     
     public static String BTN_LOG_IN_TITLE;
 
+    public static String BTN_SAVE;
+
     public static String WAITTING_MESSAGE;
 
     public static String LINK_OPEN_ACTIVATE_FORM_OFFLINE;
@@ -295,8 +297,6 @@ public class MessageConstants extends NLS {
 
     public static String DIA_TITLE_KS_UPDATE;
 
-    public static String MSG_FORUM_SEARCH;
-
     public static String URL_MOBILE_RECORD;
 
     public static String URL_MOBILE_CONFIG_AND_RECORD_STEP_WINDOWS;
@@ -325,16 +325,20 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LBL_ASK_FOR_REGISTER;
     
     public static String ActivationDialogV2_LBL_SELECT_ORGANIZATION;
+    
+    public static String ActivationDialogV2_MSG_LOGIN;
 
     public static String ActivationDialogV2_MSG_ACTIVATING;
     
     public static String ActivationDialogV2_MSG_GETTING_ORGANIZATION;
     
+    public static String ActivationDialogV2_MSG_GETTING_LICENSE_KEY;
+    
     public static String ActivationDialogV2_LNK_SEE_MORE_ORGANIZATION;
 
     public static String ActivationDialogV2_LNK_REGISTER;
 
-    public static String ActivationDialogV2_LNK_OFFLINE_ACTIVATION;
+    public static String ActivationDialogV2_LNK_KSE_ACTIVATION;
 
     public static String ActivationDialogV2_LNK_RESET_PASSWORD;
     
@@ -343,6 +347,12 @@ public class MessageConstants extends NLS {
     public static String ActivationDialogV2_LBL_ERROR;
 
     public static String ActivationDialogV2_LBL_ERROR_ORGANIZATION;
+    
+    public static String ActivationDialogV2_MSG_GETTING_FEATURE;
+    
+    public static String ActivationDialogV2_LBL_ERROR_LICENSE_KEY;
+    
+    public static String URL_KATALON_ENTERPRISE;
 
     // ActivationOfflineDialogV2
     public static String ActivationOfflineDialogV2_LNK_BACK;
@@ -418,6 +428,8 @@ public class MessageConstants extends NLS {
     public static String KStoreLoginDialog_BTN_CONNECT;
     
     public static String KStoreLoginDialog_BTN_SKIP;
+    
+    public static String KStoreLoginDialog_BTN_OK;
 
     public static String KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
 

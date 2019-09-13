@@ -102,6 +102,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BTN_ACTIVATE_TITLE = MessageConstants.BTN_ACTIVATE_TITLE;
     
     public static final String BTN_LOG_IN_TITLE = MessageConstants.BTN_LOG_IN_TITLE;
+    
+    public static final String BTN_SAVE = MessageConstants.BTN_SAVE;
 
     public static final String WAITTING_MESSAGE = MessageConstants.WAITTING_MESSAGE;
 
@@ -127,8 +129,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String NETWORK_ERROR = MessageConstants.NETWORK_ERROR;
     
-    public static final String MSG_FORUM_SEARCH = MessageConstants.MSG_FORUM_SEARCH;
-    
     //KStoreCredentialsDialog
     public static final String KStoreLoginDialog_DIA_TITLE = MessageConstants.KStoreLoginDialog_DIA_TITLE;
     
@@ -141,6 +141,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStoreLoginDialog_BTN_CONNECT = MessageConstants.KStoreLoginDialog_BTN_CONNECT;
     
     public static final String KStoreLoginDialog_BTN_SKIP = MessageConstants.KStoreLoginDialog_BTN_SKIP;
+    
+    public static final String KStoreLoginDialog_BTN_OK = MessageConstants.KStoreLoginDialog_BTN_OK;
 
     public static final String KStoreLoginDialog_INVALID_ACCOUNT_ERROR = MessageConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
     
