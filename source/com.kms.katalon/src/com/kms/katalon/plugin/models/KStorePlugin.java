@@ -35,6 +35,8 @@ public class KStorePlugin {
     private int remainingDay;
     
     private File file;
+    
+    private String downloadUrl;
 
     public long getId() {
         return id;
@@ -163,4 +165,12 @@ public class KStorePlugin {
     public void setFile(File file) {
         this.file = file;
     }
+    
+    public String getDownloadUrl() {
+		return downloadUrl;
+	}
+    
+    public void setDownloadUrl(String downloadUrl) {
+		this.downloadUrl = downloadUrl;
+	}
 }

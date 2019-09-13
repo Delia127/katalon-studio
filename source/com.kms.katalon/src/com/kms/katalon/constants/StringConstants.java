@@ -143,6 +143,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String KStoreLoginDialog_BTN_CONNECT = MessageConstants.KStoreLoginDialog_BTN_CONNECT;
     
     public static final String KStoreLoginDialog_BTN_SKIP = MessageConstants.KStoreLoginDialog_BTN_SKIP;
+    
+    public static final String KStoreLoginDialog_BTN_OK = MessageConstants.KStoreLoginDialog_BTN_OK;
 
     public static final String KStoreLoginDialog_INVALID_ACCOUNT_ERROR = MessageConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR;
     
