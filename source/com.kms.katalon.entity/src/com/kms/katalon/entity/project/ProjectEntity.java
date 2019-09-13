@@ -122,4 +122,9 @@ public class ProjectEntity extends IntegratedFileEntity {
     public void setProjectFileLocation(String projectFileLocation) {
         this.projectFileLocation = projectFileLocation;
     }
+    
+    public void setProjectFile(File projectFile) {
+    	setFolderLocation(projectFile.getParent());
+    	setProjectFileLocation(projectFile.getAbsolutePath());
+    }
 }
