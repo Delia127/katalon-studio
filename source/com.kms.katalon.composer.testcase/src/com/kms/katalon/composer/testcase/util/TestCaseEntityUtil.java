@@ -70,7 +70,9 @@ public class TestCaseEntityUtil {
 
         des.getVariables().clear();
         for (VariableEntity variable : src.getVariables()) {
-            des.getVariables().add(variable);
+            VariableEntity variableName = new VariableEntity();
+            variableName.setName(variable.getName());
+            des.getVariables().add(variableName);
         }
 
         des.getIntegratedEntities().clear();
