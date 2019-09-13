@@ -87,7 +87,7 @@ public class ActivationDialogV2 extends AbstractDialog {
 
     private Link lnkAgreeTerm;
 
-    private Composite compositeOrganization;
+    private Composite organizationComposite;
     
     private boolean isExpanded;
     
@@ -371,27 +371,27 @@ public class ActivationDialogV2 extends AbstractDialog {
         btnActivate.setText(StringConstants.BTN_ACTIVATE_TITLE);
         getShell().setDefaultButton(btnActivate);
 
-        compositeOrganization = new Composite(contentComposite, SWT.NONE);
+        organizationComposite = new Composite(contentComposite, SWT.NONE);
 
         GridLayout glCompositeOrganization = new GridLayout(2, false);
         glCompositeOrganization.verticalSpacing = 10;
         glCompositeOrganization.horizontalSpacing = 0;
         glCompositeOrganization.marginHeight = 0;
         glCompositeOrganization.marginWidth = 0;
-        compositeOrganization.setLayout(glCompositeOrganization);
-        compositeOrganization.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 2, 1));
+        organizationComposite.setLayout(glCompositeOrganization);
+        organizationComposite.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 2, 1));
 
-        Label lblOrganization = new Label(compositeOrganization, SWT.NONE);
+        Label lblOrganization = new Label(organizationComposite, SWT.NONE);
         GridData gdOrganization = new GridData(SWT.LEFT, SWT.CENTER, false, false);
         gdOrganization.widthHint = 150;
         lblOrganization.setLayoutData(gdOrganization);
         lblOrganization.setText(MessageConstants.ActivationDialogV2_LBL_SELECT_ORGANIZATION);
 
-        cbbOrganization = new Combo(compositeOrganization, SWT.READ_ONLY);
+        cbbOrganization = new Combo(organizationComposite, SWT.READ_ONLY);
         cbbOrganization.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
         cbbOrganization.setEnabled(false);
 
-        Composite saveComposite = new Composite(compositeOrganization, SWT.NONE);
+        Composite saveComposite = new Composite(organizationComposite, SWT.NONE);
         saveComposite.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 2, 1));
         GridLayout gdTemp = new GridLayout(2, false);
         gdTemp.marginHeight = 0;
@@ -499,20 +499,20 @@ public class ActivationDialogV2 extends AbstractDialog {
     	Display.getDefault().timerExec(10, new Runnable() {
             @Override
             public void run() {
-                compositeOrganization.setVisible(isExpanded);
+                organizationComposite.setVisible(isExpanded);
                 Point currentSize = getShell().getSize();
-                int detailsHeight = compositeOrganization.getSize().y;
+                int detailsHeight = organizationComposite.getSize().y;
                 int newY;
                 if (!isExpanded) {
-                    ((GridData) compositeOrganization.getLayoutData()).exclude = true;
+                    ((GridData) organizationComposite.getLayoutData()).exclude = true;
                     newY = currentSize.y - detailsHeight;
                 } else {
-                    ((GridData) compositeOrganization.getLayoutData()).exclude = false;
+                    ((GridData) organizationComposite.getLayoutData()).exclude = false;
                     newY = currentSize.y + detailsHeight;
                 }
                 getShell().setSize(currentSize.x, newY);
-                compositeOrganization.layout(true, true);
-                compositeOrganization.getParent().layout();
+                organizationComposite.layout(true, true);
+                organizationComposite.getParent().layout();
             }
         });
     }
