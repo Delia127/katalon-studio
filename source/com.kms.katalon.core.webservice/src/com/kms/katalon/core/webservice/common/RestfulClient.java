@@ -1,30 +1,26 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
-import java.security.KeyStore;
-import java.security.cert.Certificate;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.ssl.KeyMaterial;
 
+import com.google.common.net.MediaType;
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.core.model.SSLClientCertificateSettings;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
@@ -200,9 +196,13 @@ public class RestfulClient extends BasicRequestor {
 
         char[] buffer = new char[1024];
         long bodyLength = 0L;
+        
+        MediaType mediaType = MediaType.parse(conn.getContentType());
+        Charset charset = mediaType.charset().or(StandardCharsets.UTF_8);
+        
         try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream()) {
             if (inputStream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset));
                 int len = 0;
                 startTime = System.currentTimeMillis();
                 while ((len = reader.read(buffer)) != -1) {
