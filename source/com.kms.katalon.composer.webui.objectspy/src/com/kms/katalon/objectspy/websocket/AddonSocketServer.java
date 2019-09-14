@@ -107,8 +107,4 @@ public class AddonSocketServer {
         return null;
 
     }
-    
-    public List<AddonSocket> getAllAddonSockets() {
-        return activeSockets;
-    }
 }

@@ -58,6 +58,8 @@ import com.kms.katalon.util.listener.EventManager;
 
 public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEvent>, EventManager<ObjectSpyEvent> {
 
+    private static final String WEB_ELEMENT_SCREENSHOT_PROPERTY = "screenshot";
+
     private static final String HIGHLIGHT_JS_PATH = "/resources/js/highlight.js";
 
     private Label lblMessageVerifyObject;
@@ -285,21 +287,17 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
             public void widgetSelected(SelectionEvent e) {
                 Thread addScreenShotThread = new Thread(() -> {
                     try {
+                        if (seleniumSession == null) {
+                            displayErrorMessageSync(ObjectspyMessageConstants.FAIL_TO_TAKE_SCREENSHOT);
+                            return;
+                        }
                         setConnectingCompositeVisibleSync(true);
-                        WebDriver driver = null;
-                        if (seleniumSession != null) {
-                            driver = seleniumSession.getWebDriver();
-                        } else {
-                            displayErrorMessageSync(ObjectspyMessageConstants.FAIL_TO_TAKE_SCREENSHOT);
-                            return;
-                        }
+                        WebDriver driver = seleniumSession.getWebDriver();
                         String pathToImage = WebElementUtils.takeScreenShot(driver, webElement);
-                        if (pathToImage.equals("")) {
-                            displayErrorMessageSync(ObjectspyMessageConstants.FAIL_TO_TAKE_SCREENSHOT);
-                            return;
-                        }
-                        webElement.getProperties().removeIf(screenshot -> screenshot.getName().equals("screenshot"));
-                        webElement.addProperty(new WebElementPropertyEntity("screenshot", pathToImage, false));
+                        webElement.getProperties()
+                                .removeIf(screenshot -> screenshot.getName().equals(WEB_ELEMENT_SCREENSHOT_PROPERTY));
+                        webElement.addProperty(
+                                new WebElementPropertyEntity(WEB_ELEMENT_SCREENSHOT_PROPERTY, pathToImage, false));
                         displaySuccessfulMessageSync(ObjectspyMessageConstants.SCREENSHOT_TAKEN);
                         invoke(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED, webElement);
                     } catch (Exception ex) {

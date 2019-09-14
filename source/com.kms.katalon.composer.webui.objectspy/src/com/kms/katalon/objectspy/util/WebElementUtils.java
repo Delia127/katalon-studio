@@ -19,9 +19,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -50,6 +48,8 @@ import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.util.collections.Pair;
 
 public class WebElementUtils {
+    private static final String SCREENSHOT_PATH = "/screenshots";
+
     private static final String PAGE_ELEMENT_NAME_PREFIX = "Page_";
 
     private static final String FRAME_ELEMENT_NAME_PREFIX = "Frame_";
@@ -268,28 +268,22 @@ public class WebElementUtils {
 	 * @return An absolute path to the screenshot if available, otherwise empty
 	 *         string
 	 */
-	public static String takeScreenShot(WebDriver driver, WebElement el) {
-		new WebDriverWait(driver, 30).until(webDriver -> ((JavascriptExecutor) webDriver)
-				.executeScript("return document.readyState").equals("complete"));
-		
-		String currentProjectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-		File imageFolder = new File(currentProjectLocation + "/screenshots");
-		imageFolder.mkdirs();
+    public static String takeScreenShot(WebDriver driver, WebElement el) {
+        String currentProjectLocation = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        File imageFolder = new File(currentProjectLocation + SCREENSHOT_PATH);
+        imageFolder.mkdirs();
         TestObject testObject = WebElementUtils.buildTestObject(el);
         By selectorMethod = WebUiCommonHelper.buildLocator(testObject);
-
-		org.openqa.selenium.WebElement element = driver.findElement(selectorMethod);
-		String screenshotPath = "";
-		if (element != null) {
-			try {
-				screenshotPath = WebUiCommonHelper.saveWebElementScreenshot(driver, element, el.getName(),
-						imageFolder.getAbsolutePath());
-			} catch (Exception e) {
-				LoggerSingleton.logError(e);
-			}
-		}
-		return screenshotPath;
-	}
+        return Optional.ofNullable(driver.findElement(selectorMethod)).map(element -> {
+            try {
+                return WebUiCommonHelper.saveWebElementScreenshot(driver, element, el.getName(),
+                        imageFolder.getAbsolutePath());
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+            return StringUtils.EMPTY;
+        }).get();
+    }
 
 	private static List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocatorSettings() {
         WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(

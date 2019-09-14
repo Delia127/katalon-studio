@@ -1,10 +1,6 @@
 package com.kms.katalon.core.webui.common;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.AbstractMap;
@@ -22,16 +18,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
-import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -49,7 +41,7 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.TestObjectXpath;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webui.common.XPathBuilder.PropertyType;
-import com.kms.katalon.core.webui.common.internal.ByScreenshotLocatorController;
+import com.kms.katalon.core.webui.common.internal.ImageLocatorController;
 import com.kms.katalon.core.webui.common.internal.SmartXPathController;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
@@ -787,7 +779,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             
             return testObject.getProperties().stream().filter(a -> a.getName().equals("screenshot")).findAny()
                     .map(present -> {
-                        return ByScreenshotLocatorController.findElementByScreenShot(webDriver, present.getValue());
+                        return ImageLocatorController.findElementByScreenShot(webDriver, present.getValue());
                     }).orElse(Collections.emptyList());
 
         } catch (TimeoutException e) {
@@ -885,66 +877,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 		return Collections.emptyList();
 	}
     
-	/**
-	 * Take and save screenshot of a web element on the web page WebDriver is
-	 * currently on. The web page's screenshot is first taken and converted into
-	 * a BufferedImage, then the web element's location is retrieved and used to
-	 * sub-image from the BufferedImage. The image (if saved successfully) will
-	 * be under PNG extension.
-	 * 
-	 * @param driver
-	 *            A WebDriver instance that's being used at the time calling
-	 *            this function
-	 * @param ele
-	 *            The web element to be taken screenshot of
-	 * @param name
-	 *            Name of the screenshot
-	 * @param path
-	 *            An absolute path to a folder to which the image will be saved
-	 * @return Path to the newly taken screenshot if exists, an empty string
-	 *         otherwise
-	 * @throws IOException
-	 *             If an exception during I/O occurs
-	 * @throws InterruptedException 
-	 */
-	public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path)
-			throws IOException {
-	    File screenshot = ele.getScreenshotAs(OutputType.FILE);
-        BufferedImage screenshotBeforeResized = ImageIO.read(screenshot);
-        int eleWidth = ele.getRect().getWidth();
-        int eleHeight = ele.getRect().getHeight();
-        BufferedImage screenshotAfterResized = resize(screenshotBeforeResized, eleHeight, eleWidth);
-        ImageIO.write(screenshotAfterResized, "png", screenshot);
-        String screenshotPath = path;
-        screenshotPath = screenshotPath.replaceAll("\\\\", "/");
-        if (screenshotPath.endsWith("/")) {
-            screenshotPath += name;
-        } else {
-            screenshotPath += "/" + name;
-        }
-        screenshotPath += ".png";
-        File fileScreenshot = new File(screenshotPath);
-        FileUtils.copyFile(screenshot, fileScreenshot);
-        // Delete temporary image
-        screenshot.deleteOnExit();
-        return screenshotPath;
-	}
 	
-	/**
-     * Resize the given image to the specified height and width
-     * @param img An {@link BufferedImage} instance representing the image to be resized
-     * @param height Height to resize to
-     * @param width Width to resize to
-     * @return A {@link BufferedImage}
-     */
-    private static BufferedImage resize(BufferedImage img, int height, int width) {
-        Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = resized.createGraphics();
-        g2d.drawImage(tmp, 0, 0, null);
-        g2d.dispose();
-        return resized;
-    }
 	
     @SuppressWarnings("unused")
     private static double getDevicePixelRatio(WebDriver driver) {
@@ -1109,6 +1042,32 @@ public class WebUiCommonHelper extends KeywordHelper {
         } else {
             throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
         }
+    }
+    
+    /**
+     * Take and save screenshot of a web element on the web page WebDriver is
+     * currently on. The web page's screenshot is first taken and converted into
+     * a BufferedImage, then the web element's location is retrieved and used to
+     * sub-image from the BufferedImage. The image (if saved successfully) will
+     * be under PNG extension.
+     * 
+     * @param driver
+     * A WebDriver instance that's being used at the time calling
+     * this function
+     * @param ele
+     * The web element to be taken screenshot of
+     * @param name
+     * Name of the screenshot
+     * @param path
+     * An absolute path to a folder to which the image will be saved
+     * @return Path to the newly taken screenshot if exists, an empty string
+     * otherwise
+     * @throws IOException
+     * If an exception during I/O occurs
+     * @throws InterruptedException
+     */
+    public static String saveWebElementScreenshot(WebDriver driver, WebElement ele, String name, String path) throws IOException {
+        return ImageLocatorController.saveWebElementScreenshot(driver, ele, name, path);
     }
 
     /**
