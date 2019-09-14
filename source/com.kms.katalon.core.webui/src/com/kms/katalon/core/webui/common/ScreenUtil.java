@@ -22,6 +22,7 @@ import com.kms.katalon.core.webui.util.FileUtil;
 public class ScreenUtil {
 
     private ScreenRegion mainScreen;
+
     private double similarity = 0.75; // Default value
 
     public ScreenUtil() {
@@ -122,14 +123,14 @@ public class ScreenUtil {
             throw new Exception(StringConstants.COMM_EXC_IMG_FILE_DOES_NOT_EXIST);
         }
     }
-    
+
     /**
      * Get all {@link ScreenRegion} on the screen matching the image specified
      * in imagePath. The returned array is sorted by matched score in descending
      * order
      * 
      * @param imagePath
-     *            Path to target image
+     * Path to target image
      * @return A list of matched {@link ScreenRegion}
      * @throws Exception
      */

@@ -8,7 +8,6 @@ import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.common.ScreenUtil;
 
 /**
- * A controller contains logic relating to finding a {@link WebElement} by its image
+ * A controller contains logic relating to finding a {@link WebElement} by its Test Object's screenshot property
  * 
  */
 public class ImageLocatorController {
@@ -36,26 +35,14 @@ public class ImageLocatorController {
 
     /**
      * Retrieve image at the given path, then look for similar images using
-     * Sikuli. Given the closest matched image, use the coordinates to retrieve
-     * the element at that location using:
-     * 
-     * <pre>
-     * ((JavascriptExecutor) driver)
-     * .executeJavascript('document.elementsFromPoint(args[0], args[1])', x, y)
-     * </pre>
+     * Sikuli. Given a matched image's position, use the coordinates to retrieve
+     * the corresponding web element and add it to the resulting list
      * 
      * @param webDriver
      * @param pathToScreenshot
-     * @return
+     * @return A list of {@link WebElement} whose visuals match the specified image
      */
     public static List<WebElement> findElementByScreenShot(WebDriver webDriver, String pathToScreenshot) {
-        // try {
-        // webDriver.manage().window().maximize();
-        // Thread.sleep(1000);
-        // } catch (InterruptedException e1) {
-        // logger.logError(ExceptionUtils.getFullStackTrace(e1));
-        // }
-
         ScreenUtil screen = new ScreenUtil(0.2);
         logger.logInfo("Attempting to find element by its screenshot !");
         File screenshotFile = new File(pathToScreenshot);
@@ -64,37 +51,37 @@ public class ImageLocatorController {
 
         try {
             List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
-            sikuliDebug(screenshotFile, matchedRegions);
+            // Uncomment the following line to see intermediate artifacts
+            // sikuliDebug(screenshotFile, matchedRegions);
             if (matchedRegions.size() == 0) {
                 return Collections.emptyList();
             }
-
             ScreenRegion matchedRegion = matchedRegions.get(0);
+
             Point coordinatesRelativeToDriver = getCoordinatesRelativeToWebDriver(webDriver, matchedRegion);
+
             double xRelativeToDriver = coordinatesRelativeToDriver.getX();
             double yRelativeToDriver = coordinatesRelativeToDriver.getY();
+            logger.logDebug("Web Element found at position (relative to browser's viewport)" + xRelativeToDriver + " , "
+                    + yRelativeToDriver);
 
-            List<WebElement> elementsAtPointXandY = getWebElementsAt(webDriver, xRelativeToDriver, yRelativeToDriver);
+            List<WebElement> elementsAtPointXandY = elementsFromPoint(webDriver, xRelativeToDriver, yRelativeToDriver);
 
-            // Find element closest in size to the matched region
+            // Find the element whose sizes are closest to that of the matched region
             WebElement elementAtPointXandY = null;
             double min = Double.MAX_VALUE;
-            for (WebElement element : elementsAtPointXandY) {
-                double widthDiff = Math.abs(element.getRect().getWidth() - matchedRegion.getBounds().getWidth());
-                double heightDiff = Math.abs(element.getRect().getHeight() - matchedRegion.getBounds().getHeight());
-                if (widthDiff + heightDiff <= min) {
-                    elementAtPointXandY = element;
-                    min = widthDiff + heightDiff;
-                }
-            }
 
-            if (elementAtPointXandY != null) {
-                // String name = "highestMatched_" + screenshotFile.getName().replaceAll(".png", "");
-                // String imageFolderPath = screenshotFile.getParent() + "/sikuli_matched_web_element";
-                // WebUiCommonHelper.saveWebElementScreenshot(webDriver, elementAtPointXandY, name, imageFolderPath);
-                return Arrays.asList(elementAtPointXandY);
-            }
-            return Collections.emptyList();
+            // Sort ascending with respect to the difference in size between the element and the matched region
+            elementsAtPointXandY.sort((ele1, ele2) -> {
+                double ele1H = getSizeHeuristic(ele1, matchedRegion);
+                double ele2H = getSizeHeuristic(ele2, matchedRegion);
+                if (ele1H < ele2H)
+                    return -1;
+                if (ele1H > ele2H)
+                    return 1;
+                return 0;
+            });
+            return elementsAtPointXandY;
         } catch (Exception e) {
             logger.logError(ExceptionUtils.getFullStackTrace(e));
         } finally {
@@ -105,9 +92,27 @@ public class ImageLocatorController {
         return Collections.emptyList();
     }
 
+    private static double getSizeHeuristic(WebElement element, ScreenRegion matchedRegion) {
+        double widthDiff = Math.abs(element.getRect().getWidth() - matchedRegion.getBounds().getWidth());
+        double heightDiff = Math.abs(element.getRect().getHeight() - matchedRegion.getBounds().getHeight());
+        return widthDiff + heightDiff;
+    }
+
     /**
-     * Get the coordinates of the matched region produced by Sikuli and
-     * transform them into the coordinates relative to the web driver
+     * Calling {@link ImageLocatorController#findElementByScreenShot(WebDriver, String)} and then
+     * get the first element from the list or null otherwise
+     * 
+     * @param webDriver
+     * @param pathToScreenshot
+     * @return An {@link WebElement} whose visuals match the specified image the most
+     */
+    public static WebElement findElementByScreenshot(WebDriver webDriver, String pathToScreenshot) {
+        return findElementByScreenShot(webDriver, pathToScreenshot).stream().findFirst().orElse(null);
+    }
+
+    /**
+     * Get the <b>center</b> coordinates of the matched region produced by Sikuli and
+     * transform them into the coordinates relative to the web driver.
      * 
      * @param webDriver
      * A current running {@link WebDriver}
@@ -123,43 +128,26 @@ public class ImageLocatorController {
         double driverX = webDriver.manage().window().getPosition().getX();
         double driverY = webDriver.manage().window().getPosition().getY();
 
-        double X = matchedRegion.getBounds().getX();
-        double Y = matchedRegion.getBounds().getY();
+        double X = matchedRegion.getBounds().getCenterX();
+        double Y = matchedRegion.getBounds().getCenterY();
         double xRelativeToDriver = X - driverX;
-        double yRelativeToDriver = Y - (driverHeight - viewHeight) - driverY;
+        double yRelativeToDriver = Y - driverY - (driverHeight - viewHeight);
         return new Point((int) xRelativeToDriver, (int) yRelativeToDriver);
     }
 
     /**
-     * Create a <b>sikuli</b> folder that contains target and candidate images
+     * Retrieve all {@link WebElement} at the specified location using:
      * 
-     * @param screenshotFile
-     * A {@link File} containing the screenshot
-     * @param matchedRegions
-     * A list of {@link ScreenRegion} of matched regions
-     * @throws IOException
+     * <pre>
+     * "return document.elementsFromPoint(x,y)"
+     * </pre>
+     * 
+     * @param webDriver
+     * @param x
+     * @param y
+     * @return A list of @{link WebElement} returned from calling the above browser API
      */
-    @SuppressWarnings("unused")
-    private static void sikuliDebug(File screenshotFile, List<ScreenRegion> matchedRegions) throws IOException {
-        String imageFolderPath = screenshotFile.getParent() + "/sikuli/"
-                + screenshotFile.getName().replaceAll(".png", "");
-        File imageFolder = new File(imageFolderPath + "/target.png");
-        imageFolder.mkdirs();
-        imageFolder.createNewFile();
-        FileUtils.copyFileToDirectory(screenshotFile, imageFolder);
-        matchedRegions.forEach(a -> {
-            try {
-                Robot robot = new Robot();
-                BufferedImage image = robot.createScreenCapture(a.getBounds());
-                File imageFile = new File(imageFolderPath + "/candidate_" + a.getScore() + ".png");
-                ImageIO.write(image, "png", imageFile);
-            } catch (IOException | AWTException e) {
-                logger.logError(ExceptionUtils.getFullStackTrace(e));
-            }
-        });
-    }
-
-    private static List<WebElement> getWebElementsAt(WebDriver webDriver, double x, double y) {
+    private static List<WebElement> elementsFromPoint(WebDriver webDriver, double x, double y) {
 
         @SuppressWarnings("unchecked")
         List<Object> objectsAtPointXandY = (List<Object>) ((JavascriptExecutor) webDriver)
@@ -213,5 +201,34 @@ public class ImageLocatorController {
         g2d.drawImage(tmp, 0, 0, null);
         g2d.dispose();
         return resized;
+    }
+
+    /**
+     * Create a <b>sikuli</b> folder that contains target and candidate images
+     * 
+     * @param screenshotFile
+     * A {@link File} containing the screenshot
+     * @param matchedRegions
+     * A list of {@link ScreenRegion} of matched regions
+     * @throws IOException
+     */
+    @SuppressWarnings("unused")
+    private static void sikuliDebug(File screenshotFile, List<ScreenRegion> matchedRegions) throws IOException {
+        String imageFolderPath = screenshotFile.getParent() + "/sikuli/"
+                + screenshotFile.getName().replaceAll(".png", "");
+        File imageFolder = new File(imageFolderPath + "/target.png");
+        imageFolder.mkdirs();
+        imageFolder.createNewFile();
+        FileUtils.copyFileToDirectory(screenshotFile, imageFolder);
+        matchedRegions.forEach(a -> {
+            try {
+                Robot robot = new Robot();
+                BufferedImage image = robot.createScreenCapture(a.getBounds());
+                File imageFile = new File(imageFolderPath + "/candidate_" + a.getScore() + ".png");
+                ImageIO.write(image, "png", imageFile);
+            } catch (IOException | AWTException e) {
+                logger.logError(ExceptionUtils.getFullStackTrace(e));
+            }
+        });
     }
 }
