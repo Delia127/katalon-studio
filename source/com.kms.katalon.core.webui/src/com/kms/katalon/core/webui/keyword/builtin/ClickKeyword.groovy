@@ -71,7 +71,6 @@ public class ClickKeyword extends WebUIAbstractKeyword {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()
                 }
-                
             }
         }, flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_CLICK_ON_OBJ_X, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_CLICK_ON_OBJ)
