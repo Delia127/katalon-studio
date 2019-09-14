@@ -323,15 +323,7 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         if (btnAddScreenShotForElement.isDisposed()) {
             return;
         }
-
-        boolean allowEnable = false;
-        if (webElement != null) {
-            allowEnable = true;
-        }
-        if (seleniumSession == null) {
-            allowEnable = false;
-        }
-        btnAddScreenShotForElement.setEnabled(allowEnable);
+        btnAddScreenShotForElement.setEnabled(webElement != null && seleniumSession != null);
     }
 
     private void changeBtnVerifyAndHighlightState() {

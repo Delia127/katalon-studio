@@ -64,7 +64,7 @@ public class ImageLocatorController {
 
         try {
             List<ScreenRegion> matchedRegions = screen.findImages(pathToScreenshot);
-            // sikuliDebug(screenshotFile, matchedRegions);
+            sikuliDebug(screenshotFile, matchedRegions);
             if (matchedRegions.size() == 0) {
                 return Collections.emptyList();
             }
