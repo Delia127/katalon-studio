@@ -2,8 +2,12 @@ package com.kms.katalon.core.webui.keyword.builtin
 
 import java.text.MessageFormat
 
+import org.openqa.selenium.JavascriptExecutor
+import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.Actions
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
 
 import com.kms.katalon.core.annotation.internal.Action
 import com.kms.katalon.core.configuration.RunConfiguration
@@ -11,6 +15,7 @@ import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
+import com.kms.katalon.core.trymonad.Try
 import com.kms.katalon.core.webui.common.WebUiCommonHelper
 import com.kms.katalon.core.webui.constants.StringConstants
 import com.kms.katalon.core.webui.driver.DriverFactory
@@ -41,13 +46,27 @@ public class ClickKeyword extends WebUIAbstractKeyword {
         WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
             try {
-                WebUiCommonHelper.checkTestObjectParameter(to)
-                isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to)
                 WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
+                WebDriver webDriver = DriverFactory.getWebDriver();
+                WebDriverWait wait = new WebDriverWait(webDriver, 10);
+                webElement = wait.until(ExpectedConditions.elementToBeClickable(webElement));
                 logger.logDebug(MessageFormat.format(StringConstants.KW_LOG_INFO_CLICKING_ON_OBJ, to.getObjectId()))
-                Actions actions = new Actions(DriverFactory.getWebDriver());
-                actions.moveToElement(webElement).click().build().perform();
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_CLICKED, to.getObjectId()))
+                Try.ofFailable({
+                    webElement.click()
+                    return Boolean.TRUE;
+                }).orElseTry({
+                    Actions builder = new Actions(webDriver);
+                    builder.moveToElement(webElement);
+                    builder.click();
+                    builder.build().perform();
+                    return Boolean.TRUE;
+                }).orElseTry({
+                    JavascriptExecutor executor = (JavascriptExecutor) webDriver;
+                    executor.executeScript("arguments[0].click();", webElement);
+                    return Boolean.TRUE;
+                }).onSuccess({
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_CLICKED, to.getObjectId()))
+                }).get();
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()

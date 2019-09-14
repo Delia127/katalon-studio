@@ -17,8 +17,6 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String LBL_DLG_AUTHENTICATE_PASSWORD;
 
-    public static String LBL_DLG_AUTHENTICATE_USERNAME;
-
     public static String LBL_ENABLE_ANALYTICS_INTEGRATION;
     
     public static String LBL_ORGANIZATION;
@@ -48,8 +46,6 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String MSG_DLG_PRG_TITLE_UPLOAD_CODE;
     
     public static String MSG_DLG_PRG_GETTING_UPLOAD_CODE;
-
-    public static String MSG_INFO_DLG_AUTHENTICATE_ENTER_EMAIL_PASSWORD;
 
     public static String TITLE_DLG_AUTHENTICATE;
     

@@ -47,7 +47,7 @@ public class SampleProjectMenuContribution implements EventHandler {
 
             List<SampleRemoteProject> remoteProjects = SampleRemoteProjectProvider.getCachedProjects();
            
-            ProjectParameterizedCommandBuilder commandBuilder = new ProjectParameterizedCommandBuilder();
+            SampleProjectParameterizedCommandBuilder commandBuilder = new SampleProjectParameterizedCommandBuilder();
             if (remoteProjects.size() <= 0) {
                 List<SampleLocalProject> localProjects = SampleProjectProvider.getInstance().getSampleProjects();
                 for (SampleLocalProject project : localProjects) {

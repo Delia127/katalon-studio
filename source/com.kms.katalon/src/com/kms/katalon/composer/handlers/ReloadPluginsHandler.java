@@ -18,7 +18,10 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.plugin.dialog.ReloadPluginsHelpDialog;
 import com.kms.katalon.plugin.dialog.ReloadPluginsResultDialog;
 import com.kms.katalon.plugin.models.KStoreBasicCredentials;
 import com.kms.katalon.plugin.models.KStoreClientAuthException;
@@ -26,7 +29,6 @@ import com.kms.katalon.plugin.models.KStorePlugin;
 import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.service.PluginService;
-import com.kms.katalon.plugin.store.PluginPreferenceStore;
 
 public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
@@ -43,7 +45,12 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
     }
 
     public void reloadPlugins(boolean silenceMode) {
-        PluginPreferenceStore store = new PluginPreferenceStore();
+    	ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+    	if (currentProject == null) {
+    		openHelpDialog();
+    		return;
+    	}
+    	
         List<ReloadItem>[] resultHolder = new List[1];
         Job reloadPluginsJob = new Job("Reloading plugins...") {
             @Override
@@ -60,9 +67,6 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                     if (credentials[0] != null) {
                         LoggerSingleton.logInfo("Credentials found. Reloading plugins.");
                         resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
-                        if (!store.hasReloadedPluginsBefore()) {
-                            store.markFirstTimeReloadPlugins();
-                        }
                     } else {
                         LoggerSingleton.logError("Credentials not found.");
                         return Status.CANCEL_STATUS;
@@ -125,6 +129,11 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
 
     private void openResultDialog(List<ReloadItem> result) {
         ReloadPluginsResultDialog dialog = new ReloadPluginsResultDialog(Display.getCurrent().getActiveShell(), result);
+        dialog.open();
+    }
+
+    private void openHelpDialog() {
+        ReloadPluginsHelpDialog dialog = new ReloadPluginsHelpDialog(Display.getCurrent().getActiveShell());
         dialog.open();
     }
 }
