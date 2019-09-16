@@ -1,8 +1,5 @@
 package com.kms.katalon.composer.integration.analytics.uploadProject;
 
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -20,6 +17,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.plugin.dialog.KStoreLoginDialog;
 import com.kms.katalon.util.CryptoUtil;
@@ -72,8 +70,8 @@ public class StoreProjectCodeToCloudHandler {
                 StoreProjectCodeToCloudDialog storeCodeProjectDialog = new StoreProjectCodeToCloudDialog(parentShell);
                 storeCodeProjectDialog.open();
             }
-        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
         return;
     }
