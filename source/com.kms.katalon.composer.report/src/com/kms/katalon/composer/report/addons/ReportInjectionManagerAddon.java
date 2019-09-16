@@ -73,7 +73,7 @@ public class ReportInjectionManagerAddon {
         });
     }
 
-    private void collectReportExportProviders() {
+    public static void collectReportExportProviders() {
         ReportComposerIntegrationFactory.getInstance().onProjectChanged();
         List<CustomKeywordPlugin> plugins = CustomKeywordPluginFactory.getInstance().getPlugins();
         for (CustomKeywordPlugin plugin : plugins) {
@@ -84,7 +84,7 @@ public class ReportInjectionManagerAddon {
         }
     }
 
-    private void loadExportReportProvider(CustomKeywordPlugin plugin, String exportReportProviderClassName) {
+    private static void loadExportReportProvider(CustomKeywordPlugin plugin, String exportReportProviderClassName) {
         try {
             URLClassLoader classLoader = ProjectController.getInstance()
                     .getProjectClassLoader(ProjectController.getInstance().getCurrentProject());

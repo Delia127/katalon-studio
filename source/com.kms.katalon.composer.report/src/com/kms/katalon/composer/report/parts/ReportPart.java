@@ -34,7 +34,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -64,7 +63,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -85,7 +83,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.EventHandler;
@@ -95,7 +92,6 @@ import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.StyledTextMessage;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -103,9 +99,9 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.AuthenticationDialog;
 import com.kms.katalon.composer.integration.analytics.dialog.UploadSelectionDialog;
+import com.kms.katalon.composer.report.addons.ReportInjectionManagerAddon;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
@@ -127,7 +123,6 @@ import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -140,6 +135,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.entity.ReportFolder;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -223,6 +219,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private Composite mainComposite;
 
     private Composite parent;
+
+    private ToolBar tbShowHideDetails;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -658,7 +656,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         Label spacer = new Label(compositeTestCaseFilterSelection, SWT.NONE);
         spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        ToolBar tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
+        tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
         tbShowHideDetails.setForeground(ColorUtil.getToolBarForegroundColor());
 
         createExportReportMenu(tbShowHideDetails);
@@ -705,13 +703,24 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private void createExportReportMenu(ToolBar toolBar) {
         List<ExportReportProviderPlugin> exportReportPluginProviders = ReportComposerIntegrationFactory.getInstance()
                 .getExportReportPluginProviders();
+        
         if (exportReportPluginProviders.isEmpty()) {
+            ToolItem btnExportReport = (ToolItem) toolBar.getData("btnExportReport");
+            Menu exportReportMenu = (Menu) toolBar.getData("exportReportMenu");
+            if (btnExportReport != null && exportReportMenu != null) {
+                btnExportReport.dispose();
+                exportReportMenu.dispose();
+            }
             return;
         }
+
         ToolItem btnExportReport = new ToolItem(toolBar, SWT.DROP_DOWN);
         btnExportReport.setText(ComposerReportMessageConstants.BTN_EXPORT_REPORT);
-        
+        toolBar.setData("btnExportReport", btnExportReport);
+
         Menu exportReportMenu = new Menu(btnExportReport.getParent().getShell());
+        toolBar.setData("exportReportMenu", exportReportMenu);
+
         for (ExportReportProviderPlugin provider : exportReportPluginProviders) {
             ExportReportProviderReflection reflection = new ExportReportProviderReflection(provider);
             try {
@@ -722,7 +731,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 LoggerSingleton.logError(e);
             }
         }
-        
+
         btnExportReport.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -1493,6 +1502,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         eventBroker.subscribe(EventConstants.REPORT_UPDATED, this);
         eventBroker.subscribe(EventConstants.REPORT_RENAMED, this);
         eventBroker.subscribe(EventConstants.IS_INTEGRATED, this);
+        eventBroker.subscribe(EventConstants.RELOAD_PLUGINS, this);
     }
 
     public MPart getMPart() {
@@ -1555,6 +1565,11 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         }
         if (EventConstants.IS_INTEGRATED.equals(event.getTopic())) {
             uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
+        }
+        if(EventConstants.RELOAD_PLUGINS.equals(event.getTopic())) {
+            // Reload Report Export providers since plug-ins may be installed or uninstalled
+            ReportInjectionManagerAddon.collectReportExportProviders();
+            createExportReportMenu(tbShowHideDetails);            
         }
     }
 
