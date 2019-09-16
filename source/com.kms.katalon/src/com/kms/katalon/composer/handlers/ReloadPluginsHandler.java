@@ -72,6 +72,8 @@ public class ReloadPluginsHandler extends RequireAuthorizationHandler {
                         LoggerSingleton.logError("Credentials not found.");
                         return Status.CANCEL_STATUS;
                     }
+                    LoggerSingleton.logInfo("Reloading plugins.");
+                    resultHolder[0] = PluginService.getInstance().reloadPlugins(credentials[0], monitor);
                 } catch (InterruptedException e) {
                     return Status.CANCEL_STATUS;
                 } catch (Exception e) {

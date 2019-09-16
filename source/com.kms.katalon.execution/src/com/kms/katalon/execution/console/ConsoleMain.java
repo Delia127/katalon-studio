@@ -79,9 +79,9 @@ public class ConsoleMain {
     
     public static final String KATALON_STORE_API_KEY_SECOND_OPTION = "apikey";
     
-    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "testOps.licenseFile";
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_OPTION = "license";
     
-    public static final String KATALON_ANALYTICS_LICENSE_FILE_VAR = "TESTOPS_LICENSE_FILE";
+    public static final String KATALON_ANALYTICS_LICENSE_FILE_VAR = "KATALON_LICENSE";
     
     public static final String KATALON_ORGANIZATION_ID_OPTION = "orgId";
 
