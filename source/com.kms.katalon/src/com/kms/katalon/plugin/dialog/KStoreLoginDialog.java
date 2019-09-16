@@ -261,6 +261,7 @@ public class KStoreLoginDialog extends Dialog {
                 getOrganizations();
                 token = authenticateResult.getToken();
             } else {
+                enableObject(true);
                 setProgressMessage(StringConstants.KStoreLoginDialog_INVALID_ACCOUNT_ERROR, true);
             }
         } catch (Exception e) {
