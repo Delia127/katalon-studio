@@ -344,6 +344,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 recordStepsView.addSimpleKeyword("openBrowser", true);
             }
 
+            isNavigationAdded = false;
             tltmPauseAndResume.setEnabled(true);
             tltmStop.setEnabled(true);
             resume();

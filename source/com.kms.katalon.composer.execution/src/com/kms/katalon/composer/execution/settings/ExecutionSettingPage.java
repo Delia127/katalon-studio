@@ -60,6 +60,8 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
     
     private Combo cbDefaultSmartWait;
 
+    private Combo cbLogTestSteps;
+    
     private Text txtDefaultElementTimeout, txtDefaultPageLoadTimeout, txtActionDelay, txtDefaultIEHangTimeout;
 
     @SuppressWarnings("unused")
@@ -134,11 +136,21 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         lblDefaultElementTimeout.setText(StringConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT);
         GridData gdLblDefaultElementTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         lblDefaultElementTimeout.setLayoutData(gdLblDefaultElementTimeout);
-
+        
         txtDefaultElementTimeout = new Text(comp, SWT.BORDER);
         GridData gdTxtDefaultElementTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdTxtDefaultElementTimeout.widthHint = INPUT_WIDTH;
         txtDefaultElementTimeout.setLayoutData(gdTxtDefaultElementTimeout);
+        
+        Label lblLogTestSteps = new Label(comp, SWT.NONE);
+        lblLogTestSteps.setText(StringConstants.PREF_LBL_LOG_TEST_STEPS);
+        GridData gdLblLogTestSteps = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        lblLogTestSteps.setLayoutData(gdLblLogTestSteps);
+        
+        cbLogTestSteps = new Combo(comp, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
+        GridData gdCbLogTestSteps = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdCbLogTestSteps.widthHint = INPUT_WIDTH * 2;
+        cbLogTestSteps.setLayoutData(gdCbLogTestSteps);
         
         /* 	// Smart XPath's related functionality - only supported in commercial ver
          * 	Label lblApplyNeighborXpaths = new Label(comp, SWT.NONE);
@@ -316,6 +328,10 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
         cbDefaultSmartWait.select(selectedSmartWaitMode.booleanValue() ? 0 : 1);
         
+        Boolean selectedLogTestSteps = defaultSettingStore.getLogTestSteps();
+        cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
+        cbLogTestSteps.select(selectedLogTestSteps.booleanValue() ? 0 : 1);
+        
         txtDefaultElementTimeout.setText(Integer.toString(defaultSettingStore.getElementTimeout()));
         
 		/*		
@@ -357,6 +373,9 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
         
         cbDefaultSmartWait.setItems(new String[] { "Enable", "Disable" });
         cbDefaultSmartWait.select(0);
+        
+        cbLogTestSteps.setItems(new String[] { "Enable", "Disable" });
+        cbLogTestSteps.select(0);
         
         txtDefaultElementTimeout
                 .setText(Integer.toString(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_TIMEOUT_VALUE));
@@ -403,6 +422,11 @@ public class ExecutionSettingPage extends PreferencePageWithHelp {
             if (cbDefaultSmartWait != null) {
                 defaultSettingStore.setDefaultSmartWaitMode(
                         cbDefaultSmartWait.getSelectionIndex() == 0 ? Boolean.valueOf(true) : Boolean.valueOf(false));
+            }
+            
+            if (cbLogTestSteps != null) {
+                defaultSettingStore.setLogTestSteps(
+                        cbLogTestSteps.getSelectionIndex() == 0 ? Boolean.valueOf(true) : Boolean.valueOf(false));
             }
             
             /* 

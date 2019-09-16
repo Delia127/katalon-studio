@@ -21,7 +21,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.feature.models.TestOpsFeatureKey;
 import com.kms.katalon.core.model.RunningMode;
 import com.kms.katalon.core.util.ApplicationRunningMode;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -30,6 +29,7 @@ import com.kms.katalon.custom.keyword.CustomKeywordPlugin;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.constants.PluginOptions;
 import com.kms.katalon.feature.FeatureServiceConsumer;
+import com.kms.katalon.feature.TestOpsFeatureKey;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.plugin.models.KStoreApiKeyCredentials;
@@ -42,6 +42,7 @@ import com.kms.katalon.plugin.models.Plugin;
 import com.kms.katalon.plugin.models.ReloadItem;
 import com.kms.katalon.plugin.models.ReloadPluginsException;
 import com.kms.katalon.plugin.models.ResolutionItem;
+import com.kms.katalon.plugin.util.KStoreCredentialsHelper;
 import com.kms.katalon.plugin.util.PlatformHelper;
 import com.kms.katalon.plugin.util.PluginFactory;
 import com.kms.katalon.plugin.util.PluginSettings;
@@ -77,7 +78,7 @@ public class PluginService {
             SubMonitor getOnlinePluginsMonitor = subMonitor.split(10, SubMonitor.SUPPRESS_NONE);
             
             List<KStorePlugin> onlinePlugins;
-            if (shouldReloadPluginsOnline()) {
+            if (shouldReloadPluginsOnline() && KStoreCredentialsHelper.isValidCredential(credentials)) {
                 getOnlinePluginsMonitor.beginTask("Fetching latest plugins info from Katalon Store...", 100);
     
                 onlinePlugins = getOnlinePlugins(credentials);
@@ -240,12 +241,17 @@ public class PluginService {
         }
     }
     
-    private boolean shouldReloadPluginsOnline() throws IOException {
+    public boolean shouldReloadPluginsOnline() throws IOException {
         PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
         return reloadOption == PluginOptions.ONLINE || reloadOption == PluginOptions.ONLINE_AND_OFFLINE;
     }
+
+    public boolean shouldReloadPluginsOnlineOnly() throws IOException {
+        PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
+        return reloadOption == PluginOptions.ONLINE;
+    }
     
-    private boolean shouldReloadPluginsOffline() throws IOException {
+    public boolean shouldReloadPluginsOffline() throws IOException {
         PluginOptions reloadOption = PluginSettings.getReloadPluginOption();
         return reloadOption == PluginOptions.OFFLINE || reloadOption == PluginOptions.ONLINE_AND_OFFLINE;
     }

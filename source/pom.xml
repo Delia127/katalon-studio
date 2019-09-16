@@ -91,7 +91,7 @@
 		<module>com.kms.katalon.tracking.service</module>
 		<module>com.kms.katalon.ansiconsole</module>
 		<module>com.kms.katalon.netlightbody</module>
-
+        <module>com.kms.katalon.poi</module>
 		<module>com.kms.katalon.platform.internal</module>
 	</modules>
 
@@ -100,12 +100,12 @@
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		<platform.version>1.0.12</platform.version>
+		<platform.version>1.0.13</platform.version>
 
 		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
 		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>
 		<eclipse_repo_url>${eclipse_update_site}/eclipse/updates/4.6/</eclipse_repo_url>
-		<egit_repo_url>${eclipse_update_site}/egit/updates-4.4.1/</egit_repo_url>
+		<egit_repo_url>${eclipse_update_site}/egit/updates-4.6.1/</egit_repo_url>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

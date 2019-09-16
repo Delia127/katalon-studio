@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.git.handlers;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.inject.Inject;
@@ -26,10 +27,12 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.git.components.wizards.CustomGitCloneWizard;
 import com.kms.katalon.composer.integration.git.constants.GitEventConstants;
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
+import com.kms.katalon.composer.integration.git.preference.GitPreferenceUtil;
 import com.kms.katalon.composer.project.handlers.NewProjectHandler;
 import com.kms.katalon.composer.project.handlers.OpenProjectHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 @SuppressWarnings("restriction")
 public class CloneHandler {
@@ -43,8 +46,6 @@ public class CloneHandler {
 
     @Execute
     public void execute(Shell parentShell) {
-//        EPartService partService = context.getActive(PartServiceImpl.class);
-//        PartServiceSingleton.getInstance().setPartService(partService);
         WizardDialog dlg = new WizardDialog(parentShell, new CustomGitCloneWizard());
         dlg.open();
     }
@@ -53,6 +54,13 @@ public class CloneHandler {
     @Optional
     private void gitCloneSuccessEventHandler(@UIEventTopic(GitEventConstants.CLONE_FINISHED) final File destination)
             throws InvocationTargetException, InterruptedException {
+        if (!GitPreferenceUtil.isGitEnabled()) {
+            try {
+                GitPreferenceUtil.setEnable(true);
+            } catch (IOException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
         openOrCreateNewProjectAtDestination(destination);
     }
 

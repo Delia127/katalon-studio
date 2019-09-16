@@ -261,13 +261,13 @@ public class CustomPushWizard extends Wizard {
             try {
                 operation.run(monitor);
             } catch (final InvocationTargetException e) {
-                return new Status(IStatus.ERROR, Activator.getPluginId(), UIText.PushWizard_unexpectedError,
+                return new Status(IStatus.ERROR, Activator.getPluginId(), UIText.PushJob_unexpectedError,
                         e.getCause());
             }
 
             final PushOperationResult result = operation.getOperationResult();
             if (!result.isSuccessfulConnectionForAnyURI()) {
-                return new Status(IStatus.ERROR, Activator.getPluginId(), NLS.bind(UIText.PushWizard_cantConnectToAny,
+                return new Status(IStatus.ERROR, Activator.getPluginId(), NLS.bind(UIText.PushJob_cantConnectToAny,
                         result.getErrorStringForAllURis()));
             }
 

@@ -12,10 +12,6 @@ def get_version(branch):
 
     print("Branch", branch)
 
-    if (branch.endswith(version) is False) | ("{0}.rc".format(version) in branch):
-        print('Branch or version is incorrect.')
-        raise ValueError('Branch or version is incorrect.')
-
     is_qtest = "qtest" in branch
     print("Is qTest", is_qtest)
 
@@ -29,6 +25,11 @@ def get_version(branch):
     print("With update", with_update)
 
     if is_release is True:
+
+        if (branch.endswith(version) is False) | ("{0}.rc".format(version) in branch):
+            print('Branch or version is incorrect.')
+            raise ValueError('Branch or version is incorrect.')
+            
         tag = branch.replace('release-', '')
     else:
         tag = "{0}.DEV".format(version)

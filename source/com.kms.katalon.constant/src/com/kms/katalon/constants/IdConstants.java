@@ -71,8 +71,8 @@ public interface IdConstants {
 
     public static final String DEBUG_EXPRESSION_PLACEHOLDER_ID = "com.kms.katalon.placeholder.debug.top.expressions";
     
-    // EventLog Part
-    public static final String EVENT_LOG_PART_ID = "com.kms.katalon.placeholder.eventLog";
+    // EventLog placeholder 
+    public static final String EVENT_LOG_PLACEHOLDER_ID = "com.kms.katalon.placeholder.eventLog";
 
     // Explorer part content
     public static final String EXPLORER_PART_ID = "com.kms.katalon.composer.part.explorer";
@@ -84,6 +84,8 @@ public interface IdConstants {
     public static final String WELCOME_PART_ID = "com.kms.katalon.part.welcome";
     
     public static final String QUICKSTART_PART_ID = "com.kms.katalon.part.quickstart";
+    
+    public static final String EVENT_LOG_PART_ID = "com.kms.katalon.part.eventLog";
 
     // Test Case Part content
     public static final String TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testcase";
@@ -97,7 +99,7 @@ public interface IdConstants {
     public static final String TEST_CASE_VARIABLES_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variables";
     
 
-	public static final String TEST_CASE_VARIABLE_EDITOR_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variableEditor";
+    public static final String TEST_CASE_VARIABLE_EDITOR_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".variableEditor";
 
     public static final String TEST_CASE_INTEGRATION_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX
             + ".integration";
@@ -173,6 +175,10 @@ public interface IdConstants {
     public static final String SEARCH_COMMAND_ID = "org.eclipse.search.ui.openSearchDialog";
 
     public static final String RESET_PERSPECTIVE_HANDLER_ID = "com.kms.katalon.composer.menu.handler.resetPerspective";
+    
+    public static final String NEW_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.add";
+
+    public static final String OPEN_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.open";
 
     // Parameter ID
     public static final String RUN_MODE_PARAMETER_ID = "com.kms.katalon.composer.execution.runMode";

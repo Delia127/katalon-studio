@@ -62,7 +62,7 @@ public class KatalonApplication {
         return hostName;
     }
 
-    private static String getMacAddress() {
+    public static String getMacAddress() {
         String macAdress = "";
         try {
             macAdress = NetworkUtil.getMacAddress(NetworkUtil.getLocalHostAddress());

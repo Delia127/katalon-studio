@@ -836,7 +836,7 @@ public class TestStepManualComposite {
 
 	private void openRecentKeywordItems() {
 		List<StoredKeyword> recentKeywords = TestCasePreferenceDefaultValueInitializer.getRecentKeywords()
-		        .stream().filter(k -> k.getKeywordClass() != null && 
+		        .stream().filter(k -> k.getKeywordClass() != null || 
 		        KeywordContributorCollection.getContributor(k.getKeywordClass()) != null).collect(Collectors.toList());
 		if (recentKeywords.isEmpty()) {
 			return;
