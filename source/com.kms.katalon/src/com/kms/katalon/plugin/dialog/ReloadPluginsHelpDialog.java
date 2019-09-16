@@ -36,11 +36,13 @@ public class ReloadPluginsHelpDialog extends Dialog {
         body.setLayoutData(gdBody);
 
         lblHelp = new Label(body, SWT.WRAP);
-        GridData gdHelp = new GridData(SWT.FILL, SWT.FILL, true, false);
+        GridData gdHelp = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gdHelp.verticalIndent = 5;
         gdHelp.widthHint = 430;
-        gdHelp.heightHint = 30;
+        gdHelp.heightHint = 15;
         lblHelp.setLayoutData(gdHelp);
         lblHelp.setText(StringConstants.KStorePluginsDialog_LBL_HELP);
+        lblHelp.setAlignment(SWT.CENTER);
 
         Composite bottomComposite = new Composite(body, SWT.NONE);
         bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
