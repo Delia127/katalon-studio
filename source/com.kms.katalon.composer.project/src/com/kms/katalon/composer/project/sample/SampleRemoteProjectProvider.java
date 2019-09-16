@@ -35,13 +35,14 @@ public class SampleRemoteProjectProvider {
     private static List<SampleRemoteProject> cachedProjects;
 
     public static List<SampleRemoteProject> getCachedProjects() {
-        if (cachedProjects == null) { 
-            return Collections.emptyList();
+        if (cachedProjects == null) {
+            cachedProjects = getSampleProjects();
+            return cachedProjects;
         }
         return cachedProjects;
     }
 
-    public List<SampleRemoteProject> getSampleProjects() {
+    public static List<SampleRemoteProject> getSampleProjects() {
         try {
             String sampleProjectsJson = IOUtils.toString(getInputStream(SAMPLE_REMOTE_PROJECT_DESCRIPTION_URL));
             Gson gson = new GsonBuilder()
@@ -72,7 +73,7 @@ public class SampleRemoteProjectProvider {
         }));
     }
 
-    public InputStream getInputStream(String url) throws URISyntaxException, IOException, GeneralSecurityException {
+    public static InputStream getInputStream(String url) throws URISyntaxException, IOException, GeneralSecurityException {
         RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(15000).setSocketTimeout(15000).build();
         HttpClientProxyBuilder builder = HttpClientProxyBuilder.create(ProxyPreferences.getProxyInformation());
         HttpClient httpClient = builder.getClientBuilder().disableCookieManagement().setDefaultRequestConfig(requestConfig).build();
